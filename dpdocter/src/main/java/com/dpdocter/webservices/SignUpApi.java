@@ -12,10 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.User;
+import com.dpdocter.beans.UserActivation;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.services.SignUpService;
+
+import common.util.web.Response;
 
 @Component
 @Path(PathProxy.SIGNUP_BASE_URL)
@@ -27,33 +30,42 @@ public class SignUpApi {
 	
 	@Path(value=PathProxy.SignUpUrls.DOCTER_SIGNUP)
 	@POST
-	public User docterSignup(User user){
+	public Response<User> docterSignup(User user){
 		if(user == null){
 			throw new BusinessException(ServiceError.InvalidInput, "User to be saved is NULL");
 		}
 		user =  signUpService.signUp(user, RoleEnum.DOCTER.getRole());
-		return user;
+		Response<User> response = new Response<User>();
+		response.setData(user);
+		return response;
 	}
 	
 	@Path(value=PathProxy.SignUpUrls.PATIENT_SIGNUP)
 	@POST
-	public User patientSignup(User user){
+	public Response<User> patientSignup(User user){
 		if(user == null){
 			throw new BusinessException(ServiceError.InvalidInput, "User to be saved is NULL");
 		}
 		user =  signUpService.signUp(user, RoleEnum.PATIENT.getRole());
-		return user;
+		Response<User> response = new Response<User>();
+		response.setData(user);
+		return response;
 	}
 	
 	@Path(value=PathProxy.SignUpUrls.ACTIVATE_USER)
 	@GET
-	public String activateUser(@PathParam(value="userId")String userId){
+	public Response<UserActivation> activateUser(@PathParam(value="userId")String userId){
 		if(userId == null){
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Boolean flag = false;
-		flag =  signUpService.activateUser(userId);
-		return "{'flag':'"+flag+"'}";
+		Boolean isActivated = false;
+		isActivated =  signUpService.activateUser(userId);
+		UserActivation userActivation = new UserActivation();
+		userActivation.setActivated(isActivated);
+		Response<UserActivation> response = new Response<UserActivation>();
+		response.setData(userActivation);
+		
+		return response;
 	}
 	
 	

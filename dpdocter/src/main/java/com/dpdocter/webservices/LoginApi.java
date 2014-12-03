@@ -13,6 +13,7 @@ import com.dpdocter.beans.User;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.services.LoginService;
+import common.util.web.Response;
 /**
  * @author veeraj
  */
@@ -26,11 +27,13 @@ public class LoginApi {
 	
 	@Path(value=PathProxy.LoginUrls.LOGIN_USER)
 	@POST
-	public User login(User user){
+	public Response<User> login(User user){
 		if(user == null){
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		user =  loginService.login(user);
-		return user;
+		Response<User> response = new Response<User>();
+		response.setData(user);
+		return response;
 	}
 }
