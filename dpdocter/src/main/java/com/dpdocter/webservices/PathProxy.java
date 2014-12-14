@@ -25,7 +25,7 @@ public interface PathProxy {
 	public static final String CONTACTS_BASE_URL = BASE_URL + "/contacts";
 	public interface ContactsUrls {
 		public static final String DOCTOR_CONTACTS = "/doctorcontacts/{doctorId}/{page}/{size}";
-
+		public static final String BLOCK_CONTACT = "/doctorcontacts/block/{doctorId}/{patientId}";
 	}
 
 }

@@ -38,12 +38,12 @@ public class ContactsApi {
 		return response;
 	}
 	
-	@Path(value=PathProxy.ContactsUrls.DOCTOR_CONTACTS)
+	@Path(value=PathProxy.ContactsUrls.BLOCK_CONTACT)
 	@GET
-	public Response<String> blockPatient(@PathParam(value="doctorId")String doctorId,@PathParam(value="patientId")String patientId){
+	public Response<Boolean> blockPatient(@PathParam(value="doctorId")String doctorId,@PathParam(value="patientId")String patientId){
 		contactsService.blockPatient(patientId, doctorId);
-		Response<String> response = new Response<String>();
-		response.setData("Patient Blocked Succefully");
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(true);
 		return response;
 	}
 	

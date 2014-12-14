@@ -23,4 +23,10 @@ public class Response<T> {
 		this.dataList = dataList;
 	}
 
+	@Override
+	public String toString() {
+		return "Response [data=" + data + ", dataList=" + dataList + "]";
+	}
+	
+
 }

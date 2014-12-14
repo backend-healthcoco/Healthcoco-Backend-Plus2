@@ -13,13 +13,11 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.User;
 import com.dpdocter.beans.UserActivation;
-import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.PatientSignUpRequest;
 import com.dpdocter.services.SignUpService;
-
 import common.util.web.Response;
 
 @Component
