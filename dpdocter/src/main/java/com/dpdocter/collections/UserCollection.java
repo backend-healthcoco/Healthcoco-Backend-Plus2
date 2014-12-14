@@ -24,8 +24,7 @@ public class UserCollection {
 	private String emailAddress;
 	@Field
 	private String phoneNumber;
-	@Field
-	private String imageUrl;
+	
 	@Field
 	private Boolean isActive = false;
 	public String getId() {
@@ -70,12 +69,7 @@ public class UserCollection {
 	public void setEmailAddress(String emailAddress) {
 		this.emailAddress = emailAddress;
 	}
-	public String getImageUrl() {
-		return imageUrl;
-	}
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
-	}
+	
 	public Boolean getIsActive() {
 		return isActive;
 	}
@@ -95,9 +89,9 @@ public class UserCollection {
 				+ ", lastName=" + lastName + ", middleName=" + middleName
 				+ ", userName=" + userName + ", password=" + password
 				+ ", emailAddress=" + emailAddress + ", phoneNumber="
-				+ phoneNumber + ", imageUrl=" + imageUrl + ", isActive="
-				+ isActive + "]";
+				+ phoneNumber + ", isActive=" + isActive + "]";
 	}
+	
 	
 	
 }

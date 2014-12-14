@@ -9,6 +9,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.request.LoginRequest;
 import com.dpdocter.services.LoginService;
 /**
  * @author veeraj
@@ -21,12 +22,13 @@ public class LoginServiceImpl implements LoginService {
 /**
  * This method is used for login purpose.
  */
-	public User login(User user) {
+	public User login(LoginRequest request) {
 		try {
-			UserCollection userCollection = userRepository.findByUserNameAndPass(user.getUserName(), user.getPassword());
+			UserCollection userCollection = userRepository.findByUserNameAndPass(request.getUsername(), request.getPassword());
 			if(userCollection == null){
 				throw new BusinessException(ServiceError.NotVerified, "Invalid username and Password");
 			}
+			User user = new User();
 			BeanUtil.map(userCollection, user);
 			return user;
 		} catch(BusinessException be){

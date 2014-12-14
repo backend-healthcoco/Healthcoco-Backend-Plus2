@@ -5,12 +5,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection="docter_cl")
-public class DocterCollection {
+public class DoctorCollection {
 	@Id
 	private String id;
 	
 	@Field
-	private String imageUrl;
+	private String doctorImageUrl;
 	
 	@Field
 	private String specialization;
@@ -26,12 +26,16 @@ public class DocterCollection {
 		this.id = id;
 	}
 
-	public String getImageUrl() {
-		return imageUrl;
+	
+	
+
+
+	public String getDoctorImageUrl() {
+		return doctorImageUrl;
 	}
 
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
+	public void setDoctorImageUrl(String doctorImageUrl) {
+		this.doctorImageUrl = doctorImageUrl;
 	}
 
 	public String getSpecialization() {
@@ -53,11 +57,12 @@ public class DocterCollection {
 
 	@Override
 	public String toString() {
-		return "DocterCollection [id=" + id + ", imageUrl=" + imageUrl
-				+ ", specialization=" + specialization + ", userId=" + userId
-				+ "]";
+		return "DoctorCollection [id=" + id + ", doctorImageUrl="
+				+ doctorImageUrl + ", specialization=" + specialization
+				+ ", userId=" + userId + "]";
 	}
 
+	
 
 	
 }

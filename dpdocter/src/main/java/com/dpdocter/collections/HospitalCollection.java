@@ -10,48 +10,51 @@ public class HospitalCollection {
 	@Id
 	private String id;
 	@Field
-	private String name;
+	private String hospitalName;
 	@Field
-	private String phoneNumber;
+	private String hospitalPhoneNumber;
 	@Field
-	private String imageUrl;
+	private String hospitalImageUrl;
 	@Field
-	private String description;
+	private String hospitalDescription;
 	public String getId() {
 		return id;
 	}
 	public void setId(String id) {
 		this.id = id;
 	}
-	public String getName() {
-		return name;
+	public String getHospitalName() {
+		return hospitalName;
 	}
-	public void setName(String name) {
-		this.name = name;
+	public void setHospitalName(String hospitalName) {
+		this.hospitalName = hospitalName;
 	}
-	public String getPhoneNumber() {
-		return phoneNumber;
+	
+	public String getHospitalPhoneNumber() {
+		return hospitalPhoneNumber;
 	}
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
+	public void setHospitalPhoneNumber(String hospitalPhoneNumber) {
+		this.hospitalPhoneNumber = hospitalPhoneNumber;
 	}
-	public String getImageUrl() {
-		return imageUrl;
+	public String getHospitalImageUrl() {
+		return hospitalImageUrl;
 	}
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
+	public void setHospitalImageUrl(String hospitalImageUrl) {
+		this.hospitalImageUrl = hospitalImageUrl;
 	}
-	public String getDescription() {
-		return description;
+	
+	public String getHospitalDescription() {
+		return hospitalDescription;
 	}
-	public void setDescription(String description) {
-		this.description = description;
+	public void setHospitalDescription(String hospitalDescription) {
+		this.hospitalDescription = hospitalDescription;
 	}
 	@Override
 	public String toString() {
-		return "HospitalCollection [id=" + id + ", name=" + name
-				+ ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl
-				+ ", description=" + description + "]";
+		return "HospitalCollection [id=" + id + ", hospitalName="
+				+ hospitalName + ", hospitalPhoneNumber=" + hospitalPhoneNumber
+				+ ", hospitalImageUrl=" + hospitalImageUrl
+				+ ", hospitalDescription=" + hospitalDescription + "]";
 	}
 	
 }

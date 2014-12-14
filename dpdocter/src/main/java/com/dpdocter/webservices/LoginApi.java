@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.User;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.request.LoginRequest;
 import com.dpdocter.services.LoginService;
 import common.util.web.Response;
 /**
@@ -27,11 +28,11 @@ public class LoginApi {
 	
 	@Path(value=PathProxy.LoginUrls.LOGIN_USER)
 	@POST
-	public Response<User> login(User user){
-		if(user == null){
+	public Response<User> login(LoginRequest request){
+		if(request == null){
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		user =  loginService.login(user);
+		User user =  loginService.login(request);
 		Response<User> response = new Response<User>();
 		response.setData(user);
 		return response;

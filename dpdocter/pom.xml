@@ -7,6 +7,66 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>spring-mongodb Maven Webapp</name>
 	<url>http://maven.apache.org</url>
+
+	<profiles>
+
+		<profile>
+			<id>local</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<finalName>dpdocter</finalName>
+				<resources>
+					<resource>
+						<directory>src/main/resources/spring-context</directory>
+						<filtering>true</filtering>
+					</resource>
+					<resource>
+						<directory>src/main/resources/spring-properties/local</directory>
+						<filtering>true</filtering>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+
+		<profile>
+			<id>stagging</id>
+
+			<build>
+				<finalName>dpdocter</finalName>
+				<resources>
+					<resource>
+						<directory>src/main/resources/spring-context</directory>
+						<filtering>true</filtering>
+					</resource>
+					<resource>
+						<directory>src/main/resources/spring-properties/staging</directory>
+						<filtering>true</filtering>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+
+		<profile>
+			<id>production</id>
+
+			<build>
+				<finalName>dpdocter</finalName>
+				<resources>
+					<resource>
+						<directory>src/main/resources/spring-context</directory>
+						<filtering>true</filtering>
+					</resource>
+					<resource>
+						<directory>src/main/resources/spring-properties/production</directory>
+						<filtering>true</filtering>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+
+	</profiles>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -45,6 +105,13 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
+			<version>3.2.12.RELEASE</version>
+		</dependency>
+		<!-- Various Application Context utilities, including EhCache, JavaMail, 
+			Quartz, and Freemarker integration Define this if you need any of these integrations -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
 			<version>3.2.12.RELEASE</version>
 		</dependency>
 
@@ -102,16 +169,26 @@
 			<artifactId>httpclient</artifactId>
 			<version>4.2.1</version>
 		</dependency>
+		<!-- APACHE-COMMONS_COLLECTIONS -->
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.2.1</version>
+		</dependency>
+
 		<!-- DOZER -->
 		<dependency>
 			<groupId>net.sf.dozer</groupId>
 			<artifactId>dozer</artifactId>
 			<version>5.4.0</version>
 		</dependency>
-		
+		<!-- JAVA MAIL -->
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4.7</version>
+		</dependency>
 
 	</dependencies>
-	<build>
-		<finalName>dpdocter</finalName>
-	</build>
+	
 </project>

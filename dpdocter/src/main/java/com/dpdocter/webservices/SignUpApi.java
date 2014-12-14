@@ -16,6 +16,8 @@ import com.dpdocter.beans.UserActivation;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.request.DoctorSignupRequest;
+import com.dpdocter.request.PatientSignUpRequest;
 import com.dpdocter.services.SignUpService;
 
 import common.util.web.Response;
@@ -28,13 +30,13 @@ public class SignUpApi {
 	@Autowired
 	private SignUpService signUpService;
 	
-	@Path(value=PathProxy.SignUpUrls.DOCTER_SIGNUP)
+	@Path(value=PathProxy.SignUpUrls.DOCTOR_SIGNUP)
 	@POST
-	public Response<User> docterSignup(User user){
-		if(user == null){
-			throw new BusinessException(ServiceError.InvalidInput, "User to be saved is NULL");
+	public Response<User> doctorSignup(DoctorSignupRequest request){
+		if(request == null){
+			throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
 		}
-		user =  signUpService.signUp(user, RoleEnum.DOCTER.getRole());
+		User user =  signUpService.doctorSignUp(request);
 		Response<User> response = new Response<User>();
 		response.setData(user);
 		return response;
@@ -42,11 +44,11 @@ public class SignUpApi {
 	
 	@Path(value=PathProxy.SignUpUrls.PATIENT_SIGNUP)
 	@POST
-	public Response<User> patientSignup(User user){
-		if(user == null){
-			throw new BusinessException(ServiceError.InvalidInput, "User to be saved is NULL");
+	public Response<User> patientSignup(PatientSignUpRequest request){
+		if(request == null){
+			throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
 		}
-		user =  signUpService.signUp(user, RoleEnum.PATIENT.getRole());
+		User user =  signUpService.patientSignUp(request);
 		Response<User> response = new Response<User>();
 		response.setData(user);
 		return response;

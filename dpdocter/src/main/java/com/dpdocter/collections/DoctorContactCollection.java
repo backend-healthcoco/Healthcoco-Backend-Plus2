@@ -4,20 +4,23 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection="docter_contact_cl")
-public class DocterContactCollection {
+@Document(collection="doctor_contact_cl")
+public class DoctorContactCollection {
 
 	@Id
 	private String id;
 	
 	@Field
-	private String docterId;
+	private String doctorId;
 	
 	@Field
 	private String contactId;
 	
 	@Field
-	private Boolean isBlocked;
+	private Boolean isBlocked = false;
+	
+	@Field
+	private Long createdDate = System.currentTimeMillis();
 
 	public String getId() {
 		return id;
@@ -27,12 +30,14 @@ public class DocterContactCollection {
 		this.id = id;
 	}
 
-	public String getDocterId() {
-		return docterId;
+	
+
+	public String getDoctorId() {
+		return doctorId;
 	}
 
-	public void setDocterId(String docterId) {
-		this.docterId = docterId;
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
 	}
 
 	public String getContactId() {
@@ -50,12 +55,22 @@ public class DocterContactCollection {
 	public void setIsBlocked(Boolean isBlocked) {
 		this.isBlocked = isBlocked;
 	}
+	
+	public Long getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Long createdDate) {
+		this.createdDate = createdDate;
+	}
 
 	@Override
 	public String toString() {
-		return "DocterContactCollection [id=" + id + ", docterId=" + docterId
+		return "DocterContactCollection [id=" + id + ", doctorId=" + doctorId
 				+ ", contactId=" + contactId + ", isBlocked=" + isBlocked + "]";
 	}
+
+
 	
 	
 }

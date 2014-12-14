@@ -3,7 +3,7 @@ package com.dpdocter.beans;
  * @author veeraj
  */
 
-public class Docter {
+public class Doctor {
 	private String id;
 	private String imageUrl;
 	private String specialization;
@@ -27,7 +27,7 @@ public class Docter {
 	}
 	@Override
 	public String toString() {
-		return "Docter [id=" + id + ", imageUrl=" + imageUrl
+		return "Doctor [id=" + id + ", imageUrl=" + imageUrl
 				+ ", specialization=" + specialization + "]";
 	}
 	
