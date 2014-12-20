@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.services.MailService;
@@ -15,6 +16,7 @@ import com.dpdocter.services.MailService;
  * @author veeraj
  *
  */
+@Service
 public class MailServiceImpl implements MailService {
 
 	@Autowired

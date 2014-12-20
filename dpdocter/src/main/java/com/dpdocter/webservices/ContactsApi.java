@@ -21,7 +21,7 @@ import common.util.web.Response;
  */
 
 @Component
-@Path(PathProxy.LOGIN_BASE_URL)
+@Path(PathProxy.CONTACTS_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ContactsApi {
