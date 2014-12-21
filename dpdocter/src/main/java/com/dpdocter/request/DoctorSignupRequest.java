@@ -13,8 +13,8 @@ public class DoctorSignupRequest {
 	private String password;
 	private String emailAddress;
 	private String phoneNumber;
+	private String imageUrl;
 	//doctor details
-	private String doctorImageUrl;
 	private String specialization;
 	//hospital details
 	private String hospitalName;
@@ -76,12 +76,7 @@ public class DoctorSignupRequest {
 		this.phoneNumber = phoneNumber;
 	}
 	
-	public String getDoctorImageUrl() {
-		return doctorImageUrl;
-	}
-	public void setDoctorImageUrl(String doctorImageUrl) {
-		this.doctorImageUrl = doctorImageUrl;
-	}
+	
 	public String getSpecialization() {
 		return specialization;
 	}
@@ -178,20 +173,25 @@ public class DoctorSignupRequest {
 	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
+	public String getImageUrl() {
+		return imageUrl;
+	}
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
 	@Override
 	public String toString() {
 		return "DoctorSignupRequest [firstName=" + firstName + ", lastName="
 				+ lastName + ", middleName=" + middleName + ", userName="
 				+ userName + ", password=" + password + ", emailAddress="
-				+ emailAddress + ", phoneNumber=" + phoneNumber
-				+ ", doctorImageUrl=" + doctorImageUrl + ", specialization="
-				+ specialization + ", hospitalName=" + hospitalName
-				+ ", hospitalPhoneNumber=" + hospitalPhoneNumber
-				+ ", hospitalImageUrl=" + hospitalImageUrl
-				+ ", hospitalDescription=" + hospitalDescription
-				+ ", locationName=" + locationName + ", country=" + country
-				+ ", state=" + state + ", city=" + city
-				+ ", locationPhoneNumber=" + locationPhoneNumber
+				+ emailAddress + ", phoneNumber=" + phoneNumber + ", imageUrl="
+				+ imageUrl + ", specialization=" + specialization
+				+ ", hospitalName=" + hospitalName + ", hospitalPhoneNumber="
+				+ hospitalPhoneNumber + ", hospitalImageUrl="
+				+ hospitalImageUrl + ", hospitalDescription="
+				+ hospitalDescription + ", locationName=" + locationName
+				+ ", country=" + country + ", state=" + state + ", city="
+				+ city + ", locationPhoneNumber=" + locationPhoneNumber
 				+ ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl
 				+ ", locationImageUrl=" + locationImageUrl + ", hospitalId="
 				+ hospitalId + ", latitude=" + latitude + ", longitude="

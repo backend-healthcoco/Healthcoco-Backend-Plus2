@@ -24,8 +24,7 @@ public class PatientSignUpRequest {
 	private String houseNumber;
 	private Double latitude;
 	private Double longitude;
-	//doctor ID (optional)
-	private String doctorId;
+	
 	public String getFirstName() {
 		return firstName;
 	}
@@ -134,13 +133,6 @@ public class PatientSignUpRequest {
 	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
-	
-	public String getDoctorId() {
-		return doctorId;
-	}
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
 	@Override
 	public String toString() {
 		return "PatientSignUpRequest [firstName=" + firstName + ", lastName="
@@ -152,8 +144,10 @@ public class PatientSignUpRequest {
 				+ state + ", postalCode=" + postalCode + ", roadNumber="
 				+ roadNumber + ", roadName=" + roadName + ", houseNumber="
 				+ houseNumber + ", latitude=" + latitude + ", longitude="
-				+ longitude + ", doctorId=" + doctorId + "]";
+				+ longitude + "]";
 	}
+	
+	
 
 	
 	

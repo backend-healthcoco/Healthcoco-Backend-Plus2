@@ -10,9 +10,6 @@ public class DoctorCollection {
 	private String id;
 	
 	@Field
-	private String doctorImageUrl;
-	
-	@Field
 	private String specialization;
 	
 	@Field
@@ -24,18 +21,6 @@ public class DoctorCollection {
 
 	public void setId(String id) {
 		this.id = id;
-	}
-
-	
-	
-
-
-	public String getDoctorImageUrl() {
-		return doctorImageUrl;
-	}
-
-	public void setDoctorImageUrl(String doctorImageUrl) {
-		this.doctorImageUrl = doctorImageUrl;
 	}
 
 	public String getSpecialization() {
@@ -57,12 +42,9 @@ public class DoctorCollection {
 
 	@Override
 	public String toString() {
-		return "DoctorCollection [id=" + id + ", doctorImageUrl="
-				+ doctorImageUrl + ", specialization=" + specialization
-				+ ", userId=" + userId + "]";
+		return "DoctorCollection [id=" + id + ", specialization="
+				+ specialization + ", userId=" + userId + "]";
 	}
-
-	
 
 	
 }

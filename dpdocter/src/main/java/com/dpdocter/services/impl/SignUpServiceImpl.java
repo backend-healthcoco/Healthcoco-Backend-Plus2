@@ -7,10 +7,8 @@ import org.springframework.stereotype.Service;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.AddressCollection;
 import com.dpdocter.collections.DoctorCollection;
-import com.dpdocter.collections.DoctorContactCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
-import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
@@ -69,81 +67,7 @@ public class SignUpServiceImpl implements SignUpService{
 	@Value(value = "${mail.signup.subject.activation}")
 	private String signupSubject;
 	
-	/**
-	 * sign up for patient and doctor
-	 * @param user : user obj
-	 * @param signUpType : signuptype ex:DOCTER,PATIENT
-	 * @return User : save user
-	 *//*
-	public UserTemp signUp(UserTemp user,String signUpType) {
-		try {
-			//get role of specified type
-			RoleCollection roleCollection = roleRepository.findByRole(signUpType);
-			if(roleCollection == null){
-				throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
-			}
-			//save user
-			UserCollection userCollection = new UserCollection();
-			BeanUtil.map(user, userCollection);
-			//generate a unique username for each user.
-			String userName = generateUniqueUserNameService.generate(user);
-			userCollection.setUserName(userName);
-	     	userCollection = userRepository.save(userCollection);
-	     	user.setId(userCollection.getId());
-	     	//save user role mapping
-			userRoleRepository.save(new UserRoleCollection(userCollection.getId(),roleCollection.getId()));
-			//save hospital for the user
-			HospitalCollection hospitalCollection = new HospitalCollection();
-			BeanUtil.map(user.getHospital(), hospitalCollection);
-			hospitalCollection = hospitalRepository.save(hospitalCollection);
-			user.getHospital().setId(hospitalCollection.getId());
-			//save locations for the  hospital       
-			for(Locations location : user.getHospital().getLocations()){
-				LocationCollection locationCollection = new LocationCollection();
-				BeanUtil.map(location, locationCollection);
-				locationCollection = locationRepository.save(locationCollection);
-				location.setId(locationCollection.getId());
-				//save user location mapping
-				userLocationRepository.save(new UserLocationCollection(userCollection.getId(), locationCollection.getId()));
-			}
-			//save address for user
-			AddressCollection addressCollection = new AddressCollection();
-			BeanUtil.map(user.getAddress(), addressCollection);
-			addressCollection.setUserId(userCollection.getId());
-			addressCollection = addressRepository.save(addressCollection);
-			user.getAddress().setId(addressCollection.getId());
-			//save docter if docter signup
-			if(signUpType.equals(RoleEnum.DOCTER.getRole())){
-				DocterCollection docterCollection = new DocterCollection();
-				BeanUtil.map(user.getDocter(), docterCollection);
-				docterCollection.setUserId(userCollection.getId());
-				docterCollection = docterRepository.save(docterCollection);
-				user.getDocter().setId(docterCollection.getId());
-			}//save patient if patient signup
-			else if(signUpType.equals(RoleEnum.PATIENT.getRole())){
-				PatientCollection patientCollection = new PatientCollection();
-				BeanUtil.map(user.getPatient(), patientCollection);
-				patientCollection.setUserId(userCollection.getId());
-				patientCollection = patientRepository.save(patientCollection);
-				user.getPatient().setId(patientCollection.getId());
-				
-				//link patient to docter.
-				if(user.getDocter()!=null && user.getDocter().getId() != null){
-					DocterContactCollection docterContactCollection = new DocterContactCollection();
-					docterContactCollection.setDocterId(user.getDocter().getId());
-					docterContactCollection.setContactId(userCollection.getId());
-					docterContactsRepository.save(docterContactCollection);
-				}
-			}
-			
-		}catch(BusinessException be){
-			throw be;
-		}catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return user;
-	}*/
+
 	/**
 	 * @param UserTemp Id
 	 * @return Boolean

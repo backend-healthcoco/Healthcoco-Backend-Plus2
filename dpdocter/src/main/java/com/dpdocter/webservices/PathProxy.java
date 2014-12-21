@@ -27,5 +27,11 @@ public interface PathProxy {
 		public static final String DOCTOR_CONTACTS = "/doctorcontacts/{doctorId}/{page}/{size}";
 		public static final String BLOCK_CONTACT = "/doctorcontacts/block/{doctorId}/{patientId}";
 	}
+	public static final String REGISTRATION_BASE_URL = BASE_URL + "/register";
+	public interface RegistrationUrls {
+		public static final String PATIENT_REGISTER = "/patient";
+		public static final String DOCTOR_REGISTER = "/doctor";
+
+	}
 
 }
