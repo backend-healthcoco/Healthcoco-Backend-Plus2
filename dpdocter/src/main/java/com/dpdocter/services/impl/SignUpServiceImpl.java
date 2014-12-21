@@ -238,11 +238,7 @@ public class SignUpServiceImpl implements SignUpService{
 			UserCollection userCollection = new UserCollection();
 			BeanUtil.map(request, userCollection);
 			userCollection = userRepository.save(userCollection);
-			//save patient info
-			PatientCollection patientCollection = new PatientCollection();
-			BeanUtil.map(request, patientCollection);
-			patientCollection.setUserId(userCollection.getId());
-			patientRepository.save(patientCollection);
+			
 			//assign roles
 			UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), roleCollection.getId());
 			userRoleRepository.save(userRoleCollection);
@@ -251,13 +247,7 @@ public class SignUpServiceImpl implements SignUpService{
 			BeanUtil.map(request, addressCollection);
 			addressCollection.setUserId(userCollection.getId());
 			addressRepository.save(addressCollection);
-			//Link patient to doctor if doctor is creating patient
-			if(request.getDoctorId() != null){
-				DoctorContactCollection doctorContactCollection = new DoctorContactCollection();
-				doctorContactCollection.setDoctorId(request.getDoctorId());
-				doctorContactCollection.setContactId(userCollection.getId());
-				doctorContactsRepository.save(doctorContactCollection);
-			}
+			
 			//send activation email
 			String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(), userCollection.getMiddleName(), userCollection.getLastName());
 			mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
@@ -270,7 +260,7 @@ public class SignUpServiceImpl implements SignUpService{
 				e.printStackTrace();
 				throw new BusinessException(ServiceError.Unknown, "Error occured while creating user");
 			}
-		return null;
+		return user;
 	}
 	
 	
