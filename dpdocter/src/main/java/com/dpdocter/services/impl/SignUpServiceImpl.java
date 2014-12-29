@@ -22,7 +22,7 @@ import com.dpdocter.repository.DoctorContactsRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocationRepository;
-import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
@@ -56,7 +56,7 @@ public class SignUpServiceImpl implements SignUpService{
 	@Autowired
 	private DoctorRepository doctorRepository;
 	@Autowired
-	private PatientRepository patientRepository;
+	private PatientAdmissionRepository patientRepository;
 	@Autowired
 	private DoctorContactsRepository doctorContactsRepository;
 	@Autowired

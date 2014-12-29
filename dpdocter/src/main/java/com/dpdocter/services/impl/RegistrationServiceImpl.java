@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.AddressCollection;
+import com.dpdocter.collections.PatientAdmissionCollection;
 import com.dpdocter.collections.PatientCollection;
-import com.dpdocter.collections.PatientInfoCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserRoleCollection;
@@ -16,8 +16,8 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.AddressRepository;
-import com.dpdocter.repository.PatientInfoRepository;
 import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserRoleRepository;
@@ -39,9 +39,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Autowired
 	private AddressRepository addressRepository;
 	@Autowired
-	private PatientInfoRepository patientInfoRepository;
-	@Autowired
 	private PatientRepository patientRepository;
+	@Autowired
+	private PatientAdmissionRepository patientAdmissionRepository;
 	@Autowired
 	private GenerateUniqueUserNameService generateUniqueUserNameService;
 	@Autowired
@@ -101,15 +101,16 @@ public class RegistrationServiceImpl implements RegistrationService {
 			addressRepository.save(addressCollection);
 			
 			//save Patient Info
-			PatientInfoCollection patientInfoCollection  = new PatientInfoCollection();
-			BeanUtil.map(request, patientInfoCollection);
-			patientInfoRepository.save(patientInfoCollection);
+			PatientCollection patientCollection  = new PatientCollection();
+			BeanUtil.map(request, patientCollection);
+			patientRepository.save(patientCollection);
 			
 			//save Patient visit.
-			PatientCollection patientCollection = new PatientCollection();
-			BeanUtil.map(request, patientCollection);
-			patientCollection.setUserId(userCollection.getId());
-			patientRepository.save(patientCollection);
+			PatientAdmissionCollection patientAdmissionCollection = new PatientAdmissionCollection();
+			BeanUtil.map(request, patientAdmissionCollection);
+			patientAdmissionCollection.setUserId(userCollection.getId());
+			patientAdmissionCollection.setPatientId(patientCollection.getId());
+			patientAdmissionRepository.save(patientAdmissionCollection);
 			
 			//send activation email
 			String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(), userCollection.getMiddleName(), userCollection.getLastName());
@@ -126,13 +127,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 
 	@Override
-	public boolean registerExistingPatient(PatientRegistrationRequest request,String patientId) {
+	public boolean registerExistingPatient(PatientRegistrationRequest request,String userId) {
 		boolean isSaved = false;
 		try {
-			PatientCollection patientCollection = new PatientCollection();
-			BeanUtil.map(request, patientCollection);
-			patientCollection.setUserId(patientId);
-			patientRepository.save(patientCollection);
+			PatientAdmissionCollection patientAdmissionCollection = new PatientAdmissionCollection();
+			BeanUtil.map(request, patientAdmissionCollection);
+			patientAdmissionCollection.setUserId(userId);
+			PatientCollection patientCollection = patientRepository.findByUserId(userId);
+			patientAdmissionCollection.setPatientId(patientCollection.getId());
+			patientAdmissionRepository.save(patientAdmissionCollection);
 			isSaved = true;
 		} catch (Exception e) {
 			e.printStackTrace();

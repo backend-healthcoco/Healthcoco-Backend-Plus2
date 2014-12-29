@@ -28,8 +28,10 @@ public class PatientRegistrationRequest {
 	private String patientNumber;
 	private String referredBy;
 	private String locationId;
+	private String clinicId;
 	
 	private String doctorId;
+	
 
 	public String getFirstName() {
 		return firstName;
@@ -182,6 +184,14 @@ public class PatientRegistrationRequest {
 	public void setDoctorId(String doctorId) {
 		this.doctorId = doctorId;
 	}
+	
+	public String getClinicId() {
+		return clinicId;
+	}
+
+	public void setClinicId(String clinicId) {
+		this.clinicId = clinicId;
+	}
 
 	@Override
 	public String toString() {
@@ -195,9 +205,10 @@ public class PatientRegistrationRequest {
 				+ ", pastHistoryId=" + pastHistoryId + ", medicalHistoryId="
 				+ medicalHistoryId + ", patientNumber=" + patientNumber
 				+ ", referredBy=" + referredBy + ", locationId=" + locationId
-				+ ", doctorId=" + doctorId + "]";
+				+ ", clinicId=" + clinicId + ", doctorId=" + doctorId + "]";
 	}
 
+	
 	
 
 }

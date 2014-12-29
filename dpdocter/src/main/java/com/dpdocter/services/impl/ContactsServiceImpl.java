@@ -17,12 +17,14 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.collections.DoctorContactCollection;
+import com.dpdocter.collections.PatientAdmissionCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DoctorContactsRepository;
+import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.services.ContactsService;
 @Service
@@ -30,6 +32,9 @@ public class ContactsServiceImpl implements ContactsService {
 	
 	@Autowired
 	private DoctorContactsRepository doctorContactsRepository;
+	
+	@Autowired
+	private PatientAdmissionRepository patientAdmissionRepository;
 	
 	@Autowired
 	private PatientRepository patientRepository;
@@ -50,7 +55,7 @@ public class ContactsServiceImpl implements ContactsService {
 				return null;
 			}
 			@SuppressWarnings("unchecked")
-			Collection<String> patientIds =  CollectionUtils.collect(doctorContactCollections, new BeanToPropertyValueTransformer("id")); 
+			Collection<String> patientIds =  CollectionUtils.collect(doctorContactCollections, new BeanToPropertyValueTransformer("contactId")); 
 			List<PatientCard> patientCards = getSpecifiedPatientCards(patientIds);
 			return patientCards;
 		} catch (Exception e) {
@@ -60,15 +65,23 @@ public class ContactsServiceImpl implements ContactsService {
  	}
 	
 	
-	private List<PatientCard> getSpecifiedPatientCards(Collection<String> userIds)throws Exception{
-		Query query = new Query();
-		query.addCriteria(Criteria.where("id").in(userIds));
-		List<UserCollection> userCollections = mongoTemplate.find(query, UserCollection.class);
+	private List<PatientCard> getSpecifiedPatientCards(Collection<String> patientIds)throws Exception{
+		//getting patients from patient ids
+		Query queryForGettingPatientsFromPatientIds = new Query();
+		queryForGettingPatientsFromPatientIds.addCriteria(Criteria.where("id").in(patientIds));
+		List<PatientCollection> patientCollections = mongoTemplate.find(queryForGettingPatientsFromPatientIds, PatientCollection.class);
+		//getting usewrIds from patients
+		@SuppressWarnings("unchecked")
+		Collection<String> userIds =  CollectionUtils.collect(patientCollections, new BeanToPropertyValueTransformer("userId"));
+		//getting users from userids
+		Query queryForGettingUserFromUserIds = new Query();
+		queryForGettingUserFromUserIds.addCriteria(Criteria.where("id").in(userIds));
+		List<UserCollection> userCollections = mongoTemplate.find(queryForGettingUserFromUserIds, UserCollection.class);
 		List<PatientCard> patientCards = null;
 		if(userCollections != null){
 			patientCards = new ArrayList<PatientCard>();
 			for(UserCollection userCollection : userCollections){
-				PatientCollection patientCollection = patientRepository.findByUserId(userCollection.getId());
+				PatientAdmissionCollection patientCollection = patientAdmissionRepository.findByUserId(userCollection.getId());
 				PatientCard patientCard = new PatientCard();
 				BeanUtil.map(patientCollection, patientCard);
 				BeanUtil.map(userCollection, patientCard);
@@ -78,6 +91,7 @@ public class ContactsServiceImpl implements ContactsService {
 		
 		return patientCards;
 	}
+	
 
 
 	public void blockPatient(String patientId, String docterId) {

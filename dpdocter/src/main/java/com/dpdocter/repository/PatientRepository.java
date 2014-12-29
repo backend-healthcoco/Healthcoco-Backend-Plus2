@@ -6,7 +6,5 @@ import org.springframework.stereotype.Repository;
 import com.dpdocter.collections.PatientCollection;
 @Repository
 public interface PatientRepository extends MongoRepository<PatientCollection, String>{
-	
-	PatientCollection findByUserId(String userId);
-
+	public PatientCollection findByUserId(String userId);
 }
