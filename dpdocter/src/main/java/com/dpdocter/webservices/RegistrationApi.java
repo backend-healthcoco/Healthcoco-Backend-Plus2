@@ -40,7 +40,7 @@ public class RegistrationApi {
 		if (user == null) {
 			user = registrationService.registerNewPatient(request);
 		} else {
-			registrationService.registerExistingPatient(request, user.getId());
+			user = registrationService.registerExistingPatient(request, user.getId());
 		}
 		response.setData(user);
 		return response;

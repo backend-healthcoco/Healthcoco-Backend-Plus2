@@ -6,5 +6,5 @@ import com.dpdocter.request.PatientRegistrationRequest;
 public interface RegistrationService {
 	User checkIfPatientExist(PatientRegistrationRequest request) ;
 	User registerNewPatient(PatientRegistrationRequest request);
-	boolean registerExistingPatient(PatientRegistrationRequest request,String patientId);
+	User registerExistingPatient(PatientRegistrationRequest request,String patientId);
 }

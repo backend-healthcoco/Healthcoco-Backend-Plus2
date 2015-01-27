@@ -33,5 +33,30 @@ public interface PathProxy {
 		public static final String DOCTOR_REGISTER = "/doctor";
 
 	}
+	
+	public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";
+	public interface ClinicalNotesUrls {
+		public static final String ADD_NOTES = "/add";
+		public static final String EDIT_NOTES = "/edit";
+		public static final String DELETE_NOTES = "/delete/{clinicalNotesId}";
+		public static final String GET_CLINICAL_NOTES_ID = "/getbyid/{clinicalNotesId}";
+		public static final String GET_CLINICAL_NOTES = "/get/{locationId}/{patientId}/{isOTPVarified}";
+		
+
+	}
+	public static final String FORGOT_PASSWORD_BASE_URL = BASE_URL + "/forgot-password";
+	public interface ForgotPasswordUrls {
+		public static final String FORGOT_PASSWORD = "/forgot";
+		public static final String RESET_PASSWORD = "/reset-password";
+	}
+	
+	public static final String RECORDS_BASE_URL = BASE_URL + "/records";
+	public interface RecordsUrls {
+		public static final String ADD_RECORDS = "/addrecords";
+		public static final String TAG_RECORD = "/tagrecord";
+		public static final String CHANGE_LABEL_RECORD = "/changelabel";
+		public static final String SEARCH_RECORD = "/search";
+		
+	}
 
 }

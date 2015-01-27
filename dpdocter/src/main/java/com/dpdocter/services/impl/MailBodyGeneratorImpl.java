@@ -14,4 +14,13 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		return body.toString();
 	}
 
+	@Override
+	public String generateForgotPasswordEmailBody(String userName,
+			String fName, String mName, String lName, String userId) {
+		StringBuffer body = new StringBuffer();
+		body.append("Dear "+fName+ " "+lName+", \n");
+		body.append("Please click on below link to Reset Password.");
+		return body.toString();
+	}
+
 }

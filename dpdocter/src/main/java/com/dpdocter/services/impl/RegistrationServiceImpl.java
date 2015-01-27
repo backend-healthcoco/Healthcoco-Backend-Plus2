@@ -1,11 +1,15 @@
 package com.dpdocter.services.impl;
 
+import java.util.List;
+
+import org.apache.commons.collections.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.AddressCollection;
+import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.PatientAdmissionCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.RoleCollection;
@@ -16,6 +20,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.AddressRepository;
+import com.dpdocter.repository.GroupRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.RoleRepository;
@@ -48,6 +53,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 	private MailService mailService;
 	@Autowired
 	private MailBodyGenerator mailBodyGenerator;
+	@Autowired
+	private GroupRepository groupRepository;
 	
 	@Value(value = "${mail.signup.subject.activation}")
 	private String signupSubject;
@@ -112,6 +119,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 			patientAdmissionCollection.setPatientId(patientCollection.getId());
 			patientAdmissionRepository.save(patientAdmissionCollection);
 			
+			//assign groups
+			@SuppressWarnings("unchecked")
+			List<GroupCollection> groupCollections = 
+					IteratorUtils.toList(groupRepository.findAll(request.getGroups()).iterator());
+			for(GroupCollection groupCollection : groupCollections){
+				groupCollection.setUserId(userCollection.getId());
+			}
+			groupRepository.save(groupCollections);
 			//send activation email
 			String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(), userCollection.getMiddleName(), userCollection.getLastName());
 			mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
@@ -127,8 +142,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 
 	@Override
-	public boolean registerExistingPatient(PatientRegistrationRequest request,String userId) {
-		boolean isSaved = false;
+	public User registerExistingPatient(PatientRegistrationRequest request,String userId) {
+		User user = null;
 		try {
 			PatientAdmissionCollection patientAdmissionCollection = new PatientAdmissionCollection();
 			BeanUtil.map(request, patientAdmissionCollection);
@@ -136,12 +151,24 @@ public class RegistrationServiceImpl implements RegistrationService {
 			PatientCollection patientCollection = patientRepository.findByUserId(userId);
 			patientAdmissionCollection.setPatientId(patientCollection.getId());
 			patientAdmissionRepository.save(patientAdmissionCollection);
-			isSaved = true;
+			
+			//assign groups
+			@SuppressWarnings("unchecked")
+			List<GroupCollection> groupCollections = 
+					IteratorUtils.toList(groupRepository.findAll(request.getGroups()).iterator());
+			for(GroupCollection groupCollection : groupCollections){
+				groupCollection.setUserId(userId);
+			}
+			groupRepository.save(groupCollections);
+			
+			UserCollection userCollection = userRepository.findOne(userId);
+			user = new User();
+			BeanUtil.map(userCollection, user);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
-		return isSaved;
+		return user;
 	}
 	
 	
