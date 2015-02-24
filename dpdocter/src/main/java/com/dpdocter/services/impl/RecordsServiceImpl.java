@@ -1,6 +1,7 @@
 package com.dpdocter.services.impl;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -42,16 +43,16 @@ public class RecordsServiceImpl implements RecordsService {
 	private RecordsTagsRepository recordsTagsRepository;
 
 	@Override
-	public Records addRecord(RecordsAddRequest request,MultipartFile image) {
+	public Records addRecord(RecordsAddRequest request,InputStream image,String filename) {
 		try {
 			String path = request.getPatientId() + File.separator + "records";
 			//save image
-			String recordUrl = fileManager.saveImageAndReturnImageUrl(path, image);
+			String recordUrl = fileManager.saveImageAndReturnImageUrl(path, image,filename);
 			//save records
 			RecordsCollection recordsCollection = new RecordsCollection();
 			BeanUtil.map(request, recordsCollection);
 			recordsCollection.setrecordsUrl(recordUrl);
-			recordsCollection.setrecordsLable(removeExtensionFromImageName(image.getOriginalFilename()));
+			recordsCollection.setrecordsLable(removeExtensionFromImageName(filename));
 			recordsCollection = recordsRepository.save(recordsCollection);
 			Records records = new Records();
 			BeanUtil.map(recordsCollection, records);

@@ -4,7 +4,7 @@ public class Group {
 	private String id;
 	private String name;
 	private String description;
-
+	private String doctorId;
 	public String getId() {
 		return id;
 	}
@@ -28,5 +28,20 @@ public class Group {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	@Override
+	public String toString() {
+		return "Group [id=" + id + ", name=" + name + ", description="
+				+ description + ", doctorId=" + doctorId + "]";
+	}
+	
 
 }

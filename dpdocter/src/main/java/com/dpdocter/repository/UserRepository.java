@@ -1,5 +1,7 @@
 package com.dpdocter.repository;
 
+import java.util.List;
+
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -15,4 +17,5 @@ public interface UserRepository extends MongoRepository<UserCollection, String>{
 	public UserCollection findByUserNameAndPass(String userName,String pasword);
 	@Query("{'firstName':?0,'middleName':?1,'lastName':?2,'emailAddress':?3,'phoneNumber':?4}")
 	public UserCollection checkPatient(String firstName,String middleName,String lastName,String emailAddress,String phoneNumber);
+	public List<UserCollection> findByMobileNumber(String mobileNumber);
 }

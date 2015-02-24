@@ -1,17 +1,24 @@
 package com.dpdocter.services.impl;
 
+import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.collections.IteratorUtils;
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.Address;
+import com.dpdocter.beans.Patient;
+import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.AddressCollection;
-import com.dpdocter.collections.GroupCollection;
+import com.dpdocter.collections.DoctorContactCollection;
 import com.dpdocter.collections.PatientAdmissionCollection;
 import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PatientGroupCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserRoleCollection;
@@ -20,9 +27,10 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.AddressRepository;
-import com.dpdocter.repository.GroupRepository;
-import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.DoctorContactsRepository;
 import com.dpdocter.repository.PatientAdmissionRepository;
+import com.dpdocter.repository.PatientGroupRepository;
+import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserRoleRepository;
@@ -53,8 +61,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 	private MailService mailService;
 	@Autowired
 	private MailBodyGenerator mailBodyGenerator;
+	/*@Autowired
+	private GroupRepository groupRepository;*/
 	@Autowired
-	private GroupRepository groupRepository;
+	private PatientGroupRepository patientGroupRepository;
+	@Autowired
+	private DoctorContactsRepository doctorContactsRepository;
 	
 	@Value(value = "${mail.signup.subject.activation}")
 	private String signupSubject;
@@ -65,7 +77,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			UserCollection userCollection = userRepository.checkPatient(
 					request.getFirstName(), request.getMiddleName(),
 					request.getLastName(), request.getEmailAddress(),
-					request.getPhoneNumber());
+					request.getMobileNumber());
 			if (userCollection != null) {
 				User user = new User();
 				BeanUtil.map(userCollection, user);
@@ -80,8 +92,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 
 	@Override
-	public User registerNewPatient(PatientRegistrationRequest request) {
-		User user = null;
+	public RegisteredPatientDetails registerNewPatient(PatientRegistrationRequest request) {
+		RegisteredPatientDetails registeredPatientDetails = null;
 		try {
 			//get role of specified type
 			RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.PATIENT.getRole());
@@ -91,84 +103,189 @@ public class RegistrationServiceImpl implements RegistrationService {
 			//save user
 			UserCollection userCollection = new UserCollection();
 			BeanUtil.map(request, userCollection);
-			user = new User();
+			User user = new User();
 			BeanUtil.map(request, user);
 			String uniqueUserName = generateUniqueUserNameService.generate(user);
 			userCollection.setUserName(uniqueUserName);
+			userCollection.setPassword(generateRandomAlphanumericString(6));
 			userCollection = userRepository.save(userCollection);
 			
 			//assign roles
 			UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), roleCollection.getId());
 			userRoleRepository.save(userRoleCollection);
 			
+			
 			//save address
-			AddressCollection addressCollection = new AddressCollection();
+			AddressCollection addressCollection = null;
+			if(request.getAddress() != null){
+			addressCollection = new AddressCollection();
 			BeanUtil.map(request.getAddress(), addressCollection);
 			addressCollection.setUserId(userCollection.getId());
-			addressRepository.save(addressCollection);
-			
+			addressCollection = addressRepository.save(addressCollection);
+			}
 			//save Patient Info
 			PatientCollection patientCollection  = new PatientCollection();
 			BeanUtil.map(request, patientCollection);
-			patientRepository.save(patientCollection);
+			patientCollection.setUserId(userCollection.getId());
+			if(addressCollection != null){
+				patientCollection.setAddressId(addressCollection.getId());
+			}
+			patientCollection = patientRepository.save(patientCollection);
 			
 			//save Patient visit.
 			PatientAdmissionCollection patientAdmissionCollection = new PatientAdmissionCollection();
 			BeanUtil.map(request, patientAdmissionCollection);
 			patientAdmissionCollection.setUserId(userCollection.getId());
 			patientAdmissionCollection.setPatientId(patientCollection.getId());
+			patientAdmissionCollection.setDoctorId(request.getDoctorId());
 			patientAdmissionRepository.save(patientAdmissionCollection);
 			
 			//assign groups
-			@SuppressWarnings("unchecked")
-			List<GroupCollection> groupCollections = 
-					IteratorUtils.toList(groupRepository.findAll(request.getGroups()).iterator());
-			for(GroupCollection groupCollection : groupCollections){
-				groupCollection.setUserId(userCollection.getId());
+			if(request.getGroups()!= null){
+				for(String group : request.getGroups()){
+					PatientGroupCollection patientGroupCollection = new PatientGroupCollection();
+					patientGroupCollection.setGroupId(group);
+					patientGroupCollection.setPatientId(patientCollection.getId());
+					patientGroupRepository.save(patientGroupCollection);
+				}
 			}
-			groupRepository.save(groupCollections);
-			//send activation email
-			String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(), userCollection.getMiddleName(), userCollection.getLastName());
-			mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
-		    user = new User();
-			BeanUtil.map(userCollection, user);
-			user.setPassword(null);
-			
+			//add into doctor contact
+			if(request.getDoctorId() != null){
+				DoctorContactCollection doctorContactCollection = new DoctorContactCollection();
+				doctorContactCollection.setDoctorId(request.getDoctorId());
+				doctorContactCollection.setContactId(patientCollection.getId());
+				doctorContactsRepository.save(doctorContactCollection);
+			}
+			if(patientCollection.getEmailAddress() != null){
+				//send activation email
+				String body = mailBodyGenerator.generatePatientRegistrationEmailBody(userCollection.getUserName(),userCollection.getPassword(), patientCollection.getFirstName(), patientCollection.getLastName());
+				mailService.sendEmail(patientCollection.getEmailAddress(), signupSubject, body, null);
+			}
+			//send SMS logic
+			//TODO
+		    registeredPatientDetails = new RegisteredPatientDetails();
+			BeanUtil.map(userCollection, registeredPatientDetails);
+			registeredPatientDetails.setUserId(userCollection.getId());
+			Patient patient = new Patient();
+			BeanUtil.map(patientCollection, patient);
+			patient.setPatientId(patientCollection.getId());
+			Address address = new Address();
+			if(addressCollection != null){
+				BeanUtil.map(addressCollection, address);
+			}
+			registeredPatientDetails.setGroups(request.getGroups());
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
-		return user;
+		return registeredPatientDetails;
 	}
 
 	@Override
-	public User registerExistingPatient(PatientRegistrationRequest request,String userId) {
-		User user = null;
+	public RegisteredPatientDetails registerExistingPatient(PatientRegistrationRequest request) {
+		RegisteredPatientDetails registeredPatientDetails = null;
+		PatientCollection patientCollection = null;
 		try {
-			PatientAdmissionCollection patientAdmissionCollection = new PatientAdmissionCollection();
-			BeanUtil.map(request, patientAdmissionCollection);
-			patientAdmissionCollection.setUserId(userId);
-			PatientCollection patientCollection = patientRepository.findByUserId(userId);
-			patientAdmissionCollection.setPatientId(patientCollection.getId());
-			patientAdmissionRepository.save(patientAdmissionCollection);
-			
-			//assign groups
-			@SuppressWarnings("unchecked")
-			List<GroupCollection> groupCollections = 
-					IteratorUtils.toList(groupRepository.findAll(request.getGroups()).iterator());
-			for(GroupCollection groupCollection : groupCollections){
-				groupCollection.setUserId(userId);
+			//save address
+			AddressCollection addressCollection = null;
+			if(request.getAddress() != null){
+			addressCollection = new AddressCollection();
+			BeanUtil.map(request.getAddress(), addressCollection);
+			addressCollection.setUserId(request.getUserId());
+			addressCollection = addressRepository.save(addressCollection);
 			}
-			groupRepository.save(groupCollections);
+			//save Patient Info
+			 patientCollection = patientRepository.findByUserIdAndDoctorId(request.getUserId(), request.getDoctorId());
+			 if(patientCollection != null){
+				 String patientId = patientCollection.getId();
+				 BeanUtil.map(request, patientCollection);
+				 patientCollection.setId(patientId);
+			 }else{
+				 patientCollection  = new PatientCollection();
+				 BeanUtil.map(request, patientCollection);
+			 }
+			if(addressCollection != null){
+				patientCollection.setAddressId(addressCollection.getId());
+			}
+			patientCollection = patientRepository.save(patientCollection);
+
 			
-			UserCollection userCollection = userRepository.findOne(userId);
-			user = new User();
-			BeanUtil.map(userCollection, user);
+			//save patient admission
+			PatientAdmissionCollection patientAdmissionCollection = null;
+			patientAdmissionCollection = patientAdmissionRepository.findByPatientIdAndDoctorId(patientCollection.getId(), request.getDoctorId());
+			if(patientAdmissionCollection == null){
+				patientAdmissionCollection = new PatientAdmissionCollection();
+				BeanUtil.map(request, patientAdmissionCollection);
+				patientAdmissionCollection.setUserId(request.getUserId());
+		   		patientAdmissionCollection.setPatientId(patientCollection.getId());
+				patientAdmissionRepository.save(patientAdmissionCollection);
+			}
+			//assign groups
+  			if(request.getGroups()!= null){
+  				List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getId());
+  				if(patientGroupCollections != null){
+  					for(PatientGroupCollection patientGroupCollection : patientGroupCollections){
+  						patientGroupRepository.delete(patientGroupCollection);
+  					}
+  				}
+				for(String group : request.getGroups()){
+					    PatientGroupCollection patientGroupCollection = new PatientGroupCollection();
+						patientGroupCollection.setGroupId(group);
+						patientGroupCollection.setPatientId(patientCollection.getId());
+						patientGroupRepository.save(patientGroupCollection);
+					}
+				
+			}
+			//add into doctor contact
+			if(request.getDoctorId() != null){
+				DoctorContactCollection doctorContactCollection = null;
+				doctorContactCollection = doctorContactsRepository.findByDoctorIdAndContactId(request.getDoctorId(), patientCollection.getId());
+				if(doctorContactCollection == null){
+					doctorContactCollection = new DoctorContactCollection();
+					doctorContactCollection.setDoctorId(request.getDoctorId());
+					doctorContactCollection.setContactId(patientCollection.getId());
+					doctorContactsRepository.save(doctorContactCollection);
+				}
+				
+			}
+			UserCollection userCollection = userRepository.findOne(request.getUserId());
+			registeredPatientDetails = new RegisteredPatientDetails();
+			BeanUtil.map(userCollection, registeredPatientDetails);
+			registeredPatientDetails.setUserId(userCollection.getId());
+			Patient patient = new Patient();
+			BeanUtil.map(patientCollection, patient);
+			patient.setPatientId(patientCollection.getId());
+			Address address = new Address();
+			if(addressCollection != null){
+				BeanUtil.map(addressCollection, address);
+			}
+			registeredPatientDetails.setGroups(request.getGroups());
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
-		return user;
+		return registeredPatientDetails;
+	}
+
+	@Override
+	public List<User> getUsersByPhoneNumber(String phoneNumber) {
+		List<User> users = null;
+		try {
+			List<UserCollection> userCollections = userRepository.findByMobileNumber(phoneNumber);
+			if(userCollections != null){
+				@SuppressWarnings("unchecked")
+				Collection<String> userIds = CollectionUtils.collect(userCollections, new BeanToPropertyValueTransformer("id"));
+				patientRepository.findAll(userIds);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return users;
+	}
+	
+	private String generateRandomAlphanumericString(int count){
+		return RandomStringUtils.randomAlphabetic(count);
 	}
 	
 	

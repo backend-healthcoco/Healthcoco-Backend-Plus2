@@ -10,7 +10,7 @@ public class User {
 	private String userName;
 	private String password;
 	private String emailAddress;
-	private String phoneNumber;
+	private String mobileNumber;
 	private String gender;
 	private DOB dob;
 	private String secPhoneNumber;
@@ -57,13 +57,14 @@ public class User {
 	public void setEmailAddress(String emailAddress) {
 		this.emailAddress = emailAddress;
 	}
-	public String getPhoneNumber() {
-		return phoneNumber;
-	}
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
 	
+	
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
 	public String getGender() {
 		return gender;
 	}
@@ -89,7 +90,7 @@ public class User {
 		return "User [id=" + id + ", firstName=" + firstName + ", lastName="
 				+ lastName + ", middleName=" + middleName + ", userName="
 				+ userName + ", password=" + password + ", emailAddress="
-				+ emailAddress + ", phoneNumber=" + phoneNumber + ", gender="
+				+ emailAddress + ", mobileNumber=" + mobileNumber + ", gender="
 				+ gender + ", dob=" + dob + ", secPhoneNumber="
 				+ secPhoneNumber + "]";
 	}

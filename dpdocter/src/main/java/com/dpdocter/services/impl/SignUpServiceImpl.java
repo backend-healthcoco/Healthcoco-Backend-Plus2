@@ -63,10 +63,10 @@ public class SignUpServiceImpl implements SignUpService{
 	private MailService mailService;
 	@Autowired
 	private MailBodyGenerator mailBodyGenerator;
-	
+
 	@Value(value = "${mail.signup.subject.activation}")
 	private String signupSubject;
-	
+
 
 	/**
 	 * @param UserTemp Id
@@ -88,7 +88,7 @@ public class SignUpServiceImpl implements SignUpService{
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error occured while Activating user");
 		}
-		
+
 	}
 
 	public User doctorSignUp(DoctorSignupRequest request) {
@@ -138,16 +138,16 @@ public class SignUpServiceImpl implements SignUpService{
 			//send activation email
 			String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(), userCollection.getMiddleName(), userCollection.getLastName());
 			mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
-		    user = new User();
+			user = new User();
 			BeanUtil.map(userCollection, user);
 			user.setPassword(null);
 		} catch(BusinessException be){
 			throw be;
 		}catch (Exception e) {
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error occured while creating user");
+			throw new BusinessException(ServiceError.Unknown, "Error occured while creating doctor");
 		}
-			return user;
+		return user;
 	}
 
 	public User patientSignUp(PatientSignUpRequest request) {
@@ -162,7 +162,7 @@ public class SignUpServiceImpl implements SignUpService{
 			UserCollection userCollection = new UserCollection();
 			BeanUtil.map(request, userCollection);
 			userCollection = userRepository.save(userCollection);
-			
+
 			//assign roles
 			UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), roleCollection.getId());
 			userRoleRepository.save(userRoleCollection);
@@ -171,27 +171,27 @@ public class SignUpServiceImpl implements SignUpService{
 			BeanUtil.map(request, addressCollection);
 			addressCollection.setUserId(userCollection.getId());
 			addressRepository.save(addressCollection);
-			
+
 			//send activation email
 			String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(), userCollection.getMiddleName(), userCollection.getLastName());
 			mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
-		    user = new User();
+			user = new User();
 			BeanUtil.map(userCollection, user);
 			user.setPassword(null);
 		}catch(BusinessException be){
-				throw be;
-			}catch (Exception e) {
-				e.printStackTrace();
-				throw new BusinessException(ServiceError.Unknown, "Error occured while creating user");
-			}
+			throw be;
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error occured while creating user");
+		}
 		return user;
 	}
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
 
 }

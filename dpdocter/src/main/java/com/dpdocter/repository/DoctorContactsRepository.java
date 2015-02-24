@@ -12,6 +12,11 @@ import com.dpdocter.collections.DoctorContactCollection;
 
 @Repository
 public interface DoctorContactsRepository extends MongoRepository<DoctorContactCollection, String>,PagingAndSortingRepository<DoctorContactCollection, String>{
-	@Query("{'docterId':?0,'isBlocked':?1}")
-	List<DoctorContactCollection> findByDoctorId(String docterId,Boolean isBlocked,Pageable pageable);
+	@Query("{'doctorId':?0,'isBlocked':?1}")
+	List<DoctorContactCollection> findByDoctorIdAndIsBlocked(String docterId,boolean isBlocked,Pageable pageable);
+	@Query("{'doctorId':?0,'isBlocked':?1}")
+	List<DoctorContactCollection> findByDoctorIdAndIsBlocked(String docterId,boolean isBlocked);
+	@Query("{'doctorId':?0,'contactId':?1}")
+	DoctorContactCollection findByDoctorIdAndContactId(String doctorId,String contactId);
+	
 }

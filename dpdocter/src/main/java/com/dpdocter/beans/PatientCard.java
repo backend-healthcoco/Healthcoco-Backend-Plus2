@@ -1,5 +1,6 @@
 package com.dpdocter.beans;
 
+
 public class PatientCard {
 	private String id;
 	private String firstName;
@@ -10,6 +11,13 @@ public class PatientCard {
 	private String imageUrl;
 	private String bloodGroup;
 	private String PID;
+	private String gender;
+	private String phoneNumber;
+	private String secPhoneNumber;
+	private String  age;
+	private int count;
+	private Long dateOfVisit;
+	
 	public String getId() {
 		return id;
 	}
@@ -64,13 +72,54 @@ public class PatientCard {
 	public void setPID(String pID) {
 		PID = pID;
 	}
+	
+	public String getGender() {
+		return gender;
+	}
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+	public String getSecPhoneNumber() {
+		return secPhoneNumber;
+	}
+	public void setSecPhoneNumber(String secPhoneNumber) {
+		this.secPhoneNumber = secPhoneNumber;
+	}
+	public String getAge() {
+		return age;
+	}
+	public void setAge(String age) {
+		this.age = age;
+	}
+	
+	public int getCount() {
+		return count;
+	}
+	public void setCount(int count) {
+		this.count = count;
+	}
+	public Long getDateOfVisit() {
+		return dateOfVisit;
+	}
+	public void setDateOfVisit(Long dateOfVisit) {
+		this.dateOfVisit = dateOfVisit;
+	}
 	@Override
 	public String toString() {
 		return "PatientCard [id=" + id + ", firstName=" + firstName
 				+ ", lastName=" + lastName + ", middleName=" + middleName
 				+ ", userName=" + userName + ", emailAddress=" + emailAddress
 				+ ", imageUrl=" + imageUrl + ", bloodGroup=" + bloodGroup
-				+ ", PID=" + PID + "]";
+				+ ", PID=" + PID + ", gender=" + gender + ", phoneNumber="
+				+ phoneNumber + ", secPhoneNumber=" + secPhoneNumber + ", age="
+				+ age + ", count=" + count + ", dateOfVisit=" + dateOfVisit
+				+ "]";
 	}
 	
 	

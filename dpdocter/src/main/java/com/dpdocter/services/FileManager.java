@@ -1,8 +1,8 @@
 package com.dpdocter.services;
 
-import org.springframework.web.multipart.MultipartFile;
+import java.io.InputStream;
 
 public interface FileManager {
-	String saveImageAndReturnImageUrl(String path,MultipartFile image)throws Exception;
+	String saveImageAndReturnImageUrl(String path, InputStream image,String fileName)throws Exception;
 	
 }

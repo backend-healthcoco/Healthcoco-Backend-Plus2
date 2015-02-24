@@ -1,5 +1,7 @@
 package com.dpdocter.request;
 
+import com.dpdocter.beans.DOB;
+
 
 
 public class PatientSignUpRequest {
@@ -14,6 +16,8 @@ public class PatientSignUpRequest {
 	//patient details
 	private String bloodGroup;
 	private String imageUrl;
+	private DOB dob;
+	private String gender;
 	//address
 	private String country;
 	private String city;
@@ -133,6 +137,19 @@ public class PatientSignUpRequest {
 	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
+	
+	public DOB getDob() {
+		return dob;
+	}
+	public void setDob(DOB dob) {
+		this.dob = dob;
+	}
+	public String getGender() {
+		return gender;
+	}
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
 	@Override
 	public String toString() {
 		return "PatientSignUpRequest [firstName=" + firstName + ", lastName="
@@ -140,12 +157,13 @@ public class PatientSignUpRequest {
 				+ userName + ", password=" + password + ", emailAddress="
 				+ emailAddress + ", phoneNumber=" + phoneNumber
 				+ ", bloodGroup=" + bloodGroup + ", imageUrl=" + imageUrl
-				+ ", country=" + country + ", city=" + city + ", state="
-				+ state + ", postalCode=" + postalCode + ", roadNumber="
-				+ roadNumber + ", roadName=" + roadName + ", houseNumber="
-				+ houseNumber + ", latitude=" + latitude + ", longitude="
-				+ longitude + "]";
+				+ ", dob=" + dob + ", gender=" + gender + ", country="
+				+ country + ", city=" + city + ", state=" + state
+				+ ", postalCode=" + postalCode + ", roadNumber=" + roadNumber
+				+ ", roadName=" + roadName + ", houseNumber=" + houseNumber
+				+ ", latitude=" + latitude + ", longitude=" + longitude + "]";
 	}
+	
 	
 	
 

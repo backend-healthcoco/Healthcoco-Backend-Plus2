@@ -9,13 +9,14 @@ public class GroupCollection {
 
 	@Id
 	private String id;
-	
 	@Field
 	private String name;
 	@Field
 	private String description;
 	@Field
-	private String userId;
+	private String doctorId;
+	
+	
 	public String getId() {
 		return id;
 	}
@@ -34,16 +35,19 @@ public class GroupCollection {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public String getUserId() {
-		return userId;
+	
+	public String getDoctorId() {
+		return doctorId;
 	}
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
 	}
 	@Override
 	public String toString() {
 		return "GroupCollection [id=" + id + ", name=" + name
-				+ ", description=" + description + ", userId=" + userId + "]";
+				+ ", description=" + description + ", doctorId=" + doctorId
+				+ "]";
 	}
+	
 	
 }

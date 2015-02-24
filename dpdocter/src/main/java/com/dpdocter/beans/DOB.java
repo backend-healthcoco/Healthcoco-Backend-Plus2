@@ -29,7 +29,7 @@ public class DOB {
 		this.years = years;
 	}
 	public int getAge() {
-		if(this.age != 0){
+		if(this.age == 0){
 			LocalDate birthdate = new LocalDate (this.years, this.months, this.days);
 			LocalDate now = new LocalDate();
 			Period period = new Period(birthdate, now, PeriodType.yearMonthDay());

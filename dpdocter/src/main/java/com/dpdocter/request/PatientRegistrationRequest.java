@@ -4,21 +4,29 @@ import java.util.List;
 
 import com.dpdocter.beans.Address;
 import com.dpdocter.beans.DOB;
+import com.dpdocter.beans.Relations;
 
 public class PatientRegistrationRequest {
-
+	private String userId;
 	private String firstName;
 	private String middleName;
 	private String lastName;
-	private String emailAddress;
-	private String phoneNumber;
+	private String mobileNumber;
 	private String gender;
 	private DOB dob;
 
+	private String emailAddress;
 	private List<String> groups;
 	private String bloodGroup;
 	private String profession;
-	private List<String> relations;
+	private List<Relations> relations;
+	private String secMobile;
+	private String adhaarId;
+	private String panCardNumber;
+	private String drivingLicenseId;
+	private String insuranceId;
+	private String insuranceName;
+	private List<String> notes;
 
 	private Address address;
 
@@ -32,6 +40,14 @@ public class PatientRegistrationRequest {
 	
 	private String doctorId;
 	
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 
 	public String getFirstName() {
 		return firstName;
@@ -65,12 +81,14 @@ public class PatientRegistrationRequest {
 		this.emailAddress = emailAddress;
 	}
 
-	public String getPhoneNumber() {
-		return phoneNumber;
+	
+
+	public String getMobileNumber() {
+		return mobileNumber;
 	}
 
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
 	}
 
 	public String getGender() {
@@ -113,11 +131,12 @@ public class PatientRegistrationRequest {
 		this.profession = profession;
 	}
 
-	public List<String> getRelations() {
+
+	public List<Relations> getRelations() {
 		return relations;
 	}
 
-	public void setRelations(List<String> relations) {
+	public void setRelations(List<Relations> relations) {
 		this.relations = relations;
 	}
 
@@ -192,15 +211,78 @@ public class PatientRegistrationRequest {
 	public void setClinicId(String clinicId) {
 		this.clinicId = clinicId;
 	}
+	
+
+	public String getSecMobile() {
+		return secMobile;
+	}
+
+	public void setSecMobile(String secMobile) {
+		this.secMobile = secMobile;
+	}
+
+	public String getAdhaarId() {
+		return adhaarId;
+	}
+
+	public void setAdhaarId(String adhaarId) {
+		this.adhaarId = adhaarId;
+	}
+
+	public String getPanCardNumber() {
+		return panCardNumber;
+	}
+
+	public void setPanCardNumber(String panCardNumber) {
+		this.panCardNumber = panCardNumber;
+	}
+
+	public String getDrivingLicenseId() {
+		return drivingLicenseId;
+	}
+
+	public void setDrivingLicenseId(String drivingLicenseId) {
+		this.drivingLicenseId = drivingLicenseId;
+	}
+
+	public String getInsuranceId() {
+		return insuranceId;
+	}
+
+	public void setInsuranceId(String insuranceId) {
+		this.insuranceId = insuranceId;
+	}
+
+	public String getInsuranceName() {
+		return insuranceName;
+	}
+
+	public void setInsuranceName(String insuranceName) {
+		this.insuranceName = insuranceName;
+	}
+
+	
+
+	public List<String> getNotes() {
+		return notes;
+	}
+
+	public void setNotes(List<String> notes) {
+		this.notes = notes;
+	}
 
 	@Override
 	public String toString() {
-		return "PatientRegistrationRequest [firstName=" + firstName
-				+ ", middleName=" + middleName + ", lastName=" + lastName
-				+ ", emailAddress=" + emailAddress + ", phoneNumber="
-				+ phoneNumber + ", gender=" + gender + ", dob=" + dob
+		return "PatientRegistrationRequest [userId=" + userId + ", firstName="
+				+ firstName + ", middleName=" + middleName + ", lastName="
+				+ lastName + ", mobileNumber=" + mobileNumber + ", gender="
+				+ gender + ", dob=" + dob + ", emailAddress=" + emailAddress
 				+ ", groups=" + groups + ", bloodGroup=" + bloodGroup
 				+ ", profession=" + profession + ", relations=" + relations
+				+ ", secMobile=" + secMobile + ", adhaarId=" + adhaarId
+				+ ", panCardNumber=" + panCardNumber + ", drivingLicenseId="
+				+ drivingLicenseId + ", insuranceId=" + insuranceId
+				+ ", insuranceName=" + insuranceName + ", notes=" + notes
 				+ ", address=" + address + ", dateOfVisit=" + dateOfVisit
 				+ ", pastHistoryId=" + pastHistoryId + ", medicalHistoryId="
 				+ medicalHistoryId + ", patientNumber=" + patientNumber
@@ -208,6 +290,9 @@ public class PatientRegistrationRequest {
 				+ ", clinicId=" + clinicId + ", doctorId=" + doctorId + "]";
 	}
 
+	
+
+	
 	
 	
 

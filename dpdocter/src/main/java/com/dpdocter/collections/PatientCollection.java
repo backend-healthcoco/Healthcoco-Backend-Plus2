@@ -6,6 +6,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.DOB;
+import com.dpdocter.beans.Relations;
+
 @Document(collection="patient_cl")
 public class PatientCollection {
 	
@@ -16,11 +19,39 @@ public class PatientCollection {
 	@Field
 	private String profession;
 	@Field
-	private List<String> relations;
+	private List<Relations> relations;
+	@Field
+	private String emailAddress;
+	@Field
+	private String doctorId;
+	@Field
+	private String addressId;
+	@Field
+	private String secMobile;
+	@Field
+	private String adhaarId;
+	@Field
+	private String panCardNumber;
+	@Field
+	private String drivingLicenseId;
+	@Field
+	private String insuranceId;
+	@Field
+	private String insuranceName;
 	@Field
 	private String userId;
-	
-	
+	@Field
+	private List<String> notes;
+	@Field
+	private String firstName;
+	@Field
+	private String lastName;
+	@Field
+	private String middleName;
+	@Field
+	private String imageUrl;
+	@Field
+	private DOB dob;
 	public String getId() {
 		return id;
 	}
@@ -39,25 +70,127 @@ public class PatientCollection {
 	public void setProfession(String profession) {
 		this.profession = profession;
 	}
-	public List<String> getRelations() {
+	public List<Relations> getRelations() {
 		return relations;
 	}
-	public void setRelations(List<String> relations) {
+	public void setRelations(List<Relations> relations) {
 		this.relations = relations;
 	}
-	
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+	public String getDoctorId() {
+		return doctorId;
+	}
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+	public String getAddressId() {
+		return addressId;
+	}
+	public void setAddressId(String addressId) {
+		this.addressId = addressId;
+	}
+	public String getSecMobile() {
+		return secMobile;
+	}
+	public void setSecMobile(String secMobile) {
+		this.secMobile = secMobile;
+	}
+	public String getAdhaarId() {
+		return adhaarId;
+	}
+	public void setAdhaarId(String adhaarId) {
+		this.adhaarId = adhaarId;
+	}
+	public String getPanCardNumber() {
+		return panCardNumber;
+	}
+	public void setPanCardNumber(String panCardNumber) {
+		this.panCardNumber = panCardNumber;
+	}
+	public String getDrivingLicenseId() {
+		return drivingLicenseId;
+	}
+	public void setDrivingLicenseId(String drivingLicenseId) {
+		this.drivingLicenseId = drivingLicenseId;
+	}
+	public String getInsuranceId() {
+		return insuranceId;
+	}
+	public void setInsuranceId(String insuranceId) {
+		this.insuranceId = insuranceId;
+	}
+	public String getInsuranceName() {
+		return insuranceName;
+	}
+	public void setInsuranceName(String insuranceName) {
+		this.insuranceName = insuranceName;
+	}
 	public String getUserId() {
 		return userId;
 	}
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
+	
+	public List<String> getNotes() {
+		return notes;
+	}
+	public void setNotes(List<String> notes) {
+		this.notes = notes;
+	}
+	public String getFirstName() {
+		return firstName;
+	}
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+	public String getLastName() {
+		return lastName;
+	}
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+	public String getMiddleName() {
+		return middleName;
+	}
+	public void setMiddleName(String middleName) {
+		this.middleName = middleName;
+	}
+	public String getImageUrl() {
+		return imageUrl;
+	}
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+	public DOB getDob() {
+		return dob;
+	}
+	public void setDob(DOB dob) {
+		this.dob = dob;
+	}
 	@Override
 	public String toString() {
 		return "PatientCollection [id=" + id + ", bloodGroup=" + bloodGroup
 				+ ", profession=" + profession + ", relations=" + relations
-				+ ", userId=" + userId + "]";
+				+ ", emailAddress=" + emailAddress + ", doctorId=" + doctorId
+				+ ", addressId=" + addressId + ", secMobile=" + secMobile
+				+ ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber
+				+ ", drivingLicenseId=" + drivingLicenseId + ", insuranceId="
+				+ insuranceId + ", insuranceName=" + insuranceName
+				+ ", userId=" + userId + ", notes=" + notes + ", firstName="
+				+ firstName + ", lastName=" + lastName + ", middleName="
+				+ middleName + ", imageUrl=" + imageUrl + ", dob=" + dob + "]";
 	}
+	
+	
+	
+	
+	
 	
 		
 }

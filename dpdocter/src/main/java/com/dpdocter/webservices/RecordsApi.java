@@ -10,18 +10,14 @@ import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.Records;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.ChangeRecordLabelRequest;
-import com.dpdocter.request.RecordsAddRequest;
 import com.dpdocter.request.RecordsSearchRequest;
 import com.dpdocter.request.TagRecordRequest;
 import com.dpdocter.services.RecordsService;
-
 import common.util.web.Response;
 
 @Component
@@ -32,17 +28,19 @@ public class RecordsApi {
 	@Autowired
 	private RecordsService recordsService;
 	
+	/*@POST
 	@Path(value=PathProxy.RecordsUrls.ADD_RECORDS)
-	@POST
-	public Response<Records> addRecords(RecordsAddRequest request,@RequestParam(value="image",required=false)MultipartFile image){
+	@Consumes({MediaType.MULTIPART_FORM_DATA, MediaType.APPLICATION_JSON})
+	public Response<Records> addRecords(RecordsAddRequest request,@FormDataParam("file") InputStream fileInputStream,@FormDataParam("file") FormDataContentDisposition contentDispositionHeader){
 		if(request == null){
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Records records = recordsService.addRecord(request, image);
+		
+		Records records = recordsService.addRecord(request, fileInputStream,contentDispositionHeader.getFileName());
 		Response<Records> response = new Response<Records>();
 		response.setData(records);
 		return response;
-	}
+	}*/
 	
 	@Path(value=PathProxy.RecordsUrls.TAG_RECORD)
 	@POST

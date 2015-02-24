@@ -29,6 +29,8 @@ public class AddressCollection {
 	private Double latitude;
 	@Field
 	private Double longitude;
+	@Field
+	private String locality;
 	public String getId() {
 		return id;
 	}
@@ -95,6 +97,14 @@ public class AddressCollection {
 	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
+	
+	
+	public String getLocality() {
+		return locality;
+	}
+	public void setLocality(String locality) {
+		this.locality = locality;
+	}
 	@Override
 	public String toString() {
 		return "AddressCollection [id=" + id + ", country=" + country
@@ -102,8 +112,10 @@ public class AddressCollection {
 				+ postalCode + ", roadNumber=" + roadNumber + ", roadName="
 				+ roadName + ", houseNumber=" + houseNumber + ", userId="
 				+ userId + ", latitude=" + latitude + ", longitude="
-				+ longitude + "]";
+				+ longitude + ", locality=" + locality + "]";
 	}
+	
+	
 	
 	
 }

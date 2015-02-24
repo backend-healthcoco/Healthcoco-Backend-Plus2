@@ -36,6 +36,9 @@ public class PatientAdmissionCollection {
 	
 	@Field
 	private String patientId;
+	
+	@Field
+	private String doctorId;
 
 	public String getId() {
 		return id;
@@ -118,6 +121,15 @@ public class PatientAdmissionCollection {
 		this.patientId = patientId;
 	}
 
+	
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientAdmissionCollection [id=" + id + ", userId=" + userId
@@ -125,8 +137,10 @@ public class PatientAdmissionCollection {
 				+ ", pastHistoryId=" + pastHistoryId + ", medicalHistoryId="
 				+ medicalHistoryId + ", patientNumber=" + patientNumber
 				+ ", referredBy=" + referredBy + ", clinicId=" + clinicId
-				+ ", patientId=" + patientId + "]";
+				+ ", patientId=" + patientId + ", doctorId=" + doctorId + "]";
 	}
+
+	
 
 	
 }
