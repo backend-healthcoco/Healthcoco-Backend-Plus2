@@ -5,17 +5,19 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.DOB;
+
 @Document(collection = "user_cl")
 public class UserCollection {
 
 	@Id
 	private String id;
-/*	@Field
+	@Field
 	private String firstName;
 	@Field
 	private String lastName;
 	@Field
-	private String middleName;*/
+	private String middleName;
 	@Indexed(unique = true)
 	private String userName;
 	@Field
@@ -28,11 +30,11 @@ public class UserCollection {
 	private String secPhoneNumber;*/
 	@Field
 	private String gender;
-/*
+
 	@Field
 	private String imageUrl;
 	@Field
-	private DOB dob;*/
+	private DOB dob;
 
 	@Field
 	private Boolean isActive = false;
@@ -84,15 +86,58 @@ public class UserCollection {
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
+	
+	
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public String getMiddleName() {
+		return middleName;
+	}
+
+	public void setMiddleName(String middleName) {
+		this.middleName = middleName;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	public DOB getDob() {
+		return dob;
+	}
+
+	public void setDob(DOB dob) {
+		this.dob = dob;
+	}
 
 	@Override
 	public String toString() {
-		return "UserCollection [id=" + id + ", userName=" + userName
-				+ ", password=" + password + ", mobileNumber=" + mobileNumber
-				+ ", gender=" + gender + ", isActive=" + isActive + "]";
+		return "UserCollection [id=" + id + ", firstName=" + firstName
+				+ ", lastName=" + lastName + ", middleName=" + middleName
+				+ ", userName=" + userName + ", password=" + password
+				+ ", mobileNumber=" + mobileNumber + ", gender=" + gender
+				+ ", imageUrl=" + imageUrl + ", dob=" + dob + ", isActive="
+				+ isActive + "]";
 	}
 
 	
-	
-
 }

@@ -5,6 +5,12 @@ import java.util.List;
 
 public class RegisteredPatientDetails {
 	
+	private String firstName;
+	private String lastName;
+	private String middleName;
+	private String imageUrl;
+	private DOB dob;
+	
 	private String userId;
 	private String userName;
 	private String mobileNumber;
@@ -69,14 +75,59 @@ public class RegisteredPatientDetails {
 	public void setGroups(List<String> groups) {
 		this.groups = groups;
 	}
+	
+	
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public String getMiddleName() {
+		return middleName;
+	}
+
+	public void setMiddleName(String middleName) {
+		this.middleName = middleName;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	public DOB getDob() {
+		return dob;
+	}
+
+	public void setDob(DOB dob) {
+		this.dob = dob;
+	}
 
 	@Override
 	public String toString() {
-		return "RegisteredPatientDetails [userId=" + userId + ", userName="
-				+ userName + ", mobileNumber=" + mobileNumber + ", gender="
-				+ gender + ", patient=" + patient + ", address=" + address
-				+ ", groups=" + groups + "]";
+		return "RegisteredPatientDetails [firstName=" + firstName
+				+ ", lastName=" + lastName + ", middleName=" + middleName
+				+ ", imageUrl=" + imageUrl + ", dob=" + dob + ", userId="
+				+ userId + ", userName=" + userName + ", mobileNumber="
+				+ mobileNumber + ", gender=" + gender + ", patient=" + patient
+				+ ", address=" + address + ", groups=" + groups + "]";
 	}
+
 	
 	
 	

@@ -26,8 +26,8 @@ public interface PathProxy {
 	public interface ContactsUrls {
 		public static final String DOCTOR_CONTACTS = "/doctorcontacts/get";
 		public static final String BLOCK_CONTACT = "/doctorcontacts/block/{doctorId}/{patientId}";
-		public static final String ADD_GROUP = "/doctorcontacts/add";
-		public static final String EDIT_GROUP = "/doctorcontacts/edit";
+		public static final String ADD_GROUP = "/doctorcontacts/addgroup";
+		public static final String EDIT_GROUP = "/doctorcontacts/editgroup";
 		public static final String GET_ALL_GROUPS = "/doctorcontacts/getallgroups/{doctorId}";
 		public static final String DELETE_GROUP = "/doctorcontacts/deletegroup/{groupId}";
 		public static final String TOTAL_COUNT = "/doctorcontacts/totalcount";
@@ -37,6 +37,7 @@ public interface PathProxy {
 		public static final String PATIENT_REGISTER = "/patient";
 		public static final String DOCTOR_REGISTER = "/doctor";
 		public static final String EXISTING_PATIENTS_BY_PHONE_NUM = "/existing_patients/{phoneNumber}";
+		public static final String GET_PATIENT_PROFILE = "/getpatientprofile/{userId}/{doctorId}";
 
 	}
 	

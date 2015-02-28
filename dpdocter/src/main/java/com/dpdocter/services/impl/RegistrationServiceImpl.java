@@ -1,5 +1,6 @@
 package com.dpdocter.services.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -158,7 +159,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			}
 			if(patientCollection.getEmailAddress() != null){
 				//send activation email
-				String body = mailBodyGenerator.generatePatientRegistrationEmailBody(userCollection.getUserName(),userCollection.getPassword(), patientCollection.getFirstName(), patientCollection.getLastName());
+				String body = mailBodyGenerator.generatePatientRegistrationEmailBody(userCollection.getUserName(),userCollection.getPassword(), userCollection.getFirstName(), userCollection.getLastName());
 				mailService.sendEmail(patientCollection.getEmailAddress(), signupSubject, body, null);
 			}
 			//send SMS logic
@@ -169,9 +170,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 			Patient patient = new Patient();
 			BeanUtil.map(patientCollection, patient);
 			patient.setPatientId(patientCollection.getId());
+			registeredPatientDetails.setPatient(patient);
 			Address address = new Address();
 			if(addressCollection != null){
 				BeanUtil.map(addressCollection, address);
+				registeredPatientDetails.setAddress(address);
 			}
 			registeredPatientDetails.setGroups(request.getGroups());
 		} catch (Exception e) {
@@ -255,9 +258,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 			Patient patient = new Patient();
 			BeanUtil.map(patientCollection, patient);
 			patient.setPatientId(patientCollection.getId());
+			registeredPatientDetails.setPatient(patient);
 			Address address = new Address();
 			if(addressCollection != null){
 				BeanUtil.map(addressCollection, address);
+				registeredPatientDetails.setAddress(address);
 			}
 			registeredPatientDetails.setGroups(request.getGroups());
 		} catch (Exception e) {
@@ -273,10 +278,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 		try {
 			List<UserCollection> userCollections = userRepository.findByMobileNumber(phoneNumber);
 			if(userCollections != null){
-				@SuppressWarnings("unchecked")
-				Collection<String> userIds = CollectionUtils.collect(userCollections, new BeanToPropertyValueTransformer("id"));
-				patientRepository.findAll(userIds);
+				users = new ArrayList<User>();
+				for(UserCollection userCollection : userCollections){
+					User user = new User();
+					BeanUtil.map(userCollection, user);
+					users.add(user);
+				}
+				
 			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -286,6 +296,41 @@ public class RegistrationServiceImpl implements RegistrationService {
 	
 	private String generateRandomAlphanumericString(int count){
 		return RandomStringUtils.randomAlphabetic(count);
+	}
+
+	@Override
+	public RegisteredPatientDetails getPatientProfileByUserId(String userId,String doctorId) {
+		RegisteredPatientDetails registeredPatientDetails = null;
+		try {
+			UserCollection userCollection = userRepository.findOne(userId);
+			if(userCollection != null){
+				PatientCollection patientCollection = patientRepository.findByUserIdAndDoctorId(userId, doctorId);
+				if(patientCollection != null){
+					AddressCollection addressCollection = new AddressCollection();
+					if(patientCollection.getAddressId() != null){
+						 addressCollection = addressRepository.findOne(patientCollection.getAddressId());
+					}
+					List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getId());
+					Collection<String> groupIds =  CollectionUtils.collect(patientGroupCollections, new BeanToPropertyValueTransformer("groupId"));
+					registeredPatientDetails = new RegisteredPatientDetails();
+					BeanUtil.map(userCollection, registeredPatientDetails);
+					registeredPatientDetails.setUserId(userCollection.getId());
+					Patient patient = new Patient();
+					BeanUtil.map(patientCollection, patient);
+					patient.setPatientId(patientCollection.getId());
+					registeredPatientDetails.setPatient(patient);
+					Address address = new Address();
+					BeanUtil.map(addressCollection, address);
+					registeredPatientDetails.setAddress(address);
+					
+					registeredPatientDetails.setGroups((List<String>) groupIds);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return registeredPatientDetails;
 	}
 	
 	

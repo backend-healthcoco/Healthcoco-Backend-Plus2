@@ -18,11 +18,7 @@ public class Patient {
 	private String insuranceId;
 	private String insuranceName;
 	private List<String> notes;
-	private String firstName;
-	private String lastName;
-	private String middleName;
-	private String imageUrl;
-	private DOB dob;
+	
 	public String getPatientId() {
 		return patientId;
 	}
@@ -107,36 +103,6 @@ public class Patient {
 	public void setNotes(List<String> notes) {
 		this.notes = notes;
 	}
-	public String getFirstName() {
-		return firstName;
-	}
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-	public String getLastName() {
-		return lastName;
-	}
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-	public String getMiddleName() {
-		return middleName;
-	}
-	public void setMiddleName(String middleName) {
-		this.middleName = middleName;
-	}
-	public String getImageUrl() {
-		return imageUrl;
-	}
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
-	}
-	public DOB getDob() {
-		return dob;
-	}
-	public void setDob(DOB dob) {
-		this.dob = dob;
-	}
 	@Override
 	public String toString() {
 		return "Patient [patientId=" + patientId + ", bloodGroup=" + bloodGroup
@@ -146,11 +112,8 @@ public class Patient {
 				+ ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber
 				+ ", drivingLicenseId=" + drivingLicenseId + ", insuranceId="
 				+ insuranceId + ", insuranceName=" + insuranceName + ", notes="
-				+ notes + ", firstName=" + firstName + ", lastName=" + lastName
-				+ ", middleName=" + middleName + ", imageUrl=" + imageUrl
-				+ ", dob=" + dob + "]";
+				+ notes + "]";
 	}
-	
 	
 	
 	

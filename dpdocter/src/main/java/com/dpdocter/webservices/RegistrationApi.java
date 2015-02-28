@@ -13,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -34,19 +35,19 @@ public class RegistrationApi {
 
 	@Path(value = PathProxy.RegistrationUrls.PATIENT_REGISTER)
 	@POST
-	public Response<User> patientRegister(PatientRegistrationRequest request) {
+	public Response<RegisteredPatientDetails> patientRegister(PatientRegistrationRequest request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput,"Invalid Input");
 		}
-		Response<User> response = new Response<User>();
-		User user = null;
+		Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
+		RegisteredPatientDetails registeredPatientDetails = null;
 		//User user = registrationService.checkIfPatientExist(request);
 		if (request.getUserId() == null) {
-			user = registrationService.registerNewPatient(request);
+			registeredPatientDetails = registrationService.registerNewPatient(request);
 		} else {
-			user = registrationService.registerExistingPatient(request);
+			registeredPatientDetails = registrationService.registerExistingPatient(request);
 		}
-		response.setData(user);
+		response.setData(registeredPatientDetails);
 		return response;
 	}
 	
@@ -63,6 +64,26 @@ public class RegistrationApi {
 		response.setDataList(users);
 		return response;
 	}
+	
+	@Path(value = PathProxy.RegistrationUrls.GET_PATIENT_PROFILE)
+	@GET
+	public Response<RegisteredPatientDetails> getPatientProfile(@PathParam("userId")String userId,@PathParam("doctorId")String doctorId) {
+		if (userId == null) {
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Invalid Input.userId is null");
+		}
+		if (doctorId == null) {
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Invalid Input.doctorId is null");
+		}
+		Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
+
+		RegisteredPatientDetails registeredPatientDetails = registrationService.getPatientProfileByUserId(userId, doctorId);
+		response.setData(registeredPatientDetails);
+		return response;
+	}
+	
+	
 	
 	
 }

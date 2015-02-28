@@ -1,5 +1,6 @@
 package com.dpdocter.request;
 
+import com.dpdocter.beans.Address;
 import com.dpdocter.beans.DOB;
 
 
@@ -18,16 +19,7 @@ public class PatientSignUpRequest {
 	private String imageUrl;
 	private DOB dob;
 	private String gender;
-	//address
-	private String country;
-	private String city;
-	private String state;
-	private String postalCode;
-	private String roadNumber;
-	private String roadName;
-	private String houseNumber;
-	private Double latitude;
-	private Double longitude;
+	private Address address;
 	
 	public String getFirstName() {
 		return firstName;
@@ -83,61 +75,6 @@ public class PatientSignUpRequest {
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
 	}
-	public String getCountry() {
-		return country;
-	}
-	public void setCountry(String country) {
-		this.country = country;
-	}
-	public String getCity() {
-		return city;
-	}
-	public void setCity(String city) {
-		this.city = city;
-	}
-	public String getState() {
-		return state;
-	}
-	public void setState(String state) {
-		this.state = state;
-	}
-	public String getPostalCode() {
-		return postalCode;
-	}
-	public void setPostalCode(String postalCode) {
-		this.postalCode = postalCode;
-	}
-	public String getRoadNumber() {
-		return roadNumber;
-	}
-	public void setRoadNumber(String roadNumber) {
-		this.roadNumber = roadNumber;
-	}
-	public String getRoadName() {
-		return roadName;
-	}
-	public void setRoadName(String roadName) {
-		this.roadName = roadName;
-	}
-	public String getHouseNumber() {
-		return houseNumber;
-	}
-	public void setHouseNumber(String houseNumber) {
-		this.houseNumber = houseNumber;
-	}
-	public Double getLatitude() {
-		return latitude;
-	}
-	public void setLatitude(Double latitude) {
-		this.latitude = latitude;
-	}
-	public Double getLongitude() {
-		return longitude;
-	}
-	public void setLongitude(Double longitude) {
-		this.longitude = longitude;
-	}
-	
 	public DOB getDob() {
 		return dob;
 	}
@@ -150,6 +87,12 @@ public class PatientSignUpRequest {
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
+	public Address getAddress() {
+		return address;
+	}
+	public void setAddress(Address address) {
+		this.address = address;
+	}
 	@Override
 	public String toString() {
 		return "PatientSignUpRequest [firstName=" + firstName + ", lastName="
@@ -157,16 +100,9 @@ public class PatientSignUpRequest {
 				+ userName + ", password=" + password + ", emailAddress="
 				+ emailAddress + ", phoneNumber=" + phoneNumber
 				+ ", bloodGroup=" + bloodGroup + ", imageUrl=" + imageUrl
-				+ ", dob=" + dob + ", gender=" + gender + ", country="
-				+ country + ", city=" + city + ", state=" + state
-				+ ", postalCode=" + postalCode + ", roadNumber=" + roadNumber
-				+ ", roadName=" + roadName + ", houseNumber=" + houseNumber
-				+ ", latitude=" + latitude + ", longitude=" + longitude + "]";
+				+ ", dob=" + dob + ", gender=" + gender + ", address="
+				+ address + "]";
 	}
-	
-	
-	
-
 	
 	
 }

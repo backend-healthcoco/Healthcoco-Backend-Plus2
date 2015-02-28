@@ -8,7 +8,7 @@ public class User {
 	private String lastName;
 	private String middleName;
 	private String userName;
-	private String password;
+	//private String password;
 	private String emailAddress;
 	private String mobileNumber;
 	private String gender;
@@ -45,12 +45,12 @@ public class User {
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
-	public String getPassword() {
+	/*public String getPassword() {
 		return password;
 	}
 	public void setPassword(String password) {
 		this.password = password;
-	}
+	}*/
 	public String getEmailAddress() {
 		return emailAddress;
 	}
@@ -89,10 +89,9 @@ public class User {
 	public String toString() {
 		return "User [id=" + id + ", firstName=" + firstName + ", lastName="
 				+ lastName + ", middleName=" + middleName + ", userName="
-				+ userName + ", password=" + password + ", emailAddress="
-				+ emailAddress + ", mobileNumber=" + mobileNumber + ", gender="
-				+ gender + ", dob=" + dob + ", secPhoneNumber="
-				+ secPhoneNumber + "]";
+				+ userName + ", emailAddress=" + emailAddress
+				+ ", mobileNumber=" + mobileNumber + ", gender=" + gender
+				+ ", dob=" + dob + ", secPhoneNumber=" + secPhoneNumber + "]";
 	}
 	
 	

@@ -14,7 +14,7 @@ public interface PatientAdmissionRepository extends MongoRepository<PatientAdmis
 	
 	PatientAdmissionCollection findByUserId(String userId);
 	List<PatientAdmissionCollection> findDistinctPatientByDoctorId(String doctorId,Pageable pageable);
-	@Query("{'patientId':$0,'doctorId':$1}")
+	@Query("{'patientId':?0,'doctorId':?1}")
 	PatientAdmissionCollection findByPatientIdAndDoctorId(String patientId,String doctorId);
 	
 }

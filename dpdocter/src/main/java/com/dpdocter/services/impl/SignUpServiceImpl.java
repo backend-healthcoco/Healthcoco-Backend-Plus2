@@ -9,6 +9,7 @@ import com.dpdocter.collections.AddressCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
@@ -23,6 +24,7 @@ import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientAdmissionRepository;
+import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
@@ -56,7 +58,7 @@ public class SignUpServiceImpl implements SignUpService{
 	@Autowired
 	private DoctorRepository doctorRepository;
 	@Autowired
-	private PatientAdmissionRepository patientRepository;
+	private PatientRepository patientRepository;
 	@Autowired
 	private DoctorContactsRepository doctorContactsRepository;
 	@Autowired
@@ -137,10 +139,10 @@ public class SignUpServiceImpl implements SignUpService{
 			userLocationRepository.save(userLocationCollection);
 			//send activation email
 			String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(), userCollection.getMiddleName(), userCollection.getLastName());
-			mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
+			mailService.sendEmail(doctorCollection.getEmailAddress(), signupSubject, body, null);
 			user = new User();
 			BeanUtil.map(userCollection, user);
-			user.setPassword(null);
+			//user.setPassword(null);
 		} catch(BusinessException be){
 			throw be;
 		}catch (Exception e) {
@@ -167,17 +169,29 @@ public class SignUpServiceImpl implements SignUpService{
 			UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), roleCollection.getId());
 			userRoleRepository.save(userRoleCollection);
 			//save address
-			AddressCollection addressCollection = new AddressCollection();
-			BeanUtil.map(request, addressCollection);
+			AddressCollection addressCollection = null;
+			if(request.getAddress() != null){
+			addressCollection = new AddressCollection();
+			BeanUtil.map(request.getAddress(), addressCollection);
 			addressCollection.setUserId(userCollection.getId());
-			addressRepository.save(addressCollection);
+			addressCollection = addressRepository.save(addressCollection);
+			}
+			
+			//save Patient Info
+			PatientCollection patientCollection  = new PatientCollection();
+			BeanUtil.map(request, patientCollection);
+			patientCollection.setUserId(userCollection.getId());
+			if(addressCollection != null){
+				patientCollection.setAddressId(addressCollection.getId());
+			}
+			patientCollection = patientRepository.save(patientCollection);
 
 			//send activation email
 			String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(), userCollection.getMiddleName(), userCollection.getLastName());
-			mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
+			mailService.sendEmail(patientCollection.getEmailAddress(), signupSubject, body, null);
 			user = new User();
 			BeanUtil.map(userCollection, user);
-			user.setPassword(null);
+			//user.setPassword(null);
 		}catch(BusinessException be){
 			throw be;
 		}catch (Exception e) {

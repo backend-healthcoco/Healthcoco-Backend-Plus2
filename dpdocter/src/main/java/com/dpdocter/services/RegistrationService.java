@@ -12,4 +12,6 @@ public interface RegistrationService {
 	RegisteredPatientDetails registerExistingPatient(PatientRegistrationRequest request);
 	
 	List<User> getUsersByPhoneNumber(String phoneNumber);
+	
+	RegisteredPatientDetails getPatientProfileByUserId(String userId,String doctorId);
 }

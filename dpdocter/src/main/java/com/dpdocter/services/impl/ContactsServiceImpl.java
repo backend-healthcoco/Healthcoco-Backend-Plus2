@@ -86,7 +86,7 @@ public class ContactsServiceImpl implements ContactsService {
 	private List<PatientCard> getSpecifiedPatientCards(Collection<String> patientIds,String doctorId)throws Exception{
 		//getting patients from patient ids
 		Query queryForGettingPatientsFromPatientIds = new Query();
-		queryForGettingPatientsFromPatientIds.addCriteria(Criteria.where("id").in(patientIds)).addCriteria(Criteria.where("doctorId").is(doctorId));
+		queryForGettingPatientsFromPatientIds.addCriteria(Criteria.where("id").in(patientIds).andOperator(Criteria.where("doctorId").is(doctorId)));
 		List<PatientCollection> patientCollections = mongoTemplate.find(queryForGettingPatientsFromPatientIds, PatientCollection.class);
 		List<PatientCard> patientCards = new ArrayList<PatientCard>();
 		for(PatientCollection patientCollection : patientCollections){

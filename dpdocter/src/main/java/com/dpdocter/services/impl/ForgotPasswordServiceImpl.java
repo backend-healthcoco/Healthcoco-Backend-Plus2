@@ -45,8 +45,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 								userCollection.getMiddleName(),
 								userCollection.getLastName(),
 								userCollection.getId());
-				mailService.sendEmail(userCollection.getEmailAddress(),
-						forgotPasswordSub, body, null);
+				/*mailService.sendEmail(userCollection.getEmailAddress(),
+						forgotPasswordSub, body, null);*/
 			}else{
 				throw new BusinessException(ServiceError.Unknown, "User not Found.");
 			}

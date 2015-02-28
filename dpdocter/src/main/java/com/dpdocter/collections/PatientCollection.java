@@ -6,7 +6,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.Relations;
 
 @Document(collection="patient_cl")
@@ -42,7 +41,7 @@ public class PatientCollection {
 	private String userId;
 	@Field
 	private List<String> notes;
-	@Field
+	/*@Field
 	private String firstName;
 	@Field
 	private String lastName;
@@ -51,7 +50,7 @@ public class PatientCollection {
 	@Field
 	private String imageUrl;
 	@Field
-	private DOB dob;
+	private DOB dob;*/
 	public String getId() {
 		return id;
 	}
@@ -143,36 +142,6 @@ public class PatientCollection {
 	public void setNotes(List<String> notes) {
 		this.notes = notes;
 	}
-	public String getFirstName() {
-		return firstName;
-	}
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-	public String getLastName() {
-		return lastName;
-	}
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-	public String getMiddleName() {
-		return middleName;
-	}
-	public void setMiddleName(String middleName) {
-		this.middleName = middleName;
-	}
-	public String getImageUrl() {
-		return imageUrl;
-	}
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
-	}
-	public DOB getDob() {
-		return dob;
-	}
-	public void setDob(DOB dob) {
-		this.dob = dob;
-	}
 	@Override
 	public String toString() {
 		return "PatientCollection [id=" + id + ", bloodGroup=" + bloodGroup
@@ -182,12 +151,8 @@ public class PatientCollection {
 				+ ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber
 				+ ", drivingLicenseId=" + drivingLicenseId + ", insuranceId="
 				+ insuranceId + ", insuranceName=" + insuranceName
-				+ ", userId=" + userId + ", notes=" + notes + ", firstName="
-				+ firstName + ", lastName=" + lastName + ", middleName="
-				+ middleName + ", imageUrl=" + imageUrl + ", dob=" + dob + "]";
+				+ ", userId=" + userId + ", notes=" + notes + "]";
 	}
-	
-	
 	
 	
 	

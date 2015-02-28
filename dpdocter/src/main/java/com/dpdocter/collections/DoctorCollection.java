@@ -4,27 +4,25 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.DOB;
-
 @Document(collection="docter_cl")
 public class DoctorCollection {
 	@Id
 	private String id;
 	
-	@Field
+	/*@Field
 	private String firstName;
 	@Field
 	private String lastName;
 	@Field
-	private String middleName;
+	private String middleName;*/
 	@Field
 	private String emailAddress;
 	@Field
 	private String secMobile;
-	@Field
+	/*@Field
 	private String imageUrl;
 	@Field
-	private DOB dob;
+	private DOB dob;*/
 	
 	@Field
 	private String specialization;
@@ -38,30 +36,6 @@ public class DoctorCollection {
 
 	public void setId(String id) {
 		this.id = id;
-	}
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	public String getMiddleName() {
-		return middleName;
-	}
-
-	public void setMiddleName(String middleName) {
-		this.middleName = middleName;
 	}
 
 	public String getEmailAddress() {
@@ -78,22 +52,6 @@ public class DoctorCollection {
 
 	public void setSecMobile(String secMobile) {
 		this.secMobile = secMobile;
-	}
-
-	public String getImageUrl() {
-		return imageUrl;
-	}
-
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
-	}
-
-	public DOB getDob() {
-		return dob;
-	}
-
-	public void setDob(DOB dob) {
-		this.dob = dob;
 	}
 
 	public String getSpecialization() {
@@ -114,13 +72,12 @@ public class DoctorCollection {
 
 	@Override
 	public String toString() {
-		return "DoctorCollection [id=" + id + ", firstName=" + firstName
-				+ ", lastName=" + lastName + ", middleName=" + middleName
-				+ ", emailAddress=" + emailAddress + ", secMobile=" + secMobile
-				+ ", imageUrl=" + imageUrl + ", dob=" + dob
-				+ ", specialization=" + specialization + ", userId=" + userId
-				+ "]";
+		return "DoctorCollection [id=" + id + ", emailAddress=" + emailAddress
+				+ ", secMobile=" + secMobile + ", specialization="
+				+ specialization + ", userId=" + userId + "]";
 	}
+
+	
 
 	
 	
