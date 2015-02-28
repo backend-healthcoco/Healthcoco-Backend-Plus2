@@ -89,6 +89,7 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 			ClinicalNotesCollection clinicalNotesCollection = new ClinicalNotesCollection();
 			BeanUtil.map(request, clinicalNotesCollection);
 			clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
+			clinicalNotes = new ClinicalNotes();
 			BeanUtil.map(clinicalNotesCollection, clinicalNotes);
 			return clinicalNotes;
 		} catch (Exception e) {
@@ -101,6 +102,11 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 	@Override
 	public void deleteNote(String id) {
 		try {
+			List<PatientClinicalNotesCollection> patientClinicalNotesCollections = 
+					patientClinicalNotesRepository.findByClinicalNotesId(id);
+			if(patientClinicalNotesCollections != null){
+				patientClinicalNotesRepository.delete(patientClinicalNotesCollections);
+			}
 			clinicalNotesRepository.delete(id);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -134,7 +140,7 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 
 	@Override
 	public List<ClinicalNotes> getPatientsClinicalNotesWithoutVarifiedOTP(
-			String patientId,String locationId) {
+			String patientId,String doctorId) {
 		List<ClinicalNotes> clinicalNotes = null;
 		try {
 			List<PatientClinicalNotesCollection> patientClinicalNotesCollections = patientClinicalNotesRepository
@@ -144,7 +150,7 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 			
 			Query queryForGettingAllClinicalNotesFromPatient = new Query();
 			queryForGettingAllClinicalNotesFromPatient.addCriteria(Criteria.where("id").in(clinicalNotesId));
-			queryForGettingAllClinicalNotesFromPatient.addCriteria(Criteria.where("locationId").is(locationId));
+			queryForGettingAllClinicalNotesFromPatient.addCriteria(Criteria.where("doctorId").is(doctorId));
 			List<ClinicalNotesCollection> clinicalNotesCollections = mongoTemplate.find(queryForGettingAllClinicalNotesFromPatient, ClinicalNotesCollection.class);
 			clinicalNotes = new ArrayList<ClinicalNotes>();
 			BeanUtil.map(clinicalNotesCollections, clinicalNotes);

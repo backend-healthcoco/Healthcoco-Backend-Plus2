@@ -12,7 +12,7 @@ public interface ClinicalNotesService {
 	ClinicalNotes editNotes(ClinicalNotesEditRequest request);
 	void deleteNote(String id);
 	List<ClinicalNotes> getPatientsClinicalNotesWithVarifiedOTP(String patientId);
-	List<ClinicalNotes> getPatientsClinicalNotesWithoutVarifiedOTP(String patientId,String locationId);
+	List<ClinicalNotes> getPatientsClinicalNotesWithoutVarifiedOTP(String patientId,String doctorId);
 	
 	
 }

@@ -3,6 +3,8 @@ package com.dpdocter.request;
 import java.util.List;
 
 public class ClinicalNotesAddRequest {
+	private String id;
+	
 	private String patientId;
 
 	private String complaints;
@@ -22,6 +24,16 @@ public class ClinicalNotesAddRequest {
 	private String locationId;
 
 	private String hospitalId;
+	
+	
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public String getPatientId() {
 		return patientId;
@@ -105,13 +117,15 @@ public class ClinicalNotesAddRequest {
 
 	@Override
 	public String toString() {
-		return "ClinicalNotesAddRequest [patientId=" + patientId
+		return "ClinicalNotesAddRequest [id=" + id + ", patientId=" + patientId
 				+ ", complaints=" + complaints + ", observation=" + observation
 				+ ", investigation=" + investigation + ", diagnoses="
 				+ diagnoses + ", diagramUrls=" + diagramUrls + ", comments="
 				+ comments + ", doctorId=" + doctorId + ", locationId="
 				+ locationId + ", hospitalId=" + hospitalId + "]";
 	}
+
+	
 	
 	
 	
