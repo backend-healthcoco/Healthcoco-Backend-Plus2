@@ -3,15 +3,15 @@ package com.dpdocter.request;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.dpdocter.beans.Tags;
-
 public class TagRecordRequest {
-	private List<Tags> tags = new ArrayList<Tags>();
+	private List<String> tags = new ArrayList<String>();
 	private String recordId;
-	public List<Tags> getTags() {
+	
+
+	public List<String> getTags() {
 		return tags;
 	}
-	public void setTags(List<Tags> tags) {
+	public void setTags(List<String> tags) {
 		this.tags = tags;
 	}
 	public String getRecordId() {

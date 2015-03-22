@@ -1,5 +1,6 @@
 package com.dpdocter.services.impl;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.Address;
 import com.dpdocter.beans.Patient;
+import com.dpdocter.beans.Referrence;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.AddressCollection;
@@ -20,6 +22,7 @@ import com.dpdocter.collections.DoctorContactCollection;
 import com.dpdocter.collections.PatientAdmissionCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
+import com.dpdocter.collections.ReferrencesCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserRoleCollection;
@@ -32,10 +35,12 @@ import com.dpdocter.repository.DoctorContactsRepository;
 import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientGroupRepository;
 import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.ReferrenceRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.request.PatientRegistrationRequest;
+import com.dpdocter.services.FileManager;
 import com.dpdocter.services.GenerateUniqueUserNameService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
@@ -68,6 +73,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 	private PatientGroupRepository patientGroupRepository;
 	@Autowired
 	private DoctorContactsRepository doctorContactsRepository;
+	@Autowired
+	private ReferrenceRepository referrenceRepository;
+	@Autowired
+	private FileManager fileManager;
 	
 	@Value(value = "${mail.signup.subject.activation}")
 	private String signupSubject;
@@ -108,7 +117,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 			BeanUtil.map(request, user);
 			String uniqueUserName = generateUniqueUserNameService.generate(user);
 			userCollection.setUserName(uniqueUserName);
-			userCollection.setPassword(generateRandomAlphanumericString(6));
+			userCollection.setPassword(generateRandomAlphanumericString(10));
+			if(request.getImage() != null){
+				String path = "profile-images";
+				//save image
+				String imageUrl = fileManager.saveImageAndReturnImageUrl(request.getImage(),path);
+				userCollection.setImageUrl(imageUrl);
+			}
 			userCollection = userRepository.save(userCollection);
 			
 			//assign roles
@@ -128,6 +143,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			PatientCollection patientCollection  = new PatientCollection();
 			BeanUtil.map(request, patientCollection);
 			patientCollection.setUserId(userCollection.getId());
+			patientCollection.setPID(request.getPatientNumber());
 			if(addressCollection != null){
 				patientCollection.setAddressId(addressCollection.getId());
 			}
@@ -198,7 +214,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			addressCollection = addressRepository.save(addressCollection);
 			}
 			//save Patient Info
-			 patientCollection = patientRepository.findByUserIdAndDoctorId(request.getUserId(), request.getDoctorId());
+			 patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(request.getUserId(), request.getDoctorId(),request.getLocationId(),request.getHospitalId());
 			 if(patientCollection != null){
 				 String patientId = patientCollection.getId();
 				 BeanUtil.map(request, patientCollection);
@@ -210,6 +226,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if(addressCollection != null){
 				patientCollection.setAddressId(addressCollection.getId());
 			}
+			patientCollection.setPID(request.getPatientNumber());
 			patientCollection = patientRepository.save(patientCollection);
 
 			
@@ -273,7 +290,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 
 	@Override
-	public List<User> getUsersByPhoneNumber(String phoneNumber) {
+	public List<User> getUsersByPhoneNumber(String phoneNumber,String locationId,String hospitalId) {
 		List<User> users = null;
 		try {
 			List<UserCollection> userCollections = userRepository.findByMobileNumber(phoneNumber);
@@ -282,6 +299,23 @@ public class RegistrationServiceImpl implements RegistrationService {
 				for(UserCollection userCollection : userCollections){
 					User user = new User();
 					BeanUtil.map(userCollection, user);
+					if(locationId != null && hospitalId != null){
+						PatientCollection patientCollection = patientRepository.findByUserId(userCollection.getId());
+						if(patientCollection != null){
+							if(patientCollection.getLocationId()!=null && patientCollection.getHospitalId() != null ){
+								if(patientCollection.getLocationId().equals(locationId) 
+										&& patientCollection.getHospitalId().equals(hospitalId)){
+									user.setIsPartOfClinic(true);
+								}else{
+									user.setIsPartOfClinic(false);
+								}
+							}else{
+								user.setIsPartOfClinic(false);
+							}
+						}else{
+							user.setIsPartOfClinic(false);
+						}
+					}
 					users.add(user);
 				}
 				
@@ -299,18 +333,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 
 	@Override
-	public RegisteredPatientDetails getPatientProfileByUserId(String userId,String doctorId) {
+	public RegisteredPatientDetails getPatientProfileByUserId(String userId,String doctorId,String locationId,String hospitalId) {
 		RegisteredPatientDetails registeredPatientDetails = null;
 		try {
 			UserCollection userCollection = userRepository.findOne(userId);
 			if(userCollection != null){
-				PatientCollection patientCollection = patientRepository.findByUserIdAndDoctorId(userId, doctorId);
+				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userId, doctorId, locationId, hospitalId);
 				if(patientCollection != null){
 					AddressCollection addressCollection = new AddressCollection();
 					if(patientCollection.getAddressId() != null){
 						 addressCollection = addressRepository.findOne(patientCollection.getAddressId());
 					}
 					List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getId());
+					@SuppressWarnings("unchecked")
 					Collection<String> groupIds =  CollectionUtils.collect(patientGroupCollections, new BeanToPropertyValueTransformer("groupId"));
 					registeredPatientDetails = new RegisteredPatientDetails();
 					BeanUtil.map(userCollection, registeredPatientDetails);
@@ -332,6 +367,60 @@ public class RegistrationServiceImpl implements RegistrationService {
 		}
 		return registeredPatientDetails;
 	}
+
+	@Override
+	public Referrence addEditReferrence(Referrence referrence) {
+		try {
+			ReferrencesCollection referrencesCollection = new ReferrencesCollection();
+			BeanUtil.map(referrence, referrencesCollection);
+			referrencesCollection = referrenceRepository.save(referrencesCollection);
+			BeanUtil.map(referrencesCollection, referrence);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return referrence;
+	}
+
+	@Override
+	public void deleteReferrence(String referrenceId) {
+		try {
+			ReferrencesCollection referrencesCollection = referrenceRepository.findOne(referrenceId);
+			if(referrencesCollection != null){
+				referrencesCollection.setIsdeleted(true);
+				referrenceRepository.save(referrencesCollection);
+			}else{
+				throw new BusinessException(ServiceError.Unknown,"Invalid Referrence Id!");
+			}
+		}catch(BusinessException be){
+			be.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, be.getMessage());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		
+	}
+
+	@Override
+	public List<Referrence> getReferrences(String doctorId, String locationId,
+			String hospitalId) {
+		List<Referrence> referrences = null;
+		try {
+			List<ReferrencesCollection> referrencesCollections = referrenceRepository.findByDoctorIdAndLocationIdAndHospitalId(doctorId, locationId, hospitalId,false);
+			if(referrencesCollections != null){
+				referrences = new ArrayList<Referrence>();
+				BeanUtil.map(referrencesCollections, referrences);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return referrences;
+	}
+	
+	
 	
 	
 

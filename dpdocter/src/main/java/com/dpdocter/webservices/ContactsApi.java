@@ -13,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Group;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.request.GetDoctorContactsRequest;
@@ -35,10 +36,14 @@ public class ContactsApi {
 	
 	@Path(value=PathProxy.ContactsUrls.DOCTOR_CONTACTS)
 	@POST
-	public Response<PatientCard> docterContacts(GetDoctorContactsRequest request){
+	public Response<DoctorContactsResponse> docterContacts(GetDoctorContactsRequest request){
 		List<PatientCard> patientCards = contactsService.getDoctorContacts(request);
-		Response<PatientCard> response = new Response<PatientCard>();
-		response.setDataList(patientCards);
+		int ttlCount = contactsService.getcontactsTotalSize(request);
+		DoctorContactsResponse doctorContactsResponse = new DoctorContactsResponse();
+		doctorContactsResponse.setPatientCards(patientCards);
+		doctorContactsResponse.setTotalSize(ttlCount);
+		Response<DoctorContactsResponse> response = new Response<DoctorContactsResponse>();
+		response.setData(doctorContactsResponse);
 		return response;
 	}
 	
@@ -89,8 +94,10 @@ public class ContactsApi {
 	
 	@Path(value=PathProxy.ContactsUrls.GET_ALL_GROUPS)
 	@GET
-	public Response<Group> getAllGroups(@PathParam("doctorId") String doctorId){
-		List<Group> groups = contactsService.getAllGroups(doctorId);
+	public Response<Group> getAllGroups(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId,
+			@PathParam("hospitalId") String hospitalId){
+		List<Group> groups = contactsService.getAllGroups(doctorId,locationId,hospitalId);
 		Response<Group> response = new Response<Group>();
 		response.setDataList(groups);
 		return response;

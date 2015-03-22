@@ -1,8 +1,9 @@
 package com.dpdocter.services;
 
-import java.io.InputStream;
+import com.dpdocter.beans.FileDetails;
+
 
 public interface FileManager {
-	String saveImageAndReturnImageUrl(String path, InputStream image,String fileName)throws Exception;
+	String saveImageAndReturnImageUrl(FileDetails fileDetails,String path)throws Exception;
 	
 }

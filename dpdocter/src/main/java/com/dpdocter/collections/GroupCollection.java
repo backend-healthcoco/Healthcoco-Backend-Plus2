@@ -15,6 +15,10 @@ public class GroupCollection {
 	private String description;
 	@Field
 	private String doctorId;
+	@Field
+	private String locationId;
+	@Field
+	private String hospitalId;
 	
 	
 	public String getId() {
@@ -42,12 +46,25 @@ public class GroupCollection {
 	public void setDoctorId(String doctorId) {
 		this.doctorId = doctorId;
 	}
+	
+	public String getLocationId() {
+		return locationId;
+	}
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+	public String getHospitalId() {
+		return hospitalId;
+	}
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 	@Override
 	public String toString() {
 		return "GroupCollection [id=" + id + ", name=" + name
 				+ ", description=" + description + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ "]";
 	}
-	
 	
 }

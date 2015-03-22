@@ -241,13 +241,12 @@ public class ContactsServiceImpl implements ContactsService {
 				}
 			if(request.getGroups() != null && !request.getGroups().isEmpty()){
 				doctorContactCollections = filterContactsByGroup(request, doctorContactCollections);
-				return doctorContactCollections.size();
 			}
+			return doctorContactCollections.size();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
-		return 0;
 		
 	}
 
@@ -255,11 +254,12 @@ public class ContactsServiceImpl implements ContactsService {
 	 * This service gives lists of all groups for doctor.
 	 */
 	@Override
-	public List<Group> getAllGroups(String doctorId) {
+	public List<Group> getAllGroups(String doctorId,String locationId,String hospitalId) {
 		List<Group> groups = null;
 		try {
-			List<GroupCollection> groupCollections = groupRepository.findByDoctorId(doctorId);
+			List<GroupCollection> groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId);
 			if(groupCollections != null){
+				groups = new ArrayList<Group>();
 				BeanUtil.map(groupCollections, groups);
 			}
 		} catch (Exception e) {

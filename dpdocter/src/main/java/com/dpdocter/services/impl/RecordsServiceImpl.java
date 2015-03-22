@@ -1,7 +1,6 @@
 package com.dpdocter.services.impl;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -11,21 +10,23 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.Tags;
+import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.RecordsCollection;
 import com.dpdocter.collections.RecordsTagsCollection;
 import com.dpdocter.collections.TagsCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.RecordsRepository;
 import com.dpdocter.repository.RecordsTagsRepository;
 import com.dpdocter.repository.TagsRepository;
 import com.dpdocter.request.RecordsAddRequest;
 import com.dpdocter.request.RecordsSearchRequest;
+import com.dpdocter.request.TagRecordRequest;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.RecordsService;
 @Service
@@ -41,18 +42,21 @@ public class RecordsServiceImpl implements RecordsService {
 	
 	@Autowired
 	private RecordsTagsRepository recordsTagsRepository;
+	
+	@Autowired
+	private PatientRepository patientRepository;
 
 	@Override
-	public Records addRecord(RecordsAddRequest request,InputStream image,String filename) {
+	public Records addRecord(RecordsAddRequest request) {
 		try {
 			String path = request.getPatientId() + File.separator + "records";
 			//save image
-			String recordUrl = fileManager.saveImageAndReturnImageUrl(path, image,filename);
+			String recordUrl = fileManager.saveImageAndReturnImageUrl(request.getFileDetails(),path);
 			//save records
 			RecordsCollection recordsCollection = new RecordsCollection();
 			BeanUtil.map(request, recordsCollection);
 			recordsCollection.setrecordsUrl(recordUrl);
-			recordsCollection.setrecordsLable(removeExtensionFromImageName(filename));
+			recordsCollection.setrecordsLable(getFileNameFromImageURL(recordUrl));
 			recordsCollection = recordsRepository.save(recordsCollection);
 			Records records = new Records();
 			BeanUtil.map(recordsCollection, records);
@@ -65,27 +69,32 @@ public class RecordsServiceImpl implements RecordsService {
 
 	}
 	
-	private String removeExtensionFromImageName(String imageName){
+	private String getFileNameFromImageURL(String url){
+		String arr [] = url.split("/");
+		String imageName =  arr[arr.length];
 		imageName = imageName.substring(0, imageName.lastIndexOf("."));
 		return imageName;
 	}
 
 	@Override
-	public void tagRecord(List<Tags> tags, String recordId) {
+	public void tagRecord(TagRecordRequest request) {
 		try {
-			//save tags
+		/*	//save tags
 			List<TagsCollection> tagsCollections = null;
-			if(tags != null){
+			if(request.getTags() != null){
 				tagsCollections = new ArrayList<TagsCollection>();
-				BeanUtil.map(tags, tagsCollections);
-				tagsCollections = tagsRepository.save(tagsCollections);
-			}
+				for(Tags tag : request.getTags()){
+				TagsCollection tagsCollection =new TagsCollection();
+				BeanUtil.map(tag, tagsCollection);
+				tagsCollection = tagsRepository.save(tagsCollection);
+				tagsCollections.add(tagsCollection);
+			}*/
 			//save recrds tags map
 			List<RecordsTagsCollection> recordsTagsCollections = new ArrayList<RecordsTagsCollection>();
-			for(TagsCollection tagsCollection : tagsCollections){
+			for(String tagId : request.getTags()){
 				RecordsTagsCollection recordsTagsCollection = new RecordsTagsCollection();
-				recordsTagsCollection.setrecordsId(recordId);
-				recordsTagsCollection.setTagsId(tagsCollection.getId());
+				recordsTagsCollection.setrecordsId(request.getRecordId());
+				recordsTagsCollection.setTagsId(tagId);
 				recordsTagsCollections.add(recordsTagsCollection);
 			}
 			recordsTagsRepository.save(recordsTagsCollections);
@@ -135,6 +144,70 @@ public class RecordsServiceImpl implements RecordsService {
 		}
 		
 		return records;
+	}
+
+	@Override
+	public Tags addEditTag(Tags tags) {
+		try {
+			TagsCollection tagsCollection = new TagsCollection();
+			BeanUtil.map(tags, tagsCollection);
+			tagsCollection = tagsRepository.save(tagsCollection);
+			BeanUtil.map(tagsCollection, tags);
+			return tags;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+	}
+
+	@Override
+	public List<Tags> getAllTags(String doctorId, String locationId,
+			String hospitalId) {
+		List<Tags> tags = null;
+		try {
+			
+			List<TagsCollection> tagsCollections = null;
+			if(doctorId != null && locationId != null && hospitalId != null){
+				tagsCollections = new ArrayList<TagsCollection>();
+				tags = new ArrayList<Tags>();
+				tagsCollections = tagsRepository.findByDoctorIdAndlocationIdAndHospitalId(doctorId, locationId, hospitalId);
+				BeanUtil.map(tagsCollections, tags);
+			}else if(doctorId != null && locationId != null && hospitalId == null){
+				tagsCollections = new ArrayList<TagsCollection>();
+				tags = new ArrayList<Tags>();
+				tagsCollections = tagsRepository.findByDoctorIdAndlocationId(doctorId, locationId);
+				BeanUtil.map(tagsCollections, tags);
+			}else if(doctorId != null && locationId == null && hospitalId == null){
+				tagsCollections = new ArrayList<TagsCollection>();
+				tags = new ArrayList<Tags>();
+				tagsCollections = tagsRepository.findByDoctorId(doctorId);
+				BeanUtil.map(tagsCollections, tags);
+			}else{
+				throw new BusinessException(ServiceError.Unknown, "Invalid Input !");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return null;
+	}
+
+	@Override
+	public String getPatientEmailAddress(String patientId) {
+		String emailAddress = null;
+		try {
+			PatientCollection patientCollection = 
+					patientRepository.findOne(patientId);
+			if(patientCollection != null){
+				emailAddress = patientCollection.getEmailAddress();
+			}else{
+				throw new BusinessException(ServiceError.Unknown, "Invalid PatientId");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return emailAddress;
 	}
 	
 	

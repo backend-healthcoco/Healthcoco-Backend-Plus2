@@ -22,8 +22,8 @@ public class UserCollection {
 	private String userName;
 	@Field
 	private String password;
-/*	@Field
-	private String emailAddress;*/
+	@Field
+	private String emailAddress;
 	@Field
 	private String mobileNumber;
 /*	@Field
@@ -127,6 +127,15 @@ public class UserCollection {
 
 	public void setDob(DOB dob) {
 		this.dob = dob;
+	}
+	
+
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
 	}
 
 	@Override

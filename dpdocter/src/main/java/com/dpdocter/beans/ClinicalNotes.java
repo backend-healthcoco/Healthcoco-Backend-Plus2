@@ -13,10 +13,12 @@ public class ClinicalNotes {
 	private String investigation;
 
 	private String diagnoses;
+	
+	private Long createdDate;
 
 	private List<String> diagramUrls;
 
-	private String comments;
+	private String notes;
 
 	private String doctorId;
 
@@ -32,12 +34,12 @@ public class ClinicalNotes {
 		this.id = id;
 	}
 
-	public String getComplaints() {
-		return complaints;
+	public String getNotes() {
+		return notes;
 	}
 
-	public void setComplaints(String complaints) {
-		this.complaints = complaints;
+	public void setNotes(String notes) {
+		this.notes = notes;
 	}
 
 	public String getObservation() {
@@ -72,12 +74,13 @@ public class ClinicalNotes {
 		this.diagramUrls = diagramUrls;
 	}
 
-	public String getComments() {
-		return comments;
+
+	public String getComplaints() {
+		return complaints;
 	}
 
-	public void setComments(String comments) {
-		this.comments = comments;
+	public void setComplaints(String complaints) {
+		this.complaints = complaints;
 	}
 
 	public String getDoctorId() {
@@ -103,6 +106,24 @@ public class ClinicalNotes {
 	public void setHospitalId(String hospitalId) {
 		this.hospitalId = hospitalId;
 	}
-	
+
+	public Long getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Long createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	@Override
+	public String toString() {
+		return "ClinicalNotes [id=" + id + ", complaints=" + complaints
+				+ ", observation=" + observation + ", investigation="
+				+ investigation + ", diagnoses=" + diagnoses + ", createdDate="
+				+ createdDate + ", diagramUrls=" + diagramUrls + ", notes="
+				+ notes + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + "]";
+	}
+
 	
 }

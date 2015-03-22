@@ -11,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.User;
 import com.dpdocter.beans.UserActivation;
 import com.dpdocter.exceptions.BusinessException;
@@ -18,6 +19,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.PatientSignUpRequest;
 import com.dpdocter.services.SignUpService;
+
 import common.util.web.Response;
 
 @Component
@@ -30,15 +32,17 @@ public class SignUpApi {
 	
 	@Path(value=PathProxy.SignUpUrls.DOCTOR_SIGNUP)
 	@POST
-	public Response<User> doctorSignup(DoctorSignupRequest request){
+	public Response<DoctorSignUp> doctorSignup(DoctorSignupRequest request){
 		if(request == null){
 			throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
 		}
-		User user =  signUpService.doctorSignUp(request);
-		Response<User> response = new Response<User>();
-		response.setData(user);
+		DoctorSignUp doctorSignUp =  signUpService.doctorSignUp(request);
+		Response<DoctorSignUp> response = new Response<DoctorSignUp>();
+		response.setData(doctorSignUp);
 		return response;
 	}
+	
+	
 	
 	@Path(value=PathProxy.SignUpUrls.PATIENT_SIGNUP)
 	@POST
@@ -68,5 +72,37 @@ public class SignUpApi {
 		return response;
 	}
 	
+	@Path(value=PathProxy.SignUpUrls.CHECK_IF_USERNAME_EXIST)
+	@GET
+	public Response<Boolean> checkUsernameExist(@PathParam(value="username")String username){
+		if(username == null){
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(signUpService.checkUserNameExist(username));
+		return response;
+	}
 	
+	@Path(value=PathProxy.SignUpUrls.CHECK_IF_MOBNUM_EXIST)
+	@GET
+	public Response<Boolean> checkMobileNumExist(@PathParam(value="mobileNumber")String mobileNumber){
+		if(mobileNumber == null){
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(signUpService.checkMobileNumExist(mobileNumber));
+		return response;
+	}
+
+	
+	@Path(value=PathProxy.SignUpUrls.CHECK_IF_EMAIL_ADDR_EXIST)
+	@GET
+	public Response<Boolean> checkEmailExist(@PathParam(value="emailaddress")String emailaddress){
+		if(emailaddress == null){
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(signUpService.checkEmailAddressExist(emailaddress));
+		return response;
+	}
 }

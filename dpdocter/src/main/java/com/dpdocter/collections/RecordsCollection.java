@@ -21,6 +21,11 @@ public class RecordsCollection {
 	private String doctorId;
 	@Field
 	private Long createdDate;
+	@Field
+	private String locationId;
+	@Field
+	private String hospitalId;
+	
 	
 	public String getId() {
 		return id;
@@ -66,12 +71,38 @@ public class RecordsCollection {
 	public void setDoctorId(String doctorId) {
 		this.doctorId = doctorId;
 	}
+	
+	public String getRecordsUrl() {
+		return recordsUrl;
+	}
+	public void setRecordsUrl(String recordsUrl) {
+		this.recordsUrl = recordsUrl;
+	}
+	public String getRecordsLable() {
+		return recordsLable;
+	}
+	public void setRecordsLable(String recordsLable) {
+		this.recordsLable = recordsLable;
+	}
+	public String getLocationId() {
+		return locationId;
+	}
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+	public String getHospitalId() {
+		return hospitalId;
+	}
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 	@Override
 	public String toString() {
-		return "recordssCollection [id=" + id + ", recordsUrl=" + recordsUrl
+		return "RecordsCollection [id=" + id + ", recordsUrl=" + recordsUrl
 				+ ", recordsLable=" + recordsLable + ", description="
 				+ description + ", patientId=" + patientId + ", doctorId="
-				+ doctorId + ", createdDate=" + createdDate + "]";
+				+ doctorId + ", createdDate=" + createdDate + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + "]";
 	}
 	
 	

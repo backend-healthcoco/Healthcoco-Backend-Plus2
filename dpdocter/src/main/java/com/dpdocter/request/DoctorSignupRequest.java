@@ -12,8 +12,9 @@ public class DoctorSignupRequest {
 	private String userName;
 	private String password;
 	private String emailAddress;
-	private String phoneNumber;
+	private String mobileNumber;
 	private String imageUrl;
+	private String gender;
 	//doctor details
 	private String specialization;
 	//hospital details
@@ -69,14 +70,20 @@ public class DoctorSignupRequest {
 	public void setEmailAddress(String emailAddress) {
 		this.emailAddress = emailAddress;
 	}
-	public String getPhoneNumber() {
-		return phoneNumber;
-	}
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
 	
 	
+	public String getGender() {
+		return gender;
+	}
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
 	public String getSpecialization() {
 		return specialization;
 	}
@@ -184,19 +191,22 @@ public class DoctorSignupRequest {
 		return "DoctorSignupRequest [firstName=" + firstName + ", lastName="
 				+ lastName + ", middleName=" + middleName + ", userName="
 				+ userName + ", password=" + password + ", emailAddress="
-				+ emailAddress + ", phoneNumber=" + phoneNumber + ", imageUrl="
-				+ imageUrl + ", specialization=" + specialization
-				+ ", hospitalName=" + hospitalName + ", hospitalPhoneNumber="
-				+ hospitalPhoneNumber + ", hospitalImageUrl="
-				+ hospitalImageUrl + ", hospitalDescription="
-				+ hospitalDescription + ", locationName=" + locationName
-				+ ", country=" + country + ", state=" + state + ", city="
-				+ city + ", locationPhoneNumber=" + locationPhoneNumber
+				+ emailAddress + ", mobileNumber=" + mobileNumber
+				+ ", imageUrl=" + imageUrl + ", gender=" + gender
+				+ ", specialization=" + specialization + ", hospitalName="
+				+ hospitalName + ", hospitalPhoneNumber=" + hospitalPhoneNumber
+				+ ", hospitalImageUrl=" + hospitalImageUrl
+				+ ", hospitalDescription=" + hospitalDescription
+				+ ", locationName=" + locationName + ", country=" + country
+				+ ", state=" + state + ", city=" + city
+				+ ", locationPhoneNumber=" + locationPhoneNumber
 				+ ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl
 				+ ", locationImageUrl=" + locationImageUrl + ", hospitalId="
 				+ hospitalId + ", latitude=" + latitude + ", longitude="
 				+ longitude + "]";
 	}
+
+	
 	
 	
 }

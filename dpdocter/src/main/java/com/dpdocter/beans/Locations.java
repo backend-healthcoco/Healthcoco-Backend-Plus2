@@ -5,11 +5,11 @@ package com.dpdocter.beans;
 
 public class Locations {
 	private String id;
-	private String name;
+	private String locationName;
 	private String country;
 	private String state;
 	private String city;
-	private String phoneNumber;
+	private String locationPhoneNumber;
 	private String postalCode;
 	private String websiteUrl;
 	private String imageUrl;
@@ -22,11 +22,11 @@ public class Locations {
 	public void setId(String id) {
 		this.id = id;
 	}
-	public String getName() {
-		return name;
+	public String getLocationName() {
+		return locationName;
 	}
-	public void setName(String name) {
-		this.name = name;
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
 	}
 	public String getCountry() {
 		return country;
@@ -46,11 +46,11 @@ public class Locations {
 	public void setCity(String city) {
 		this.city = city;
 	}
-	public String getPhoneNumber() {
-		return phoneNumber;
+	public String getLocationPhoneNumber() {
+		return locationPhoneNumber;
 	}
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
+	public void setLocationPhoneNumber(String locationPhoneNumber) {
+		this.locationPhoneNumber = locationPhoneNumber;
 	}
 	public String getPostalCode() {
 		return postalCode;
@@ -90,13 +90,15 @@ public class Locations {
 	}
 	@Override
 	public String toString() {
-		return "Locations [id=" + id + ", name=" + name + ", country="
-				+ country + ", state=" + state + ", city=" + city
-				+ ", phoneNumber=" + phoneNumber + ", postalCode=" + postalCode
-				+ ", websiteUrl=" + websiteUrl + ", imageUrl=" + imageUrl
-				+ ", hospitalId=" + hospitalId + ", latitude=" + latitude
-				+ ", longitude=" + longitude + "]";
+		return "Locations [id=" + id + ", locationName=" + locationName
+				+ ", country=" + country + ", state=" + state + ", city="
+				+ city + ", locationPhoneNumber=" + locationPhoneNumber
+				+ ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl
+				+ ", imageUrl=" + imageUrl + ", hospitalId=" + hospitalId
+				+ ", latitude=" + latitude + ", longitude=" + longitude + "]";
 	}
+	
+	
 	
 	
 }

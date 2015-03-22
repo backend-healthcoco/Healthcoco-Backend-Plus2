@@ -15,15 +15,17 @@ public class ClinicalNotesEditRequest {
 
 	private String diagnoses;
 
-	private List<String> diagramUrls;
+	private List<String> diagrams;
 
-	private String comments;
+	private String notes;
 
 	private String doctorId;
 
 	private String locationId;
 
 	private String hospitalId;
+	
+	private Long createdDate;
 
 	public String getPatientId() {
 		return patientId;
@@ -33,12 +35,14 @@ public class ClinicalNotesEditRequest {
 		this.patientId = patientId;
 	}
 
-	public String getComplaints() {
-		return complaints;
+	
+
+	public String getNotes() {
+		return notes;
 	}
 
-	public void setComplaints(String complaints) {
-		this.complaints = complaints;
+	public void setNotes(String notes) {
+		this.notes = notes;
 	}
 
 	public String getObservation() {
@@ -65,20 +69,15 @@ public class ClinicalNotesEditRequest {
 		this.diagnoses = diagnoses;
 	}
 
-	public List<String> getDiagramUrls() {
-		return diagramUrls;
+
+
+	
+	public String getComplaints() {
+		return complaints;
 	}
 
-	public void setDiagramUrls(List<String> diagramUrls) {
-		this.diagramUrls = diagramUrls;
-	}
-
-	public String getComments() {
-		return comments;
-	}
-
-	public void setComments(String comments) {
-		this.comments = comments;
+	public void setComplaints(String complaints) {
+		this.complaints = complaints;
 	}
 
 	public String getDoctorId() {
@@ -112,17 +111,36 @@ public class ClinicalNotesEditRequest {
 	public void setId(String id) {
 		this.id = id;
 	}
+	
+	
+
+	public Long getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Long createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public List<String> getDiagrams() {
+		return diagrams;
+	}
+
+	public void setDiagrams(List<String> diagrams) {
+		this.diagrams = diagrams;
+	}
 
 	@Override
 	public String toString() {
 		return "ClinicalNotesEditRequest [id=" + id + ", patientId="
 				+ patientId + ", complaints=" + complaints + ", observation="
 				+ observation + ", investigation=" + investigation
-				+ ", diagnoses=" + diagnoses + ", diagramUrls=" + diagramUrls
-				+ ", comments=" + comments + ", doctorId=" + doctorId
+				+ ", diagnoses=" + diagnoses + ", diagrams=" + diagrams
+				+ ", notes=" + notes + ", doctorId=" + doctorId
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ "]";
+				+ ", createdDate=" + createdDate + "]";
 	}
+
 	
 	
 }

@@ -1,9 +1,15 @@
 package com.dpdocter.services.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.DoctorSignUp;
+import com.dpdocter.beans.Hospital;
+import com.dpdocter.beans.Locations;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.AddressCollection;
 import com.dpdocter.collections.DoctorCollection;
@@ -23,7 +29,6 @@ import com.dpdocter.repository.DoctorContactsRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocationRepository;
-import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.UserLocationRepository;
@@ -93,8 +98,9 @@ public class SignUpServiceImpl implements SignUpService{
 
 	}
 
-	public User doctorSignUp(DoctorSignupRequest request) {
-		User user = null;
+	public DoctorSignUp doctorSignUp(DoctorSignupRequest request) {
+		DoctorSignUp response = null;
+		
 		try {
 			//get role of specified type
 			RoleCollection hospitalAdmin = roleRepository.findByRole(RoleEnum.HOSPITAL_ADMIN.getRole());
@@ -112,12 +118,13 @@ public class SignUpServiceImpl implements SignUpService{
 			//save user
 			UserCollection userCollection = new UserCollection();
 			BeanUtil.map(request, userCollection);
+			userCollection.setUserName(request.getEmailAddress());
 			userCollection = userRepository.save(userCollection);
 			//save doctor specific details
 			DoctorCollection doctorCollection = new DoctorCollection();
 			BeanUtil.map(request, doctorCollection);
 			doctorCollection.setUserId(userCollection.getId());
-			doctorRepository.save(doctorCollection);
+			doctorCollection = doctorRepository.save(doctorCollection);
 			//assign role to doctor
 			UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), hospitalAdmin.getId());
 			userRoleRepository.save(userRoleCollection);
@@ -129,6 +136,7 @@ public class SignUpServiceImpl implements SignUpService{
 			HospitalCollection hospitalCollection = new HospitalCollection();
 			BeanUtil.map(request, hospitalCollection);
 			hospitalCollection = hospitalRepository.save(hospitalCollection);
+			
 			//save location for hospital
 			LocationCollection locationCollection = new LocationCollection();
 			BeanUtil.map(request, locationCollection);
@@ -139,9 +147,21 @@ public class SignUpServiceImpl implements SignUpService{
 			userLocationRepository.save(userLocationCollection);
 			//send activation email
 			String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(), userCollection.getMiddleName(), userCollection.getLastName());
-			mailService.sendEmail(doctorCollection.getEmailAddress(), signupSubject, body, null);
-			user = new User();
+			mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
+			response = new DoctorSignUp();
+			User user = new User();
+			userCollection.setPassword(null);
 			BeanUtil.map(userCollection, user);
+			user.setEmailAddress(userCollection.getEmailAddress());
+			response.setUser(user);
+			Hospital hospital = new Hospital();
+			BeanUtil.map(hospitalCollection, hospital);
+			List<Locations> locations = new ArrayList<Locations>();
+			Locations location = new Locations();
+			BeanUtil.map(locationCollection, location);
+			locations.add(location);
+			hospital.setLocations(locations);
+			response.setHospital(hospital);
 			//user.setPassword(null);
 		} catch(BusinessException be){
 			throw be;
@@ -149,7 +169,7 @@ public class SignUpServiceImpl implements SignUpService{
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error occured while creating doctor");
 		}
-		return user;
+		return response;
 	}
 
 	public User patientSignUp(PatientSignUpRequest request) {
@@ -188,7 +208,7 @@ public class SignUpServiceImpl implements SignUpService{
 
 			//send activation email
 			String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(), userCollection.getMiddleName(), userCollection.getLastName());
-			mailService.sendEmail(patientCollection.getEmailAddress(), signupSubject, body, null);
+			mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
 			user = new User();
 			BeanUtil.map(userCollection, user);
 			//user.setPassword(null);
@@ -201,11 +221,55 @@ public class SignUpServiceImpl implements SignUpService{
 		return user;
 	}
 
+	@Override
+	public Boolean checkUserNameExist(String username) {
+		try {
+			UserCollection userCollection = userRepository.findByUserName(username);
+			if(userCollection == null){
+				return false;
+			}
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+	}
 
+	@Override
+	public Boolean checkMobileNumExist(String mobileNum) {
+		try {
+			List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNum);
+			if(userCollections != null){
+				if(!userCollections.isEmpty()){
+					return true;
+				}else{
+					return false;
+				}
+			}
+			return false;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		
+	}
 
-
-
-
-
+	@Override
+	public Boolean checkEmailAddressExist(String email) {
+		try {
+			List<DoctorCollection> doctorCollections = doctorRepository.findByEmailAddress(email);
+			if(doctorCollections != null){
+				if(!doctorCollections.isEmpty()){
+					return true;
+				}else{
+					return false;
+				}
+			}
+			return false;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+	}
 
 }

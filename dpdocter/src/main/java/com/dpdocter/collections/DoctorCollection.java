@@ -15,8 +15,8 @@ public class DoctorCollection {
 	private String lastName;
 	@Field
 	private String middleName;*/
-	@Field
-	private String emailAddress;
+	/*@Field
+	private String emailAddress;*/
 	@Field
 	private String secMobile;
 	/*@Field
@@ -38,13 +38,7 @@ public class DoctorCollection {
 		this.id = id;
 	}
 
-	public String getEmailAddress() {
-		return emailAddress;
-	}
-
-	public void setEmailAddress(String emailAddress) {
-		this.emailAddress = emailAddress;
-	}
+	
 
 	public String getSecMobile() {
 		return secMobile;
@@ -72,11 +66,12 @@ public class DoctorCollection {
 
 	@Override
 	public String toString() {
-		return "DoctorCollection [id=" + id + ", emailAddress=" + emailAddress
-				+ ", secMobile=" + secMobile + ", specialization="
-				+ specialization + ", userId=" + userId + "]";
+		return "DoctorCollection [id=" + id + ", secMobile=" + secMobile
+				+ ", specialization=" + specialization + ", userId=" + userId
+				+ "]";
 	}
 
+	
 	
 
 	

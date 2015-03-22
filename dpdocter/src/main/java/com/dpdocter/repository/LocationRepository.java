@@ -7,4 +7,6 @@ import com.dpdocter.collections.LocationCollection;
 
 @Repository
 public interface LocationRepository extends MongoRepository<LocationCollection, String>{
+	
+	
 }	

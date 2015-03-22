@@ -14,7 +14,16 @@ public class User {
 	private String gender;
 	private DOB dob;
 	private String secPhoneNumber;
+	private Boolean isPartOfClinic;
 	
+	
+	
+	public Boolean getIsPartOfClinic() {
+		return isPartOfClinic;
+	}
+	public void setIsPartOfClinic(Boolean isPartOfClinic) {
+		this.isPartOfClinic = isPartOfClinic;
+	}
 	public String getId() {
 		return id;
 	}

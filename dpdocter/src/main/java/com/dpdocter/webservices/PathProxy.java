@@ -14,6 +14,9 @@ public interface PathProxy {
 		public static final String DOCTOR_SIGNUP = "/doctor";
 		public static final String PATIENT_SIGNUP = "/patient";
 		public static final String ACTIVATE_USER = "/activate/{userId}";
+		public static final String CHECK_IF_USERNAME_EXIST = "/check-username-exists/{username}";
+		public static final String CHECK_IF_MOBNUM_EXIST = "/check-mobnum-exists/{mobileNumber}";
+		public static final String CHECK_IF_EMAIL_ADDR_EXIST = "/check-email-exists/{emailaddress}";
 	}
 	
 	public static final String LOGIN_BASE_URL = BASE_URL + "/login";
@@ -28,7 +31,7 @@ public interface PathProxy {
 		public static final String BLOCK_CONTACT = "/doctorcontacts/block/{doctorId}/{patientId}";
 		public static final String ADD_GROUP = "/doctorcontacts/addgroup";
 		public static final String EDIT_GROUP = "/doctorcontacts/editgroup";
-		public static final String GET_ALL_GROUPS = "/doctorcontacts/getallgroups/{doctorId}";
+		public static final String GET_ALL_GROUPS = "/doctorcontacts/getallgroups/{doctorId}/{locationId}/{hospitalId}";
 		public static final String DELETE_GROUP = "/doctorcontacts/deletegroup/{groupId}";
 		public static final String TOTAL_COUNT = "/doctorcontacts/totalcount";
 	}
@@ -36,18 +39,38 @@ public interface PathProxy {
 	public interface RegistrationUrls {
 		public static final String PATIENT_REGISTER = "/patient";
 		public static final String DOCTOR_REGISTER = "/doctor";
-		public static final String EXISTING_PATIENTS_BY_PHONE_NUM = "/existing_patients/{phoneNumber}";
-		public static final String GET_PATIENT_PROFILE = "/getpatientprofile/{userId}/{doctorId}";
-
+		public static final String EXISTING_PATIENTS_BY_PHONE_NUM = "/existing_patients/{mobileNumber}/{locationId}/{hospitalId}";
+		public static final String EXISTING_PATIENTS_BY_PHONE_NUM_COUNT = "/existing_patients_count/{mobileNumber}";
+		public static final String GET_PATIENT_PROFILE = "/getpatientprofile/{userId}/{doctorId}/{locationId}/{hospitalId}";
+		public static final String ADD_REFERRENCE = "/addreferrence";
+		public static final String DELETE_REFERRENCE = "/deletereferrence/{referrenceId}";
+		public static final String GET_REFERRENCES = "/getreferrences/{doctorId}/{locationId}/{hospitalId}";
 	}
 	
 	public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";
 	public interface ClinicalNotesUrls {
-		public static final String ADD_NOTES = "/add";
-		public static final String EDIT_NOTES = "/edit";
-		public static final String DELETE_NOTES = "/delete/{clinicalNotesId}";
+		public static final String SAVE_CLINICAL_NOTE = "/save";
+		public static final String EDIT_CLINICAL_NOTES = "/edit";
+		public static final String DELETE_CLINICAL_NOTES = "/delete/{clinicalNotesId}";
 		public static final String GET_CLINICAL_NOTES_ID = "/getbyid/{clinicalNotesId}";
 		public static final String GET_CLINICAL_NOTES = "/get/{doctorId}/{patientId}/{isOTPVarified}";
+		
+		public static final String ADD_COMPLAINT = "/addcomplaint";
+		public static final String ADD_OBSERVATION = "/addobservation";
+		public static final String ADD_INVESTIGATION = "/addinvestigation";
+		public static final String ADD_DIAGNOSIS = "/adddiagnosis";
+		public static final String ADD_NOTES = "/addnotes";
+		public static final String ADD_DIAGRAM = "/adddiagram";
+		
+		
+		
+		public static final String DELETE_COMPLAINT = "/deletecomplaint/{id}/{doctorId}";
+		public static final String DELETE_OBSERVATION = "/deleteobservation/{id}/{doctorId}";
+		public static final String DELETE_INVESTIGATION = "/deleteinvestigation/{id}/{doctorId}";
+		public static final String DELETE_DIAGNOSIS = "/deletediagnosis/{id}/{doctorId}";
+		public static final String DELETE_NOTE = "/deletenotes/{id}/{doctorId}";
+		public static final String DELETE_DIAGRAM = "/deletediagram/{id}/{doctorId}";
+		
 		
 
 	}
@@ -63,6 +86,9 @@ public interface PathProxy {
 		public static final String TAG_RECORD = "/tagrecord";
 		public static final String CHANGE_LABEL_RECORD = "/changelabel";
 		public static final String SEARCH_RECORD = "/search";
+		public static final String CREATE_TAG = "/createtag";
+		public static final String GET_ALL_TAGS = "/getalltags/{doctorId}/{locationId}/{hospitalId}";
+		public static final String GET_PATIENT_EMAIL_ADD = "/getpatientemailaddr/{patientId}";
 		
 	}
 

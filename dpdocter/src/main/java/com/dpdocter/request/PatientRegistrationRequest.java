@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dpdocter.beans.Address;
 import com.dpdocter.beans.DOB;
+import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Relations;
 
 public class PatientRegistrationRequest {
@@ -14,6 +15,7 @@ public class PatientRegistrationRequest {
 	private String mobileNumber;
 	private String gender;
 	private DOB dob;
+	private FileDetails image;
 
 	private String emailAddress;
 	private List<String> groups;
@@ -29,14 +31,14 @@ public class PatientRegistrationRequest {
 	private List<String> notes;
 
 	private Address address;
-
+     
 	private Long dateOfVisit;
 	private String pastHistoryId;
 	private String medicalHistoryId;
 	private String patientNumber;
 	private String referredBy;
 	private String locationId;
-	private String clinicId;
+	private String hospitalId;
 	
 	private String doctorId;
 	
@@ -82,7 +84,6 @@ public class PatientRegistrationRequest {
 	}
 
 	
-
 	public String getMobileNumber() {
 		return mobileNumber;
 	}
@@ -204,14 +205,15 @@ public class PatientRegistrationRequest {
 		this.doctorId = doctorId;
 	}
 	
-	public String getClinicId() {
-		return clinicId;
+	
+
+	public String getHospitalId() {
+		return hospitalId;
 	}
 
-	public void setClinicId(String clinicId) {
-		this.clinicId = clinicId;
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
 	}
-	
 
 	public String getSecMobile() {
 		return secMobile;
@@ -271,6 +273,14 @@ public class PatientRegistrationRequest {
 		this.notes = notes;
 	}
 
+	public FileDetails getImage() {
+		return image;
+	}
+
+	public void setImage(FileDetails image) {
+		this.image = image;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientRegistrationRequest [userId=" + userId + ", firstName="
@@ -287,13 +297,8 @@ public class PatientRegistrationRequest {
 				+ ", pastHistoryId=" + pastHistoryId + ", medicalHistoryId="
 				+ medicalHistoryId + ", patientNumber=" + patientNumber
 				+ ", referredBy=" + referredBy + ", locationId=" + locationId
-				+ ", clinicId=" + clinicId + ", doctorId=" + doctorId + "]";
+				+ ", hospitalId=" + hospitalId + ", doctorId=" + doctorId + "]";
 	}
 
-	
-
-	
-	
-	
 
 }

@@ -13,7 +13,7 @@ public class ClinicalNotesCollection {
 	private String id;
 	
 	@Field
-	private String complaints;
+	private String notes;
 	
 	@Field
 	private String observation;
@@ -25,7 +25,7 @@ public class ClinicalNotesCollection {
 	private String diagnoses;
 	
 	@Field
-	private List<String> diagramUrls;
+	private List<String> diagrams;
 	
 	@Field
 	private String comments;
@@ -38,6 +38,9 @@ public class ClinicalNotesCollection {
 	
 	@Field
 	private String hospitalId;
+	
+	@Field
+	private Long createdDate;
 
 	public String getId() {
 		return id;
@@ -47,12 +50,14 @@ public class ClinicalNotesCollection {
 		this.id = id;
 	}
 
-	public String getComplaints() {
-		return complaints;
+	
+
+	public String getNotes() {
+		return notes;
 	}
 
-	public void setComplaints(String complaints) {
-		this.complaints = complaints;
+	public void setNotes(String notes) {
+		this.notes = notes;
 	}
 
 	public String getObservation() {
@@ -79,13 +84,6 @@ public class ClinicalNotesCollection {
 		this.diagnoses = diagnoses;
 	}
 
-	public List<String> getDiagramUrls() {
-		return diagramUrls;
-	}
-
-	public void setDiagramUrls(List<String> diagramUrls) {
-		this.diagramUrls = diagramUrls;
-	}
 
 	public String getComments() {
 		return comments;
@@ -118,19 +116,35 @@ public class ClinicalNotesCollection {
 	public void setHospitalId(String hospitalId) {
 		this.hospitalId = hospitalId;
 	}
+	
+
+	public Long getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Long createdDate) {
+		this.createdDate = createdDate;
+	}
+
+
+	public List<String> getDiagrams() {
+		return diagrams;
+	}
+
+	public void setDiagrams(List<String> diagrams) {
+		this.diagrams = diagrams;
+	}
 
 	@Override
 	public String toString() {
-		return "ClinicalNotesCollection [id=" + id + ", complaints="
-				+ complaints + ", observation=" + observation
-				+ ", investigation=" + investigation + ", diagnoses="
-				+ diagnoses + ", diagramUrls=" + diagramUrls + ", comments="
-				+ comments + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + "]";
+		return "ClinicalNotesCollection [id=" + id + ", notes=" + notes
+				+ ", observation=" + observation + ", investigation="
+				+ investigation + ", diagnoses=" + diagnoses + ", diagrams="
+				+ diagrams + ", comments=" + comments + ", doctorId="
+				+ doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", createdDate=" + createdDate + "]";
 	}
-	
-	
-	
+
 	
 	
 }

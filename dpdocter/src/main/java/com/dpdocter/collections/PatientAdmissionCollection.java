@@ -32,7 +32,7 @@ public class PatientAdmissionCollection {
 	private String referredBy;
 	
 	@Field
-	private String clinicId;
+	private String hospitalId;
 	
 	@Field
 	private String patientId;
@@ -105,12 +105,14 @@ public class PatientAdmissionCollection {
 		this.referredBy = referredBy;
 	}
 
-	public String getClinicId() {
-		return clinicId;
+	
+
+	public String getHospitalId() {
+		return hospitalId;
 	}
 
-	public void setClinicId(String clinicId) {
-		this.clinicId = clinicId;
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
 	}
 
 	public String getPatientId() {
@@ -136,11 +138,10 @@ public class PatientAdmissionCollection {
 				+ ", locationId=" + locationId + ", dateOfVisit=" + dateOfVisit
 				+ ", pastHistoryId=" + pastHistoryId + ", medicalHistoryId="
 				+ medicalHistoryId + ", patientNumber=" + patientNumber
-				+ ", referredBy=" + referredBy + ", clinicId=" + clinicId
+				+ ", referredBy=" + referredBy + ", hospitalId=" + hospitalId
 				+ ", patientId=" + patientId + ", doctorId=" + doctorId + "]";
 	}
 
 	
-
 	
 }

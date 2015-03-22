@@ -9,7 +9,7 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.beans.User;
+import com.dpdocter.beans.LoginResponse;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.LoginRequest;
@@ -28,13 +28,13 @@ public class LoginApi {
 	
 	@Path(value=PathProxy.LoginUrls.LOGIN_USER)
 	@POST
-	public Response<User> login(LoginRequest request){
+	public Response<LoginResponse> login(LoginRequest request){
 		if(request == null){
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		User user =  loginService.login(request);
-		Response<User> response = new Response<User>();
-		response.setData(user);
+		LoginResponse loginResponse =  loginService.login(request);
+		Response<LoginResponse> response = new Response<LoginResponse>();
+		response.setData(loginResponse);
 		return response;
 	}
 }

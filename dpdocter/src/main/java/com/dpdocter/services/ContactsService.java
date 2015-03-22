@@ -17,6 +17,6 @@ public interface ContactsService {
 	List<PatientCard> getDoctorsRecentlyVisitedContacts(String doctorId,int size,int page);
 	List<PatientCard> getDoctorsMostVisitedContacts(String doctorId,int size,int page);
 	int getcontactsTotalSize(GetDoctorContactsRequest request);
-	List<Group> getAllGroups(String doctorId);
+	List<Group> getAllGroups(String doctorId,String locationId,String hospitalId);
 
 }

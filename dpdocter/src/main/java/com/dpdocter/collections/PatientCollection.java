@@ -24,6 +24,10 @@ public class PatientCollection {
 	@Field
 	private String doctorId;
 	@Field
+	private String locationId;
+	@Field
+	private String hospitalId;
+	@Field
 	private String addressId;
 	@Field
 	private String secMobile;
@@ -41,6 +45,9 @@ public class PatientCollection {
 	private String userId;
 	@Field
 	private List<String> notes;
+	@Field
+	private String PID;
+	
 	/*@Field
 	private String firstName;
 	@Field
@@ -142,18 +149,42 @@ public class PatientCollection {
 	public void setNotes(List<String> notes) {
 		this.notes = notes;
 	}
+	
+	
+	public String getPID() {
+		return PID;
+	}
+	
+	public void setPID(String pID) {
+		PID = pID;
+	}
+	
+	
+	public String getLocationId() {
+		return locationId;
+	}
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+	public String getHospitalId() {
+		return hospitalId;
+	}
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 	@Override
 	public String toString() {
 		return "PatientCollection [id=" + id + ", bloodGroup=" + bloodGroup
 				+ ", profession=" + profession + ", relations=" + relations
 				+ ", emailAddress=" + emailAddress + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ ", addressId=" + addressId + ", secMobile=" + secMobile
 				+ ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber
 				+ ", drivingLicenseId=" + drivingLicenseId + ", insuranceId="
 				+ insuranceId + ", insuranceName=" + insuranceName
-				+ ", userId=" + userId + ", notes=" + notes + "]";
+				+ ", userId=" + userId + ", notes=" + notes + ", PID=" + PID
+				+ "]";
 	}
-	
 	
 	
 	
