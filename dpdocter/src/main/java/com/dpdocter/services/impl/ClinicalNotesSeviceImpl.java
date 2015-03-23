@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -17,6 +18,7 @@ import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.Diagnosis;
 import com.dpdocter.beans.Diagram;
+import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Investigation;
 import com.dpdocter.beans.Notes;
 import com.dpdocter.beans.Observation;
@@ -77,6 +79,10 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 	
 	@Autowired
 	private MongoTemplate mongoTemplate;
+	
+
+	@Value(value = "${IMAGE_RESOURCE}")
+	private String imageResource;
 
 	@Override
 	public ClinicalNotes addNotes(ClinicalNotesAddRequest request) {
@@ -85,6 +91,24 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 			// save clinical notes.
 			ClinicalNotesCollection clinicalNotesCollection = new ClinicalNotesCollection();
 			BeanUtil.map(request, clinicalNotesCollection);
+			if(request.getDiagrams() != null){
+				List<String> diagramUrls = new ArrayList<String>();
+				List<String> diagramPaths = new ArrayList<String>();;
+				for(FileDetails diagram : request.getDiagrams()){
+					String path = request.getPatientId() + File.separator + "clinical-notes-diagrams";
+					//save image
+					String diagramUrl = fileManager.saveImageAndReturnImageUrl(diagram,path);
+					String fileName = diagram.getFileName()
+							+ "." + diagram.getFileExtension();
+					String diagramPath = imageResource + File.separator + path + File.separator + fileName;
+					diagramUrls.add(diagramUrl);
+					diagramPaths.add(diagramPath);
+				}
+				
+				clinicalNotesCollection.setDiagrams(diagramUrls);
+				clinicalNotesCollection.setDiagramsPaths(diagramPaths);
+			}
+			
 			clinicalNotesCollection = clinicalNotesRepository
 					.save(clinicalNotesCollection);
 			if (clinicalNotesCollection != null) {
@@ -106,7 +130,8 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 
 		return clinicalNotes;
 	}
-
+	
+	
 	@Override
 	public ClinicalNotes getNotesById(String id) {
 		ClinicalNotes clinicalNotes = null;
@@ -130,15 +155,32 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 		try {
 			ClinicalNotesCollection clinicalNotesCollection = new ClinicalNotesCollection();
 			BeanUtil.map(request, clinicalNotesCollection);
-			clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
-			clinicalNotes = new ClinicalNotes();
+			if(request.getDiagrams() != null){
+				List<String> diagramUrls = new ArrayList<String>();
+				List<String> diagramPaths = new ArrayList<String>();;
+				for(FileDetails diagram : request.getDiagrams()){
+					String path = request.getPatientId() + File.separator + "clinical-notes-diagrams";
+					//save image
+					String diagramUrl = fileManager.saveImageAndReturnImageUrl(diagram,path);
+					String fileName = diagram.getFileName()
+							+ "." + diagram.getFileExtension();
+					String diagramPath = imageResource + File.separator + path + File.separator + fileName;
+					diagramUrls.add(diagramUrl);
+					diagramPaths.add(diagramPath);
+				}
+				
+				clinicalNotesCollection.setDiagrams(diagramUrls);
+				clinicalNotesCollection.setDiagramsPaths(diagramPaths);
+			}
+			
+			clinicalNotesCollection = clinicalNotesRepository
+					.save(clinicalNotesCollection);
 			BeanUtil.map(clinicalNotesCollection, clinicalNotes);
-			return clinicalNotes;
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
-
+		return clinicalNotes;
 	}
 
 	@Override
@@ -437,6 +479,8 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 	}
+
+
 	
 	
 

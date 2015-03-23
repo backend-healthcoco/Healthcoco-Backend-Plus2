@@ -8,5 +8,4 @@ import org.springframework.stereotype.Repository;
 import com.dpdocter.collections.DoctorCollection;
 @Repository
 public interface DoctorRepository extends MongoRepository<DoctorCollection, String>{
-	List<DoctorCollection> findByEmailAddress(String emailAddress);
 }

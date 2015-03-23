@@ -22,7 +22,6 @@ import com.dpdocter.request.RecordsAddRequest;
 import com.dpdocter.request.RecordsSearchRequest;
 import com.dpdocter.request.TagRecordRequest;
 import com.dpdocter.services.RecordsService;
-
 import common.util.web.Response;
 
 @Component
@@ -117,5 +116,48 @@ public class RecordsApi {
 		return response;
 	}
 	
-
+	@Path(value=PathProxy.RecordsUrls.EMAIL_RECORD)
+	@GET
+	public Response<Boolean> emailRecords(
+			@PathParam("recordId")String recordId){
+		recordsService.emailRecordToPatient(recordId);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(true);
+		return response;
+	}
+	
+	@Path(value=PathProxy.RecordsUrls.DELETE_RECORD)
+	@GET
+	public Response<Boolean> deleteRecords(
+			@PathParam("recordId")String recordId){
+		recordsService.deleteRecord(recordId);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(true);
+		return response;
+	}
+	
+	@Path(value=PathProxy.RecordsUrls.DELETE_TAG)
+	@GET
+	public Response<Boolean> deleteTag(
+			@PathParam("tagid")String tagid){
+		recordsService.deleteTag(tagid);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(true);
+		return response;
+	}
+	
+/*	@Path(value=PathProxy.RecordsUrls.DOWNLOAD_RECORD)
+	@GET
+	public javax.ws.rs.core.Response downloadRecords(
+			@PathParam("recordId")String recordId){
+		File file = recordsService.getRecordFile(recordId);
+		 if(file == null )
+	        {
+	            ResponseBuilder response = javax.ws.rs.core.Response.status(Status.BAD_REQUEST);
+	            return response.build();
+	        }
+		 ResponseBuilder response = javax.ws.rs.core.Response.ok((Object) file);
+	        response.header("Content-Disposition", "attachment; filename=);
+	        return response.build();
+	}*/
 }

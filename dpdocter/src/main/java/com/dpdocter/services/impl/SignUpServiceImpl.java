@@ -36,6 +36,7 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.PatientSignUpRequest;
+import com.dpdocter.services.FileManager;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.SignUpService;
@@ -70,6 +71,9 @@ public class SignUpServiceImpl implements SignUpService{
 	private MailService mailService;
 	@Autowired
 	private MailBodyGenerator mailBodyGenerator;
+	
+	@Autowired
+	private FileManager fileManager;
 
 	@Value(value = "${mail.signup.subject.activation}")
 	private String signupSubject;
@@ -119,6 +123,12 @@ public class SignUpServiceImpl implements SignUpService{
 			UserCollection userCollection = new UserCollection();
 			BeanUtil.map(request, userCollection);
 			userCollection.setUserName(request.getEmailAddress());
+			if(request.getImage() != null){
+				String path = "profile-pic";
+				//save image
+				String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(),path);
+				userCollection.setImageUrl(imageurl);
+			}
 			userCollection = userRepository.save(userCollection);
 			//save doctor specific details
 			DoctorCollection doctorCollection = new DoctorCollection();
@@ -257,9 +267,9 @@ public class SignUpServiceImpl implements SignUpService{
 	@Override
 	public Boolean checkEmailAddressExist(String email) {
 		try {
-			List<DoctorCollection> doctorCollections = doctorRepository.findByEmailAddress(email);
-			if(doctorCollections != null){
-				if(!doctorCollections.isEmpty()){
+			List<UserCollection> userCollections = userRepository.findByEmailAddress(email);
+			if(userCollections != null){
+				if(!userCollections.isEmpty()){
 					return true;
 				}else{
 					return false;

@@ -4,10 +4,26 @@ import java.util.List;
 
 public class GetDoctorContactsRequest {
 	private String doctorId;
+	private String locationId;
+	private String hospitalId;
 	private Boolean blocked=false;
 	private int page;
 	private int size;
 	private List<String> groups;
+	
+	
+	public String getLocationId() {
+		return locationId;
+	}
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+	public String getHospitalId() {
+		return hospitalId;
+	}
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 	public String getDoctorId() {
 		return doctorId;
 	}
@@ -40,9 +56,10 @@ public class GetDoctorContactsRequest {
 	}
 	@Override
 	public String toString() {
-		return "GetDoctorContactsRequest [doctorId=" + doctorId + ", blocked="
-				+ blocked + ", page=" + page + ", size=" + size + ", groups="
-				+ groups + "]";
+		return "GetDoctorContactsRequest [doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", blocked=" + blocked + ", page=" + page + ", size=" + size
+				+ ", groups=" + groups + "]";
 	}
 	
 	

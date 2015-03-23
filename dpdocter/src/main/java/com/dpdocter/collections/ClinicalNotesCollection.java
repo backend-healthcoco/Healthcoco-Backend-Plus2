@@ -28,6 +28,9 @@ public class ClinicalNotesCollection {
 	private List<String> diagrams;
 	
 	@Field
+	private List<String> diagramsPaths;
+	
+	@Field
 	private String comments;
 	
 	@Field
@@ -51,6 +54,14 @@ public class ClinicalNotesCollection {
 	}
 
 	
+
+	public List<String> getDiagramsPaths() {
+		return diagramsPaths;
+	}
+
+	public void setDiagramsPaths(List<String> diagramsPaths) {
+		this.diagramsPaths = diagramsPaths;
+	}
 
 	public String getNotes() {
 		return notes;
@@ -140,9 +151,10 @@ public class ClinicalNotesCollection {
 		return "ClinicalNotesCollection [id=" + id + ", notes=" + notes
 				+ ", observation=" + observation + ", investigation="
 				+ investigation + ", diagnoses=" + diagnoses + ", diagrams="
-				+ diagrams + ", comments=" + comments + ", doctorId="
-				+ doctorId + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + ", createdDate=" + createdDate + "]";
+				+ diagrams + ", diagramsPaths=" + diagramsPaths + ", comments="
+				+ comments + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", createdDate="
+				+ createdDate + "]";
 	}
 
 	

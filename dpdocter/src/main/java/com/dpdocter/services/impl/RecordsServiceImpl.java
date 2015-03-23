@@ -9,8 +9,11 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.Tags;
 import com.dpdocter.collections.PatientCollection;
@@ -28,6 +31,7 @@ import com.dpdocter.request.RecordsAddRequest;
 import com.dpdocter.request.RecordsSearchRequest;
 import com.dpdocter.request.TagRecordRequest;
 import com.dpdocter.services.FileManager;
+import com.dpdocter.services.MailService;
 import com.dpdocter.services.RecordsService;
 @Service
 public class RecordsServiceImpl implements RecordsService {
@@ -45,6 +49,13 @@ public class RecordsServiceImpl implements RecordsService {
 	
 	@Autowired
 	private PatientRepository patientRepository;
+	
+	@Autowired
+	private MailService mailService;
+
+
+	@Value(value = "${IMAGE_RESOURCE}")
+	private String imageResource;
 
 	@Override
 	public Records addRecord(RecordsAddRequest request) {
@@ -52,11 +63,16 @@ public class RecordsServiceImpl implements RecordsService {
 			String path = request.getPatientId() + File.separator + "records";
 			//save image
 			String recordUrl = fileManager.saveImageAndReturnImageUrl(request.getFileDetails(),path);
+			String fileName = request.getFileDetails().getFileName()
+					+ "." + request.getFileDetails().getFileExtension();
+			String recordPath = imageResource + File.separator + path + File.separator + fileName;
+			
 			//save records
 			RecordsCollection recordsCollection = new RecordsCollection();
 			BeanUtil.map(request, recordsCollection);
 			recordsCollection.setrecordsUrl(recordUrl);
-			recordsCollection.setrecordsLable(getFileNameFromImageURL(recordUrl));
+			recordsCollection.setRecordsPath(recordPath);
+			recordsCollection.setRecordsLable(getFileNameFromImageURL(recordUrl));
 			recordsCollection = recordsRepository.save(recordsCollection);
 			Records records = new Records();
 			BeanUtil.map(recordsCollection, records);
@@ -67,6 +83,34 @@ public class RecordsServiceImpl implements RecordsService {
 			
 		}
 
+	}
+	
+	@Override
+	public void emailRecordToPatient(String recordId) {
+		try {
+			RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
+			if(recordsCollection != null){
+				PatientCollection patientCollection = 
+						patientRepository.findOne(recordsCollection.getPatientId());
+				if(patientCollection != null){
+					String emailAddress = patientCollection.getEmailAddress();
+					FileSystemResource file = new FileSystemResource(recordsCollection.getRecordsPath());
+					MailAttachment mailAttachment = new MailAttachment();
+					mailAttachment.setAttachmentName(recordsCollection.getRecordsLable());
+					mailAttachment.setFileSystemResource(file);
+					mailService.sendEmail(emailAddress, "Records", "PFA.", mailAttachment);
+				}
+			}else{
+				throw new BusinessException(ServiceError.Unknown,"Record not found.Please check recordId.");
+			}
+			
+		} catch (BusinessException e) {
+			throw new BusinessException(ServiceError.Unknown,e.getMessage());
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		
 	}
 	
 	private String getFileNameFromImageURL(String url){
@@ -110,7 +154,7 @@ public class RecordsServiceImpl implements RecordsService {
 	public void changeReportLabel(String recordId,String label) {
 		try {
 			RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
-			recordsCollection.setrecordsLable(label);
+			recordsCollection.setRecordsLable(label);
 			recordsRepository.save(recordsCollection);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -133,7 +177,7 @@ public class RecordsServiceImpl implements RecordsService {
 				records = new ArrayList<Records>();
 				BeanUtil.map(recordsCollections, records);
 			}else{
-				List<RecordsCollection> recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId());
+				List<RecordsCollection> recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(),request.getLocationId(),request.getHospitalId(),false);
 				records = new ArrayList<Records>();
 				BeanUtil.map(recordsCollections, records);
 			}
@@ -185,7 +229,9 @@ public class RecordsServiceImpl implements RecordsService {
 			}else{
 				throw new BusinessException(ServiceError.Unknown, "Invalid Input !");
 			}
-		} catch (Exception e) {
+		} catch (BusinessException e) {
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
@@ -209,9 +255,49 @@ public class RecordsServiceImpl implements RecordsService {
 		}
 		return emailAddress;
 	}
-	
-	
-	
-	
+
+	@Override
+	public File getRecordFile(String recordId) {
+		try {
+			RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
+			if(recordsCollection != null){
+				return new File(recordsCollection.getRecordsPath());
+			}else{
+				throw new BusinessException(ServiceError.Unknown,"Record not found.Please check recordId.");
+			}
+			
+		} catch (BusinessException e) {
+			throw new BusinessException(ServiceError.Unknown,e.getMessage());
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+	}
+
+	@Override
+	public void deleteRecord(String recordId) {
+		try {
+			RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
+			recordsCollection.setDeleted(true);
+			recordsRepository.save(recordsCollection);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		
+		
+	}
+
+	@Override
+	public void deleteTag(String tagId) {
+		try {
+			tagsRepository.delete(tagId);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		
+	}
 
 }

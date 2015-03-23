@@ -1,5 +1,8 @@
 package com.dpdocter.request;
 
+import com.dpdocter.beans.DOB;
+import com.dpdocter.beans.FileDetails;
+
 
 /**
  * @author veeraj
@@ -13,8 +16,9 @@ public class DoctorSignupRequest {
 	private String password;
 	private String emailAddress;
 	private String mobileNumber;
-	private String imageUrl;
+	private FileDetails image;
 	private String gender;
+	private DOB dob;
 	//doctor details
 	private String specialization;
 	//hospital details
@@ -34,6 +38,14 @@ public class DoctorSignupRequest {
 	private String hospitalId;
 	private Double latitude;
 	private Double longitude;
+	
+	
+	public DOB getDob() {
+		return dob;
+	}
+	public void setDob(DOB dob) {
+		this.dob = dob;
+	}
 	public String getFirstName() {
 		return firstName;
 	}
@@ -180,21 +192,22 @@ public class DoctorSignupRequest {
 	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
-	public String getImageUrl() {
-		return imageUrl;
+	
+	public FileDetails getImage() {
+		return image;
 	}
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
+	public void setImage(FileDetails image) {
+		this.image = image;
 	}
 	@Override
 	public String toString() {
 		return "DoctorSignupRequest [firstName=" + firstName + ", lastName="
 				+ lastName + ", middleName=" + middleName + ", userName="
 				+ userName + ", password=" + password + ", emailAddress="
-				+ emailAddress + ", mobileNumber=" + mobileNumber
-				+ ", imageUrl=" + imageUrl + ", gender=" + gender
-				+ ", specialization=" + specialization + ", hospitalName="
-				+ hospitalName + ", hospitalPhoneNumber=" + hospitalPhoneNumber
+				+ emailAddress + ", mobileNumber=" + mobileNumber + ", image="
+				+ image + ", gender=" + gender + ", specialization="
+				+ specialization + ", hospitalName=" + hospitalName
+				+ ", hospitalPhoneNumber=" + hospitalPhoneNumber
 				+ ", hospitalImageUrl=" + hospitalImageUrl
 				+ ", hospitalDescription=" + hospitalDescription
 				+ ", locationName=" + locationName + ", country=" + country
@@ -205,7 +218,6 @@ public class DoctorSignupRequest {
 				+ hospitalId + ", latitude=" + latitude + ", longitude="
 				+ longitude + "]";
 	}
-
 	
 	
 	

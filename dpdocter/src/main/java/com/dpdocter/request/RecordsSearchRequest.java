@@ -4,8 +4,23 @@ public class RecordsSearchRequest {
 	private String patientId;
 	private String doctorId;
 	private String tagId;
+	private String locationId;
+	private String hospitalId;
 	
 	
+	
+	public String getLocationId() {
+		return locationId;
+	}
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+	public String getHospitalId() {
+		return hospitalId;
+	}
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 	public String getPatientId() {
 		return patientId;
 	}
@@ -27,9 +42,9 @@ public class RecordsSearchRequest {
 	@Override
 	public String toString() {
 		return "RecordsSearchRequest [patientId=" + patientId + ", doctorId="
-				+ doctorId + ", tagId=" + tagId + "]";
+				+ doctorId + ", tagId=" + tagId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + "]";
 	}
-	
 	
 	
 	

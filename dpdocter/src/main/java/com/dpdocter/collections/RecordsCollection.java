@@ -12,6 +12,8 @@ public class RecordsCollection {
 	@Field
 	private String recordsUrl;
 	@Field
+	private String recordsPath;
+	@Field
 	private String recordsLable;
 	@Field
 	private String description;
@@ -25,8 +27,16 @@ public class RecordsCollection {
 	private String locationId;
 	@Field
 	private String hospitalId;
+	@Field
+	private boolean isDeleted = false;
 	
 	
+	public String getRecordsPath() {
+		return recordsPath;
+	}
+	public void setRecordsPath(String recordsPath) {
+		this.recordsPath = recordsPath;
+	}
 	public String getId() {
 		return id;
 	}
@@ -39,12 +49,7 @@ public class RecordsCollection {
 	public void setrecordsUrl(String recordsUrl) {
 		this.recordsUrl = recordsUrl;
 	}
-	public String getrecordsLable() {
-		return recordsLable;
-	}
-	public void setrecordsLable(String recordsLable) {
-		this.recordsLable = recordsLable;
-	}
+
 	public String getDescription() {
 		return description;
 	}
@@ -65,6 +70,12 @@ public class RecordsCollection {
 		this.createdDate = createdDate;
 	}
 	
+	public boolean isDeleted() {
+		return isDeleted;
+	}
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
 	public String getDoctorId() {
 		return doctorId;
 	}
@@ -78,6 +89,7 @@ public class RecordsCollection {
 	public void setRecordsUrl(String recordsUrl) {
 		this.recordsUrl = recordsUrl;
 	}
+
 	public String getRecordsLable() {
 		return recordsLable;
 	}
@@ -99,11 +111,12 @@ public class RecordsCollection {
 	@Override
 	public String toString() {
 		return "RecordsCollection [id=" + id + ", recordsUrl=" + recordsUrl
-				+ ", recordsLable=" + recordsLable + ", description="
-				+ description + ", patientId=" + patientId + ", doctorId="
-				+ doctorId + ", createdDate=" + createdDate + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + "]";
+				+ ", recordsPath=" + recordsPath + ", recordsLable="
+				+ recordsLable + ", description=" + description
+				+ ", patientId=" + patientId + ", doctorId=" + doctorId
+				+ ", createdDate=" + createdDate + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", isDeleted=" + isDeleted
+				+ "]";
 	}
-	
 	
 }

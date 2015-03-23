@@ -74,7 +74,7 @@ public class ContactsServiceImpl implements ContactsService {
 			}
 			@SuppressWarnings("unchecked")
 			Collection<String> patientIds =  CollectionUtils.collect(doctorContactCollections, new BeanToPropertyValueTransformer("contactId")); 
-			List<PatientCard> patientCards = getSpecifiedPatientCards(patientIds,request.getDoctorId());
+			List<PatientCard> patientCards = getSpecifiedPatientCards(patientIds,request.getDoctorId(),request.getLocationId(),request.getHospitalId());
 			return patientCards;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -83,10 +83,10 @@ public class ContactsServiceImpl implements ContactsService {
  	}
 	
 	
-	private List<PatientCard> getSpecifiedPatientCards(Collection<String> patientIds,String doctorId)throws Exception{
+	private List<PatientCard> getSpecifiedPatientCards(Collection<String> patientIds,String doctorId,String locationId,String hospitalId)throws Exception{
 		//getting patients from patient ids
 		Query queryForGettingPatientsFromPatientIds = new Query();
-		queryForGettingPatientsFromPatientIds.addCriteria(Criteria.where("id").in(patientIds).andOperator(Criteria.where("doctorId").is(doctorId)));
+		queryForGettingPatientsFromPatientIds.addCriteria(Criteria.where("id").in(patientIds).andOperator(Criteria.where("doctorId").is(doctorId)).andOperator(Criteria.where("locationId").is(locationId)).andOperator(Criteria.where("hospitalId").is(hospitalId)));
 		List<PatientCollection> patientCollections = mongoTemplate.find(queryForGettingPatientsFromPatientIds, PatientCollection.class);
 		List<PatientCard> patientCards = new ArrayList<PatientCard>();
 		for(PatientCollection patientCollection : patientCollections){
@@ -209,7 +209,7 @@ public class ContactsServiceImpl implements ContactsService {
 			 if(patientAdmissionCollections != null){
 				 @SuppressWarnings("unchecked")
 				Collection<String> patientIds =  CollectionUtils.collect(patientAdmissionCollections, new BeanToPropertyValueTransformer("patientId"));
-				 List<PatientCard> patientCards = getSpecifiedPatientCards(patientIds,doctorId);
+				 List<PatientCard> patientCards = null;//getSpecifiedPatientCards(patientIds,doctorId);
 				 return patientCards;
 			 }
 		} catch (Exception e) {
@@ -238,11 +238,14 @@ public class ContactsServiceImpl implements ContactsService {
 			List<DoctorContactCollection> doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(),false);
 			if(doctorContactCollections == null){
 				return 0;
-				}
-			if(request.getGroups() != null && !request.getGroups().isEmpty()){
+ 			}
+  			if(request.getGroups() != null && !request.getGroups().isEmpty()){
 				doctorContactCollections = filterContactsByGroup(request, doctorContactCollections);
 			}
-			return doctorContactCollections.size();
+			@SuppressWarnings("unchecked")
+			Collection<String> patientIds =  CollectionUtils.collect(doctorContactCollections, new BeanToPropertyValueTransformer("contactId")); 
+			List<PatientCard> patientCards = getSpecifiedPatientCards(patientIds,request.getDoctorId(),request.getLocationId(),request.getHospitalId());
+			return patientCards.size();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());

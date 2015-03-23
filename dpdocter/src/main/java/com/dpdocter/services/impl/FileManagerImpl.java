@@ -84,7 +84,7 @@ public class FileManagerImpl implements FileManager {
 	public String saveImageAndReturnImageUrl(FileDetails fileDetails,
 			String path) throws Exception {
 		String fileName = fileDetails.getFileName()
-				+ fileDetails.getFileExtension();
+				+ "." + fileDetails.getFileExtension();
 		createDirIfNotExist(imageResource + File.separator + path);
 		String filePath = imageResource + File.separator + path
 				+ File.separator + fileName;

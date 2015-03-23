@@ -44,6 +44,7 @@ public class ClinicalNotesApi {
 		return response;
 	}
 	
+	
 	@Path(value=PathProxy.ClinicalNotesUrls.EDIT_CLINICAL_NOTES)
 	@POST
 	public Response<ClinicalNotes> editNotes(ClinicalNotesEditRequest request){

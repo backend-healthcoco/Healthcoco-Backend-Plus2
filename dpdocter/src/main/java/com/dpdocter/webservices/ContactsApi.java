@@ -1,5 +1,6 @@
 package com.dpdocter.webservices;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -98,6 +99,20 @@ public class ContactsApi {
 			@PathParam("locationId") String locationId,
 			@PathParam("hospitalId") String hospitalId){
 		List<Group> groups = contactsService.getAllGroups(doctorId,locationId,hospitalId);
+		if(groups != null){
+			for(Group group : groups){
+				GetDoctorContactsRequest getDoctorContactsRequest = new GetDoctorContactsRequest();
+				getDoctorContactsRequest.setDoctorId(doctorId);
+				List<String> groupList = new ArrayList<String>();
+				groupList.add(group.getId());
+				getDoctorContactsRequest.setGroups(groupList);
+				int ttlCount = contactsService.getcontactsTotalSize(getDoctorContactsRequest);
+				group.setCount(ttlCount);
+			}
+		}
+		
+		
+		
 		Response<Group> response = new Response<Group>();
 		response.setDataList(groups);
 		return response;

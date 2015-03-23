@@ -7,6 +7,7 @@ public class Group {
 	private String doctorId;
 	private String locationId;
 	private String hospitalId;
+	private int count;
 	public String getId() {
 		return id;
 	}
@@ -55,6 +56,14 @@ public class Group {
 
 	public void setHospitalId(String hospitalId) {
 		this.hospitalId = hospitalId;
+	}
+
+	public int getCount() {
+		return count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
 	}
 
 	@Override

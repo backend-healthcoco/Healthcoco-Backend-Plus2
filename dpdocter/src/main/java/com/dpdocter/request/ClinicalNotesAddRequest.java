@@ -2,6 +2,8 @@ package com.dpdocter.request;
 
 import java.util.List;
 
+import com.dpdocter.beans.FileDetails;
+
 public class ClinicalNotesAddRequest {
 	private String id;
 	
@@ -15,7 +17,7 @@ public class ClinicalNotesAddRequest {
 
 	private String diagnoses;
 
-	private List<String> diagrams;
+	private List<FileDetails> diagrams;
 
 	private String notes;
 
@@ -126,11 +128,11 @@ public class ClinicalNotesAddRequest {
 
 
 
-	public List<String> getDiagrams() {
+	public List<FileDetails> getDiagrams() {
 		return diagrams;
 	}
 
-	public void setDiagrams(List<String> diagrams) {
+	public void setDiagrams(List<FileDetails> diagrams) {
 		this.diagrams = diagrams;
 	}
 

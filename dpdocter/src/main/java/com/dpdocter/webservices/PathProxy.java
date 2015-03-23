@@ -89,6 +89,10 @@ public interface PathProxy {
 		public static final String CREATE_TAG = "/createtag";
 		public static final String GET_ALL_TAGS = "/getalltags/{doctorId}/{locationId}/{hospitalId}";
 		public static final String GET_PATIENT_EMAIL_ADD = "/getpatientemailaddr/{patientId}";
+		public static final String EMAIL_RECORD = "/emailrecord/{recordId}";
+		public static final String DELETE_RECORD = "/deleterecord/{recordId}";
+		public static final String DOWNLOAD_RECORD = "/downloadrecord/{recordId}";
+		public static final String DELETE_TAG = "/deletetag/{tagid}";
 		
 	}
 
