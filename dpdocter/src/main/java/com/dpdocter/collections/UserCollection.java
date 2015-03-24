@@ -12,27 +12,37 @@ public class UserCollection {
 
 	@Id
 	private String id;
+
 	@Field
 	private String firstName;
+
 	@Field
 	private String lastName;
+
 	@Field
 	private String middleName;
+
 	@Indexed(unique = true)
 	private String userName;
+
 	@Field
 	private String password;
+
 	@Field
 	private String emailAddress;
+
 	@Field
 	private String mobileNumber;
-/*	@Field
+
+	/*@Field
 	private String secPhoneNumber;*/
+
 	@Field
 	private String gender;
 
 	@Field
 	private String imageUrl;
+
 	@Field
 	private DOB dob;
 
@@ -86,8 +96,6 @@ public class UserCollection {
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
-	
-	
 
 	public String getFirstName() {
 		return firstName;
@@ -128,7 +136,6 @@ public class UserCollection {
 	public void setDob(DOB dob) {
 		this.dob = dob;
 	}
-	
 
 	public String getEmailAddress() {
 		return emailAddress;
@@ -140,13 +147,9 @@ public class UserCollection {
 
 	@Override
 	public String toString() {
-		return "UserCollection [id=" + id + ", firstName=" + firstName
-				+ ", lastName=" + lastName + ", middleName=" + middleName
-				+ ", userName=" + userName + ", password=" + password
-				+ ", mobileNumber=" + mobileNumber + ", gender=" + gender
-				+ ", imageUrl=" + imageUrl + ", dob=" + dob + ", isActive="
-				+ isActive + "]";
+		return "UserCollection [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", userName=" + userName
+				+ ", password=" + password + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl=" + imageUrl + ", dob=" + dob
+				+ ", isActive=" + isActive + "]";
 	}
 
-	
 }

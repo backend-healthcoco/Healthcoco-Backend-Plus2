@@ -7,5 +7,8 @@
     <wb-resource deploy-path="/WEB-INF/classes" source-path="src/main/resources/spring-context"/>
     <wb-resource deploy-path="/WEB-INF/classes" source-path="src/main/resources/spring-properties/local"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources/spring-properties/local"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources/spring-context"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources/spring-properties/staging"/>
   </wb-module>
 </project-modules>
