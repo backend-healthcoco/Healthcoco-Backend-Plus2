@@ -12,6 +12,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.request.DoctorSignupRequest;
+import com.dpdocter.request.ForgotPasswordRequest;
 import com.dpdocter.request.PatientSignUpRequest;
 import com.dpdocter.webservices.PathProxy;
 
@@ -42,5 +43,11 @@ public class Converter {
 		JSONResult = ObjectToJSON(new PatientSignUpRequest());
 		System.out.println("Patient Signup : " + PathProxy.SIGNUP_BASE_URL + PathProxy.SignUpUrls.PATIENT_SIGNUP);
 		System.out.println("Patient Signup Request : " + JSONResult);
+
+		ForgotPasswordRequest request = new ForgotPasswordRequest();
+		request.setEmailAddress("");
+		request.setPhoneNumber("0123456789");
+		request.setUsername("");
+		System.out.println(ObjectToJSON(request));
 	}
 }

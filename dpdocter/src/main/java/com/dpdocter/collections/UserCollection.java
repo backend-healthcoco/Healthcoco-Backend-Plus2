@@ -49,6 +49,26 @@ public class UserCollection {
 	@Field
 	private Boolean isActive = false;
 
+	public UserCollection() {
+		super();
+	}
+
+	public UserCollection(String id, String firstName, String lastName, String middleName, String userName, String password, String emailAddress,
+			String mobileNumber, String gender, String imageUrl, DOB dob, Boolean isActive) {
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.middleName = middleName;
+		this.userName = userName;
+		this.password = password;
+		this.emailAddress = emailAddress;
+		this.mobileNumber = mobileNumber;
+		this.gender = gender;
+		this.imageUrl = imageUrl;
+		this.dob = dob;
+		this.isActive = isActive;
+	}
+
 	public String getId() {
 		return id;
 	}

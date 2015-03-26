@@ -30,4 +30,5 @@ public interface UserRepository extends MongoRepository<UserCollection, String> 
 
 	@Query("{'firstName':?0,'lastName':?1,'mobileNumber':?2}")
 	public List<UserCollection> findByFirstNameLastNameMobileNumber(String firstName, String lastName, String mobileNumber);
+
 }
