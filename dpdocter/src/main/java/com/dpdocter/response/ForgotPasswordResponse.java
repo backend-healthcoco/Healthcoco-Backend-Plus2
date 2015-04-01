@@ -1,9 +1,19 @@
-package com.dpdocter.request;
+package com.dpdocter.response;
 
-public class ForgotPasswordRequest {
+import com.dpdocter.enums.RoleEnum;
+
+public class ForgotPasswordResponse {
 	private String username;
 	private String phoneNumber;
 	private String emailAddress;
+	private RoleEnum role;
+
+	public ForgotPasswordResponse(String username, String phoneNumber, String emailAddress, RoleEnum role) {
+		this.username = username;
+		this.phoneNumber = phoneNumber;
+		this.emailAddress = emailAddress;
+		this.role = role;
+	}
 
 	public String getUsername() {
 		return username;
@@ -29,9 +39,12 @@ public class ForgotPasswordRequest {
 		this.emailAddress = emailAddress;
 	}
 
-	@Override
-	public String toString() {
-		return "ResetPasswordRequest [username=" + username + ", phoneNumber=" + phoneNumber + ", emailAddress=" + emailAddress + "]";
+	public RoleEnum getRole() {
+		return role;
+	}
+
+	public void setRole(RoleEnum role) {
+		this.role = role;
 	}
 
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.services.MailService;
+
 /***
  * 
  * @author veeraj
@@ -24,15 +25,19 @@ public class MailServiceImpl implements MailService {
 
 	@Value(value = "${mail.from}")
 	private String from;
+
 	/**
-	 * @param String to 
-	 * @param String subject
-	 * @param String body
-	 * @param MailAttachment(Optional) - If any attachment is to be send with mail else should be NULL.
-	 * This method sends Simple mails,MIME mails  
+	 * @param String
+	 *            to
+	 * @param String
+	 *            subject
+	 * @param String
+	 *            body
+	 * @param MailAttachment
+	 *            (Optional) - If any attachment is to be send with mail else
+	 *            should be NULL. This method sends Simple mails,MIME mails
 	 */
-	public void sendEmail(String to, String subject, String body,MailAttachment mailAttachment)
-			throws MessagingException {
+	public void sendEmail(String to, String subject, String body, MailAttachment mailAttachment) throws MessagingException {
 
 		MimeMessage message = javaMailSender.createMimeMessage();
 
@@ -41,8 +46,8 @@ public class MailServiceImpl implements MailService {
 		helper.setTo(to);
 		helper.setSubject(subject);
 		helper.setText(body);
-		if(mailAttachment != null){
-			helper.addAttachment(mailAttachment.getAttachmentName()	, mailAttachment.getFileSystemResource());
+		if (mailAttachment != null) {
+			helper.addAttachment(mailAttachment.getAttachmentName(), mailAttachment.getFileSystemResource());
 		}
 		javaMailSender.send(message);
 	}
