@@ -2,6 +2,7 @@ package com.dpdocter.request;
 
 import com.dpdocter.beans.Address;
 import com.dpdocter.beans.DOB;
+import com.dpdocter.beans.FileDetails;
 
 
 
@@ -13,10 +14,10 @@ public class PatientSignUpRequest {
 	private String userName;
 	private String password;
 	private String emailAddress;
-	private String phoneNumber;
+	private String mobileNumber;
 	//patient details
 	private String bloodGroup;
-	private String imageUrl;
+	private FileDetails image;
 	private DOB dob;
 	private String gender;
 	private Address address;
@@ -57,11 +58,12 @@ public class PatientSignUpRequest {
 	public void setEmailAddress(String emailAddress) {
 		this.emailAddress = emailAddress;
 	}
-	public String getPhoneNumber() {
-		return phoneNumber;
+	
+	public String getMobileNumber() {
+		return mobileNumber;
 	}
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
 	}
 	public String getBloodGroup() {
 		return bloodGroup;
@@ -69,11 +71,12 @@ public class PatientSignUpRequest {
 	public void setBloodGroup(String bloodGroup) {
 		this.bloodGroup = bloodGroup;
 	}
-	public String getImageUrl() {
-		return imageUrl;
+	
+	public FileDetails getImage() {
+		return image;
 	}
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
+	public void setImage(FileDetails image) {
+		this.image = image;
 	}
 	public DOB getDob() {
 		return dob;
@@ -98,11 +101,9 @@ public class PatientSignUpRequest {
 		return "PatientSignUpRequest [firstName=" + firstName + ", lastName="
 				+ lastName + ", middleName=" + middleName + ", userName="
 				+ userName + ", password=" + password + ", emailAddress="
-				+ emailAddress + ", phoneNumber=" + phoneNumber
-				+ ", bloodGroup=" + bloodGroup + ", imageUrl=" + imageUrl
-				+ ", dob=" + dob + ", gender=" + gender + ", address="
-				+ address + "]";
+				+ emailAddress + ", mobileNumber=" + mobileNumber
+				+ ", bloodGroup=" + bloodGroup + ", image=" + image + ", dob="
+				+ dob + ", gender=" + gender + ", address=" + address + "]";
 	}
-	
 	
 }

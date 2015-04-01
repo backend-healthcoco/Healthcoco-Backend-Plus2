@@ -91,7 +91,7 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 			// save clinical notes.
 			ClinicalNotesCollection clinicalNotesCollection = new ClinicalNotesCollection();
 			BeanUtil.map(request, clinicalNotesCollection);
-			if(request.getDiagrams() != null){
+		/*	if(request.getDiagrams() != null){
 				List<String> diagramUrls = new ArrayList<String>();
 				List<String> diagramPaths = new ArrayList<String>();;
 				for(FileDetails diagram : request.getDiagrams()){
@@ -107,11 +107,12 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 				
 				clinicalNotesCollection.setDiagrams(diagramUrls);
 				clinicalNotesCollection.setDiagramsPaths(diagramPaths);
-			}
+			}*/
 			
 			clinicalNotesCollection = clinicalNotesRepository
 					.save(clinicalNotesCollection);
 			if (clinicalNotesCollection != null) {
+				if(request.getId() == null){
 				// map the clinical notes with patient
 				PatientClinicalNotesCollection patientClinicalNotesCollection = new PatientClinicalNotesCollection();
 				patientClinicalNotesCollection
@@ -120,9 +121,11 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 						.getPatientId());
 				patientClinicalNotesRepository
 						.save(patientClinicalNotesCollection);
-				clinicalNotes = new ClinicalNotes();
-				BeanUtil.map(clinicalNotesCollection, clinicalNotes);
+				}
+				
 			}
+			clinicalNotes = new ClinicalNotes();
+			BeanUtil.map(clinicalNotesCollection, clinicalNotes);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -324,6 +327,9 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 			diagram.setDiagramUrl(diagramUrl);
 			DiagramsCollection diagramsCollection = new DiagramsCollection();
 			BeanUtil.map(diagram, diagramsCollection);
+			diagramsCollection = diagramsRepository.save(diagramsCollection);
+			BeanUtil.map(diagramsCollection, diagram);
+			diagram.setDiagram(null);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());

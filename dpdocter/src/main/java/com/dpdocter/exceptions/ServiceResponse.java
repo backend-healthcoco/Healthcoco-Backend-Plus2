@@ -3,6 +3,7 @@ package com.dpdocter.exceptions;
 /**
  * Generic Server-side response 
  * 
+ *
  */
 
 public class ServiceResponse {

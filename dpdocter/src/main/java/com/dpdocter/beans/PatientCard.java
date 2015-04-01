@@ -12,7 +12,7 @@ public class PatientCard {
 	private String bloodGroup;
 	private String PID;
 	private String gender;
-	private String phoneNumber;
+	private String mobileNumber;
 	private String secPhoneNumber;
 	private String  age;
 	private int count;
@@ -79,11 +79,12 @@ public class PatientCard {
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
-	public String getPhoneNumber() {
-		return phoneNumber;
+	
+	public String getMobileNumber() {
+		return mobileNumber;
 	}
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
 	}
 	public String getSecPhoneNumber() {
 		return secPhoneNumber;
@@ -116,11 +117,12 @@ public class PatientCard {
 				+ ", lastName=" + lastName + ", middleName=" + middleName
 				+ ", userName=" + userName + ", emailAddress=" + emailAddress
 				+ ", imageUrl=" + imageUrl + ", bloodGroup=" + bloodGroup
-				+ ", PID=" + PID + ", gender=" + gender + ", phoneNumber="
-				+ phoneNumber + ", secPhoneNumber=" + secPhoneNumber + ", age="
-				+ age + ", count=" + count + ", dateOfVisit=" + dateOfVisit
-				+ "]";
+				+ ", PID=" + PID + ", gender=" + gender + ", mobileNumber="
+				+ mobileNumber + ", secPhoneNumber=" + secPhoneNumber
+				+ ", age=" + age + ", count=" + count + ", dateOfVisit="
+				+ dateOfVisit + "]";
 	}
+	
 	
 	
 	

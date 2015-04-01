@@ -88,7 +88,7 @@ public class SignUpServiceImpl implements SignUpService{
 		try {
 			UserCollection userCollection = userRepository.findOne(userId);
 			if(userCollection == null){
-				throw new BusinessException(ServiceError.NotVerified, "Invalid Url.");
+				throw new BusinessException(ServiceError.Unknown, "Invalid Url.");
 			}
 			userCollection.setIsActive(true);
 			userRepository.save(userCollection);
@@ -193,6 +193,12 @@ public class SignUpServiceImpl implements SignUpService{
 			//save user
 			UserCollection userCollection = new UserCollection();
 			BeanUtil.map(request, userCollection);
+			if(request.getImage() != null){
+				String path = "profile-pic";
+				//save image
+				String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(),path);
+				userCollection.setImageUrl(imageurl);
+			}
 			userCollection = userRepository.save(userCollection);
 
 			//assign roles

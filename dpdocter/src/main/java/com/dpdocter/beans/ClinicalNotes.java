@@ -16,7 +16,7 @@ public class ClinicalNotes {
 	
 	private Long createdDate;
 
-	private List<String> diagramUrls;
+	private List<String> diagrams;
 
 	private String notes;
 
@@ -65,15 +65,17 @@ public class ClinicalNotes {
 	public void setDiagnoses(String diagnoses) {
 		this.diagnoses = diagnoses;
 	}
+	
+	
 
-	public List<String> getDiagramUrls() {
-		return diagramUrls;
+
+	public List<String> getDiagrams() {
+		return diagrams;
 	}
 
-	public void setDiagramUrls(List<String> diagramUrls) {
-		this.diagramUrls = diagramUrls;
+	public void setDiagrams(List<String> diagrams) {
+		this.diagrams = diagrams;
 	}
-
 
 	public String getComplaints() {
 		return complaints;
@@ -120,7 +122,7 @@ public class ClinicalNotes {
 		return "ClinicalNotes [id=" + id + ", complaints=" + complaints
 				+ ", observation=" + observation + ", investigation="
 				+ investigation + ", diagnoses=" + diagnoses + ", createdDate="
-				+ createdDate + ", diagramUrls=" + diagramUrls + ", notes="
+				+ createdDate + ", diagrams=" + diagrams + ", notes="
 				+ notes + ", doctorId=" + doctorId + ", locationId="
 				+ locationId + ", hospitalId=" + hospitalId + "]";
 	}

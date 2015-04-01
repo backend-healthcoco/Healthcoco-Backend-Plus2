@@ -17,7 +17,7 @@ public class ClinicalNotesAddRequest {
 
 	private String diagnoses;
 
-	private List<FileDetails> diagrams;
+	private List<String> diagrams;
 
 	private String notes;
 
@@ -128,11 +128,13 @@ public class ClinicalNotesAddRequest {
 
 
 
-	public List<FileDetails> getDiagrams() {
+	
+
+	public List<String> getDiagrams() {
 		return diagrams;
 	}
 
-	public void setDiagrams(List<FileDetails> diagrams) {
+	public void setDiagrams(List<String> diagrams) {
 		this.diagrams = diagrams;
 	}
 

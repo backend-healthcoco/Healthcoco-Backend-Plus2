@@ -14,7 +14,7 @@ public interface RecordsService {
 	 void tagRecord(TagRecordRequest request);
 	 void changeReportLabel(String recordId,String label);
 	 List<Records> searchRecords(RecordsSearchRequest request);
-	 void emailRecordToPatient(String recordId);
+	 void emailRecordToPatient(String recordId,String emailAddr);
 	 
 	 Tags addEditTag(Tags tags);
 	 void deleteTag(String tagId);

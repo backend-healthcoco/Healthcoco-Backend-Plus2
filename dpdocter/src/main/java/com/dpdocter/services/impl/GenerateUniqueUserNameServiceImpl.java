@@ -26,10 +26,10 @@ public class GenerateUniqueUserNameServiceImpl implements
 		//UserCollection userCollection = userRepository.findByUserName(user.get)
 		String userName = null;
 		try {
-			userName = user.getMobileNumber() + user.getFirstName() + user.getLastName();
+			userName = user.getMobileNumber() + user.getFirstName().substring(0, 2);
 			List<UserCollection> userCollections = userRepository.findByFirstNameLastNameMobileNumber(user.getFirstName(), user.getLastName(), user.getMobileNumber());
-			if(userCollections != null){
-				userName = user.getMobileNumber() + user.getFirstName() + user.getLastName() + "0" + userCollections.size();
+			if(userCollections != null && userCollections.size() > 1){
+				userName = user.getMobileNumber() + user.getFirstName().substring(0, 2) + "0" + userCollections.size();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

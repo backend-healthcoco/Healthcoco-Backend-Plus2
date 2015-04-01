@@ -15,9 +15,15 @@ public class User {
 	private DOB dob;
 	private String secPhoneNumber;
 	private Boolean isPartOfClinic;
+	private String imageUrl;
 	
 	
-	
+	public String getImageUrl() {
+		return imageUrl;
+	}
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
 	public Boolean getIsPartOfClinic() {
 		return isPartOfClinic;
 	}

@@ -1,187 +1,557 @@
 package com.dpdocter.reflections;
 
-import java.lang.reflect.InvocationTargetException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.lang.reflect.ParameterizedType;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
-/**
- * This class can be used for reflection purpose. Both class should match the getter and setter.
- * @version 1.0
- */
 public class ReflectionUtil {
-	
-	/**
-	 * This method is used to copy one bean values to another bean.
-	 * @param toClazz Class object of Destination bean, which will be used to create class instance to copy values from passed object
-	 * @param from Origin bean from where to copy values
-	 * @param strictCopy boolean value denoting that copy should be in strict manner or not. If this is true then null values will also copied to destination bean from origin bean
-	 * @throws IllegalArgumentException If passed bean is null.
-	 * @throws InvocationTargetException If method access is denied
-	 * @throws InstantiationException If not able to create an instance of an passed toClass
-	 * @throws IllegalAccessException If access denied to access given class
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T copy(Class<T> toClazz, Object from, boolean strictCopy) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		if (toClazz == null)
-			throw new IllegalArgumentException("No destination bean specified");
-		Object to = toClazz.newInstance();
-		copy(to, from, strictCopy);
-		return (T)to;
-	}
-	
-	/**
-	 * This method is used to copy one bean values to another bean.
-	 * @param toClazz Class object of Destination bean, which will be used to create class instance to copy values from passed object
-	 * @param from Origin bean from where to copy values
-	 * @throws IllegalArgumentException If passed bean is null.
-	 * @throws InvocationTargetException If method access is denied
-	 * @throws InstantiationException If not able to create an instance of an passed toClass
-	 * @throws IllegalAccessException If access denied to access given class
-	 */
-	public static <T> T copy(Class<T> toClazz, Object from) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		return copy(toClazz, from, false);
-	}
+    public static <T> T copy(Class<T> clazz, Object from) {
+        return copy(clazz, from, false);
+    }
+    
+    @SuppressWarnings("unchecked")
+	public static <T> T copy(Class<T> clazz, Object from, boolean primeOnly) {
+        try {
+            Object to = clazz.newInstance();
+            copy(to, from, primeOnly);
+            return (T) to;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	/**
-	 * This method is used to copy one bean values to another bean.
-	 * @param to : Destination bean where values need to be copy from origin
-	 * @param from : Origin bean from where to copy values
-	 * @throws IllegalArgumentException If passed bean is null.
-	 * @throws InvocationTargetException If method access is denied
-	 */
-	public static void copy(final Object to, final Object from) throws IllegalArgumentException, InvocationTargetException {
-		copy(to, from, false);
-	}
-	
-	/**
-	 * This method is used to copy one bean values to another bean. 
-	 * @param to : Origin bean from where to copy values
-	 * @param from : Destination bean where values need to be copy from origin
-	 * @param strictCopy boolean value denoting that copy should be in strict manner or not. If this is true then null values will also copied to destination bean from origin bean
-	 * @throws IllegalArgumentException If passed bean is null.
-	 * @throws InvocationTargetException If method access is denied
-	 */
-	synchronized public static void copy(final Object to, final Object from, boolean strictCopy) throws IllegalArgumentException, InvocationTargetException{
-		// long t1 = System.currentTimeMillis();
-		// System.out.println("Time Sarted : " + t1);
-		// Validate existence of the specified beans
-		if (to == null) {
-			throw new IllegalArgumentException("No destination bean specified");
-		}
-		if (from == null) {
-			throw new IllegalArgumentException("No origin bean specified");
-		}
-		try {
-			Class<? extends Object> toClass = to.getClass();
-			Method[] toMethods = toClass.getMethods();
-			Set<Method> toMethodsList = new LinkedHashSet<Method>(Arrays.asList(toMethods));
+    public static void copy(final Object to, final Object from) {
+        copy(to, from, false);
+    }
 
-			Class<? extends Object> fromClass = from.getClass();
-			Method[] fromMethods = fromClass.getMethods();
-			Set<Method> fromMethodsList = new LinkedHashSet<Method>(Arrays.asList(fromMethods));
-			
-			Iterator<Method> fromMethodsIterator = fromMethodsList.iterator();
-			while(fromMethodsIterator.hasNext()) {
-				Method fromMethod = fromMethodsIterator.next();
-				boolean isBoolean = false;
-				Class<?> returnType = fromMethod.getReturnType();
-				if(fromMethod.getName().startsWith("is") && boolean.class.equals(returnType)) {
-					isBoolean = true;
-				} 
-				if (isGetter(fromMethod, isBoolean)) {
-					Object value = null;
-					try {
-						value = fromMethod.invoke(from);
-					} catch (Exception e) {
-						throw new InvocationTargetException(e, "Getter method cannot have any parameter. Error on method : " + fromMethod.getName());
-					}
-					if(strictCopy){
-						setValues(returnType, value, fromMethod, to, toMethodsList, isBoolean);
-					} else {
-						if(value != null) {
-							setValues(returnType, value, fromMethod, to, toMethodsList, isBoolean);
-						}
-					}
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			
-		}
-		// long t2 = System.currentTimeMillis();
-		// System.out.println("Time completed : " + t2);
-		// System.out.println("Total Time completed : " + (t2 - t1));
-	}
+    public static void copy(final Object to, final Object from,
+            final boolean primeOnly) {
+        if ((from == null) || (to == null)) {
+            return;
+        }
+        try {
+            iterateFields(to, new FieldFoundCallback() {
+                public void field(Object o, Field field) throws Exception {
+                    Class<?> fieldType = field.getType();
+                    if (!isPrimeType(fieldType) && primeOnly) {
+                        return;
+                    }
+                    Method setter = getSetter(to.getClass(), field.getName(),
+                            fieldType);
+                    Method getter = getGetter(from.getClass(), field.getName(), fieldType);
+                    if (setter == null || getter == null) {
+                        return;
+                    }
+                    Object fromFieldValue = getter.invoke(from, null);
+                    if (isPrimeType(fieldType)) {
+                        setter.invoke(to, fromFieldValue);
+                    } else {
+                        Object toFieldValue = copy(fieldType, fromFieldValue,
+                                primeOnly);
+                        setter.invoke(to, toFieldValue);
+                    }
+                }
+            });
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	/**
-	 * This method is used to check method is getter or not.
-	 * @param method Method which needs to be check
-	 * @param isBoolean If the given method is primitive boolean type because getter for it starts with "is".
-	 * @return true is method is getter
-	 */
-	public static boolean isGetter(Method method, boolean isBoolean) {
-		if(isBoolean && !method.getName().startsWith("is"))
-			return false;
-		if (!isBoolean && !method.getName().startsWith("get"))
-			return false;
-		if (method.getParameterTypes().length != 0)
-			return false;
-		if (void.class.equals(method.getReturnType()))
-			return false;
-		return true;
-	}
+    public static void iterateClassTree(Class<?> clazz, ClassCallback callback)
+            throws Exception {
+        while (true) {
+            if (clazz == null || clazz.equals(Object.class)) {
+                break;
+            }
+            callback.classFound(clazz);
+            clazz = clazz.getSuperclass();
+        }
+    }
 
-	/**
-	 * This method is used to check method is setter or not.
-	 * @param method Method which needs to be check
-	 * @return true is method is setter
-	 */
-	public static boolean isSetter(Method method) {
-		if (!method.getName().startsWith("set"))
-			return false;
-		if (method.getParameterTypes().length != 1)
-			return false;
-		return true;
-	}
+    public static void iterateFields(final Object o,
+            final FieldFoundCallback callback) throws Exception {
+        iterateFields(o.getClass(), o, callback);
+    }
 
-	/**
-	 * This method set the values to destination bean
-	 * @param returnType Return type of from class method
-	 * @param value value of from class getter method to be copied to destination
-	 * @param fromMethod method of from class
-	 * @param to destination class object
-	 * @param toMethodsList set of to class all methods
-	 * @param isBoolean method return type is boolean or not
-	 * @throws IllegalArgumentException If passed bean is null.
-	 * @throws InvocationTargetException If method access is denied
-	 * @throws IllegalAccessException If access denied to access given class
-	 */
-	public static void setValues(Class<?> returnType, Object value, final Method fromMethod, final Object to, Set<Method> toMethodsList, boolean isBoolean) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException{
-		if(!returnType.isPrimitive()) {
-			fromMethod.getReturnType().cast(value);
-		} 
-		Iterator<Method> toMethodsIterator = toMethodsList.iterator();
-		while (toMethodsIterator.hasNext()) {
-			Method toMethod = (Method) toMethodsIterator.next();
-			if (isSetter(toMethod)) {
-				int fromSubstringIndex = 3; 
-				if(isBoolean)
-					fromSubstringIndex = 2;
-				if(toMethod.getName().substring(3).equals(fromMethod.getName().substring(fromSubstringIndex))) {
-					try {
-						toMethod.invoke(to, value);
-					} catch (Exception e) {
-						throw new InvocationTargetException(e, "Data type mismatched or access specifier is wrong. Error on method: TO method = " + toMethod.getName() + " FROM method = " + fromMethod.getName());
-					}
-					toMethodsList.remove(toMethod);
-					break;
-				}
-			}
-		}
-	}
-	
+    public static void iterateFields(final Class<?> clazz, final Object o,
+            final FieldFoundCallback callback) throws Exception {
+        iterateClassTree(clazz, new ClassCallback() {
+            public void classFound(Class<?> cls) throws Exception {
+                for (Field field : cls.getDeclaredFields()) {
+                    callback.field(o, field);
+                }
+            }
+        });
+    }
+
+    public static void iterateMethods(final Object o,
+            final MethodFoundCallback callback) throws Exception {
+        iterateMethods(o.getClass(), o, callback);
+    }
+
+    private static void iterateMethods(final Class<?> clazz, final Object o,
+            final MethodFoundCallback callback) throws Exception {
+        iterateClassTree(clazz, new ClassCallback() {
+            public void classFound(Class<?> cls) {
+                for (Method method : cls.getDeclaredMethods()) {
+                    callback.method(o, method);
+                }
+            }
+        });
+    }
+
+    public static void iterateAnnotation(final Object o,
+            final Class<?> annoClass, final AnnotationFoundCallback callback)
+            throws Exception {
+        iterateAnnotatedFields(o, annoClass, callback);
+        iterateAnnotatedMethods(o, annoClass, callback);
+    }
+
+    public static void iterateAnnotatedFields(final Object o,
+            final Class<?> annoClass, final AnnotatedFieldCallback callback)
+            throws Exception {
+        iterateAnnotatedFields(o.getClass(), o, annoClass, callback);
+    }
+
+    public static void iterateAnnotatedMethods(final Object o,
+            final Class<?> annoClass, final AnnotatedMethodCallback callback)
+            throws Exception {
+        iterateAnnotatedMethods(o.getClass(), o, annoClass, callback);
+    }
+
+    public static void iterateAnnotatedFields(final Object o,
+            final Class<?> annoClass, final Class<?> fieldType,
+            final AnnotatedFieldCallback callback) throws Exception {
+        iterateAnnotatedFields(o.getClass(), o, annoClass, fieldType, callback);
+    }
+
+    public static void iterateAnnotatedFields(final Class<?> clazz,
+            final Object o, final Class<?> annoClass,
+            final AnnotatedFieldCallback callback) throws Exception {
+        iterateClassTree(clazz, new ClassCallback() {
+            public void classFound(Class<?> cls) throws Exception {
+                for (Field field : cls.getDeclaredFields()) {
+                    for (Annotation fieldAnnot : field.getAnnotations()) {
+                        if (fieldAnnot.annotationType().equals(annoClass)) {
+                            callback.field(o, field);
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    private static void iterateAnnotatedFields(final Class<?> clazz,
+            final Object o, final Class<?> annoClass, final Class<?> fieldType,
+            final AnnotatedFieldCallback callback) throws Exception {
+        iterateClassTree(clazz, new ClassCallback() {
+            public void classFound(Class<?> cls) throws Exception {
+                for (Field field : cls.getDeclaredFields()) {
+                    Class<?> type = field.getType();
+                    if (!fieldType.isAssignableFrom(type)) {
+                        continue;
+                    }
+                    for (Annotation fieldAnnot : field.getAnnotations()) {
+                        if (!fieldAnnot.equals(annoClass)) {
+                            continue;
+                        }
+                    }
+                    callback.field(o, field);
+                }
+            }
+        });
+    }
+
+    private static void iterateAnnotatedMethods(final Class<?> clazz,
+            final Object o, final Class<?> annoClass,
+            final AnnotatedMethodCallback callback) throws Exception {
+        iterateClassTree(clazz, new ClassCallback() {
+            public void classFound(Class<?> cls) throws Exception {
+                for (Method method : cls.getDeclaredMethods()) {
+                    for (Annotation methodAnnot : method.getAnnotations()) {
+                        if (methodAnnot.annotationType().equals(annoClass)) {
+                            callback.method(o, method);
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    public static void setAnnotatedFields(final Object o,
+            final Class<?> annoClass, final Object fieldValue) throws Exception {
+        iterateAnnotatedFields(o, annoClass, new AnnotatedFieldCallback() {
+            public void field(Object obj, Field field)
+                    throws IllegalArgumentException, IllegalAccessException {
+                field.setAccessible(true);
+                field.set(obj, fieldValue);
+            }
+        });
+    }
+
+    public static void setAnnotatedFields(final Object o,
+            final Class<?> annoClass, final Class<?> fieldType,
+            final Object fieldValue) throws Exception {
+        iterateAnnotatedFields(o, annoClass, fieldType,
+                new AnnotatedFieldCallback() {
+                    public void field(Object obj, Field field)
+                            throws IllegalArgumentException,
+                            IllegalAccessException {
+                        field.setAccessible(true);
+                        field.set(obj, fieldValue);
+                    }
+                });
+    }
+
+    @SuppressWarnings("rawtypes")
+	public static Class getParameterizedType(Class clazz) {
+        return getParameterizedType(clazz, 0);
+    }
+
+    public static Class getParameterizedType(Class clazz, int index) {
+        ParameterizedType s = (ParameterizedType) clazz.getGenericSuperclass();
+        return (Class) s.getActualTypeArguments()[index];
+    }
+
+    public static Class getFieldGenericType(Class c, String fieldName)
+            throws Exception {
+        Field f = c.getDeclaredField(fieldName);
+        return getFieldGenericType(f);
+    }
+
+    public static Class getFieldGenericType(Field f) throws Exception {
+        ParameterizedType gt = (ParameterizedType) f.getGenericType();
+        return (Class) gt.getActualTypeArguments()[0];
+    }
+
+    public static Class getFieldGenericType(Field f, int index) throws Exception {
+        ParameterizedType gt = (ParameterizedType) f.getGenericType();
+        return (Class) gt.getActualTypeArguments()[index];
+    }
+
+    public static Method getMethod(Class cls, final String name,
+            final Class<?>... parmTypes) throws Exception {
+        final ArrayList<Method> holder = new ArrayList<Method>();
+        iterateClassTree(cls, new ClassCallback() {
+
+            public void classFound(Class<?> clazz) throws Exception {
+                try {
+                    Method method = clazz.getMethod(name, parmTypes);
+                    holder.add(method);
+                } catch (Exception e) {
+                    // don't remove try...catch
+                }
+            }
+        });
+
+        if (holder.size() == 0) {
+            return null;
+        }
+        return holder.get(0);
+    }
+
+    public static boolean annotatedWith(Method method, Class annoCls) {
+        try {
+            Annotation annotation = method.getAnnotation(annoCls);
+            return annotation != null;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean annotatedWith(Field field, Class annoCls) {
+        try {
+            Annotation annotation = field.getAnnotation(annoCls);
+            return annotation != null;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean annotatedWith(Class<?> target, Class annoCls) {
+        try {
+            Annotation annotation = target.getAnnotation(annoCls);
+            return annotation != null;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static Annotation getAnnotation(Class<?> target, Class annoCls) {
+        try {
+            Annotation annotation = target.getAnnotation(annoCls);
+            return annotation;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static Field getField(Class clazz, final String fieldName)
+            throws Exception {
+        final ArrayList<Field> holder = new ArrayList<Field>();
+        iterateClassTree(clazz, new ClassCallback() {
+
+            public void classFound(Class<?> clazz) throws Exception {
+                try {
+                    Field field = clazz.getDeclaredField(fieldName);
+                    holder.add(field);
+                } catch (Exception e) {
+                    // don't remove this try...catch block.
+                }
+            }
+        });
+        if (holder.size() == 0) {
+            return null;
+        }
+        return holder.get(0);
+    }
+
+    public static Method getMethod(Class clazz, final String methodName,
+            final Class<?> parameterTypes) throws Exception {
+        final ArrayList<Method> holder = new ArrayList<Method>();
+        iterateClassTree(clazz, new ClassCallback() {
+            public void classFound(Class<?> clazz) throws Exception {
+                try {
+                    Method method = clazz.getDeclaredMethod(methodName,
+                            parameterTypes);
+                    holder.add(method);
+                } catch (Exception e) {
+                    // don't remove this try...catch block.
+                }
+            }
+        });
+        if (holder.size() == 0) {
+            return null;
+        }
+        return holder.get(0);
+    }
+
+    public static Method getSetter(Class clazz, final String fieldName,
+            final Class<?> fieldType) throws Exception {
+        final String methodName = "set"
+                + fieldName.substring(0, 1).toUpperCase()
+                + fieldName.substring(1);
+        return getMethod(clazz, methodName, fieldType);
+    }
+
+    public static Method getGetter(Class clazz, final String fieldName, final Class<?> fieldType)
+            throws Exception {
+        String prefix = boolean.class.equals(fieldType) ? "is" : "get";
+        
+        String methodName = prefix + fieldName.substring(0, 1).toUpperCase()
+                + fieldName.substring(1);
+        return getMethod(clazz, methodName, new Class<?>[0]);
+    }
+
+    public static void setField(Object target, String fieldName,
+            Object fieldValue) throws Exception {
+        Field field = getField(target.getClass(), fieldName);
+        field.setAccessible(true);
+        field.set(target, fieldValue);
+    }
+
+    public static void callSetter(Object target, String fieldName,
+            Object fieldValue) throws Exception {
+        Method setter = getSetter(target.getClass(), fieldName,
+                fieldValue.getClass());
+        setter.invoke(target, fieldValue);
+    }
+
+    public static void callSetter(Object target, String fieldName,
+            Object fieldValue, Class<?> fieldType) throws Exception {
+        Method setter = getSetter(target.getClass(), fieldName, fieldType);
+        setter.invoke(target, fieldValue);
+    }
+
+    public static void callSetter(Object target, String fieldName,
+            String fieldValue) throws Exception {
+        Field field = getField(target.getClass(), fieldName);
+        if (field == null) {
+            return;
+        }
+        Class<?> fieldType = field.getType();
+        if (isPrimeType(fieldType)) {
+            Object value = convert(fieldValue, fieldType);
+            callSetter(target, fieldName, value, fieldType);
+        } else if (fieldType.isEnum()) {
+            for (Object o : fieldType.getEnumConstants()) {
+                Enum<?> c = (Enum<?>) o;
+                if (c.name().equals(fieldValue)) {
+                    callSetter(target, fieldName, c);
+                }
+            }
+        } else {
+            Method fromString = fieldType.getDeclaredMethod("fromString",
+                    String.class);
+            Object value = fromString.invoke(fieldType.newInstance(),
+                    fieldValue);
+            callSetter(target, fieldName, value);
+        }
+    }
+
+    public static Object callGetter(Object target, String fieldName)
+            throws Exception {
+        Class<?> type = target.getClass().getDeclaredField(fieldName).getType();
+        Method getter = getGetter(target.getClass(), fieldName, type);
+        return getter.invoke(target, new Object[0]);
+    }
+
+    public static boolean isPrimeField(Field field) {
+        return isPrimeType(field.getType());
+    }
+
+    public static boolean isPrimeType(Class type) {
+        if (type.equals(String.class)) {
+            return true;
+        }
+        if (type.equals(Integer.class) || type.equals(int.class)) {
+            return true;
+        }
+        if (type.equals(Float.class) || type.equals(float.class)) {
+            return true;
+        }
+        if (type.equals(Double.class) || type.equals(double.class)) {
+            return true;
+        }
+        if (type.equals(Long.class) || type.equals(long.class)) {
+            return true;
+        }
+        if (type.equals(Boolean.class) || type.equals(boolean.class)) {
+            return true;
+        }
+        if (type.equals(Date.class)) {
+            return true;
+        }
+        if (type.equals(Calendar.class)) {
+            return true;
+        }
+        if (type.equals(BigInteger.class)) {
+            return true;
+        }
+        if (type.equals(BigDecimal.class)) {
+            return true;
+        }
+        if(type.isEnum()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static Object convert(String value, Class toType) throws Exception {
+        if (value == null) {
+            return null;
+        }
+        if (toType.equals(String.class)) {
+            return value;
+        }
+        if (toType.equals(Integer.class) || toType.equals(int.class)) {
+            return Integer.parseInt(value);
+        }
+        if (toType.equals(Float.class) || toType.equals(float.class)) {
+            return Float.parseFloat(value);
+        }
+        if (toType.equals(Double.class) || toType.equals(double.class)) {
+            return Double.parseDouble(value);
+        }
+        if (toType.equals(Long.class) || toType.equals(long.class)) {
+            return Long.parseLong(value);
+        }
+        if (toType.equals(BigInteger.class)) {
+            return new BigInteger(value);
+        }
+        if (toType.equals(BigDecimal.class)) {
+            return new BigDecimal(value);
+        }
+        if (toType.equals(Boolean.class) || toType.equals(boolean.class)) {
+            value = value.toLowerCase();
+            if (value.equals("1") || value.startsWith("t")
+                    || value.startsWith("y") || value.equalsIgnoreCase("on")) {
+                return Boolean.TRUE;
+            } else {
+                return Boolean.FALSE;
+            }
+        }
+        if (toType.equals(Date.class)) {
+            try {
+                Long millisecond = Long.parseLong(value);
+                if(millisecond == 0)
+                    return null;
+                return new Date(millisecond);
+            } catch (Exception e) {
+                SimpleDateFormat sdf = getIso8601DateFormat();
+                return sdf.parse(value);
+            }
+        }
+        if (toType.equals(Calendar.class)) {
+            Long millisecond = Long.parseLong(value);
+            if(millisecond == 0)
+                return null;
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeInMillis(millisecond);
+            return cal;
+        }
+        if (toType.isEnum()) {
+            for (Object e : toType.getEnumConstants()) {
+                if (e.toString().equals(value))
+                    return e;
+            }
+        }
+        throw new Exception("Unhandled data type: " + toType);
+    }
+
+    public static SimpleDateFormat getIso8601DateFormat() {
+        final SimpleDateFormat ISO8601UTC = new SimpleDateFormat(
+                "yyyy-MM-dd'T'HH:mm:ss.SSSZ");// 24
+        // characters
+        ISO8601UTC.setTimeZone(TimeZone.getTimeZone("UTC")); // UTC == GMT
+        return ISO8601UTC;
+    }
+
+    public static boolean isPrimeType(Object item) {
+        return isPrimeType(item.getClass());
+    }
+
+    public static void setFieldValue(Object target, Field field, Object value) {
+        try {
+            field.setAccessible(true);
+            if(value == null) {
+                field.set(target, null);
+            }
+            else if(field.getType().isAssignableFrom(value.getClass())) {
+                field.set(target, value);
+            }
+            else if (isPrimeField(field)){
+                Object convert = convert(value.toString(), field.getType());
+                field.set(target, convert);
+            }
+            else {
+                throw new Exception("cannot set field value " + field.getName() + " for " + target.getClass());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public static String primeString(Object primeObject) {
+        if(primeObject == null)
+            return null;
+        if(primeObject instanceof Date) {
+            return getIso8601DateFormat().format((Date)primeObject);
+        }
+        if(primeObject instanceof Calendar) {
+            return getIso8601DateFormat().format(((Calendar)primeObject).getTime());
+        }
+        return primeObject.toString();
+    }
 }

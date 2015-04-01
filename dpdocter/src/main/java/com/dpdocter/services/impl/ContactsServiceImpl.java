@@ -26,6 +26,7 @@ import com.dpdocter.collections.UserCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.reflections.ReflectionUtil;
 import com.dpdocter.repository.DoctorContactsRepository;
 import com.dpdocter.repository.GroupRepository;
 import com.dpdocter.repository.PatientAdmissionRepository;
@@ -86,7 +87,8 @@ public class ContactsServiceImpl implements ContactsService {
 	private List<PatientCard> getSpecifiedPatientCards(Collection<String> patientIds,String doctorId,String locationId,String hospitalId)throws Exception{
 		//getting patients from patient ids
 		Query queryForGettingPatientsFromPatientIds = new Query();
-		queryForGettingPatientsFromPatientIds.addCriteria(Criteria.where("id").in(patientIds).andOperator(Criteria.where("doctorId").is(doctorId)).andOperator(Criteria.where("locationId").is(locationId)).andOperator(Criteria.where("hospitalId").is(hospitalId)));
+		//queryForGettingPatientsFromPatientIds.addCriteria(Criteria.where("id").in(patientIds).andOperator(Criteria.where("doctorId").is(doctorId)).andOperator(Criteria.where("locationId").is(locationId)).andOperator(Criteria.where("hospitalId").is(hospitalId)));
+		queryForGettingPatientsFromPatientIds.addCriteria(Criteria.where("id").in(patientIds).andOperator(Criteria.where("doctorId").is(doctorId),Criteria.where("locationId").is(locationId),Criteria.where("hospitalId").is(hospitalId)));
 		List<PatientCollection> patientCollections = mongoTemplate.find(queryForGettingPatientsFromPatientIds, PatientCollection.class);
 		List<PatientCard> patientCards = new ArrayList<PatientCard>();
 		for(PatientCollection patientCollection : patientCollections){
@@ -263,7 +265,11 @@ public class ContactsServiceImpl implements ContactsService {
 			List<GroupCollection> groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId);
 			if(groupCollections != null){
 				groups = new ArrayList<Group>();
-				BeanUtil.map(groupCollections, groups);
+				for(GroupCollection groupCollection : groupCollections){
+					Group group = new Group();
+					ReflectionUtil.copy(group, groupCollection);
+					groups.add(group);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

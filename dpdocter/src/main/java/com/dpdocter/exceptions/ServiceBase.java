@@ -135,7 +135,7 @@ public class ServiceBase {
 		} catch (BusinessException e) {
 			throw e;
 		} catch (Throwable t) {
-			throw new BusinessException(ServiceError.Unknown, t.getMessage());
+			throw new BusinessException(ServiceError.InvalidInput, t.getMessage());
 		} finally {
 			if (response != null) {
 				try {
@@ -175,7 +175,7 @@ public class ServiceBase {
 		} catch (BusinessException e) {
 			throw e;
 		} catch (Throwable t) {
-			throw new BusinessException(ServiceError.Unknown, t.getMessage());
+			throw new BusinessException(ServiceError.InvalidInput, t.getMessage());
 		} finally {
 			if (response != null) {
 				try {
@@ -225,7 +225,7 @@ public class ServiceBase {
 			if (response.getEntity() != null)
 				errMsg = EntityUtils.toString(response.getEntity(), "UTF-8");
 			if (err == null) {
-				err = ServiceError.Unknown;
+				err = ServiceError.InvalidInput;
 			}
 			throw new BusinessException(err, errMsg);
 		}

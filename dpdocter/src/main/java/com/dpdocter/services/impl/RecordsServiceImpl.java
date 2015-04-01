@@ -20,6 +20,7 @@ import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.RecordsCollection;
 import com.dpdocter.collections.RecordsTagsCollection;
 import com.dpdocter.collections.TagsCollection;
+import com.dpdocter.collections.UserCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -27,6 +28,7 @@ import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.RecordsRepository;
 import com.dpdocter.repository.RecordsTagsRepository;
 import com.dpdocter.repository.TagsRepository;
+import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.RecordsAddRequest;
 import com.dpdocter.request.RecordsSearchRequest;
 import com.dpdocter.request.TagRecordRequest;
@@ -52,6 +54,9 @@ public class RecordsServiceImpl implements RecordsService {
 	
 	@Autowired
 	private MailService mailService;
+	
+	@Autowired
+	private UserRepository userRepository;
 
 
 	@Value(value = "${IMAGE_RESOURCE}")
@@ -70,7 +75,7 @@ public class RecordsServiceImpl implements RecordsService {
 			//save records
 			RecordsCollection recordsCollection = new RecordsCollection();
 			BeanUtil.map(request, recordsCollection);
-			recordsCollection.setrecordsUrl(recordUrl);
+			recordsCollection.setRecordsUrl(recordUrl);
 			recordsCollection.setRecordsPath(recordPath);
 			recordsCollection.setRecordsLable(getFileNameFromImageURL(recordUrl));
 			recordsCollection = recordsRepository.save(recordsCollection);
@@ -86,20 +91,16 @@ public class RecordsServiceImpl implements RecordsService {
 	}
 	
 	@Override
-	public void emailRecordToPatient(String recordId) {
+	public void emailRecordToPatient(String recordId,String emailAddr) {
 		try {
 			RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
 			if(recordsCollection != null){
-				PatientCollection patientCollection = 
-						patientRepository.findOne(recordsCollection.getPatientId());
-				if(patientCollection != null){
-					String emailAddress = patientCollection.getEmailAddress();
 					FileSystemResource file = new FileSystemResource(recordsCollection.getRecordsPath());
 					MailAttachment mailAttachment = new MailAttachment();
 					mailAttachment.setAttachmentName(recordsCollection.getRecordsLable());
 					mailAttachment.setFileSystemResource(file);
-					mailService.sendEmail(emailAddress, "Records", "PFA.", mailAttachment);
-				}
+					mailService.sendEmail(emailAddr, "Records", "PFA.", mailAttachment);
+				
 			}else{
 				throw new BusinessException(ServiceError.Unknown,"Record not found.Please check recordId.");
 			}
@@ -115,7 +116,7 @@ public class RecordsServiceImpl implements RecordsService {
 	
 	private String getFileNameFromImageURL(String url){
 		String arr [] = url.split("/");
-		String imageName =  arr[arr.length];
+		String imageName =  arr[arr.length - 1];
 		imageName = imageName.substring(0, imageName.lastIndexOf("."));
 		return imageName;
 	}
@@ -154,8 +155,13 @@ public class RecordsServiceImpl implements RecordsService {
 	public void changeReportLabel(String recordId,String label) {
 		try {
 			RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
+			if(recordsCollection == null){
+				throw new BusinessException(ServiceError.Unknown, "Record not found.Check RecordId !");
+			}
 			recordsCollection.setRecordsLable(label);
 			recordsRepository.save(recordsCollection);
+		}catch (BusinessException e) {
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -177,7 +183,7 @@ public class RecordsServiceImpl implements RecordsService {
 				records = new ArrayList<Records>();
 				BeanUtil.map(recordsCollections, records);
 			}else{
-				List<RecordsCollection> recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(),request.getLocationId(),request.getHospitalId(),false);
+				List<RecordsCollection> recordsCollections = recordsRepository.findRecords(request.getDoctorId(),request.getLocationId(),request.getHospitalId(),false);
 				records = new ArrayList<Records>();
 				BeanUtil.map(recordsCollections, records);
 			}
@@ -235,20 +241,22 @@ public class RecordsServiceImpl implements RecordsService {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
-		return null;
+		return tags;
 	}
 
 	@Override
 	public String getPatientEmailAddress(String patientId) {
 		String emailAddress = null;
 		try {
-			PatientCollection patientCollection = 
-					patientRepository.findOne(patientId);
-			if(patientCollection != null){
-				emailAddress = patientCollection.getEmailAddress();
-			}else{
-				throw new BusinessException(ServiceError.Unknown, "Invalid PatientId");
-			}
+				PatientCollection patientCollection = 
+						patientRepository.findByUserId(patientId);
+				if(patientCollection != null){
+					emailAddress = patientCollection.getEmailAddress();
+				}else{
+					throw new BusinessException(ServiceError.Unknown, "Invalid PatientId");
+				}
+			
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -279,9 +287,15 @@ public class RecordsServiceImpl implements RecordsService {
 	public void deleteRecord(String recordId) {
 		try {
 			RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
+			if(recordsCollection == null){
+				throw new BusinessException(ServiceError.Unknown,"Record Not found.Check RecordId");
+			}
 			recordsCollection.setDeleted(true);
 			recordsRepository.save(recordsCollection);
-		} catch (Exception e) {
+		}catch (BusinessException e) {
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		} 
+		catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}

@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 import com.dpdocter.collections.RecordsCollection;
 @Repository
 public interface RecordsRepository extends MongoRepository<RecordsCollection, String>,PagingAndSortingRepository<RecordsCollection, String>{
-	@Query("{'patientId':?0,'doctorId':?1,'locationId':?2,'hospitalId':?3,'isDeleted':?4}")
-	List<RecordsCollection> findRecords(String patientId,String doctorId,String locationId,String hospitalId,boolean isDeleted);
+	@Query("{'doctorId':?0,'locationId':?1,'hospitalId':?2,'isDeleted':?3}")
+	List<RecordsCollection> findRecords(String doctorId,String locationId,String hospitalId,boolean isDeleted);
 }

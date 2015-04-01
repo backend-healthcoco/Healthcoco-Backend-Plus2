@@ -25,6 +25,9 @@ public class ClinicalNotesCollection {
 	private String diagnoses;
 	
 	@Field
+	private String complaints;
+	
+	@Field
 	private List<String> diagrams;
 	
 	@Field
@@ -51,16 +54,6 @@ public class ClinicalNotesCollection {
 
 	public void setId(String id) {
 		this.id = id;
-	}
-
-	
-
-	public List<String> getDiagramsPaths() {
-		return diagramsPaths;
-	}
-
-	public void setDiagramsPaths(List<String> diagramsPaths) {
-		this.diagramsPaths = diagramsPaths;
 	}
 
 	public String getNotes() {
@@ -95,6 +88,29 @@ public class ClinicalNotesCollection {
 		this.diagnoses = diagnoses;
 	}
 
+	public String getComplaints() {
+		return complaints;
+	}
+
+	public void setComplaints(String complaints) {
+		this.complaints = complaints;
+	}
+
+	public List<String> getDiagrams() {
+		return diagrams;
+	}
+
+	public void setDiagrams(List<String> diagrams) {
+		this.diagrams = diagrams;
+	}
+
+	public List<String> getDiagramsPaths() {
+		return diagramsPaths;
+	}
+
+	public void setDiagramsPaths(List<String> diagramsPaths) {
+		this.diagramsPaths = diagramsPaths;
+	}
 
 	public String getComments() {
 		return comments;
@@ -127,7 +143,6 @@ public class ClinicalNotesCollection {
 	public void setHospitalId(String hospitalId) {
 		this.hospitalId = hospitalId;
 	}
-	
 
 	public Long getCreatedDate() {
 		return createdDate;
@@ -137,26 +152,19 @@ public class ClinicalNotesCollection {
 		this.createdDate = createdDate;
 	}
 
-
-	public List<String> getDiagrams() {
-		return diagrams;
-	}
-
-	public void setDiagrams(List<String> diagrams) {
-		this.diagrams = diagrams;
-	}
-
 	@Override
 	public String toString() {
 		return "ClinicalNotesCollection [id=" + id + ", notes=" + notes
 				+ ", observation=" + observation + ", investigation="
-				+ investigation + ", diagnoses=" + diagnoses + ", diagrams="
-				+ diagrams + ", diagramsPaths=" + diagramsPaths + ", comments="
-				+ comments + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", createdDate="
-				+ createdDate + "]";
+				+ investigation + ", diagnoses=" + diagnoses + ", complaints="
+				+ complaints + ", diagrams=" + diagrams + ", diagramsPaths="
+				+ diagramsPaths + ", comments=" + comments + ", doctorId="
+				+ doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", createdDate=" + createdDate + "]";
 	}
 
+
+	
 	
 	
 }

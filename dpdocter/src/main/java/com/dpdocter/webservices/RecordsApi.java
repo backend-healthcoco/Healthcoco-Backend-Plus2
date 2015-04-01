@@ -43,7 +43,7 @@ public class RecordsApi {
 		Records records = recordsService.addRecord(request);
 		Response<Records> response = new Response<Records>();
 		response.setData(records);
-		return null;
+		return response;
 	}
 	
 	@Path(value=PathProxy.RecordsUrls.TAG_RECORD)
@@ -119,8 +119,9 @@ public class RecordsApi {
 	@Path(value=PathProxy.RecordsUrls.EMAIL_RECORD)
 	@GET
 	public Response<Boolean> emailRecords(
-			@PathParam("recordId")String recordId){
-		recordsService.emailRecordToPatient(recordId);
+			@PathParam("recordId")String recordId,
+			@PathParam("emailAddress")String emailAddress){
+		recordsService.emailRecordToPatient(recordId,emailAddress);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(true);
 		return response;

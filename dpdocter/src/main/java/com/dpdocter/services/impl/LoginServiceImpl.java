@@ -70,7 +70,7 @@ public class LoginServiceImpl implements LoginService {
 			if(userCollection == null){
 				userCollection = userRepository.findByEmailAddressAndPass(request.getUsername(), request.getPassword());
 				if(userCollection == null){
-					throw new BusinessException(ServiceError.NotVerified, "Invalid username and Password");
+					throw new BusinessException(ServiceError.Unknown, "Invalid username and Password");
 				}
 				
 			}
