@@ -1,7 +1,6 @@
 package com.dpdocter.webservices;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -12,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.request.ForgotPasswordRequest;
+import com.dpdocter.request.ForgotUsernamePasswordRequest;
 import com.dpdocter.request.ResetPasswordRequest;
 import com.dpdocter.services.ForgotPasswordService;
 import common.util.web.Response;
@@ -28,11 +27,11 @@ public class ForgotPasswordApi {
 
 	@Path(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD)
 	@POST
-	public Response<String> forgotPassword(ForgotPasswordRequest request) {
+	public Response<String> forgotPassword(ForgotUsernamePasswordRequest request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		forgotPasswordService.forgotPassword(request);
+		forgotPasswordService.forgotPasswordForDoctor(request);
 		Response<String> response = new Response<String>();
 		response.setData("RESET YOUR PASSWORD FROM EMAIL ADDRESS");
 		return response;
@@ -52,7 +51,7 @@ public class ForgotPasswordApi {
 
 	@Path(value = PathProxy.ForgotPasswordUrls.FORGOT_USERNAME)
 	@POST
-	public void forgotUsername(ForgotPasswordRequest request) {
+	public void forgotUsername(ForgotUsernamePasswordRequest request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}

@@ -1,13 +1,21 @@
 package com.dpdocter.services;
 
-import com.dpdocter.request.ForgotPasswordRequest;
+import java.util.List;
+
+import com.dpdocter.request.ForgotUsernamePasswordRequest;
 import com.dpdocter.request.ResetPasswordRequest;
 import com.dpdocter.response.ForgotPasswordResponse;
 
 public interface ForgotPasswordService {
-	ForgotPasswordResponse forgotPassword(ForgotPasswordRequest request);
+	ForgotPasswordResponse forgotPasswordForDoctor(ForgotUsernamePasswordRequest request);
+	
+	ForgotPasswordResponse forgotPasswordForPatient(ForgotUsernamePasswordRequest request);
 
 	void resetPassword(ResetPasswordRequest request);
 
-	void forgotUsername(ForgotPasswordRequest request);
+	void forgotUsername(ForgotUsernamePasswordRequest request);
+	
+	List<ForgotPasswordResponse> getEmailAndMobNumberOfPatient(String username);
+	
+	
 }

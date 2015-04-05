@@ -1,6 +1,6 @@
 package com.dpdocter.request;
 
-public class ForgotPasswordRequest {
+public class ForgotUsernamePasswordRequest {
 	private String username;
 	private String phoneNumber;
 	private String emailAddress;

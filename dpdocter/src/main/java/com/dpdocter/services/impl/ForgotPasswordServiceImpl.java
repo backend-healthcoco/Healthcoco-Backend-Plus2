@@ -11,7 +11,7 @@ import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.repository.UserRepository;
-import com.dpdocter.request.ForgotPasswordRequest;
+import com.dpdocter.request.ForgotUsernamePasswordRequest;
 import com.dpdocter.request.ResetPasswordRequest;
 import com.dpdocter.response.ForgotPasswordResponse;
 import com.dpdocter.services.ForgotPasswordService;
@@ -28,12 +28,12 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	private MailService mailService;
 
 	@Value(value = "${mail.forgotPassword.subject}")
-	private String forgotPasswordSub;
+	private String forgotUsernamePasswordSub;
 
 	@Autowired
 	private MailBodyGenerator mailBodyGenerator;
 
-	public ForgotPasswordResponse forgotPassword(ForgotPasswordRequest request) {
+	public ForgotPasswordResponse forgotPasswordForDoctor(ForgotUsernamePasswordRequest request) {
 		try {
 			UserCollection userCollection = null;
 			ForgotPasswordResponse response = null;
@@ -45,12 +45,11 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 				if (userCollection.getEmailAddress().trim().equals(request.getEmailAddress().trim())) {
 					String body = mailBodyGenerator.generateForgotPasswordEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
 							userCollection.getMiddleName(), userCollection.getLastName(), userCollection.getId());
-					/*mailService.sendEmail(userCollection.getEmailAddress(), forgotPasswordSub, body, null);*/
+					mailService.sendEmail(userCollection.getEmailAddress(), forgotUsernamePasswordSub, body, null);
 					response = new ForgotPasswordResponse(userCollection.getUserName(), userCollection.getMobileNumber(), userCollection.getEmailAddress(),
 							RoleEnum.DOCTOR);
-				} else {
-					response = new ForgotPasswordResponse(userCollection.getUserName(), userCollection.getMobileNumber(), userCollection.getEmailAddress(),
-							RoleEnum.PATIENT);
+				}else{
+					throw new BusinessException(ServiceError.Unknown, "Email address is empty.");
 				}
 			} else {
 				throw new BusinessException(ServiceError.Unknown, "User not Found.");
@@ -62,6 +61,20 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
+	}
+	
+	@Override
+	public ForgotPasswordResponse forgotPasswordForPatient(
+			ForgotUsernamePasswordRequest request) {
+		
+		return null;
+	}
+	
+	@Override
+	public List<ForgotPasswordResponse> getEmailAndMobNumberOfPatient(
+			String username) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	public void resetPassword(ResetPasswordRequest request) {
@@ -76,18 +89,23 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
 	}
 
-	public void forgotUsername(ForgotPasswordRequest request) {
-		List<UserCollection> userCollection = null;
+	public void forgotUsername(ForgotUsernamePasswordRequest request) {
+		List<UserCollection> userCollections = null;
 		try {
 			if (request.getEmailAddress() != null && !request.getEmailAddress().isEmpty()) {
-				userCollection = userRepository.findByEmailAddress(request.getEmailAddress());
+				userCollections = userRepository.findByEmailAddress(request.getEmailAddress());
+				if (userCollections != null) {
+					String body = mailBodyGenerator.generateForgotUsernameEmailBody(userCollections);
+					mailService.sendEmail(request.getEmailAddress(), forgotUsernamePasswordSub, body, null);
+				}
 			} else if (request.getPhoneNumber() != null && !request.getEmailAddress().isEmpty()) {
-				userCollection = userRepository.findByMobileNumber(request.getPhoneNumber());
+				userCollections = userRepository.findByMobileNumber(request.getPhoneNumber());
+				if(userCollections != null){
+					//SMS logic will go here.
+				}
 			}
 
-			if (userCollection != null) {
-				String body = mailBodyGenerator.generateForgotUsernameEmailBody(userCollection);
-			}
+			
 		} catch (BusinessException be) {
 			throw new BusinessException(ServiceError.Unknown, "User not Found.");
 		} catch (Exception e) {
@@ -96,5 +114,9 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		}
 
 	}
+
+
+
+
 
 }
