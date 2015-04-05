@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -137,19 +138,52 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 	
 	@Override
 	public ClinicalNotes getNotesById(String id) {
-		ClinicalNotes clinicalNotes = null;
+		ClinicalNotes clinicalNote = null;
 		try {
 			ClinicalNotesCollection clinicalNotesCollection = clinicalNotesRepository
 					.findOne(id);
 			if (clinicalNotesCollection != null) {
-				clinicalNotes = new ClinicalNotes();
-				BeanUtil.map(clinicalNotesCollection, clinicalNotes);
+					clinicalNote = new ClinicalNotes();
+					clinicalNote.setDoctorId(clinicalNotesCollection.getDoctorId());
+					clinicalNote.setHospitalId(clinicalNotesCollection.getHospitalId());
+					clinicalNote.setLocationId(clinicalNotesCollection.getLocationId());
+					ComplaintCollection complaintCollection = complaintRepository.findOne(clinicalNotesCollection.getComplaints());
+					if(complaintCollection != null){
+						Complaint complaint = new Complaint();
+						BeanUtil.map(complaintCollection, complaint);
+						clinicalNote.setComplaints(complaint);
+					}
+					ObservationCollection observationCollection = observationRepository.findOne(clinicalNotesCollection.getObservation());
+					if(observationCollection != null){
+						Observation observation = new Observation();
+						BeanUtil.map(observationCollection, observation);
+						clinicalNote.setObservation(observation);
+					}
+					InvestigationCollection investigationCollection = investigationRepository.findOne(clinicalNotesCollection.getInvestigation());
+					if(investigationCollection != null){
+						Investigation investigation = new Investigation();
+						BeanUtil.map(investigationCollection, investigation);
+						clinicalNote.setInvestigation(investigation);
+					}
+					DiagnosisCollection diagnosisCollection = diagnosisRepository.findOne(clinicalNotesCollection.getDiagnoses());
+					if(diagnosisCollection != null){
+						Diagnosis diagnosis = new Diagnosis();
+						BeanUtil.map(diagnosisCollection, diagnosis);
+						clinicalNote.setDiagnoses(diagnosis);
+					}
+					@SuppressWarnings("unchecked")
+					List<DiagramsCollection> diagramsCollections = IteratorUtils.toList(diagramsRepository.findAll(clinicalNotesCollection.getDiagrams()).iterator());
+					if(diagramsCollections != null){
+						List<Diagram> diagrams = new ArrayList<Diagram>();
+						BeanUtil.map(diagramsCollections, diagrams);
+						clinicalNote.setDiagrams(diagrams);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
-		return clinicalNotes;
+		return clinicalNote;
 	}
 
 	@Override
@@ -215,8 +249,48 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 			Query queryForGettingAllClinicalNotesFromPatient = new Query();
 			queryForGettingAllClinicalNotesFromPatient.addCriteria(Criteria.where("id").in(clinicalNotesId));
 			List<ClinicalNotesCollection> clinicalNotesCollections = mongoTemplate.find(queryForGettingAllClinicalNotesFromPatient, ClinicalNotesCollection.class);
-			clinicalNotes = new ArrayList<ClinicalNotes>();
-			BeanUtil.map(clinicalNotesCollections, clinicalNotes);
+			if(clinicalNotesCollections != null){
+				clinicalNotes = new ArrayList<ClinicalNotes>();
+				//BeanUtil.map(clinicalNotesCollections, clinicalNotes);
+				for(ClinicalNotesCollection clinicalNotesCollection : clinicalNotesCollections){
+					ClinicalNotes clinicalNote = new ClinicalNotes();
+					clinicalNote.setDoctorId(clinicalNotesCollection.getDoctorId());
+					clinicalNote.setHospitalId(clinicalNotesCollection.getHospitalId());
+					clinicalNote.setLocationId(clinicalNotesCollection.getLocationId());
+					ComplaintCollection complaintCollection = complaintRepository.findOne(clinicalNotesCollection.getComplaints());
+					if(complaintCollection != null){
+						Complaint complaint = new Complaint();
+						BeanUtil.map(complaintCollection, complaint);
+						clinicalNote.setComplaints(complaint);
+					}
+					ObservationCollection observationCollection = observationRepository.findOne(clinicalNotesCollection.getObservation());
+					if(observationCollection != null){
+						Observation observation = new Observation();
+						BeanUtil.map(observationCollection, observation);
+						clinicalNote.setObservation(observation);
+					}
+					InvestigationCollection investigationCollection = investigationRepository.findOne(clinicalNotesCollection.getInvestigation());
+					if(investigationCollection != null){
+						Investigation investigation = new Investigation();
+						BeanUtil.map(investigationCollection, investigation);
+						clinicalNote.setInvestigation(investigation);
+					}
+					DiagnosisCollection diagnosisCollection = diagnosisRepository.findOne(clinicalNotesCollection.getDiagnoses());
+					if(diagnosisCollection != null){
+						Diagnosis diagnosis = new Diagnosis();
+						BeanUtil.map(diagnosisCollection, diagnosis);
+						clinicalNote.setDiagnoses(diagnosis);
+					}
+					@SuppressWarnings("unchecked")
+					List<DiagramsCollection> diagramsCollections = IteratorUtils.toList(diagramsRepository.findAll(clinicalNotesCollection.getDiagrams()).iterator());
+					if(diagramsCollections != null){
+						List<Diagram> diagrams = new ArrayList<Diagram>();
+						BeanUtil.map(diagramsCollections, diagrams);
+						clinicalNote.setDiagrams(diagrams);
+					}
+					clinicalNotes.add(clinicalNote);
+				}
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -239,8 +313,51 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 			queryForGettingAllClinicalNotesFromPatient.addCriteria(Criteria.where("id").in(clinicalNotesId));
 			queryForGettingAllClinicalNotesFromPatient.addCriteria(Criteria.where("doctorId").is(doctorId));
 			List<ClinicalNotesCollection> clinicalNotesCollections = mongoTemplate.find(queryForGettingAllClinicalNotesFromPatient, ClinicalNotesCollection.class);
-			clinicalNotes = new ArrayList<ClinicalNotes>();
-			BeanUtil.map(clinicalNotesCollections, clinicalNotes);
+			
+			if(clinicalNotesCollections != null){
+				clinicalNotes = new ArrayList<ClinicalNotes>();
+				//BeanUtil.map(clinicalNotesCollections, clinicalNotes);
+				for(ClinicalNotesCollection clinicalNotesCollection : clinicalNotesCollections){
+					ClinicalNotes clinicalNote = new ClinicalNotes();
+					clinicalNote.setDoctorId(clinicalNotesCollection.getDoctorId());
+					clinicalNote.setHospitalId(clinicalNotesCollection.getHospitalId());
+					clinicalNote.setLocationId(clinicalNotesCollection.getLocationId());
+					ComplaintCollection complaintCollection = complaintRepository.findOne(clinicalNotesCollection.getComplaints());
+					if(complaintCollection != null){
+						Complaint complaint = new Complaint();
+						BeanUtil.map(complaintCollection, complaint);
+						clinicalNote.setComplaints(complaint);
+					}
+					ObservationCollection observationCollection = observationRepository.findOne(clinicalNotesCollection.getObservation());
+					if(observationCollection != null){
+						Observation observation = new Observation();
+						BeanUtil.map(observationCollection, observation);
+						clinicalNote.setObservation(observation);
+					}
+					InvestigationCollection investigationCollection = investigationRepository.findOne(clinicalNotesCollection.getInvestigation());
+					if(investigationCollection != null){
+						Investigation investigation = new Investigation();
+						BeanUtil.map(investigationCollection, investigation);
+						clinicalNote.setInvestigation(investigation);
+					}
+					DiagnosisCollection diagnosisCollection = diagnosisRepository.findOne(clinicalNotesCollection.getDiagnoses());
+					if(diagnosisCollection != null){
+						Diagnosis diagnosis = new Diagnosis();
+						BeanUtil.map(diagnosisCollection, diagnosis);
+						clinicalNote.setDiagnoses(diagnosis);
+					}
+					@SuppressWarnings("unchecked")
+					List<DiagramsCollection> diagramsCollections = IteratorUtils.toList(diagramsRepository.findAll(clinicalNotesCollection.getDiagrams()).iterator());
+					if(diagramsCollections != null){
+						List<Diagram> diagrams = new ArrayList<Diagram>();
+						BeanUtil.map(diagramsCollections, diagrams);
+						clinicalNote.setDiagrams(diagrams);
+					}
+					clinicalNotes.add(clinicalNote);
+				}
+			}
+			//clinicalNotes = new ArrayList<ClinicalNotes>();
+			//BeanUtil.map(clinicalNotesCollections, clinicalNotes);
 			
 		} catch (Exception e) {
 			e.printStackTrace();

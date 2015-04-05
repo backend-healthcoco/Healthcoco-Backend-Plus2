@@ -74,7 +74,7 @@ public interface PathProxy {
 		
 
 	}
-	public static final String FORGOT_PASSWORD_BASE_URL = BASE_URL + "/forgot-password";
+	public static final String FORGOT_PASSWORD_BASE_URL = BASE_URL + "/forgotPassword";
 	public interface ForgotPasswordUrls {
 		public static final String FORGOT_PASSWORD = "/forgot";
 		public static final String RESET_PASSWORD = "/reset-password";

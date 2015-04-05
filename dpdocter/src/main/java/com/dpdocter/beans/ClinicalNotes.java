@@ -6,19 +6,19 @@ public class ClinicalNotes {
 
 	private String id;
 
-	private String complaints;
+	private Complaint complaints;
 
-	private String observation;
+	private Observation observation;
 
-	private String investigation;
+	private Investigation investigation;
 
-	private String diagnoses;
+	private Diagnosis diagnoses;
 	
 	private Long createdDate;
 
-	private List<String> diagrams;
+	private List<Diagram> diagrams;
 
-	private String notes;
+	private Notes notes;
 
 	private String doctorId;
 
@@ -34,55 +34,60 @@ public class ClinicalNotes {
 		this.id = id;
 	}
 
-	public String getNotes() {
-		return notes;
-	}
-
-	public void setNotes(String notes) {
-		this.notes = notes;
-	}
-
-	public String getObservation() {
-		return observation;
-	}
-
-	public void setObservation(String observation) {
-		this.observation = observation;
-	}
-
-	public String getInvestigation() {
-		return investigation;
-	}
-
-	public void setInvestigation(String investigation) {
-		this.investigation = investigation;
-	}
-
-	public String getDiagnoses() {
-		return diagnoses;
-	}
-
-	public void setDiagnoses(String diagnoses) {
-		this.diagnoses = diagnoses;
-	}
-	
-	
-
-
-	public List<String> getDiagrams() {
-		return diagrams;
-	}
-
-	public void setDiagrams(List<String> diagrams) {
-		this.diagrams = diagrams;
-	}
-
-	public String getComplaints() {
+	public Complaint getComplaints() {
 		return complaints;
 	}
 
-	public void setComplaints(String complaints) {
+	public void setComplaints(Complaint complaints) {
 		this.complaints = complaints;
+	}
+
+	public Observation getObservation() {
+		return observation;
+	}
+
+	public void setObservation(Observation observation) {
+		this.observation = observation;
+	}
+
+	public Investigation getInvestigation() {
+		return investigation;
+	}
+
+	public void setInvestigation(Investigation investigation) {
+		this.investigation = investigation;
+	}
+
+	public Diagnosis getDiagnoses() {
+		return diagnoses;
+	}
+
+	public void setDiagnoses(Diagnosis diagnoses) {
+		this.diagnoses = diagnoses;
+	}
+
+	public Long getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Long createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public List<Diagram> getDiagrams() {
+		return diagrams;
+	}
+
+	public void setDiagrams(List<Diagram> diagrams) {
+		this.diagrams = diagrams;
+	}
+
+	public Notes getNotes() {
+		return notes;
+	}
+
+	public void setNotes(Notes notes) {
+		this.notes = notes;
 	}
 
 	public String getDoctorId() {
@@ -109,23 +114,17 @@ public class ClinicalNotes {
 		this.hospitalId = hospitalId;
 	}
 
-	public Long getCreatedDate() {
-		return createdDate;
-	}
-
-	public void setCreatedDate(Long createdDate) {
-		this.createdDate = createdDate;
-	}
-
 	@Override
 	public String toString() {
 		return "ClinicalNotes [id=" + id + ", complaints=" + complaints
 				+ ", observation=" + observation + ", investigation="
 				+ investigation + ", diagnoses=" + diagnoses + ", createdDate="
-				+ createdDate + ", diagrams=" + diagrams + ", notes="
-				+ notes + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + "]";
+				+ createdDate + ", diagrams=" + diagrams + ", notes=" + notes
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + "]";
 	}
 
+	
+	
 	
 }
