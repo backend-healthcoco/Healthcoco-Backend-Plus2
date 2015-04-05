@@ -268,9 +268,6 @@ public class RecordsServiceImpl implements RecordsService {
 				throw new BusinessException(ServiceError.Unknown, "Record not found.Please check recordId.");
 			}
 
-		} catch (BusinessException e) {
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());

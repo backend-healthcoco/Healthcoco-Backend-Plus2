@@ -55,6 +55,9 @@ public class ForgotPasswordApi {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		return forgotPasswordService.forgotUsername(request);
+		boolean flag = forgotPasswordService.forgotUsername(request); 
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(flag);
+		return response;
 	}
 }
