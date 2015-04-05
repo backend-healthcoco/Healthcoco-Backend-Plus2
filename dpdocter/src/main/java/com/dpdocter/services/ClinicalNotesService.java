@@ -14,27 +14,39 @@ import com.dpdocter.request.ClinicalNotesEditRequest;
 
 public interface ClinicalNotesService {
 	ClinicalNotes addNotes(ClinicalNotesAddRequest request);
+
 	ClinicalNotes getNotesById(String id);
+
 	ClinicalNotes editNotes(ClinicalNotesEditRequest request);
+
 	void deleteNote(String id);
+
 	List<ClinicalNotes> getPatientsClinicalNotesWithVarifiedOTP(String patientId);
-	List<ClinicalNotes> getPatientsClinicalNotesWithoutVarifiedOTP(String patientId,String doctorId);
-	
+
+	List<ClinicalNotes> getPatientsClinicalNotesWithoutVarifiedOTP(String patientId, String doctorId);
+
 	Complaint addEditComplaint(Complaint complaint);
+
 	Observation addEditObservation(Observation observation);
+
 	Investigation addEditInvestigation(Investigation investigation);
+
 	Diagnosis addEditDiagnosis(Diagnosis diagnosis);
+
 	Notes addEditNotes(Notes notes);
+
 	Diagram addEditDiagram(Diagram diagram);
-	
-	
-	void deleteComplaint(String id,String doctorId);
-	void deleteObservation(String id,String doctorId);
-	void deleteInvestigation(String id,String doctorId);
-	void deleteDiagnosis(String id,String doctorId);
-	void deleteNotes(String id,String doctorId);
-	void deleteDiagram(String id,String doctorId);
-	
-	
-	
+
+	void deleteComplaint(String id, String doctorId, String locationId, String hospitalId);
+
+	void deleteObservation(String id, String doctorId, String locationId, String hospitalId);
+
+	void deleteInvestigation(String id, String doctorId, String locationId, String hospitalId);
+
+	void deleteDiagnosis(String id, String doctorId, String locationId, String hospitalId);
+
+	void deleteNotes(String id, String doctorId, String locationId, String hospitalId);
+
+	void deleteDiagram(String id, String doctorId, String locationId, String hospitalId);
+
 }

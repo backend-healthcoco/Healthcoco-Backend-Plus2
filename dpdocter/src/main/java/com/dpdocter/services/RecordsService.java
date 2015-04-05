@@ -11,17 +11,25 @@ import com.dpdocter.request.TagRecordRequest;
 
 public interface RecordsService {
 	Records addRecord(RecordsAddRequest request);
-	 void tagRecord(TagRecordRequest request);
-	 void changeReportLabel(String recordId,String label);
-	 List<Records> searchRecords(RecordsSearchRequest request);
-	 void emailRecordToPatient(String recordId,String emailAddr);
-	 
-	 Tags addEditTag(Tags tags);
-	 void deleteTag(String tagId);
-	 List<Tags> getAllTags(String doctorId,String locationId,String hospitalId);
-	  String getPatientEmailAddress(String patientId);
-	  File getRecordFile(String recordId);
-	  void deleteRecord(String recordId);
-	 
-	 
+
+	void tagRecord(TagRecordRequest request);
+
+	void changeReportLabel(String recordId, String label);
+
+	List<Records> searchRecords(RecordsSearchRequest request);
+
+	void emailRecordToPatient(String recordId, String emailAddr);
+
+	Tags addEditTag(Tags tags);
+
+	void deleteTag(String tagId);
+
+	List<Tags> getAllTags(String doctorId, String locationId, String hospitalId);
+
+	String getPatientEmailAddress(String patientId);
+
+	File getRecordFile(String recordId);
+
+	void deleteRecord(String recordId);
+
 }

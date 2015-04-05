@@ -46,7 +46,7 @@ public class Converter {
 
 		ForgotUsernamePasswordRequest request = new ForgotUsernamePasswordRequest();
 		request.setEmailAddress("");
-		request.setPhoneNumber("0123456789");
+		request.setMobileNumber("0123456789");
 		request.setUsername("");
 		System.out.println(ObjectToJSON(request));
 	}

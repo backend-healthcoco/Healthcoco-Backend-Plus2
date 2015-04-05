@@ -6,16 +6,17 @@ import com.dpdocter.request.ForgotUsernamePasswordRequest;
 import com.dpdocter.request.ResetPasswordRequest;
 import com.dpdocter.response.ForgotPasswordResponse;
 
+import common.util.web.Response;
+
 public interface ForgotPasswordService {
 	ForgotPasswordResponse forgotPasswordForDoctor(ForgotUsernamePasswordRequest request);
-	
-	ForgotPasswordResponse forgotPasswordForPatient(ForgotUsernamePasswordRequest request);
+
+	Response<Boolean> forgotPasswordForPatient(ForgotUsernamePasswordRequest request);
 
 	void resetPassword(ResetPasswordRequest request);
 
-	void forgotUsername(ForgotUsernamePasswordRequest request);
-	
-	List<ForgotPasswordResponse> getEmailAndMobNumberOfPatient(String username);
-	
-	
+	Response<Boolean> forgotUsername(ForgotUsernamePasswordRequest request);
+
+	ForgotPasswordResponse getEmailAndMobNumberOfPatient(String username);
+
 }

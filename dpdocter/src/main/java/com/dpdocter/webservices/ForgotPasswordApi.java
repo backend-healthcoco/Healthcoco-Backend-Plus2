@@ -51,10 +51,10 @@ public class ForgotPasswordApi {
 
 	@Path(value = PathProxy.ForgotPasswordUrls.FORGOT_USERNAME)
 	@POST
-	public void forgotUsername(ForgotUsernamePasswordRequest request) {
+	public Response<Boolean> forgotUsername(ForgotUsernamePasswordRequest request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		forgotPasswordService.forgotUsername(request);
+		return forgotPasswordService.forgotUsername(request);
 	}
 }

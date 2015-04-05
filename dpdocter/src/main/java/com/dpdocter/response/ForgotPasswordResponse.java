@@ -4,13 +4,13 @@ import com.dpdocter.enums.RoleEnum;
 
 public class ForgotPasswordResponse {
 	private String username;
-	private String phoneNumber;
+	private String mobileNumber;
 	private String emailAddress;
 	private RoleEnum role;
 
-	public ForgotPasswordResponse(String username, String phoneNumber, String emailAddress, RoleEnum role) {
+	public ForgotPasswordResponse(String username, String mobileNumber, String emailAddress, RoleEnum role) {
 		this.username = username;
-		this.phoneNumber = phoneNumber;
+		this.mobileNumber = mobileNumber;
 		this.emailAddress = emailAddress;
 		this.role = role;
 	}
@@ -23,12 +23,12 @@ public class ForgotPasswordResponse {
 		this.username = username;
 	}
 
-	public String getPhoneNumber() {
-		return phoneNumber;
+	public String getMobileNumber() {
+		return mobileNumber;
 	}
 
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
 	}
 
 	public String getEmailAddress() {
@@ -45,6 +45,11 @@ public class ForgotPasswordResponse {
 
 	public void setRole(RoleEnum role) {
 		this.role = role;
+	}
+
+	@Override
+	public String toString() {
+		return "ForgotPasswordResponse [username=" + username + ", mobileNumber=" + mobileNumber + ", emailAddress=" + emailAddress + ", role=" + role + "]";
 	}
 
 }

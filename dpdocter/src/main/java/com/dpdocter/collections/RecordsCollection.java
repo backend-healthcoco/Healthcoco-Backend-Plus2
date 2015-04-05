@@ -4,9 +4,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection="records_cl")
+@Document(collection = "records_cl")
 public class RecordsCollection {
-	
+
 	@Id
 	private String id;
 	@Field
@@ -29,150 +29,100 @@ public class RecordsCollection {
 	private String hospitalId;
 	@Field
 	private boolean isDeleted = false;
-	
-	
 
 	public String getId() {
 		return id;
 	}
 
-
-
 	public void setId(String id) {
 		this.id = id;
 	}
-
-
 
 	public String getRecordsUrl() {
 		return recordsUrl;
 	}
 
-
-
 	public void setRecordsUrl(String recordsUrl) {
 		this.recordsUrl = recordsUrl;
 	}
-
-
 
 	public String getRecordsPath() {
 		return recordsPath;
 	}
 
-
-
 	public void setRecordsPath(String recordsPath) {
 		this.recordsPath = recordsPath;
 	}
-
-
 
 	public String getRecordsLable() {
 		return recordsLable;
 	}
 
-
-
 	public void setRecordsLable(String recordsLable) {
 		this.recordsLable = recordsLable;
 	}
-
-
 
 	public String getDescription() {
 		return description;
 	}
 
-
-
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
-
 
 	public String getPatientId() {
 		return patientId;
 	}
 
-
-
 	public void setPatientId(String patientId) {
 		this.patientId = patientId;
 	}
-
-
 
 	public String getDoctorId() {
 		return doctorId;
 	}
 
-
-
 	public void setDoctorId(String doctorId) {
 		this.doctorId = doctorId;
 	}
-
-
 
 	public Long getCreatedDate() {
 		return createdDate;
 	}
 
-
-
 	public void setCreatedDate(Long createdDate) {
 		this.createdDate = createdDate;
 	}
-
-
 
 	public String getLocationId() {
 		return locationId;
 	}
 
-
-
 	public void setLocationId(String locationId) {
 		this.locationId = locationId;
 	}
-
-
 
 	public String getHospitalId() {
 		return hospitalId;
 	}
 
-
-
 	public void setHospitalId(String hospitalId) {
 		this.hospitalId = hospitalId;
 	}
-
-
 
 	public boolean isDeleted() {
 		return isDeleted;
 	}
 
-
-
 	public void setDeleted(boolean isDeleted) {
 		this.isDeleted = isDeleted;
 	}
 
-
-
 	@Override
 	public String toString() {
-		return "RecordsCollection [id=" + id + ", recordsUrl=" + recordsUrl
-				+ ", recordsPath=" + recordsPath + ", recordsLable="
-				+ recordsLable + ", description=" + description
-				+ ", patientId=" + patientId + ", doctorId=" + doctorId
-				+ ", createdDate=" + createdDate + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", isDeleted=" + isDeleted
-				+ "]";
+		return "RecordsCollection [id=" + id + ", recordsUrl=" + recordsUrl + ", recordsPath=" + recordsPath + ", recordsLable=" + recordsLable
+				+ ", description=" + description + ", patientId=" + patientId + ", doctorId=" + doctorId + ", createdDate=" + createdDate + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", isDeleted=" + isDeleted + "]";
 	}
-	
+
 }

@@ -2,7 +2,7 @@ package com.dpdocter.request;
 
 public class ForgotUsernamePasswordRequest {
 	private String username;
-	private String phoneNumber;
+	private String mobileNumber;
 	private String emailAddress;
 
 	public String getUsername() {
@@ -13,12 +13,12 @@ public class ForgotUsernamePasswordRequest {
 		this.username = username;
 	}
 
-	public String getPhoneNumber() {
-		return phoneNumber;
+	public String getMobileNumber() {
+		return mobileNumber;
 	}
 
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
 	}
 
 	public String getEmailAddress() {
@@ -31,7 +31,7 @@ public class ForgotUsernamePasswordRequest {
 
 	@Override
 	public String toString() {
-		return "ResetPasswordRequest [username=" + username + ", phoneNumber=" + phoneNumber + ", emailAddress=" + emailAddress + "]";
+		return "ForgotUsernamePasswordRequest [username=" + username + ", mobileNumber=" + mobileNumber + ", emailAddress=" + emailAddress + "]";
 	}
 
 }
