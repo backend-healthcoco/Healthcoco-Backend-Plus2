@@ -2,8 +2,6 @@ package com.dpdocter.request;
 
 import java.util.List;
 
-import com.dpdocter.beans.FileDetails;
-
 public class ClinicalNotesAddRequest {
 	private String id;
 	
