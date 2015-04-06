@@ -439,26 +439,13 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 		try {
 			ComplaintCollection complaintCollection = complaintRepository.findOne(id);
 			if (complaintCollection != null) {
-				if (complaintCollection.getDoctorId() != null) {
-					if (complaintCollection.getDoctorId().equals(doctorId)) {
+				if (complaintCollection.getDoctorId() != null && complaintCollection.getHospitalId() != null && complaintCollection.getLocationId() != null) {
+					if (complaintCollection.getDoctorId().equals(doctorId) && complaintCollection.getHospitalId().equals(hospitalId)
+							&& complaintCollection.getLocationId().equals(locationId)) {
 						complaintCollection.setDeleted(true);
 						complaintRepository.save(complaintCollection);
 					} else {
-						throw new BusinessException(ServiceError.Unknown, "Invalid DoctorId.");
-					}
-				} else if (complaintCollection.getLocationId() != null) {
-					if (complaintCollection.getLocationId().equals(locationId)) {
-						complaintCollection.setDeleted(true);
-						complaintRepository.save(complaintCollection);
-					} else {
-						throw new BusinessException(ServiceError.Unknown, "Invalid Location Id.");
-					}
-				} else if (complaintCollection.getHospitalId() != null) {
-					if (complaintCollection.getHospitalId().equals(hospitalId)) {
-						complaintCollection.setDeleted(true);
-						complaintRepository.save(complaintCollection);
-					} else {
-						throw new BusinessException(ServiceError.Unknown, "Invalid Hospital Id.");
+						throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
 					}
 				} else {
 					throw new BusinessException(ServiceError.Unknown, "Cant delete Global Complaint.");
@@ -478,26 +465,14 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 		try {
 			ObservationCollection observationCollection = observationRepository.findOne(id);
 			if (observationCollection != null) {
-				if (observationCollection.getDoctorId() != null) {
-					if (observationCollection.getDoctorId().equals(doctorId)) {
+				if (observationCollection.getDoctorId() != null && observationCollection.getHospitalId() != null
+						&& observationCollection.getLocationId() != null) {
+					if (observationCollection.getDoctorId().equals(doctorId) && observationCollection.getHospitalId().equals(hospitalId)
+							&& observationCollection.getLocationId().equals(locationId)) {
 						observationCollection.setDeleted(true);
 						observationRepository.save(observationCollection);
 					} else {
-						throw new BusinessException(ServiceError.Unknown, "Invalid DoctorId.");
-					}
-				} else if (observationCollection.getLocationId() != null) {
-					if (observationCollection.getLocationId().equals(locationId)) {
-						observationCollection.setDeleted(true);
-						observationRepository.save(observationCollection);
-					} else {
-						throw new BusinessException(ServiceError.Unknown, "Invalid Location Id.");
-					}
-				} else if (observationCollection.getHospitalId() != null) {
-					if (observationCollection.getHospitalId().equals(hospitalId)) {
-						observationCollection.setDeleted(true);
-						observationRepository.save(observationCollection);
-					} else {
-						throw new BusinessException(ServiceError.Unknown, "Invalid Hospital Id.");
+						throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
 					}
 				} else {
 					throw new BusinessException(ServiceError.Unknown, "Cant delete Global Observation.");
@@ -515,26 +490,14 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 		try {
 			InvestigationCollection investigationCollection = investigationRepository.findOne(id);
 			if (investigationCollection != null) {
-				if (investigationCollection.getDoctorId() != null) {
-					if (investigationCollection.getDoctorId().equals(doctorId)) {
+				if (investigationCollection.getDoctorId() != null && investigationCollection.getHospitalId() != null
+						&& investigationCollection.getLocationId() != null) {
+					if (investigationCollection.getDoctorId().equals(doctorId) && investigationCollection.getHospitalId().equals(hospitalId)
+							&& investigationCollection.getLocationId().equals(locationId)) {
 						investigationCollection.setDeleted(true);
 						investigationRepository.save(investigationCollection);
 					} else {
-						throw new BusinessException(ServiceError.Unknown, "Invalid DoctorId.");
-					}
-				} else if (investigationCollection.getLocationId() != null) {
-					if (investigationCollection.getLocationId().equals(locationId)) {
-						investigationCollection.setDeleted(true);
-						investigationRepository.save(investigationCollection);
-					} else {
-						throw new BusinessException(ServiceError.Unknown, "Invalid Location Id.");
-					}
-				} else if (investigationCollection.getHospitalId() != null) {
-					if (investigationCollection.getHospitalId().equals(hospitalId)) {
-						investigationCollection.setDeleted(true);
-						investigationRepository.save(investigationCollection);
-					} else {
-						throw new BusinessException(ServiceError.Unknown, "Invalid Hospital Id.");
+						throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
 					}
 				} else {
 					throw new BusinessException(ServiceError.Unknown, "Cant delete Global Investigation.");
@@ -552,26 +515,13 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 		try {
 			DiagnosisCollection diagnosisCollection = diagnosisRepository.findOne(id);
 			if (diagnosisCollection != null) {
-				if (diagnosisCollection.getDoctorId() != null) {
-					if (diagnosisCollection.getDoctorId().equals(doctorId)) {
+				if (diagnosisCollection.getDoctorId() != null && diagnosisCollection.getHospitalId() != null && diagnosisCollection.getLocationId() != null) {
+					if (diagnosisCollection.getDoctorId().equals(doctorId) && diagnosisCollection.getHospitalId().equals(hospitalId)
+							&& diagnosisCollection.getLocationId().equals(locationId)) {
 						diagnosisCollection.setDeleted(true);
 						diagnosisRepository.save(diagnosisCollection);
 					} else {
-						throw new BusinessException(ServiceError.Unknown, "Invalid DoctorId.");
-					}
-				} else if (diagnosisCollection.getLocationId() != null) {
-					if (diagnosisCollection.getLocationId().equals(locationId)) {
-						diagnosisCollection.setDeleted(true);
-						diagnosisRepository.save(diagnosisCollection);
-					} else {
-						throw new BusinessException(ServiceError.Unknown, "Invalid Location Id.");
-					}
-				} else if (diagnosisCollection.getHospitalId() != null) {
-					if (diagnosisCollection.getHospitalId().equals(hospitalId)) {
-						diagnosisCollection.setDeleted(true);
-						diagnosisRepository.save(diagnosisCollection);
-					} else {
-						throw new BusinessException(ServiceError.Unknown, "Invalid Hospital Id.");
+						throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
 					}
 				} else {
 					throw new BusinessException(ServiceError.Unknown, "Cant delete Global Diagnosis.");
@@ -589,26 +539,13 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 		try {
 			NotesCollection notesCollection = notesRepository.findOne(id);
 			if (notesCollection != null) {
-				if (notesCollection.getDoctorId() != null) {
-					if (notesCollection.getDoctorId().equals(doctorId)) {
+				if (notesCollection.getDoctorId() != null && notesCollection.getHospitalId() != null && notesCollection.getLocationId() != null) {
+					if (notesCollection.getDoctorId().equals(doctorId) && notesCollection.getHospitalId().equals(hospitalId)
+							&& notesCollection.getLocationId().equals(locationId)) {
 						notesCollection.setDeleted(true);
 						notesRepository.save(notesCollection);
 					} else {
-						throw new BusinessException(ServiceError.Unknown, "Invalid DoctorId.");
-					}
-				} else if (notesCollection.getLocationId() != null) {
-					if (notesCollection.getLocationId().equals(locationId)) {
-						notesCollection.setDeleted(true);
-						notesRepository.save(notesCollection);
-					} else {
-						throw new BusinessException(ServiceError.Unknown, "Invalid Location Id.");
-					}
-				} else if (notesCollection.getHospitalId() != null) {
-					if (notesCollection.getHospitalId().equals(hospitalId)) {
-						notesCollection.setDeleted(true);
-						notesRepository.save(notesCollection);
-					} else {
-						throw new BusinessException(ServiceError.Unknown, "Invalid Hospital Id.");
+						throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
 					}
 				} else {
 					throw new BusinessException(ServiceError.Unknown, "Cant delete Global Notes.");
@@ -627,26 +564,13 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 		try {
 			DiagramsCollection diagramsCollection = diagramsRepository.findOne(id);
 			if (diagramsCollection != null) {
-				if (diagramsCollection.getDoctorId() != null) {
-					if (diagramsCollection.getDoctorId().equals(doctorId)) {
+				if (diagramsCollection.getDoctorId() != null && diagramsCollection.getHospitalId() != null && diagramsCollection.getLocationId() != null) {
+					if (diagramsCollection.getDoctorId().equals(doctorId) && diagramsCollection.getHospitalId().equals(hospitalId)
+							&& diagramsCollection.getLocationId().equals(locationId)) {
 						diagramsCollection.setDeleted(true);
 						diagramsRepository.save(diagramsCollection);
 					} else {
-						throw new BusinessException(ServiceError.Unknown, "Invalid DoctorId.");
-					}
-				} else if (diagramsCollection.getLocationId() != null) {
-					if (diagramsCollection.getLocationId().equals(locationId)) {
-						diagramsCollection.setDeleted(true);
-						diagramsRepository.save(diagramsCollection);
-					} else {
-						throw new BusinessException(ServiceError.Unknown, "Invalid Location Id.");
-					}
-				} else if (diagramsCollection.getHospitalId() != null) {
-					if (diagramsCollection.getHospitalId().equals(hospitalId)) {
-						diagramsCollection.setDeleted(true);
-						diagramsRepository.save(diagramsCollection);
-					} else {
-						throw new BusinessException(ServiceError.Unknown, "Invalid Hospital Id.");
+						throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
 					}
 				} else {
 					throw new BusinessException(ServiceError.Unknown, "Cant delete Global Diagram.");

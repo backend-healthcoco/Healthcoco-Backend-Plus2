@@ -25,7 +25,7 @@ public class ForgotPasswordApi {
 	@Autowired
 	private ForgotPasswordService forgotPasswordService;
 
-	@Path(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD)
+	@Path(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_DOCTOR)
 	@POST
 	public Response<String> forgotPassword(ForgotUsernamePasswordRequest request) {
 		if (request == null) {
@@ -34,6 +34,17 @@ public class ForgotPasswordApi {
 		forgotPasswordService.forgotPasswordForDoctor(request);
 		Response<String> response = new Response<String>();
 		response.setData("RESET YOUR PASSWORD FROM EMAIL ADDRESS");
+		return response;
+	}
+
+	@Path(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_PATIENT)
+	public Response<Boolean> forgotPasswordForPatient(ForgotUsernamePasswordRequest request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		boolean flag = forgotPasswordService.forgotPasswordForPatient(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(flag);
 		return response;
 	}
 
@@ -55,7 +66,7 @@ public class ForgotPasswordApi {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		boolean flag = forgotPasswordService.forgotUsername(request); 
+		boolean flag = forgotPasswordService.forgotUsername(request);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(flag);
 		return response;
