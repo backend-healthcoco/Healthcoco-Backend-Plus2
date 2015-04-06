@@ -38,6 +38,7 @@ public class ForgotPasswordApi {
 	}
 
 	@Path(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_PATIENT)
+	@POST
 	public Response<Boolean> forgotPasswordForPatient(ForgotUsernamePasswordRequest request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
