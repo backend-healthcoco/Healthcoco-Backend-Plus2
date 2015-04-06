@@ -45,6 +45,7 @@ public interface PathProxy {
 		public static final String ADD_REFERRENCE = "/addreferrence";
 		public static final String DELETE_REFERRENCE = "/deletereferrence/{referrenceId}";
 		public static final String GET_REFERRENCES = "/getreferrences/{doctorId}/{locationId}/{hospitalId}";
+		public static final String PATIENT_ID_GENERATOR = "/generatePatientId/{doctorId}/{locationId}/{hospitalId}";
 	}
 	
 	public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";

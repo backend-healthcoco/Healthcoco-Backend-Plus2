@@ -165,4 +165,28 @@ public class RegistrationApi {
 		return response;
 	}
 	
+	@Path(value = PathProxy.RegistrationUrls.PATIENT_ID_GENERATOR)
+	@GET
+	public Response<String> patientIDGenerator(@PathParam("doctorId")String doctorId,
+			@PathParam("locationId")String locationId,@PathParam("hospitalId")String hospitalId) {
+		
+		if (doctorId == null) {
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Invalid Input.doctorId is null");
+		}
+		if (locationId == null) {
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Invalid Input.locationId is null");
+		}
+		if (hospitalId == null) {
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Invalid Input.hospitalId is null");
+		}
+		
+		Response<String> response = new Response<String>();
+		String generatedId = registrationService.patientIdGenerator(doctorId, locationId, hospitalId);
+		response.setData(generatedId);
+		return response;
+	}
+	
 }

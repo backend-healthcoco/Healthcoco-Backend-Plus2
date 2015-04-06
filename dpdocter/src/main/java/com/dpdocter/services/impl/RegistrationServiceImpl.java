@@ -1,8 +1,11 @@
 package com.dpdocter.services.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -142,6 +145,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			PatientCollection patientCollection  = new PatientCollection();
 			BeanUtil.map(request, patientCollection);
 			patientCollection.setUserId(userCollection.getId());
+			patientCollection.setRegistrationDate(request.getDateOfVisit());
 			patientCollection.setPID(request.getPatientNumber());
 			if(addressCollection != null){
 				patientCollection.setAddressId(addressCollection.getId());
@@ -226,6 +230,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				patientCollection.setAddressId(addressCollection.getId());
 			}
 			patientCollection.setPID(request.getPatientNumber());
+			patientCollection.setRegistrationDate(request.getDateOfVisit());
 			patientCollection = patientRepository.save(patientCollection);
 
 			
@@ -417,6 +422,35 @@ public class RegistrationServiceImpl implements RegistrationService {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return referrences;
+	}
+
+	@Override
+	public String patientIdGenerator(String doctorId, String locationId,
+			String hospitalId) {
+		String generatedId = null;
+		try {
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+			int currentDay = localCalendar.get(Calendar.DATE);
+	        int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+	        int currentYear = localCalendar.get(Calendar.YEAR);
+	        
+	        String startDate = currentDay + "-" + currentMonth + "-" + currentYear + " 00:00:00";
+	        String endDate = currentDay + "-" + currentMonth + "-" + currentYear + " 23:59:59";
+	        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
+	        Long from = dateFormat.parse(startDate).getTime();
+	        Long to = dateFormat.parse(endDate).getTime();
+	        List<PatientCollection> patientCollections = patientRepository.findTodaysRegisteredPatient(doctorId, locationId, hospitalId, from, to);
+	        int patientCount = 0;
+	        if(patientCollections != null){
+	        	patientCount = patientCollections.size();
+	        }
+	        generatedId = "P" + "-" + currentDay +  currentMonth + currentYear + "-" + patientCount +1;
+	        
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return generatedId;
 	}
 	
 	

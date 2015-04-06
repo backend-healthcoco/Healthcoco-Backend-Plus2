@@ -47,6 +47,8 @@ public class PatientCollection {
 	private List<String> notes;
 	@Field
 	private String PID;
+	@Field
+	private Long registrationDate;
 
 	/*@Field
 	private String firstName;
@@ -200,6 +202,14 @@ public class PatientCollection {
 
 	public void setHospitalId(String hospitalId) {
 		this.hospitalId = hospitalId;
+	}
+
+	public Long getRegistrationDate() {
+		return registrationDate;
+	}
+
+	public void setRegistrationDate(Long registrationDate) {
+		this.registrationDate = registrationDate;
 	}
 
 	@Override

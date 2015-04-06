@@ -19,6 +19,7 @@ public interface RegistrationService {
 	Referrence addEditReferrence(Referrence referrence);
 	void deleteReferrence(String referrenceId);
 	List<Referrence> getReferrences(String doctorId,String locationId,String hospitalId);
+	String patientIdGenerator(String doctorId,String locationId,String hospitalId);
 	
 	
 }
