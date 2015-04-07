@@ -80,14 +80,10 @@ public class FileManagerImpl implements FileManager {
 	 * fop.flush(); fop.close(); }
 	 */
 
-	@Override
-	public String saveImageAndReturnImageUrl(FileDetails fileDetails,
-			String path) throws Exception {
-		String fileName = fileDetails.getFileName()
-				+ "." + fileDetails.getFileExtension();
+	public String saveImageAndReturnImageUrl(FileDetails fileDetails, String path) throws Exception {
+		String fileName = fileDetails.getFileName() + "." + fileDetails.getFileExtension();
 		createDirIfNotExist(imageResource + File.separator + path);
-		String filePath = imageResource + File.separator + path
-				+ File.separator + fileName;
+		String filePath = imageResource + File.separator + path + File.separator + fileName;
 		// File distinationFile = new File(imageResource + File.separator + path
 		// + File.separator + fileName);
 		IOUtils.write(Base64.decodeBase64(fileDetails.getFileEncoded()), new FileOutputStream(filePath));

@@ -34,32 +34,34 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.request.LoginRequest;
 import com.dpdocter.services.LoginService;
+
 /**
  * @author veeraj
  */
 @Service
 public class LoginServiceImpl implements LoginService {
-	
+
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Autowired
 	private UserRoleRepository userRoleRepository;
-	
+
 	@Autowired
 	private RoleRepository roleRepository;
-	
+
 	@Autowired
 	private LocationRepository locationRepository;
-	
+
 	@Autowired
 	private HospitalRepository hospitalRepository;
-	
+
 	@Autowired
 	private UserLocationRepository userLocationRepository;
-/**
- * This method is used for login purpose.
- */
+
+	/**
+	 * This method is used for login purpose.
+	 */
 	public LoginResponse login(LoginRequest request) {
 		LoginResponse response = null;
 		try {
@@ -67,49 +69,51 @@ public class LoginServiceImpl implements LoginService {
 			 * Check if user exist.
 			 */
 			UserCollection userCollection = userRepository.findByUserNameAndPass(request.getUsername(), request.getPassword());
-			if(userCollection == null){
+			if (userCollection == null) {
 				userCollection = userRepository.findByEmailAddressAndPass(request.getUsername(), request.getPassword());
-				if(userCollection == null){
+				if (userCollection == null) {
 					throw new BusinessException(ServiceError.Unknown, "Invalid username and Password");
 				}
-				
+
 			}
 			User user = new User();
 			BeanUtil.map(userCollection, user);
 			/**
-			 * Now fetch hospitals and locations for doctor,locationadmin and hospitaladmin.
-			 * For patient send user details.
+			 * Now fetch hospitals and locations for doctor,locationadmin and
+			 * hospitaladmin. For patient send user details.
 			 */
 			List<UserRoleCollection> userRoleCollections = userRoleRepository.findByUserId(userCollection.getId());
-			for(UserRoleCollection userRoleCollection : userRoleCollections){
+			for (UserRoleCollection userRoleCollection : userRoleCollections) {
 				RoleCollection roleCollection = roleRepository.findOne(userRoleCollection.getRoleId());
-				if(roleCollection.getRole().equalsIgnoreCase(RoleEnum.PATIENT.getRole()) || roleCollection.getRole().equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole())){
-					
+				if (roleCollection.getRole().equalsIgnoreCase(RoleEnum.PATIENT.getRole())
+						|| roleCollection.getRole().equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole())) {
+
 					response = new LoginResponse();
 					response.setUser(user);
 					response.setRole(roleCollection.getRole());
+					response.setTempPassword(userCollection.getTempPassword());
 					return response;
-				}else{
+				} else {
 					List<UserLocationCollection> userLocationCollections = userLocationRepository.findByUserId(userCollection.getId());
-					if(userLocationCollections != null){
+					if (userLocationCollections != null) {
 						@SuppressWarnings("unchecked")
-						Collection<String> locationIds =  CollectionUtils.collect(userLocationCollections, new BeanToPropertyValueTransformer("locationId"));
+						Collection<String> locationIds = CollectionUtils.collect(userLocationCollections, new BeanToPropertyValueTransformer("locationId"));
 						@SuppressWarnings("unchecked")
-						List<LocationCollection> locationCollections =  IteratorUtils.toList(locationRepository.findAll(locationIds).iterator());
+						List<LocationCollection> locationCollections = IteratorUtils.toList(locationRepository.findAll(locationIds).iterator());
 						List<Hospital> hospitals = new ArrayList<Hospital>();
-						Map<String,Hospital> checkHospitalId = new HashMap<String,Hospital>();
-						for(LocationCollection locationCollection : locationCollections){
+						Map<String, Hospital> checkHospitalId = new HashMap<String, Hospital>();
+						for (LocationCollection locationCollection : locationCollections) {
 							HospitalCollection hospitalCollection = null;
 							Locations location = new Locations();
 							BeanUtil.map(locationCollection, location);
-							if(!checkHospitalId.containsKey(locationCollection.getHospitalId())){
+							if (!checkHospitalId.containsKey(locationCollection.getHospitalId())) {
 								hospitalCollection = hospitalRepository.findOne(locationCollection.getHospitalId());
 								Hospital hospital = new Hospital();
 								BeanUtil.map(hospitalCollection, hospital);
 								hospital.getLocations().add(location);
 								checkHospitalId.put(locationCollection.getHospitalId(), hospital);
 								hospitals.add(hospital);
-							}else{
+							} else {
 								Hospital hospital = checkHospitalId.get(locationCollection.getHospitalId());
 								hospital.getLocations().add(location);
 								hospitals.add(hospital);
@@ -120,14 +124,12 @@ public class LoginServiceImpl implements LoginService {
 						response.setUser(user);
 						response.setHospitals(hospitals);
 						response.setRole(roleCollection.getRole());
-
 					}
 				}
 			}
-			
-		} catch(BusinessException be){
+		} catch (BusinessException be) {
 			throw be;
-		}catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error occured while login");
 		}

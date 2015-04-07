@@ -121,6 +121,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		try {
 			UserCollection userCollection = userRepository.findOne(request.getUserId());
 			userCollection.setPassword(request.getPassword());
+			userCollection.setTempPassword(false);
 			userRepository.save(userCollection);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -130,7 +131,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	}
 
 	public Boolean forgotUsername(ForgotUsernamePasswordRequest request) {
-		boolean flag =false;
+		boolean flag = false;
 		try {
 			List<UserCollection> userCollections = null;
 			if (request.getEmailAddress() != null && !request.getEmailAddress().isEmpty()) {
@@ -138,13 +139,13 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 				if (userCollections != null) {
 					String body = mailBodyGenerator.generateForgotUsernameEmailBody(userCollections);
 					mailService.sendEmail(request.getEmailAddress(), forgotUsernamePasswordSub, body, null);
-					flag =true;
+					flag = true;
 				}
 			} else if (request.getMobileNumber() != null && !request.getMobileNumber().isEmpty()) {
 				userCollections = userRepository.findByMobileNumber(request.getMobileNumber());
 				if (userCollections != null) {
 					// SMS logic will go here.
-					flag =true;
+					flag = true;
 				}
 			} else {
 				throw new BusinessException(ServiceError.Unknown, "Email Address or mobile should be provided!");

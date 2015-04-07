@@ -17,6 +17,7 @@ public interface PathProxy {
 		public static final String CHECK_IF_USERNAME_EXIST = "/check-username-exists/{username}";
 		public static final String CHECK_IF_MOBNUM_EXIST = "/check-mobnum-exists/{mobileNumber}";
 		public static final String CHECK_IF_EMAIL_ADDR_EXIST = "/check-email-exists/{emailaddress}";
+		public static final String PATIENT_PROFILE_PIC_CHANGE = "/patientProfilePicChange";
 	}
 
 	public static final String LOGIN_BASE_URL = BASE_URL + "/login";

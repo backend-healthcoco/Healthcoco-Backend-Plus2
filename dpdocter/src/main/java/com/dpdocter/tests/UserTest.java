@@ -27,6 +27,7 @@ public class UserTest {
 		UserCollection doctor = new UserCollection("1", "isank", "agarwal", "", "isankagarwal@gmail.com", "i123#", "isankagarwal@gmail.com", "9021703700",
 				"male", "", dob, true);
 		UserCollection patientOne = new UserCollection("2", "veeraj", "bhokre", "", "veeraj1", "v123#", "veeraj@gmail.com", "0123456789", "male", "", dob, true);
+		patientOne.setTempPassword(true);
 		UserCollection patientTwo = new UserCollection("3", "veeraj", "bhokre", "", "veeraj2", "v123#", "veeraj@gmail.com", "0123456789", "male", "", dob, true);
 		UserCollection patientThree = new UserCollection("4", "veeraj", "bhokre", "", "veeraj3", "v123#", "veeraj@gmail.com", "0123456789", "male", "", dob,
 				true);

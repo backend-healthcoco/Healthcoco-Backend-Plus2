@@ -35,6 +35,7 @@ import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.request.DoctorSignupRequest;
+import com.dpdocter.request.PatientProfilePicChangeRequest;
 import com.dpdocter.request.PatientSignUpRequest;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.MailBodyGenerator;
@@ -45,57 +46,70 @@ import com.dpdocter.services.SignUpService;
  * @author veeraj
  */
 @Service
-public class SignUpServiceImpl implements SignUpService{
+public class SignUpServiceImpl implements SignUpService {
 
 	@Autowired
 	private RoleRepository roleRepository;
-	@Autowired 
+
+	@Autowired
 	private UserRepository userRepository;
+
 	@Autowired
 	private UserRoleRepository userRoleRepository;
+
 	@Autowired
 	private HospitalRepository hospitalRepository;
+
 	@Autowired
 	private LocationRepository locationRepository;
+
 	@Autowired
 	private UserLocationRepository userLocationRepository;
+
 	@Autowired
 	private AddressRepository addressRepository;
+
 	@Autowired
 	private DoctorRepository doctorRepository;
+
 	@Autowired
 	private PatientRepository patientRepository;
+
 	@Autowired
 	private DoctorContactsRepository doctorContactsRepository;
+
 	@Autowired
 	private MailService mailService;
+
 	@Autowired
 	private MailBodyGenerator mailBodyGenerator;
-	
+
 	@Autowired
 	private FileManager fileManager;
 
 	@Value(value = "${mail.signup.subject.activation}")
 	private String signupSubject;
 
+	@Value(value = "${IMAGE_RESOURCE}")
+	private String profilePicturePath;
 
 	/**
-	 * @param UserTemp Id
-	 * @return Boolean
-	 * This method activates the user account.
+	 * @param UserTemp
+	 *            Id
+	 * @return Boolean This method activates the user account.
 	 */
 	public Boolean activateUser(String userId) {
 		try {
 			UserCollection userCollection = userRepository.findOne(userId);
-			if(userCollection == null){
+			if (userCollection == null) {
 				throw new BusinessException(ServiceError.Unknown, "Invalid Url.");
 			}
 			userCollection.setIsActive(true);
 			userRepository.save(userCollection);
 			return true;
-		} catch(BusinessException be){
+		} catch (BusinessException be) {
 			throw be;
-		}catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error occured while Activating user");
 		}
@@ -104,59 +118,60 @@ public class SignUpServiceImpl implements SignUpService{
 
 	public DoctorSignUp doctorSignUp(DoctorSignupRequest request) {
 		DoctorSignUp response = null;
-		
+
 		try {
-			//get role of specified type
+			// get role of specified type
 			RoleCollection hospitalAdmin = roleRepository.findByRole(RoleEnum.HOSPITAL_ADMIN.getRole());
-			if(hospitalAdmin == null){
+			if (hospitalAdmin == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
 			}
 			RoleCollection locationAdmin = roleRepository.findByRole(RoleEnum.LOCATION_ADMIN.getRole());
-			if(locationAdmin == null){
+			if (locationAdmin == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
 			}
 			RoleCollection doctorRole = roleRepository.findByRole(RoleEnum.DOCTOR.getRole());
-			if(doctorRole == null){
+			if (doctorRole == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
 			}
-			//save user
+			// save user
 			UserCollection userCollection = new UserCollection();
 			BeanUtil.map(request, userCollection);
 			userCollection.setUserName(request.getEmailAddress());
-			if(request.getImage() != null){
+			if (request.getImage() != null) {
 				String path = "profile-pic";
-				//save image
-				String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(),path);
+				// save image
+				String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 				userCollection.setImageUrl(imageurl);
 			}
 			userCollection = userRepository.save(userCollection);
-			//save doctor specific details
+			// save doctor specific details
 			DoctorCollection doctorCollection = new DoctorCollection();
 			BeanUtil.map(request, doctorCollection);
 			doctorCollection.setUserId(userCollection.getId());
 			doctorCollection = doctorRepository.save(doctorCollection);
-			//assign role to doctor
+			// assign role to doctor
 			UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), hospitalAdmin.getId());
 			userRoleRepository.save(userRoleCollection);
 			userRoleCollection = new UserRoleCollection(userCollection.getId(), locationAdmin.getId());
 			userRoleRepository.save(userRoleCollection);
 			userRoleCollection = new UserRoleCollection(userCollection.getId(), doctorRole.getId());
 			userRoleRepository.save(userRoleCollection);
-			//Save hospital
+			// Save hospital
 			HospitalCollection hospitalCollection = new HospitalCollection();
 			BeanUtil.map(request, hospitalCollection);
 			hospitalCollection = hospitalRepository.save(hospitalCollection);
-			
-			//save location for hospital
+
+			// save location for hospital
 			LocationCollection locationCollection = new LocationCollection();
 			BeanUtil.map(request, locationCollection);
 			locationCollection.setHospitalId(hospitalCollection.getId());
 			locationCollection = locationRepository.save(locationCollection);
-			//save user location.
+			// save user location.
 			UserLocationCollection userLocationCollection = new UserLocationCollection(userCollection.getId(), locationCollection.getId());
 			userLocationRepository.save(userLocationCollection);
-			//send activation email
-			String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(), userCollection.getMiddleName(), userCollection.getLastName());
+			// send activation email
+			String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
+					userCollection.getMiddleName(), userCollection.getLastName());
 			mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
 			response = new DoctorSignUp();
 			User user = new User();
@@ -172,10 +187,10 @@ public class SignUpServiceImpl implements SignUpService{
 			locations.add(location);
 			hospital.setLocations(locations);
 			response.setHospital(hospital);
-			//user.setPassword(null);
-		} catch(BusinessException be){
+			// user.setPassword(null);
+		} catch (BusinessException be) {
 			throw be;
-		}catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error occured while creating doctor");
 		}
@@ -184,64 +199,65 @@ public class SignUpServiceImpl implements SignUpService{
 
 	public User patientSignUp(PatientSignUpRequest request) {
 		User user = null;
-		try{
-			//get role of specified type
+		try {
+			// get role of specified type
 			RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.PATIENT.getRole());
-			if(roleCollection == null){
-				throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
+			if (roleCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defined properly");
 			}
-			//save user
+			// save user
 			UserCollection userCollection = new UserCollection();
 			BeanUtil.map(request, userCollection);
-			if(request.getImage() != null){
-				String path = "profile-pic";
-				//save image
-				String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(),path);
+			if (request.getImage() != null) {
+				String path = profilePicturePath;
+				// save image
+				String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 				userCollection.setImageUrl(imageurl);
 			}
+			userCollection.setTempPassword(true);
 			userCollection = userRepository.save(userCollection);
 
-			//assign roles
+			// assign roles
 			UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), roleCollection.getId());
 			userRoleRepository.save(userRoleCollection);
-			//save address
+			// save address
 			AddressCollection addressCollection = null;
-			if(request.getAddress() != null){
-			addressCollection = new AddressCollection();
-			BeanUtil.map(request.getAddress(), addressCollection);
-			addressCollection.setUserId(userCollection.getId());
-			addressCollection = addressRepository.save(addressCollection);
+			if (request.getAddress() != null) {
+				addressCollection = new AddressCollection();
+				BeanUtil.map(request.getAddress(), addressCollection);
+				addressCollection.setUserId(userCollection.getId());
+				addressCollection = addressRepository.save(addressCollection);
 			}
-			
-			//save Patient Info
-			PatientCollection patientCollection  = new PatientCollection();
+
+			// save Patient Info
+			PatientCollection patientCollection = new PatientCollection();
 			BeanUtil.map(request, patientCollection);
 			patientCollection.setUserId(userCollection.getId());
-			if(addressCollection != null){
+			if (addressCollection != null) {
 				patientCollection.setAddressId(addressCollection.getId());
 			}
 			patientCollection = patientRepository.save(patientCollection);
 
-			//send activation email
-			String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(), userCollection.getMiddleName(), userCollection.getLastName());
+			// send activation email
+			String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
+					userCollection.getMiddleName(), userCollection.getLastName());
 			mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
 			user = new User();
 			BeanUtil.map(userCollection, user);
-			//user.setPassword(null);
-		}catch(BusinessException be){
+			// user.setPassword(null);
+		} catch (BusinessException be) {
 			throw be;
-		}catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error occured while creating user");
 		}
 		return user;
 	}
 
-	@Override
 	public Boolean checkUserNameExist(String username) {
 		try {
 			UserCollection userCollection = userRepository.findByUserName(username);
-			if(userCollection == null){
+			if (userCollection == null) {
 				return false;
 			}
 			return true;
@@ -251,14 +267,13 @@ public class SignUpServiceImpl implements SignUpService{
 		}
 	}
 
-	@Override
 	public Boolean checkMobileNumExist(String mobileNum) {
 		try {
 			List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNum);
-			if(userCollections != null){
-				if(!userCollections.isEmpty()){
+			if (userCollections != null) {
+				if (!userCollections.isEmpty()) {
 					return true;
-				}else{
+				} else {
 					return false;
 				}
 			}
@@ -267,17 +282,16 @@ public class SignUpServiceImpl implements SignUpService{
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
-		
+
 	}
 
-	@Override
 	public Boolean checkEmailAddressExist(String email) {
 		try {
 			List<UserCollection> userCollections = userRepository.findByEmailAddress(email);
-			if(userCollections != null){
-				if(!userCollections.isEmpty()){
+			if (userCollections != null) {
+				if (!userCollections.isEmpty()) {
 					return true;
-				}else{
+				} else {
 					return false;
 				}
 			}
@@ -288,4 +302,28 @@ public class SignUpServiceImpl implements SignUpService{
 		}
 	}
 
+	public User patientProfilePicChange(PatientProfilePicChangeRequest request) {
+		User user = null;
+		try {
+			UserCollection userCollection = userRepository.findByUserName(request.getUsername());
+			if (userCollection == null) {
+				throw new BusinessException(ServiceError.NotFound, "User not found");
+			} else {
+				if (request.getImage() != null) {
+					String path = profilePicturePath;
+					// save image
+					String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
+					userCollection.setImageUrl(imageurl);
+					userCollection = userRepository.save(userCollection);
+
+					user = new User();
+					BeanUtil.map(userCollection, user);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return user;
+	}
 }

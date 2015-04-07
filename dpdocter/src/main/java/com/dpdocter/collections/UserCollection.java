@@ -49,6 +49,9 @@ public class UserCollection {
 	@Field
 	private Boolean isActive = false;
 
+	@Field
+	private Boolean tempPassword = false;
+
 	public UserCollection() {
 		super();
 	}
@@ -165,11 +168,19 @@ public class UserCollection {
 		this.emailAddress = emailAddress;
 	}
 
+	public Boolean getTempPassword() {
+		return tempPassword;
+	}
+
+	public void setTempPassword(Boolean tempPassword) {
+		this.tempPassword = tempPassword;
+	}
+
 	@Override
 	public String toString() {
 		return "UserCollection [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", userName=" + userName
-				+ ", password=" + password + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl=" + imageUrl + ", dob=" + dob
-				+ ", isActive=" + isActive + "]";
+				+ ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl="
+				+ imageUrl + ", dob=" + dob + ", isActive=" + isActive + ", tempPassword=" + tempPassword + "]";
 	}
 
 }

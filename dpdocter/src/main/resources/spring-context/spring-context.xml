@@ -16,7 +16,8 @@
 		<property name="maxUploadSize" value="100000" />
 
 	</bean> -->
-
+	
+	<context:annotation-config />
 	<context:component-scan base-package="com.dpdocter" />
 	<context:property-placeholder
 		location="classpath:jdbc.properties,classpath:mail.properties,classpath:commons.properties"
