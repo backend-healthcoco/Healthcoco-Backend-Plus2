@@ -90,8 +90,7 @@ public class SignUpServiceImpl implements SignUpService {
 	@Value(value = "${mail.signup.subject.activation}")
 	private String signupSubject;
 
-	@Value(value = "${IMAGE_RESOURCE}")
-	private String profilePicturePath;
+
 
 	/**
 	 * @param UserTemp
@@ -209,12 +208,11 @@ public class SignUpServiceImpl implements SignUpService {
 			UserCollection userCollection = new UserCollection();
 			BeanUtil.map(request, userCollection);
 			if (request.getImage() != null) {
-				String path = profilePicturePath;
+				String path = "profile-image";
 				// save image
 				String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 				userCollection.setImageUrl(imageurl);
 			}
-			userCollection.setTempPassword(true);
 			userCollection = userRepository.save(userCollection);
 
 			// assign roles
@@ -310,7 +308,7 @@ public class SignUpServiceImpl implements SignUpService {
 				throw new BusinessException(ServiceError.NotFound, "User not found");
 			} else {
 				if (request.getImage() != null) {
-					String path = profilePicturePath;
+					String path = "profile-image";
 					// save image
 					String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 					userCollection.setImageUrl(imageurl);

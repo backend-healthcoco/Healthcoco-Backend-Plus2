@@ -121,7 +121,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		try {
 			UserCollection userCollection = userRepository.findOne(request.getUserId());
 			userCollection.setPassword(request.getPassword());
-			userCollection.setTempPassword(false);
+			userCollection.setIsTempPassword(false);
 			userRepository.save(userCollection);
 		} catch (Exception e) {
 			e.printStackTrace();

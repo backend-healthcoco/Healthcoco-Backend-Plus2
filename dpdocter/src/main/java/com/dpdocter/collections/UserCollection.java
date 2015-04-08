@@ -50,7 +50,7 @@ public class UserCollection {
 	private Boolean isActive = false;
 
 	@Field
-	private Boolean tempPassword = false;
+	private Boolean isTempPassword = true;
 
 	public UserCollection() {
 		super();
@@ -168,19 +168,21 @@ public class UserCollection {
 		this.emailAddress = emailAddress;
 	}
 
-	public Boolean getTempPassword() {
-		return tempPassword;
+
+
+	public Boolean getIsTempPassword() {
+		return isTempPassword;
 	}
 
-	public void setTempPassword(Boolean tempPassword) {
-		this.tempPassword = tempPassword;
+	public void setIsTempPassword(Boolean isTempPassword) {
+		this.isTempPassword = isTempPassword;
 	}
 
 	@Override
 	public String toString() {
 		return "UserCollection [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", userName=" + userName
 				+ ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl="
-				+ imageUrl + ", dob=" + dob + ", isActive=" + isActive + ", tempPassword=" + tempPassword + "]";
+				+ imageUrl + ", dob=" + dob + ", isActive=" + isActive + ", tempPassword=" + isTempPassword + "]";
 	}
 
 }

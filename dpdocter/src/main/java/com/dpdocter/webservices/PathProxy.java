@@ -69,12 +69,12 @@ public interface PathProxy {
 		public static final String ADD_NOTES = "/addnotes";
 		public static final String ADD_DIAGRAM = "/adddiagram";
 
-		public static final String DELETE_COMPLAINT = "/deletecomplaint/{id}/{doctorId}";
-		public static final String DELETE_OBSERVATION = "/deleteobservation/{id}/{doctorId}";
-		public static final String DELETE_INVESTIGATION = "/deleteinvestigation/{id}/{doctorId}";
-		public static final String DELETE_DIAGNOSIS = "/deletediagnosis/{id}/{doctorId}";
-		public static final String DELETE_NOTE = "/deletenotes/{id}/{doctorId}";
-		public static final String DELETE_DIAGRAM = "/deletediagram/{id}/{doctorId}";
+		public static final String DELETE_COMPLAINT = "/deletecomplaint/{id}/{doctorId}/{locationId}/{hospitalId}";
+		public static final String DELETE_OBSERVATION = "/deleteobservation/{id}/{doctorId}/{locationId}/{hospitalId}";
+		public static final String DELETE_INVESTIGATION = "/deleteinvestigation/{id}/{doctorId}/{locationId}/{hospitalId}";
+		public static final String DELETE_DIAGNOSIS = "/deletediagnosis/{id}/{doctorId}/{locationId}/{hospitalId}";
+		public static final String DELETE_NOTE = "/deletenotes/{id}/{doctorId}/{locationId}/{hospitalId}";
+		public static final String DELETE_DIAGRAM = "/deletediagram/{id}/{doctorId}/{locationId}/{hospitalId}";
 
 	}
 

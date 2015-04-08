@@ -91,7 +91,7 @@ public class LoginServiceImpl implements LoginService {
 					response = new LoginResponse();
 					response.setUser(user);
 					response.setRole(roleCollection.getRole());
-					response.setTempPassword(userCollection.getTempPassword());
+					response.setIsTempPassword(userCollection.getIsTempPassword());
 					return response;
 				} else {
 					List<UserLocationCollection> userLocationCollections = userLocationRepository.findByUserId(userCollection.getId());

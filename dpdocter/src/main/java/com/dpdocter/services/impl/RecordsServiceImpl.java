@@ -263,7 +263,11 @@ public class RecordsServiceImpl implements RecordsService {
 		try {
 			RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
 			if (recordsCollection != null) {
-				return new File(recordsCollection.getRecordsPath());
+				if(recordsCollection.getRecordsPath() != null){
+					return new File(recordsCollection.getRecordsPath());
+				}else{
+					throw new BusinessException(ServiceError.Unknown, "Record Path for this Record is Empty.");
+				}
 			} else {
 				throw new BusinessException(ServiceError.Unknown, "Record not found.Please check recordId.");
 			}
