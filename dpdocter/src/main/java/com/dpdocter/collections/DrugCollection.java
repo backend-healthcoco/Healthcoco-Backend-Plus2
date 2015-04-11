@@ -21,6 +21,9 @@ public class DrugCollection {
 	private String drugName;
 	
 	@Field
+	private String description;
+	
+	@Field
 	private Strength strength;
 	
 	@Field
@@ -28,9 +31,10 @@ public class DrugCollection {
 	
 	@Field
 	private String doctorId;
+	   
 	
-	
-
+	@Field
+	private boolean isDeleted = false;
 
 	public String getId() {
 		return id;
@@ -39,6 +43,8 @@ public class DrugCollection {
 	public void setId(String id) {
 		this.id = id;
 	}
+	
+	
 
 	public DrugTypeEnum getDrugType() {
 		return drugType;
@@ -83,11 +89,29 @@ public class DrugCollection {
 	
 	
 
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public boolean isDeleted() {
+		return isDeleted;
+	}
+
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
 	@Override
 	public String toString() {
 		return "DrugCollection [id=" + id + ", drugType=" + drugType
-				+ ", drugName=" + drugName + ", strength=" + strength
-				+ ", genericNames=" + genericNames + ", doctorId=" + doctorId
-				+ "]";
+				+ ", drugName=" + drugName + ", description=" + description
+				+ ", strength=" + strength + ", genericNames=" + genericNames
+				+ ", doctorId=" + doctorId + ", isDeleted=" + isDeleted + "]";
 	}
+
+
 }
