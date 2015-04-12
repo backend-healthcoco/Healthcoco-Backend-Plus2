@@ -28,7 +28,7 @@ public class UserCollection {
 	@Field
 	private String password;
 
-	@Field
+	@Indexed(unique = true)
 	private String emailAddress;
 
 	@Field

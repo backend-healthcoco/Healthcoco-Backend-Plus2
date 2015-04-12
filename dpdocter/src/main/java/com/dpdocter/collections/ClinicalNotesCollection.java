@@ -13,19 +13,19 @@ public class ClinicalNotesCollection {
 	private String id;
 	
 	@Field
-	private String notes;
+	private List<String> notes;
 	
 	@Field
-	private String observation;
+	private List<String> observation;
 	
 	@Field
-	private String investigation;
+	private List<String> investigation;
 	
 	@Field
-	private String diagnoses;
+	private List<String> diagnoses;
 	
 	@Field
-	private String complaints;
+	private List<String> complaints;
 	
 	@Field
 	private List<String> diagrams;
@@ -34,7 +34,7 @@ public class ClinicalNotesCollection {
 	private List<String> diagramsPaths;
 	
 	@Field
-	private String comments;
+	private List<String> comments;
 	
 	@Field
 	private String doctorId;
@@ -56,43 +56,43 @@ public class ClinicalNotesCollection {
 		this.id = id;
 	}
 
-	public String getNotes() {
+	public List<String> getNotes() {
 		return notes;
 	}
 
-	public void setNotes(String notes) {
+	public void setNotes(List<String> notes) {
 		this.notes = notes;
 	}
 
-	public String getObservation() {
+	public List<String> getObservation() {
 		return observation;
 	}
 
-	public void setObservation(String observation) {
+	public void setObservation(List<String> observation) {
 		this.observation = observation;
 	}
 
-	public String getInvestigation() {
+	public List<String> getInvestigation() {
 		return investigation;
 	}
 
-	public void setInvestigation(String investigation) {
+	public void setInvestigation(List<String> investigation) {
 		this.investigation = investigation;
 	}
 
-	public String getDiagnoses() {
+	public List<String> getDiagnoses() {
 		return diagnoses;
 	}
 
-	public void setDiagnoses(String diagnoses) {
+	public void setDiagnoses(List<String> diagnoses) {
 		this.diagnoses = diagnoses;
 	}
 
-	public String getComplaints() {
+	public List<String> getComplaints() {
 		return complaints;
 	}
 
-	public void setComplaints(String complaints) {
+	public void setComplaints(List<String> complaints) {
 		this.complaints = complaints;
 	}
 
@@ -112,11 +112,11 @@ public class ClinicalNotesCollection {
 		this.diagramsPaths = diagramsPaths;
 	}
 
-	public String getComments() {
+	public List<String> getComments() {
 		return comments;
 	}
 
-	public void setComments(String comments) {
+	public void setComments(List<String> comments) {
 		this.comments = comments;
 	}
 
@@ -163,8 +163,4 @@ public class ClinicalNotesCollection {
 				+ hospitalId + ", createdDate=" + createdDate + "]";
 	}
 
-
-	
-	
-	
 }

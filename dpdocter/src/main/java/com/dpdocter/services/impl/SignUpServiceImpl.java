@@ -285,7 +285,7 @@ public class SignUpServiceImpl implements SignUpService {
 
 	public Boolean checkEmailAddressExist(String email) {
 		try {
-			List<UserCollection> userCollections = userRepository.findByEmailAddress(email);
+			List<UserCollection> userCollections = userRepository.findByEmailAddressIgnoreCase(email);
 			if (userCollections != null) {
 				if (!userCollections.isEmpty()) {
 					return true;

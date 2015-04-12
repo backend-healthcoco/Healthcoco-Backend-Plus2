@@ -6,19 +6,19 @@ public class ClinicalNotes {
 
 	private String id;
 
-	private Complaint complaints;
+	private List<Complaint> complaints;
 
-	private Observation observation;
+	private List<Observation> observations;
 
-	private Investigation investigation;
+	private List<Investigation> investigations;
 
-	private Diagnosis diagnoses;
+	private List<Diagnosis> diagnoses;
 	
 	private Long createdDate;
 
 	private List<Diagram> diagrams;
 
-	private Notes notes;
+	private List<Notes> notes;
 
 	private String doctorId;
 
@@ -34,35 +34,35 @@ public class ClinicalNotes {
 		this.id = id;
 	}
 
-	public Complaint getComplaints() {
+	public List<Complaint> getComplaints() {
 		return complaints;
 	}
 
-	public void setComplaints(Complaint complaints) {
+	public void setComplaints(List<Complaint> complaints) {
 		this.complaints = complaints;
 	}
 
-	public Observation getObservation() {
-		return observation;
+	public List<Observation> getObservations() {
+		return observations;
 	}
 
-	public void setObservation(Observation observation) {
-		this.observation = observation;
+	public void setObservations(List<Observation> observations) {
+		this.observations = observations;
 	}
 
-	public Investigation getInvestigation() {
-		return investigation;
+	public List<Investigation> getInvestigations() {
+		return investigations;
 	}
 
-	public void setInvestigation(Investigation investigation) {
-		this.investigation = investigation;
+	public void setInvestigations(List<Investigation> investigations) {
+		this.investigations = investigations;
 	}
 
-	public Diagnosis getDiagnoses() {
+	public List<Diagnosis> getDiagnoses() {
 		return diagnoses;
 	}
 
-	public void setDiagnoses(Diagnosis diagnoses) {
+	public void setDiagnoses(List<Diagnosis> diagnoses) {
 		this.diagnoses = diagnoses;
 	}
 
@@ -82,11 +82,11 @@ public class ClinicalNotes {
 		this.diagrams = diagrams;
 	}
 
-	public Notes getNotes() {
+	public List<Notes> getNotes() {
 		return notes;
 	}
 
-	public void setNotes(Notes notes) {
+	public void setNotes(List<Notes> notes) {
 		this.notes = notes;
 	}
 
@@ -117,14 +117,14 @@ public class ClinicalNotes {
 	@Override
 	public String toString() {
 		return "ClinicalNotes [id=" + id + ", complaints=" + complaints
-				+ ", observation=" + observation + ", investigation="
-				+ investigation + ", diagnoses=" + diagnoses + ", createdDate="
-				+ createdDate + ", diagrams=" + diagrams + ", notes=" + notes
-				+ ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + "]";
+				+ ", observations=" + observations + ", investigations="
+				+ investigations + ", diagnoses=" + diagnoses
+				+ ", createdDate=" + createdDate + ", diagrams=" + diagrams
+				+ ", notes=" + notes + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ "]";
 	}
 
-	
 	
 	
 }

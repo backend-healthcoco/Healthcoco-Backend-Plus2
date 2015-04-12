@@ -15,13 +15,17 @@ import com.dpdocter.collections.UserCollection;
 public interface UserRepository extends MongoRepository<UserCollection, String> {
 	public UserCollection findByUserName(String userName);
 
-	public List<UserCollection> findByEmailAddress(String emailAddress);
+	public List<UserCollection> findByEmailAddressIgnoreCase(String emailAddress);
 
 	@Query("{'userName':?0,'password':?1}")
 	public UserCollection findByUserNameAndPass(String userName, String pasword);
-
+	
+	public UserCollection findByPasswordAndUserNameIgnoreCase(String password,String userName);
+	
 	@Query("{'emailAddress':?0,'password':?1}")
 	public UserCollection findByEmailAddressAndPass(String emailAddress, String pasword);
+	
+	public UserCollection findByPasswordAndEmailAddressIgnoreCase(String pasword,String emailAddress);
 
 	@Query("{'firstName':?0,'middleName':?1,'lastName':?2,'emailAddress':?3,'phoneNumber':?4}")
 	public UserCollection checkPatient(String firstName, String middleName, String lastName, String emailAddress, String phoneNumber);

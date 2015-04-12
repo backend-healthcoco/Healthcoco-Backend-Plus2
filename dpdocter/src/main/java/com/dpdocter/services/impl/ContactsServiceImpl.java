@@ -152,16 +152,24 @@ public class ContactsServiceImpl implements ContactsService {
 	@Override
 	public void blockPatient(String patientId, String docterId) {
 		try {
-			Query query = new Query();
+			/*Query query = new Query();
 			query.addCriteria(Criteria.where("docterId").is(docterId)).addCriteria(Criteria.where("contactId").is(patientId));
 			Update update = new Update();
 			update.set("isBlocked", true);
-			mongoTemplate.updateFirst(query, update, DoctorContactCollection.class);
+			mongoTemplate.updateFirst(query, update, DoctorContactCollection.class);*/
+			
+			DoctorContactCollection doctorContactCollection = doctorContactsRepository.findByDoctorIdAndContactId(docterId, patientId);
+			if(doctorContactCollection != null){
+				doctorContactCollection.setIsBlocked(true);
+				doctorContactsRepository.save(doctorContactCollection);
+			}else{
+				throw new BusinessException(ServiceError.Unknown, "PatientId and DoctorId send is not proper.");
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
-		
 	}
 
 

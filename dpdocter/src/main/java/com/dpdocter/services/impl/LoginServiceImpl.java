@@ -68,9 +68,11 @@ public class LoginServiceImpl implements LoginService {
 			/**
 			 * Check if user exist.
 			 */
-			UserCollection userCollection = userRepository.findByUserNameAndPass(request.getUsername(), request.getPassword());
+			//UserCollection userCollection = userRepository.findByUserNameAndPass(request.getUsername(), request.getPassword());
+			UserCollection userCollection = userRepository.findByPasswordAndUserNameIgnoreCase(request.getPassword(), request.getUsername());
 			if (userCollection == null) {
-				userCollection = userRepository.findByEmailAddressAndPass(request.getUsername(), request.getPassword());
+				//userCollection = userRepository.findByEmailAddressAndPass(request.getUsername(), request.getPassword());
+				userCollection = userRepository.findByPasswordAndEmailAddressIgnoreCase(request.getPassword(), request.getUsername());
 				if (userCollection == null) {
 					throw new BusinessException(ServiceError.Unknown, "Invalid username and Password");
 				}
