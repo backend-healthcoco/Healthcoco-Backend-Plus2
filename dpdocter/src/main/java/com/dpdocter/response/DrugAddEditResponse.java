@@ -1,45 +1,28 @@
-package com.dpdocter.collections;
+package com.dpdocter.response;
 
 import java.util.List;
-
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.Strength;
 import com.dpdocter.enums.DrugTypeEnum;
 
-@Document(collection = "drug_cl")
-public class DrugCollection {
-	@Id
+public class DrugAddEditResponse {
 	private String id;
 
-	@Field
 	private DrugTypeEnum drugType;
 
-	@Field
 	private String drugName;
 
-	@Field
 	private String description;
 
-	@Field
 	private Strength strength;
 
-	@Field
 	private List<String> genericNames;
 
-	@Field
 	private String doctorId;
 
-	@Field
 	private String hospitalId;
 
-	@Field
 	private String locationId;
-
-	@Field
-	private boolean isDeleted = false;
 
 	public String getId() {
 		return id;
@@ -113,19 +96,10 @@ public class DrugCollection {
 		this.locationId = locationId;
 	}
 
-	public boolean isDeleted() {
-		return isDeleted;
-	}
-
-	public void setDeleted(boolean isDeleted) {
-		this.isDeleted = isDeleted;
-	}
-
 	@Override
 	public String toString() {
-		return "DrugCollection [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", description=" + description + ", strength=" + strength
-				+ ", genericNames=" + genericNames + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", isDeleted="
-				+ isDeleted + "]";
+		return "DrugAddEditResponse [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", description=" + description + ", strength="
+				+ strength + ", genericNames=" + genericNames + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + "]";
 	}
 
 }
