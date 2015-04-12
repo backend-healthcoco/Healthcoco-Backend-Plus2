@@ -30,8 +30,8 @@ public class DrugApi {
 	public Response<DrugAddEditResponse> addDrug(DrugAddEditRequest request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
-		}
-		DrugAddEditResponse drugAddEditResponse = drugServices.addDrug(request);
+	    	}
+ 		DrugAddEditResponse drugAddEditResponse = drugServices.addDrug(request);
 		Response<DrugAddEditResponse> response = new Response<DrugAddEditResponse>();
 		response.setData(drugAddEditResponse);
 		return response;
