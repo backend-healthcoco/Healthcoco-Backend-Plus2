@@ -19,7 +19,7 @@ public class Address {
 	private String roadName;
 
 	private String houseNumber;
-	
+
 	private String locality;
 
 	private String userId;
@@ -115,9 +115,6 @@ public class Address {
 	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
-	
-
-	
 
 	public String getLocality() {
 		return locality;
@@ -129,16 +126,9 @@ public class Address {
 
 	@Override
 	public String toString() {
-		return "Address [id=" + id + ", country=" + country + ", city=" + city
-				+ ", state=" + state + ", postalCode=" + postalCode
-				+ ", roadNumber=" + roadNumber + ", roadName=" + roadName
-				+ ", houseNumber=" + houseNumber + ", locality=" + locality
-				+ ", userId=" + userId + ", latitude=" + latitude
-				+ ", longitude=" + longitude + "]";
+		return "Address [id=" + id + ", country=" + country + ", city=" + city + ", state=" + state + ", postalCode=" + postalCode + ", roadNumber="
+				+ roadNumber + ", roadName=" + roadName + ", houseNumber=" + houseNumber + ", locality=" + locality + ", userId=" + userId + ", latitude="
+				+ latitude + ", longitude=" + longitude + "]";
 	}
-
-	
-
-	
 
 }

@@ -104,7 +104,7 @@ public interface PathProxy {
 
 	}
 
-	public static final String DRUG_BASE_URL = BASE_URL + "/drug";
+	public static final String DRUG_BASE_URL = BASE_URL + "/prescription";
 
 	public interface DrugUrls {
 		public static final String ADD_DRUG = "addDrug";

@@ -4,10 +4,10 @@ import com.dpdocter.request.DrugAddEditRequest;
 import com.dpdocter.request.DrugDeleteRequest;
 import com.dpdocter.response.DrugAddEditResponse;
 
-public interface DrugServices {
+public interface PrescriptionServices {
 	DrugAddEditResponse addDrug(DrugAddEditRequest request);
 
 	DrugAddEditResponse editDrug(DrugAddEditRequest request);
 
-	String deleteDrug(DrugDeleteRequest request);
+	Boolean deleteDrug(DrugDeleteRequest request);
 }

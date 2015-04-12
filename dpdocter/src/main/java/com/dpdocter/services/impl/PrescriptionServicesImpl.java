@@ -11,10 +11,10 @@ import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.request.DrugAddEditRequest;
 import com.dpdocter.request.DrugDeleteRequest;
 import com.dpdocter.response.DrugAddEditResponse;
-import com.dpdocter.services.DrugServices;
+import com.dpdocter.services.PrescriptionServices;
 
 @Service
-public class DrugServicesImpl implements DrugServices {
+public class PrescriptionServicesImpl implements PrescriptionServices {
 	@Autowired
 	private DrugRepository drugRepository;
 
@@ -48,8 +48,8 @@ public class DrugServicesImpl implements DrugServices {
 		return response;
 	}
 
-	public String deleteDrug(DrugDeleteRequest request) {
-		String response = null;
+	public Boolean deleteDrug(DrugDeleteRequest request) {
+		Boolean response = false;
 		DrugCollection drugCollection = null;
 		try {
 			drugCollection = drugRepository.findOne(request.getId());
@@ -59,7 +59,7 @@ public class DrugServicesImpl implements DrugServices {
 							&& drugCollection.getLocationId().equals(request.getLocationId())) {
 						drugCollection.setDeleted(true);
 						drugCollection = drugRepository.save(drugCollection);
-						response = "DRUG DELETED SUCCESSFULLY";
+						response = true;
 					} else {
 						throw new BusinessException(ServiceError.NotAuthorized, "Invalid Doctor Id, Hospital Id, Or Location Id");
 					}

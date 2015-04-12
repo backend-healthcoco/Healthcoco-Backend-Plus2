@@ -14,24 +14,24 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.DrugAddEditRequest;
 import com.dpdocter.request.DrugDeleteRequest;
 import com.dpdocter.response.DrugAddEditResponse;
-import com.dpdocter.services.DrugServices;
+import com.dpdocter.services.PrescriptionServices;
 import common.util.web.Response;
 
 @Component
 @Path(PathProxy.DRUG_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class DrugApi {
+public class PrescriptionApi {
 	@Autowired
-	private DrugServices drugServices;
+	private PrescriptionServices drugServices;
 
 	@Path(value = PathProxy.DrugUrls.ADD_DRUG)
 	@POST
 	public Response<DrugAddEditResponse> addDrug(DrugAddEditRequest request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
-	    	}
- 		DrugAddEditResponse drugAddEditResponse = drugServices.addDrug(request);
+		}
+		DrugAddEditResponse drugAddEditResponse = drugServices.addDrug(request);
 		Response<DrugAddEditResponse> response = new Response<DrugAddEditResponse>();
 		response.setData(drugAddEditResponse);
 		return response;
@@ -51,7 +51,7 @@ public class DrugApi {
 
 	@Path(value = PathProxy.DrugUrls.DELETE_DRUG)
 	@POST
-	public Response<String> deleteDrug(DrugDeleteRequest request) {
+	public Response<Boolean> deleteDrug(DrugDeleteRequest request) {
 		if (request != null) {
 			if (request.getId() == null || request.getId().isEmpty() || request.getDoctorId() == null || request.getDoctorId().isEmpty()
 					|| request.getHospitalId() == null || request.getHospitalId().isEmpty() || request.getLocationId() == null
@@ -62,8 +62,8 @@ public class DrugApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 		}
 
-		String drugDeleteResponse = drugServices.deleteDrug(request);
-		Response<String> response = new Response<String>();
+		Boolean drugDeleteResponse = drugServices.deleteDrug(request);
+		Response<Boolean> response = new Response<Boolean>();
 		response.setData(drugDeleteResponse);
 		return response;
 	}
