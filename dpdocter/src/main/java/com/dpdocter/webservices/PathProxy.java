@@ -104,12 +104,16 @@ public interface PathProxy {
 
 	}
 
-	public static final String DRUG_BASE_URL = BASE_URL + "/prescription";
+	public static final String PRESCRIPTION_BASE_URL = BASE_URL + "/prescription";
 
-	public interface DrugUrls {
+	public interface PrescriptionUrls {
 		public static final String ADD_DRUG = "addDrug";
 		public static final String EDIT_DRUG = "editDrug";
 		public static final String DELETE_DRUG = "deleteDrug";
+
+		public static final String ADD_TEMPLATE = "addTemplate";
+		public static final String EDIT_TEMPLATE = "editTemplate";
+		public static final String DELETE_TEMPLATE = "deleteTemplate";
 	}
 
 }

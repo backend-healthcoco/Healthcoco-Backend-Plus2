@@ -1,6 +1,7 @@
 package com.dpdocter.response;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.dpdocter.beans.Strength;
 import com.dpdocter.enums.DrugTypeEnum;
@@ -23,6 +24,8 @@ public class DrugAddEditResponse {
 	private String hospitalId;
 
 	private String locationId;
+
+	private UUID drugCode;
 
 	public String getId() {
 		return id;
@@ -94,6 +97,14 @@ public class DrugAddEditResponse {
 
 	public void setLocationId(String locationId) {
 		this.locationId = locationId;
+	}
+
+	public UUID getDrugCode() {
+		return drugCode;
+	}
+
+	public void setDrugCode(UUID drugCode) {
+		this.drugCode = drugCode;
 	}
 
 	@Override

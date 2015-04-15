@@ -1,6 +1,7 @@
 package com.dpdocter.collections;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -40,6 +41,9 @@ public class DrugCollection {
 
 	@Field
 	private boolean isDeleted = false;
+
+	@Field
+	private UUID drugCode;
 
 	public String getId() {
 		return id;
@@ -113,8 +117,20 @@ public class DrugCollection {
 		this.locationId = locationId;
 	}
 
-	public boolean isDeleted() {
+	public boolean getIsDeleted() {
 		return isDeleted;
+	}
+
+	public void setIsDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
+	public UUID getDrugCode() {
+		return drugCode;
+	}
+
+	public void setDrugCode(UUID drugCode) {
+		this.drugCode = drugCode;
 	}
 
 	public void setDeleted(boolean isDeleted) {
@@ -125,7 +141,7 @@ public class DrugCollection {
 	public String toString() {
 		return "DrugCollection [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", description=" + description + ", strength=" + strength
 				+ ", genericNames=" + genericNames + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", isDeleted="
-				+ isDeleted + "]";
+				+ isDeleted + ", drugCode=" + drugCode + "]";
 	}
 
 }

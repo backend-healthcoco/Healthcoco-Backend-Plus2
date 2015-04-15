@@ -23,7 +23,7 @@ public interface ClinicalNotesService {
 
 	List<ClinicalNotes> getPatientsClinicalNotesWithVarifiedOTP(String patientId);
 
-	List<ClinicalNotes> getPatientsClinicalNotesWithoutVarifiedOTP(String patientId, String doctorId,String locationId,String hospitalId);
+	List<ClinicalNotes> getPatientsClinicalNotesWithoutVarifiedOTP(String patientId, String doctorId, String locationId, String hospitalId);
 
 	Complaint addEditComplaint(Complaint complaint);
 

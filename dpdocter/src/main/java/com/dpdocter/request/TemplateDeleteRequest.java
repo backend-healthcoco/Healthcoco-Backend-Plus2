@@ -1,8 +1,6 @@
 package com.dpdocter.request;
 
-import java.util.UUID;
-
-public class DrugDeleteRequest {
+public class TemplateDeleteRequest {
 	private String id;
 
 	private String doctorId;
@@ -10,8 +8,6 @@ public class DrugDeleteRequest {
 	private String hospitalId;
 
 	private String locationId;
-
-	private UUID drugCode;
 
 	public String getId() {
 		return id;
@@ -45,18 +41,9 @@ public class DrugDeleteRequest {
 		this.locationId = locationId;
 	}
 
-	public UUID getDrugCode() {
-		return drugCode;
-	}
-
-	public void setDrugCode(UUID drugCode) {
-		this.drugCode = drugCode;
-	}
-
 	@Override
 	public String toString() {
-		return "DrugDeleteRequest [id=" + id + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", drugCode="
-				+ drugCode + "]";
+		return "TemplateDeleteRequest [id=" + id + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + "]";
 	}
 
 }

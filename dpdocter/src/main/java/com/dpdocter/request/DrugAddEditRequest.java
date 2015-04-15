@@ -1,6 +1,7 @@
 package com.dpdocter.request;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.dpdocter.beans.Strength;
 import com.dpdocter.enums.DrugTypeEnum;
@@ -23,6 +24,8 @@ public class DrugAddEditRequest {
 	private String hospitalId;
 
 	private String locationId;
+
+	private UUID drugCode;
 
 	public String getId() {
 		return id;
@@ -96,10 +99,19 @@ public class DrugAddEditRequest {
 		this.locationId = locationId;
 	}
 
+	public UUID getDrugCode() {
+		return drugCode;
+	}
+
+	public void setDrugCode(UUID drugCode) {
+		this.drugCode = drugCode;
+	}
+
 	@Override
 	public String toString() {
 		return "DrugAddEditRequest [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", description=" + description + ", strength=" + strength
-				+ ", genericNames=" + genericNames + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + "]";
+				+ ", genericNames=" + genericNames + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", drugCode="
+				+ drugCode + "]";
 	}
 
 }
