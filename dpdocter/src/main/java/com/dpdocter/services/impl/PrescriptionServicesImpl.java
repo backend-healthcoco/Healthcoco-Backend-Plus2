@@ -242,4 +242,22 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
+	@Override
+	public DrugAddEditResponse getDrugById(String drugId) {
+		DrugAddEditResponse drugAddEditResponse = null;
+		try {
+			DrugCollection drugCollection = drugRepository.findOne(drugId);
+			if(drugCollection != null){
+				drugAddEditResponse = new DrugAddEditResponse();
+				BeanUtil.map(drugCollection, drugAddEditResponse);
+			}else{
+				throw new BusinessException(ServiceError.Unknown, "Drug not found.Please check Drug Id");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug");
+		}
+		return drugAddEditResponse;
+	}
+
 }

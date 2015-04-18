@@ -3,14 +3,17 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.Tags;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.DrugAddEditRequest;
@@ -181,4 +184,17 @@ public class PrescriptionApi {
 		response.setData(prescriptionGetResponse);
 		return response;
 	}
+	
+	@Path(value = PathProxy.PrescriptionUrls.GET_DRUG_ID)
+	@GET
+	public Response<DrugAddEditResponse> getDrugDetails(@PathParam("drugId") String drugId) {
+		if(drugId == null){
+			throw new BusinessException(ServiceError.InvalidInput, "drugId Is NULL");
+		}
+		DrugAddEditResponse drugAddEditResponse = prescriptionServices.getDrugById(drugId);
+		Response<DrugAddEditResponse> response = new Response<DrugAddEditResponse>();
+		response.setData(drugAddEditResponse);
+		return response;
+	}
+	
 }

@@ -34,4 +34,8 @@ public interface PrescriptionServices {
 	Boolean deletePrescription(PrescriptionDeleteRequest request);
 
 	List<PrescriptionGetResponse> getPrescription(PrescriptionGetRequest request);
+	
+	DrugAddEditResponse getDrugById(String drugId);
+	
+	
 }

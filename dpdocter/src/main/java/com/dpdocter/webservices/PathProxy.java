@@ -119,6 +119,7 @@ public interface PathProxy {
 		public static final String EDIT_PRESCRIPTION = "editPrescription";
 		public static final String DELETE_PRESCRIPTION = "deletePrescription";
 		public static final String GET_PRESCRIPTION = "getPrescription";
+		public static final String GET_DRUG_ID = "getDrugDetails/{drugId}";
 	}
 
 }
