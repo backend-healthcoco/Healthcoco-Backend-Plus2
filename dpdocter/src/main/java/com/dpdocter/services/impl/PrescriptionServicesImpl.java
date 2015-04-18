@@ -1,22 +1,33 @@
 package com.dpdocter.services.impl;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.collections.DrugCollection;
+import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.TemplateCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DrugRepository;
+import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.TemplateRepository;
 import com.dpdocter.request.DrugAddEditRequest;
 import com.dpdocter.request.DrugDeleteRequest;
+import com.dpdocter.request.PrescriptionAddEditRequest;
+import com.dpdocter.request.PrescriptionDeleteRequest;
+import com.dpdocter.request.PrescriptionGetRequest;
 import com.dpdocter.request.TemplateAddEditRequest;
 import com.dpdocter.request.TemplateDeleteRequest;
 import com.dpdocter.response.DrugAddEditResponse;
+import com.dpdocter.response.PrescriptionAddEditResponse;
+import com.dpdocter.response.PrescriptionGetResponse;
 import com.dpdocter.response.TemplateAddEditResponse;
 import com.dpdocter.services.PrescriptionServices;
 
@@ -27,6 +38,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Autowired
 	private TemplateRepository templateRepository;
+
+	@Autowired
+	private PrescriptionRepository prescriptionRepository;
 
 	public DrugAddEditResponse addDrug(DrugAddEditRequest request) {
 		DrugAddEditResponse response = null;
@@ -141,7 +155,89 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Template");
+		}
+		return response;
+	}
+
+	public PrescriptionAddEditResponse addPrescription(PrescriptionAddEditRequest request) {
+		PrescriptionAddEditResponse response = null;
+		PrescriptionCollection prescriptionCollection = new PrescriptionCollection();
+		BeanUtil.map(request, prescriptionCollection);
+		try {
+			prescriptionCollection.setCreatedTime(new Date());
+			prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
+			response = new PrescriptionAddEditResponse();
+			BeanUtil.map(prescriptionCollection, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Prescription");
+		}
+		return response;
+	}
+
+	public PrescriptionAddEditResponse editPrescription(PrescriptionAddEditRequest request) {
+		PrescriptionAddEditResponse response = null;
+		PrescriptionCollection prescriptionCollection = new PrescriptionCollection();
+		BeanUtil.map(request, prescriptionCollection);
+		try {
+			prescriptionCollection.setCreatedTime(new Date());
+			prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
+			response = new PrescriptionAddEditResponse();
+			BeanUtil.map(prescriptionCollection, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Prescription");
+		}
+		return response;
+	}
+
+	public Boolean deletePrescription(PrescriptionDeleteRequest request) {
+		Boolean response = false;
+		PrescriptionCollection prescriptionCollection = null;
+		try {
+			prescriptionCollection = prescriptionRepository.findOne(request.getId());
+			if (prescriptionCollection != null) {
+				if (prescriptionCollection.getDoctorId() != null && prescriptionCollection.getHospitalId() != null
+						&& prescriptionCollection.getLocationId() != null) {
+					if (prescriptionCollection.getDoctorId().equals(request.getDoctorId())
+							&& prescriptionCollection.getHospitalId().equals(request.getHospitalId())
+							&& prescriptionCollection.getLocationId().equals(request.getLocationId())
+							&& prescriptionCollection.getPatientId().equals(request.getPatientId())) {
+						prescriptionCollection.setIsDeleted(true);
+						prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
+						response = true;
+					} else {
+						throw new BusinessException(ServiceError.NotAuthorized, "Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");
+					}
+				} else {
+					throw new BusinessException(ServiceError.NotAuthorized, "Cannot Delete Prescription");
+				}
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "Prescription Not Found");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Prescription");
+		}
+		return response;
+	}
+
+	public List<PrescriptionGetResponse> getPrescription(PrescriptionGetRequest request) {
+		List<PrescriptionGetResponse> response = null;
+		List<PrescriptionCollection> prescriptionCollections = new ArrayList<PrescriptionCollection>();
+		try {
+			prescriptionCollections = prescriptionRepository.getPrescription(request.getDoctorId(), request.getHospitalId(), request.getLocationId(),
+					request.getPatientId(), new Sort(Sort.Direction.DESC, "createdTime"));
+			if (prescriptionCollections != null) {
+				response = new ArrayList<PrescriptionGetResponse>();
+				BeanUtil.map(prescriptionCollections, response);
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "Prescription Not Found");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Prescription");
 		}
 		return response;
 	}

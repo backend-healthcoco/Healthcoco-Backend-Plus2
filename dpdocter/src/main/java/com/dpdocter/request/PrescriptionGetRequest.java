@@ -1,6 +1,6 @@
 package com.dpdocter.request;
 
-public class DrugDeleteRequest {
+public class PrescriptionGetRequest {
 	private String id;
 
 	private String doctorId;
@@ -8,6 +8,8 @@ public class DrugDeleteRequest {
 	private String hospitalId;
 
 	private String locationId;
+
+	private String patientId;
 
 	public String getId() {
 		return id;
@@ -41,9 +43,18 @@ public class DrugDeleteRequest {
 		this.locationId = locationId;
 	}
 
+	public String getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
+
 	@Override
 	public String toString() {
-		return "DrugDeleteRequest [id=" + id + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + "]";
+		return "PrescriptionGetRequest [id=" + id + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", patientId="
+				+ patientId + "]";
 	}
 
 }

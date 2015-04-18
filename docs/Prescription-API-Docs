@@ -1,0 +1,23 @@
+http://localhost:8080/dpdocter/api/v1/prescription/addPrescription
+
+Request - {"hospitalId":"H12345","items":[{"direction":"WITH_MILK","instructions":"Test Instructions","dosage":"1-1-1","duration":{"unit":"DAY","value":"1"},"drugId":"552a302e986c027021cae6ae"}],"doctorId":"D12345","locationId":"L12345","id":null, "patientId" : "P12345"}
+
+Response - {"dataList":null,"data":{"doctorId":"D12345","hospitalId":"H12345","locationId":"L12345","patientId":"P12345","items":[{"drugId":"552a302e986c027021cae6ae","dosage":"1-1-1","direction":"WITH_MILK","instructions":"Test Instructions","duration":{"unit":"DAY","value":"1"}}],"name":null,"id":"5532701a2736ab7822cdfff5","createdTime":1429368858733}}
+
+http://localhost:8080/dpdocter/api/v1/prescription/editPrescription
+
+Request - {"hospitalId":"H12345","items":[{"direction":"WITH_MILK","instructions":"Test Instructions","dosage":"1-1-1","duration":{"unit":"DAY","value":"1"},"drugId":"552a302e986c027021cae6ae"}],"doctorId":"D12345","locationId":"L12345","id":"5532701a2736ab7822cdfff5", "patientId" : "P123456"}
+
+Response - {"dataList":null,"data":{"doctorId":"D12345","hospitalId":"H12345","locationId":"L12345","patientId":"P123456","items":[{"drugId":"552a302e986c027021cae6ae","dosage":"1-1-1","direction":"WITH_MILK","instructions":"Test Instructions","duration":{"unit":"DAY","value":"1"}}],"name":null,"id":"5532701a2736ab7822cdfff5","createdTime":1429369399396}}
+
+http://localhost:8080/dpdocter/api/v1/prescription/deletePrescription
+
+Request - {"hospitalId":"H12345","doctorId":"D12345","locationId":"L12345","id":"553273352736b126f7f46224", "patientId" : "P123456"}
+
+Response - {"dataList":null,"data":true}
+
+http://localhost:8080/dpdocter/api/v1/prescription/getPrescription
+
+Request - {"hospitalId":"H12345","doctorId":"D12345","locationId":"L12345", "patientId" : "P123456"}
+
+Response - {"dataList":null,"data":[{"doctorId":"D12345","hospitalId":"H12345","locationId":"L12345","patientId":"P123456","isDeleted":true,"items":[{"drugId":"552ed8df2736165ddf48ac44","dosage":"1-1-1","direction":"WITH_MILK","instructions":"Test Instructions","duration":{"unit":"DAY","value":"1"}}],"name":null,"id":"553273352736b126f7f46224","createdTime":1429369653642},{"doctorId":"D12345","hospitalId":"H12345","locationId":"L12345","patientId":"P123456","isDeleted":false,"items":[{"drugId":"552a302e986c027021cae6ae","dosage":"1-1-1","direction":"WITH_MILK","instructions":"Test Instructions","duration":{"unit":"DAY","value":"1"}}],"name":null,"id":"5532701a2736ab7822cdfff5","createdTime":1429369399396}]}

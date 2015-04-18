@@ -114,6 +114,11 @@ public interface PathProxy {
 		public static final String ADD_TEMPLATE = "addTemplate";
 		public static final String EDIT_TEMPLATE = "editTemplate";
 		public static final String DELETE_TEMPLATE = "deleteTemplate";
+
+		public static final String ADD_PRESCRIPTION = "addPrescription";
+		public static final String EDIT_PRESCRIPTION = "editPrescription";
+		public static final String DELETE_PRESCRIPTION = "deletePrescription";
+		public static final String GET_PRESCRIPTION = "getPrescription";
 	}
 
 }
