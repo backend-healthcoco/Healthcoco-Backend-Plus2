@@ -33,7 +33,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		DrugCollection drugCollection = new DrugCollection();
 		BeanUtil.map(request, drugCollection);
 		UUID drugCode = UUID.randomUUID();
-		drugCollection.setDrugCode(drugCode);
+		drugCollection.setDrugCode(drugCode.toString());
 		try {
 			drugCollection = drugRepository.save(drugCollection);
 			response = new DrugAddEditResponse();
@@ -64,7 +64,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		Boolean response = false;
 		DrugCollection drugCollection = null;
 		try {
-			drugCollection = drugRepository.findByDrugIdAndDrugCode(request.getId(), request.getDrugCode());
+			drugCollection = drugRepository.findOne(request.getId());
 			if (drugCollection != null) {
 				if (drugCollection.getDoctorId() != null && drugCollection.getHospitalId() != null && drugCollection.getLocationId() != null) {
 					if (drugCollection.getDoctorId().equals(request.getDoctorId()) && drugCollection.getHospitalId().equals(request.getHospitalId())

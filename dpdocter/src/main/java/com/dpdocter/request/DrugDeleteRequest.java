@@ -11,7 +11,6 @@ public class DrugDeleteRequest {
 
 	private String locationId;
 
-	private UUID drugCode;
 
 	public String getId() {
 		return id;
@@ -45,18 +44,13 @@ public class DrugDeleteRequest {
 		this.locationId = locationId;
 	}
 
-	public UUID getDrugCode() {
-		return drugCode;
-	}
-
-	public void setDrugCode(UUID drugCode) {
-		this.drugCode = drugCode;
-	}
-
 	@Override
 	public String toString() {
-		return "DrugDeleteRequest [id=" + id + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", drugCode="
-				+ drugCode + "]";
+		return "DrugDeleteRequest [id=" + id + ", doctorId=" + doctorId
+				+ ", hospitalId=" + hospitalId + ", locationId=" + locationId
+				+ "]";
 	}
+
+
 
 }

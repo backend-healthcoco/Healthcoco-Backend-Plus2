@@ -43,7 +43,7 @@ public class DrugCollection {
 	private boolean isDeleted = false;
 
 	@Field
-	private UUID drugCode;
+	private String drugCode;
 
 	public String getId() {
 		return id;
@@ -125,11 +125,11 @@ public class DrugCollection {
 		this.isDeleted = isDeleted;
 	}
 
-	public UUID getDrugCode() {
+	public String getDrugCode() {
 		return drugCode;
 	}
 
-	public void setDrugCode(UUID drugCode) {
+	public void setDrugCode(String drugCode) {
 		this.drugCode = drugCode;
 	}
 
