@@ -109,17 +109,19 @@ public interface PathProxy {
 	public interface PrescriptionUrls {
 		public static final String ADD_DRUG = "addDrug";
 		public static final String EDIT_DRUG = "editDrug";
-		public static final String DELETE_DRUG = "deleteDrug";
+		public static final String DELETE_DRUG = "deleteDrug/{drugId}/{doctorId}/{hospitalId}/{locationId}";
+		public static final String GET_DRUG_ID = "getDrugDetails/{drugId}";
 
 		public static final String ADD_TEMPLATE = "addTemplate";
 		public static final String EDIT_TEMPLATE = "editTemplate";
-		public static final String DELETE_TEMPLATE = "deleteTemplate";
+		public static final String DELETE_TEMPLATE = "deleteTemplate/{templateId}/{doctorId}/{hospitalId}/{locationId}";
+		public static final String GET_TEMPLATE = "getTemplate/{templateId}/{doctorId}/{hospitalId}/{locationId}";
 
 		public static final String ADD_PRESCRIPTION = "addPrescription";
 		public static final String EDIT_PRESCRIPTION = "editPrescription";
-		public static final String DELETE_PRESCRIPTION = "deletePrescription";
-		public static final String GET_PRESCRIPTION = "getPrescription";
-		public static final String GET_DRUG_ID = "getDrugDetails/{drugId}";
+		public static final String DELETE_PRESCRIPTION = "deletePrescription/{prescriptionId}/{doctorId}/{hospitalId}/{locationId}/{patientId}";
+		public static final String GET_PRESCRIPTION = "getPrescription/{doctorId}/{hospitalId}/{locationId}/{patientId}";
+
 	}
 
 }

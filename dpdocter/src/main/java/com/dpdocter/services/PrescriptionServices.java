@@ -3,39 +3,37 @@ package com.dpdocter.services;
 import java.util.List;
 
 import com.dpdocter.request.DrugAddEditRequest;
-import com.dpdocter.request.DrugDeleteRequest;
 import com.dpdocter.request.PrescriptionAddEditRequest;
-import com.dpdocter.request.PrescriptionDeleteRequest;
-import com.dpdocter.request.PrescriptionGetRequest;
 import com.dpdocter.request.TemplateAddEditRequest;
-import com.dpdocter.request.TemplateDeleteRequest;
 import com.dpdocter.response.DrugAddEditResponse;
 import com.dpdocter.response.PrescriptionAddEditResponse;
 import com.dpdocter.response.PrescriptionGetResponse;
 import com.dpdocter.response.TemplateAddEditResponse;
+import com.dpdocter.response.TemplateGetResponse;
 
 public interface PrescriptionServices {
 	DrugAddEditResponse addDrug(DrugAddEditRequest request);
 
 	DrugAddEditResponse editDrug(DrugAddEditRequest request);
 
-	Boolean deleteDrug(DrugDeleteRequest request);
+	Boolean deleteDrug(String drugId, String doctorId, String hospitalId, String locationIdString);
+
+	DrugAddEditResponse getDrugById(String drugId);
 
 	TemplateAddEditResponse addTemplate(TemplateAddEditRequest request);
 
 	TemplateAddEditResponse editTemplate(TemplateAddEditRequest request);
 
-	Boolean deleteTemplate(TemplateDeleteRequest request);
+	Boolean deleteTemplate(String templateId, String doctorId, String hospitalId, String locationId);
+
+	TemplateGetResponse getTemplate(String templateId, String doctorId, String hospitalId, String locationId);
 
 	PrescriptionAddEditResponse addPrescription(PrescriptionAddEditRequest request);
 
 	PrescriptionAddEditResponse editPrescription(PrescriptionAddEditRequest request);
 
-	Boolean deletePrescription(PrescriptionDeleteRequest request);
+	Boolean deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId, String patientId);
 
-	List<PrescriptionGetResponse> getPrescription(PrescriptionGetRequest request);
-	
-	DrugAddEditResponse getDrugById(String drugId);
-	
-	
+	List<PrescriptionGetResponse> getPrescription(String prescriptionId, String doctorId, String hospitalId, String locationId);
+
 }

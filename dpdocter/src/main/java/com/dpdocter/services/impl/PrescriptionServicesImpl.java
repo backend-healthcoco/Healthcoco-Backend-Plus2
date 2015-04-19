@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.TemplateItem;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.TemplateCollection;
@@ -19,16 +20,13 @@ import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.TemplateRepository;
 import com.dpdocter.request.DrugAddEditRequest;
-import com.dpdocter.request.DrugDeleteRequest;
 import com.dpdocter.request.PrescriptionAddEditRequest;
-import com.dpdocter.request.PrescriptionDeleteRequest;
-import com.dpdocter.request.PrescriptionGetRequest;
 import com.dpdocter.request.TemplateAddEditRequest;
-import com.dpdocter.request.TemplateDeleteRequest;
 import com.dpdocter.response.DrugAddEditResponse;
 import com.dpdocter.response.PrescriptionAddEditResponse;
 import com.dpdocter.response.PrescriptionGetResponse;
 import com.dpdocter.response.TemplateAddEditResponse;
+import com.dpdocter.response.TemplateGetResponse;
 import com.dpdocter.services.PrescriptionServices;
 
 @Service
@@ -74,15 +72,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	public Boolean deleteDrug(DrugDeleteRequest request) {
+	public Boolean deleteDrug(String drugId, String doctorId, String hospitalId, String locationId) {
 		Boolean response = false;
 		DrugCollection drugCollection = null;
 		try {
-			drugCollection = drugRepository.findOne(request.getId());
+			drugCollection = drugRepository.findOne(drugId);
 			if (drugCollection != null) {
 				if (drugCollection.getDoctorId() != null && drugCollection.getHospitalId() != null && drugCollection.getLocationId() != null) {
-					if (drugCollection.getDoctorId().equals(request.getDoctorId()) && drugCollection.getHospitalId().equals(request.getHospitalId())
-							&& drugCollection.getLocationId().equals(request.getLocationId())) {
+					if (drugCollection.getDoctorId().equals(doctorId) && drugCollection.getHospitalId().equals(hospitalId)
+							&& drugCollection.getLocationId().equals(locationId)) {
 						drugCollection.setIsDeleted(true);
 						drugCollection = drugRepository.save(drugCollection);
 						response = true;
@@ -100,6 +98,23 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug");
 		}
 		return response;
+	}
+
+	public DrugAddEditResponse getDrugById(String drugId) {
+		DrugAddEditResponse drugAddEditResponse = null;
+		try {
+			DrugCollection drugCollection = drugRepository.findOne(drugId);
+			if (drugCollection != null) {
+				drugAddEditResponse = new DrugAddEditResponse();
+				BeanUtil.map(drugCollection, drugAddEditResponse);
+			} else {
+				throw new BusinessException(ServiceError.Unknown, "Drug not found. Please check Drug Id");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug");
+		}
+		return drugAddEditResponse;
 	}
 
 	public TemplateAddEditResponse addTemplate(TemplateAddEditRequest request) {
@@ -132,15 +147,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	public Boolean deleteTemplate(TemplateDeleteRequest request) {
+	public Boolean deleteTemplate(String templateId, String doctorId, String hospitalId, String locationId) {
 		Boolean response = false;
 		TemplateCollection templateCollection = null;
 		try {
-			templateCollection = templateRepository.findOne(request.getId());
+			templateCollection = templateRepository.findOne(templateId);
 			if (templateCollection != null) {
 				if (templateCollection.getDoctorId() != null && templateCollection.getHospitalId() != null && templateCollection.getLocationId() != null) {
-					if (templateCollection.getDoctorId().equals(request.getDoctorId()) && templateCollection.getHospitalId().equals(request.getHospitalId())
-							&& templateCollection.getLocationId().equals(request.getLocationId())) {
+					if (templateCollection.getDoctorId().equals(doctorId) && templateCollection.getHospitalId().equals(hospitalId)
+							&& templateCollection.getLocationId().equals(locationId)) {
 						templateCollection.setIsDeleted(true);
 						templateCollection = templateRepository.save(templateCollection);
 						response = true;
@@ -156,6 +171,32 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Template");
+		}
+		return response;
+	}
+
+	public TemplateGetResponse getTemplate(String templateId, String doctorId, String hospitalId, String locationId) {
+		TemplateGetResponse response = null;
+		TemplateCollection templateCollection = new TemplateCollection();
+		try {
+			templateCollection = templateRepository.getTemplate(templateId, doctorId, hospitalId, locationId);
+			if (templateCollection != null) {
+				response = new TemplateGetResponse();
+				BeanUtil.map(templateCollection, response);
+				int i = 0;
+				for (TemplateItem item : templateCollection.getItems()) {
+					DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
+					DrugAddEditResponse drugAddEditResponse = new DrugAddEditResponse();
+					BeanUtil.map(drugCollection, drugAddEditResponse);
+					response.getItems().get(i).setDrug(drugAddEditResponse);
+					i++;
+				}
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "Template Not Found");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Template");
 		}
 		return response;
 	}
@@ -192,18 +233,16 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	public Boolean deletePrescription(PrescriptionDeleteRequest request) {
+	public Boolean deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId, String patientId) {
 		Boolean response = false;
 		PrescriptionCollection prescriptionCollection = null;
 		try {
-			prescriptionCollection = prescriptionRepository.findOne(request.getId());
+			prescriptionCollection = prescriptionRepository.findOne(prescriptionId);
 			if (prescriptionCollection != null) {
 				if (prescriptionCollection.getDoctorId() != null && prescriptionCollection.getHospitalId() != null
-						&& prescriptionCollection.getLocationId() != null) {
-					if (prescriptionCollection.getDoctorId().equals(request.getDoctorId())
-							&& prescriptionCollection.getHospitalId().equals(request.getHospitalId())
-							&& prescriptionCollection.getLocationId().equals(request.getLocationId())
-							&& prescriptionCollection.getPatientId().equals(request.getPatientId())) {
+						&& prescriptionCollection.getLocationId() != null && prescriptionCollection.getPatientId() != null) {
+					if (prescriptionCollection.getDoctorId().equals(doctorId) && prescriptionCollection.getHospitalId().equals(hospitalId)
+							&& prescriptionCollection.getLocationId().equals(locationId) && prescriptionCollection.getPatientId().equals(patientId)) {
 						prescriptionCollection.setIsDeleted(true);
 						prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 						response = true;
@@ -223,12 +262,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	public List<PrescriptionGetResponse> getPrescription(PrescriptionGetRequest request) {
+	public List<PrescriptionGetResponse> getPrescription(String doctorId, String hospitalId, String locationId, String patientId) {
 		List<PrescriptionGetResponse> response = null;
 		List<PrescriptionCollection> prescriptionCollections = new ArrayList<PrescriptionCollection>();
 		try {
-			prescriptionCollections = prescriptionRepository.getPrescription(request.getDoctorId(), request.getHospitalId(), request.getLocationId(),
-					request.getPatientId(), new Sort(Sort.Direction.DESC, "createdTime"));
+			prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId, new Sort(Sort.Direction.DESC,
+					"createdTime"));
 			if (prescriptionCollections != null) {
 				response = new ArrayList<PrescriptionGetResponse>();
 				BeanUtil.map(prescriptionCollections, response);
@@ -240,24 +279,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Prescription");
 		}
 		return response;
-	}
-
-	@Override
-	public DrugAddEditResponse getDrugById(String drugId) {
-		DrugAddEditResponse drugAddEditResponse = null;
-		try {
-			DrugCollection drugCollection = drugRepository.findOne(drugId);
-			if(drugCollection != null){
-				drugAddEditResponse = new DrugAddEditResponse();
-				BeanUtil.map(drugCollection, drugAddEditResponse);
-			}else{
-				throw new BusinessException(ServiceError.Unknown, "Drug not found.Please check Drug Id");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug");
-		}
-		return drugAddEditResponse;
 	}
 
 }

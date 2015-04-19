@@ -26,6 +26,8 @@ public class DrugAddEditResponse {
 
 	private String drugCode;
 
+	private boolean isDeleted = false;
+
 	public String getId() {
 		return id;
 	}
@@ -106,11 +108,19 @@ public class DrugAddEditResponse {
 		this.drugCode = drugCode;
 	}
 
+	public boolean isDeleted() {
+		return isDeleted;
+	}
+
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
 	@Override
 	public String toString() {
 		return "DrugAddEditResponse [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", description=" + description + ", strength="
 				+ strength + ", genericNames=" + genericNames + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId
-				+ ", drugCode=" + drugCode + "]";
+				+ ", drugCode=" + drugCode + ", isDeleted=" + isDeleted + "]";
 	}
 
 }

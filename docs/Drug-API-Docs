@@ -10,8 +10,8 @@ Request - {"doctorId":"D12345","hospitalId":"H12345","locationId":"L12345","drug
 
 Response - {"dataList":null,"data":{"doctorId":"D12345","hospitalId":"H12345","locationId":"L12345","drugCode":"4389eeab-c063-4d79-a309-506eb3ad9669","genericNames":["paracetamol","generic paracetamol","paracetamol fast action"],"drugName":"paracetamol","strength":{"unit":"MG","value":"20"},"drugType":"TABLET","description":"for fever","id":"552ed8df2736165ddf48ac44"}}
 
--http://localhost:8080/dpdocter/api/v1/prescription/deleteDrug
+-http://localhost:8080/dpdocter/api/v1/prescription/deleteDrug/553279002736bf4f69c97709/D12345/H12345/L12345
 
-Request - { "id" :"553279002736bf4f69c97709", "doctorId" : "D12345", "hospitalId" : "H12345", "locationId" : "L12345"}
+Request - http://localhost:8080/dpdocter/api/v1/prescription/deleteDrug/{drugId}/{doctorId}/{hospitalId}/{locationId}
 
 Response - {"dataList":null,"data":true}

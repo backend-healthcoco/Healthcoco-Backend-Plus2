@@ -11,8 +11,15 @@ Request - {"doctorId":"D12345","hospitalId":"H12345","locationId":"L12345","item
 
 Response - {"dataList":null,"data":{"doctorId":"D12345","hospitalId":"H12345","locationId":"L12345","isDeleted":false,"items":[{"drugId":"552a302e986c027021cae6ae","dosage":"1-1-1","direction":"WITH_MILK","instructions":"Test Instructions","duration":{"unit":"DAY","value":"2"}},{"drugId":"552a3c3027362bb298b0c9a5","dosage":"1-1-1","direction":"WITH_MILK","instructions":"Test Instructions","duration":{"unit":"DAY","value":"2"}}],"name":"Jaundice Template","id":"552ed56c2736ba429ec33b20"}}
 
--http://localhost:8080/dpdocter/api/v1/prescription/deleteTemplate
+-http://localhost:8080/dpdocter/api/v1/prescription/deleteTemplate/5533866d2736bdbc7e647956/D12345/H12345/L12345
 
-Request - {"doctorId":"D12345","locationId":"L12345","hospitalId":"H12345","id":"552ed56c2736ba429ec33b20"}
+Request - http://localhost:8080/dpdocter/api/v1/prescription/deleteTemplate/{templateId}/{doctorId}/{hospitalId}/{locationId}
 
 Response - {"dataList":null,"data":true}
+
+-http://localhost:8080/dpdocter/api/v1/prescription/getTemplate/5533866d2736bdbc7e647956/D12345/H12345/L12345
+
+Request - http://localhost:8080/dpdocter/api/v1/prescription/getTemplate/{templateId}/{doctorId}/{hospitalId}/{locationId}
+
+Response - {"dataList":null,"data":{"doctorId":"D12345","hospitalId":"H12345","locationId":"L12345","items":[{"drug":{"doctorId":"D12345","hospitalId":"H12345","locationId":"L12345","deleted":false,"drugName":"paracetamol","strength":{"unit":"MG","value":"10"},"drugType":"TABLET","genericNames":["paracetamol","generic paracetamol","paracetamol fast action"],"drugCode":"761dc769-df84-477a-b29c-904ccd2fbffc","description":"for fever","id":"553277d12736de75ffc6dc45"},"dosage":"1-1-1","direction":"WITH_MILK","instructions":"Test Instructions","duration":{"unit":"DAY","value":"1"}}],"isDeleted":false,"name":"Jaundice Template","id":"5533866d2736bdbc7e647956"}}
+
