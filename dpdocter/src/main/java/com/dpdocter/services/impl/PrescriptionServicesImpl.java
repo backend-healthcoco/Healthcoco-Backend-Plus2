@@ -266,7 +266,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		List<PrescriptionGetResponse> response = null;
 		List<PrescriptionCollection> prescriptionCollections = new ArrayList<PrescriptionCollection>();
 		try {
-			prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId, new Sort(Sort.Direction.DESC,
+			prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId,false, new Sort(Sort.Direction.DESC,
 					"createdTime"));
 			if (prescriptionCollections != null) {
 				response = new ArrayList<PrescriptionGetResponse>();
