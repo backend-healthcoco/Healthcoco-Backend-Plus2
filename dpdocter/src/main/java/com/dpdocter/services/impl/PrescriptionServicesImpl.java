@@ -277,7 +277,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				for(PrescriptionCollection prescriptionCollection : prescriptionCollections){
 					if(prescriptionCollection.getItems() != null){
 						Prescription prescription = new Prescription();
-						BeanUtil.map(prescriptionCollections, prescription);
+						BeanUtil.map(prescriptionCollection, prescription);
 						List<PrescriptionItemDetails> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetails>();
 						for(PrescriptionItem prescriptionItem : prescriptionCollection.getItems()){
 							PrescriptionItemDetails prescriptionItemDetails = new PrescriptionItemDetails();
