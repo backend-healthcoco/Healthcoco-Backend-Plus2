@@ -34,6 +34,8 @@ public interface PrescriptionServices {
 
 	Boolean deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId, String patientId);
 
-	List<PrescriptionGetResponse> getPrescription(String prescriptionId, String doctorId, String hospitalId, String locationId);
+	PrescriptionGetResponse getPrescriptions(String doctorId, String hospitalId, String locationId, String patientId);
+	
+	
 
 }

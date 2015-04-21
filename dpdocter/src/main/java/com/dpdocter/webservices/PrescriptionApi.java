@@ -176,14 +176,14 @@ public class PrescriptionApi {
 
 	@Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION)
 	@GET
-	public Response<List<PrescriptionGetResponse>> getPrescription(@PathParam(value = "doctorId") String doctorId,
+	public Response<PrescriptionGetResponse> getPrescription(@PathParam(value = "doctorId") String doctorId,
 			@PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "locationId") String locationId,
 			@PathParam(value = "patientId") String patientId) {
 		if (StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		List<PrescriptionGetResponse> prescriptionGetResponse = prescriptionServices.getPrescription(doctorId, hospitalId, locationId, patientId);
-		Response<List<PrescriptionGetResponse>> response = new Response<List<PrescriptionGetResponse>>();
+		PrescriptionGetResponse prescriptionGetResponse = prescriptionServices.getPrescriptions(doctorId, hospitalId, locationId, patientId);
+		Response<PrescriptionGetResponse> response = new Response<PrescriptionGetResponse>();
 		response.setData(prescriptionGetResponse);
 		return response;
 	}

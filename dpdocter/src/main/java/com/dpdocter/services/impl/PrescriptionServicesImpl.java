@@ -9,6 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.Drug;
+import com.dpdocter.beans.Prescription;
+import com.dpdocter.beans.PrescriptionItem;
+import com.dpdocter.beans.PrescriptionItemDetails;
 import com.dpdocter.beans.TemplateItem;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.PrescriptionCollection;
@@ -262,15 +266,36 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	public List<PrescriptionGetResponse> getPrescription(String doctorId, String hospitalId, String locationId, String patientId) {
-		List<PrescriptionGetResponse> response = null;
-		List<PrescriptionCollection> prescriptionCollections = new ArrayList<PrescriptionCollection>();
+	public PrescriptionGetResponse getPrescriptions(String doctorId, String hospitalId, String locationId, String patientId) {
+		PrescriptionGetResponse response = null;
+		List<PrescriptionCollection> prescriptionCollections = null;
 		try {
 			prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId,false, new Sort(Sort.Direction.DESC,
 					"createdTime"));
 			if (prescriptionCollections != null) {
-				response = new ArrayList<PrescriptionGetResponse>();
+				response = new PrescriptionGetResponse();
 				BeanUtil.map(prescriptionCollections, response);
+				List<Prescription> prescriptions = new ArrayList<Prescription>();
+				for(PrescriptionCollection prescriptionCollection : prescriptionCollections){
+					if(prescriptionCollection.getItems() != null){
+						Prescription prescription = new Prescription();
+						BeanUtil.map(prescriptionCollections, prescription);
+						List<PrescriptionItemDetails> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetails>();
+						for(PrescriptionItem prescriptionItem : prescriptionCollection.getItems()){
+							PrescriptionItemDetails prescriptionItemDetails = new PrescriptionItemDetails();
+							BeanUtil.map(prescriptionItem, prescriptionItemDetails);
+							DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
+							Drug drug = new Drug();
+							BeanUtil.map(drugCollection, drug);
+							prescriptionItemDetails.setDrug(drug);
+							prescriptionItemDetailsList.add(prescriptionItemDetails);
+						}
+						prescription.setItemList(prescriptionItemDetailsList);
+						prescriptions.add(prescription);
+					}
+					
+				}
+				response.setPrescriptions(prescriptions);
 			} else {
 				throw new BusinessException(ServiceError.NotFound, "Prescription Not Found");
 			}

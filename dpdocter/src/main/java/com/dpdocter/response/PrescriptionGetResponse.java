@@ -2,13 +2,10 @@ package com.dpdocter.response;
 
 import java.util.List;
 
-import com.dpdocter.beans.PrescriptionItem;
+import com.dpdocter.beans.Prescription;
 import com.dpdocter.collections.GenericCollection;
 
 public class PrescriptionGetResponse extends GenericCollection {
-	private String id;
-
-	private String name;
 
 	private String doctorId;
 
@@ -16,27 +13,9 @@ public class PrescriptionGetResponse extends GenericCollection {
 
 	private String hospitalId;
 
-	private Boolean isDeleted = false;
-
-	private List<PrescriptionItem> items;
-
 	private String patientId;
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
+	
+	private List<Prescription> prescriptions;
 
 	public String getDoctorId() {
 		return doctorId;
@@ -62,22 +41,6 @@ public class PrescriptionGetResponse extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
-	public Boolean getIsDeleted() {
-		return isDeleted;
-	}
-
-	public void setIsDeleted(Boolean isDeleted) {
-		this.isDeleted = isDeleted;
-	}
-
-	public List<PrescriptionItem> getItems() {
-		return items;
-	}
-
-	public void setItems(List<PrescriptionItem> items) {
-		this.items = items;
-	}
-
 	public String getPatientId() {
 		return patientId;
 	}
@@ -85,11 +48,27 @@ public class PrescriptionGetResponse extends GenericCollection {
 	public void setPatientId(String patientId) {
 		this.patientId = patientId;
 	}
+	
+	
+
+	public List<Prescription> getPrescriptions() {
+		return prescriptions;
+	}
+
+	public void setPrescriptions(List<Prescription> prescriptions) {
+		this.prescriptions = prescriptions;
+	}
 
 	@Override
 	public String toString() {
-		return "PrescriptionGetResponse [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", isDeleted=" + isDeleted + ", items=" + items + ", patientId=" + patientId + "]";
+		return "PrescriptionGetResponse [doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", patientId=" + patientId + ", prescriptions="
+				+ prescriptions + "]";
 	}
+
+	
+
+	
 
 }
