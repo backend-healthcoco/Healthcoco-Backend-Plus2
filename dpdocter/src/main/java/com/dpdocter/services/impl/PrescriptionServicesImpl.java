@@ -266,16 +266,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	public PrescriptionGetResponse getPrescriptions(String doctorId, String hospitalId, String locationId, String patientId) {
-		PrescriptionGetResponse response = null;
+	public List<Prescription> getPrescriptions(String doctorId, String hospitalId, String locationId, String patientId) {
 		List<PrescriptionCollection> prescriptionCollections = null;
+		List<Prescription> prescriptions = null;
 		try {
 			prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId,false, new Sort(Sort.Direction.DESC,
 					"createdTime"));
 			if (prescriptionCollections != null) {
-				response = new PrescriptionGetResponse();
-				BeanUtil.map(prescriptionCollections, response);
-				List<Prescription> prescriptions = new ArrayList<Prescription>();
+				prescriptions = new ArrayList<Prescription>();
 				for(PrescriptionCollection prescriptionCollection : prescriptionCollections){
 					if(prescriptionCollection.getItems() != null){
 						Prescription prescription = new Prescription();
@@ -295,7 +293,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					}
 					
 				}
-				response.setPrescriptions(prescriptions);
 			} else {
 				throw new BusinessException(ServiceError.NotFound, "Prescription Not Found");
 			}
@@ -303,7 +300,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Prescription");
 		}
-		return response;
+		return prescriptions;
 	}
 
 }

@@ -2,6 +2,7 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import com.dpdocter.beans.Prescription;
 import com.dpdocter.request.DrugAddEditRequest;
 import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.request.TemplateAddEditRequest;
@@ -34,7 +35,7 @@ public interface PrescriptionServices {
 
 	Boolean deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId, String patientId);
 
-	PrescriptionGetResponse getPrescriptions(String doctorId, String hospitalId, String locationId, String patientId);
+	List<Prescription> getPrescriptions(String doctorId, String hospitalId, String locationId, String patientId);
 	
 	
 

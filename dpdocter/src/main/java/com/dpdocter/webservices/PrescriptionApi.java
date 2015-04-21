@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.Prescription;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.DrugAddEditRequest;
@@ -176,15 +177,15 @@ public class PrescriptionApi {
 
 	@Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION)
 	@GET
-	public Response<PrescriptionGetResponse> getPrescription(@PathParam(value = "doctorId") String doctorId,
+	public Response<Prescription> getPrescription(@PathParam(value = "doctorId") String doctorId,
 			@PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "locationId") String locationId,
 			@PathParam(value = "patientId") String patientId) {
 		if (StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		PrescriptionGetResponse prescriptionGetResponse = prescriptionServices.getPrescriptions(doctorId, hospitalId, locationId, patientId);
-		Response<PrescriptionGetResponse> response = new Response<PrescriptionGetResponse>();
-		response.setData(prescriptionGetResponse);
+		List<Prescription> prescriptions = prescriptionServices.getPrescriptions(doctorId, hospitalId, locationId, patientId);
+		Response<Prescription> response = new Response<Prescription>();
+		response.setDataList(prescriptions);
 		return response;
 	}
 
