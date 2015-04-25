@@ -1,25 +1,232 @@
 -http://localhost:8080/dpdocter/api/v1/prescription/addTemplate
 
-Request - {"hospitalId":"H12345","items":[{"direction":"WITH_MILK","instructions":"Test Instructions","dosage":"1-1-1","duration":{"unit":"DAY","value":"1"},"drugId":"552a302e986c027021cae6ae"}],"doctorId":"D12345","locationId":"L12345","name":"Jaundice Template","id":null}
+Request - {
+    "doctorId": "D12345",
+    "hospitalId": "H12345",
+    "id": null,
+    "items": [
+        {
+            "direction": [
+                "WITH_MILK"
+            ],
+            "dosage": "1-1-1",
+            "drugId": "553abf5c2736ae76583d8d98",
+            "duration": {
+                "unit": "MONTH",
+                "value": "1"
+            },
+            "instructions": "Test Instructions"
+        },
+        {
+            "direction": [
+                "WITH_MILK"
+            ],
+            "dosage": "1-1-1",
+            "drugId": "553ac2952736ae76583d8d99",
+            "duration": {
+                "unit": "MONTH",
+                "value": "1"
+            },
+            "instructions": "Test Instructions"
+        }
+    ],
+    "locationId": "L12345",
+    "name": "Fever Template"
+}
 
-Response - {"dataList":null,"data":{"doctorId":"D12345","hospitalId":"H12345","locationId":"L12345","isDeleted":false,"items":[{"drugId":"552a302e986c027021cae6ae","dosage":"1-1-1","direction":"WITH_MILK","instructions":"Test Instructions","duration":{"unit":"DAY","value":"1"}}],"name":"Jaundice Template","id":"552ed56c2736ba429ec33b20"}}
-
+Response - {
+    "data": {
+        "doctorId": "D12345",
+        "hospitalId": "H12345",
+        "id": "553b41ed986cda6147783f09",
+        "items": [
+            {
+                "direction": [
+                    "WITH_MILK"
+                ],
+                "dosage": "1-1-1",
+                "drugId": "553abf5c2736ae76583d8d98",
+                "duration": {
+                    "unit": "MONTH",
+                    "value": "1"
+                },
+                "instructions": "Test Instructions"
+            },
+            {
+                "direction": [
+                    "WITH_MILK"
+                ],
+                "dosage": "1-1-1",
+                "drugId": "553ac2952736ae76583d8d99",
+                "duration": {
+                    "unit": "MONTH",
+                    "value": "1"
+                },
+                "instructions": "Test Instructions"
+            }
+        ],
+        "locationId": "L12345",
+        "name": "Fever Template"
+    },
+    "dataList": null
+}
 
 -http://localhost:8080/dpdocter/api/v1/prescription/editTemplate
 
-Request - {"doctorId":"D12345","hospitalId":"H12345","locationId":"L12345","items":[{"drugId":"552a302e986c027021cae6ae","dosage":"1-1-1","direction":"WITH_MILK","instructions":"Test Instructions","duration":{"unit":"DAY","value":"2"}}, {"drugId":"552a3c3027362bb298b0c9a5","dosage":"1-1-1","direction":"WITH_MILK","instructions":"Test Instructions","duration":{"unit":"DAY","value":"2"}}],"name":"Jaundice Template","id":"552ed56c2736ba429ec33b20"}
+Request - {
+    "doctorId": "D12345",
+    "hospitalId": "H12345",
+    "id": "553b41ed986cda6147783f09",
+    "items": [
+        {
+            "direction": [
+                "WITH_MILK",
+                "WITH_WATER"
+            ],
+            "dosage": "1-1-1",
+            "drugId": "553abf5c2736ae76583d8d98",
+            "duration": {
+                "unit": "MONTH",
+                "value": "1"
+            },
+            "instructions": "Test Instructions"
+        },
+        {
+            "direction": [
+                "WITH_MILK"
+            ],
+            "dosage": "1-1-1",
+            "drugId": "553ac2952736ae76583d8d99",
+            "duration": {
+                "unit": "MONTH",
+                "value": "1"
+            },
+            "instructions": "Test Instructions"
+        }
+    ],
+    "locationId": "L12345",
+    "name": "Fever Template"
+}
 
-Response - {"dataList":null,"data":{"doctorId":"D12345","hospitalId":"H12345","locationId":"L12345","isDeleted":false,"items":[{"drugId":"552a302e986c027021cae6ae","dosage":"1-1-1","direction":"WITH_MILK","instructions":"Test Instructions","duration":{"unit":"DAY","value":"2"}},{"drugId":"552a3c3027362bb298b0c9a5","dosage":"1-1-1","direction":"WITH_MILK","instructions":"Test Instructions","duration":{"unit":"DAY","value":"2"}}],"name":"Jaundice Template","id":"552ed56c2736ba429ec33b20"}}
+Response - {
+    "data": {
+        "doctorId": "D12345",
+        "hospitalId": "H12345",
+        "id": "553b41ed986cda6147783f09",
+        "items": [
+            {
+                "direction": [
+                    "WITH_MILK",
+                    "WITH_WATER"
+                ],
+                "dosage": "1-1-1",
+                "drugId": "553abf5c2736ae76583d8d98",
+                "duration": {
+                    "unit": "MONTH",
+                    "value": "1"
+                },
+                "instructions": "Test Instructions"
+            },
+            {
+                "direction": [
+                    "WITH_MILK"
+                ],
+                "dosage": "1-1-1",
+                "drugId": "553ac2952736ae76583d8d99",
+                "duration": {
+                    "unit": "MONTH",
+                    "value": "1"
+                },
+                "instructions": "Test Instructions"
+            }
+        ],
+        "locationId": "L12345",
+        "name": "Fever Template"
+    },
+    "dataList": null
+}
 
 -http://localhost:8080/dpdocter/api/v1/prescription/deleteTemplate/5533866d2736bdbc7e647956/D12345/H12345/L12345
 
 Request - http://localhost:8080/dpdocter/api/v1/prescription/deleteTemplate/{templateId}/{doctorId}/{hospitalId}/{locationId}
 
-Response - {"dataList":null,"data":true}
+Response - {
+    "data": true,
+    "dataList": null
+}
 
--http://localhost:8080/dpdocter/api/v1/prescription/getTemplate/5533866d2736bdbc7e647956/D12345/H12345/L12345
+-http://localhost:8080/dpdocter/api/v1/prescription/getTemplate/553b41ed986cda6147783f09/D12345/H12345/L12345
 
 Request - http://localhost:8080/dpdocter/api/v1/prescription/getTemplate/{templateId}/{doctorId}/{hospitalId}/{locationId}
 
-Response - {"dataList":null,"data":{"doctorId":"D12345","hospitalId":"H12345","locationId":"L12345","items":[{"drug":{"doctorId":"D12345","hospitalId":"H12345","locationId":"L12345","deleted":false,"drugName":"paracetamol","strength":{"unit":"MG","value":"10"},"drugType":"TABLET","genericNames":["paracetamol","generic paracetamol","paracetamol fast action"],"drugCode":"761dc769-df84-477a-b29c-904ccd2fbffc","description":"for fever","id":"553277d12736de75ffc6dc45"},"dosage":"1-1-1","direction":"WITH_MILK","instructions":"Test Instructions","duration":{"unit":"DAY","value":"1"}}],"isDeleted":false,"name":"Jaundice Template","id":"5533866d2736bdbc7e647956"}}
+Response - {
+    "data": {
+        "doctorId": "D12345",
+        "hospitalId": "H12345",
+        "id": "553b41ed986cda6147783f09",
+        "items": [
+            {
+                "direction": [
+                    "WITH_MILK",
+                    "WITH_WATER"
+                ],
+                "dosage": "1-1-1",
+                "drug": {
+                    "description": "Test Description",
+                    "drugCode": "498009e5-d2a6-42a0-970d-bf1a95356b3f",
+                    "drugName": "Calpol",
+                    "drugType": "TABLET",
+                    "genericNames": [
+                        "Calpol",
+                        "Paracetamol",
+                        "For Fever"
+                    ],
+                    "id": "553abf5c2736ae76583d8d98",
+                    "strength": {
+                        "unit": "MG",
+                        "value": "5"
+                    }
+                },
+                "duration": {
+                    "unit": "MONTH",
+                    "value": "1"
+                },
+                "instructions": "Test Instructions"
+            },
+            {
+                "direction": [
+                    "WITH_MILK"
+                ],
+                "dosage": "1-1-1",
+                "drug": {
+                    "description": "Test Description",
+                    "drugCode": "78a7132c-c5ea-4b6f-b93e-fbcd5d910901",
+                    "drugName": "Crocin",
+                    "drugType": "TABLET",
+                    "genericNames": [
+                        "Crocin",
+                        "Paracetamol",
+                        "For Fever"
+                    ],
+                    "id": "553ac2952736ae76583d8d99",
+                    "strength": {
+                        "unit": "MG",
+                        "value": "10"
+                    }
+                },
+                "duration": {
+                    "unit": "MONTH",
+                    "value": "1"
+                },
+                "instructions": "Test Instructions"
+            }
+        ],
+        "locationId": "L12345",
+        "name": "Fever Template"
+    },
+    "dataList": null
+}
+
+
+
 

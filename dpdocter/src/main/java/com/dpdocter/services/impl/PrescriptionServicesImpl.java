@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.PrescriptionItemDetails;
+import com.dpdocter.beans.TemplateDrug;
 import com.dpdocter.beans.TemplateItem;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.PrescriptionCollection;
@@ -28,10 +30,10 @@ import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.request.TemplateAddEditRequest;
 import com.dpdocter.response.DrugAddEditResponse;
 import com.dpdocter.response.PrescriptionAddEditResponse;
-import com.dpdocter.response.PrescriptionGetResponse;
 import com.dpdocter.response.TemplateAddEditResponse;
 import com.dpdocter.response.TemplateGetResponse;
 import com.dpdocter.services.PrescriptionServices;
+import common.util.web.PrescriptionUtils;
 
 @Service
 public class PrescriptionServicesImpl implements PrescriptionServices {
@@ -94,6 +96,25 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				} else {
 					throw new BusinessException(ServiceError.NotAuthorized, "Cannot Delete Global Drug");
 				}
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "Drug Not Found");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug");
+		}
+		return response;
+	}
+
+	public Boolean deleteDrug(String drugId) {
+		Boolean response = false;
+		DrugCollection drugCollection = null;
+		try {
+			drugCollection = drugRepository.findOne(drugId);
+			if (drugCollection != null) {
+				drugCollection.setIsDeleted(true);
+				drugCollection = drugRepository.save(drugCollection);
+				response = true;
 			} else {
 				throw new BusinessException(ServiceError.NotFound, "Drug Not Found");
 			}
@@ -190,9 +211,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				int i = 0;
 				for (TemplateItem item : templateCollection.getItems()) {
 					DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
-					DrugAddEditResponse drugAddEditResponse = new DrugAddEditResponse();
-					BeanUtil.map(drugCollection, drugAddEditResponse);
-					response.getItems().get(i).setDrug(drugAddEditResponse);
+					TemplateDrug drug = new TemplateDrug();
+					BeanUtil.map(drugCollection, drug);
+					response.getItems().get(i).setDrug(drug);
 					i++;
 				}
 			} else {
@@ -211,6 +232,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		BeanUtil.map(request, prescriptionCollection);
 		try {
 			prescriptionCollection.setCreatedTime(new Date());
+			prescriptionCollection.setPrescriptionCode(PrescriptionUtils.generatePrescriptionCode());
 			prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 			response = new PrescriptionAddEditResponse();
 			BeanUtil.map(prescriptionCollection, response);
@@ -266,20 +288,27 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	public List<Prescription> getPrescriptions(String doctorId, String hospitalId, String locationId, String patientId) {
+	public List<Prescription> getPrescriptions(String doctorId, String hospitalId, String locationId, String patientId, String createdTime) {
 		List<PrescriptionCollection> prescriptionCollections = null;
 		List<Prescription> prescriptions = null;
 		try {
-			prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId,false, new Sort(Sort.Direction.DESC,
-					"createdTime"));
+			if (StringUtils.isEmpty(createdTime)) {
+				prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId, false, new Sort(Sort.Direction.DESC,
+						"createdTime"));
+			} else {
+				long createdTimestamp = Long.parseLong(createdTime);
+				prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId, new Date(createdTimestamp), false, new Sort(Sort.Direction.DESC,
+						"createdTime"));
+			}
+			
 			if (prescriptionCollections != null) {
 				prescriptions = new ArrayList<Prescription>();
-				for(PrescriptionCollection prescriptionCollection : prescriptionCollections){
-					if(prescriptionCollection.getItems() != null){
+				for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
+					if (prescriptionCollection.getItems() != null) {
 						Prescription prescription = new Prescription();
 						BeanUtil.map(prescriptionCollection, prescription);
 						List<PrescriptionItemDetails> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetails>();
-						for(PrescriptionItem prescriptionItem : prescriptionCollection.getItems()){
+						for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
 							PrescriptionItemDetails prescriptionItemDetails = new PrescriptionItemDetails();
 							BeanUtil.map(prescriptionItem, prescriptionItemDetails);
 							DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
@@ -291,7 +320,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						prescription.setItemList(prescriptionItemDetailsList);
 						prescriptions.add(prescription);
 					}
-					
+
 				}
 			} else {
 				throw new BusinessException(ServiceError.NotFound, "Prescription Not Found");

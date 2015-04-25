@@ -12,7 +12,6 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.Group;
@@ -157,7 +156,6 @@ public class ContactsServiceImpl implements ContactsService {
 		return filteredDoctorContactCollection;
 	}
 
-	@Override
 	public void blockPatient(String patientId, String docterId) {
 		try {
 			/*Query query = new Query();
@@ -180,7 +178,6 @@ public class ContactsServiceImpl implements ContactsService {
 		}
 	}
 
-	@Override
 	public Group addEditGroup(Group group) {
 		try {
 			GroupCollection groupCollection = new GroupCollection();
@@ -194,7 +191,6 @@ public class ContactsServiceImpl implements ContactsService {
 		}
 	}
 
-	@Override
 	public void deleteGroup(String groupId) {
 		try {
 			groupRepository.delete(groupId);
@@ -204,7 +200,6 @@ public class ContactsServiceImpl implements ContactsService {
 		}
 	}
 
-	@Override
 	public List<PatientCard> searchPatients(SearchRequest request) {
 		try {
 
@@ -214,7 +209,6 @@ public class ContactsServiceImpl implements ContactsService {
 		return null;
 	}
 
-	@Override
 	public List<PatientCard> getDoctorsRecentlyVisitedContacts(String doctorId, int size, int page) {
 		try {
 			List<PatientAdmissionCollection> patientAdmissionCollections = patientAdmissionRepository.findDistinctPatientByDoctorId(doctorId, new PageRequest(
@@ -232,7 +226,6 @@ public class ContactsServiceImpl implements ContactsService {
 		return null;
 	}
 
-	@Override
 	public List<PatientCard> getDoctorsMostVisitedContacts(String doctorId, int size, int page) {
 		try {
 
@@ -242,7 +235,6 @@ public class ContactsServiceImpl implements ContactsService {
 		return null;
 	}
 
-	@Override
 	public int getcontactsTotalSize(GetDoctorContactsRequest request) {
 		try {
 			List<DoctorContactCollection> doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(), false);
@@ -266,7 +258,6 @@ public class ContactsServiceImpl implements ContactsService {
 	/**
 	 * This service gives lists of all groups for doctor.
 	 */
-	@Override
 	public List<Group> getAllGroups(String doctorId, String locationId, String hospitalId) {
 		List<Group> groups = null;
 		try {

@@ -1,17 +1,102 @@
 -http://localhost:8080/dpdocter/api/v1/prescription/addDrug
 
-Request - { "id" :null, "drugType" : "TABLET" , "drugName" : "paracetamol" , "description" : "for fever" , "strength" : { "value" : "10" , "unit" : "MG"} , "genericNames" : [ "paracetamol" , "generic paracetamol" , "paracetamol fast action"] , "doctorId" : "D12345", "hospitalId":"H12345", "locationId":"L12345" }
+Request - {
+    "description": "Test Description",
+    "doctorId": "D12345",
+    "drugCode": null,
+    "drugName": "Calpol",
+    "drugType": "TABLET",
+    "genericNames": [
+        "Calpol",
+        "Paracetamol",
+        "For Fever"
+    ],
+    "hospitalId": "H12345",
+    "id": null,
+    "locationId": "L12345",
+    "strength": {
+        "unit": "MG",
+        "value": "10"
+    }
+}
 
-Response - {"dataList":null,"data":{"doctorId":"D12345","hospitalId":"H12345","locationId":"L12345","drugCode":"4389eeab-c063-4d79-a309-506eb3ad9669","genericNames":["paracetamol","generic paracetamol","paracetamol fast action"],"drugName":"paracetamol","strength":{"unit":"MG","value":"10"},"drugType":"TABLET","description":"for fever","id":"552ed8df2736165ddf48ac44"}}
+Response - {
+    "data": {
+        "description": "Test Description",
+        "doctorId": "D12345",
+        "drugCode": "88342bc1-b838-4975-b200-46b8b2779418",
+        "drugName": "Calpol",
+        "drugType": "TABLET",
+        "genericNames": [
+            "Calpol",
+            "Paracetamol",
+            "For Fever"
+        ],
+        "hospitalId": "H12345",
+        "id": "553abf5c2736ae76583d8d98",
+        "locationId": "L12345",
+        "strength": {
+            "unit": "MG",
+            "value": "10"
+        }
+    },
+    "dataList": null
+}
 
 -http://localhost:8080/dpdocter/api/v1/prescription/editDrug
 
-Request - {"doctorId":"D12345","hospitalId":"H12345","locationId":"L12345","drugCode":"4389eeab-c063-4d79-a309-506eb3ad9669","genericNames":["paracetamol","generic paracetamol","paracetamol fast action"],"drugName":"paracetamol","strength":{"unit":"MG","value":"20"},"drugType":"TABLET","description":"for fever","id":"552ed8df2736165ddf48ac44"}
+Request - {
+    "description": "Test Description",
+    "doctorId": "D12345",
+    "drugCode": "88342bc1-b838-4975-b200-46b8b2779418",
+    "drugName": "Calpol",
+    "drugType": "TABLET",
+    "genericNames": [
+        "Calpol",
+        "Paracetamol",
+        "For Fever"
+    ],
+    "hospitalId": "H12345",
+    "id": "553abf5c2736ae76583d8d98",
+    "locationId": "L12345",
+    "strength": {
+        "unit": "MG",
+        "value": "5"
+    }
+}
 
-Response - {"dataList":null,"data":{"doctorId":"D12345","hospitalId":"H12345","locationId":"L12345","drugCode":"4389eeab-c063-4d79-a309-506eb3ad9669","genericNames":["paracetamol","generic paracetamol","paracetamol fast action"],"drugName":"paracetamol","strength":{"unit":"MG","value":"20"},"drugType":"TABLET","description":"for fever","id":"552ed8df2736165ddf48ac44"}}
+Response - {
+    "data": {
+        "description": "Test Description",
+        "doctorId": "D12345",
+        "drugCode": "88342bc1-b838-4975-b200-46b8b2779418",
+        "drugName": "Calpol",
+        "drugType": "TABLET",
+        "genericNames": [
+            "Calpol",
+            "Paracetamol",
+            "For Fever"
+        ],
+        "hospitalId": "H12345",
+        "id": "553abf5c2736ae76583d8d98",
+        "locationId": "L12345",
+        "strength": {
+            "unit": "MG",
+            "value": "5"
+        }
+    },
+    "dataList": null
+}
 
--http://localhost:8080/dpdocter/api/v1/prescription/deleteDrug/553279002736bf4f69c97709/D12345/H12345/L12345
+-http://localhost:8080/dpdocter/api/v1/prescription/deleteDrug/553abf5c2736ae76583d8d98/D12345/H12345/L12345
 
 Request - http://localhost:8080/dpdocter/api/v1/prescription/deleteDrug/{drugId}/{doctorId}/{hospitalId}/{locationId}
 
-Response - {"dataList":null,"data":true}
+Response - {
+    "data": true,
+    "dataList": null
+}
+
+
+
+

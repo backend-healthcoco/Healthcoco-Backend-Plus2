@@ -1,12 +1,14 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 import com.dpdocter.enums.DirectionEnum;
 
 public class PrescriptionItem {
 	private String drugId;
 	private Duration duration;
 	private String dosage;
-	private DirectionEnum direction;
+	private List<DirectionEnum> direction;
 	private String instructions;
 
 	public String getDrugId() {
@@ -33,11 +35,11 @@ public class PrescriptionItem {
 		this.dosage = dosage;
 	}
 
-	public DirectionEnum getDirection() {
+	public List<DirectionEnum> getDirection() {
 		return direction;
 	}
 
-	public void setDirection(DirectionEnum direction) {
+	public void setDirection(List<DirectionEnum> direction) {
 		this.direction = direction;
 	}
 

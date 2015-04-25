@@ -22,11 +22,9 @@ import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.request.TemplateAddEditRequest;
 import com.dpdocter.response.DrugAddEditResponse;
 import com.dpdocter.response.PrescriptionAddEditResponse;
-import com.dpdocter.response.PrescriptionGetResponse;
 import com.dpdocter.response.TemplateAddEditResponse;
 import com.dpdocter.response.TemplateGetResponse;
 import com.dpdocter.services.PrescriptionServices;
-
 import common.util.web.Response;
 
 @Component
@@ -69,6 +67,18 @@ public class PrescriptionApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Drug Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
 		Boolean drugDeleteResponse = prescriptionServices.deleteDrug(drugId, doctorId, hospitalId, locationId);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(drugDeleteResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.PrescriptionUrls.DELETE_GLOBAL_DRUG)
+	@GET
+	public Response<Boolean> deleteDrug(@PathParam(value = "drugId") String drugId) {
+		if (StringUtils.isEmpty(drugId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Drug Id, Doctor Id Cannot Be Empty");
+		}
+		Boolean drugDeleteResponse = prescriptionServices.deleteDrug(drugId);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(drugDeleteResponse);
 		return response;
@@ -177,13 +187,25 @@ public class PrescriptionApi {
 
 	@Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION)
 	@GET
-	public Response<Prescription> getPrescription(@PathParam(value = "doctorId") String doctorId,
-			@PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "patientId") String patientId) {
+	public Response<Prescription> getPrescription(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "hospitalId") String hospitalId,
+			@PathParam(value = "locationId") String locationId, @PathParam(value = "patientId") String patientId) {
 		if (StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		List<Prescription> prescriptions = prescriptionServices.getPrescriptions(doctorId, hospitalId, locationId, patientId);
+		List<Prescription> prescriptions = prescriptionServices.getPrescriptions(doctorId, hospitalId, locationId, patientId, null);
+		Response<Prescription> response = new Response<Prescription>();
+		response.setDataList(prescriptions);
+		return response;
+	}
+	
+	@Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_CREATED_TIME)
+	@GET
+	public Response<Prescription> getPrescription(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "hospitalId") String hospitalId,
+			@PathParam(value = "locationId") String locationId, @PathParam(value = "patientId") String patientId, @PathParam(value = "createdTime") String createdTime) {
+		if (StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		List<Prescription> prescriptions = prescriptionServices.getPrescriptions(doctorId, hospitalId, locationId, patientId, createdTime);
 		Response<Prescription> response = new Response<Prescription>();
 		response.setDataList(prescriptions);
 		return response;

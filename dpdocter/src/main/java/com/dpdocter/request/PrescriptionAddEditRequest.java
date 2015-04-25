@@ -19,6 +19,8 @@ public class PrescriptionAddEditRequest {
 
 	private String patientId;
 
+	private String prescriptionCode;
+
 	public String getId() {
 		return id;
 	}
@@ -75,10 +77,18 @@ public class PrescriptionAddEditRequest {
 		this.patientId = patientId;
 	}
 
+	public String getPrescriptionCode() {
+		return prescriptionCode;
+	}
+
+	public void setPrescriptionCode(String prescriptionCode) {
+		this.prescriptionCode = prescriptionCode;
+	}
+
 	@Override
 	public String toString() {
 		return "PrescriptionAddEditRequest [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + ", items=" + items + "]";
+				+ hospitalId + ", items=" + items + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + "]";
 	}
 
 }

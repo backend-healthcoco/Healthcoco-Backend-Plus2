@@ -1,8 +1,10 @@
 package com.dpdocter.beans;
 
+import org.codehaus.jackson.annotate.JsonAutoDetect;
+
 import com.dpdocter.enums.StrengthUnitEnum;
 
-
+@JsonAutoDetect
 public class Strength {
 	
 	private String value;

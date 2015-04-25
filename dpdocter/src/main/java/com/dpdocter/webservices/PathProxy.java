@@ -111,6 +111,8 @@ public interface PathProxy {
 		public static final String EDIT_DRUG = "editDrug";
 		public static final String DELETE_DRUG = "deleteDrug/{drugId}/{doctorId}/{hospitalId}/{locationId}";
 		public static final String GET_DRUG_ID = "getDrugDetails/{drugId}";
+		
+		public static final String DELETE_GLOBAL_DRUG = "deleteDrug/{drugId}";
 
 		public static final String ADD_TEMPLATE = "addTemplate";
 		public static final String EDIT_TEMPLATE = "editTemplate";
@@ -121,6 +123,7 @@ public interface PathProxy {
 		public static final String EDIT_PRESCRIPTION = "editPrescription";
 		public static final String DELETE_PRESCRIPTION = "deletePrescription/{prescriptionId}/{doctorId}/{hospitalId}/{locationId}/{patientId}";
 		public static final String GET_PRESCRIPTION = "getPrescription/{doctorId}/{hospitalId}/{locationId}/{patientId}";
+		public static final String GET_PRESCRIPTION_CREATED_TIME = "getPrescription/{doctorId}/{hospitalId}/{locationId}/{patientId}/{createdTime}";
 
 	}
 

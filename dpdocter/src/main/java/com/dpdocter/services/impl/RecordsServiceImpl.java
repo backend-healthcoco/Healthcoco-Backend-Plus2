@@ -20,7 +20,6 @@ import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.RecordsCollection;
 import com.dpdocter.collections.RecordsTagsCollection;
 import com.dpdocter.collections.TagsCollection;
-import com.dpdocter.collections.UserCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -62,7 +61,6 @@ public class RecordsServiceImpl implements RecordsService {
 	@Value(value = "${IMAGE_RESOURCE}")
 	private String imageResource;
 
-	@Override
 	public Records addRecord(RecordsAddRequest request) {
 		try {
 			String path = request.getPatientId() + File.separator + "records";
@@ -89,7 +87,6 @@ public class RecordsServiceImpl implements RecordsService {
 
 	}
 
-	@Override
 	public void emailRecordToPatient(String recordId, String emailAddr) {
 		try {
 			RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
@@ -120,7 +117,6 @@ public class RecordsServiceImpl implements RecordsService {
 		return imageName;
 	}
 
-	@Override
 	public void tagRecord(TagRecordRequest request) {
 		try {
 			/*	//save tags
@@ -149,7 +145,6 @@ public class RecordsServiceImpl implements RecordsService {
 
 	}
 
-	@Override
 	public void changeReportLabel(String recordId, String label) {
 		try {
 			RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
@@ -167,7 +162,6 @@ public class RecordsServiceImpl implements RecordsService {
 
 	}
 
-	@Override
 	public List<Records> searchRecords(RecordsSearchRequest request) {
 		List<Records> records = null;
 		try {
@@ -194,7 +188,6 @@ public class RecordsServiceImpl implements RecordsService {
 		return records;
 	}
 
-	@Override
 	public Tags addEditTag(Tags tags) {
 		try {
 			TagsCollection tagsCollection = new TagsCollection();
@@ -208,7 +201,6 @@ public class RecordsServiceImpl implements RecordsService {
 		}
 	}
 
-	@Override
 	public List<Tags> getAllTags(String doctorId, String locationId, String hospitalId) {
 		List<Tags> tags = null;
 		try {
@@ -241,7 +233,6 @@ public class RecordsServiceImpl implements RecordsService {
 		return tags;
 	}
 
-	@Override
 	public String getPatientEmailAddress(String patientId) {
 		String emailAddress = null;
 		try {
@@ -278,7 +269,6 @@ public class RecordsServiceImpl implements RecordsService {
 		}
 	}
 
-	@Override
 	public void deleteRecord(String recordId) {
 		try {
 			RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
@@ -296,7 +286,6 @@ public class RecordsServiceImpl implements RecordsService {
 
 	}
 
-	@Override
 	public void deleteTag(String tagId) {
 		try {
 			tagsRepository.delete(tagId);

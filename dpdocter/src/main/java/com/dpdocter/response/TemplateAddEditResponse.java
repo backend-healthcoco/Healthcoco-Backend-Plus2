@@ -15,8 +15,6 @@ public class TemplateAddEditResponse {
 
 	private String hospitalId;
 
-	private Boolean isDeleted;
-
 	private List<TemplateItem> items;
 
 	public String getId() {
@@ -59,14 +57,6 @@ public class TemplateAddEditResponse {
 		this.hospitalId = hospitalId;
 	}
 
-	public Boolean getIsDeleted() {
-		return isDeleted;
-	}
-
-	public void setIsDeleted(Boolean isDeleted) {
-		this.isDeleted = isDeleted;
-	}
-
 	public List<TemplateItem> getItems() {
 		return items;
 	}
@@ -78,7 +68,7 @@ public class TemplateAddEditResponse {
 	@Override
 	public String toString() {
 		return "TemplateAddEditResponse [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", isDeleted=" + isDeleted + ", items=" + items + "]";
+				+ ", items=" + items + "]";
 	}
 
 }

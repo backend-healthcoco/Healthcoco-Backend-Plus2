@@ -1,20 +1,21 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 import com.dpdocter.enums.DirectionEnum;
-import com.dpdocter.response.DrugAddEditResponse;
 
 public class TemplateGetItem {
-	private DrugAddEditResponse drug;
+	private TemplateDrug drug;
 	private Duration duration;
 	private String dosage;
-	private DirectionEnum direction;
+	private List<DirectionEnum> direction;
 	private String instructions;
 
-	public DrugAddEditResponse getDrug() {
+	public TemplateDrug getDrug() {
 		return drug;
 	}
 
-	public void setDrug(DrugAddEditResponse drug) {
+	public void setDrug(TemplateDrug drug) {
 		this.drug = drug;
 	}
 
@@ -34,11 +35,11 @@ public class TemplateGetItem {
 		this.dosage = dosage;
 	}
 
-	public DirectionEnum getDirection() {
+	public List<DirectionEnum> getDirection() {
 		return direction;
 	}
 
-	public void setDirection(DirectionEnum direction) {
+	public void setDirection(List<DirectionEnum> direction) {
 		this.direction = direction;
 	}
 

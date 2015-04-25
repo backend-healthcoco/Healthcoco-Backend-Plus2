@@ -1,13 +1,10 @@
-package com.dpdocter.response;
+package com.dpdocter.beans;
 
 import java.util.List;
 
-import org.codehaus.jackson.annotate.JsonManagedReference;
-
-import com.dpdocter.beans.Strength;
 import com.dpdocter.enums.DrugTypeEnum;
 
-public class DrugAddEditResponse {
+public class TemplateDrug {
 	private String id;
 
 	private DrugTypeEnum drugType;
@@ -16,16 +13,9 @@ public class DrugAddEditResponse {
 
 	private String description;
 
-	@JsonManagedReference
 	private Strength strength;
 
 	private List<String> genericNames;
-
-	private String doctorId;
-
-	private String hospitalId;
-
-	private String locationId;
 
 	private String drugCode;
 
@@ -77,30 +67,6 @@ public class DrugAddEditResponse {
 		this.genericNames = genericNames;
 	}
 
-	public String getDoctorId() {
-		return doctorId;
-	}
-
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
-
-	public String getHospitalId() {
-		return hospitalId;
-	}
-
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
-
-	public String getLocationId() {
-		return locationId;
-	}
-
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
-
 	public String getDrugCode() {
 		return drugCode;
 	}
@@ -111,9 +77,8 @@ public class DrugAddEditResponse {
 
 	@Override
 	public String toString() {
-		return "DrugAddEditResponse [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", description=" + description + ", strength="
-				+ strength + ", genericNames=" + genericNames + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId
-				+ ", drugCode=" + drugCode + "]";
+		return "TemplateDrug [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", description=" + description + ", strength=" + strength
+				+ ", genericNames=" + genericNames + ", drugCode=" + drugCode + "]";
 	}
 
 }

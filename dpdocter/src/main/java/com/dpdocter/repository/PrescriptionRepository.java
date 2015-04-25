@@ -1,5 +1,6 @@
 package com.dpdocter.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Sort;
@@ -11,5 +12,8 @@ import com.dpdocter.collections.PrescriptionCollection;
 
 public interface PrescriptionRepository extends MongoRepository<PrescriptionCollection, String>, PagingAndSortingRepository<PrescriptionCollection, String> {
 	@Query("{'doctorId' : ?0, 'hospitalId' : ?1, 'locationId' : ?2, 'patientId' : ?3,'isDeleted' : ?4}")
-	List<PrescriptionCollection> getPrescription(String doctorId, String hospitalId, String locationId, String patientId,Boolean isDeleted ,Sort sort);
+	List<PrescriptionCollection> getPrescription(String doctorId, String hospitalId, String locationId, String patientId, Boolean isDeleted, Sort sort);
+	
+	@Query("{'doctorId' : ?0, 'hospitalId' : ?1, 'locationId' : ?2, 'patientId' : ?3, 'createdTime' : {'$gte' : ?4}, 'isDeleted' : ?5}")
+	List<PrescriptionCollection> getPrescription(String doctorId, String hospitalId, String locationId, String patientId, Date date, Boolean isDeleted, Sort sort);
 }

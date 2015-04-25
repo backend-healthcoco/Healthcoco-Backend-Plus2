@@ -8,7 +8,6 @@ import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.request.TemplateAddEditRequest;
 import com.dpdocter.response.DrugAddEditResponse;
 import com.dpdocter.response.PrescriptionAddEditResponse;
-import com.dpdocter.response.PrescriptionGetResponse;
 import com.dpdocter.response.TemplateAddEditResponse;
 import com.dpdocter.response.TemplateGetResponse;
 
@@ -18,6 +17,8 @@ public interface PrescriptionServices {
 	DrugAddEditResponse editDrug(DrugAddEditRequest request);
 
 	Boolean deleteDrug(String drugId, String doctorId, String hospitalId, String locationIdString);
+
+	Boolean deleteDrug(String drugId);
 
 	DrugAddEditResponse getDrugById(String drugId);
 
@@ -35,8 +36,6 @@ public interface PrescriptionServices {
 
 	Boolean deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId, String patientId);
 
-	List<Prescription> getPrescriptions(String doctorId, String hospitalId, String locationId, String patientId);
-	
-	
+	List<Prescription> getPrescriptions(String doctorId, String hospitalId, String locationId, String patientId, String createdTime);
 
 }

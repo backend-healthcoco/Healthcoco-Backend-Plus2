@@ -3,6 +3,7 @@ package com.dpdocter.collections;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -30,12 +31,15 @@ public class DrugCollection {
 	private List<String> genericNames;
 
 	@Field
+	@Indexed(sparse = true)
 	private String doctorId;
 
 	@Field
+	@Indexed(sparse = true)
 	private String hospitalId;
 
 	@Field
+	@Indexed(sparse = true)
 	private String locationId;
 
 	@Field

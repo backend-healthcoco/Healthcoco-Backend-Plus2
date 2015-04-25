@@ -53,37 +53,49 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Autowired
 	private UserRepository userRepository;
+
 	@Autowired
 	private RoleRepository roleRepository;
+
 	@Autowired
 	private UserRoleRepository userRoleRepository;
+
 	@Autowired
 	private AddressRepository addressRepository;
+
 	@Autowired
 	private PatientRepository patientRepository;
+
 	@Autowired
 	private PatientAdmissionRepository patientAdmissionRepository;
+
 	@Autowired
 	private GenerateUniqueUserNameService generateUniqueUserNameService;
+
 	@Autowired
 	private MailService mailService;
+
 	@Autowired
 	private MailBodyGenerator mailBodyGenerator;
+
 	/*@Autowired
 	private GroupRepository groupRepository;*/
+
 	@Autowired
 	private PatientGroupRepository patientGroupRepository;
+
 	@Autowired
 	private DoctorContactsRepository doctorContactsRepository;
+
 	@Autowired
 	private ReferrenceRepository referrenceRepository;
+
 	@Autowired
 	private FileManager fileManager;
 
 	@Value(value = "${mail.signup.subject.activation}")
 	private String signupSubject;
 
-	@Override
 	public User checkIfPatientExist(PatientRegistrationRequest request) {
 		try {
 			UserCollection userCollection = userRepository.checkPatient(request.getFirstName(), request.getMiddleName(), request.getLastName(),
@@ -101,7 +113,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	}
 
-	@Override
 	public RegisteredPatientDetails registerNewPatient(PatientRegistrationRequest request) {
 		RegisteredPatientDetails registeredPatientDetails = null;
 		try {
@@ -201,7 +212,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return registeredPatientDetails;
 	}
 
-	@Override
 	public RegisteredPatientDetails registerExistingPatient(PatientRegistrationRequest request) {
 		RegisteredPatientDetails registeredPatientDetails = null;
 		PatientCollection patientCollection = null;
@@ -291,7 +301,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return registeredPatientDetails;
 	}
 
-	@Override
 	public List<User> getUsersByPhoneNumber(String phoneNumber, String locationId, String hospitalId) {
 		List<User> users = null;
 		try {
@@ -333,7 +342,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return RandomStringUtils.randomAlphabetic(count);
 	}
 
-	@Override
 	public RegisteredPatientDetails getPatientProfileByUserId(String userId, String doctorId, String locationId, String hospitalId) {
 		RegisteredPatientDetails registeredPatientDetails = null;
 		try {
@@ -369,7 +377,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return registeredPatientDetails;
 	}
 
-	@Override
 	public Referrence addEditReferrence(Referrence referrence) {
 		try {
 			ReferrencesCollection referrencesCollection = new ReferrencesCollection();
@@ -383,7 +390,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return referrence;
 	}
 
-	@Override
 	public void deleteReferrence(String referrenceId) {
 		try {
 			ReferrencesCollection referrencesCollection = referrenceRepository.findOne(referrenceId);
@@ -403,7 +409,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	}
 
-	@Override
 	public List<Referrence> getReferrences(String doctorId, String locationId, String hospitalId) {
 		List<Referrence> referrences = null;
 		try {
@@ -420,8 +425,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return referrences;
 	}
 
-	@Override
-	public String patientIdGenerator(String doctorId, String locationId, String hospitalId) {
+		public String patientIdGenerator(String doctorId, String locationId, String hospitalId) {
 		String generatedId = null;
 		try {
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
