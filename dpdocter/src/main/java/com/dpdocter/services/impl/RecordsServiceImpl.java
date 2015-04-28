@@ -296,4 +296,22 @@ public class RecordsServiceImpl implements RecordsService {
 
 	}
 
+	@Override
+	public List<Records> getRecordsByIds(List<String> recordIds) {
+		List<Records> records = null;
+		try {
+			Iterable<RecordsCollection>  recordsCollectionIterable = recordsRepository.findAll(recordIds);
+			if(recordsCollectionIterable!= null){
+				@SuppressWarnings("unchecked")
+				List<RecordsCollection> recordsCollections = IteratorUtils.toList(recordsCollectionIterable.iterator());
+				records = new ArrayList<Records>();
+				BeanUtil.map(recordsCollections, records);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return records;
+	}
+
 }

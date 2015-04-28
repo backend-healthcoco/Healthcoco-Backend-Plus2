@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -33,6 +34,7 @@ import com.dpdocter.response.PrescriptionAddEditResponse;
 import com.dpdocter.response.TemplateAddEditResponse;
 import com.dpdocter.response.TemplateGetResponse;
 import com.dpdocter.services.PrescriptionServices;
+
 import common.util.web.PrescriptionUtils;
 
 @Service
@@ -299,6 +301,48 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				long createdTimestamp = Long.parseLong(createdTime);
 				prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId, new Date(createdTimestamp), false, new Sort(Sort.Direction.DESC,
 						"createdTime"));
+			}
+			
+			if (prescriptionCollections != null) {
+				prescriptions = new ArrayList<Prescription>();
+				for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
+					if (prescriptionCollection.getItems() != null) {
+						Prescription prescription = new Prescription();
+						BeanUtil.map(prescriptionCollection, prescription);
+						List<PrescriptionItemDetails> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetails>();
+						for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
+							PrescriptionItemDetails prescriptionItemDetails = new PrescriptionItemDetails();
+							BeanUtil.map(prescriptionItem, prescriptionItemDetails);
+							DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
+							Drug drug = new Drug();
+							BeanUtil.map(drugCollection, drug);
+							prescriptionItemDetails.setDrug(drug);
+							prescriptionItemDetailsList.add(prescriptionItemDetails);
+						}
+						prescription.setItemList(prescriptionItemDetailsList);
+						prescriptions.add(prescription);
+					}
+
+				}
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "Prescription Not Found");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Prescription");
+		}
+		return prescriptions;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Prescription> getPrescriptionsByIds(List<String> prescriptionIds) {
+		List<PrescriptionCollection> prescriptionCollections = null;
+		List<Prescription> prescriptions = null;
+		try {
+			Iterable<PrescriptionCollection>  prescriptionCollectionsIterable = prescriptionRepository.findAll(prescriptionIds);
+			if(prescriptionCollectionsIterable != null){
+				prescriptionCollections = IteratorUtils.toList(prescriptionCollectionsIterable.iterator());
 			}
 			
 			if (prescriptionCollections != null) {

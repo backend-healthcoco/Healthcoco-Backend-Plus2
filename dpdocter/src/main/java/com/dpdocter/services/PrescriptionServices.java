@@ -37,5 +37,7 @@ public interface PrescriptionServices {
 	Boolean deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId, String patientId);
 
 	List<Prescription> getPrescriptions(String doctorId, String hospitalId, String locationId, String patientId, String createdTime);
+	
+	List<Prescription> getPrescriptionsByIds(List<String> prescriptionIds);
 
 }

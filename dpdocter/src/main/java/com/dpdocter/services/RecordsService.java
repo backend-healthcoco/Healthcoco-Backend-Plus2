@@ -17,6 +17,8 @@ public interface RecordsService {
 	void changeReportLabel(String recordId, String label);
 
 	List<Records> searchRecords(RecordsSearchRequest request);
+	
+	List<Records> getRecordsByIds(List<String> recordIds);
 
 	void emailRecordToPatient(String recordId, String emailAddr);
 
@@ -31,5 +33,7 @@ public interface RecordsService {
 	File getRecordFile(String recordId);
 
 	void deleteRecord(String recordId);
+	
+	
 
 }
