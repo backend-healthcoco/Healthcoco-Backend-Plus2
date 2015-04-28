@@ -34,7 +34,6 @@ import com.dpdocter.response.PrescriptionAddEditResponse;
 import com.dpdocter.response.TemplateAddEditResponse;
 import com.dpdocter.response.TemplateGetResponse;
 import com.dpdocter.services.PrescriptionServices;
-
 import common.util.web.PrescriptionUtils;
 
 @Service
@@ -335,7 +334,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
 	public List<Prescription> getPrescriptionsByIds(List<String> prescriptionIds) {
 		List<PrescriptionCollection> prescriptionCollections = null;
 		List<Prescription> prescriptions = null;
