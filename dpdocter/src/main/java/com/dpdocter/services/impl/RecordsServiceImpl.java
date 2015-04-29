@@ -296,7 +296,6 @@ public class RecordsServiceImpl implements RecordsService {
 
 	}
 
-	@Override
 	public List<Records> getRecordsByIds(List<String> recordIds) {
 		List<Records> records = null;
 		try {

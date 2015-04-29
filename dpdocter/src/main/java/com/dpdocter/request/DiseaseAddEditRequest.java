@@ -1,32 +1,12 @@
-package com.dpdocter.collections;
+package com.dpdocter.request;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
-
-@Document(collection = "diseases_cl")
-public class DiseasesCollection {
-
-	@Id
+public class DiseaseAddEditRequest {
 	private String id;
-
-	@Field
 	private String doctorId;
-
-	@Field
 	private String locationId;
-
-	@Field
 	private String hospitalId;
-
-	@Field
 	private String disease;
-
-	@Field
 	private String description;
-
-	@Field
-	private boolean isDeleted = false;
 
 	public String getId() {
 		return id;
@@ -76,18 +56,10 @@ public class DiseasesCollection {
 		this.description = description;
 	}
 
-	public boolean isDeleted() {
-		return isDeleted;
-	}
-
-	public void setDeleted(boolean isDeleted) {
-		this.isDeleted = isDeleted;
-	}
-
 	@Override
 	public String toString() {
-		return "DiseasesCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", disease=" + disease
-				+ ", description=" + description + ", isDeleted=" + isDeleted + "]";
+		return "DiseaseAddEditRequest [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", disease="
+				+ disease + ", description=" + description + "]";
 	}
 
 }
