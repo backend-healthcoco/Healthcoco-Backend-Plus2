@@ -31,6 +31,17 @@ public class HistoryCollection {
 	private List<String> medicalhistory;
 	@Field
 	private List<String> spetialNotes;
+	
+	
+	
+	public HistoryCollection(String doctorId, String locationId,
+			String hospitalId, String patientId) {
+		super();
+		this.doctorId = doctorId;
+		this.locationId = locationId;
+		this.hospitalId = hospitalId;
+		this.patientId = patientId;
+	}
 	public String getId() {
 		return id;
 	}

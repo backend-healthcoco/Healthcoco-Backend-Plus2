@@ -65,4 +65,7 @@ public class HistoryApi {
 		response.setData(diseaseDeleteResponse);
 		return response;
 	}
+	
+	
+	
 }
