@@ -133,7 +133,21 @@ public interface PathProxy {
 		public static final String ADD_DISEASE = "addDisease";
 		public static final String EDIT_DISEASE = "editDisease";
 		public static final String DELETE_DISEASE = "deleteDisease/{diseaseId}/{doctorId}/{hospitalId}/{locationId}";
+		public static final String GET_DISEASES = "getDiseases/{doctorId}/{hospitalId}/{locationId}";
 
+		public static final String ADD_REPORT_TO_HISTORY = "addReportToHistory/{reportId}/{patientId}/{doctorId}/{hospitalId}/{locationId}";
+		public static final String ADD_CLINICAL_NOTES_TO_HISTORY = "addClinicalNotesToHistory/{clinicalNotesId}/{patientId}/{doctorId}/{hospitalId}/{locationId}";
+		public static final String ADD_PRESCRIPTION_TO_HISTORY = "addPrescriptionToHistory/{prescriptionId}/{patientId}/{doctorId}/{hospitalId}/{locationId}";
+		public static final String ADD_SPECIAL_NOTES = "addSpecialNotes";
+
+		public static final String ASSIGN_MEDICAL_HISTORY = "assignMedicalHistory/{diseaseId}/{patientId}/{doctorId}/{hospitalId}/{locationId}";
+		public static final String ASSIGN_FAMILY_HISTORY = "assignFamilyHistory/{diseaseId}/{patientId}/{doctorId}/{hospitalId}/{locationId}";
+
+		public static final String REMOVE_REPORTS = "removeReports/{reportId}/{patientId}/{doctorId}/{hospitalId}/{locationId}";
+		public static final String REMOVE_CLINICAL_NOTES = "removeClinicalNotes/{clinicalNotesId}/{patientId}/{doctorId}/{hospitalId}/{locationId}";
+		public static final String REMOVE_PRESCRIPTION = "removePrescription/{prescriptionId}/{patientId}/{doctorId}/{hospitalId}/{locationId}";
+		public static final String REMOVE_MEDICAL_HISTORY = "removeMedicalHistory/{diseaseId}/{patientId}/{doctorId}/{hospitalId}/{locationId}";
+		public static final String REMOVE_FAMILY_HISTORY = "removeFamilyHistory/{diseaseId}/{patientId}/{doctorId}/{hospitalId}/{locationId}";
 	}
 
 }
