@@ -34,7 +34,7 @@ public class HistoryApi {
 
 	@Path(value = PathProxy.HistoryUrls.ADD_DISEASE)
 	@POST
-	public Response<DiseaseAddEditResponse> addDisease(List<DiseaseAddEditRequest> request) {
+	public Response<DiseaseAddEditResponse> addDiseases(List<DiseaseAddEditRequest> request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 		}
@@ -46,7 +46,7 @@ public class HistoryApi {
 
 	@Path(value = PathProxy.HistoryUrls.EDIT_DISEASE)
 	@POST
-	public Response<DiseaseAddEditResponse> addDisease(DiseaseAddEditRequest request) {
+	public Response<DiseaseAddEditResponse> editDisease(DiseaseAddEditRequest request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 		}

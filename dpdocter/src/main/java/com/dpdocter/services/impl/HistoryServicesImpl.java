@@ -178,13 +178,13 @@ public class HistoryServicesImpl implements HistoryServices {
 				} else {
 					prescriptions = new ArrayList<String>();
 					prescriptions.add(prescriptionId);
-					historyCollection.setClinicalNotes(prescriptions);
+					historyCollection.setPrescriptions(prescriptions);
 				}
 			} else {// if history not added for this patient.Create new history.
 				historyCollection = new HistoryCollection(doctorId, locationId, hospitalId, patientId);
 				List<String> prescriptions = new ArrayList<String>();
 				prescriptions.add(prescriptionId);
-				historyCollection.setClinicalNotes(prescriptions);
+				historyCollection.setPrescriptions(prescriptions);
 			}
 			// finally add history into db.
 			historyRepository.save(historyCollection);
@@ -277,18 +277,18 @@ public class HistoryServicesImpl implements HistoryServices {
 			historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientId(doctorId, locationId, hospitalId, patientId);
 			if (historyCollection != null) {
 				// check if spetialNotes are there in history.
-				List<String> spetialNotesInHistory = historyCollection.getSpetialNotes();
+				List<String> spetialNotesInHistory = historyCollection.getSpecialNotes();
 				if (spetialNotesInHistory != null) {
 					spetialNotesInHistory.addAll(specialNotes);
 					// if no spetialNotes is added into history then add it .
 				} else {
 					spetialNotesInHistory = new ArrayList<String>();
 					spetialNotesInHistory.addAll(specialNotes);
-					historyCollection.setSpetialNotes(spetialNotesInHistory);
+					historyCollection.setSpecialNotes(spetialNotesInHistory);
 				}
 			} else {// if history not added for this patient.Create new history.
 				historyCollection = new HistoryCollection(doctorId, locationId, hospitalId, patientId);
-				historyCollection.setSpetialNotes(specialNotes);
+				historyCollection.setSpecialNotes(specialNotes);
 			}
 			// finally add history into db.
 			historyRepository.save(historyCollection);
@@ -454,7 +454,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		if (historyCollection != null) {
 			if (historyCollection.getReports() == null && historyCollection.getClinicalNotes() == null && historyCollection.getPrescriptions() == null
 					&& historyCollection.getMedicalhistory() == null && historyCollection.getFamilyhistory() == null
-					&& historyCollection.getSpetialNotes() == null) {
+					&& historyCollection.getSpecialNotes() == null) {
 				return true;
 			} else {
 				return false;
