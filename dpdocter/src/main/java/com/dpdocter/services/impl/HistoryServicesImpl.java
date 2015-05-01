@@ -3,11 +3,17 @@ package com.dpdocter.services.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.ClinicalNotes;
+import com.dpdocter.beans.Prescription;
+import com.dpdocter.beans.Records;
 import com.dpdocter.collections.DiseasesCollection;
 import com.dpdocter.collections.HistoryCollection;
+import com.dpdocter.collections.RecordsCollection;
+import com.dpdocter.enums.HistoryFilter;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -16,7 +22,11 @@ import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.request.DiseaseAddEditRequest;
 import com.dpdocter.response.DiseaseAddEditResponse;
 import com.dpdocter.response.DiseaseListResponse;
+import com.dpdocter.response.HistoryDetailsResponse;
+import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.HistoryServices;
+import com.dpdocter.services.PrescriptionServices;
+import com.dpdocter.services.RecordsService;
 
 @Service
 public class HistoryServicesImpl implements HistoryServices {
@@ -25,6 +35,12 @@ public class HistoryServicesImpl implements HistoryServices {
 
 	@Autowired
 	private HistoryRepository historyRepository;
+	@Autowired
+	private RecordsService recordsService;
+	@Autowired
+	private PrescriptionServices prescriptionServices;
+	@Autowired
+	private ClinicalNotesService clinicalNotesService;
 
 	public List<DiseaseAddEditResponse> addDiseases(List<DiseaseAddEditRequest> request) {
 		List<DiseaseAddEditResponse> response = null;
@@ -476,6 +492,95 @@ public class HistoryServicesImpl implements HistoryServices {
 					diseaseListResponses.add(diseaseListResponse);
 
 				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return diseaseListResponses;
+	}
+
+	@Override
+	public HistoryDetailsResponse getPatientHistoryDetailsWithoutVarifiedOTP(
+			String patientId, String doctorId, String hospitalId,
+			String locationId,String historyFilter) {
+		HistoryDetailsResponse response = null;
+		try {
+			HistoryCollection historyCollection = null;
+			if(HistoryFilter.ALL.getFilter().equals(historyFilter)){
+				historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientId(doctorId, locationId, hospitalId, patientId);
+			}else if(HistoryFilter.REPORTS.getFilter().equals(historyFilter)){
+				historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientIdFilterByReports(doctorId, locationId, hospitalId, patientId);
+			}else if (HistoryFilter.PRESCRIPTIONS.getFilter().equals(historyFilter)){
+				historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientIdFilterByPrescriptions(doctorId, locationId, hospitalId, patientId);
+			}else if(HistoryFilter.CLINICAL_NOTES.getFilter().equals(historyFilter)){
+				historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientIdFilterByClinicalNotes(doctorId, locationId, hospitalId, patientId);
+			}
+			
+			 
+			if(historyCollection != null){
+				 response =
+						new HistoryDetailsResponse(historyCollection.getId(),
+								doctorId, locationId, hospitalId, patientId);
+				
+				List<String> reportIds = historyCollection.getReports();
+				if(reportIds != null){
+					List<Records> records = recordsService.getRecordsByIds(reportIds);
+					response.setReports(records);
+				}
+				List<String> prescriptionIds = historyCollection.getPrescriptions();
+				if(prescriptionIds != null){
+					List<Prescription> prescriptions = prescriptionServices.getPrescriptionsByIds(prescriptionIds);
+					response.setPrescriptions(prescriptions);
+				}
+				List<String> clinicalNoteIds = historyCollection.getClinicalNotes();
+				if(clinicalNoteIds != null){
+					List<ClinicalNotes> clinicalNotes = new ArrayList<ClinicalNotes>();
+					for(String id : clinicalNoteIds){
+						ClinicalNotes clinicalNote = clinicalNotesService.getNotesById(id);
+						clinicalNotes.add(clinicalNote);
+					}
+					response.setClinicalNotes(clinicalNotes);
+				}
+				List<String> medicalHistoryIds = historyCollection.getMedicalhistory();
+				if(medicalHistoryIds != null){
+					List<DiseaseListResponse> medicalHistory = getDiseasesByIds(medicalHistoryIds);
+					response.setMedicalhistory(medicalHistory);
+				}
+				List<String> familyHistoryIds = historyCollection.getFamilyhistory();
+				if(familyHistoryIds != null){
+					List<DiseaseListResponse> familyHistory = getDiseasesByIds(medicalHistoryIds);
+					response.setMedicalhistory(familyHistory);
+				}
+				response.setSpecialNotes(historyCollection.getSpecialNotes());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		
+		return response;
+	}
+
+	@Override
+	public List<HistoryDetailsResponse> getPatientHistoryDetailsWithVarifiedOTP(
+			String patientId, String doctorId, String hospitalId,
+			String locationId,String historyFilter) {
+		
+		return null;
+	}
+
+	@Override
+	public List<DiseaseListResponse> getDiseasesByIds(List<String> diseasesIds) {
+		List<DiseaseListResponse> diseaseListResponses = null;
+		try {
+			Iterable<DiseasesCollection> diseasesCollIterable = diseasesRepository.findAll(diseasesIds);
+			
+			if(diseasesCollIterable!= null){
+				@SuppressWarnings("unchecked")
+				List<DiseasesCollection> diseasesCollections = IteratorUtils.toList(diseasesCollIterable.iterator());
+				diseaseListResponses = new ArrayList<DiseaseListResponse>();
+				BeanUtil.map(diseasesCollections, diseaseListResponses);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
