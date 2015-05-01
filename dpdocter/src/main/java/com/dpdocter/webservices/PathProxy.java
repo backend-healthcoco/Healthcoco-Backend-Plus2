@@ -122,8 +122,8 @@ public interface PathProxy {
 		public static final String ADD_PRESCRIPTION = "addPrescription";
 		public static final String EDIT_PRESCRIPTION = "editPrescription";
 		public static final String DELETE_PRESCRIPTION = "deletePrescription/{prescriptionId}/{doctorId}/{hospitalId}/{locationId}/{patientId}";
-		public static final String GET_PRESCRIPTION = "getPrescription/{doctorId}/{hospitalId}/{locationId}/{patientId}";
-		public static final String GET_PRESCRIPTION_CREATED_TIME = "getPrescription/{doctorId}/{hospitalId}/{locationId}/{patientId}/{createdTime}";
+		public static final String GET_PRESCRIPTION = "getPrescription/{doctorId}/{hospitalId}/{locationId}/{patientId}/{isOTPVarified}";
+		public static final String GET_PRESCRIPTION_CREATED_TIME = "getPrescription/{doctorId}/{hospitalId}/{locationId}/{patientId}/{isOTPVarified}/{createdTime}";
 
 	}
 

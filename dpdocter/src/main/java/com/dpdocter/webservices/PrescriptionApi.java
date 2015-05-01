@@ -188,11 +188,11 @@ public class PrescriptionApi {
 	@Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION)
 	@GET
 	public Response<Prescription> getPrescription(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "locationId") String locationId, @PathParam(value = "patientId") String patientId) {
+			@PathParam(value = "locationId") String locationId, @PathParam(value = "patientId") String patientId,@PathParam(value="{isOTPVarified}")boolean isOTPVarified) {
 		if (StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		List<Prescription> prescriptions = prescriptionServices.getPrescriptions(doctorId, hospitalId, locationId, patientId, null);
+		List<Prescription> prescriptions = prescriptionServices.getPrescriptions(doctorId, hospitalId, locationId, patientId, null,isOTPVarified);
 		Response<Prescription> response = new Response<Prescription>();
 		response.setDataList(prescriptions);
 		return response;
@@ -201,11 +201,12 @@ public class PrescriptionApi {
 	@Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_CREATED_TIME)
 	@GET
 	public Response<Prescription> getPrescription(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "locationId") String locationId, @PathParam(value = "patientId") String patientId, @PathParam(value = "createdTime") String createdTime) {
+			@PathParam(value = "locationId") String locationId, @PathParam(value = "patientId") String patientId,@PathParam(value="{isOTPVarified}")boolean isOTPVarified,
+			@PathParam(value = "createdTime") String createdTime) {
 		if (StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		List<Prescription> prescriptions = prescriptionServices.getPrescriptions(doctorId, hospitalId, locationId, patientId, createdTime);
+		List<Prescription> prescriptions = prescriptionServices.getPrescriptions(doctorId, hospitalId, locationId, patientId, createdTime,isOTPVarified);
 		Response<Prescription> response = new Response<Prescription>();
 		response.setDataList(prescriptions);
 		return response;

@@ -289,17 +289,30 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	public List<Prescription> getPrescriptions(String doctorId, String hospitalId, String locationId, String patientId, String createdTime) {
+	public List<Prescription> getPrescriptions(String doctorId, String hospitalId, String locationId, String patientId, String createdTime,boolean isOTPVarified) {
 		List<PrescriptionCollection> prescriptionCollections = null;
 		List<Prescription> prescriptions = null;
 		try {
 			if (StringUtils.isEmpty(createdTime)) {
-				prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId, false, new Sort(Sort.Direction.DESC,
-						"createdTime"));
+				if(!isOTPVarified){
+					prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId, false, new Sort(Sort.Direction.DESC,
+							"createdTime"));
+				}else{
+					prescriptionCollections = prescriptionRepository.getPrescription(patientId, false, new Sort(Sort.Direction.DESC,
+							"createdTime"));
+				}
+				
 			} else {
+				
 				long createdTimestamp = Long.parseLong(createdTime);
-				prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId, new Date(createdTimestamp), false, new Sort(Sort.Direction.DESC,
-						"createdTime"));
+				if(!isOTPVarified){
+					prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId, new Date(createdTimestamp), false, new Sort(Sort.Direction.DESC,
+							"createdTime"));
+				}else{
+					prescriptionCollections = prescriptionRepository.getPrescription(patientId, new Date(createdTimestamp), false, new Sort(Sort.Direction.DESC,
+							"createdTime"));
+				}
+				
 			}
 			
 			if (prescriptionCollections != null) {
