@@ -4,21 +4,21 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection="doctor_contact_cl")
+@Document(collection = "doctor_contact_cl")
 public class DoctorContactCollection {
 
 	@Id
 	private String id;
-	
+
 	@Field
 	private String doctorId;
-	
+
 	@Field
 	private String contactId;
-	
+
 	@Field
 	private Boolean isBlocked = false;
-	
+
 	@Field
 	private Long createdDate = System.currentTimeMillis();
 
@@ -29,8 +29,6 @@ public class DoctorContactCollection {
 	public void setId(String id) {
 		this.id = id;
 	}
-
-	
 
 	public String getDoctorId() {
 		return doctorId;
@@ -55,7 +53,7 @@ public class DoctorContactCollection {
 	public void setIsBlocked(Boolean isBlocked) {
 		this.isBlocked = isBlocked;
 	}
-	
+
 	public Long getCreatedDate() {
 		return createdDate;
 	}
@@ -66,11 +64,7 @@ public class DoctorContactCollection {
 
 	@Override
 	public String toString() {
-		return "DocterContactCollection [id=" + id + ", doctorId=" + doctorId
-				+ ", contactId=" + contactId + ", isBlocked=" + isBlocked + "]";
+		return "DocterContactCollection [id=" + id + ", doctorId=" + doctorId + ", contactId=" + contactId + ", isBlocked=" + isBlocked + "]";
 	}
 
-
-	
-	
 }

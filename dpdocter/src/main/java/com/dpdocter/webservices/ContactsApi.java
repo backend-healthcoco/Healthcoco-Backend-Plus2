@@ -31,13 +31,13 @@ import common.util.web.Response;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ContactsApi {
-	
+
 	@Autowired
 	private ContactsService contactsService;
-	
-	@Path(value=PathProxy.ContactsUrls.DOCTOR_CONTACTS)
+
+	@Path(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS)
 	@POST
-	public Response<DoctorContactsResponse> docterContacts(GetDoctorContactsRequest request){
+	public Response<DoctorContactsResponse> docterContacts(GetDoctorContactsRequest request) {
 		List<PatientCard> patientCards = contactsService.getDoctorContacts(request);
 		int ttlCount = contactsService.getcontactsTotalSize(request);
 		DoctorContactsResponse doctorContactsResponse = new DoctorContactsResponse();
@@ -47,60 +47,59 @@ public class ContactsApi {
 		response.setData(doctorContactsResponse);
 		return response;
 	}
-	
-	@Path(value=PathProxy.ContactsUrls.BLOCK_CONTACT)
+
+	@Path(value = PathProxy.ContactsUrls.BLOCK_CONTACT)
 	@GET
-	public Response<Boolean> blockPatient(@PathParam("doctorId")String doctorId,@PathParam("patientId")String patientId){
+	public Response<Boolean> blockPatient(@PathParam("doctorId") String doctorId, @PathParam("patientId") String patientId) {
 		contactsService.blockPatient(patientId, doctorId);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(true);
 		return response;
 	}
-	@Path(value=PathProxy.ContactsUrls.ADD_GROUP)
+
+	@Path(value = PathProxy.ContactsUrls.ADD_GROUP)
 	@POST
-	public Response<Group> addGroup(Group group){
+	public Response<Group> addGroup(Group group) {
 		group = contactsService.addEditGroup(group);
 		Response<Group> response = new Response<Group>();
 		response.setData(group);
 		return response;
 	}
-	
-	@Path(value=PathProxy.ContactsUrls.EDIT_GROUP)
+
+	@Path(value = PathProxy.ContactsUrls.EDIT_GROUP)
 	@POST
-	public Response<Group> editGroup(Group group){
+	public Response<Group> editGroup(Group group) {
 		group = contactsService.addEditGroup(group);
 		Response<Group> response = new Response<Group>();
 		response.setData(group);
 		return response;
 	}
-	
-	
-	@Path(value=PathProxy.ContactsUrls.DELETE_GROUP)
+
+	@Path(value = PathProxy.ContactsUrls.DELETE_GROUP)
 	@GET
-	public Response<Boolean> deleteGroup(@PathParam("groupId") String groupId){
+	public Response<Boolean> deleteGroup(@PathParam("groupId") String groupId) {
 		contactsService.deleteGroup(groupId);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(true);
 		return response;
 	}
-	
-	@Path(value=PathProxy.ContactsUrls.TOTAL_COUNT)
+
+	@Path(value = PathProxy.ContactsUrls.TOTAL_COUNT)
 	@POST
-	public Response<Integer> docterContactsCount(GetDoctorContactsRequest request){
+	public Response<Integer> docterContactsCount(GetDoctorContactsRequest request) {
 		int ttlCount = contactsService.getcontactsTotalSize(request);
 		Response<Integer> response = new Response<Integer>();
 		response.setData(ttlCount);
 		return response;
 	}
-	
-	@Path(value=PathProxy.ContactsUrls.GET_ALL_GROUPS)
+
+	@Path(value = PathProxy.ContactsUrls.GET_ALL_GROUPS)
 	@GET
-	public Response<Group> getAllGroups(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId,
-			@PathParam("hospitalId") String hospitalId){
-		List<Group> groups = contactsService.getAllGroups(doctorId,locationId,hospitalId);
-		if(groups != null){
-			for(Group group : groups){
+	public Response<Group> getAllGroups(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+			@PathParam("hospitalId") String hospitalId) {
+		List<Group> groups = contactsService.getAllGroups(doctorId, locationId, hospitalId);
+		if (groups != null) {
+			for (Group group : groups) {
 				GetDoctorContactsRequest getDoctorContactsRequest = new GetDoctorContactsRequest();
 				getDoctorContactsRequest.setDoctorId(doctorId);
 				List<String> groupList = new ArrayList<String>();
@@ -110,15 +109,10 @@ public class ContactsApi {
 				group.setCount(ttlCount);
 			}
 		}
-		
-		
-		
+
 		Response<Group> response = new Response<Group>();
 		response.setDataList(groups);
 		return response;
 	}
-	
-	
-	
 
 }

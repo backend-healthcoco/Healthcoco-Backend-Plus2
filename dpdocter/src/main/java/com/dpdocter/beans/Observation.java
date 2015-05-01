@@ -1,21 +1,15 @@
 package com.dpdocter.beans;
 
-
 public class Observation {
 
-	
 	private String id;
-	
-	
+
 	private String observation;
-	
-	
+
 	private String doctorId;
-	
-	
+
 	private String locationId;
-	
-	
+
 	private String hospitalId;
 
 	public String getId() {
@@ -60,11 +54,8 @@ public class Observation {
 
 	@Override
 	public String toString() {
-		return "Observation [id=" + id + ", observation="
-				+ observation + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + "]";
+		return "Observation [id=" + id + ", observation=" + observation + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + "]";
 	}
-	
-	
-	
+
 }

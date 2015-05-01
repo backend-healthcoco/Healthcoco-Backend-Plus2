@@ -31,7 +31,7 @@ public class PatientRegistrationRequest {
 	private List<String> notes;
 
 	private Address address;
-     
+
 	private Long dateOfVisit;
 	private String pastHistoryId;
 	private String medicalHistoryId;
@@ -39,9 +39,8 @@ public class PatientRegistrationRequest {
 	private String referredBy;
 	private String locationId;
 	private String hospitalId;
-	
+
 	private String doctorId;
-	
 
 	public String getUserId() {
 		return userId;
@@ -83,7 +82,6 @@ public class PatientRegistrationRequest {
 		this.emailAddress = emailAddress;
 	}
 
-	
 	public String getMobileNumber() {
 		return mobileNumber;
 	}
@@ -131,7 +129,6 @@ public class PatientRegistrationRequest {
 	public void setProfession(String profession) {
 		this.profession = profession;
 	}
-
 
 	public List<Relations> getRelations() {
 		return relations;
@@ -204,8 +201,6 @@ public class PatientRegistrationRequest {
 	public void setDoctorId(String doctorId) {
 		this.doctorId = doctorId;
 	}
-	
-	
 
 	public String getHospitalId() {
 		return hospitalId;
@@ -263,8 +258,6 @@ public class PatientRegistrationRequest {
 		this.insuranceName = insuranceName;
 	}
 
-	
-
 	public List<String> getNotes() {
 		return notes;
 	}
@@ -283,22 +276,13 @@ public class PatientRegistrationRequest {
 
 	@Override
 	public String toString() {
-		return "PatientRegistrationRequest [userId=" + userId + ", firstName="
-				+ firstName + ", middleName=" + middleName + ", lastName="
-				+ lastName + ", mobileNumber=" + mobileNumber + ", gender="
-				+ gender + ", dob=" + dob + ", emailAddress=" + emailAddress
-				+ ", groups=" + groups + ", bloodGroup=" + bloodGroup
-				+ ", profession=" + profession + ", relations=" + relations
-				+ ", secMobile=" + secMobile + ", adhaarId=" + adhaarId
-				+ ", panCardNumber=" + panCardNumber + ", drivingLicenseId="
-				+ drivingLicenseId + ", insuranceId=" + insuranceId
-				+ ", insuranceName=" + insuranceName + ", notes=" + notes
-				+ ", address=" + address + ", dateOfVisit=" + dateOfVisit
-				+ ", pastHistoryId=" + pastHistoryId + ", medicalHistoryId="
-				+ medicalHistoryId + ", patientNumber=" + patientNumber
-				+ ", referredBy=" + referredBy + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", doctorId=" + doctorId + "]";
+		return "PatientRegistrationRequest [userId=" + userId + ", firstName=" + firstName + ", middleName=" + middleName + ", lastName=" + lastName
+				+ ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob=" + dob + ", emailAddress=" + emailAddress + ", groups=" + groups
+				+ ", bloodGroup=" + bloodGroup + ", profession=" + profession + ", relations=" + relations + ", secMobile=" + secMobile + ", adhaarId="
+				+ adhaarId + ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId + ", insuranceId=" + insuranceId
+				+ ", insuranceName=" + insuranceName + ", notes=" + notes + ", address=" + address + ", dateOfVisit=" + dateOfVisit + ", pastHistoryId="
+				+ pastHistoryId + ", medicalHistoryId=" + medicalHistoryId + ", patientNumber=" + patientNumber + ", referredBy=" + referredBy
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId + "]";
 	}
-
 
 }

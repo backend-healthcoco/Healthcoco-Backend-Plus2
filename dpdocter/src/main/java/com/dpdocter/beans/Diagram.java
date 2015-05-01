@@ -1,19 +1,18 @@
 package com.dpdocter.beans;
 
-
 public class Diagram {
-private String id;
-	
+	private String id;
+
 	private String diagramUrl;
-	
+
 	private String tags;
-	
+
 	private String doctorId;
-	
+
 	private String locationId;
-	
+
 	private String hospitalId;
-	
+
 	private FileDetails diagram;
 
 	public String getId() {
@@ -63,8 +62,6 @@ private String id;
 	public void setHospitalId(String hospitalId) {
 		this.hospitalId = hospitalId;
 	}
-	
-
 
 	public FileDetails getDiagram() {
 		return diagram;
@@ -73,17 +70,11 @@ private String id;
 	public void setDiagram(FileDetails diagram) {
 		this.diagram = diagram;
 	}
-	
-	
-	
 
 	@Override
 	public String toString() {
-		return "Diagram [id=" + id + ", diagramUrl=" + diagramUrl + ", tags="
-				+ tags + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", diagram="
-				+ diagram + "]";
+		return "Diagram [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", diagram=" + diagram + "]";
 	}
-	
 
 }

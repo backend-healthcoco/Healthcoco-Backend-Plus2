@@ -6,45 +6,45 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection="clinical_notes_cl")
+@Document(collection = "clinical_notes_cl")
 public class ClinicalNotesCollection {
 
 	@Id
 	private String id;
-	
+
 	@Field
 	private List<String> notes;
-	
+
 	@Field
 	private List<String> observation;
-	
+
 	@Field
 	private List<String> investigation;
-	
+
 	@Field
 	private List<String> diagnoses;
-	
+
 	@Field
 	private List<String> complaints;
-	
+
 	@Field
 	private List<String> diagrams;
-	
+
 	@Field
 	private List<String> diagramsPaths;
-	
+
 	@Field
 	private List<String> comments;
-	
+
 	@Field
 	private String doctorId;
-	
+
 	@Field
 	private String locationId;
-	
+
 	@Field
 	private String hospitalId;
-	
+
 	@Field
 	private Long createdDate;
 
@@ -154,13 +154,9 @@ public class ClinicalNotesCollection {
 
 	@Override
 	public String toString() {
-		return "ClinicalNotesCollection [id=" + id + ", notes=" + notes
-				+ ", observation=" + observation + ", investigation="
-				+ investigation + ", diagnoses=" + diagnoses + ", complaints="
-				+ complaints + ", diagrams=" + diagrams + ", diagramsPaths="
-				+ diagramsPaths + ", comments=" + comments + ", doctorId="
-				+ doctorId + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + ", createdDate=" + createdDate + "]";
+		return "ClinicalNotesCollection [id=" + id + ", notes=" + notes + ", observation=" + observation + ", investigation=" + investigation + ", diagnoses="
+				+ diagnoses + ", complaints=" + complaints + ", diagrams=" + diagrams + ", diagramsPaths=" + diagramsPaths + ", comments=" + comments
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", createdDate=" + createdDate + "]";
 	}
 
 }

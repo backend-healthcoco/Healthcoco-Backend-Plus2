@@ -136,10 +136,11 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 				clinicalNote.setHospitalId(clinicalNotesCollection.getHospitalId());
 				clinicalNote.setLocationId(clinicalNotesCollection.getLocationId());
 				@SuppressWarnings("unchecked")
-				List<ComplaintCollection> complaintCollections = IteratorUtils.toList(complaintRepository.findAll(clinicalNotesCollection.getComplaints()).iterator());
+				List<ComplaintCollection> complaintCollections = IteratorUtils.toList(complaintRepository.findAll(clinicalNotesCollection.getComplaints())
+						.iterator());
 				if (complaintCollections != null) {
 					List<Complaint> complaints = new ArrayList<Complaint>();
-					for(ComplaintCollection complaintCollection : complaintCollections){
+					for (ComplaintCollection complaintCollection : complaintCollections) {
 						Complaint complaint = new Complaint();
 						complaint.setComplaint(complaintCollection.getComplaint());
 						BeanUtil.map(complaintCollection, complaint);
@@ -151,10 +152,11 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 					clinicalNote.setComplaints(complaints);
 				}
 				@SuppressWarnings("unchecked")
-				List<ObservationCollection> observationCollections = IteratorUtils.toList(observationRepository.findAll(clinicalNotesCollection.getObservation()).iterator());
+				List<ObservationCollection> observationCollections = IteratorUtils.toList(observationRepository.findAll(
+						clinicalNotesCollection.getObservation()).iterator());
 				if (observationCollections != null) {
 					List<Observation> observations = new ArrayList<Observation>();
-					for(ObservationCollection observationCollection : observationCollections){
+					for (ObservationCollection observationCollection : observationCollections) {
 						Observation observation = new Observation();
 						BeanUtil.map(observationCollection, observation);
 						observation.setDoctorId(null);
@@ -165,10 +167,11 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 					clinicalNote.setObservations(observations);
 				}
 				@SuppressWarnings("unchecked")
-				List<InvestigationCollection> investigationCollections = IteratorUtils.toList(investigationRepository.findAll(clinicalNotesCollection.getInvestigation()).iterator());
+				List<InvestigationCollection> investigationCollections = IteratorUtils.toList(investigationRepository.findAll(
+						clinicalNotesCollection.getInvestigation()).iterator());
 				if (investigationCollections != null) {
 					List<Investigation> investigations = new ArrayList<Investigation>();
-					for(InvestigationCollection investigationCollection : investigationCollections){
+					for (InvestigationCollection investigationCollection : investigationCollections) {
 						Investigation investigation = new Investigation();
 						BeanUtil.map(investigationCollection, investigation);
 						investigation.setDoctorId(null);
@@ -179,10 +182,11 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 					clinicalNote.setInvestigations(investigations);
 				}
 				@SuppressWarnings("unchecked")
-				List<DiagnosisCollection> diagnosisCollections = IteratorUtils.toList(diagnosisRepository.findAll(clinicalNotesCollection.getDiagnoses()).iterator());
+				List<DiagnosisCollection> diagnosisCollections = IteratorUtils.toList(diagnosisRepository.findAll(clinicalNotesCollection.getDiagnoses())
+						.iterator());
 				if (diagnosisCollections != null) {
 					List<Diagnosis> diagnosisList = new ArrayList<Diagnosis>();
-					for(DiagnosisCollection diagnosisCollection : diagnosisCollections){
+					for (DiagnosisCollection diagnosisCollection : diagnosisCollections) {
 						Diagnosis diagnosis = new Diagnosis();
 						BeanUtil.map(diagnosisCollection, diagnosis);
 						diagnosis.setDoctorId(null);
@@ -197,7 +201,7 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 						.iterator());
 				if (diagramsCollections != null) {
 					List<Diagram> diagrams = new ArrayList<Diagram>();
-					for(DiagramsCollection diagramsCollection : diagramsCollections){
+					for (DiagramsCollection diagramsCollection : diagramsCollections) {
 						Diagram diagram = new Diagram();
 						BeanUtil.map(diagramsCollection, diagrams);
 						diagram.setDoctorId(null);
@@ -265,18 +269,18 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 		List<ClinicalNotes> clinicalNotesList = null;
 		try {
 			List<PatientClinicalNotesCollection> patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId);
-			if(patientClinicalNotesCollections != null){
+			if (patientClinicalNotesCollections != null) {
 				@SuppressWarnings("unchecked")
-				Collection<String> clinicalNotesIds = CollectionUtils
-						.collect(patientClinicalNotesCollections, new BeanToPropertyValueTransformer("clinicalNotesId"));
+				Collection<String> clinicalNotesIds = CollectionUtils.collect(patientClinicalNotesCollections, new BeanToPropertyValueTransformer(
+						"clinicalNotesId"));
 				clinicalNotesList = new ArrayList<ClinicalNotes>();
-				for(String clinicalNotesId : clinicalNotesIds){
+				for (String clinicalNotesId : clinicalNotesIds) {
 					ClinicalNotes clinicalNotes = getNotesById(clinicalNotesId);
-					if(clinicalNotes != null){
+					if (clinicalNotes != null) {
 						clinicalNotesList.add(clinicalNotes);
 					}
 				}
-			}else{
+			} else {
 				throw new BusinessException(ServiceError.Unknown, "No Clinical Notes found for patient Id : " + patientId);
 			}
 		} catch (Exception e) {
@@ -286,25 +290,25 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 		return clinicalNotesList;
 	}
 
-	public List<ClinicalNotes> getPatientsClinicalNotesWithoutVarifiedOTP(String patientId, String doctorId ,String locationId,String hospitalId) {
+	public List<ClinicalNotes> getPatientsClinicalNotesWithoutVarifiedOTP(String patientId, String doctorId, String locationId, String hospitalId) {
 		List<ClinicalNotes> clinicalNotesList = null;
 		try {
 			List<PatientClinicalNotesCollection> patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId);
-			if(patientClinicalNotesCollections != null){
+			if (patientClinicalNotesCollections != null) {
 				@SuppressWarnings("unchecked")
-				Collection<String> clinicalNotesIds = CollectionUtils
-						.collect(patientClinicalNotesCollections, new BeanToPropertyValueTransformer("clinicalNotesId"));
+				Collection<String> clinicalNotesIds = CollectionUtils.collect(patientClinicalNotesCollections, new BeanToPropertyValueTransformer(
+						"clinicalNotesId"));
 				clinicalNotesList = new ArrayList<ClinicalNotes>();
-				for(String clinicalNotesId : clinicalNotesIds){
+				for (String clinicalNotesId : clinicalNotesIds) {
 					ClinicalNotes clinicalNotes = getNotesById(clinicalNotesId);
-					if(clinicalNotes != null){
-						if(clinicalNotes.getDoctorId().equals(doctorId) && clinicalNotes.getLocationId().equals(locationId) 
-								&& clinicalNotes.getHospitalId().equals(hospitalId)){
+					if (clinicalNotes != null) {
+						if (clinicalNotes.getDoctorId().equals(doctorId) && clinicalNotes.getLocationId().equals(locationId)
+								&& clinicalNotes.getHospitalId().equals(hospitalId)) {
 							clinicalNotesList.add(clinicalNotes);
 						}
 					}
 				}
-			}else{
+			} else {
 				throw new BusinessException(ServiceError.Unknown, "No Clinical Notes found for patient Id : " + patientId);
 			}
 		} catch (Exception e) {

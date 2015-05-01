@@ -1,7 +1,7 @@
 package com.dpdocter.beans;
 
 public class UserActivation {
-	
+
 	private boolean isActivated;
 
 	public boolean isActivated() {
@@ -16,7 +16,5 @@ public class UserActivation {
 	public String toString() {
 		return "UserActivation [isActivated=" + isActivated + "]";
 	}
-	
-	
 
 }

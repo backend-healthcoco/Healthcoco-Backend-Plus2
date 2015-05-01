@@ -44,8 +44,7 @@ import common.util.web.JacksonUtil;
 
 @SuppressWarnings("deprecation")
 public class ServiceBase {
-	private static DocumentBuilderFactory factory = DocumentBuilderFactory
-			.newInstance();
+	private static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	private static HttpParams params = null;
 	private static ClientConnectionManager cm = null;
 	private static CookieStore cookieStore = null;
@@ -55,8 +54,7 @@ public class ServiceBase {
 		HttpConnectionParams.setSocketBufferSize(params, 8192);
 		HttpConnectionParams.setConnectionTimeout(params, 15000);
 		SchemeRegistry schemeRegistry = new SchemeRegistry();
-		schemeRegistry.register(new Scheme("http", PlainSocketFactory
-				.getSocketFactory(), 80));
+		schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
 		cm = new ThreadSafeClientConnManager(params, schemeRegistry);
 		cookieStore = new BasicCookieStore();
 	}
@@ -80,10 +78,7 @@ public class ServiceBase {
 		this.server = server;
 		this.httpClient = httpClient;
 		jsonProcessor.configure(Feature.WRITE_NULL_PROPERTIES, false);
-		jsonProcessor
-				.configure(
-						org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES,
-						false);
+		jsonProcessor.configure(org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	}
 
 	public String getServer() {
@@ -94,13 +89,11 @@ public class ServiceBase {
 		return server + path;
 	}
 
-	protected Document getDocument(InputStream inputStream)
-			throws SAXException, IOException, ParserConfigurationException {
+	protected Document getDocument(InputStream inputStream) throws SAXException, IOException, ParserConfigurationException {
 		return factory.newDocumentBuilder().parse(inputStream);
 	}
 
-	protected Document getDocument(String content) throws SAXException,
-			IOException, ParserConfigurationException {
+	protected Document getDocument(String content) throws SAXException, IOException, ParserConfigurationException {
 		InputSource inputSource = new InputSource(new StringReader(content));
 		return factory.newDocumentBuilder().parse(inputSource);
 	}
@@ -109,8 +102,7 @@ public class ServiceBase {
 		httpPost(resourcePath, String.class, " ");
 	}
 
-	public <T> T httpPost(String resourcePath, Class<T> resultType,
-			Object request) throws BusinessException {
+	public <T> T httpPost(String resourcePath, Class<T> resultType, Object request) throws BusinessException {
 		HttpResponse response = null;
 		try {
 			String fullUrl = getServiceUrl(resourcePath);
@@ -126,8 +118,7 @@ public class ServiceBase {
 
 			HttpPost httppost = new HttpPost(fullUrl);
 			httppost.setHeader("Accept", "application/json;charset=utf-8");
-			httppost.setHeader(HTTP.CONTENT_TYPE,
-					"application/json;charset=utf-8");
+			httppost.setHeader(HTTP.CONTENT_TYPE, "application/json;charset=utf-8");
 			StringEntity se = new StringEntity(jsonStr, "UTF-8");
 			httppost.setEntity(se);
 			response = getHttpClient().execute(httppost);
@@ -146,24 +137,20 @@ public class ServiceBase {
 		}
 	}
 
-	public <T> T httpGet(String path, Class<T> resultType)
-			throws BusinessException {
+	public <T> T httpGet(String path, Class<T> resultType) throws BusinessException {
 		return httpGet(path, resultType, "application/json");
 	}
 
 	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> httpGet(String path)
-			throws BusinessException {
+	public HashMap<String, Object> httpGet(String path) throws BusinessException {
 		return httpGet(path, HashMap.class, "application/json");
 	}
 
-	public String getHtml(String path) throws ClientProtocolException,
-			BusinessException, IOException {
+	public String getHtml(String path) throws ClientProtocolException, BusinessException, IOException {
 		return httpGet(path, String.class, "text/html");
 	}
 
-	public <T> T httpGet(String resourcePath, Class<T> resultType, String accept)
-			throws BusinessException {
+	public <T> T httpGet(String resourcePath, Class<T> resultType, String accept) throws BusinessException {
 		HttpResponse response = null;
 		try {
 			String fullUrl = getServiceUrl(resourcePath);
@@ -187,18 +174,15 @@ public class ServiceBase {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> T processHttpResponse(HttpResponse response, Class<T> resultType)
-			throws JsonParseException, JsonMappingException, IOException,
+	private <T> T processHttpResponse(HttpResponse response, Class<T> resultType) throws JsonParseException, JsonMappingException, IOException,
 			InstantiationException, IllegalAccessException {
 		int statusCode = response.getStatusLine().getStatusCode();
 		if (statusCode == 200) {
-			String jsonResp = EntityUtils.toString(response.getEntity(),
-					"UTF-8");
+			String jsonResp = EntityUtils.toString(response.getEntity(), "UTF-8");
 			if (resultType.equals(String.class)) {
 				return (T) jsonResp;
 			} else if (resultType.equals(HashMap.class)) {
-				return (T) jsonProcessor.readValue(new StringReader(jsonResp),
-						JacksonUtil.getTypeRef());
+				return (T) jsonProcessor.readValue(new StringReader(jsonResp), JacksonUtil.getTypeRef());
 			} else {
 				if (jsonResp == null || jsonResp.length() == 0) {
 					return null;
@@ -208,8 +192,7 @@ public class ServiceBase {
 				}
 				T bean = null;
 				try {
-					bean = jsonProcessor.readValue(new StringReader(jsonResp),
-							resultType);
+					bean = jsonProcessor.readValue(new StringReader(jsonResp), resultType);
 				} catch (Exception e) {
 					System.out.println("---------- jsonResp: " + jsonResp);
 					e.printStackTrace();
@@ -218,9 +201,7 @@ public class ServiceBase {
 			}
 		} else {
 			ServiceError err = ServiceError.getErrorByCode(statusCode);
-			System.out
-					.println("---------- web service returns error. status code is "
-							+ statusCode + ", errorCode is " + err);
+			System.out.println("---------- web service returns error. status code is " + statusCode + ", errorCode is " + err);
 			String errMsg = null;
 			if (response.getEntity() != null)
 				errMsg = EntityUtils.toString(response.getEntity(), "UTF-8");
@@ -246,8 +227,7 @@ public class ServiceBase {
 			return null;
 		StringBuilder sb = new StringBuilder();
 		for (Entry<String, String> entry : cookieMap.entrySet()) {
-			sb.append(entry.getKey()).append("=").append(entry.getValue())
-					.append(";");
+			sb.append(entry.getKey()).append("=").append(entry.getValue()).append(";");
 		}
 		return sb.toString();
 	}

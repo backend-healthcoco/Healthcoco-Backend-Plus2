@@ -13,16 +13,15 @@ import com.dpdocter.collections.PrescriptionCollection;
 public interface PrescriptionRepository extends MongoRepository<PrescriptionCollection, String>, PagingAndSortingRepository<PrescriptionCollection, String> {
 	@Query("{'doctorId' : ?0, 'hospitalId' : ?1, 'locationId' : ?2, 'patientId' : ?3,'isDeleted' : ?4}")
 	List<PrescriptionCollection> getPrescription(String doctorId, String hospitalId, String locationId, String patientId, Boolean isDeleted, Sort sort);
-	
-	@Query("{'doctorId' : ?0, 'hospitalId' : ?1, 'locationId' : ?2, 'patientId' : ?3, 'createdTime' : {'$gte' : ?4}, 'isDeleted' : ?5}")
-	List<PrescriptionCollection> getPrescription(String doctorId, String hospitalId, String locationId, String patientId, Date date, Boolean isDeleted, Sort sort);
 
-	
+	@Query("{'doctorId' : ?0, 'hospitalId' : ?1, 'locationId' : ?2, 'patientId' : ?3, 'createdTime' : {'$gte' : ?4}, 'isDeleted' : ?5}")
+	List<PrescriptionCollection> getPrescription(String doctorId, String hospitalId, String locationId, String patientId, Date date, Boolean isDeleted,
+			Sort sort);
+
 	@Query("{'patientId' : ?0,'isDeleted' : ?1}")
 	List<PrescriptionCollection> getPrescription(String patientId, Boolean isDeleted, Sort sort);
-	
+
 	@Query("{'patientId' : ?0, 'createdTime' : {'$gte' : ?1}, 'isDeleted' : ?2}")
 	List<PrescriptionCollection> getPrescription(String patientId, Date date, Boolean isDeleted, Sort sort);
-
 
 }

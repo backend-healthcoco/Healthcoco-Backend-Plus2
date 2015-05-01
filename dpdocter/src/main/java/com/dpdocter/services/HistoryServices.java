@@ -16,7 +16,7 @@ public interface HistoryServices {
 	Boolean deleteDisease(String diseaseId, String doctorId, String hospitalId, String locationId);
 
 	List<DiseaseListResponse> getDiseases(String doctorId, String hospitalId, String locationId);
-	
+
 	List<DiseaseListResponse> getDiseasesByIds(List<String> diseasesIds);
 
 	boolean addReportToHistory(String reportId, String patientId, String doctorId, String hospitalId, String locationId);
@@ -40,8 +40,10 @@ public interface HistoryServices {
 	boolean removeMedicalHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId);
 
 	boolean removeFamilyHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId);
-	
-	HistoryDetailsResponse getPatientHistoryDetailsWithoutVarifiedOTP(String patientId, String doctorId, String hospitalId, String locationId,String historyFilter);
 
-	List<HistoryDetailsResponse> getPatientHistoryDetailsWithVarifiedOTP(String patientId, String doctorId, String hospitalId, String locationId ,String historyFilter);
+	HistoryDetailsResponse getPatientHistoryDetailsWithoutVerifiedOTP(String patientId, String doctorId, String hospitalId, String locationId,
+			String historyFilter);
+
+	List<HistoryDetailsResponse> getPatientHistoryDetailsWithVerifiedOTP(String patientId, String doctorId, String hospitalId, String locationId,
+			String historyFilter);
 }

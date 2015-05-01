@@ -11,24 +11,26 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.services.GenerateUniqueUserNameService;
+
 /**
  * Generates a unique username for each user.
  */
 
 @Service
-public class GenerateUniqueUserNameServiceImpl implements
-		GenerateUniqueUserNameService {
-	
+public class GenerateUniqueUserNameServiceImpl implements GenerateUniqueUserNameService {
+
 	@Autowired
 	private UserRepository userRepository;
 
 	public String generate(User user) {
-		//UserCollection userCollection = userRepository.findByUserName(user.get)
+		// UserCollection userCollection =
+		// userRepository.findByUserName(user.get)
 		String userName = null;
 		try {
 			userName = user.getMobileNumber() + user.getFirstName().substring(0, 2);
-			List<UserCollection> userCollections = userRepository.findByFirstNameLastNameMobileNumber(user.getFirstName(), user.getLastName(), user.getMobileNumber());
-			if(userCollections != null && userCollections.size() > 1){
+			List<UserCollection> userCollections = userRepository.findByFirstNameLastNameMobileNumber(user.getFirstName(), user.getLastName(),
+					user.getMobileNumber());
+			if (userCollections != null && userCollections.size() > 1) {
 				userName = user.getMobileNumber() + user.getFirstName().substring(0, 2) + "0" + userCollections.size();
 			}
 		} catch (Exception e) {

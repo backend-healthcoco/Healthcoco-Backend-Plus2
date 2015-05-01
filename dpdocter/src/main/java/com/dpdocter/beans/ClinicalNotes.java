@@ -13,7 +13,7 @@ public class ClinicalNotes {
 	private List<Investigation> investigations;
 
 	private List<Diagnosis> diagnoses;
-	
+
 	private Long createdDate;
 
 	private List<Diagram> diagrams;
@@ -116,15 +116,9 @@ public class ClinicalNotes {
 
 	@Override
 	public String toString() {
-		return "ClinicalNotes [id=" + id + ", complaints=" + complaints
-				+ ", observations=" + observations + ", investigations="
-				+ investigations + ", diagnoses=" + diagnoses
-				+ ", createdDate=" + createdDate + ", diagrams=" + diagrams
-				+ ", notes=" + notes + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ "]";
+		return "ClinicalNotes [id=" + id + ", complaints=" + complaints + ", observations=" + observations + ", investigations=" + investigations
+				+ ", diagnoses=" + diagnoses + ", createdDate=" + createdDate + ", diagrams=" + diagrams + ", notes=" + notes + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
 	}
 
-	
-	
 }

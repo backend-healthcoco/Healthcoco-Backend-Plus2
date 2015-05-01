@@ -37,8 +37,6 @@ public class LoginResponse {
 		this.hospitals = hospitals;
 	}
 
-	
-
 	public Boolean getIsTempPassword() {
 		return isTempPassword;
 	}

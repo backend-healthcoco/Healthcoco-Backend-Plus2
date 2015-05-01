@@ -1,5 +1,6 @@
 package com.dpdocter.webservices;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -20,6 +21,7 @@ import com.dpdocter.request.DiseaseAddEditRequest;
 import com.dpdocter.request.SpecialNotesAddRequest;
 import com.dpdocter.response.DiseaseAddEditResponse;
 import com.dpdocter.response.DiseaseListResponse;
+import com.dpdocter.response.HistoryDetailsResponse;
 import com.dpdocter.services.HistoryServices;
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -236,4 +238,24 @@ public class HistoryApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.HistoryUrls.GET_PATIENT_HISTORY_OTP_VERIFIED)
+	@GET
+	public Response<HistoryDetailsResponse> getPatientHistoryDetailsOTP(@PathParam(value = "patientId") String patientId,
+			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "hospitalId") String hospitalId,
+			@PathParam(value = "locationId") String locationId, @PathParam(value = "historyFilter") String historyFilter,
+			@PathParam(value = "otpVerified") boolean otpVerified) {
+		if (DPDoctorUtils.anyStringEmpty(patientId, doctorId, hospitalId, locationId, historyFilter)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Patient Id, Doctor Id, Hospital Id, Location Id, History Filter Cannot Be Empty");
+		}
+		List<HistoryDetailsResponse> historyDetailsResponses = null;
+		if (otpVerified) {
+			historyDetailsResponses = historyServices.getPatientHistoryDetailsWithVerifiedOTP(patientId, doctorId, hospitalId, locationId, historyFilter);
+		} else {
+			historyDetailsResponses = new ArrayList<HistoryDetailsResponse>();
+			historyDetailsResponses.add(historyServices.getPatientHistoryDetailsWithoutVerifiedOTP(patientId, doctorId, hospitalId, locationId, historyFilter));
+		}
+		Response<HistoryDetailsResponse> response = new Response<HistoryDetailsResponse>();
+		response.setDataList(historyDetailsResponses);
+		return response;
+	}
 }

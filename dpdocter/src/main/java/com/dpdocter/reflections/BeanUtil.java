@@ -13,9 +13,7 @@ public class BeanUtil {
 		MAPPER = new DozerBeanMapper();
 		BeanMappingBuilder builder = new BeanMappingBuilder() {
 			protected void configure() {
-				mapping(UUID.class, UUID.class, TypeMappingOptions.oneWay(),
-						TypeMappingOptions.beanFactory(UuidBeanFactory.class
-							.getName()));
+				mapping(UUID.class, UUID.class, TypeMappingOptions.oneWay(), TypeMappingOptions.beanFactory(UuidBeanFactory.class.getName()));
 			}
 		};
 		MAPPER.addMapping(builder);
@@ -28,5 +26,4 @@ public class BeanUtil {
 		MAPPER.map(source, destination);
 	}
 
-	
 }

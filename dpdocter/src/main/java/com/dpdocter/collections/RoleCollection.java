@@ -4,15 +4,15 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection="role_cl")
+@Document(collection = "role_cl")
 public class RoleCollection {
 
 	@Id
 	private String id;
-	
+
 	@Field
 	private String role;
-	
+
 	@Field
 	private String description;
 
@@ -42,9 +42,7 @@ public class RoleCollection {
 
 	@Override
 	public String toString() {
-		return "RoleCollection [id=" + id + ", role=" + role + ", description="
-				+ description + "]";
+		return "RoleCollection [id=" + id + ", role=" + role + ", description=" + description + "]";
 	}
-	
-	
+
 }

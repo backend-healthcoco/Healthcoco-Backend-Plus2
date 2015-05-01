@@ -6,8 +6,6 @@ public class PatientProfilePicChangeRequest {
 	private String username;
 	private FileDetails image;
 
-	
-
 	public String getUsername() {
 		return username;
 	}
@@ -26,10 +24,7 @@ public class PatientProfilePicChangeRequest {
 
 	@Override
 	public String toString() {
-		return "PatientProfilePicChangeRequest [username=" + username
-				+ ", image=" + image + "]";
+		return "PatientProfilePicChangeRequest [username=" + username + ", image=" + image + "]";
 	}
-
-	
 
 }

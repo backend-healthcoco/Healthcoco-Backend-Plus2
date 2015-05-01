@@ -4,14 +4,14 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection="patient_clinical_notes_cl")
+@Document(collection = "patient_clinical_notes_cl")
 public class PatientClinicalNotesCollection {
 	@Id
 	private String id;
-	
+
 	@Field
 	private String patientId;
-	
+
 	@Field
 	private String clinicalNotesId;
 
@@ -41,11 +41,7 @@ public class PatientClinicalNotesCollection {
 
 	@Override
 	public String toString() {
-		return "PatientClinicalNotesCollection [id=" + id + ", patientId="
-				+ patientId + ", clinicalNotesId=" + clinicalNotesId + "]";
+		return "PatientClinicalNotesCollection [id=" + id + ", patientId=" + patientId + ", clinicalNotesId=" + clinicalNotesId + "]";
 	}
-	
-	
-	
-	
+
 }

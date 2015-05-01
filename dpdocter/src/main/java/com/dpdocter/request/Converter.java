@@ -11,7 +11,6 @@ import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.Referrence;
 import com.dpdocter.webservices.PathProxy;
 
-
 public class Converter {
 
 	public static String ObjectToJSON(Object value) {
@@ -31,7 +30,7 @@ public class Converter {
 
 	public static void main(String[] args) {
 		String JSONResult = ObjectToJSON(new Referrence());
-		
+
 		System.out.println(JSONResult);
 	}
 }

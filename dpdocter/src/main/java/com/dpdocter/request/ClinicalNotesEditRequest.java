@@ -6,7 +6,7 @@ import com.dpdocter.beans.FileDetails;
 
 public class ClinicalNotesEditRequest {
 	private String id;
-	
+
 	private String patientId;
 
 	private String complaints;
@@ -26,7 +26,7 @@ public class ClinicalNotesEditRequest {
 	private String locationId;
 
 	private String hospitalId;
-	
+
 	private Long createdDate;
 
 	public String getPatientId() {
@@ -36,8 +36,6 @@ public class ClinicalNotesEditRequest {
 	public void setPatientId(String patientId) {
 		this.patientId = patientId;
 	}
-
-	
 
 	public String getNotes() {
 		return notes;
@@ -71,9 +69,6 @@ public class ClinicalNotesEditRequest {
 		this.diagnoses = diagnoses;
 	}
 
-
-
-	
 	public String getComplaints() {
 		return complaints;
 	}
@@ -113,8 +108,6 @@ public class ClinicalNotesEditRequest {
 	public void setId(String id) {
 		this.id = id;
 	}
-	
-	
 
 	public Long getCreatedDate() {
 		return createdDate;
@@ -134,15 +127,9 @@ public class ClinicalNotesEditRequest {
 
 	@Override
 	public String toString() {
-		return "ClinicalNotesEditRequest [id=" + id + ", patientId="
-				+ patientId + ", complaints=" + complaints + ", observation="
-				+ observation + ", investigation=" + investigation
-				+ ", diagnoses=" + diagnoses + ", diagrams=" + diagrams
-				+ ", notes=" + notes + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", createdDate=" + createdDate + "]";
+		return "ClinicalNotesEditRequest [id=" + id + ", patientId=" + patientId + ", complaints=" + complaints + ", observation=" + observation
+				+ ", investigation=" + investigation + ", diagnoses=" + diagnoses + ", diagrams=" + diagrams + ", notes=" + notes + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", createdDate=" + createdDate + "]";
 	}
 
-	
-	
 }

@@ -4,11 +4,11 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection="docter_cl")
+@Document(collection = "docter_cl")
 public class DoctorCollection {
 	@Id
 	private String id;
-	
+
 	/*@Field
 	private String firstName;
 	@Field
@@ -23,10 +23,10 @@ public class DoctorCollection {
 	private String imageUrl;
 	@Field
 	private DOB dob;*/
-	
+
 	@Field
 	private String specialization;
-	
+
 	@Field
 	private String userId;
 
@@ -37,8 +37,6 @@ public class DoctorCollection {
 	public void setId(String id) {
 		this.id = id;
 	}
-
-	
 
 	public String getSecMobile() {
 		return secMobile;
@@ -66,14 +64,7 @@ public class DoctorCollection {
 
 	@Override
 	public String toString() {
-		return "DoctorCollection [id=" + id + ", secMobile=" + secMobile
-				+ ", specialization=" + specialization + ", userId=" + userId
-				+ "]";
+		return "DoctorCollection [id=" + id + ", secMobile=" + secMobile + ", specialization=" + specialization + ", userId=" + userId + "]";
 	}
 
-	
-	
-
-	
-	
 }

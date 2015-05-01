@@ -10,7 +10,7 @@ public class TemplateGetResponse {
 	private String name;
 
 	private String doctorId;
-	
+
 	private String locationId;
 
 	private String hospitalId;

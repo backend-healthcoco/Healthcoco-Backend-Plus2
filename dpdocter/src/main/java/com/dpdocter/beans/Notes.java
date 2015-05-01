@@ -1,21 +1,15 @@
 package com.dpdocter.beans;
 
-
 public class Notes {
-	
-	
+
 	private String id;
-	
-	
+
 	private String notes;
-	
-	
+
 	private String doctorId;
-	
-	
+
 	private String locationId;
-	
-	
+
 	private String hospitalId;
 
 	public String getId() {
@@ -60,11 +54,7 @@ public class Notes {
 
 	@Override
 	public String toString() {
-		return "Notes [id=" + id + ", notes=" + notes + ", doctorId="
-				+ doctorId + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + "]";
+		return "Notes [id=" + id + ", notes=" + notes + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
 	}
-	
-	
 
 }

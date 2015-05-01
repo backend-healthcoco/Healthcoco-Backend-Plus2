@@ -73,14 +73,14 @@ public class ClinicalNotesApi {
 
 	@Path(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES)
 	@GET
-	public Response<ClinicalNotes> getNotes(@PathParam(value = "doctorId") String doctorId,@PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,@PathParam(value = "patientId") String patientId,
+	public Response<ClinicalNotes> getNotes(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "patientId") String patientId,
 			@PathParam(value = "isOTPVarified") boolean isOTPVarified) {
 		List<ClinicalNotes> clinicalNotes = null;
 		if (isOTPVarified) {
 			clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithVarifiedOTP(patientId);
 		} else {
-			clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVarifiedOTP(patientId, doctorId,locationId,hospitalId);
+			clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVarifiedOTP(patientId, doctorId, locationId, hospitalId);
 		}
 
 		Response<ClinicalNotes> response = new Response<ClinicalNotes>();

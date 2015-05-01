@@ -5,7 +5,7 @@ import java.util.List;
 import com.dpdocter.enums.DrugTypeEnum;
 
 public class Drug {
-	
+
 	private String id;
 
 	private DrugTypeEnum drugType;
@@ -17,7 +17,7 @@ public class Drug {
 	private Strength strength;
 
 	private List<String> genericNames;
-	
+
 	private String drugCode;
 
 	public String getId() {
@@ -78,12 +78,8 @@ public class Drug {
 
 	@Override
 	public String toString() {
-		return "Drug [id=" + id + ", drugType=" + drugType + ", drugName="
-				+ drugName + ", description=" + description + ", strength="
-				+ strength + ", genericNames=" + genericNames + ", drugCode="
-				+ drugCode + "]";
+		return "Drug [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", description=" + description + ", strength=" + strength
+				+ ", genericNames=" + genericNames + ", drugCode=" + drugCode + "]";
 	}
-	
-	
-	
+
 }

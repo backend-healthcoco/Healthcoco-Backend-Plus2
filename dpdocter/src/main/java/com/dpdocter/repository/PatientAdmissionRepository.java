@@ -9,12 +9,16 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import com.dpdocter.collections.PatientAdmissionCollection;
+
 @Repository
-public interface PatientAdmissionRepository extends MongoRepository<PatientAdmissionCollection, String>,PagingAndSortingRepository<PatientAdmissionCollection, String>{
-	
+public interface PatientAdmissionRepository extends MongoRepository<PatientAdmissionCollection, String>,
+		PagingAndSortingRepository<PatientAdmissionCollection, String> {
+
 	PatientAdmissionCollection findByUserId(String userId);
-	List<PatientAdmissionCollection> findDistinctPatientByDoctorId(String doctorId,Pageable pageable);
+
+	List<PatientAdmissionCollection> findDistinctPatientByDoctorId(String doctorId, Pageable pageable);
+
 	@Query("{'patientId':?0,'doctorId':?1}")
-	PatientAdmissionCollection findByPatientIdAndDoctorId(String patientId,String doctorId);
-	
+	PatientAdmissionCollection findByPatientIdAndDoctorId(String patientId, String doctorId);
+
 }

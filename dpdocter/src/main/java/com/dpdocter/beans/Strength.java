@@ -6,9 +6,9 @@ import com.dpdocter.enums.StrengthUnitEnum;
 
 @JsonAutoDetect
 public class Strength {
-	
+
 	private String value;
-	
+
 	private StrengthUnitEnum unit;
 
 	public String getValue() {

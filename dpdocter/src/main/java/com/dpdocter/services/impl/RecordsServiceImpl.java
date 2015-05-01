@@ -254,9 +254,9 @@ public class RecordsServiceImpl implements RecordsService {
 		try {
 			RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
 			if (recordsCollection != null) {
-				if(recordsCollection.getRecordsPath() != null){
+				if (recordsCollection.getRecordsPath() != null) {
 					return new File(recordsCollection.getRecordsPath());
-				}else{
+				} else {
 					throw new BusinessException(ServiceError.Unknown, "Record Path for this Record is Empty.");
 				}
 			} else {
@@ -299,8 +299,8 @@ public class RecordsServiceImpl implements RecordsService {
 	public List<Records> getRecordsByIds(List<String> recordIds) {
 		List<Records> records = null;
 		try {
-			Iterable<RecordsCollection>  recordsCollectionIterable = recordsRepository.findAll(recordIds);
-			if(recordsCollectionIterable!= null){
+			Iterable<RecordsCollection> recordsCollectionIterable = recordsRepository.findAll(recordIds);
+			if (recordsCollectionIterable != null) {
 				@SuppressWarnings("unchecked")
 				List<RecordsCollection> recordsCollections = IteratorUtils.toList(recordsCollectionIterable.iterator());
 				records = new ArrayList<Records>();

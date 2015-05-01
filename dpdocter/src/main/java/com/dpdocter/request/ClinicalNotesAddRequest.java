@@ -4,7 +4,7 @@ import java.util.List;
 
 public class ClinicalNotesAddRequest {
 	private String id;
-	
+
 	private String patientId;
 
 	private List<String> complaints;
@@ -24,7 +24,7 @@ public class ClinicalNotesAddRequest {
 	private String locationId;
 
 	private String hospitalId;
-	
+
 	private Long createdDate;
 
 	public String getId() {
@@ -125,14 +125,9 @@ public class ClinicalNotesAddRequest {
 
 	@Override
 	public String toString() {
-		return "ClinicalNotesAddRequest [id=" + id + ", patientId=" + patientId
-				+ ", complaints=" + complaints + ", observation=" + observation
-				+ ", investigation=" + investigation + ", diagnoses="
-				+ diagnoses + ", diagrams=" + diagrams + ", notes=" + notes
-				+ ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", createdDate=" + createdDate
-				+ "]";
+		return "ClinicalNotesAddRequest [id=" + id + ", patientId=" + patientId + ", complaints=" + complaints + ", observation=" + observation
+				+ ", investigation=" + investigation + ", diagnoses=" + diagnoses + ", diagrams=" + diagrams + ", notes=" + notes + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", createdDate=" + createdDate + "]";
 	}
-	
-	
+
 }

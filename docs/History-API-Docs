@@ -200,3 +200,26 @@ Response - {
   "dataList": null,
   "data": true
 }
+
+-http://localhost:8080/dpdocter/api/v1/history/getPatientHistoryOtp/P12345/D12345/H12345/L12345/PRESCRIPTIONS/true
+
+Request - http://localhost:8080/dpdocter/api/v1/history/getPatientHistoryOtp/{PatientId}/{DoctorId}/{HospitalId}/{LocationId}/{historyFilter}/{otpVerified}
+
+Response - {
+  "dataList": [
+    {
+      "specialNotes": null,
+      "patientId": "P12345",
+      "doctorId": "D12345",
+      "hospitalId": "H12345",
+      "locationId": "L12345",
+      "prescriptions": [],
+      "reports": null,
+      "clinicalNotes": null,
+      "medicalhistory": [],
+      "familyhistory": null,
+      "id": "55428ca027366fa1f06ff609"
+    }
+  ],
+  "data": null
+}

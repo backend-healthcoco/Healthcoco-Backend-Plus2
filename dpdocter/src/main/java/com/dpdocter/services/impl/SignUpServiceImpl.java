@@ -90,8 +90,6 @@ public class SignUpServiceImpl implements SignUpService {
 	@Value(value = "${mail.signup.subject.activation}")
 	private String signupSubject;
 
-
-
 	/**
 	 * @param UserTemp
 	 *            Id

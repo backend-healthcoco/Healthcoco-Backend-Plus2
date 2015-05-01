@@ -1,23 +1,17 @@
 package com.dpdocter.beans;
 
-
 public class Investigation {
-	
-	
+
 	private String id;
-	
-	
+
 	private String investigation;
-	
-	
+
 	private String doctorId;
-	
-	
+
 	private String locationId;
-	
-	
+
 	private String hospitalId;
-	
+
 	public String getId() {
 		return id;
 	}
@@ -25,6 +19,7 @@ public class Investigation {
 	public void setId(String id) {
 		this.id = id;
 	}
+
 	public String getInvestigation() {
 		return investigation;
 	}
@@ -32,7 +27,6 @@ public class Investigation {
 	public void setInvestigation(String investigation) {
 		this.investigation = investigation;
 	}
-	
 
 	public String getDoctorId() {
 		return doctorId;
@@ -60,9 +54,8 @@ public class Investigation {
 
 	@Override
 	public String toString() {
-		return "Investigation [id=" + id + ", investigation="
-				+ investigation + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + "]";
+		return "Investigation [id=" + id + ", investigation=" + investigation + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + "]";
 	}
 
 }

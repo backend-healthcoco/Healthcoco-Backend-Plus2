@@ -27,7 +27,7 @@ public class UserCollection {
 
 	@Field
 	private String password;
-	
+
 	private String emailAddress;
 
 	@Field
@@ -166,8 +166,6 @@ public class UserCollection {
 	public void setEmailAddress(String emailAddress) {
 		this.emailAddress = emailAddress;
 	}
-
-
 
 	public Boolean getIsTempPassword() {
 		return isTempPassword;

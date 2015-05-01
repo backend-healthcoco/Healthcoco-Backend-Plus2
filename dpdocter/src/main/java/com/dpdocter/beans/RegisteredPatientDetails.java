@@ -2,15 +2,14 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-
 public class RegisteredPatientDetails {
-	
+
 	private String firstName;
 	private String lastName;
 	private String middleName;
 	private String imageUrl;
 	private DOB dob;
-	
+
 	private String userId;
 	private String userName;
 	private String mobileNumber;
@@ -18,8 +17,7 @@ public class RegisteredPatientDetails {
 	private Patient patient;
 	private Address address;
 	private List<String> groups;
-	
-	
+
 	public String getUserId() {
 		return userId;
 	}
@@ -75,8 +73,6 @@ public class RegisteredPatientDetails {
 	public void setGroups(List<String> groups) {
 		this.groups = groups;
 	}
-	
-	
 
 	public String getFirstName() {
 		return firstName;
@@ -120,16 +116,9 @@ public class RegisteredPatientDetails {
 
 	@Override
 	public String toString() {
-		return "RegisteredPatientDetails [firstName=" + firstName
-				+ ", lastName=" + lastName + ", middleName=" + middleName
-				+ ", imageUrl=" + imageUrl + ", dob=" + dob + ", userId="
-				+ userId + ", userName=" + userName + ", mobileNumber="
-				+ mobileNumber + ", gender=" + gender + ", patient=" + patient
-				+ ", address=" + address + ", groups=" + groups + "]";
+		return "RegisteredPatientDetails [firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", imageUrl=" + imageUrl
+				+ ", dob=" + dob + ", userId=" + userId + ", userName=" + userName + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", patient="
+				+ patient + ", address=" + address + ", groups=" + groups + "]";
 	}
-
-	
-	
-	
 
 }

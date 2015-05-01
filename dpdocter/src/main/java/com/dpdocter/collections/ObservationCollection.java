@@ -3,24 +3,24 @@ package com.dpdocter.collections;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection="observation_cl")
+@Document(collection = "observation_cl")
 public class ObservationCollection {
 
 	@Field
 	private String id;
-	
+
 	@Field
 	private String observation;
-	
+
 	@Field
 	private String doctorId;
-	
+
 	@Field
 	private String locationId;
-	
+
 	@Field
 	private String hospitalId;
-	
+
 	@Field
 	private boolean isDeleted = false;
 
@@ -64,8 +64,6 @@ public class ObservationCollection {
 		this.hospitalId = hospitalId;
 	}
 
-
-
 	public boolean isDeleted() {
 		return isDeleted;
 	}
@@ -74,14 +72,10 @@ public class ObservationCollection {
 		this.isDeleted = isDeleted;
 	}
 
-
 	@Override
 	public String toString() {
-		return "ObservationCollection [id=" + id + ", observation="
-				+ observation + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", isDeleted="
-				+ isDeleted + "]";
+		return "ObservationCollection [id=" + id + ", observation=" + observation + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", isDeleted=" + isDeleted + "]";
 	}
 
-	
 }

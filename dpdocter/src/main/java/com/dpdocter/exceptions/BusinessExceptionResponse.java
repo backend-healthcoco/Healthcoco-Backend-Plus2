@@ -7,7 +7,7 @@ public class BusinessExceptionResponse {
 	private ServiceError errorCode;
 	private String data;
 	private String errMsg;
-	
+
 	public BusinessExceptionResponse() {
 	}
 

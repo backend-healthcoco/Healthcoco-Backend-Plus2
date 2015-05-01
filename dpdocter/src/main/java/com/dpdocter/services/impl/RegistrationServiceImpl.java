@@ -425,7 +425,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return referrences;
 	}
 
-		public String patientIdGenerator(String doctorId, String locationId, String hospitalId) {
+	public String patientIdGenerator(String doctorId, String locationId, String hospitalId) {
 		String generatedId = null;
 		try {
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));

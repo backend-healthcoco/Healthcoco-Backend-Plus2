@@ -8,15 +8,23 @@ import com.dpdocter.request.GetDoctorContactsRequest;
 import com.dpdocter.request.SearchRequest;
 
 public interface ContactsService {
-	
+
 	List<PatientCard> getDoctorContacts(GetDoctorContactsRequest request);
-	void blockPatient(String patientId,String docterId);
+
+	void blockPatient(String patientId, String docterId);
+
 	Group addEditGroup(Group group);
+
 	void deleteGroup(String groupId);
+
 	List<PatientCard> searchPatients(SearchRequest request);
-	List<PatientCard> getDoctorsRecentlyVisitedContacts(String doctorId,int size,int page);
-	List<PatientCard> getDoctorsMostVisitedContacts(String doctorId,int size,int page);
+
+	List<PatientCard> getDoctorsRecentlyVisitedContacts(String doctorId, int size, int page);
+
+	List<PatientCard> getDoctorsMostVisitedContacts(String doctorId, int size, int page);
+
 	int getcontactsTotalSize(GetDoctorContactsRequest request);
-	List<Group> getAllGroups(String doctorId,String locationId,String hospitalId);
+
+	List<Group> getAllGroups(String doctorId, String locationId, String hospitalId);
 
 }

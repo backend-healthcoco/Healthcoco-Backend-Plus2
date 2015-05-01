@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.dpdocter.collections.HospitalCollection;
 
 @Repository
-public interface HospitalRepository extends MongoRepository<HospitalCollection, String>{
+public interface HospitalRepository extends MongoRepository<HospitalCollection, String> {
 
 }

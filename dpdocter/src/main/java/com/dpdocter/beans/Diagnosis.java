@@ -1,25 +1,17 @@
 package com.dpdocter.beans;
 
-
 public class Diagnosis {
 
-	
-
-	
 	private String id;
-	
-	
+
 	private String diagnosis;
-	
-	
+
 	private String doctorId;
-	
-	
+
 	private String locationId;
-	
-	
+
 	private String hospitalId;
-	
+
 	public String getId() {
 		return id;
 	}
@@ -27,8 +19,6 @@ public class Diagnosis {
 	public void setId(String id) {
 		this.id = id;
 	}
-
-	
 
 	public String getDoctorId() {
 		return doctorId;
@@ -64,10 +54,8 @@ public class Diagnosis {
 
 	@Override
 	public String toString() {
-		return "Diagnosis [id=" + id + ", diagnosis=" + diagnosis
-				+ ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + "]";
+		return "Diagnosis [id=" + id + ", diagnosis=" + diagnosis + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ "]";
 	}
-	
-	
+
 }

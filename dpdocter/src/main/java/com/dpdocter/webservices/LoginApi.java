@@ -15,6 +15,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.LoginRequest;
 import com.dpdocter.services.LoginService;
 import common.util.web.Response;
+
 /**
  * @author veeraj
  */
@@ -25,14 +26,14 @@ import common.util.web.Response;
 public class LoginApi {
 	@Autowired
 	private LoginService loginService;
-	
-	@Path(value=PathProxy.LoginUrls.LOGIN_USER)
+
+	@Path(value = PathProxy.LoginUrls.LOGIN_USER)
 	@POST
-	public Response<LoginResponse> login(LoginRequest request){
-		if(request == null){
+	public Response<LoginResponse> login(LoginRequest request) {
+		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		LoginResponse loginResponse =  loginService.login(request);
+		LoginResponse loginResponse = loginService.login(request);
 		Response<LoginResponse> response = new Response<LoginResponse>();
 		response.setData(loginResponse);
 		return response;

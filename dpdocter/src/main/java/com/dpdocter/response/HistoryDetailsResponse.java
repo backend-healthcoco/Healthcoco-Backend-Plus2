@@ -7,33 +7,30 @@ import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.Records;
 
 public class HistoryDetailsResponse {
-	
-	private String id;
-	
-	private String doctorId;
-	
-	private String locationId;
-	
-	private String hospitalId;
-	
-	private String patientId;
-	
-	private List<Records> reports;
-	
-	private List<Prescription> prescriptions;
-	
-	private List<ClinicalNotes> clinicalNotes;
-	
-	private List<DiseaseListResponse> familyhistory;
-	
-	private List<DiseaseListResponse> medicalhistory;
-	
-	private List<String> specialNotes;
-	
-	
 
-	public HistoryDetailsResponse(String id, String doctorId,
-			String locationId, String hospitalId, String patientId) {
+	private String id;
+
+	private String doctorId;
+
+	private String locationId;
+
+	private String hospitalId;
+
+	private String patientId;
+
+	private List<Records> reports;
+
+	private List<Prescription> prescriptions;
+
+	private List<ClinicalNotes> clinicalNotes;
+
+	private List<DiseaseListResponse> familyhistory;
+
+	private List<DiseaseListResponse> medicalhistory;
+
+	private List<String> specialNotes;
+
+	public HistoryDetailsResponse(String id, String doctorId, String locationId, String hospitalId, String patientId) {
 		this.id = id;
 		this.doctorId = doctorId;
 		this.locationId = locationId;
@@ -131,15 +128,9 @@ public class HistoryDetailsResponse {
 
 	@Override
 	public String toString() {
-		return "HistoryDetailsResponse [id=" + id + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", patientId=" + patientId + ", reports=" + reports
-				+ ", prescriptions=" + prescriptions + ", clinicalNotes="
-				+ clinicalNotes + ", familyhistory=" + familyhistory
-				+ ", medicalhistory=" + medicalhistory + ", specialNotes="
-				+ specialNotes + "]";
+		return "HistoryDetailsResponse [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId="
+				+ patientId + ", reports=" + reports + ", prescriptions=" + prescriptions + ", clinicalNotes=" + clinicalNotes + ", familyhistory="
+				+ familyhistory + ", medicalhistory=" + medicalhistory + ", specialNotes=" + specialNotes + "]";
 	}
-	
-	
-	
+
 }

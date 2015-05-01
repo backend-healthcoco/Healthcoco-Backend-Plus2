@@ -3,27 +3,27 @@ package com.dpdocter.collections;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection="investigation_cl")
+@Document(collection = "investigation_cl")
 public class InvestigationCollection {
-	
+
 	@Field
 	private String id;
-	
+
 	@Field
 	private String investigation;
-	
+
 	@Field
 	private String doctorId;
-	
+
 	@Field
 	private String locationId;
-	
+
 	@Field
 	private String hospitalId;
-	
+
 	@Field
 	private boolean isDeleted = false;
-	
+
 	public String getId() {
 		return id;
 	}
@@ -31,6 +31,7 @@ public class InvestigationCollection {
 	public void setId(String id) {
 		this.id = id;
 	}
+
 	public String getInvestigation() {
 		return investigation;
 	}
@@ -38,7 +39,6 @@ public class InvestigationCollection {
 	public void setInvestigation(String investigation) {
 		this.investigation = investigation;
 	}
-	
 
 	public String getDoctorId() {
 		return doctorId;
@@ -64,8 +64,6 @@ public class InvestigationCollection {
 		this.hospitalId = hospitalId;
 	}
 
-
-
 	public boolean isDeleted() {
 		return isDeleted;
 	}
@@ -74,13 +72,10 @@ public class InvestigationCollection {
 		this.isDeleted = isDeleted;
 	}
 
-
 	@Override
 	public String toString() {
-		return "InvestigationCollection [id=" + id + ", investigation="
-				+ investigation + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", isDeleted="
-				+ isDeleted + "]";
+		return "InvestigationCollection [id=" + id + ", investigation=" + investigation + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", isDeleted=" + isDeleted + "]";
 	}
 
 }

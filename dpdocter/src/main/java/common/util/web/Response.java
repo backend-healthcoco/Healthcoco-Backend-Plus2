@@ -1,6 +1,7 @@
 package common.util.web;
 
 import java.util.List;
+
 /**
  * 
  * @author veeraj
@@ -31,6 +32,5 @@ public class Response<T> {
 	public String toString() {
 		return "Response [data=" + data + ", dataList=" + dataList + "]";
 	}
-	
 
 }

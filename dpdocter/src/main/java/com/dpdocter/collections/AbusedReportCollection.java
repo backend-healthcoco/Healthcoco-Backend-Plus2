@@ -4,18 +4,18 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection="abused_report_cl")
+@Document(collection = "abused_report_cl")
 public class AbusedReportCollection {
 
 	@Id
 	private String id;
-	
+
 	@Field
 	private String abusedBy;
-	
+
 	@Field
 	private String abusedTo;
-	
+
 	@Field
 	private String reason;
 
@@ -53,10 +53,7 @@ public class AbusedReportCollection {
 
 	@Override
 	public String toString() {
-		return "AbusedReportCollection [id=" + id + ", abusedBy=" + abusedBy
-				+ ", abusedTo=" + abusedTo + ", reason=" + reason + "]";
+		return "AbusedReportCollection [id=" + id + ", abusedBy=" + abusedBy + ", abusedTo=" + abusedTo + ", reason=" + reason + "]";
 	}
-	
-	
-	
+
 }

@@ -14,7 +14,7 @@ public class PrescriptionGetResponse extends GenericCollection {
 	private String hospitalId;
 
 	private String patientId;
-	
+
 	private List<Prescription> prescriptions;
 
 	public String getDoctorId() {
@@ -48,8 +48,6 @@ public class PrescriptionGetResponse extends GenericCollection {
 	public void setPatientId(String patientId) {
 		this.patientId = patientId;
 	}
-	
-	
 
 	public List<Prescription> getPrescriptions() {
 		return prescriptions;
@@ -61,14 +59,8 @@ public class PrescriptionGetResponse extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "PrescriptionGetResponse [doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", patientId=" + patientId + ", prescriptions="
-				+ prescriptions + "]";
+		return "PrescriptionGetResponse [doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId
+				+ ", prescriptions=" + prescriptions + "]";
 	}
-
-	
-
-	
 
 }

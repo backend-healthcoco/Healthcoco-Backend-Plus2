@@ -8,8 +8,9 @@ import org.springframework.stereotype.Repository;
 import com.dpdocter.collections.PatientClinicalNotesCollection;
 
 @Repository
-public interface PatientClinicalNotesRepository extends MongoRepository<PatientClinicalNotesCollection, String>{
+public interface PatientClinicalNotesRepository extends MongoRepository<PatientClinicalNotesCollection, String> {
 	List<PatientClinicalNotesCollection> findByPatientId(String patientId);
+
 	List<PatientClinicalNotesCollection> findByClinicalNotesId(String clinicalNotesId);
-	
+
 }

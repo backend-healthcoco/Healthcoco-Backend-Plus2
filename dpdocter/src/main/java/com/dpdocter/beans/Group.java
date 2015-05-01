@@ -8,6 +8,7 @@ public class Group {
 	private String locationId;
 	private String hospitalId;
 	private int count;
+
 	public String getId() {
 		return id;
 	}
@@ -39,8 +40,6 @@ public class Group {
 	public void setDoctorId(String doctorId) {
 		this.doctorId = doctorId;
 	}
-	
-	
 
 	public String getLocationId() {
 		return locationId;
@@ -68,11 +67,8 @@ public class Group {
 
 	@Override
 	public String toString() {
-		return "Group [id=" + id + ", name=" + name + ", description="
-				+ description + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + "]";
+		return "Group [id=" + id + ", name=" + name + ", description=" + description + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + "]";
 	}
-
-	
 
 }

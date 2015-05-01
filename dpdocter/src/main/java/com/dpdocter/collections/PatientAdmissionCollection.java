@@ -4,39 +4,39 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection="patient_admission_cl")
+@Document(collection = "patient_admission_cl")
 public class PatientAdmissionCollection {
 
 	@Id
 	private String id;
-	
+
 	@Field
 	private String userId;
 
 	@Field
 	private String locationId;
-	
+
 	@Field
 	private Long dateOfVisit;
-	
+
 	@Field
 	private String pastHistoryId;
-	
+
 	@Field
 	private String medicalHistoryId;
-	
+
 	@Field
 	private String patientNumber;
-	
+
 	@Field
 	private String referredBy;
-	
+
 	@Field
 	private String hospitalId;
-	
+
 	@Field
 	private String patientId;
-	
+
 	@Field
 	private String doctorId;
 
@@ -95,7 +95,6 @@ public class PatientAdmissionCollection {
 	public void setPatientNumber(String patientNumber) {
 		this.patientNumber = patientNumber;
 	}
-	
 
 	public String getReferredBy() {
 		return referredBy;
@@ -104,8 +103,6 @@ public class PatientAdmissionCollection {
 	public void setReferredBy(String referredBy) {
 		this.referredBy = referredBy;
 	}
-
-	
 
 	public String getHospitalId() {
 		return hospitalId;
@@ -123,7 +120,6 @@ public class PatientAdmissionCollection {
 		this.patientId = patientId;
 	}
 
-	
 	public String getDoctorId() {
 		return doctorId;
 	}
@@ -134,14 +130,9 @@ public class PatientAdmissionCollection {
 
 	@Override
 	public String toString() {
-		return "PatientAdmissionCollection [id=" + id + ", userId=" + userId
-				+ ", locationId=" + locationId + ", dateOfVisit=" + dateOfVisit
-				+ ", pastHistoryId=" + pastHistoryId + ", medicalHistoryId="
-				+ medicalHistoryId + ", patientNumber=" + patientNumber
-				+ ", referredBy=" + referredBy + ", hospitalId=" + hospitalId
-				+ ", patientId=" + patientId + ", doctorId=" + doctorId + "]";
+		return "PatientAdmissionCollection [id=" + id + ", userId=" + userId + ", locationId=" + locationId + ", dateOfVisit=" + dateOfVisit
+				+ ", pastHistoryId=" + pastHistoryId + ", medicalHistoryId=" + medicalHistoryId + ", patientNumber=" + patientNumber + ", referredBy="
+				+ referredBy + ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", doctorId=" + doctorId + "]";
 	}
 
-	
-	
 }
