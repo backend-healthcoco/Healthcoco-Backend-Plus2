@@ -546,7 +546,7 @@ public class HistoryServicesImpl implements HistoryServices {
 				List<String> familyHistoryIds = historyCollection.getFamilyhistory();
 				if (familyHistoryIds != null) {
 					List<DiseaseListResponse> familyHistory = getDiseasesByIds(medicalHistoryIds);
-					response.setMedicalhistory(familyHistory);
+					response.setFamilyhistory(familyHistory);
 				}
 				response.setSpecialNotes(historyCollection.getSpecialNotes());
 			}
@@ -605,7 +605,7 @@ public class HistoryServicesImpl implements HistoryServices {
 					List<String> familyHistoryIds = historyCollection.getFamilyhistory();
 					if (familyHistoryIds != null) {
 						List<DiseaseListResponse> familyHistory = getDiseasesByIds(medicalHistoryIds);
-						historyDetailsResponse.setMedicalhistory(familyHistory);
+						historyDetailsResponse.setFamilyhistory(familyHistory);
 					}
 					response.add(historyDetailsResponse);
 				}
