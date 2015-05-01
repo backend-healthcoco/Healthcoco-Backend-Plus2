@@ -149,7 +149,7 @@ public interface PathProxy {
 		public static final String REMOVE_MEDICAL_HISTORY = "removeMedicalHistory/{diseaseId}/{patientId}/{doctorId}/{hospitalId}/{locationId}";
 		public static final String REMOVE_FAMILY_HISTORY = "removeFamilyHistory/{diseaseId}/{patientId}/{doctorId}/{hospitalId}/{locationId}";
 
-		public static final String GET_PATIENT_HISTORY_OTP_VERIFIED = "getPatientHistoryOtp/{patientId}/{doctorId}/{hospitalId}/{locationId}/{historyFilter}/{otpVerified}";
+		public static final String GET_PATIENT_HISTORY_OTP_VERIFIED = "getPatientHistory/{patientId}/{doctorId}/{hospitalId}/{locationId}/{historyFilter}/{otpVerified}";
 	}
 
 }
