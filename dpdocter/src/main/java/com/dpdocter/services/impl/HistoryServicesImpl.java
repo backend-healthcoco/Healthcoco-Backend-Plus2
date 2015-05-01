@@ -607,6 +607,7 @@ public class HistoryServicesImpl implements HistoryServices {
 						List<DiseaseListResponse> familyHistory = getDiseasesByIds(medicalHistoryIds);
 						historyDetailsResponse.setFamilyhistory(familyHistory);
 					}
+					historyDetailsResponse.setSpecialNotes(historyCollection.getSpecialNotes());
 					response.add(historyDetailsResponse);
 				}
 			}

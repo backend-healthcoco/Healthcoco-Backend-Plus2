@@ -203,21 +203,86 @@ Response - {
 
 -http://localhost:8080/dpdocter/api/v1/history/getPatientHistoryOtp/P12345/D12345/H12345/L12345/PRESCRIPTIONS/true
 
-Request - http://localhost:8080/dpdocter/api/v1/history/getPatientHistoryOtp/{PatientId}/{DoctorId}/{HospitalId}/{LocationId}/{historyFilter}/{otpVerified}
+Request - http://localhost:8080/dpdocter/api/v1/history/getPatientHistoryOtp/{patientId}/{doctorId}/{hospitalId}/{locationId}/{historyFilter}/{otpVerified}
 
 Response - {
   "dataList": [
     {
-      "specialNotes": null,
+      "specialNotes": [
+        "Take rest",
+        "Test Notes"
+      ],
       "patientId": "P12345",
       "doctorId": "D12345",
       "hospitalId": "H12345",
       "locationId": "L12345",
-      "prescriptions": [],
-      "reports": null,
+      "prescriptions": [
+        {
+          "itemList": [
+            {
+              "drug": {
+                "drugType": "TABLET",
+                "genericNames": [
+                  "Calpol",
+                  "Paracetamol",
+                  "For Fever"
+                ],
+                "drugCode": "498009e5-d2a6-42a0-970d-bf1a95356b3f",
+                "drugName": "Calpol",
+                "strength": {
+                  "unit": "MG",
+                  "value": "5"
+                },
+                "description": "Test Description",
+                "id": "553abf5c2736ae76583d8d98"
+              },
+              "direction": [
+                "WITH_MILK",
+                "WITH_WATER"
+              ],
+              "dosage": "1-1-1",
+              "instructions": "Test Instructions",
+              "duration": {
+                "unit": "MONTH",
+                "value": "1"
+              }
+            },
+            {
+              "drug": {
+                "drugType": "TABLET",
+                "genericNames": [
+                  "Crocin",
+                  "Paracetamol",
+                  "For Fever"
+                ],
+                "drugCode": "78a7132c-c5ea-4b6f-b93e-fbcd5d910901",
+                "drugName": "Crocin",
+                "strength": {
+                  "unit": "MG",
+                  "value": "10"
+                },
+                "description": "Test Description",
+                "id": "553ac2952736ae76583d8d99"
+              },
+              "direction": [
+                "WITH_MILK"
+              ],
+              "dosage": "1-0-1",
+              "instructions": "Test Instructions",
+              "duration": {
+                "unit": "MONTH",
+                "value": "1"
+              }
+            }
+          ],
+          "name": "Mr. X Prescription",
+          "id": "553b6c692736d7eaeb47c91c"
+        }
+      ],
       "clinicalNotes": null,
       "medicalhistory": [],
-      "familyhistory": null,
+      "familyhistory": [],
+      "reports": null,
       "id": "55428ca027366fa1f06ff609"
     }
   ],
