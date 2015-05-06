@@ -20,10 +20,12 @@ import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.Investigation;
 import com.dpdocter.beans.Notes;
 import com.dpdocter.beans.Observation;
+import com.dpdocter.exceptions.BusinessException;
+import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.ClinicalNotesAddRequest;
 import com.dpdocter.request.ClinicalNotesEditRequest;
 import com.dpdocter.services.ClinicalNotesService;
-
+import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
 @Component
@@ -97,12 +99,38 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.ClinicalNotesUrls.GET_CUSTOM_COMPLAINTS)
+	@GET
+	public Response<Complaint> getCustomComplaints(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "page") int page, @PathParam(value = "size") int size) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id, Location Id, or Hospital Id Cannot Be Empty");
+		}
+		List<Complaint> customComplaints = clinicalNotesService.getCustomComplaints(doctorId, locationId, hospitalId, page, size);
+		Response<Complaint> response = new Response<Complaint>();
+		response.setDataList(customComplaints);
+		return response;
+	}
+
 	@Path(value = PathProxy.ClinicalNotesUrls.ADD_OBSERVATION)
 	@POST
 	public Response<Observation> addObservation(Observation request) {
 		Observation observation = clinicalNotesService.addEditObservation(request);
 		Response<Observation> response = new Response<Observation>();
 		response.setData(observation);
+		return response;
+	}
+
+	@Path(value = PathProxy.ClinicalNotesUrls.GET_CUSTOM_OBSERVATIONS)
+	@GET
+	public Response<Observation> getCustomObservations(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "page") int page, @PathParam(value = "size") int size) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id, Location Id, or Hospital Id Cannot Be Empty");
+		}
+		List<Observation> customObservations = clinicalNotesService.getCustomObservations(doctorId, locationId, hospitalId, page, size);
+		Response<Observation> response = new Response<Observation>();
+		response.setDataList(customObservations);
 		return response;
 	}
 
@@ -115,12 +143,38 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.ClinicalNotesUrls.GET_CUSTOM_INVESTIGATIONS)
+	@GET
+	public Response<Investigation> getCustomInvestigations(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "page") int page, @PathParam(value = "size") int size) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id, Location Id, or Hospital Id Cannot Be Empty");
+		}
+		List<Investigation> customInvestigations = clinicalNotesService.getCustomInvestigations(doctorId, locationId, hospitalId, page, size);
+		Response<Investigation> response = new Response<Investigation>();
+		response.setDataList(customInvestigations);
+		return response;
+	}
+
 	@Path(value = PathProxy.ClinicalNotesUrls.ADD_DIAGNOSIS)
 	@POST
 	public Response<Diagnosis> addDiagnosis(Diagnosis request) {
 		Diagnosis diagnosis = clinicalNotesService.addEditDiagnosis(request);
 		Response<Diagnosis> response = new Response<Diagnosis>();
 		response.setData(diagnosis);
+		return response;
+	}
+
+	@Path(value = PathProxy.ClinicalNotesUrls.GET_CUSTOM_DIAGNOSIS)
+	@GET
+	public Response<Diagnosis> getCustomDiagnosis(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "page") int page, @PathParam(value = "size") int size) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id, Location Id, or Hospital Id Cannot Be Empty");
+		}
+		List<Diagnosis> customDiagnosis = clinicalNotesService.getCustomDiagnosis(doctorId, locationId, hospitalId, page, size);
+		Response<Diagnosis> response = new Response<Diagnosis>();
+		response.setDataList(customDiagnosis);
 		return response;
 	}
 

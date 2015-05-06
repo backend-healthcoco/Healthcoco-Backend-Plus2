@@ -9,16 +9,24 @@ public class GroupCollection {
 
 	@Id
 	private String id;
+
 	@Field
 	private String name;
+
 	@Field
 	private String description;
+
 	@Field
 	private String doctorId;
+
 	@Field
 	private String locationId;
+
 	@Field
 	private String hospitalId;
+
+	@Field
+	private boolean isDeleted = false;
 
 	public String getId() {
 		return id;
@@ -68,10 +76,18 @@ public class GroupCollection {
 		this.hospitalId = hospitalId;
 	}
 
+	public boolean isDeleted() {
+		return isDeleted;
+	}
+
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
 	@Override
 	public String toString() {
 		return "GroupCollection [id=" + id + ", name=" + name + ", description=" + description + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + "]";
+				+ ", hospitalId=" + hospitalId + ", isDeleted=" + isDeleted + "]";
 	}
 
 }

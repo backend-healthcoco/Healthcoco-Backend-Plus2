@@ -12,6 +12,6 @@ import com.dpdocter.collections.GroupCollection;
 public interface GroupRepository extends MongoRepository<GroupCollection, String> {
 	public List<GroupCollection> findByDoctorId(String doctorId);
 
-	@Query("{'doctorId':?0,'locationId':?1,'hospitalId':?2}")
-	public List<GroupCollection> findByDoctorIdPatientIdHospitalId(String doctorId, String locationId, String hospitalId);
+	@Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'isDeleted': ?3}")
+	public List<GroupCollection> findByDoctorIdPatientIdHospitalId(String doctorId, String locationId, String hospitalId, boolean isDeleted);
 }

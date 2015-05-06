@@ -1,0 +1,44 @@
+-http://localhost:8080/dpdocter/api/v1/register/getCustomReferences/D12345/L12345/H12345
+
+Request - http://localhost:8080/dpdocter/api/v1/register/getCustomReferences/{doctorId}/{locationId}/{hospitalId}
+
+Response - {"dataList":[{"doctorId":"D12345","hospitalId":"H12345","locationId":"L12345","deleted":false,"referrence":"Mr. XYZ","description":"Test Description","id":"554a5854798b1e76e6e8fe3c"}],"data":null}
+
+-http://localhost:8080/dpdocter/api/v1/register/getReferences/D12345/L12345/H12345
+
+Request - http://localhost:8080/dpdocter/api/v1/register/getReferences/{doctorId}/{locationId}/{hospitalId}
+
+Response - {
+  "dataList": [
+    {
+      "doctorId": "D12345",
+      "hospitalId": "H12345",
+      "locationId": "L12345",
+      "deleted": false,
+      "referrence": "Mr. XYZ",
+      "description": "Test Description",
+      "id": "554a5854798b1e76e6e8fe3c"
+    },
+    {
+      "doctorId": "",
+      "hospitalId": "",
+      "locationId": "",
+      "deleted": false,
+      "referrence": "News",
+      "description": "Test Description",
+      "id": "554a5892798b1e76e6e8fe3d"
+    }
+  ],
+  "data": null
+}
+
+-http://localhost:8080/dpdocter/api/v1/register/updatePatientInitialAndCounter/554a8e53798b1e76e6e8fe44/NEU/10
+
+Request - http://localhost:8080/dpdocter/api/v1/register/updatePatientInitialAndCounter/{doctorId}/{patientInitial}/{patientCounter}
+
+Response - {
+  "dataList": null,
+  "data": true
+}
+
+

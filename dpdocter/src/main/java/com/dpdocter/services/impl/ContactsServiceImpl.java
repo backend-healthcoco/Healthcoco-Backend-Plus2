@@ -53,8 +53,10 @@ public class ContactsServiceImpl implements ContactsService {
 
 	@Autowired
 	private GroupRepository groupRepository;
+	
 	@Autowired
 	private PatientGroupRepository patientGroupRepository;
+	
 	@Autowired
 	private UserRepository userRepository;
 
@@ -191,13 +193,23 @@ public class ContactsServiceImpl implements ContactsService {
 		}
 	}
 
-	public void deleteGroup(String groupId) {
+	public Boolean deleteGroup(String groupId) {
+		Boolean response = false;
+		GroupCollection groupCollection = null;
 		try {
-			groupRepository.delete(groupId);
+			groupCollection = groupRepository.findOne(groupId);
+			if (groupCollection != null) {
+				groupCollection.setDeleted(true);
+				groupCollection = groupRepository.save(groupCollection);
+				response = true;
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "Drug Not Found");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Group");
 		}
+		return response;
 	}
 
 	public List<PatientCard> searchPatients(SearchRequest request) {
@@ -261,7 +273,7 @@ public class ContactsServiceImpl implements ContactsService {
 	public List<Group> getAllGroups(String doctorId, String locationId, String hospitalId) {
 		List<Group> groups = null;
 		try {
-			List<GroupCollection> groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId);
+			List<GroupCollection> groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId, false);
 			if (groupCollections != null) {
 				groups = new ArrayList<Group>();
 				for (GroupCollection groupCollection : groupCollections) {

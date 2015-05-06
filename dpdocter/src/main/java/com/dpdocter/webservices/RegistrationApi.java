@@ -13,14 +13,14 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.beans.Referrence;
+import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.services.RegistrationService;
-
+import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
 /**
@@ -113,12 +113,12 @@ public class RegistrationApi {
 
 	@Path(value = PathProxy.RegistrationUrls.ADD_REFERRENCE)
 	@POST
-	public Response<Referrence> addReferrence(Referrence request) {
+	public Response<Reference> addReference(Reference request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Response<Referrence> response = new Response<Referrence>();
-		response.setData(registrationService.addEditReferrence(request));
+		Response<Reference> response = new Response<Reference>();
+		response.setData(registrationService.addEditReference(request));
 		return response;
 	}
 
@@ -136,7 +136,7 @@ public class RegistrationApi {
 
 	@Path(value = PathProxy.RegistrationUrls.GET_REFERRENCES)
 	@GET
-	public Response<Referrence> getReferrences(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+	public Response<Reference> getReferences(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
 			@PathParam("hospitalId") String hospitalId) {
 		if (doctorId == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.doctorId is null");
@@ -147,9 +147,28 @@ public class RegistrationApi {
 		if (hospitalId == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.hospitalId is null");
 		}
-		Response<Referrence> response = new Response<Referrence>();
-		List<Referrence> referrences = registrationService.getReferrences(doctorId, locationId, hospitalId);
+		Response<Reference> response = new Response<Reference>();
+		List<Reference> referrences = registrationService.getReferences(doctorId, locationId, hospitalId);
 		response.setDataList(referrences);
+		return response;
+	}
+
+	@Path(value = PathProxy.RegistrationUrls.GET_CUSTOM_REFERENCES)
+	@GET
+	public Response<Reference> getCustomReferences(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+			@PathParam("hospitalId") String hospitalId) {
+		if (doctorId == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.doctorId is null");
+		}
+		if (locationId == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.locationId is null");
+		}
+		if (hospitalId == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.hospitalId is null");
+		}
+		Response<Reference> response = new Response<Reference>();
+		List<Reference> references = registrationService.getCustomReferences(doctorId, locationId, hospitalId);
+		response.setDataList(references);
 		return response;
 	}
 
@@ -171,6 +190,19 @@ public class RegistrationApi {
 		Response<String> response = new Response<String>();
 		String generatedId = registrationService.patientIdGenerator(doctorId, locationId, hospitalId);
 		response.setData(generatedId);
+		return response;
+	}
+
+	@Path(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_INITIAL_COUNTER)
+	@GET
+	public Response<Boolean> updatePatientInitialAndCounter(@PathParam("doctorId") String doctorId, @PathParam("patientInitial") String patientInitial,
+			@PathParam("patientCounter") int patientCounter) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, patientInitial, new Integer(patientCounter).toString())) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Dcotor Id, Patient Initial, Patient Counter Cannot Be Empty");
+		}
+		Boolean updateResponse = registrationService.updatePatientInitialAndCounter(doctorId, patientInitial, patientCounter);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(updateResponse);
 		return response;
 	}
 

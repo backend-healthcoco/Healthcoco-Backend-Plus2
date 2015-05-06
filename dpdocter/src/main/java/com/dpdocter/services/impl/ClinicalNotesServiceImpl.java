@@ -10,6 +10,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +47,7 @@ import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.FileManager;
 
 @Service
-public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
+public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	@Autowired
 	private ClinicalNotesRepository clinicalNotesRepository;
@@ -548,6 +549,82 @@ public class ClinicalNotesSeviceImpl implements ClinicalNotesService {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
+	}
+
+	@Override
+	public List<Complaint> getCustomComplaints(String doctorId, String locationId, String hospitalId, int page, int size) {
+		List<ComplaintCollection> complaintCollections = null;
+		List<Complaint> complaints = null;
+		try {
+			complaintCollections = complaintRepository.findCustomComplaints(doctorId, locationId, hospitalId, false, new PageRequest(page, size));
+			if (complaintCollections != null) {
+				complaints = new ArrayList<Complaint>();
+				BeanUtil.map(complaintCollections, complaints);
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "No Complaints Found");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
+		}
+		return complaints;
+	}
+
+	@Override
+	public List<Diagnosis> getCustomDiagnosis(String doctorId, String locationId, String hospitalId, int page, int size) {
+		List<DiagnosisCollection> diagnosisCollections = null;
+		List<Diagnosis> diagnosis = null;
+		try {
+			diagnosisCollections = diagnosisRepository.findCustomDiagnosis(doctorId, locationId, hospitalId, false, new PageRequest(page, size));
+			if (diagnosisCollections != null) {
+				diagnosis = new ArrayList<Diagnosis>();
+				BeanUtil.map(diagnosisCollections, diagnosis);
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "No Diagnosis Found");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnosis");
+		}
+		return diagnosis;
+	}
+
+	@Override
+	public List<Investigation> getCustomInvestigations(String doctorId, String locationId, String hospitalId, int page, int size) {
+		List<InvestigationCollection> investigationCollections = null;
+		List<Investigation> investigations = null;
+		try {
+			investigationCollections = investigationRepository.findCustomInvestigations(doctorId, locationId, hospitalId, false, new PageRequest(page, size));
+			if (investigationCollections != null) {
+				investigations = new ArrayList<Investigation>();
+				BeanUtil.map(investigationCollections, investigations);
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "No Investigation Found");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Investigations");
+		}
+		return investigations;
+	}
+
+	@Override
+	public List<Observation> getCustomObservations(String doctorId, String locationId, String hospitalId, int page, int size) {
+		List<ObservationCollection> observationCollections = null;
+		List<Observation> observations = null;
+		try {
+			observationCollections = observationRepository.findCustomObservations(doctorId, locationId, hospitalId, false, new PageRequest(page, size));
+			if (observationCollections != null) {
+				observations = new ArrayList<Observation>();
+				BeanUtil.map(observationCollections, observations);
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "No Observations Found");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Observations");
+		}
+		return observations;
 	}
 
 }

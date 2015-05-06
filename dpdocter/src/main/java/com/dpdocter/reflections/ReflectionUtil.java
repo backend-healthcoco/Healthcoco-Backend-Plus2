@@ -193,9 +193,9 @@ public class ReflectionUtil {
 		return getParameterizedType(clazz, 0);
 	}
 
-	public static Class getParameterizedType(Class clazz, int index) {
+	public static Class<?> getParameterizedType(Class<?> clazz, int index) {
 		ParameterizedType s = (ParameterizedType) clazz.getGenericSuperclass();
-		return (Class) s.getActualTypeArguments()[index];
+		return (Class<?>) s.getActualTypeArguments()[index];
 	}
 
 	public static Class getFieldGenericType(Class c, String fieldName) throws Exception {

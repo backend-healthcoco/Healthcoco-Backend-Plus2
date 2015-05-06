@@ -49,8 +49,12 @@ public interface PathProxy {
 		public static final String GET_PATIENT_PROFILE = "/getpatientprofile/{userId}/{doctorId}/{locationId}/{hospitalId}";
 		public static final String ADD_REFERRENCE = "/addreferrence";
 		public static final String DELETE_REFERRENCE = "/deletereferrence/{referrenceId}";
-		public static final String GET_REFERRENCES = "/getreferrences/{doctorId}/{locationId}/{hospitalId}";
+		public static final String GET_REFERRENCES = "/getReferences/{doctorId}/{locationId}/{hospitalId}";
+		public static final String GET_CUSTOM_REFERENCES = "/getCustomReferences/{doctorId}/{locationId}/{hospitalId}";
 		public static final String PATIENT_ID_GENERATOR = "/generatePatientId/{doctorId}/{locationId}/{hospitalId}";
+		
+		public static final String UPDATE_PATIENT_INITIAL_COUNTER = "updatePatientInitialAndCounter/{doctorId}/{patientInitial}/{patientCounter}";
+		public static final String GET_PATIENT_INITIAL_COUNTER = "getPatientInitialAndCounter/{doctorId}";
 	}
 
 	public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";
@@ -75,6 +79,11 @@ public interface PathProxy {
 		public static final String DELETE_DIAGNOSIS = "/deletediagnosis/{id}/{doctorId}/{locationId}/{hospitalId}";
 		public static final String DELETE_NOTE = "/deletenotes/{id}/{doctorId}/{locationId}/{hospitalId}";
 		public static final String DELETE_DIAGRAM = "/deletediagram/{id}/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String GET_CUSTOM_COMPLAINTS = "getCustomComplaints/{doctorId}/{locationId}/{hospitalId}/{page}/{size}";
+		public static final String GET_CUSTOM_DIAGNOSIS = "getCustomDiagnosis/{doctorId}/{locationId}/{hospitalId}/{page}/{size}";
+		public static final String GET_CUSTOM_INVESTIGATIONS = "getCustomInvestigations/{doctorId}/{locationId}/{hospitalId}/{page}/{size}";
+		public static final String GET_CUSTOM_OBSERVATIONS = "getCustomObservations/{doctorId}/{locationId}/{hospitalId}/{page}/{size}";
 
 	}
 

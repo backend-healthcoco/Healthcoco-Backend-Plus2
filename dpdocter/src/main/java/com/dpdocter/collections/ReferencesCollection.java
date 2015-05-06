@@ -5,21 +5,27 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "referrences_cl")
-public class ReferrencesCollection {
+public class ReferencesCollection {
 	@Id
 	private String id;
+
 	@Field
 	private String referrence;
+
 	@Field
 	private String description;
+
 	@Field
 	private String doctorId;
+
 	@Field
 	private String locationId;
+
 	@Field
 	private String hospitalId;
+
 	@Field
-	private boolean isdeleted;
+	private boolean isDeleted = false;
 
 	public String getId() {
 		return id;
@@ -69,18 +75,18 @@ public class ReferrencesCollection {
 		this.hospitalId = hospitalId;
 	}
 
-	public boolean isIsdeleted() {
-		return isdeleted;
+	public boolean isDeleted() {
+		return isDeleted;
 	}
 
-	public void setIsdeleted(boolean isdeleted) {
-		this.isdeleted = isdeleted;
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
 	}
 
 	@Override
 	public String toString() {
 		return "ReferrencesCollection [id=" + id + ", referrence=" + referrence + ", description=" + description + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", isdeleted=" + isdeleted + "]";
+				+ locationId + ", hospitalId=" + hospitalId + ", isDeleted=" + isDeleted + "]";
 	}
 
 }

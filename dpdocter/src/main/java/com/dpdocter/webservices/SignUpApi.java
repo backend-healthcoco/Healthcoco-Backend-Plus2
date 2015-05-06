@@ -20,7 +20,6 @@ import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.PatientProfilePicChangeRequest;
 import com.dpdocter.request.PatientSignUpRequest;
 import com.dpdocter.services.SignUpService;
-
 import common.util.web.Response;
 
 @Component

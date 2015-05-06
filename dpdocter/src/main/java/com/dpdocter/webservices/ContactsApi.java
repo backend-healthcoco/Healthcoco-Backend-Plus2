@@ -19,7 +19,6 @@ import com.dpdocter.beans.Group;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.request.GetDoctorContactsRequest;
 import com.dpdocter.services.ContactsService;
-
 import common.util.web.Response;
 
 /**
@@ -78,9 +77,9 @@ public class ContactsApi {
 	@Path(value = PathProxy.ContactsUrls.DELETE_GROUP)
 	@GET
 	public Response<Boolean> deleteGroup(@PathParam("groupId") String groupId) {
-		contactsService.deleteGroup(groupId);
+		Boolean groupDeleteResponse = contactsService.deleteGroup(groupId);
 		Response<Boolean> response = new Response<Boolean>();
-		response.setData(true);
+		response.setData(groupDeleteResponse);
 		return response;
 	}
 

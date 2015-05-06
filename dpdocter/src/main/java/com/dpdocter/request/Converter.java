@@ -6,10 +6,7 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import com.dpdocter.beans.Address;
-import com.dpdocter.beans.DOB;
-import com.dpdocter.beans.Referrence;
-import com.dpdocter.webservices.PathProxy;
+import com.dpdocter.beans.Reference;
 
 public class Converter {
 
@@ -29,7 +26,7 @@ public class Converter {
 	}
 
 	public static void main(String[] args) {
-		String JSONResult = ObjectToJSON(new Referrence());
+		String JSONResult = ObjectToJSON(new Reference());
 
 		System.out.println(JSONResult);
 	}

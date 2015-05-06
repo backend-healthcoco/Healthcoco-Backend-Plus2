@@ -49,4 +49,12 @@ public interface ClinicalNotesService {
 
 	void deleteDiagram(String id, String doctorId, String locationId, String hospitalId);
 
+	List<Complaint> getCustomComplaints(String doctorId, String locationId, String hospitalId, int page, int size);
+
+	List<Diagnosis> getCustomDiagnosis(String doctorId, String locationId, String hospitalId, int page, int size);
+
+	List<Investigation> getCustomInvestigations(String doctorId, String locationId, String hospitalId, int page, int size);
+
+	List<Observation> getCustomObservations(String doctorId, String locationId, String hospitalId, int page, int size);
+
 }

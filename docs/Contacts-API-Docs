@@ -1,0 +1,9 @@
+-http://localhost:8080/dpdocter/api/v1/contacts/doctorcontacts/deletegroup/554a6f26798b1e76e6e8fe3f
+
+Request - http://localhost:8080/dpdocter/api/v1/contacts/doctorcontacts/deletegroup/{groupId}
+
+Response - {
+  "dataList": null,
+  "data": true
+}
+

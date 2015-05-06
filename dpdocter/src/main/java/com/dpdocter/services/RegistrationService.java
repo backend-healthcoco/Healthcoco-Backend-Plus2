@@ -2,7 +2,7 @@ package com.dpdocter.services;
 
 import java.util.List;
 
-import com.dpdocter.beans.Referrence;
+import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
 import com.dpdocter.request.PatientRegistrationRequest;
@@ -18,12 +18,16 @@ public interface RegistrationService {
 
 	RegisteredPatientDetails getPatientProfileByUserId(String userId, String doctorId, String locationId, String hospitalId);
 
-	Referrence addEditReferrence(Referrence referrence);
+	Reference addEditReference(Reference referrence);
 
 	void deleteReferrence(String referrenceId);
 
-	List<Referrence> getReferrences(String doctorId, String locationId, String hospitalId);
+	List<Reference> getReferences(String doctorId, String locationId, String hospitalId);
 
 	String patientIdGenerator(String doctorId, String locationId, String hospitalId);
+
+	List<Reference> getCustomReferences(String doctorId, String locationId, String hospitalId);
+
+	Boolean updatePatientInitialAndCounter(String doctorId, String patientInitial, int patientCounter);
 
 }

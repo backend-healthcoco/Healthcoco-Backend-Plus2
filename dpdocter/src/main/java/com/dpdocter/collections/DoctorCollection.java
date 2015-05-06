@@ -9,26 +9,38 @@ public class DoctorCollection {
 	@Id
 	private String id;
 
-	/*@Field
-	private String firstName;
-	@Field
-	private String lastName;
-	@Field
-	private String middleName;*/
-	/*@Field
-	private String emailAddress;*/
 	@Field
 	private String secMobile;
-	/*@Field
-	private String imageUrl;
-	@Field
-	private DOB dob;*/
 
 	@Field
 	private String specialization;
 
 	@Field
 	private String userId;
+
+	@Field
+	private String patientInitial = "P";
+
+	@Field
+	private int patientCounter = 0;
+
+	/*@Field
+	private String firstName;
+	
+	@Field
+	private String lastName;
+	
+	@Field
+	private String middleName;
+	
+	@Field
+	private String emailAddress;
+	
+	@Field
+	private String imageUrl;
+	
+	@Field
+	private DOB dob;*/
 
 	public String getId() {
 		return id;
@@ -62,9 +74,26 @@ public class DoctorCollection {
 		this.userId = userId;
 	}
 
+	public String getPatientInitial() {
+		return patientInitial;
+	}
+
+	public void setPatientInitial(String patientInitial) {
+		this.patientInitial = patientInitial;
+	}
+
+	public int getPatientCounter() {
+		return patientCounter;
+	}
+
+	public void setPatientCounter(int patientCounter) {
+		this.patientCounter = patientCounter;
+	}
+
 	@Override
 	public String toString() {
-		return "DoctorCollection [id=" + id + ", secMobile=" + secMobile + ", specialization=" + specialization + ", userId=" + userId + "]";
+		return "DoctorCollection [id=" + id + ", secMobile=" + secMobile + ", specialization=" + specialization + ", userId=" + userId + ", patientInitial="
+				+ patientInitial + ", patientCounter=" + patientCounter + "]";
 	}
 
 }

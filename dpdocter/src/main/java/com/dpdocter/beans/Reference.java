@@ -1,8 +1,8 @@
 package com.dpdocter.beans;
 
-public class Referrence {
+public class Reference {
 	private String id;
-	private String referrence;
+	private String reference;
 	private String description;
 	private String doctorId;
 	private String locationId;
@@ -16,12 +16,12 @@ public class Referrence {
 		this.id = id;
 	}
 
-	public String getReferrence() {
-		return referrence;
+	public String getReference() {
+		return reference;
 	}
 
-	public void setReferrence(String referrence) {
-		this.referrence = referrence;
+	public void setReference(String reference) {
+		this.reference = reference;
 	}
 
 	public String getDescription() {
@@ -58,7 +58,7 @@ public class Referrence {
 
 	@Override
 	public String toString() {
-		return "Referrence [id=" + id + ", referrence=" + referrence + ", description=" + description + ", doctorId=" + doctorId + ", locationId=" + locationId
+		return "Reference [id=" + id + ", reference=" + reference + ", description=" + description + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + "]";
 	}
 

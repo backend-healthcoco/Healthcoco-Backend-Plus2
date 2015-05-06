@@ -16,15 +16,16 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.Address;
 import com.dpdocter.beans.Patient;
-import com.dpdocter.beans.Referrence;
+import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.AddressCollection;
+import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DoctorContactCollection;
 import com.dpdocter.collections.PatientAdmissionCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
-import com.dpdocter.collections.ReferrencesCollection;
+import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserRoleCollection;
@@ -34,10 +35,11 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.AddressRepository;
 import com.dpdocter.repository.DoctorContactsRepository;
+import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientGroupRepository;
 import com.dpdocter.repository.PatientRepository;
-import com.dpdocter.repository.ReferrenceRepository;
+import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserRoleRepository;
@@ -88,10 +90,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 	private DoctorContactsRepository doctorContactsRepository;
 
 	@Autowired
-	private ReferrenceRepository referrenceRepository;
+	private ReferenceRepository referrenceRepository;
 
 	@Autowired
 	private FileManager fileManager;
+
+	@Autowired
+	private DoctorRepository doctorRepository;
 
 	@Value(value = "${mail.signup.subject.activation}")
 	private String signupSubject;
@@ -377,9 +382,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return registeredPatientDetails;
 	}
 
-	public Referrence addEditReferrence(Referrence referrence) {
+	public Reference addEditReference(Reference referrence) {
 		try {
-			ReferrencesCollection referrencesCollection = new ReferrencesCollection();
+			ReferencesCollection referrencesCollection = new ReferencesCollection();
 			BeanUtil.map(referrence, referrencesCollection);
 			referrencesCollection = referrenceRepository.save(referrencesCollection);
 			BeanUtil.map(referrencesCollection, referrence);
@@ -392,9 +397,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	public void deleteReferrence(String referrenceId) {
 		try {
-			ReferrencesCollection referrencesCollection = referrenceRepository.findOne(referrenceId);
+			ReferencesCollection referrencesCollection = referrenceRepository.findOne(referrenceId);
 			if (referrencesCollection != null) {
-				referrencesCollection.setIsdeleted(true);
+				referrencesCollection.setDeleted(true);
 				referrenceRepository.save(referrencesCollection);
 			} else {
 				throw new BusinessException(ServiceError.Unknown, "Invalid Referrence Id!");
@@ -409,13 +414,29 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	}
 
-	public List<Referrence> getReferrences(String doctorId, String locationId, String hospitalId) {
-		List<Referrence> referrences = null;
+	public List<Reference> getReferences(String doctorId, String locationId, String hospitalId) {
+		List<Reference> referrences = null;
 		try {
-			List<ReferrencesCollection> referrencesCollections = referrenceRepository.findByDoctorIdAndLocationIdAndHospitalId(doctorId, locationId,
-					hospitalId, false);
+			List<ReferencesCollection> referrencesCollections = referrenceRepository.findByDoctorIdAndLocationIdAndHospitalId(doctorId, locationId, hospitalId,
+					false);
 			if (referrencesCollections != null) {
-				referrences = new ArrayList<Referrence>();
+				referrences = new ArrayList<Reference>();
+				BeanUtil.map(referrencesCollections, referrences);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return referrences;
+	}
+
+	public List<Reference> getCustomReferences(String doctorId, String locationId, String hospitalId) {
+		List<Reference> referrences = null;
+		try {
+			List<ReferencesCollection> referrencesCollections = referrenceRepository.findByDoctorIdAndLocationIdAndHospitalIdCustomReferences(doctorId,
+					locationId, hospitalId, false);
+			if (referrencesCollections != null) {
+				referrences = new ArrayList<Reference>();
 				BeanUtil.map(referrencesCollections, referrences);
 			}
 		} catch (Exception e) {
@@ -443,13 +464,42 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if (patientCollections != null) {
 				patientCount = patientCollections.size();
 			}
-			generatedId = "P" + "-" + currentDay + currentMonth + currentYear + "-" + patientCount + 1;
+
+			DoctorCollection doctor = doctorRepository.findOne(doctorId);
+
+			String patientInitial = doctor.getPatientInitial();
+			int patientCounter = doctor.getPatientCounter();
+
+			/*generatedId = "P" + "-" + currentDay + currentMonth + currentYear + "-" + patientCount + 1;*/
+
+			generatedId = patientInitial + "-" + currentDay + currentMonth + currentYear + "-" + patientCounter + patientCount + 1;
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return generatedId;
+	}
+
+	@Override
+	public Boolean updatePatientInitialAndCounter(String doctorId, String patientInitial, int patientCounter) {
+		Boolean response = false;
+		DoctorCollection doctor = null;
+		try {
+			doctor = doctorRepository.findOne(doctorId);
+			if (doctor != null) {
+				doctor.setPatientInitial(patientInitial);
+				doctor.setPatientCounter(patientCounter);
+				doctor = doctorRepository.save(doctor);
+				response = true;
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "Doctor Not Found");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error While Updating Patient Initial and Counter");
+		}
+		return response;
 	}
 
 }

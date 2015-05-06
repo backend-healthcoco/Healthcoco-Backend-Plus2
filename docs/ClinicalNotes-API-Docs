@@ -1,0 +1,73 @@
+-http://localhost:8080/dpdocter/api/v1/clinicalNotes/getCustomComplaints/D12345/L12345/H12345/1/10
+
+Request - http://localhost:8080/dpdocter/api/v1/clinicalNotes/getCustomComplaints/{doctorId}/{locationId}/{hospitalId}/{page}/{size}
+
+Response - {
+  "dataList": [
+    {
+      "doctorId": "D12345",
+      "hospitalId": "H12345",
+      "locationId": "L12345",
+      "complaint": "Test Complaint",
+      "deleted": false,
+      "id": "554a81c0798b1e76e6e8fe40"
+    }
+  ],
+  "data": null
+}
+
+-http://localhost:8080/dpdocter/api/v1/clinicalNotes/getCustomObservations/D12345/L12345/H12345/1/10
+
+Request - http://localhost:8080/dpdocter/api/v1/clinicalNotes/getCustomObservations/{doctorId}/{locationId}/{hospitalId}/{page}/{size}
+
+Response - {
+  "dataList": [
+    {
+      "doctorId": "D12345",
+      "hospitalId": "H12345",
+      "locationId": "L12345",
+      "observation": "Test Observation",
+      "deleted": false,
+      "id": "554a8233798b1e76e6e8fe43"
+    }
+  ],
+  "data": null
+}
+
+-http://localhost:8080/dpdocter/api/v1/clinicalNotes/getCustomInvestigations/D12345/L12345/H12345/1/10
+
+Request - http://localhost:8080/dpdocter/api/v1/clinicalNotes/getCustomInvestigations/{doctorId}/{locationId}/{hospitalId}/{page}/{size}
+
+Response - {
+  "dataList": [
+    {
+      "doctorId": "D12345",
+      "hospitalId": "H12345",
+      "locationId": "L12345",
+      "investigation": "Test Investigation",
+      "deleted": false,
+      "id": "554a81fc798b1e76e6e8fe41"
+    }
+  ],
+  "data": null
+}
+
+-http://localhost:8080/dpdocter/api/v1/clinicalNotes/getCustomDiagnosis/D12345/L12345/H12345/1/10
+
+Request - http://localhost:8080/dpdocter/api/v1/clinicalNotes/getCustomDiagnosis/{doctorId}/{locationId}/{hospitalId}/{page}/{size}
+
+Response - {
+  "dataList": [
+    {
+      "doctorId": "D12345",
+      "hospitalId": "H12345",
+      "locationId": "L12345",
+      "deleted": false,
+      "diagnosis": "Test Diagnosis",
+      "id": "554a821c798b1e76e6e8fe42"
+    }
+  ],
+  "data": null
+}
+
+

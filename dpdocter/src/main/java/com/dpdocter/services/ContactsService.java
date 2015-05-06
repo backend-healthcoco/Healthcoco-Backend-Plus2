@@ -15,7 +15,7 @@ public interface ContactsService {
 
 	Group addEditGroup(Group group);
 
-	void deleteGroup(String groupId);
+	Boolean deleteGroup(String groupId);
 
 	List<PatientCard> searchPatients(SearchRequest request);
 
