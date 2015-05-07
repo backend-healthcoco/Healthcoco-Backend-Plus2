@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import com.dpdocter.beans.Group;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.collections.DoctorContactCollection;
+import com.dpdocter.collections.ExportContactsRequestCollection;
 import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.ImportContactsRequestCollection;
 import com.dpdocter.collections.PatientAdmissionCollection;
@@ -29,12 +30,14 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.reflections.ReflectionUtil;
 import com.dpdocter.repository.DoctorContactsRepository;
+import com.dpdocter.repository.ExportContactsRequestRepository;
 import com.dpdocter.repository.GroupRepository;
 import com.dpdocter.repository.ImportContactsRequestRepository;
 import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientGroupRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.request.ExportContactsRequest;
 import com.dpdocter.request.GetDoctorContactsRequest;
 import com.dpdocter.request.ImportContactsRequest;
 import com.dpdocter.request.SearchRequest;
@@ -58,16 +61,19 @@ public class ContactsServiceImpl implements ContactsService {
 
 	@Autowired
 	private GroupRepository groupRepository;
-	
+
 	@Autowired
 	private PatientGroupRepository patientGroupRepository;
-	
+
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Autowired
 	private ImportContactsRequestRepository importContactsRequestRepository;
 	
+	@Autowired
+	private ExportContactsRequestRepository exportContactsRequestRepository;
+
 	@Autowired
 	private FileManager fileManager;
 
@@ -315,6 +321,22 @@ public class ContactsServiceImpl implements ContactsService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error Importing Contact");
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean exportContacts(ExportContactsRequest request) {
+		Boolean response = false;
+		ExportContactsRequestCollection exportContactsRequestCollection = null;
+		try {
+			exportContactsRequestCollection = new ExportContactsRequestCollection();
+			BeanUtil.map(request, exportContactsRequestCollection);
+			exportContactsRequestCollection = exportContactsRequestRepository.save(exportContactsRequestCollection);
+			response = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Exporting Contact");
 		}
 		return response;
 	}

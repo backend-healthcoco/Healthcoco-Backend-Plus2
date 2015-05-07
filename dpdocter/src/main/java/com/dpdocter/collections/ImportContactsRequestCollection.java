@@ -3,7 +3,7 @@ package com.dpdocter.collections;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection = "import_contacts_cl")
+@Document(collection = "import_contacts_request_cl")
 public class ImportContactsRequestCollection {
 	@Field
 	private String doctorId;

@@ -1,24 +1,13 @@
-package com.dpdocter.collections;
+package com.dpdocter.request;
 
 import java.util.List;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
-
 import com.dpdocter.enums.ExportRequestData;
 
-@Document(collection = "export_contacts_request_cl")
-public class ExportContactsRequestCollection {
-	@Field
+public class ExportContactsRequest {
 	private String doctorId;
-
-	@Field
 	private String emailAddress;
-
-	@Field
 	private List<ExportRequestData> dataType;
-
-	@Field
 	private String specialComments;
 
 	public String getDoctorId() {
@@ -55,7 +44,7 @@ public class ExportContactsRequestCollection {
 
 	@Override
 	public String toString() {
-		return "ExportContactsRequestCollection [doctorId=" + doctorId + ", emailAddress=" + emailAddress + ", dataType=" + dataType + ", specialComments="
+		return "ExportContactsRequest [doctorId=" + doctorId + ", emailAddress=" + emailAddress + ", dataType=" + dataType + ", specialComments="
 				+ specialComments + "]";
 	}
 

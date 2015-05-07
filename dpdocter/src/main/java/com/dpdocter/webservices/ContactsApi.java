@@ -19,6 +19,7 @@ import com.dpdocter.beans.Group;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.request.ExportContactsRequest;
 import com.dpdocter.request.GetDoctorContactsRequest;
 import com.dpdocter.request.ImportContactsRequest;
 import com.dpdocter.services.ContactsService;
@@ -59,6 +60,18 @@ public class ContactsApi {
 		Boolean importContactsResponse = contactsService.importContacts(request);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(importContactsResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.ContactsUrls.EXPORT_CONTACTS)
+	@POST
+	public Response<Boolean> exportContacts(ExportContactsRequest request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Export Request Cannot Be Empty");
+		}
+		Boolean exportContactsResponse = contactsService.exportContacts(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(exportContactsResponse);
 		return response;
 	}
 
