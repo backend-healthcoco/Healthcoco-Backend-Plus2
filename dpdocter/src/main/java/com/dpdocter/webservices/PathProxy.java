@@ -37,6 +37,9 @@ public interface PathProxy {
 		public static final String GET_ALL_GROUPS = "/doctorcontacts/getallgroups/{doctorId}/{locationId}/{hospitalId}";
 		public static final String DELETE_GROUP = "/doctorcontacts/deletegroup/{groupId}";
 		public static final String TOTAL_COUNT = "/doctorcontacts/totalcount";
+		
+		public static final String IMPORT_CONTACTS = "/doctorContacts/importContacts";
+		public static final String EXPORT_CONTACTS = "doctorContacts/exportContacts";
 	}
 
 	public static final String REGISTRATION_BASE_URL = BASE_URL + "/register";

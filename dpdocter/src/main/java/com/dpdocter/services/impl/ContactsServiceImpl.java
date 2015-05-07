@@ -1,5 +1,6 @@
 package com.dpdocter.services.impl;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -18,6 +19,7 @@ import com.dpdocter.beans.Group;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.collections.DoctorContactCollection;
 import com.dpdocter.collections.GroupCollection;
+import com.dpdocter.collections.ImportContactsRequestCollection;
 import com.dpdocter.collections.PatientAdmissionCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
@@ -28,13 +30,16 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.reflections.ReflectionUtil;
 import com.dpdocter.repository.DoctorContactsRepository;
 import com.dpdocter.repository.GroupRepository;
+import com.dpdocter.repository.ImportContactsRequestRepository;
 import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientGroupRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.GetDoctorContactsRequest;
+import com.dpdocter.request.ImportContactsRequest;
 import com.dpdocter.request.SearchRequest;
 import com.dpdocter.services.ContactsService;
+import com.dpdocter.services.FileManager;
 
 @Service
 public class ContactsServiceImpl implements ContactsService {
@@ -59,6 +64,12 @@ public class ContactsServiceImpl implements ContactsService {
 	
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private ImportContactsRequestRepository importContactsRequestRepository;
+	
+	@Autowired
+	private FileManager fileManager;
 
 	/**
 	 * This method returns all unblocked or blocked patients (based on param
@@ -287,6 +298,25 @@ public class ContactsServiceImpl implements ContactsService {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return groups;
+	}
+
+	@Override
+	public Boolean importContacts(ImportContactsRequest request) {
+		Boolean response = false;
+		ImportContactsRequestCollection importContactsRequestCollection = null;
+		try {
+			String path = "contacts" + File.separator + request.getDoctorId();
+			String contactsFileUrl = fileManager.saveImageAndReturnImageUrl(request.getContactsFile(), path);
+			request.setContactsFileUrl(contactsFileUrl);
+			importContactsRequestCollection = new ImportContactsRequestCollection();
+			BeanUtil.map(request, importContactsRequestCollection);
+			importContactsRequestCollection = importContactsRequestRepository.save(importContactsRequestCollection);
+			response = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Importing Contact");
+		}
+		return response;
 	}
 
 }

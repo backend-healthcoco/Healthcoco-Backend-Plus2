@@ -17,7 +17,10 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Group;
 import com.dpdocter.beans.PatientCard;
+import com.dpdocter.exceptions.BusinessException;
+import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.GetDoctorContactsRequest;
+import com.dpdocter.request.ImportContactsRequest;
 import com.dpdocter.services.ContactsService;
 import common.util.web.Response;
 
@@ -44,6 +47,18 @@ public class ContactsApi {
 		doctorContactsResponse.setTotalSize(ttlCount);
 		Response<DoctorContactsResponse> response = new Response<DoctorContactsResponse>();
 		response.setData(doctorContactsResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.ContactsUrls.IMPORT_CONTACTS)
+	@POST
+	public Response<Boolean> importContacts(ImportContactsRequest request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Import Request Cannot Be Empty");
+		}
+		Boolean importContactsResponse = contactsService.importContacts(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(importContactsResponse);
 		return response;
 	}
 

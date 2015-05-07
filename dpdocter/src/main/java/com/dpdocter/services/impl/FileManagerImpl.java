@@ -90,5 +90,4 @@ public class FileManagerImpl implements FileManager {
 		String imageUrl = this.imageUrl + "/" + path + "/" + fileName;
 		return imageUrl;
 	}
-
 }

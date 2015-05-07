@@ -5,6 +5,7 @@ import java.util.List;
 import com.dpdocter.beans.Group;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.request.GetDoctorContactsRequest;
+import com.dpdocter.request.ImportContactsRequest;
 import com.dpdocter.request.SearchRequest;
 
 public interface ContactsService {
@@ -26,5 +27,7 @@ public interface ContactsService {
 	int getcontactsTotalSize(GetDoctorContactsRequest request);
 
 	List<Group> getAllGroups(String doctorId, String locationId, String hospitalId);
+
+	Boolean importContacts(ImportContactsRequest request);
 
 }
