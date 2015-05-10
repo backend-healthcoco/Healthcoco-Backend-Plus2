@@ -2,6 +2,10 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import com.dpdocter.beans.ClinicAddress;
+import com.dpdocter.beans.ClinicProfile;
+import com.dpdocter.beans.ClinicTiming;
+import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
@@ -29,5 +33,13 @@ public interface RegistrationService {
 	List<Reference> getCustomReferences(String doctorId, String locationId, String hospitalId);
 
 	Boolean updatePatientInitialAndCounter(String doctorId, String patientInitial, int patientCounter);
+
+	Location getLocationDetails(String locationId);
+
+	Location updateClinicProfile(ClinicProfile request);
+
+	Location updateClinicAddress(ClinicAddress request);
+
+	Location updateClinicTiming(ClinicTiming request);
 
 }

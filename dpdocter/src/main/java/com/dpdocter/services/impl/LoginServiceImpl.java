@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.Hospital;
-import com.dpdocter.beans.Locations;
+import com.dpdocter.beans.Location;
 import com.dpdocter.beans.LoginResponse;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.HospitalCollection;
@@ -110,7 +110,7 @@ public class LoginServiceImpl implements LoginService {
 						Map<String, Hospital> checkHospitalId = new HashMap<String, Hospital>();
 						for (LocationCollection locationCollection : locationCollections) {
 							HospitalCollection hospitalCollection = null;
-							Locations location = new Locations();
+							Location location = new Location();
 							BeanUtil.map(locationCollection, location);
 							if (!checkHospitalId.containsKey(locationCollection.getHospitalId())) {
 								hospitalCollection = hospitalRepository.findOne(locationCollection.getHospitalId());

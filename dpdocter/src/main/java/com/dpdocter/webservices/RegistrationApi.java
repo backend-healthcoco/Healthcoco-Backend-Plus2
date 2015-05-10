@@ -13,6 +13,10 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.ClinicAddress;
+import com.dpdocter.beans.ClinicProfile;
+import com.dpdocter.beans.ClinicTiming;
+import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
@@ -206,4 +210,51 @@ public class RegistrationApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.RegistrationUrls.GET_LOCATION_DETAILS)
+	@GET
+	public Response<Location> getLocationDetails(@PathParam("locationId") String locationId) {
+		if (DPDoctorUtils.anyStringEmpty(locationId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Location Id Cannot Be Empty");
+		}
+		Location locationDetails = registrationService.getLocationDetails(locationId);
+		Response<Location> response = new Response<Location>();
+		response.setData(locationDetails);
+		return response;
+	}
+
+	@Path(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_PROFILE)
+	@POST
+	public Response<Location> updateClinicProfile(ClinicProfile request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
+		}
+		Location clinicProfileUpdateResponse = registrationService.updateClinicProfile(request);
+		Response<Location> response = new Response<Location>();
+		response.setData(clinicProfileUpdateResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_ADDRESS)
+	@POST
+	public Response<Location> updateClinicAddress(ClinicAddress request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
+		}
+		Location clinicAddressUpdateResponse = registrationService.updateClinicAddress(request);
+		Response<Location> response = new Response<Location>();
+		response.setData(clinicAddressUpdateResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_TIMING)
+	@POST
+	public Response<Location> updateClinicTiming(ClinicTiming request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
+		}
+		Location clinicTimingUpdateResponse = registrationService.updateClinicTiming(request);
+		Response<Location> response = new Response<Location>();
+		response.setData(clinicTimingUpdateResponse);
+		return response;
+	}
 }

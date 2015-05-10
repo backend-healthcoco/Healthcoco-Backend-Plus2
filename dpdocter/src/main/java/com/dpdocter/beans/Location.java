@@ -1,84 +1,58 @@
-package com.dpdocter.collections;
+package com.dpdocter.beans;
 
 import java.util.List;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
-
-import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.enums.Day;
 
-@Document(collection = "location_cl")
-public class LocationCollection {
+/**
+ * @author veeraj
+ */
 
-	@Id
+public class Location {
 	private String id;
 
-	@Field
 	private String locationName;
 
-	@Field
 	private String country;
 
-	@Field
 	private String state;
 
-	@Field
 	private String city;
 
-	@Field
 	private String locationPhoneNumber;
 
-	@Field
 	private String postalCode;
 
-	@Field
 	private String websiteUrl;
 
-	@Field
 	private String imageUrl;
 
-	@Field
 	private String hospitalId;
 
-	@Field
 	private Double latitude;
 
-	@Field
 	private Double longitude;
 
-	@Field
 	private String tagLine;
 
-	@Field
 	private String landmarkDetails;
 
-	@Field
 	private String locationEmailAddress;
 
-	@Field
 	private List<String> specialization;
 
-	@Field
 	private String streetAddress;
 
-	@Field
 	private String locality;
 
-	@Field
 	private String mobileNumber;
 
-	@Field
 	private String alternateNumber;
 
-	@Field
 	private List<Day> workingDays;
 
-	@Field
 	private List<WorkingHours> workingSession;
 
-	@Field
 	private boolean isTwentyFourSevenOpen;
 
 	public String getId() {
@@ -267,7 +241,7 @@ public class LocationCollection {
 
 	@Override
 	public String toString() {
-		return "LocationCollection [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city
+		return "Location [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city
 				+ ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", imageUrl=" + imageUrl
 				+ ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude=" + longitude + ", tagLine=" + tagLine + ", landmarkDetails="
 				+ landmarkDetails + ", locationEmailAddress=" + locationEmailAddress + ", specialization=" + specialization + ", streetAddress="

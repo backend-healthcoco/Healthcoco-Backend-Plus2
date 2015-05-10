@@ -41,4 +41,275 @@ Response - {
   "data": true
 }
 
+-http://localhost:8080/dpdocter/api/v1/register/settings/getLocationDetails/554f6c3c0856339fb59bb29f
 
+Request - http://localhost:8080/dpdocter/api/v1/register/settings/getLocationDetails/{locationId}
+
+Response - {
+  "dataList": null,
+  "data": {
+    "hospitalId": "H12345",
+    "mobileNumber": "9021703700",
+    "specialization": [
+      "ear",
+      "nose",
+      "throat"
+    ],
+    "workingDays": [
+      "MONDAY",
+      "TUESDAY",
+      "WEDNESDAY"
+    ],
+    "workingSession": [
+      {
+        "to": {
+          "hour": "2",
+          "period": "PM"
+        },
+        "from": {
+          "hour": "11",
+          "period": "AM"
+        }
+      }
+    ],
+    "twentyFourSevenOpen": false,
+    "locationName": "XYZ Clinic",
+    "city": "Nagpur",
+    "locationPhoneNumber": "0712112233",
+    "postalCode": "440010",
+    "websiteUrl": "websiteUrl",
+    "latitude": 27.27,
+    "longitude": 42.52,
+    "tagLine": "Test Tagline",
+    "landmarkDetails": "Near Bhole Petrol Pump",
+    "locationEmailAddress": "clinic@clinics.com",
+    "streetAddress": "Dharampeth",
+    "alternateNumber": "9988776655",
+    "imageUrl": "imgurl",
+    "locality": "Dharampeth",
+    "id": "554f6c3c0856339fb59bb29f",
+    "state": "Maharashtra",
+    "country": "India"
+  }
+}
+
+-http://localhost:8080/dpdocter/api/v1/register/settings/updateClinicProfile
+
+Request - {
+    "landmarkDetails": "Children Traffic Park",
+    "locationEmailAddress": "clinic@clinics.com",
+    "locationId": "554f6c3c0856339fb59bb29f",
+    "locationName": "XYZ Clinic",
+    "specialization": [
+        "ear",
+        "nose",
+        "throat"
+    ],
+    "tagLine": "Test Tagline",
+    "websiteUrl": "websiteUrl"
+}
+
+Response - {
+    "data": {
+        "alternateNumber": "9988776655",
+        "city": "Nagpur",
+        "country": "India",
+        "hospitalId": "H12345",
+        "id": "554f6c3c0856339fb59bb29f",
+        "imageUrl": "imgurl",
+        "landmarkDetails": "Children Traffic Park",
+        "latitude": 27.27,
+        "locality": "Dharampeth",
+        "locationEmailAddress": "clinic@clinics.com",
+        "locationName": "XYZ Clinic",
+        "locationPhoneNumber": "0712112233",
+        "longitude": 42.52,
+        "mobileNumber": "9021703700",
+        "postalCode": "440010",
+        "specialization": [
+            "ear",
+            "nose",
+            "throat"
+        ],
+        "state": "Maharashtra",
+        "streetAddress": "Dharampeth",
+        "tagLine": "Test Tagline",
+        "twentyFourSevenOpen": false,
+        "websiteUrl": "websiteUrl",
+        "workingDays": [
+            "MONDAY",
+            "TUESDAY",
+            "WEDNESDAY"
+        ],
+        "workingSession": [
+            {
+                "from": {
+                    "hour": "11",
+                    "period": "AM"
+                },
+                "to": {
+                    "hour": "2",
+                    "period": "PM"
+                }
+            }
+        ]
+    },
+    "dataList": null
+}
+
+-http://localhost:8080/dpdocter/api/v1/register/settings/updateClinicAddress
+
+Request -{
+    "alternateNumber": "001122334455",
+    "city": "Nagpur",
+    "country": "India",
+    "locality": "Dharampeth",
+    "locationId": "554f6c3c0856339fb59bb29f",
+    "locationPhoneNumber": "0712665544",
+    "mobileNumber": "9021703700",
+    "postalCode": "440012",
+    "state": "Maharashtra",
+    "streetAddress": "Dharampeth"
+}
+
+Response - {
+    "data": {
+        "alternateNumber": "001122334455",
+        "city": "Nagpur",
+        "country": "India",
+        "hospitalId": "H12345",
+        "id": "554f6c3c0856339fb59bb29f",
+        "imageUrl": "imgurl",
+        "landmarkDetails": "Children Traffic Park",
+        "latitude": 27.27,
+        "locality": "Dharampeth",
+        "locationEmailAddress": "clinic@clinics.com",
+        "locationName": "XYZ Clinic",
+        "locationPhoneNumber": "0712665544",
+        "longitude": 42.52,
+        "mobileNumber": "9021703700",
+        "postalCode": "440012",
+        "specialization": [
+            "ear",
+            "nose",
+            "throat"
+        ],
+        "state": "Maharashtra",
+        "streetAddress": "Dharampeth",
+        "tagLine": "Test Tagline",
+        "twentyFourSevenOpen": false,
+        "websiteUrl": "websiteUrl",
+        "workingDays": [
+            "MONDAY",
+            "TUESDAY",
+            "WEDNESDAY"
+        ],
+        "workingSession": [
+            {
+                "from": {
+                    "hour": "11",
+                    "period": "AM"
+                },
+                "to": {
+                    "hour": "2",
+                    "period": "PM"
+                }
+            }
+        ]
+    },
+    "dataList": null
+}
+
+-http://localhost:8080/dpdocter/api/v1/register/settings/updateClinicTiming
+
+Request - {
+    "locationId": "554f6c3c0856339fb59bb29f",
+    "twentyFourSevenOpen": false,
+    "workingDays": [
+        "MONDAY",
+        "TUESDAY",
+        "WEDNESDAY",
+        "THURSDAY"
+    ],
+    "workingSession": [
+        {
+            "from": {
+                "hour": "11",
+                "period": "AM"
+            },
+            "to": {
+                "hour": "2",
+                "period": "PM"
+            }
+        },
+        {
+            "from": {
+                "hour": "4",
+                "period": "PM"
+            },
+            "to": {
+                "hour": "10",
+                "period": "PM"
+            }
+        }
+    ]
+}
+
+Response - {
+    "data": {
+        "alternateNumber": "001122334455",
+        "city": "Nagpur",
+        "country": "India",
+        "hospitalId": "H12345",
+        "id": "554f6c3c0856339fb59bb29f",
+        "imageUrl": "imgurl",
+        "landmarkDetails": "Children Traffic Park",
+        "latitude": 27.27,
+        "locality": "Dharampeth",
+        "locationEmailAddress": "clinic@clinics.com",
+        "locationName": "XYZ Clinic",
+        "locationPhoneNumber": "0712665544",
+        "longitude": 42.52,
+        "mobileNumber": "9021703700",
+        "postalCode": "440012",
+        "specialization": [
+            "ear",
+            "nose",
+            "throat"
+        ],
+        "state": "Maharashtra",
+        "streetAddress": "Dharampeth",
+        "tagLine": "Test Tagline",
+        "twentyFourSevenOpen": false,
+        "websiteUrl": "websiteUrl",
+        "workingDays": [
+            "MONDAY",
+            "TUESDAY",
+            "WEDNESDAY",
+            "THURSDAY"
+        ],
+        "workingSession": [
+            {
+                "from": {
+                    "hour": "11",
+                    "period": "AM"
+                },
+                "to": {
+                    "hour": "2",
+                    "period": "PM"
+                }
+            },
+            {
+                "from": {
+                    "hour": "4",
+                    "period": "PM"
+                },
+                "to": {
+                    "hour": "10",
+                    "period": "PM"
+                }
+            }
+        ]
+    },
+    "dataList": null
+}

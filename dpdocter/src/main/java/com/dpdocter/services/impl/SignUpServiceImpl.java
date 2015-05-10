@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.Hospital;
-import com.dpdocter.beans.Locations;
+import com.dpdocter.beans.Location;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.AddressCollection;
 import com.dpdocter.collections.DoctorCollection;
@@ -178,8 +178,8 @@ public class SignUpServiceImpl implements SignUpService {
 			response.setUser(user);
 			Hospital hospital = new Hospital();
 			BeanUtil.map(hospitalCollection, hospital);
-			List<Locations> locations = new ArrayList<Locations>();
-			Locations location = new Locations();
+			List<Location> locations = new ArrayList<Location>();
+			Location location = new Location();
 			BeanUtil.map(locationCollection, location);
 			locations.add(location);
 			hospital.setLocations(locations);

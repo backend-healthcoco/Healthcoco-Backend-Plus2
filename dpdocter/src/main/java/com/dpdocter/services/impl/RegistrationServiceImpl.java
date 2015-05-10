@@ -15,6 +15,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.Address;
+import com.dpdocter.beans.ClinicAddress;
+import com.dpdocter.beans.ClinicProfile;
+import com.dpdocter.beans.ClinicTiming;
+import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.RegisteredPatientDetails;
@@ -22,6 +26,7 @@ import com.dpdocter.beans.User;
 import com.dpdocter.collections.AddressCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DoctorContactCollection;
+import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientAdmissionCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
@@ -36,6 +41,7 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.AddressRepository;
 import com.dpdocter.repository.DoctorContactsRepository;
 import com.dpdocter.repository.DoctorRepository;
+import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientGroupRepository;
 import com.dpdocter.repository.PatientRepository;
@@ -97,6 +103,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Autowired
 	private DoctorRepository doctorRepository;
+
+	@Autowired
+	private LocationRepository locationRepository;
 
 	@Value(value = "${mail.signup.subject.activation}")
 	private String signupSubject;
@@ -500,6 +509,91 @@ public class RegistrationServiceImpl implements RegistrationService {
 			throw new BusinessException(ServiceError.Unknown, "Error While Updating Patient Initial and Counter");
 		}
 		return response;
+	}
+
+	@Override
+	public Location getLocationDetails(String locationId) {
+		Location location = null;
+		LocationCollection locationCollection = null;
+		try {
+			locationCollection = locationRepository.findOne(locationId);
+			if (locationCollection != null) {
+				location = new Location();
+				BeanUtil.map(locationCollection, location);
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "No Location Found For The Location Id");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error While Retrieving Location Details");
+		}
+		return location;
+	}
+
+	@Override
+	public Location updateClinicProfile(ClinicProfile request) {
+		Location location = null;
+		LocationCollection locationCollection = null;
+		try {
+			locationCollection = locationRepository.findOne(request.getLocationId());
+			if (locationCollection != null) {
+				BeanUtil.map(request, locationCollection);
+				locationCollection.setSpecialization(request.getSpecialization());
+				locationCollection = locationRepository.save(locationCollection);
+				location = new Location();
+				BeanUtil.map(locationCollection, location);
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "No Location Found For The Location Id");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error While Updating Location Details");
+		}
+		return location;
+	}
+
+	@Override
+	public Location updateClinicAddress(ClinicAddress request) {
+		Location location = null;
+		LocationCollection locationCollection = null;
+		try {
+			locationCollection = locationRepository.findOne(request.getLocationId());
+			if (locationCollection != null) {
+				BeanUtil.map(request, locationCollection);
+				locationCollection = locationRepository.save(locationCollection);
+				location = new Location();
+				BeanUtil.map(locationCollection, location);
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "No Location Found For The Location Id");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error While Updating Location Details");
+		}
+		return location;
+	}
+
+	@Override
+	public Location updateClinicTiming(ClinicTiming request) {
+		Location location = null;
+		LocationCollection locationCollection = null;
+		try {
+			locationCollection = locationRepository.findOne(request.getLocationId());
+			if (locationCollection != null) {
+				BeanUtil.map(request, locationCollection);
+				locationCollection.setWorkingDays(request.getWorkingDays());
+				locationCollection.setWorkingSession(request.getWorkingSession());
+				locationCollection = locationRepository.save(locationCollection);
+				location = new Location();
+				BeanUtil.map(locationCollection, location);
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "No Location Found For The Location Id");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error While Updating Location Details");
+		}
+		return location;
 	}
 
 }

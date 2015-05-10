@@ -12,7 +12,7 @@ public class Hospital {
 	private String hospitalPhoneNumber;
 	private String hospitalImageUrl;
 	private String hospitalDescription;
-	private List<Locations> locations = new ArrayList<Locations>();
+	private List<Location> locations = new ArrayList<Location>();
 
 	public String getId() {
 		return id;
@@ -54,11 +54,11 @@ public class Hospital {
 		this.hospitalDescription = hospitalDescription;
 	}
 
-	public List<Locations> getLocations() {
+	public List<Location> getLocations() {
 		return locations;
 	}
 
-	public void setLocations(List<Locations> locations) {
+	public void setLocations(List<Location> locations) {
 		this.locations = locations;
 	}
 
