@@ -72,7 +72,7 @@ public interface PathProxy {
 		public static final String EDIT_CLINICAL_NOTES = "/edit";
 		public static final String DELETE_CLINICAL_NOTES = "/delete/{clinicalNotesId}";
 		public static final String GET_CLINICAL_NOTES_ID = "/getbyid/{clinicalNotesId}";
-		public static final String GET_CLINICAL_NOTES = "/get/{doctorId}/{hospitalId}/{locationId}/{patientId}/{isOTPVarified}";
+		public static final String GET_CLINICAL_NOTES = "/get/{doctorId}/{locationId}/{hospitalId}/{patientId}/{isOTPVarified}";
 
 		public static final String ADD_COMPLAINT = "/addcomplaint";
 		public static final String ADD_OBSERVATION = "/addobservation";
