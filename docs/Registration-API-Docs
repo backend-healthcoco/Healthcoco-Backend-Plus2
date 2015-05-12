@@ -1,40 +1,49 @@
--http://localhost:8080/dpdocter/api/v1/register/getCustomReferences/D12345/L12345/H12345
+﻿-http://localhost:8080/dpdocter/api/v1/register/getCustomReferences/D12345/L12345/H12345
 
 Request - http://localhost:8080/dpdocter/api/v1/register/getCustomReferences/{doctorId}/{locationId}/{hospitalId}
 
-Response - {"dataList":[{"doctorId":"D12345","hospitalId":"H12345","locationId":"L12345","deleted":false,"referrence":"Mr. XYZ","description":"Test Description","id":"554a5854798b1e76e6e8fe3c"}],"data":null}
-
+Response - {
+  "dataList": null,
+  "data": {
+    "doctorId": "D12345",
+    "hospitalId": "H12345",
+    "locationId": "L12345",
+    "referenceDetails": [
+      {
+        "description": "Test Description",
+        "reference": "Mr. XYZ",
+        "id": "554a5854798b1e76e6e8fe3c"
+      }
+    ]
+  }
+}
 -http://localhost:8080/dpdocter/api/v1/register/getReferences/D12345/L12345/H12345
 
 Request - http://localhost:8080/dpdocter/api/v1/register/getReferences/{doctorId}/{locationId}/{hospitalId}
 
 Response - {
-  "dataList": [
-    {
-      "doctorId": "D12345",
-      "hospitalId": "H12345",
-      "locationId": "L12345",
-      "deleted": false,
-      "referrence": "Mr. XYZ",
-      "description": "Test Description",
-      "id": "554a5854798b1e76e6e8fe3c"
-    },
-    {
-      "doctorId": "",
-      "hospitalId": "",
-      "locationId": "",
-      "deleted": false,
-      "referrence": "News",
-      "description": "Test Description",
-      "id": "554a5892798b1e76e6e8fe3d"
-    }
-  ],
-  "data": null
+  "dataList": null,
+  "data": {
+    "doctorId": "D12345",
+    "hospitalId": "H12345",
+    "locationId": "L12345",
+    "referenceDetails": [
+      {
+        "description": "Test Description",
+        "reference": "Mr. XYZ",
+        "id": "554a5854798b1e76e6e8fe3c"
+      },
+      {
+        "description": "Test Description",
+        "reference": "News",
+        "id": "554a5892798b1e76e6e8fe3d"
+      }
+    ]
+  }
 }
+-http://localhost:8080/dpdocter/api/v1/register/updatePatientIdGeneratorLogic/554a8e53798b1e76e6e8fe44/NEU/10
 
--http://localhost:8080/dpdocter/api/v1/register/updatePatientInitialAndCounter/554a8e53798b1e76e6e8fe44/NEU/10
-
-Request - http://localhost:8080/dpdocter/api/v1/register/updatePatientInitialAndCounter/{doctorId}/{patientInitial}/{patientCounter}
+Request - http://localhost:8080/dpdocter/api/v1/register/updatePatientIdGeneratorLogic/{doctorId}/{patientInitial}/{patientCounter}
 
 Response - {
   "dataList": null,
@@ -43,7 +52,7 @@ Response - {
 
 -http://localhost:8080/dpdocter/api/v1/register/settings/getLocationDetails/554f6c3c0856339fb59bb29f
 
-Request - http://localhost:8080/dpdocter/api/v1/register/settings/getLocationDetails/{locationId}
+Request - http://localhost:8080/dpdocter/api/v1/register/settings/getLocationDetails/{clinicId}
 
 Response - {
   "dataList": null,
@@ -98,7 +107,7 @@ Response - {
 Request - {
     "landmarkDetails": "Children Traffic Park",
     "locationEmailAddress": "clinic@clinics.com",
-    "locationId": "554f6c3c0856339fb59bb29f",
+    "id": "554f6c3c0856339fb59bb29f",
     "locationName": "XYZ Clinic",
     "specialization": [
         "ear",
@@ -164,7 +173,7 @@ Request -{
     "city": "Nagpur",
     "country": "India",
     "locality": "Dharampeth",
-    "locationId": "554f6c3c0856339fb59bb29f",
+    "id": "554f6c3c0856339fb59bb29f",
     "locationPhoneNumber": "0712665544",
     "mobileNumber": "9021703700",
     "postalCode": "440012",
