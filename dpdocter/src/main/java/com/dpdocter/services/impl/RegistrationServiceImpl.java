@@ -532,11 +532,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 
 	@Override
-	public Location getClinicDetails(String locationId) {
+	public Location getClinicDetails(String clinicId) {
 		Location location = null;
 		LocationCollection locationCollection = null;
 		try {
-			locationCollection = locationRepository.findOne(locationId);
+			locationCollection = locationRepository.findOne(clinicId);
 			if (locationCollection != null) {
 				location = new Location();
 				BeanUtil.map(locationCollection, location);
@@ -555,7 +555,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		ClinicProfile response = null;
 		LocationCollection locationCollection = null;
 		try {
-			locationCollection = new LocationCollection();
+			locationCollection = locationRepository.findOne(request.getId());
 			BeanUtil.map(request, locationCollection);
 			locationCollection.setSpecialization(request.getSpecialization());
 			locationCollection = locationRepository.save(locationCollection);
@@ -573,7 +573,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		ClinicAddress response = null;
 		LocationCollection locationCollection = null;
 		try {
-			locationCollection = new LocationCollection();
+			locationCollection = locationRepository.findOne(request.getId());
 			BeanUtil.map(request, locationCollection);
 			locationCollection = locationRepository.save(locationCollection);
 			response = new ClinicAddress();
@@ -590,7 +590,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		ClinicTiming response = null;
 		LocationCollection locationCollection = null;
 		try {
-			locationCollection = new LocationCollection();
+			locationCollection = locationRepository.findOne(request.getId());
 			BeanUtil.map(request, locationCollection);
 			locationCollection.setWorkingSchedules(request.getWorkingSchedules());
 			locationCollection = locationRepository.save(locationCollection);
