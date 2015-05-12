@@ -2,8 +2,6 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-import com.dpdocter.enums.Day;
-
 /**
  * @author veeraj
  */
@@ -48,10 +46,6 @@ public class Location {
 	private String mobileNumber;
 
 	private String alternateNumber;
-
-	private List<Day> workingDays;
-
-	private List<WorkingHours> workingSession;
 
 	private List<WorkingSchedule> WorkingSchedules;
 
@@ -217,22 +211,6 @@ public class Location {
 		this.alternateNumber = alternateNumber;
 	}
 
-	public List<Day> getWorkingDays() {
-		return workingDays;
-	}
-
-	public void setWorkingDays(List<Day> workingDays) {
-		this.workingDays = workingDays;
-	}
-
-	public List<WorkingHours> getWorkingSession() {
-		return workingSession;
-	}
-
-	public void setWorkingSession(List<WorkingHours> workingSession) {
-		this.workingSession = workingSession;
-	}
-
 	public List<WorkingSchedule> getWorkingSchedules() {
 		return WorkingSchedules;
 	}
@@ -255,9 +233,8 @@ public class Location {
 				+ ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", imageUrl=" + imageUrl
 				+ ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude=" + longitude + ", tagLine=" + tagLine + ", landmarkDetails="
 				+ landmarkDetails + ", locationEmailAddress=" + locationEmailAddress + ", specialization=" + specialization + ", streetAddress="
-				+ streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber + ", alternateNumber=" + alternateNumber + ", workingDays="
-				+ workingDays + ", workingSession=" + workingSession + ", WorkingSchedules=" + WorkingSchedules + ", isTwentyFourSevenOpen="
-				+ isTwentyFourSevenOpen + "]";
+				+ streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber + ", alternateNumber=" + alternateNumber + ", WorkingSchedules="
+				+ WorkingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + "]";
 	}
 
 }
