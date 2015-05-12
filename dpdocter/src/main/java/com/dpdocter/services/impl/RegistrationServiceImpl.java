@@ -21,6 +21,7 @@ import com.dpdocter.beans.ClinicTiming;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.Reference;
+import com.dpdocter.beans.ReferenceDetail;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.AddressCollection;
@@ -50,6 +51,7 @@ import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.request.PatientRegistrationRequest;
+import com.dpdocter.response.ReferenceResponse;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.GenerateUniqueUserNameService;
 import com.dpdocter.services.MailBodyGenerator;
@@ -391,22 +393,22 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return registeredPatientDetails;
 	}
 
-	public Reference addEditReference(Reference referrence) {
+	public Reference addEditReference(Reference reference) {
 		try {
 			ReferencesCollection referrencesCollection = new ReferencesCollection();
-			BeanUtil.map(referrence, referrencesCollection);
+			BeanUtil.map(reference, referrencesCollection);
 			referrencesCollection = referrenceRepository.save(referrencesCollection);
-			BeanUtil.map(referrencesCollection, referrence);
+			BeanUtil.map(referrencesCollection, reference);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
-		return referrence;
+		return reference;
 	}
 
-	public void deleteReferrence(String referrenceId) {
+	public void deleteReferrence(String referenceId) {
 		try {
-			ReferencesCollection referrencesCollection = referrenceRepository.findOne(referrenceId);
+			ReferencesCollection referrencesCollection = referrenceRepository.findOne(referenceId);
 			if (referrencesCollection != null) {
 				referrencesCollection.setDeleted(true);
 				referrenceRepository.save(referrencesCollection);
@@ -423,36 +425,54 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	}
 
-	public List<Reference> getReferences(String doctorId, String locationId, String hospitalId) {
-		List<Reference> referrences = null;
+	public ReferenceResponse getReferences(String doctorId, String locationId, String hospitalId) {
+		ReferenceResponse response = null;
 		try {
 			List<ReferencesCollection> referrencesCollections = referrenceRepository.findByDoctorIdAndLocationIdAndHospitalId(doctorId, locationId, hospitalId,
 					false);
 			if (referrencesCollections != null) {
-				referrences = new ArrayList<Reference>();
-				BeanUtil.map(referrencesCollections, referrences);
+				response = new ReferenceResponse();
+				List<ReferenceDetail> referenceDetails = new ArrayList<ReferenceDetail>();
+				for (ReferencesCollection ref : referrencesCollections) {
+					ReferenceDetail referenceDetail = new ReferenceDetail();
+					BeanUtil.map(ref, referenceDetail);
+					referenceDetails.add(referenceDetail);
+				}
+				response.setDoctorId(doctorId);
+				response.setHospitalId(hospitalId);
+				response.setLocationId(locationId);
+				response.setReferenceDetails(referenceDetails);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
-		return referrences;
+		return response;
 	}
 
-	public List<Reference> getCustomReferences(String doctorId, String locationId, String hospitalId) {
-		List<Reference> referrences = null;
+	public ReferenceResponse getCustomReferences(String doctorId, String locationId, String hospitalId) {
+		ReferenceResponse response = null;
 		try {
 			List<ReferencesCollection> referrencesCollections = referrenceRepository.findByDoctorIdAndLocationIdAndHospitalIdCustomReferences(doctorId,
 					locationId, hospitalId, false);
 			if (referrencesCollections != null) {
-				referrences = new ArrayList<Reference>();
-				BeanUtil.map(referrencesCollections, referrences);
+				response = new ReferenceResponse();
+				List<ReferenceDetail> referenceDetails = new ArrayList<ReferenceDetail>();
+				for (ReferencesCollection ref : referrencesCollections) {
+					ReferenceDetail referenceDetail = new ReferenceDetail();
+					BeanUtil.map(ref, referenceDetail);
+					referenceDetails.add(referenceDetail);
+				}
+				response.setDoctorId(doctorId);
+				response.setHospitalId(hospitalId);
+				response.setLocationId(locationId);
+				response.setReferenceDetails(referenceDetails);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
-		return referrences;
+		return response;
 	}
 
 	public String patientIdGenerator(String doctorId, String locationId, String hospitalId) {
@@ -512,7 +532,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 
 	@Override
-	public Location getLocationDetails(String locationId) {
+	public Location getClinicDetails(String locationId) {
 		Location location = null;
 		LocationCollection locationCollection = null;
 		try {
@@ -531,69 +551,56 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 
 	@Override
-	public Location updateClinicProfile(ClinicProfile request) {
-		Location location = null;
+	public ClinicProfile updateClinicProfile(ClinicProfile request) {
+		ClinicProfile response = null;
 		LocationCollection locationCollection = null;
 		try {
-			locationCollection = locationRepository.findOne(request.getLocationId());
-			if (locationCollection != null) {
-				BeanUtil.map(request, locationCollection);
-				locationCollection.setSpecialization(request.getSpecialization());
-				locationCollection = locationRepository.save(locationCollection);
-				location = new Location();
-				BeanUtil.map(locationCollection, location);
-			} else {
-				throw new BusinessException(ServiceError.NotFound, "No Location Found For The Location Id");
-			}
+			locationCollection = new LocationCollection();
+			BeanUtil.map(request, locationCollection);
+			locationCollection.setSpecialization(request.getSpecialization());
+			locationCollection = locationRepository.save(locationCollection);
+			response = new ClinicProfile();
+			BeanUtil.map(locationCollection, response);
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error While Updating Location Details");
+			throw new BusinessException(ServiceError.Unknown, "Error While Updating Clinic Details");
 		}
-		return location;
+		return response;
 	}
 
 	@Override
-	public Location updateClinicAddress(ClinicAddress request) {
-		Location location = null;
+	public ClinicAddress updateClinicAddress(ClinicAddress request) {
+		ClinicAddress response = null;
 		LocationCollection locationCollection = null;
 		try {
-			locationCollection = locationRepository.findOne(request.getLocationId());
-			if (locationCollection != null) {
-				BeanUtil.map(request, locationCollection);
-				locationCollection = locationRepository.save(locationCollection);
-				location = new Location();
-				BeanUtil.map(locationCollection, location);
-			} else {
-				throw new BusinessException(ServiceError.NotFound, "No Location Found For The Location Id");
-			}
+			locationCollection = new LocationCollection();
+			BeanUtil.map(request, locationCollection);
+			locationCollection = locationRepository.save(locationCollection);
+			response = new ClinicAddress();
+			BeanUtil.map(locationCollection, response);
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error While Updating Location Details");
+			throw new BusinessException(ServiceError.Unknown, "Error While Updating Clinic Details");
 		}
-		return location;
+		return response;
 	}
 
 	@Override
-	public Location updateClinicTiming(ClinicTiming request) {
-		Location location = null;
+	public ClinicTiming updateClinicTiming(ClinicTiming request) {
+		ClinicTiming response = null;
 		LocationCollection locationCollection = null;
 		try {
-			locationCollection = locationRepository.findOne(request.getLocationId());
-			if (locationCollection != null) {
-				BeanUtil.map(request, locationCollection);
-				locationCollection.setWorkingDays(request.getWorkingDays());
-				locationCollection.setWorkingSession(request.getWorkingSession());
-				locationCollection = locationRepository.save(locationCollection);
-				location = new Location();
-				BeanUtil.map(locationCollection, location);
-			} else {
-				throw new BusinessException(ServiceError.NotFound, "No Location Found For The Location Id");
-			}
+			locationCollection = new LocationCollection();
+			BeanUtil.map(request, locationCollection);
+			locationCollection.setWorkingSchedules(request.getWorkingSchedules());
+			locationCollection = locationRepository.save(locationCollection);
+			response = new ClinicTiming();
+			BeanUtil.map(locationCollection, response);
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error While Updating Location Details");
+			throw new BusinessException(ServiceError.Unknown, "Error While Updating Clinic Details");
 		}
-		return location;
+		return response;
 	}
 
 }

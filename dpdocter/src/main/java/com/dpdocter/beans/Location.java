@@ -53,6 +53,8 @@ public class Location {
 
 	private List<WorkingHours> workingSession;
 
+	private List<WorkingSchedule> WorkingSchedules;
+
 	private boolean isTwentyFourSevenOpen;
 
 	public String getId() {
@@ -231,6 +233,14 @@ public class Location {
 		this.workingSession = workingSession;
 	}
 
+	public List<WorkingSchedule> getWorkingSchedules() {
+		return WorkingSchedules;
+	}
+
+	public void setWorkingSchedules(List<WorkingSchedule> workingSchedules) {
+		WorkingSchedules = workingSchedules;
+	}
+
 	public boolean isTwentyFourSevenOpen() {
 		return isTwentyFourSevenOpen;
 	}
@@ -246,7 +256,8 @@ public class Location {
 				+ ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude=" + longitude + ", tagLine=" + tagLine + ", landmarkDetails="
 				+ landmarkDetails + ", locationEmailAddress=" + locationEmailAddress + ", specialization=" + specialization + ", streetAddress="
 				+ streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber + ", alternateNumber=" + alternateNumber + ", workingDays="
-				+ workingDays + ", workingSession=" + workingSession + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + "]";
+				+ workingDays + ", workingSession=" + workingSession + ", WorkingSchedules=" + WorkingSchedules + ", isTwentyFourSevenOpen="
+				+ isTwentyFourSevenOpen + "]";
 	}
 
 }

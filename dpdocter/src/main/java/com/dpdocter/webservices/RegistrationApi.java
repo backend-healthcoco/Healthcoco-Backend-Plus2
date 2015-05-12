@@ -23,6 +23,7 @@ import com.dpdocter.beans.User;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.PatientRegistrationRequest;
+import com.dpdocter.response.ReferenceResponse;
 import com.dpdocter.services.RegistrationService;
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -140,7 +141,7 @@ public class RegistrationApi {
 
 	@Path(value = PathProxy.RegistrationUrls.GET_REFERRENCES)
 	@GET
-	public Response<Reference> getReferences(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+	public Response<ReferenceResponse> getReferences(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
 			@PathParam("hospitalId") String hospitalId) {
 		if (doctorId == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.doctorId is null");
@@ -151,15 +152,15 @@ public class RegistrationApi {
 		if (hospitalId == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.hospitalId is null");
 		}
-		Response<Reference> response = new Response<Reference>();
-		List<Reference> referrences = registrationService.getReferences(doctorId, locationId, hospitalId);
-		response.setDataList(referrences);
+		ReferenceResponse references = registrationService.getReferences(doctorId, locationId, hospitalId);
+		Response<ReferenceResponse> response = new Response<ReferenceResponse>();
+		response.setData(references);
 		return response;
 	}
 
 	@Path(value = PathProxy.RegistrationUrls.GET_CUSTOM_REFERENCES)
 	@GET
-	public Response<Reference> getCustomReferences(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+	public Response<ReferenceResponse> getCustomReferences(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
 			@PathParam("hospitalId") String hospitalId) {
 		if (doctorId == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.doctorId is null");
@@ -170,9 +171,9 @@ public class RegistrationApi {
 		if (hospitalId == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.hospitalId is null");
 		}
-		Response<Reference> response = new Response<Reference>();
-		List<Reference> references = registrationService.getCustomReferences(doctorId, locationId, hospitalId);
-		response.setDataList(references);
+		ReferenceResponse references = registrationService.getCustomReferences(doctorId, locationId, hospitalId);
+		Response<ReferenceResponse> response = new Response<ReferenceResponse>();
+		response.setData(references);
 		return response;
 	}
 
@@ -197,7 +198,7 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_INITIAL_COUNTER)
+	@Path(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_ID_GENERATOR_LOGIC)
 	@GET
 	public Response<Boolean> updatePatientInitialAndCounter(@PathParam("doctorId") String doctorId, @PathParam("patientInitial") String patientInitial,
 			@PathParam("patientCounter") int patientCounter) {
@@ -210,50 +211,50 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.GET_LOCATION_DETAILS)
+	@Path(value = PathProxy.RegistrationUrls.GET_CLINIC_DETAILS)
 	@GET
-	public Response<Location> getLocationDetails(@PathParam("locationId") String locationId) {
-		if (DPDoctorUtils.anyStringEmpty(locationId)) {
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Location Id Cannot Be Empty");
+	public Response<Location> getClinicDetails(@PathParam("clinicId") String clinicId) {
+		if (DPDoctorUtils.anyStringEmpty(clinicId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Clinic Id Cannot Be Empty");
 		}
-		Location locationDetails = registrationService.getLocationDetails(locationId);
+		Location clinicDetails = registrationService.getClinicDetails(clinicId);
 		Response<Location> response = new Response<Location>();
-		response.setData(locationDetails);
+		response.setData(clinicDetails);
 		return response;
 	}
 
 	@Path(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_PROFILE)
 	@POST
-	public Response<Location> updateClinicProfile(ClinicProfile request) {
+	public Response<ClinicProfile> updateClinicProfile(ClinicProfile request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
 		}
-		Location clinicProfileUpdateResponse = registrationService.updateClinicProfile(request);
-		Response<Location> response = new Response<Location>();
+		ClinicProfile clinicProfileUpdateResponse = registrationService.updateClinicProfile(request);
+		Response<ClinicProfile> response = new Response<ClinicProfile>();
 		response.setData(clinicProfileUpdateResponse);
 		return response;
 	}
 
 	@Path(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_ADDRESS)
 	@POST
-	public Response<Location> updateClinicAddress(ClinicAddress request) {
+	public Response<ClinicAddress> updateClinicAddress(ClinicAddress request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
 		}
-		Location clinicAddressUpdateResponse = registrationService.updateClinicAddress(request);
-		Response<Location> response = new Response<Location>();
+		ClinicAddress clinicAddressUpdateResponse = registrationService.updateClinicAddress(request);
+		Response<ClinicAddress> response = new Response<ClinicAddress>();
 		response.setData(clinicAddressUpdateResponse);
 		return response;
 	}
 
 	@Path(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_TIMING)
 	@POST
-	public Response<Location> updateClinicTiming(ClinicTiming request) {
+	public Response<ClinicTiming> updateClinicTiming(ClinicTiming request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
 		}
-		Location clinicTimingUpdateResponse = registrationService.updateClinicTiming(request);
-		Response<Location> response = new Response<Location>();
+		ClinicTiming clinicTimingUpdateResponse = registrationService.updateClinicTiming(request);
+		Response<ClinicTiming> response = new Response<ClinicTiming>();
 		response.setData(clinicTimingUpdateResponse);
 		return response;
 	}

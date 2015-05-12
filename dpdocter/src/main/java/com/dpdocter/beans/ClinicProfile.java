@@ -4,7 +4,7 @@ import java.util.List;
 
 public class ClinicProfile {
 
-	private String locationId;
+	private String id;
 	private String locationName;
 	private String tagLine;
 	private List<String> specialization;
@@ -12,12 +12,12 @@ public class ClinicProfile {
 	private String websiteUrl;
 	private String landmarkDetails;
 
-	public String getLocationId() {
-		return locationId;
+	public String getId() {
+		return id;
 	}
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public String getLocationName() {
@@ -70,7 +70,7 @@ public class ClinicProfile {
 
 	@Override
 	public String toString() {
-		return "ClinicProfile [locationId=" + locationId + ", locationName=" + locationName + ", tagLine=" + tagLine + ", specialization=" + specialization
+		return "ClinicProfile [id=" + id + ", locationName=" + locationName + ", tagLine=" + tagLine + ", specialization=" + specialization
 				+ ", locationEmailAddress=" + locationEmailAddress + ", websiteUrl=" + websiteUrl + ", landmarkDetails=" + landmarkDetails + "]";
 	}
 

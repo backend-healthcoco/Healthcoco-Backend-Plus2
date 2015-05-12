@@ -301,9 +301,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				} else {
 					prescriptionCollections = prescriptionRepository.getPrescription(patientId, false, new Sort(Sort.Direction.DESC, "createdTime"));
 				}
-
 			} else {
-
 				long createdTimestamp = Long.parseLong(createdTime);
 				if (!isOTPVarified) {
 					prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId, new Date(createdTimestamp),
@@ -312,7 +310,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					prescriptionCollections = prescriptionRepository.getPrescription(patientId, new Date(createdTimestamp), false, new Sort(
 							Sort.Direction.DESC, "createdTime"));
 				}
-
 			}
 
 			if (prescriptionCollections != null) {

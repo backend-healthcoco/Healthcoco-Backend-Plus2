@@ -2,36 +2,25 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-import com.dpdocter.enums.Day;
-
 public class ClinicTiming {
-	private String locationId;
-	private List<Day> workingDays;
-	private List<WorkingHours> workingSession;
+	private String id;
+	private List<WorkingSchedule> workingSchedules;
 	private boolean isTwentyFourSevenOpen;
 
-	public String getLocationId() {
-		return locationId;
+	public String getId() {
+		return id;
 	}
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
+	public void setId(String id) {
+		this.id = id;
 	}
 
-	public List<Day> getWorkingDays() {
-		return workingDays;
+	public List<WorkingSchedule> getWorkingSchedules() {
+		return workingSchedules;
 	}
 
-	public void setWorkingDays(List<Day> workingDays) {
-		this.workingDays = workingDays;
-	}
-
-	public List<WorkingHours> getWorkingSession() {
-		return workingSession;
-	}
-
-	public void setWorkingSession(List<WorkingHours> workingSession) {
-		this.workingSession = workingSession;
+	public void setWorkingSchedules(List<WorkingSchedule> workingSchedules) {
+		this.workingSchedules = workingSchedules;
 	}
 
 	public boolean isTwentyFourSevenOpen() {
@@ -44,7 +33,7 @@ public class ClinicTiming {
 
 	@Override
 	public String toString() {
-		return "ClinicTiming [workingDays=" + workingDays + ", workingSession=" + workingSession + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + "]";
+		return "ClinicTiming [id=" + id + ", workingSchedules=" + workingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + "]";
 	}
 
 }

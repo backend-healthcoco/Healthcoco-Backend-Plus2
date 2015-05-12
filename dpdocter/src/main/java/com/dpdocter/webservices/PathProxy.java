@@ -56,10 +56,10 @@ public interface PathProxy {
 		public static final String GET_CUSTOM_REFERENCES = "/getCustomReferences/{doctorId}/{locationId}/{hospitalId}";
 		public static final String PATIENT_ID_GENERATOR = "/generatePatientId/{doctorId}/{locationId}/{hospitalId}";
 
-		public static final String UPDATE_PATIENT_INITIAL_COUNTER = "updatePatientInitialAndCounter/{doctorId}/{patientInitial}/{patientCounter}";
+		public static final String UPDATE_PATIENT_ID_GENERATOR_LOGIC = "updatePatientIdGeneratorLogic/{doctorId}/{patientInitial}/{patientCounter}";
 		public static final String GET_PATIENT_INITIAL_COUNTER = "getPatientInitialAndCounter/{doctorId}";
 
-		public static final String GET_LOCATION_DETAILS = "settings/getLocationDetails/{locationId}";
+		public static final String GET_CLINIC_DETAILS = "settings/getClinicDetails/{locationId}";
 		public static final String UPDATE_CLINIC_PROFILE = "settings/updateClinicProfile";
 		public static final String UPDATE_CLINIC_ADDRESS = "settings/updateClinicAddress";
 		public static final String UPDATE_CLINIC_TIMING = "settings/updateClinicTiming";

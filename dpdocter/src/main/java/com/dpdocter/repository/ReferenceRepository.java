@@ -10,11 +10,10 @@ import com.dpdocter.collections.ReferencesCollection;
 
 @Repository
 public interface ReferenceRepository extends MongoRepository<ReferencesCollection, String> {
-	@Query("{'$and': [ {'$or': [ {'doctorId': 'D12345'}, {'doctorId': ''} ]}, {'$or': [ {'locationId': 'L12345'}, {'locationId': ''} ]}, {'$or': [ {'hospitalId': 'H12345'}, {'hospitalId': ''} ]}, {'isDeleted': false} ]}")
+	@Query(value = "{'$and': [ {'$or': [ {'doctorId': ?0}, {'doctorId': ''} ]}, {'$or': [ {'locationId': ?1}, {'locationId': ''} ]}, {'$or': [ {'hospitalId': ?2}, {'hospitalId': ''} ]}, {'isDeleted': ?3} ]}", fields = "{'dcotorId': 0, 'hospitalId': 0, 'locationId': 0, 'isDeleted': 0}")
 	List<ReferencesCollection> findByDoctorIdAndLocationIdAndHospitalId(String doctorId, String locationId, String hospitalId, boolean isDeleted);
 
-	@Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'isDeleted': ?3}")
-	List<ReferencesCollection> findByDoctorIdAndLocationIdAndHospitalIdCustomReferences(String doctorId, String locationId, String hospitalId,
-			boolean isDeleted);
+	@Query(value = "{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'isDeleted': ?3}", fields = "{'dcotorId': 0, 'hospitalId': 0, 'locationId': 0, 'isDeleted': 0}")
+	List<ReferencesCollection> findByDoctorIdAndLocationIdAndHospitalIdCustomReferences(String doctorId, String locationId, String hospitalId, boolean isDeleted);
 
 }

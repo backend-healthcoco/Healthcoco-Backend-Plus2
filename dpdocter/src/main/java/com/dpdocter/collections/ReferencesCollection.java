@@ -10,7 +10,7 @@ public class ReferencesCollection {
 	private String id;
 
 	@Field
-	private String referrence;
+	private String reference;
 
 	@Field
 	private String description;
@@ -35,12 +35,12 @@ public class ReferencesCollection {
 		this.id = id;
 	}
 
-	public String getReferrence() {
-		return referrence;
+	public String getReference() {
+		return reference;
 	}
 
-	public void setReferrence(String referrence) {
-		this.referrence = referrence;
+	public void setReference(String reference) {
+		this.reference = reference;
 	}
 
 	public String getDescription() {
@@ -85,7 +85,7 @@ public class ReferencesCollection {
 
 	@Override
 	public String toString() {
-		return "ReferrencesCollection [id=" + id + ", referrence=" + referrence + ", description=" + description + ", doctorId=" + doctorId + ", locationId="
+		return "ReferencesCollection [id=" + id + ", reference=" + reference + ", description=" + description + ", doctorId=" + doctorId + ", locationId="
 				+ locationId + ", hospitalId=" + hospitalId + ", isDeleted=" + isDeleted + "]";
 	}
 

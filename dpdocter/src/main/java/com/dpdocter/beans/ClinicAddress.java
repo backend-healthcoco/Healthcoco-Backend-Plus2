@@ -1,7 +1,8 @@
 package com.dpdocter.beans;
 
 public class ClinicAddress {
-	private String locationId;
+
+	private String id;
 	private String streetAddress;
 	private String locality;
 	private String city;
@@ -12,12 +13,12 @@ public class ClinicAddress {
 	private String locationPhoneNumber;
 	private String alternateNumber;
 
-	public String getLocationId() {
-		return locationId;
+	public String getId() {
+		return id;
 	}
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public String getStreetAddress() {
@@ -94,9 +95,9 @@ public class ClinicAddress {
 
 	@Override
 	public String toString() {
-		return "ClinicAddress [locationId=" + locationId + ", streetAddress=" + streetAddress + ", locality=" + locality + ", city=" + city + ", state="
-				+ state + ", country=" + country + ", postalCode=" + postalCode + ", mobileNumber=" + mobileNumber + ", locationPhoneNumber="
-				+ locationPhoneNumber + ", alternateNumber=" + alternateNumber + "]";
+		return "ClinicAddress [id=" + id + ", streetAddress=" + streetAddress + ", locality=" + locality + ", city=" + city + ", state=" + state + ", country="
+				+ country + ", postalCode=" + postalCode + ", mobileNumber=" + mobileNumber + ", locationPhoneNumber=" + locationPhoneNumber
+				+ ", alternateNumber=" + alternateNumber + "]";
 	}
 
 }

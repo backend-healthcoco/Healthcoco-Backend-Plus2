@@ -6,8 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.WorkingHours;
-import com.dpdocter.enums.Day;
+import com.dpdocter.beans.WorkingSchedule;
 
 @Document(collection = "location_cl")
 public class LocationCollection {
@@ -73,10 +72,7 @@ public class LocationCollection {
 	private String alternateNumber;
 
 	@Field
-	private List<Day> workingDays;
-
-	@Field
-	private List<WorkingHours> workingSession;
+	private List<WorkingSchedule> WorkingSchedules;
 
 	@Field
 	private boolean isTwentyFourSevenOpen;
@@ -241,20 +237,12 @@ public class LocationCollection {
 		this.alternateNumber = alternateNumber;
 	}
 
-	public List<Day> getWorkingDays() {
-		return workingDays;
+	public List<WorkingSchedule> getWorkingSchedules() {
+		return WorkingSchedules;
 	}
 
-	public void setWorkingDays(List<Day> workingDays) {
-		this.workingDays = workingDays;
-	}
-
-	public List<WorkingHours> getWorkingSession() {
-		return workingSession;
-	}
-
-	public void setWorkingSession(List<WorkingHours> workingSession) {
-		this.workingSession = workingSession;
+	public void setWorkingSchedules(List<WorkingSchedule> workingSchedules) {
+		WorkingSchedules = workingSchedules;
 	}
 
 	public boolean isTwentyFourSevenOpen() {
@@ -271,8 +259,8 @@ public class LocationCollection {
 				+ ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", imageUrl=" + imageUrl
 				+ ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude=" + longitude + ", tagLine=" + tagLine + ", landmarkDetails="
 				+ landmarkDetails + ", locationEmailAddress=" + locationEmailAddress + ", specialization=" + specialization + ", streetAddress="
-				+ streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber + ", alternateNumber=" + alternateNumber + ", workingDays="
-				+ workingDays + ", workingSession=" + workingSession + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + "]";
+				+ streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber + ", alternateNumber=" + alternateNumber + ", WorkingSchedules="
+				+ WorkingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + "]";
 	}
 
 }
