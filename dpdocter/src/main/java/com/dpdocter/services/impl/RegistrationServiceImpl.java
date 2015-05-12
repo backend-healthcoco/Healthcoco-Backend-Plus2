@@ -501,7 +501,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 			/*generatedId = "P" + "-" + currentDay + currentMonth + currentYear + "-" + patientCount + 1;*/
 
-			generatedId = patientInitial + "-" + currentDay + currentMonth + currentYear + "-" + patientCounter + patientCount + 1;
+			generatedId = patientInitial + "-" + currentDay + currentMonth + currentYear + "-" + (patientCounter + patientCount + 1);
 
 		} catch (Exception e) {
 			e.printStackTrace();
