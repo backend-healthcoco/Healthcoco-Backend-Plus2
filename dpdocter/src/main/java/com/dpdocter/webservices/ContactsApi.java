@@ -3,6 +3,7 @@ package com.dpdocter.webservices;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -23,6 +24,7 @@ import com.dpdocter.request.ExportContactsRequest;
 import com.dpdocter.request.GetDoctorContactsRequest;
 import com.dpdocter.request.ImportContactsRequest;
 import com.dpdocter.services.ContactsService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -50,6 +52,15 @@ public class ContactsApi {
 		Response<DoctorContactsResponse> response = new Response<DoctorContactsResponse>();
 		response.setData(doctorContactsResponse);
 		return response;
+	}
+	
+	@Path(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_DOCTOR_SPECIFIC)
+	@GET
+	public void doctorContacts(@PathParam("doctorId") String doctorId) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id Cannot Be Empty");
+		}
+		
 	}
 
 	@Path(value = PathProxy.ContactsUrls.IMPORT_CONTACTS)
@@ -142,6 +153,8 @@ public class ContactsApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.ContactsUrls.GET_ALL_DOCTOR_SPECIFIC_GROUPS)
+	@GET
 	public Response<Group> getAllGroups(@PathParam("doctorId") String doctorId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id Cannot Be Empty");

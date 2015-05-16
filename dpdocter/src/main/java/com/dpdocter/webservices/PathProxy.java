@@ -35,6 +35,7 @@ public interface PathProxy {
 
 	public interface ContactsUrls {
 		public static final String DOCTOR_CONTACTS = "/doctorcontacts/get";
+		public static final String DOCTOR_CONTACTS_DOCTOR_SPECIFIC = "/doctorcontacts/get/{doctorId}";
 		public static final String BLOCK_CONTACT = "/doctorcontacts/block/{doctorId}/{patientId}";
 		public static final String ADD_GROUP = "/doctorcontacts/addgroup";
 		public static final String EDIT_GROUP = "/doctorcontacts/editgroup";

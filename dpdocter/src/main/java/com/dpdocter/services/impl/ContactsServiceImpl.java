@@ -43,6 +43,7 @@ import com.dpdocter.request.ImportContactsRequest;
 import com.dpdocter.request.SearchRequest;
 import com.dpdocter.services.ContactsService;
 import com.dpdocter.services.FileManager;
+import common.util.web.DPDoctorUtils;
 
 @Service
 public class ContactsServiceImpl implements ContactsService {
@@ -105,16 +106,46 @@ public class ContactsServiceImpl implements ContactsService {
 		}
 	}
 
+	public List<PatientCard> getDoctorContacts(String doctorId) {
+		try {
+			List<DoctorContactCollection> doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false);
+			if (doctorContactCollections == null) {
+				return null;
+			}
+			@SuppressWarnings("unchecked")
+			Collection<String> patientIds = CollectionUtils.collect(doctorContactCollections, new BeanToPropertyValueTransformer("contactId"));
+
+			List<PatientGroupCollection> patientGroupCollections = (List<PatientGroupCollection>) patientGroupRepository.findAll(patientIds);
+
+			@SuppressWarnings("unchecked")
+			List<String> groupIds = (List<String>) CollectionUtils.collect(patientGroupCollections, new BeanToPropertyValueTransformer("groupId"));
+
+			doctorContactCollections = filterContactsByGroup(groupIds, doctorContactCollections);
+
+			List<PatientCard> patientCards = getSpecifiedPatientCards(patientIds, doctorId);
+			return patientCards;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+
+	}
+
 	private List<PatientCard> getSpecifiedPatientCards(Collection<String> patientIds, String doctorId, String locationId, String hospitalId) throws Exception {
 		// getting patients from patient ids
 		Query queryForGettingPatientsFromPatientIds = new Query();
 		// queryForGettingPatientsFromPatientIds.addCriteria(Criteria.where("id").in(patientIds).andOperator(Criteria.where("doctorId").is(doctorId)).andOperator(Criteria.where("locationId").is(locationId)).andOperator(Criteria.where("hospitalId").is(hospitalId)));
-		queryForGettingPatientsFromPatientIds
-				.addCriteria(Criteria
-						.where("id")
-						.in(patientIds)
-						.andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
-								Criteria.where("hospitalId").is(hospitalId)));
+		if (!DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId) && patientIds != null && !patientIds.isEmpty()) {
+			queryForGettingPatientsFromPatientIds.addCriteria(Criteria
+					.where("id")
+					.in(patientIds)
+					.andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
+							Criteria.where("hospitalId").is(hospitalId)));
+		} else if (patientIds != null && !patientIds.isEmpty() && !DPDoctorUtils.anyStringEmpty(doctorId)) {
+			queryForGettingPatientsFromPatientIds.addCriteria(Criteria.where("id").in(patientIds).andOperator(Criteria.where("doctorId").is(doctorId)));
+		} else {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
 		List<PatientCollection> patientCollections = mongoTemplate.find(queryForGettingPatientsFromPatientIds, PatientCollection.class);
 		List<PatientCard> patientCards = new ArrayList<PatientCard>();
 		for (PatientCollection patientCollection : patientCollections) {
@@ -150,6 +181,19 @@ public class ContactsServiceImpl implements ContactsService {
 	private List<DoctorContactCollection> filterContactsByGroup(GetDoctorContactsRequest request, List<DoctorContactCollection> doctorContactCollections)
 			throws Exception {
 		Collection<String> patientIds = getPatientIdsForGroups(request.getGroups());
+		List<DoctorContactCollection> filteredDoctorContactCollection = new ArrayList<DoctorContactCollection>();
+		if (patientIds != null) {
+			for (DoctorContactCollection doctorContactCollection : doctorContactCollections) {
+				if (patientIds.contains(doctorContactCollection.getContactId().trim())) {
+					filteredDoctorContactCollection.add(doctorContactCollection);
+				}
+			}
+		}
+		return filteredDoctorContactCollection;
+	}
+
+	private List<DoctorContactCollection> filterContactsByGroup(List<String> groupIds, List<DoctorContactCollection> doctorContactCollections) throws Exception {
+		Collection<String> patientIds = getPatientIdsForGroups(groupIds);
 		List<DoctorContactCollection> filteredDoctorContactCollection = new ArrayList<DoctorContactCollection>();
 		if (patientIds != null) {
 			for (DoctorContactCollection doctorContactCollection : doctorContactCollections) {
