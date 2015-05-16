@@ -34,6 +34,7 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.request.LoginRequest;
 import com.dpdocter.services.LoginService;
+import common.util.web.LoginUtils;
 
 /**
  * @author veeraj
@@ -68,32 +69,28 @@ public class LoginServiceImpl implements LoginService {
 			/**
 			 * Check if user exist.
 			 */
-			// UserCollection userCollection =
-			// userRepository.findByUserNameAndPass(request.getUsername(),
-			// request.getPassword());
 			UserCollection userCollection = userRepository.findByPasswordAndUserNameIgnoreCase(request.getPassword(), request.getUsername());
 			if (userCollection == null) {
-				// userCollection =
-				// userRepository.findByEmailAddressAndPass(request.getUsername(),
-				// request.getPassword());
 				userCollection = userRepository.findByPasswordAndEmailAddressIgnoreCase(request.getPassword(), request.getUsername());
 				if (userCollection == null) {
 					throw new BusinessException(ServiceError.Unknown, "Invalid username and Password");
 				}
 
 			}
+			if (!userCollection.getIsVerified()) {
+				throw new BusinessException(ServiceError.NotAuthorized, "This user is not verified");
+			}
 			User user = new User();
 			BeanUtil.map(userCollection, user);
 			/**
-			 * Now fetch hospitals and locations for doctor,locationadmin and
-			 * hospitaladmin. For patient send user details.
+			 * Now fetch hospitals and locations for doctor, location admin and
+			 * hospital admin. For patient send user details.
 			 */
 			List<UserRoleCollection> userRoleCollections = userRoleRepository.findByUserId(userCollection.getId());
 			for (UserRoleCollection userRoleCollection : userRoleCollections) {
 				RoleCollection roleCollection = roleRepository.findOne(userRoleCollection.getRoleId());
 				if (roleCollection.getRole().equalsIgnoreCase(RoleEnum.PATIENT.getRole())
 						|| roleCollection.getRole().equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole())) {
-
 					response = new LoginResponse();
 					response.setUser(user);
 					response.setRole(roleCollection.getRole());
@@ -140,6 +137,42 @@ public class LoginServiceImpl implements LoginService {
 			throw new BusinessException(ServiceError.Unknown, "Error occured while login");
 		}
 		return response;
+	}
+
+	@Override
+	public Boolean verifyUser(String userId) {
+		UserCollection userCollection = null;
+		Boolean response = false;
+		try {
+			userCollection = userRepository.findOne(userId);
+			if (userCollection != null) {
+				userCollection.setIsVerified(true);
+				userRepository.save(userCollection);
+				response = true;
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "User Not Found For The Given User Id");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error While Verifying User");
+		}
+		return response;
+	}
+
+	@Override
+	public String otpGenerator(String mobileNumber) {
+		String OTP = null;
+		try {
+			OTP = LoginUtils.generateOTP();
+			// TODO also send OTP SMS to the specified mobile number, after SMS
+			// Gateway integration.
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error While Generating OTP");
+		}
+
+		return OTP;
+
 	}
 
 }

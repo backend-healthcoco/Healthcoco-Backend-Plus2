@@ -25,12 +25,14 @@ public interface ContactsService {
 
 	List<PatientCard> getDoctorsMostVisitedContacts(String doctorId, int size, int page);
 
-	int getcontactsTotalSize(GetDoctorContactsRequest request);
+	int getContactsTotalSize(GetDoctorContactsRequest request);
 
 	List<Group> getAllGroups(String doctorId, String locationId, String hospitalId);
 
 	Boolean importContacts(ImportContactsRequest request);
 
 	Boolean exportContacts(ExportContactsRequest request);
+
+	List<Group> getAllGroups(String doctorId);
 
 }

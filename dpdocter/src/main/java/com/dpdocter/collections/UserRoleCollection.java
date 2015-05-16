@@ -6,7 +6,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "user_role_cl")
 public class UserRoleCollection {
-
 	@Id
 	private String id;
 	@Field

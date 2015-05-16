@@ -10,6 +10,7 @@ import com.dpdocter.collections.GroupCollection;
 
 @Repository
 public interface GroupRepository extends MongoRepository<GroupCollection, String> {
+	@Query("{'doctorId': ?0}")
 	public List<GroupCollection> findByDoctorId(String doctorId);
 
 	@Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'isDeleted': ?3}")

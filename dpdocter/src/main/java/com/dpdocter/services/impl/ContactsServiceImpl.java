@@ -70,7 +70,7 @@ public class ContactsServiceImpl implements ContactsService {
 
 	@Autowired
 	private ImportContactsRequestRepository importContactsRequestRepository;
-	
+
 	@Autowired
 	private ExportContactsRequestRepository exportContactsRequestRepository;
 
@@ -119,33 +119,19 @@ public class ContactsServiceImpl implements ContactsService {
 		List<PatientCard> patientCards = new ArrayList<PatientCard>();
 		for (PatientCollection patientCollection : patientCollections) {
 			UserCollection userCollection = userRepository.findOne(patientCollection.getUserId());
+			List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getId());
+			@SuppressWarnings("unchecked")
+			Collection<String> groupIds = CollectionUtils.collect(patientGroupCollections, new BeanToPropertyValueTransformer("groupId"));
+			List<Group> groups = new ArrayList<Group>();
+			List<GroupCollection> groupCollections = (List<GroupCollection>) groupRepository.findAll(groupIds);
+			BeanUtil.map(groupCollections, groups);
 			PatientCard patientCard = new PatientCard();
 			BeanUtil.map(patientCollection, patientCard);
 			BeanUtil.map(userCollection, patientCard);
-			patientCard.setAge(String.valueOf(userCollection.getDob().getAge()));
+			patientCard.setGroups(groups);
+			patientCard.setAge(userCollection.getDob());
 			patientCards.add(patientCard);
 		}
-
-		/*	//getting usewrIds from patients
-			@SuppressWarnings("unchecked")
-			Collection<String> userIds =  CollectionUtils.collect(patientCollections, new BeanToPropertyValueTransformer("userId"));
-			//getting users from userids
-			Query queryForGettingUserFromUserIds = new Query();
-			queryForGettingUserFromUserIds.addCriteria(Criteria.where("id").in(userIds));
-			List<UserCollection> userCollections = mongoTemplate.find(queryForGettingUserFromUserIds, UserCollection.class);
-			List<PatientCard> patientCards = null;
-			if(userCollections != null){
-				patientCards = new ArrayList<PatientCard>();
-				for(UserCollection userCollection : userCollections){
-					//PatientAdmissionCollection patientAdmissionCollection = patientAdmissionRepository.findByUserId(userCollection.getId());
-					PatientCard patientCard = new PatientCard();
-					//BeanUtil.map(patientAdmissionCollection, patientCard);
-					BeanUtil.map(userCollection, patientCard);
-					
-					patientCards.add(patientCard);
-				}
-			}*/
-
 		return patientCards;
 	}
 
@@ -177,12 +163,6 @@ public class ContactsServiceImpl implements ContactsService {
 
 	public void blockPatient(String patientId, String docterId) {
 		try {
-			/*Query query = new Query();
-			query.addCriteria(Criteria.where("docterId").is(docterId)).addCriteria(Criteria.where("contactId").is(patientId));
-			Update update = new Update();
-			update.set("isBlocked", true);
-			mongoTemplate.updateFirst(query, update, DoctorContactCollection.class);*/
-
 			DoctorContactCollection doctorContactCollection = doctorContactsRepository.findByDoctorIdAndContactId(docterId, patientId);
 			if (doctorContactCollection != null) {
 				doctorContactCollection.setIsBlocked(true);
@@ -243,7 +223,7 @@ public class ContactsServiceImpl implements ContactsService {
 			List<PatientAdmissionCollection> patientAdmissionCollections = patientAdmissionRepository.findDistinctPatientByDoctorId(doctorId, new PageRequest(
 					page, size));
 			if (patientAdmissionCollections != null) {
-				@SuppressWarnings("unchecked")
+				@SuppressWarnings({ "unchecked", "unused" })
 				Collection<String> patientIds = CollectionUtils.collect(patientAdmissionCollections, new BeanToPropertyValueTransformer("patientId"));
 				List<PatientCard> patientCards = null;// getSpecifiedPatientCards(patientIds,doctorId);
 				return patientCards;
@@ -264,7 +244,7 @@ public class ContactsServiceImpl implements ContactsService {
 		return null;
 	}
 
-	public int getcontactsTotalSize(GetDoctorContactsRequest request) {
+	public int getContactsTotalSize(GetDoctorContactsRequest request) {
 		try {
 			List<DoctorContactCollection> doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(), false);
 			if (doctorContactCollections == null) {
@@ -339,6 +319,26 @@ public class ContactsServiceImpl implements ContactsService {
 			throw new BusinessException(ServiceError.Unknown, "Error Exporting Contact");
 		}
 		return response;
+	}
+
+	@Override
+	public List<Group> getAllGroups(String doctorId) {
+		List<Group> groups = null;
+		try {
+			List<GroupCollection> groupCollections = groupRepository.findByDoctorId(doctorId);
+			if (groupCollections != null) {
+				groups = new ArrayList<Group>();
+				for (GroupCollection groupCollection : groupCollections) {
+					Group group = new Group();
+					ReflectionUtil.copy(group, groupCollection);
+					groups.add(group);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error While Retrieving Groups");
+		}
+		return null;
 	}
 
 }

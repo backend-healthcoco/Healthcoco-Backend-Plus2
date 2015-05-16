@@ -51,6 +51,9 @@ public class UserCollection {
 	@Field
 	private Boolean isTempPassword = true;
 
+	@Field
+	private Boolean isVerified = false;
+
 	public UserCollection() {
 		super();
 	}
@@ -175,11 +178,19 @@ public class UserCollection {
 		this.isTempPassword = isTempPassword;
 	}
 
+	public Boolean getIsVerified() {
+		return isVerified;
+	}
+
+	public void setIsVerified(Boolean isVerified) {
+		this.isVerified = isVerified;
+	}
+
 	@Override
 	public String toString() {
 		return "UserCollection [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", userName=" + userName
 				+ ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl="
-				+ imageUrl + ", dob=" + dob + ", isActive=" + isActive + ", tempPassword=" + isTempPassword + "]";
+				+ imageUrl + ", dob=" + dob + ", isActive=" + isActive + ", isTempPassword=" + isTempPassword + ", isVerified=" + isVerified + "]";
 	}
 
 }

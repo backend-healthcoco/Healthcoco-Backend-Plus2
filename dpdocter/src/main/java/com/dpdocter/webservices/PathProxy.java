@@ -25,6 +25,10 @@ public interface PathProxy {
 	public interface LoginUrls {
 		public static final String LOGIN_USER = "/user";
 
+		public static final String VERIFY_USER = "/user/verifyUser/{userId}";
+
+		public static final String OTP_GENERATOR = "/user/otpGenerator/{mobileNumber}";
+
 	}
 
 	public static final String CONTACTS_BASE_URL = BASE_URL + "/contacts";
@@ -35,6 +39,7 @@ public interface PathProxy {
 		public static final String ADD_GROUP = "/doctorcontacts/addgroup";
 		public static final String EDIT_GROUP = "/doctorcontacts/editgroup";
 		public static final String GET_ALL_GROUPS = "/doctorcontacts/getallgroups/{doctorId}/{locationId}/{hospitalId}";
+		public static final String GET_ALL_DOCTOR_SPECIFIC_GROUPS = "doctorcontacts/getallgroups/{doctorId}";
 		public static final String DELETE_GROUP = "/doctorcontacts/deletegroup/{groupId}";
 		public static final String TOTAL_COUNT = "/doctorcontacts/totalcount";
 

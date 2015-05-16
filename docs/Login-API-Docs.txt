@@ -1,0 +1,15 @@
+﻿-http://localhost:8080/dpdocter/api/v1/login/user/otpGenerator/9021703700
+
+Request - http://localhost:8080/dpdocter/api/v1/login/user/otpGenerator/{mobileNumber}
+
+Response - {
+  "dataList": null,
+  "data": "14379"
+}
+-http://localhost:8080/dpdocter/api/v1/login/user/verifyUser/552427e2426e8f9f954a64fa
+Request - http://localhost:8080/dpdocter/api/v1/login/user/verifyUser/{userId}
+Response - {
+  "dataList": null,
+  "data": true
+}
+

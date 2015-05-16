@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 public class PatientCard {
 	private String id;
 	private String firstName;
@@ -13,9 +15,10 @@ public class PatientCard {
 	private String gender;
 	private String mobileNumber;
 	private String secPhoneNumber;
-	private String age;
+	private DOB age;
 	private int count;
 	private Long dateOfVisit;
+	private List<Group> groups;
 
 	public String getId() {
 		return id;
@@ -113,11 +116,11 @@ public class PatientCard {
 		this.secPhoneNumber = secPhoneNumber;
 	}
 
-	public String getAge() {
+	public DOB getAge() {
 		return age;
 	}
 
-	public void setAge(String age) {
+	public void setAge(DOB age) {
 		this.age = age;
 	}
 
@@ -137,12 +140,20 @@ public class PatientCard {
 		this.dateOfVisit = dateOfVisit;
 	}
 
+	public List<Group> getGroups() {
+		return groups;
+	}
+
+	public void setGroups(List<Group> groups) {
+		this.groups = groups;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientCard [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", userName=" + userName
 				+ ", emailAddress=" + emailAddress + ", imageUrl=" + imageUrl + ", bloodGroup=" + bloodGroup + ", PID=" + PID + ", gender=" + gender
 				+ ", mobileNumber=" + mobileNumber + ", secPhoneNumber=" + secPhoneNumber + ", age=" + age + ", count=" + count + ", dateOfVisit="
-				+ dateOfVisit + "]";
+				+ dateOfVisit + ", groups=" + groups + "]";
 	}
 
 }

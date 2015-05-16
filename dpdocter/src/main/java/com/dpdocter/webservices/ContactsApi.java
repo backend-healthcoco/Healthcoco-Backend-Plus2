@@ -23,6 +23,7 @@ import com.dpdocter.request.ExportContactsRequest;
 import com.dpdocter.request.GetDoctorContactsRequest;
 import com.dpdocter.request.ImportContactsRequest;
 import com.dpdocter.services.ContactsService;
+import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
 /**
@@ -40,9 +41,9 @@ public class ContactsApi {
 
 	@Path(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS)
 	@POST
-	public Response<DoctorContactsResponse> docterContacts(GetDoctorContactsRequest request) {
+	public Response<DoctorContactsResponse> doctorContacts(GetDoctorContactsRequest request) {
 		List<PatientCard> patientCards = contactsService.getDoctorContacts(request);
-		int ttlCount = contactsService.getcontactsTotalSize(request);
+		int ttlCount = contactsService.getContactsTotalSize(request);
 		DoctorContactsResponse doctorContactsResponse = new DoctorContactsResponse();
 		doctorContactsResponse.setPatientCards(patientCards);
 		doctorContactsResponse.setTotalSize(ttlCount);
@@ -113,8 +114,8 @@ public class ContactsApi {
 
 	@Path(value = PathProxy.ContactsUrls.TOTAL_COUNT)
 	@POST
-	public Response<Integer> docterContactsCount(GetDoctorContactsRequest request) {
-		int ttlCount = contactsService.getcontactsTotalSize(request);
+	public Response<Integer> doctorContactsCount(GetDoctorContactsRequest request) {
+		int ttlCount = contactsService.getContactsTotalSize(request);
 		Response<Integer> response = new Response<Integer>();
 		response.setData(ttlCount);
 		return response;
@@ -132,11 +133,20 @@ public class ContactsApi {
 				List<String> groupList = new ArrayList<String>();
 				groupList.add(group.getId());
 				getDoctorContactsRequest.setGroups(groupList);
-				int ttlCount = contactsService.getcontactsTotalSize(getDoctorContactsRequest);
+				int ttlCount = contactsService.getContactsTotalSize(getDoctorContactsRequest);
 				group.setCount(ttlCount);
 			}
 		}
+		Response<Group> response = new Response<Group>();
+		response.setDataList(groups);
+		return response;
+	}
 
+	public Response<Group> getAllGroups(@PathParam("doctorId") String doctorId) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id Cannot Be Empty");
+		}
+		List<Group> groups = contactsService.getAllGroups(doctorId);
 		Response<Group> response = new Response<Group>();
 		response.setDataList(groups);
 		return response;
