@@ -35,4 +35,6 @@ public interface ContactsService {
 
 	List<Group> getAllGroups(String doctorId);
 
+	List<PatientCard> getDoctorContacts(String doctorId);
+
 }

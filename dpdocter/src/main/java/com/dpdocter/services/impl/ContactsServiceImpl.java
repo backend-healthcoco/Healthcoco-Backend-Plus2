@@ -115,14 +115,15 @@ public class ContactsServiceImpl implements ContactsService {
 			@SuppressWarnings("unchecked")
 			Collection<String> patientIds = CollectionUtils.collect(doctorContactCollections, new BeanToPropertyValueTransformer("contactId"));
 
-			List<PatientGroupCollection> patientGroupCollections = (List<PatientGroupCollection>) patientGroupRepository.findAll(patientIds);
+			List<PatientGroupCollection> patientGroupCollections = (List<PatientGroupCollection>) patientGroupRepository
+					.findByPatientId((List<String>) patientIds);
 
 			@SuppressWarnings("unchecked")
 			List<String> groupIds = (List<String>) CollectionUtils.collect(patientGroupCollections, new BeanToPropertyValueTransformer("groupId"));
 
 			doctorContactCollections = filterContactsByGroup(groupIds, doctorContactCollections);
 
-			List<PatientCard> patientCards = getSpecifiedPatientCards(patientIds, doctorId);
+			List<PatientCard> patientCards = getSpecifiedPatientCards(patientIds, doctorId, null, null);
 			return patientCards;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -374,7 +375,7 @@ public class ContactsServiceImpl implements ContactsService {
 				groups = new ArrayList<Group>();
 				for (GroupCollection groupCollection : groupCollections) {
 					Group group = new Group();
-					ReflectionUtil.copy(group, groupCollection);
+					BeanUtil.map(groupCollection, group);
 					groups.add(group);
 				}
 			}
@@ -382,7 +383,7 @@ public class ContactsServiceImpl implements ContactsService {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error While Retrieving Groups");
 		}
-		return null;
+		return groups;
 	}
 
 }

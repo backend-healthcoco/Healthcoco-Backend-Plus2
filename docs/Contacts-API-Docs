@@ -41,11 +41,110 @@ Request - {
     "specialComments": "Test Special Comments"
 }
 
-
 Response - {
     "data": true,
     "dataList": null
 }
+
+-http://localhost:8080/dpdocter/api/v1/contacts/doctorcontacts/getallgroups/D12345
+
+Request - http://localhost:8080/dpdocter/api/v1/contacts/doctorcontacts/getallgroups/{doctorId}
+
+Response - {
+  "dataList": [
+    {
+      "doctorId": "D12345",
+      "hospitalId": "H12345",
+      "locationId": "L12345",
+      "name": "Test Group",
+      "id": "554a6f26798b1e76e6e8fe3f",
+      "description": "Test Description"
+    }
+  ],
+  "data": null
+}
+
+-http://localhost:8080/dpdocter/api/v1/contacts/doctorcontacts/get/554a8e53798b1e76e6e8fe44
+
+Request - http://localhost:8080/dpdocter/api/v1/contacts/doctorcontacts/get/{doctorId}
+
+Response - 
+
+{
+  "dataList": null,
+  "data": {
+    "patientCards": [
+      {
+        "gender": "Male",
+        "bloodGroup": "B+",
+        "firstName": "XYZ",
+        "middleName": null,
+        "lastName": null,
+        "emailAddress": "abc@example.com",
+        "mobileNumber": null,
+        "dateOfVisit": null,
+        "secPhoneNumber": null,
+        "imageUrl": null,
+        "age": {
+          "age": 26,
+          "days": 1,
+          "years": 26,
+          "months": 1
+        },
+        "pid": null,
+        "count": 0,
+        "id": "5552696727366543272a5fdc",
+        "groups": [
+          {
+            "deleted": true,
+            "doctorId": "D12345",
+            "hospitalId": "H12345",
+            "locationId": "L12345",
+            "description": "Test Description",
+            "name": "Test Group",
+            "id": "554a6f26798b1e76e6e8fe3f"
+          }
+        ],
+        "userName": "nullXY"
+      },
+      {
+        "gender": "male",
+        "bloodGroup": "B+",
+        "firstName": "veeraj",
+        "middleName": "",
+        "lastName": "bhokre",
+        "emailAddress": "veeraj@gmail.com",
+        "mobileNumber": "0123456789",
+        "dateOfVisit": null,
+        "secPhoneNumber": null,
+        "imageUrl": "http://localhost:8080/resource-data//home/isank/hacks/java/jee-spring/doctor-project-git/data/test.jpg",
+        "age": {
+          "age": 26,
+          "days": 30,
+          "years": 1988,
+          "months": 6
+        },
+        "pid": null,
+        "count": 0,
+        "id": "552427e2426e8f9f954a64fa",
+        "groups": [
+          {
+            "deleted": true,
+            "doctorId": "D12345",
+            "hospitalId": "H12345",
+            "locationId": "L12345",
+            "description": "Test Description",
+            "name": "Test Group",
+            "id": "554a6f26798b1e76e6e8fe3f"
+          }
+        ],
+        "userName": "veeraj1"
+      }
+    ],
+    "totalSize": 2
+  }
+}
+
 
 
 
