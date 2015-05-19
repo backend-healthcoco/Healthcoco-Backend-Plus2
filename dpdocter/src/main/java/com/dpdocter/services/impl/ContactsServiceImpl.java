@@ -115,13 +115,13 @@ public class ContactsServiceImpl implements ContactsService {
 			@SuppressWarnings("unchecked")
 			Collection<String> patientIds = CollectionUtils.collect(doctorContactCollections, new BeanToPropertyValueTransformer("contactId"));
 
-			List<PatientGroupCollection> patientGroupCollections = (List<PatientGroupCollection>) patientGroupRepository
-					.findByPatientId((List<String>) patientIds);
+		/*	List<PatientGroupCollection> patientGroupCollections = (List<PatientGroupCollection>) patientGroupRepository
+					.findByPatientId((List<String>) patientIds);*/
 
-			@SuppressWarnings("unchecked")
+			/*@SuppressWarnings("unchecked")
 			List<String> groupIds = (List<String>) CollectionUtils.collect(patientGroupCollections, new BeanToPropertyValueTransformer("groupId"));
 
-			doctorContactCollections = filterContactsByGroup(groupIds, doctorContactCollections);
+			doctorContactCollections = filterContactsByGroup(groupIds, doctorContactCollections);*/
 
 			List<PatientCard> patientCards = getSpecifiedPatientCards(patientIds, doctorId, null, null);
 			return patientCards;
@@ -161,7 +161,7 @@ public class ContactsServiceImpl implements ContactsService {
 			BeanUtil.map(patientCollection, patientCard);
 			BeanUtil.map(userCollection, patientCard);
 			patientCard.setGroups(groups);
-			patientCard.setAge(userCollection.getDob());
+			patientCard.setDob(userCollection.getDob());
 			patientCards.add(patientCard);
 		}
 		return patientCards;

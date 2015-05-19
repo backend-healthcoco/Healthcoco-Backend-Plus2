@@ -136,6 +136,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				clinicalNote.setDoctorId(clinicalNotesCollection.getDoctorId());
 				clinicalNote.setHospitalId(clinicalNotesCollection.getHospitalId());
 				clinicalNote.setLocationId(clinicalNotesCollection.getLocationId());
+				clinicalNote.setId(id);
 				@SuppressWarnings("unchecked")
 				List<ComplaintCollection> complaintCollections = IteratorUtils.toList(complaintRepository.findAll(clinicalNotesCollection.getComplaints())
 						.iterator());
