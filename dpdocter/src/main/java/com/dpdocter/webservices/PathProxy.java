@@ -35,12 +35,15 @@ public interface PathProxy {
 
 	public interface ContactsUrls {
 		public static final String DOCTOR_CONTACTS = "/doctorcontacts/get";
-		public static final String DOCTOR_CONTACTS_DOCTOR_SPECIFIC = "/doctorcontacts/get/{doctorId}{createdTime : (/createdTime)?}";
+		public static final String DOCTOR_CONTACTS_DOCTOR_SPECIFIC = "/doctorcontacts/get/{doctorId}";
+		public static final String DOCTOR_CONTACTS_DOCTOR_SPECIFIC_CREATED_TIME = "/doctorcontacts/get/{doctorId}/{createdTime}";
 		public static final String BLOCK_CONTACT = "/doctorcontacts/block/{doctorId}/{patientId}";
 		public static final String ADD_GROUP = "/doctorcontacts/addgroup";
 		public static final String EDIT_GROUP = "/doctorcontacts/editgroup";
-		public static final String GET_ALL_GROUPS = "/doctorcontacts/getallgroups/{doctorId}/{locationId}/{hospitalId}{createdTime : (/createdTime)?}";
-		public static final String GET_ALL_DOCTOR_SPECIFIC_GROUPS = "doctorcontacts/getallgroups/{doctorId}{createdTime : (/createdTime)?}";
+		public static final String GET_ALL_GROUPS = "/doctorcontacts/getallgroups/{doctorId}/{locationId}/{hospitalId}";
+		public static final String GET_ALL_GROUPS_CREATED_TIME = "/doctorcontacts/getallgroups/{doctorId}/{locationId}/{hospitalId}/{createdTime}";
+		public static final String GET_ALL_DOCTOR_SPECIFIC_GROUPS = "doctorcontacts/getallgroups/{doctorId}";
+		public static final String GET_ALL_DOCTOR_SPECIFIC_GROUPS_CREATED_TIME = "doctorcontacts/getallgroups/{doctorId}/{createdTime}";
 		public static final String DELETE_GROUP = "/doctorcontacts/deletegroup/{groupId}";
 		public static final String TOTAL_COUNT = "/doctorcontacts/totalcount";
 

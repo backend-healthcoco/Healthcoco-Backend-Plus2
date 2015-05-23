@@ -54,7 +54,17 @@ public class ContactsApi {
 
 	@Path(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_DOCTOR_SPECIFIC)
 	@GET
-	public Response<DoctorContactsResponse> doctorContacts(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
+	public Response<DoctorContactsResponse> getDoctorContacts(@PathParam("doctorId") String doctorId) {
+		return doctorContacts(doctorId, null);
+	}
+
+	@Path(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_DOCTOR_SPECIFIC_CREATED_TIME)
+	@GET
+	public Response<DoctorContactsResponse> getDoctorContacts(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
+		return doctorContacts(doctorId, createdTime);
+	}
+
+	private Response<DoctorContactsResponse> doctorContacts(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id Cannot Be Empty");
 		}
@@ -140,7 +150,18 @@ public class ContactsApi {
 	@Path(value = PathProxy.ContactsUrls.GET_ALL_GROUPS)
 	@GET
 	public Response<Group> getAllGroups(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+			@PathParam("hospitalId") String hospitalId) {
+		return getGroups(doctorId, locationId, hospitalId, null);
+	}
+
+	@Path(value = PathProxy.ContactsUrls.GET_ALL_GROUPS_CREATED_TIME)
+	@GET
+	public Response<Group> getAllGroups(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
 			@PathParam("hospitalId") String hospitalId, @PathParam("createdTime") String createdTime) {
+		return getGroups(doctorId, locationId, hospitalId, createdTime);
+	}
+
+	private Response<Group> getGroups(String doctorId, String locationId, String hospitalId, String createdTime) {
 		List<Group> groups = contactsService.getAllGroups(doctorId, locationId, hospitalId, createdTime);
 		if (groups != null) {
 			for (Group group : groups) {
@@ -160,7 +181,17 @@ public class ContactsApi {
 
 	@Path(value = PathProxy.ContactsUrls.GET_ALL_DOCTOR_SPECIFIC_GROUPS)
 	@GET
+	public Response<Group> getAllGroups(@PathParam("doctorId") String doctorId) {
+		return getGroups(doctorId, null);
+	}
+
+	@Path(value = PathProxy.ContactsUrls.GET_ALL_DOCTOR_SPECIFIC_GROUPS_CREATED_TIME)
+	@GET
 	public Response<Group> getAllGroups(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
+		return getGroups(doctorId, createdTime);
+	}
+
+	private Response<Group> getGroups(String doctorId, String createdTime) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id Cannot Be Empty");
 		}
