@@ -54,11 +54,11 @@ public class ContactsApi {
 
 	@Path(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_DOCTOR_SPECIFIC)
 	@GET
-	public Response<DoctorContactsResponse> doctorContacts(@PathParam("doctorId") String doctorId) {
+	public Response<DoctorContactsResponse> doctorContacts(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id Cannot Be Empty");
 		}
-		List<PatientCard> patientCards = contactsService.getDoctorContacts(doctorId);
+		List<PatientCard> patientCards = contactsService.getDoctorContacts(doctorId, createdTime);
 		int ttlCount = patientCards.size();
 		DoctorContactsResponse doctorContactsResponse = new DoctorContactsResponse();
 		doctorContactsResponse.setPatientCards(patientCards);
@@ -140,8 +140,8 @@ public class ContactsApi {
 	@Path(value = PathProxy.ContactsUrls.GET_ALL_GROUPS)
 	@GET
 	public Response<Group> getAllGroups(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
-			@PathParam("hospitalId") String hospitalId) {
-		List<Group> groups = contactsService.getAllGroups(doctorId, locationId, hospitalId);
+			@PathParam("hospitalId") String hospitalId, @PathParam("createdTime") String createdTime) {
+		List<Group> groups = contactsService.getAllGroups(doctorId, locationId, hospitalId, createdTime);
 		if (groups != null) {
 			for (Group group : groups) {
 				GetDoctorContactsRequest getDoctorContactsRequest = new GetDoctorContactsRequest();
@@ -160,11 +160,11 @@ public class ContactsApi {
 
 	@Path(value = PathProxy.ContactsUrls.GET_ALL_DOCTOR_SPECIFIC_GROUPS)
 	@GET
-	public Response<Group> getAllGroups(@PathParam("doctorId") String doctorId) {
+	public Response<Group> getAllGroups(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id Cannot Be Empty");
 		}
-		List<Group> groups = contactsService.getAllGroups(doctorId);
+		List<Group> groups = contactsService.getAllGroups(doctorId, createdTime);
 		Response<Group> response = new Response<Group>();
 		response.setDataList(groups);
 		return response;

@@ -27,14 +27,14 @@ public interface ContactsService {
 
 	int getContactsTotalSize(GetDoctorContactsRequest request);
 
-	List<Group> getAllGroups(String doctorId, String locationId, String hospitalId);
+	List<Group> getAllGroups(String doctorId, String locationId, String hospitalId, String createdTime);
 
 	Boolean importContacts(ImportContactsRequest request);
 
 	Boolean exportContacts(ExportContactsRequest request);
 
-	List<Group> getAllGroups(String doctorId);
+	List<Group> getAllGroups(String doctorId, String createdTime);
 
-	List<PatientCard> getDoctorContacts(String doctorId);
+	List<PatientCard> getDoctorContacts(String doctorId, String createdTime);
 
 }

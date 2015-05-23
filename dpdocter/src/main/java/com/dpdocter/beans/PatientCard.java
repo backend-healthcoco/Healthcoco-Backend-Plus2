@@ -19,6 +19,9 @@ public class PatientCard {
 	private int count;
 	private Long dateOfVisit;
 	private List<Group> groups;
+	private String doctorId;
+	private String locationId;
+	private String hospitalId;
 
 	public String getId() {
 		return id;
@@ -116,8 +119,6 @@ public class PatientCard {
 		this.secPhoneNumber = secPhoneNumber;
 	}
 
-
-
 	public DOB getDob() {
 		return dob;
 	}
@@ -150,18 +151,36 @@ public class PatientCard {
 		this.groups = groups;
 	}
 
-	@Override
-	public String toString() {
-		return "PatientCard [id=" + id + ", firstName=" + firstName
-				+ ", lastName=" + lastName + ", middleName=" + middleName
-				+ ", userName=" + userName + ", emailAddress=" + emailAddress
-				+ ", imageUrl=" + imageUrl + ", bloodGroup=" + bloodGroup
-				+ ", PID=" + PID + ", gender=" + gender + ", mobileNumber="
-				+ mobileNumber + ", secPhoneNumber=" + secPhoneNumber
-				+ ", dob=" + dob + ", count=" + count + ", dateOfVisit="
-				+ dateOfVisit + ", groups=" + groups + "]";
+	public String getDoctorId() {
+		return doctorId;
 	}
 
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientCard [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", userName=" + userName
+				+ ", emailAddress=" + emailAddress + ", imageUrl=" + imageUrl + ", bloodGroup=" + bloodGroup + ", PID=" + PID + ", gender=" + gender
+				+ ", mobileNumber=" + mobileNumber + ", secPhoneNumber=" + secPhoneNumber + ", dob=" + dob + ", count=" + count + ", dateOfVisit="
+				+ dateOfVisit + ", groups=" + groups + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
+	}
 
 }

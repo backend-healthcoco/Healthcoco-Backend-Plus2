@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -196,6 +197,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			// add into doctor contact
 			if (request.getDoctorId() != null) {
 				DoctorContactCollection doctorContactCollection = new DoctorContactCollection();
+				doctorContactCollection.setCreatedTime(new Date());
 				doctorContactCollection.setDoctorId(request.getDoctorId());
 				doctorContactCollection.setContactId(patientCollection.getId());
 				doctorContactsRepository.save(doctorContactCollection);
@@ -290,6 +292,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				doctorContactCollection = doctorContactsRepository.findByDoctorIdAndContactId(request.getDoctorId(), patientCollection.getId());
 				if (doctorContactCollection == null) {
 					doctorContactCollection = new DoctorContactCollection();
+					doctorContactCollection.setCreatedTime(new Date());
 					doctorContactCollection.setDoctorId(request.getDoctorId());
 					doctorContactCollection.setContactId(patientCollection.getId());
 					doctorContactsRepository.save(doctorContactCollection);
@@ -494,7 +497,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				patientCount = patientCollections.size();
 			}
 
-			DoctorCollection doctor = doctorRepository.findOne(doctorId);
+			DoctorCollection doctor = doctorRepository.findByUserId(doctorId);
 
 			String patientInitial = doctor.getPatientInitial();
 			int patientCounter = doctor.getPatientCounter();
@@ -515,7 +518,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		Boolean response = false;
 		DoctorCollection doctor = null;
 		try {
-			doctor = doctorRepository.findOne(doctorId);
+			doctor = doctorRepository.findByUserId(doctorId);
 			if (doctor != null) {
 				doctor.setPatientInitial(patientInitial);
 				doctor.setPatientCounter(patientCounter);

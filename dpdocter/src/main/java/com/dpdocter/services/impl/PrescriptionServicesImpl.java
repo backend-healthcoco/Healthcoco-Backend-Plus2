@@ -290,12 +290,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	public List<Prescription> getPrescriptions(String doctorId, String hospitalId, String locationId, String patientId, String createdTime,
-			boolean isOTPVarified) {
+			boolean isOTPVerified) {
 		List<PrescriptionCollection> prescriptionCollections = null;
 		List<Prescription> prescriptions = null;
 		try {
 			if (StringUtils.isEmpty(createdTime)) {
-				if (!isOTPVarified) {
+				if (!isOTPVerified) {
 					prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId, false, new Sort(
 							Sort.Direction.DESC, "createdTime"));
 				} else {
@@ -303,7 +303,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				}
 			} else {
 				long createdTimestamp = Long.parseLong(createdTime);
-				if (!isOTPVarified) {
+				if (!isOTPVerified) {
 					prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId, new Date(createdTimestamp),
 							false, new Sort(Sort.Direction.DESC, "createdTime"));
 				} else {
