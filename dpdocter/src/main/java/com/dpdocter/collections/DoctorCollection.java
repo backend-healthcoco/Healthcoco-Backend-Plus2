@@ -24,23 +24,7 @@ public class DoctorCollection {
 	@Field
 	private int patientCounter = 0;
 
-	/*@Field
-	private String firstName;
-	
-	@Field
-	private String lastName;
-	
-	@Field
-	private String middleName;
-	
-	@Field
-	private String emailAddress;
-	
-	@Field
-	private String imageUrl;
-	
-	@Field
-	private DOB dob;*/
+
 
 	public String getId() {
 		return id;

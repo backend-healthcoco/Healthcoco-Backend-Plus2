@@ -156,7 +156,7 @@ public class ContactsServiceImpl implements ContactsService {
 		} else if (patientIds != null && !patientIds.isEmpty() && !DPDoctorUtils.anyStringEmpty(doctorId)) {
 			queryForGettingPatientsFromPatientIds.addCriteria(Criteria.where("id").in(patientIds).andOperator(Criteria.where("doctorId").is(doctorId)));
 		} else {
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+			return new ArrayList<PatientCard>();
 		}
 		List<PatientCollection> patientCollections = mongoTemplate.find(queryForGettingPatientsFromPatientIds, PatientCollection.class);
 		List<PatientCard> patientCards = new ArrayList<PatientCard>();
