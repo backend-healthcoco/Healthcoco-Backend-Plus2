@@ -1,8 +1,16 @@
 package com.dpdocter.collections;
 
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+
+import com.dpdocter.beans.Achievement;
+import com.dpdocter.beans.DoctorExperience;
+import com.dpdocter.beans.DoctorExperienceDetail;
+import com.dpdocter.beans.DoctorRegistrationDetail;
+import com.dpdocter.beans.Education;
 
 @Document(collection = "docter_cl")
 public class DoctorCollection {
@@ -10,7 +18,10 @@ public class DoctorCollection {
 	private String id;
 
 	@Field
-	private String secMobile;
+	private List<String> additionalNumbers;
+
+	@Field
+	private List<String> otherEmailAddresses;
 
 	@Field
 	private String specialization;
@@ -24,7 +35,26 @@ public class DoctorCollection {
 	@Field
 	private int patientCounter = 0;
 
+	@Field
+	private DoctorExperience experience;
 
+	@Field
+	private List<Education> education;
+
+	@Field
+	private List<String> specialities;
+
+	@Field
+	private List<Achievement> achievements;
+
+	@Field
+	private String professionalStatement;
+
+	@Field
+	private List<DoctorRegistrationDetail> registrationDetails;
+
+	@Field
+	private List<DoctorExperienceDetail> experienceDetails;
 
 	public String getId() {
 		return id;
@@ -34,12 +64,20 @@ public class DoctorCollection {
 		this.id = id;
 	}
 
-	public String getSecMobile() {
-		return secMobile;
+	public List<String> getAdditionalNumbers() {
+		return additionalNumbers;
 	}
 
-	public void setSecMobile(String secMobile) {
-		this.secMobile = secMobile;
+	public void setAdditionalNumbers(List<String> additionalNumbers) {
+		this.additionalNumbers = additionalNumbers;
+	}
+
+	public List<String> getOtherEmailAddresses() {
+		return otherEmailAddresses;
+	}
+
+	public void setOtherEmailAddresses(List<String> otherEmailAddresses) {
+		this.otherEmailAddresses = otherEmailAddresses;
 	}
 
 	public String getSpecialization() {
@@ -74,10 +112,68 @@ public class DoctorCollection {
 		this.patientCounter = patientCounter;
 	}
 
+	public DoctorExperience getExperience() {
+		return experience;
+	}
+
+	public void setExperience(DoctorExperience experience) {
+		this.experience = experience;
+	}
+
+	public List<Education> getEducation() {
+		return education;
+	}
+
+	public void setEducation(List<Education> education) {
+		this.education = education;
+	}
+
+	public List<String> getSpecialities() {
+		return specialities;
+	}
+
+	public void setSpecialities(List<String> specialities) {
+		this.specialities = specialities;
+	}
+
+	public List<Achievement> getAchievements() {
+		return achievements;
+	}
+
+	public void setAchievements(List<Achievement> achievements) {
+		this.achievements = achievements;
+	}
+
+	public String getProfessionalStatement() {
+		return professionalStatement;
+	}
+
+	public void setProfessionalStatement(String professionalStatement) {
+		this.professionalStatement = professionalStatement;
+	}
+
+	public List<DoctorRegistrationDetail> getRegistrationDetails() {
+		return registrationDetails;
+	}
+
+	public void setRegistrationDetails(List<DoctorRegistrationDetail> registrationDetails) {
+		this.registrationDetails = registrationDetails;
+	}
+
+	public List<DoctorExperienceDetail> getExperienceDetails() {
+		return experienceDetails;
+	}
+
+	public void setExperienceDetails(List<DoctorExperienceDetail> experienceDetails) {
+		this.experienceDetails = experienceDetails;
+	}
+
 	@Override
 	public String toString() {
-		return "DoctorCollection [id=" + id + ", secMobile=" + secMobile + ", specialization=" + specialization + ", userId=" + userId + ", patientInitial="
-				+ patientInitial + ", patientCounter=" + patientCounter + "]";
+		return "DoctorCollection [id=" + id + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses=" + otherEmailAddresses + ", specialization="
+				+ specialization + ", userId=" + userId + ", patientInitial=" + patientInitial + ", patientCounter=" + patientCounter + ", experience="
+				+ experience + ", education=" + education + ", specialities=" + specialities + ", achievements=" + achievements + ", professionalStatement="
+				+ professionalStatement + ", registrationDetails=" + registrationDetails + ", experienceDetails=" + experienceDetails + "]";
 	}
 
 }

@@ -14,6 +14,9 @@ public class UserCollection {
 	private String id;
 
 	@Field
+	private String title;
+
+	@Field
 	private String firstName;
 
 	@Field
@@ -28,13 +31,11 @@ public class UserCollection {
 	@Field
 	private String password;
 
+	@Field
 	private String emailAddress;
 
 	@Field
 	private String mobileNumber;
-
-	/*@Field
-	private String secPhoneNumber;*/
 
 	@Field
 	private String gender;
@@ -54,32 +55,20 @@ public class UserCollection {
 	@Field
 	private Boolean isVerified = false;
 
-	public UserCollection() {
-		super();
-	}
-
-	public UserCollection(String id, String firstName, String lastName, String middleName, String userName, String password, String emailAddress,
-			String mobileNumber, String gender, String imageUrl, DOB dob, Boolean isActive) {
-		this.id = id;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.middleName = middleName;
-		this.userName = userName;
-		this.password = password;
-		this.emailAddress = emailAddress;
-		this.mobileNumber = mobileNumber;
-		this.gender = gender;
-		this.imageUrl = imageUrl;
-		this.dob = dob;
-		this.isActive = isActive;
-	}
-
 	public String getId() {
 		return id;
 	}
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	public String getUserName() {
@@ -188,9 +177,10 @@ public class UserCollection {
 
 	@Override
 	public String toString() {
-		return "UserCollection [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", userName=" + userName
-				+ ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl="
-				+ imageUrl + ", dob=" + dob + ", isActive=" + isActive + ", isTempPassword=" + isTempPassword + ", isVerified=" + isVerified + "]";
+		return "UserCollection [id=" + id + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName
+				+ ", userName=" + userName + ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender="
+				+ gender + ", imageUrl=" + imageUrl + ", dob=" + dob + ", isActive=" + isActive + ", isTempPassword=" + isTempPassword + ", isVerified="
+				+ isVerified + "]";
 	}
 
 }

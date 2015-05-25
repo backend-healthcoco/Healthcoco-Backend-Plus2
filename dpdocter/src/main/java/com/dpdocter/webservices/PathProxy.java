@@ -178,4 +178,21 @@ public interface PathProxy {
 		public static final String GET_PATIENT_HISTORY_OTP_VERIFIED = "getPatientHistory/{patientId}/{doctorId}/{hospitalId}/{locationId}/{historyFilter}/{otpVerified}";
 	}
 
+	public static final String DOCTOR_PROFILE_URL = BASE_URL + "/doctorProfile";
+
+	public interface DoctorProfileUrls {
+		public static final String ADD_EDIT_NAME = "addEditName/{doctorId}/{title}/{fname}/{mname}/{lname}";
+		public static final String ADD_EDIT_EXPERIENCE = "addEditExperience/{doctorId}/{experience}";
+		public static final String ADD_EDIT_CONTACT = "addEditContact";
+		public static final String ADD_EDIT_EDUCATION = "addEditEducation";
+		public static final String ADD_EDIT_SPECIALITY = "addEditSpeciality";
+		public static final String ADD_EDIT_ACHIEVEMENT = "addAchievement";
+		public static final String ADD_EDIT_PROFESSIONAL_STATEMENT = "addEditProfessionalStatement/{doctorId}/{professionalStatement}";
+		public static final String ADD_EDIT_REGISTRATION_DETAIL = "addEditRegistrationDetail";
+		public static final String ADD_EDIT_EXPERIENCE_DETAIL = "addEditExperienceDetail";
+		public static final String ADD_EDIT_PROFILE_PICTURE = "addEditProfilePicture";
+
+		public static final String ADD_EDIT_MEDICAL_COUNCILS = "addEditMedicalCouncils";
+	}
+
 }

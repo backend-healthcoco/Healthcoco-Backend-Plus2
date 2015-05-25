@@ -11,7 +11,7 @@ public class Group {
 	private String doctorId;
 	private String locationId;
 	private String hospitalId;
-	private int count;
+	private int count = 0;
 
 	public String getId() {
 		return id;

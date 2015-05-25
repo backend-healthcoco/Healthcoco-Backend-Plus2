@@ -229,7 +229,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (request.getDiagrams() != null) {
 				List<String> diagramUrls = new ArrayList<String>();
 				List<String> diagramPaths = new ArrayList<String>();
-				;
 				for (FileDetails diagram : request.getDiagrams()) {
 					String path = request.getPatientId() + File.separator + "clinical-notes-diagrams";
 					// save image

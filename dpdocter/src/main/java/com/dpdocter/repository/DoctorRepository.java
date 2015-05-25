@@ -8,7 +8,7 @@ import com.dpdocter.collections.DoctorCollection;
 
 @Repository
 public interface DoctorRepository extends MongoRepository<DoctorCollection, String> {
-	
+
 	@Query("{'userId': ?0}")
 	DoctorCollection findByUserId(String doctorId);
 }
