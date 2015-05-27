@@ -4,8 +4,11 @@ import java.util.List;
 
 public class DoctorContactAddEditRequest {
 	private String doctorId;
+
 	private String mobileNumber;
+
 	private List<String> additionalNumbers;
+
 	private List<String> otherEmailAddresses;
 
 	public String getDoctorId() {

@@ -8,10 +8,15 @@ import java.util.List;
  */
 public class Hospital {
 	private String id;
+
 	private String hospitalName;
+
 	private String hospitalPhoneNumber;
+
 	private String hospitalImageUrl;
+
 	private String hospitalDescription;
+
 	private List<Location> locations = new ArrayList<Location>();
 
 	public String getId() {

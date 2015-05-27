@@ -9,24 +9,34 @@ public class RecordsCollection {
 
 	@Id
 	private String id;
+
 	@Field
 	private String recordsUrl;
+
 	@Field
 	private String recordsPath;
+
 	@Field
 	private String recordsLable;
+
 	@Field
 	private String description;
+
 	@Field
 	private String patientId;
+
 	@Field
 	private String doctorId;
+
 	@Field
 	private Long createdDate;
+
 	@Field
 	private String locationId;
+
 	@Field
 	private String hospitalId;
+
 	@Field
 	private boolean isDeleted = false;
 

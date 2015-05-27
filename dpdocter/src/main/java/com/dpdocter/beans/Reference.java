@@ -2,10 +2,15 @@ package com.dpdocter.beans;
 
 public class Reference {
 	private String id;
+
 	private String reference;
+
 	private String description;
+
 	private String doctorId;
+
 	private String locationId;
+
 	private String hospitalId;
 
 	public String getId() {

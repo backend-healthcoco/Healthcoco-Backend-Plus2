@@ -3,6 +3,7 @@ package com.dpdocter.beans;
 public class Relations {
 
 	private String name;
+
 	private String relation;
 
 	public String getName() {

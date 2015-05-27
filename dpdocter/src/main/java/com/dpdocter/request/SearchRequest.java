@@ -3,13 +3,21 @@ package com.dpdocter.request;
 public class SearchRequest {
 
 	private String firstName;
+
 	private String lastName;
+
 	private String middleName;
+
 	private String userName;
+
 	private String phoneNumber;
+
 	private String secPhoneNumber;
+
 	private String emailAddress;
+
 	private String PID;
+
 	private String doctorId;
 
 	public String getFirstName() {

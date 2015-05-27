@@ -2,7 +2,9 @@ package com.dpdocter.beans;
 
 public class ReferenceDetail {
 	private String id;
+
 	private String reference;
+
 	private String description;
 
 	public String getId() {

@@ -1,16 +1,18 @@
 package com.dpdocter.beans;
 
 public class DoctorRegistrationDetail {
-	private String medicalCouncilId;
+	private String medicalCouncil;
+
 	private String registrationId;
+
 	private int yearOfPassing;
 
-	public String getMedicalCouncilId() {
-		return medicalCouncilId;
+	public String getMedicalCouncil() {
+		return medicalCouncil;
 	}
 
-	public void setMedicalCouncilId(String medicalCouncilId) {
-		this.medicalCouncilId = medicalCouncilId;
+	public void setMedicalCouncil(String medicalCouncil) {
+		this.medicalCouncil = medicalCouncil;
 	}
 
 	public String getRegistrationId() {
@@ -31,8 +33,7 @@ public class DoctorRegistrationDetail {
 
 	@Override
 	public String toString() {
-		return "DoctorRegistrationDetail [medicalCouncilId=" + medicalCouncilId + ", registrationId=" + registrationId + ", yearOfPassing=" + yearOfPassing
-				+ "]";
+		return "DoctorRegistrationDetail [medicalCouncil=" + medicalCouncil + ", registrationId=" + registrationId + ", yearOfPassing=" + yearOfPassing + "]";
 	}
 
 }

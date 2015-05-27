@@ -9,6 +9,7 @@ package com.dpdocter.exceptions;
 public class ServiceResponse {
 
 	private String message;
+
 	private int code;
 
 	public ServiceResponse() {

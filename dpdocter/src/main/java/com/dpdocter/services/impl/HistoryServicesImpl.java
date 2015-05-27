@@ -31,12 +31,16 @@ import com.dpdocter.services.RecordsService;
 public class HistoryServicesImpl implements HistoryServices {
 	@Autowired
 	private DiseasesRepository diseasesRepository;
+
 	@Autowired
 	private HistoryRepository historyRepository;
+
 	@Autowired
 	private RecordsService recordsService;
+
 	@Autowired
 	private PrescriptionServices prescriptionServices;
+
 	@Autowired
 	private ClinicalNotesService clinicalNotesService;
 

@@ -9,16 +9,22 @@ public class EmailUserCollection {
 
 	@Id
 	private String id;
+
 	@Field
 	private String subject;
+
 	@Field
 	private String receiverId;
+
 	@Field
 	private String emailId;
+
 	@Field
 	private Boolean isTrashed;
+
 	@Field
 	private Boolean isRead;
+
 	@Field
 	private Boolean isStarted;
 

@@ -8,8 +8,10 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class PatientGroupCollection {
 	@Id
 	private String id;
+
 	@Field
 	private String groupId;
+
 	@Field
 	private String patientId;
 

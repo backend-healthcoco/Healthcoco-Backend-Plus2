@@ -2,8 +2,11 @@ package com.dpdocter.beans;
 
 public class DoctorExperienceDetail {
 	private String organization;
+
 	private String city;
+
 	private int from;
+
 	private int to;
 
 	public String getOrganization() {

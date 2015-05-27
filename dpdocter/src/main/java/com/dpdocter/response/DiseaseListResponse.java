@@ -2,7 +2,9 @@ package com.dpdocter.response;
 
 public class DiseaseListResponse {
 	private String id;
+
 	private String disease;
+
 	private String description;
 
 	public DiseaseListResponse(String id, String disease, String description) {

@@ -2,7 +2,9 @@ package com.dpdocter.request;
 
 public class ForgotUsernamePasswordRequest {
 	private String username;
+
 	private String mobileNumber;
+
 	private String emailAddress;
 
 	public String getUsername() {

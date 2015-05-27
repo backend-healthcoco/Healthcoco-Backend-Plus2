@@ -2,10 +2,15 @@ package com.dpdocter.response;
 
 public class DiseaseAddEditResponse {
 	private String id;
+
 	private String doctorId;
+
 	private String locationId;
+
 	private String hospitalId;
+
 	private String disease;
+
 	private String description;
 
 	public String getId() {

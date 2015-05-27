@@ -3,6 +3,7 @@ package com.dpdocter.beans;
 public class DoctorSignUp {
 
 	private User user;
+
 	private Hospital hospital;
 
 	public User getUser() {

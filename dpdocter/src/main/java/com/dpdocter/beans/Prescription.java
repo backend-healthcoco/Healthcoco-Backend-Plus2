@@ -4,7 +4,9 @@ import java.util.List;
 
 public class Prescription {
 	private String id;
+
 	private String name;
+
 	private List<PrescriptionItemDetails> itemList;
 
 	public String getId() {

@@ -9,8 +9,10 @@ public class RecordsTagsCollection {
 
 	@Id
 	private String id;
+
 	@Field
 	private String recordsId;
+
 	@Field
 	private String tagsId;
 

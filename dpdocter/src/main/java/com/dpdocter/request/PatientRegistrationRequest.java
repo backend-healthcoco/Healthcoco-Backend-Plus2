@@ -9,35 +9,59 @@ import com.dpdocter.beans.Relations;
 
 public class PatientRegistrationRequest {
 	private String userId;
+
 	private String firstName;
+
 	private String middleName;
+
 	private String lastName;
+
 	private String mobileNumber;
+
 	private String gender;
+
 	private DOB dob;
+
 	private FileDetails image;
 
 	private String emailAddress;
+
 	private List<String> groups;
+
 	private String bloodGroup;
+
 	private String profession;
+
 	private List<Relations> relations;
+
 	private String secMobile;
+
 	private String adhaarId;
+
 	private String panCardNumber;
+
 	private String drivingLicenseId;
+
 	private String insuranceId;
+
 	private String insuranceName;
+
 	private List<String> notes;
 
 	private Address address;
 
 	private Long dateOfVisit;
+
 	private String pastHistoryId;
+
 	private String medicalHistoryId;
+
 	private String patientNumber;
+
 	private String referredBy;
+
 	private String locationId;
+
 	private String hospitalId;
 
 	private String doctorId;

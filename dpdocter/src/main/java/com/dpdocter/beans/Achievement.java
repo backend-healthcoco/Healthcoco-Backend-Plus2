@@ -4,7 +4,9 @@ import com.dpdocter.enums.AchievementType;
 
 public class Achievement {
 	private String achievementName;
+
 	private int year;
+
 	private AchievementType achievementType;
 
 	public String getAchievementName() {

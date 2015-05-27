@@ -6,8 +6,11 @@ import com.dpdocter.enums.ExportRequestData;
 
 public class ExportContactsRequest {
 	private String doctorId;
+
 	private String emailAddress;
+
 	private List<ExportRequestData> dataType;
+
 	private String specialComments;
 
 	public String getDoctorId() {

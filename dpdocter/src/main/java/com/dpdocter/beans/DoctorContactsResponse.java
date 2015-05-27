@@ -5,6 +5,7 @@ import java.util.List;
 public class DoctorContactsResponse {
 
 	private List<PatientCard> patientCards;
+
 	private int totalSize;
 
 	public List<PatientCard> getPatientCards() {

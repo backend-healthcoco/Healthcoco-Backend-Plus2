@@ -4,9 +4,13 @@ import java.util.List;
 
 public class SpecialNotesAddRequest {
 	List<String> specialNotes;
+
 	String patientId;
+
 	String doctorId;
+
 	String hospitalId;
+
 	String locationId;
 
 	public List<String> getSpecialNotes() {

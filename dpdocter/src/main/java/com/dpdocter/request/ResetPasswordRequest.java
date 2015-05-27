@@ -2,6 +2,7 @@ package com.dpdocter.request;
 
 public class ResetPasswordRequest {
 	private String userId;
+
 	private String password;
 
 	public String getUserId() {

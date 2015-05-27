@@ -9,6 +9,7 @@ import org.springframework.core.io.FileSystemResource;
  */
 public class MailAttachment {
 	private String attachmentName;
+
 	private FileSystemResource fileSystemResource;
 
 	public String getAttachmentName() {

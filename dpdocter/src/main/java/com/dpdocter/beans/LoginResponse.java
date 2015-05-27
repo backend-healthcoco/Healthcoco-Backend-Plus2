@@ -6,8 +6,11 @@ import java.util.List;
 public class LoginResponse {
 
 	private User user;
+
 	private List<Hospital> hospitals = null;
+
 	private String role;
+
 	private Boolean isTempPassword = false;
 
 	public String getRole() {

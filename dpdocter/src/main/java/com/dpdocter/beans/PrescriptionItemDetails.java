@@ -6,9 +6,13 @@ import com.dpdocter.enums.DirectionEnum;
 
 public class PrescriptionItemDetails {
 	private Drug drug;
+
 	private Duration duration;
+
 	private String dosage;
+
 	private List<DirectionEnum> direction;
+
 	private String instructions;
 
 	public Drug getDrug() {

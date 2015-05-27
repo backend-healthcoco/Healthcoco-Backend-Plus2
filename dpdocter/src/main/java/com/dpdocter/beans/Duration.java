@@ -4,6 +4,7 @@ import com.dpdocter.enums.DurationUnitEnum;
 
 public class Duration {
 	private String value;
+
 	private DurationUnitEnum unit;
 
 	public String getValue() {

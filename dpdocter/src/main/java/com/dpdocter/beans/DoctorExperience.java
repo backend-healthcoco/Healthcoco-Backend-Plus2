@@ -4,6 +4,7 @@ import com.dpdocter.enums.DoctorExperienceUnit;
 
 public class DoctorExperience {
 	private float experience;
+
 	private DoctorExperienceUnit period;
 
 	public float getExperience() {

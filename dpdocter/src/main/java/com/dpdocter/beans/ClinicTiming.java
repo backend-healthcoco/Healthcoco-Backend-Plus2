@@ -4,7 +4,9 @@ import java.util.List;
 
 public class ClinicTiming {
 	private String id;
+
 	private List<WorkingSchedule> workingSchedules;
+
 	private boolean isTwentyFourSevenOpen;
 
 	public String getId() {

@@ -4,6 +4,7 @@ import com.dpdocter.beans.FileDetails;
 
 public class PatientProfilePicChangeRequest {
 	private String username;
+
 	private FileDetails image;
 
 	public String getUsername() {

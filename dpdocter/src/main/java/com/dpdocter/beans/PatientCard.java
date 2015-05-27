@@ -4,23 +4,41 @@ import java.util.List;
 
 public class PatientCard {
 	private String id;
+
 	private String firstName;
+
 	private String lastName;
+
 	private String middleName;
+
 	private String userName;
+
 	private String emailAddress;
+
 	private String imageUrl;
+
 	private String bloodGroup;
+
 	private String PID;
+
 	private String gender;
+
 	private String mobileNumber;
+
 	private String secPhoneNumber;
+
 	private DOB dob;
+
 	private int count;
+
 	private Long dateOfVisit;
+
 	private List<Group> groups;
+
 	private String doctorId;
+
 	private String locationId;
+
 	private String hospitalId;
 
 	public String getId() {

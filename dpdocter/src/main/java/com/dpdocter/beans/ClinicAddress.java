@@ -3,14 +3,23 @@ package com.dpdocter.beans;
 public class ClinicAddress {
 
 	private String id;
+
 	private String streetAddress;
+
 	private String locality;
+
 	private String city;
+
 	private String state;
+
 	private String country;
+
 	private String postalCode;
+
 	private String mobileNumber;
+
 	private String locationPhoneNumber;
+
 	private String alternateNumber;
 
 	public String getId() {

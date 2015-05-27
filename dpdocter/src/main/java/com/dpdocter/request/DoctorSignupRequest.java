@@ -9,36 +9,63 @@ import com.dpdocter.beans.FileDetails;
 public class DoctorSignupRequest {
 	// user details
 	private String firstName;
+
 	private String lastName;
+
 	private String middleName;
+
 	private String userName;
+
 	private String password;
+
 	private String emailAddress;
+
 	private String mobileNumber;
+
 	private FileDetails image;
+
 	private String gender;
+
 	private DOB dob;
+
 	// doctor details
 	private String phoneNumber;
+
 	private String imageUrl;
+
 	// doctor details
 	private String specialization;
+
 	// hospital details
 	private String hospitalName;
+
 	private String hospitalPhoneNumber;
+
 	private String hospitalImageUrl;
+
 	private String hospitalDescription;
+
 	// location details
 	private String locationName;
+
 	private String country;
+
 	private String state;
+
 	private String city;
+
 	private String locationPhoneNumber;
+
 	private String postalCode;
+
 	private String websiteUrl;
+
 	private String locationImageUrl;
+
 	private String hospitalId;
+
 	private Double latitude;
+
 	private Double longitude;
 
 	public DOB getDob() {

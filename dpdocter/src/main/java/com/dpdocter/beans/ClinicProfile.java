@@ -5,11 +5,17 @@ import java.util.List;
 public class ClinicProfile {
 
 	private String id;
+
 	private String locationName;
+
 	private String tagLine;
+
 	private List<String> specialization;
+
 	private String locationEmailAddress;
+
 	private String websiteUrl;
+
 	private String landmarkDetails;
 
 	public String getId() {

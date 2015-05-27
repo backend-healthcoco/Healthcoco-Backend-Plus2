@@ -1,34 +1,50 @@
 package com.dpdocter.services.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.DoctorExperience;
+import com.dpdocter.beans.DoctorProfile;
+import com.dpdocter.beans.DoctorRegistrationDetail;
 import com.dpdocter.beans.MedicalCouncil;
+import com.dpdocter.beans.ProfessionalMembership;
+import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
+import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.MedicalCouncilCollection;
+import com.dpdocter.collections.ProfessionalMembershipCollection;
 import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.DoctorExperienceUnit;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorRepository;
+import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.MedicalCouncilRepository;
+import com.dpdocter.repository.ProfessionalMembershipRepository;
 import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
 import com.dpdocter.request.DoctorContactAddEditRequest;
 import com.dpdocter.request.DoctorEducationAddEditRequest;
 import com.dpdocter.request.DoctorExperienceAddEditRequest;
+import com.dpdocter.request.DoctorProfessionalAddEditRequest;
 import com.dpdocter.request.DoctorProfilePictureAddEditRequest;
 import com.dpdocter.request.DoctorRegistrationAddEditRequest;
 import com.dpdocter.request.DoctorSpecialityAddEditRequest;
 import com.dpdocter.services.DoctorProfileService;
 import com.dpdocter.services.FileManager;
 
+@Service
 public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 	@Autowired
@@ -41,7 +57,16 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	private MedicalCouncilRepository medicalCouncilRepository;
 
 	@Autowired
+	private ProfessionalMembershipRepository professionalMembershipRepository;
+
+	@Autowired
+	private DoctorClinicProfileRepository doctorClinicProfileRepository;
+
+	@Autowired
 	private SpecialityRepository specialityRepository;
+
+	@Autowired
+	private LocationRepository locationRepository;
 
 	@Autowired
 	private FileManager fileManager;
@@ -121,7 +146,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	}
 
 	@Override
-	public Boolean addEditMedicalCouncil(List<MedicalCouncil> medicalCouncils) {
+	public Boolean addEditMedicalCouncils(List<MedicalCouncil> medicalCouncils) {
 		List<MedicalCouncilCollection> medicalCouncilCollections = null;
 		Boolean response = false;
 		try {
@@ -134,6 +159,21 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			throw new BusinessException(ServiceError.Unknown, "Error Editing Medical Councils");
 		}
 		return response;
+	}
+
+	@Override
+	public List<MedicalCouncil> getMedicalCouncils() {
+		List<MedicalCouncil> medicalCouncils = null;
+		List<MedicalCouncilCollection> medicalCouncilCollections = null;
+		try {
+			medicalCouncilCollections = medicalCouncilRepository.findAll();
+			medicalCouncils = new ArrayList<MedicalCouncil>();
+			BeanUtil.map(medicalCouncilCollections, medicalCouncils);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Getting Medical Councils");
+		}
+		return medicalCouncils;
 	}
 
 	@Override
@@ -257,4 +297,191 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		return response;
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	public DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId) {
+		DoctorProfile doctorProfile = null;
+		UserCollection userCollection = null;
+		DoctorCollection doctorCollection = null;
+		DoctorClinicProfileCollection clinicProfileCollection = null;
+		LocationCollection locationCollection = null;
+		List<String> specialities = null;
+		List<DoctorRegistrationDetail> registrationDetails = null;
+		List<String> professionalMemberships = null;
+		DoctorClinicProfile clinicProfile = null;
+		try {
+			userCollection = userRepository.findOne(doctorId);
+			doctorCollection = doctorRepository.findByUserId(doctorId);
+			clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(locationId);
+			locationCollection = locationRepository.findOne(locationId);
+			doctorProfile = new DoctorProfile();
+			BeanUtil.map(userCollection, doctorProfile);
+			BeanUtil.map(doctorCollection, doctorProfile);
+
+			// set specialities using speciality ids
+			specialities = (List<String>) CollectionUtils.collect((Collection) specialityRepository.findAll(doctorProfile.getSpecialities()),
+					new BeanToPropertyValueTransformer("speciality"));
+			doctorProfile.setSpecialities(specialities);
+
+			// set medical councils using medical councils ids
+			registrationDetails = new ArrayList<DoctorRegistrationDetail>();
+			for (DoctorRegistrationDetail registrationDetail : doctorProfile.getRegistrationDetails()) {
+				DoctorRegistrationDetail doctorRegistrationDetail = new DoctorRegistrationDetail();
+				BeanUtil.map(registrationDetail, doctorRegistrationDetail);
+				MedicalCouncilCollection medicalCouncilCollection = medicalCouncilRepository.findOne(registrationDetail.getMedicalCouncil());
+				doctorRegistrationDetail.setMedicalCouncil(medicalCouncilCollection.getMedicalCouncil());
+				registrationDetails.add(doctorRegistrationDetail);
+			}
+			doctorProfile.setRegistrationDetails(registrationDetails);
+
+			// set professional memberships using professional membership ids
+			professionalMemberships = (List<String>) CollectionUtils.collect((Collection) professionalMembershipRepository.findAll(doctorProfile
+					.getProfessionalMemberships()), new BeanToPropertyValueTransformer("membership"));
+			doctorProfile.setProfessionalMemberships(professionalMemberships);
+
+			// set clinic profile details
+			clinicProfile = new DoctorClinicProfile();
+			BeanUtil.map(clinicProfileCollection, clinicProfile);
+			String address = locationCollection.getLocationName() + ", " + locationCollection.getStreetAddress() + ", " + locationCollection.getCity() + ", "
+					+ locationCollection.getState() + " - " + locationCollection.getPostalCode() + ", " + locationCollection.getCountry();
+			clinicProfile.setClinicAddress(address);
+			doctorProfile.setClinicProfile(clinicProfile);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Getting Doctor Profile");
+		}
+		return doctorProfile;
+	}
+
+	@Override
+	public Boolean insertProfessionalMemberships(List<ProfessionalMembership> professionalMemberships) {
+		List<ProfessionalMembershipCollection> professionalMembershipCollections = null;
+		Boolean response = false;
+		try {
+			professionalMembershipCollections = new ArrayList<ProfessionalMembershipCollection>();
+			BeanUtil.map(professionalMemberships, professionalMembershipCollections);
+			professionalMembershipRepository.save(professionalMembershipCollections);
+			response = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Inserting Professional Memberships");
+		}
+		return response;
+	}
+
+	@Override
+	public List<ProfessionalMembership> getProfessionalMemberships() {
+		List<ProfessionalMembership> professionalMemberships = null;
+		List<ProfessionalMembershipCollection> professionalMembershipCollections = null;
+		try {
+			professionalMembershipCollections = professionalMembershipRepository.findAll();
+			professionalMemberships = new ArrayList<ProfessionalMembership>();
+			BeanUtil.map(professionalMembershipCollections, professionalMemberships);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Getting Professional Memberships");
+		}
+		return professionalMemberships;
+	}
+
+	@Override
+	public Boolean addEditProfessionalMembership(DoctorProfessionalAddEditRequest request) {
+		DoctorCollection doctorCollection = null;
+		List<ProfessionalMembershipCollection> professionalMembershipCollections = null;
+		List<String> professionalMemberships = null;
+		Boolean response = false;
+		try {
+			professionalMembershipCollections = professionalMembershipRepository.findAll();
+			professionalMemberships = new ArrayList<String>();
+			for (String professionalMembership : request.getMembership()) {
+				Boolean professionalMembershipFound = false;
+				for (ProfessionalMembershipCollection professionalMembershipCollection : professionalMembershipCollections) {
+					if (professionalMembership.trim().equalsIgnoreCase(professionalMembershipCollection.getMembership())) {
+						professionalMemberships.add(professionalMembershipCollection.getId());
+						professionalMembershipFound = true;
+						break;
+					}
+				}
+				if (!professionalMembershipFound) {
+					ProfessionalMembershipCollection professionalMembershipCollection = new ProfessionalMembershipCollection();
+					professionalMembershipCollection.setMembership(professionalMembership);
+					professionalMembershipCollection = professionalMembershipRepository.save(professionalMembershipCollection);
+					professionalMemberships.add(professionalMembershipCollection.getId());
+				}
+			}
+			doctorCollection = doctorRepository.findByUserId(request.getDoctorId());
+			doctorCollection.setProfessionalMemberships(professionalMemberships);
+			doctorRepository.save(doctorCollection);
+			response = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean addEditAppointmentNumbers(DoctorClinicProfile request) {
+		DoctorClinicProfileCollection doctorClinicProfileCollection = null;
+		Boolean response = false;
+		try {
+			doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(request.getUserLocationId());
+			doctorClinicProfileCollection.setAppointmentBookingNumber(request.getAppointmentBookingNumber());
+			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+			response = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Clinic Profile");
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean addEditVisitingTime(DoctorClinicProfile request) {
+		DoctorClinicProfileCollection doctorClinicProfileCollection = null;
+		Boolean response = false;
+		try {
+			doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(request.getUserLocationId());
+			doctorClinicProfileCollection.setWorkingSchedules(request.getWorkingSchedules());
+			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+			response = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Clinic Profile");
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean addEditConsultationFee(DoctorClinicProfile request) {
+		DoctorClinicProfileCollection doctorClinicProfileCollection = null;
+		Boolean response = false;
+		try {
+			doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(request.getUserLocationId());
+			doctorClinicProfileCollection.setConsultationFee(request.getConsultationFee());
+			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+			response = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Clinic Profile");
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean addEditAppointmentSlot(DoctorClinicProfile request) {
+		DoctorClinicProfileCollection doctorClinicProfileCollection = null;
+		Boolean response = false;
+		try {
+			doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(request.getUserLocationId());
+			doctorClinicProfileCollection.setAppointmentSlot(request.getAppointmentSlot());
+			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+			response = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Clinic Profile");
+		}
+		return response;
+	}
 }

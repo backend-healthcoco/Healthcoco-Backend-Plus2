@@ -2,10 +2,15 @@ package com.dpdocter.beans;
 
 public class Tags {
 	private String id;
+
 	private String tag;
+
 	private String description;
+
 	private String doctorId;
+
 	private String locationId;
+
 	private String hospitalId;
 
 	public String getId() {

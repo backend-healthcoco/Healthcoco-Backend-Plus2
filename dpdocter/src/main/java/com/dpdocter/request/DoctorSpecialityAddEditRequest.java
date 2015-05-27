@@ -4,6 +4,7 @@ import java.util.List;
 
 public class DoctorSpecialityAddEditRequest {
 	private String doctorId;
+
 	private List<String> speciality;
 
 	public String getDoctorId() {

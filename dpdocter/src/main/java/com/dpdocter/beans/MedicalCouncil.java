@@ -2,6 +2,7 @@ package com.dpdocter.beans;
 
 public class MedicalCouncil {
 	private String id;
+
 	private String medicalCouncil;
 
 	public String getId() {

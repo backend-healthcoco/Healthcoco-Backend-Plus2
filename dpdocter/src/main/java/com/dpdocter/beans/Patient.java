@@ -4,18 +4,31 @@ import java.util.List;
 
 public class Patient {
 	private String patientId;
+
 	private String bloodGroup;
+
 	private String profession;
+
 	private List<Relations> relations;
+
 	private String emailAddress;
+
 	private String doctorId;
+
 	private String addressId;
+
 	private String secMobile;
+
 	private String adhaarId;
+
 	private String panCardNumber;
+
 	private String drivingLicenseId;
+
 	private String insuranceId;
+
 	private String insuranceName;
+
 	private List<String> notes;
 
 	public String getPatientId() {

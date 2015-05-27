@@ -2,9 +2,13 @@ package com.dpdocter.beans;
 
 public class Records {
 	private String id;
+
 	private String recordsUrl;
+
 	private String recordsLable;
+
 	private String description;
+
 	private Long createdDate;
 
 	public String getId() {

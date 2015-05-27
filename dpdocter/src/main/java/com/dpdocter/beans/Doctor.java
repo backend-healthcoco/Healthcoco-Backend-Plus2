@@ -6,7 +6,9 @@ package com.dpdocter.beans;
 
 public class Doctor {
 	private String id;
+
 	private String imageUrl;
+
 	private String specialization;
 
 	public String getId() {

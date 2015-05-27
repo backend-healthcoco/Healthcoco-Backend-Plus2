@@ -11,24 +11,34 @@ public class HistoryCollection {
 
 	@Id
 	private String id;
+
 	@Field
 	private String doctorId;
+
 	@Field
 	private String locationId;
+
 	@Field
 	private String hospitalId;
+
 	@Field
 	private String patientId;
+
 	@Field
 	private List<String> reports;
+
 	@Field
 	private List<String> prescriptions;
+
 	@Field
 	private List<String> clinicalNotes;
+
 	@Field
 	private List<String> familyhistory;
+
 	@Field
 	private List<String> medicalhistory;
+
 	@Field
 	private List<String> specialNotes;
 

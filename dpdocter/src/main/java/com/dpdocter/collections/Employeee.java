@@ -8,8 +8,10 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class Employeee {
 	@Id
 	private String id;
+
 	@Field
 	private String firstName;
+
 	@Field
 	private String lastName;
 

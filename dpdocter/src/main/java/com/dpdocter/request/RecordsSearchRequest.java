@@ -2,9 +2,13 @@ package com.dpdocter.request;
 
 public class RecordsSearchRequest {
 	private String patientId;
+
 	private String doctorId;
+
 	private String tagId;
+
 	private String locationId;
+
 	private String hospitalId;
 
 	public String getLocationId() {

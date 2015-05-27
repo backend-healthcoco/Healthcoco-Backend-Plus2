@@ -8,10 +8,13 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class DiseaseCollection {
 	@Id
 	private String id;
+
 	@Field
 	private String disease;
+
 	@Field
 	private String doctorId;
+
 	@Field
 	private String description;
 

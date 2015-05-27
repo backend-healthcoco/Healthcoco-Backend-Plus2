@@ -6,7 +6,9 @@ public class ServiceException extends Exception {
 	private static final long serialVersionUID = 1L;
 
 	private int statusCode;
+
 	private Error error;
+
 	private MediaType mediaType = MediaType.APPLICATION_XML_TYPE;
 
 	public ServiceException(StatusCode statusCode, Error errors) {

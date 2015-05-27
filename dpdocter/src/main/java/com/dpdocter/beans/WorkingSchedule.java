@@ -6,6 +6,7 @@ import com.dpdocter.enums.Day;
 
 public class WorkingSchedule {
 	private Day workingDay;
+
 	private List<WorkingHours> workingHours;
 
 	public Day getWorkingDay() {

@@ -6,11 +6,17 @@ import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 @JsonSerialize(include = Inclusion.NON_DEFAULT)
 public class Group {
 	private String id;
+
 	private String name;
+
 	private String description;
+
 	private String doctorId;
+
 	private String locationId;
+
 	private String hospitalId;
+
 	private int count = 0;
 
 	public String getId() {

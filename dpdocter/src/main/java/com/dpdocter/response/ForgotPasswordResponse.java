@@ -4,8 +4,11 @@ import com.dpdocter.enums.RoleEnum;
 
 public class ForgotPasswordResponse {
 	private String username;
+
 	private String mobileNumber;
+
 	private String emailAddress;
+
 	private RoleEnum role;
 
 	public ForgotPasswordResponse(String username, String mobileNumber, String emailAddress, RoleEnum role) {

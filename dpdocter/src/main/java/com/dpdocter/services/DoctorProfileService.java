@@ -2,11 +2,15 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import com.dpdocter.beans.DoctorClinicProfile;
+import com.dpdocter.beans.DoctorProfile;
 import com.dpdocter.beans.MedicalCouncil;
+import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
 import com.dpdocter.request.DoctorContactAddEditRequest;
 import com.dpdocter.request.DoctorEducationAddEditRequest;
 import com.dpdocter.request.DoctorExperienceAddEditRequest;
+import com.dpdocter.request.DoctorProfessionalAddEditRequest;
 import com.dpdocter.request.DoctorProfilePictureAddEditRequest;
 import com.dpdocter.request.DoctorRegistrationAddEditRequest;
 import com.dpdocter.request.DoctorSpecialityAddEditRequest;
@@ -21,7 +25,9 @@ public interface DoctorProfileService {
 
 	Boolean addEditEducation(DoctorEducationAddEditRequest request);
 
-	Boolean addEditMedicalCouncil(List<MedicalCouncil> medicalCouncils);
+	Boolean addEditMedicalCouncils(List<MedicalCouncil> medicalCouncils);
+
+	List<MedicalCouncil> getMedicalCouncils();
 
 	Boolean addEditSpeciality(DoctorSpecialityAddEditRequest request);
 
@@ -34,5 +40,21 @@ public interface DoctorProfileService {
 	Boolean addEditExperienceDetail(DoctorExperienceAddEditRequest request);
 
 	String addEditProfilePicture(DoctorProfilePictureAddEditRequest request);
+
+	DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId);
+
+	Boolean insertProfessionalMemberships(List<ProfessionalMembership> professionalMemberships);
+
+	List<ProfessionalMembership> getProfessionalMemberships();
+
+	Boolean addEditProfessionalMembership(DoctorProfessionalAddEditRequest request);
+
+	Boolean addEditAppointmentNumbers(DoctorClinicProfile request);
+
+	Boolean addEditVisitingTime(DoctorClinicProfile request);
+
+	Boolean addEditConsultationFee(DoctorClinicProfile request);
+
+	Boolean addEditAppointmentSlot(DoctorClinicProfile request);
 
 }

@@ -4,11 +4,17 @@ import com.dpdocter.beans.FileDetails;
 
 public class ImportContactsRequest {
 	private String doctorId;
+
 	private String locationId;
+
 	private String hospitalId;
+
 	private String specialComments;
+
 	private FileDetails contactsFile;
+
 	private String contactsFileUrl;
+
 	private String emailAddress;
 
 	public String getDoctorId() {

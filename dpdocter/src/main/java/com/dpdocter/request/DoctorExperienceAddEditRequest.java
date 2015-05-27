@@ -6,6 +6,7 @@ import com.dpdocter.beans.DoctorExperienceDetail;
 
 public class DoctorExperienceAddEditRequest {
 	private String doctorId;
+
 	private List<DoctorExperienceDetail> experienceDetails;
 
 	public String getDoctorId() {

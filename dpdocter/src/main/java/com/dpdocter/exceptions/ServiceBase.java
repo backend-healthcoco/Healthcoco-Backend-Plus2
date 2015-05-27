@@ -45,8 +45,11 @@ import common.util.web.JacksonUtil;
 @SuppressWarnings("deprecation")
 public class ServiceBase {
 	private static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
 	private static HttpParams params = null;
+
 	private static ClientConnectionManager cm = null;
+
 	private static CookieStore cookieStore = null;
 	static {
 		params = new BasicHttpParams();
@@ -66,8 +69,11 @@ public class ServiceBase {
 	}
 
 	protected String server = null;
+
 	protected ObjectMapper jsonProcessor = new ObjectMapper();
+
 	private DefaultHttpClient httpClient = null;
+
 	private Map<String, String> cookieMap = new HashMap<String, String>();
 
 	public ServiceBase(String server) {

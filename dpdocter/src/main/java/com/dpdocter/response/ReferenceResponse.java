@@ -6,8 +6,11 @@ import com.dpdocter.beans.ReferenceDetail;
 
 public class ReferenceResponse {
 	private List<ReferenceDetail> referenceDetails;
+
 	private String doctorId;
+
 	private String locationId;
+
 	private String hospitalId;
 
 	public List<ReferenceDetail> getReferenceDetails() {

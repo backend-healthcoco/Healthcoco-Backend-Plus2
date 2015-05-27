@@ -7,17 +7,28 @@ import com.dpdocter.beans.FileDetails;
 public class PatientSignUpRequest {
 	// user details
 	private String firstName;
+
 	private String lastName;
+
 	private String middleName;
+
 	private String userName;
+
 	private String password;
+
 	private String emailAddress;
+
 	private String mobileNumber;
+
 	// patient details
 	private String bloodGroup;
+
 	private FileDetails image;
+
 	private DOB dob;
+
 	private String gender;
+
 	private Address address;
 
 	public String getFirstName() {

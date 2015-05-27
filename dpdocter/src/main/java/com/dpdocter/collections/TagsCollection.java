@@ -8,10 +8,13 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class TagsCollection {
 	@Id
 	private String id;
+
 	@Field
 	private String tag;
+
 	@Field
 	private String locationId;
+
 	@Field
 	private String hospitalId;
 

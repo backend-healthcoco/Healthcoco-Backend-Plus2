@@ -6,9 +6,13 @@ import com.dpdocter.enums.DirectionEnum;
 
 public class TemplateGetItem {
 	private TemplateDrug drug;
+
 	private Duration duration;
+
 	private String dosage;
+
 	private List<DirectionEnum> direction;
+
 	private String instructions;
 
 	public TemplateDrug getDrug() {

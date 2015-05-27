@@ -6,6 +6,7 @@ import com.dpdocter.beans.DoctorRegistrationDetail;
 
 public class DoctorRegistrationAddEditRequest {
 	private String doctorId;
+
 	private List<DoctorRegistrationDetail> registrationDetails;
 
 	public String getDoctorId() {

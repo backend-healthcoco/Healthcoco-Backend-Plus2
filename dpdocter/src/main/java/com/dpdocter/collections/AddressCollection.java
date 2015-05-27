@@ -9,26 +9,37 @@ public class AddressCollection {
 
 	@Id
 	private String id;
+
 	@Field
 	private String country;
+
 	@Field
 	private String city;
+
 	@Field
 	private String state;
+
 	@Field
 	private String postalCode;
+
 	@Field
 	private String roadNumber;
+
 	@Field
 	private String roadName;
+
 	@Field
 	private String houseNumber;
+
 	@Field
 	private String userId;
+
 	@Field
 	private Double latitude;
+
 	@Field
 	private Double longitude;
+
 	@Field
 	private String locality;
 

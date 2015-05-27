@@ -2,6 +2,7 @@ package com.dpdocter.request;
 
 public class ChangeRecordLabelRequest {
 	private String recordId;
+
 	private String label;
 
 	public String getRecordId() {

@@ -6,6 +6,7 @@ import com.dpdocter.beans.Achievement;
 
 public class DoctorAchievementAddEditRequest {
 	private String doctorId;
+
 	private List<Achievement> achievements;
 
 	public String getDoctorId() {

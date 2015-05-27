@@ -5,6 +5,7 @@ import java.util.List;
 
 public class TagRecordRequest {
 	private List<String> tags = new ArrayList<String>();
+
 	private String recordId;
 
 	public List<String> getTags() {

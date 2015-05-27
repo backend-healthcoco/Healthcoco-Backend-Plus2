@@ -2,17 +2,28 @@ package com.dpdocter.beans;
 
 public class User {
 	private String id;
+
 	private String firstName;
+
 	private String lastName;
+
 	private String middleName;
+
 	private String userName;
+
 	// private String password;
 	private String emailAddress;
+
 	private String mobileNumber;
+
 	private String gender;
+
 	private DOB dob;
+
 	private String secPhoneNumber;
+
 	private Boolean isPartOfClinic;
+
 	private String imageUrl;
 
 	public String getImageUrl() {

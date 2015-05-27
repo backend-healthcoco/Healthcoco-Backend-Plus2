@@ -2,6 +2,7 @@ package com.dpdocter.beans;
 
 public class WorkingHours {
 	private Timing from;
+
 	private Timing to;
 
 	public Timing getFrom() {

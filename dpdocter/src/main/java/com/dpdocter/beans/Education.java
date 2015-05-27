@@ -2,7 +2,9 @@ package com.dpdocter.beans;
 
 public class Education {
 	private String qualification;
+
 	private String collegeUniversity;
+
 	private int yearOfPassing;
 
 	public String getQualification() {

@@ -24,9 +24,6 @@ public class DoctorCollection {
 	private List<String> otherEmailAddresses;
 
 	@Field
-	private String specialization;
-
-	@Field
 	private String userId;
 
 	@Field
@@ -56,6 +53,9 @@ public class DoctorCollection {
 	@Field
 	private List<DoctorExperienceDetail> experienceDetails;
 
+	@Field
+	private List<String> professionalMemberships;
+
 	public String getId() {
 		return id;
 	}
@@ -78,14 +78,6 @@ public class DoctorCollection {
 
 	public void setOtherEmailAddresses(List<String> otherEmailAddresses) {
 		this.otherEmailAddresses = otherEmailAddresses;
-	}
-
-	public String getSpecialization() {
-		return specialization;
-	}
-
-	public void setSpecialization(String specialization) {
-		this.specialization = specialization;
 	}
 
 	public String getUserId() {
@@ -168,12 +160,21 @@ public class DoctorCollection {
 		this.experienceDetails = experienceDetails;
 	}
 
+	public List<String> getProfessionalMemberships() {
+		return professionalMemberships;
+	}
+
+	public void setProfessionalMemberships(List<String> professionalMemberships) {
+		this.professionalMemberships = professionalMemberships;
+	}
+
 	@Override
 	public String toString() {
-		return "DoctorCollection [id=" + id + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses=" + otherEmailAddresses + ", specialization="
-				+ specialization + ", userId=" + userId + ", patientInitial=" + patientInitial + ", patientCounter=" + patientCounter + ", experience="
-				+ experience + ", education=" + education + ", specialities=" + specialities + ", achievements=" + achievements + ", professionalStatement="
-				+ professionalStatement + ", registrationDetails=" + registrationDetails + ", experienceDetails=" + experienceDetails + "]";
+		return "DoctorCollection [id=" + id + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses=" + otherEmailAddresses + ", userId="
+				+ userId + ", patientInitial=" + patientInitial + ", patientCounter=" + patientCounter + ", experience=" + experience + ", education="
+				+ education + ", specialities=" + specialities + ", achievements=" + achievements + ", professionalStatement=" + professionalStatement
+				+ ", registrationDetails=" + registrationDetails + ", experienceDetails=" + experienceDetails + ", professionalMemberships="
+				+ professionalMemberships + "]";
 	}
 
 }

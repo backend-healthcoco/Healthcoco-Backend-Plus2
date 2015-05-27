@@ -4,6 +4,7 @@ import com.dpdocter.enums.Period;
 
 public class Timing {
 	private String hour;
+
 	private Period period;
 
 	public String getHour() {

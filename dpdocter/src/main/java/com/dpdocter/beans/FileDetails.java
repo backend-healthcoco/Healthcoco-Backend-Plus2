@@ -3,8 +3,11 @@ package com.dpdocter.beans;
 public class FileDetails {
 
 	private String fileEncoded;
+
 	private String fileDecoded;
+
 	private String fileName;
+
 	private String fileExtension;
 
 	public String getFileEncoded() {

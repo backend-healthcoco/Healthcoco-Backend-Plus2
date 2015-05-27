@@ -6,8 +6,11 @@ import org.joda.time.PeriodType;
 
 public class DOB {
 	private int days;
+
 	private int months;
+
 	private int years;
+
 	private int age;
 
 	public DOB() {

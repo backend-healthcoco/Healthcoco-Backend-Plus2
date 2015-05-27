@@ -4,6 +4,7 @@ import com.dpdocter.beans.FileDetails;
 
 public class DoctorProfilePictureAddEditRequest {
 	private String doctorId;
+
 	private FileDetails image;
 
 	public String getDoctorId() {

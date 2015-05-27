@@ -13,13 +13,17 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.DoctorClinicProfile;
+import com.dpdocter.beans.DoctorProfile;
 import com.dpdocter.beans.MedicalCouncil;
+import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
 import com.dpdocter.request.DoctorContactAddEditRequest;
 import com.dpdocter.request.DoctorEducationAddEditRequest;
 import com.dpdocter.request.DoctorExperienceAddEditRequest;
+import com.dpdocter.request.DoctorProfessionalAddEditRequest;
 import com.dpdocter.request.DoctorProfilePictureAddEditRequest;
 import com.dpdocter.request.DoctorRegistrationAddEditRequest;
 import com.dpdocter.request.DoctorSpecialityAddEditRequest;
@@ -84,13 +88,22 @@ public class DoctorProfileApi {
 
 	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_MEDICAL_COUNCILS)
 	@POST
-	public Response<Boolean> addEditMedicalCouncil(List<MedicalCouncil> medicalCouncils) {
+	public Response<Boolean> addEditMedicalCouncils(List<MedicalCouncil> medicalCouncils) {
 		if (medicalCouncils == null || medicalCouncils.isEmpty()) {
 			throw new BusinessException(ServiceError.InvalidInput, "Medical Councils Cannot Be Empty");
 		}
-		Boolean addEditMedicalCouncil = doctorProfileService.addEditMedicalCouncil(medicalCouncils);
+		Boolean addEditMedicalCouncil = doctorProfileService.addEditMedicalCouncils(medicalCouncils);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(addEditMedicalCouncil);
+		return response;
+	}
+
+	@Path(value = PathProxy.DoctorProfileUrls.GET_MEDICAL_COUNCILS)
+	@GET
+	public Response<MedicalCouncil> getMedicalCouncils() {
+		List<MedicalCouncil> medicalCouncils = doctorProfileService.getMedicalCouncils();
+		Response<MedicalCouncil> response = new Response<MedicalCouncil>();
+		response.setDataList(medicalCouncils);
 		return response;
 	}
 
@@ -161,6 +174,88 @@ public class DoctorProfileApi {
 		String addEditProfilePictureResponse = doctorProfileService.addEditProfilePicture(request);
 		Response<String> response = new Response<String>();
 		response.setData(addEditProfilePictureResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFESSIONAL_MEMBERSHIP)
+	@POST
+	public Response<Boolean> addEditProfessionalMembership(DoctorProfessionalAddEditRequest request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Professional Membership Request Is Empty");
+		}
+		Boolean addEditProfessionalMembershipResponse = doctorProfileService.addEditProfessionalMembership(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(addEditProfessionalMembershipResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE)
+	@GET
+	public Response<DoctorProfile> getDoctorProfile(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+			@PathParam("hospitalId") String hospitalId) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Location Id and Hospital Id Cannot Be Empty");
+		}
+		DoctorProfile doctorProfile = doctorProfileService.getDoctorProfile(doctorId, locationId, hospitalId);
+		Response<DoctorProfile> response = new Response<DoctorProfile>();
+		response.setData(doctorProfile);
+		return response;
+	}
+
+	@Path(value = PathProxy.DoctorProfileUrls.INSERT_PROFESSIONAL_MEMBERSHIPS)
+	@POST
+	public Response<Boolean> insertProfessionalMemberships(List<ProfessionalMembership> professionalMemberships) {
+		if (professionalMemberships == null || professionalMemberships.isEmpty()) {
+			throw new BusinessException(ServiceError.InvalidInput, "Professional Memberships Cannot Be Empty");
+		}
+		Boolean insertProfessionalMembershipResponse = doctorProfileService.insertProfessionalMemberships(professionalMemberships);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(insertProfessionalMembershipResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.DoctorProfileUrls.GET_PROFESSIONAL_MEMBERSHIPS)
+	@GET
+	public Response<ProfessionalMembership> getProfessionalMemberships() {
+		List<ProfessionalMembership> professionalMemberships = doctorProfileService.getProfessionalMemberships();
+		Response<ProfessionalMembership> response = new Response<ProfessionalMembership>();
+		response.setDataList(professionalMemberships);
+		return response;
+	}
+
+	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_APPOINTMENT_NUMBERS)
+	@POST
+	public Response<Boolean> addEditAppointmentNumbers(DoctorClinicProfile request) {
+		Boolean addEditAppointmentNumbersResponse = doctorProfileService.addEditAppointmentNumbers(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(addEditAppointmentNumbersResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_VISITING_TIME)
+	@POST
+	public Response<Boolean> addEditVisitingTime(DoctorClinicProfile request) {
+		Boolean addEditVisitingTimeResponse = doctorProfileService.addEditVisitingTime(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(addEditVisitingTimeResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_CONSULTATION_FEE)
+	@POST
+	public Response<Boolean> addEditConsultationFee(DoctorClinicProfile request) {
+		Boolean addEditConsultationFeeResponse = doctorProfileService.addEditConsultationFee(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(addEditConsultationFeeResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_APPOINTMENT_SLOT)
+	@POST
+	public Response<Boolean> addEditAppointmentSlot(DoctorClinicProfile request) {
+		Boolean addEditAppointmentSlotResponse = doctorProfileService.addEditAppointmentSlot(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(addEditAppointmentSlotResponse);
 		return response;
 	}
 

@@ -8,8 +8,10 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class UserRoleCollection {
 	@Id
 	private String id;
+
 	@Field
 	private String userId;
+
 	@Field
 	private String roleId;
 

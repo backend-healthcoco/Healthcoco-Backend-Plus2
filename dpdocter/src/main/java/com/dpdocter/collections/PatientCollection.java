@@ -13,40 +13,58 @@ public class PatientCollection {
 
 	@Id
 	private String id;
+
 	@Field
 	private String bloodGroup;
+
 	@Field
 	private String profession;
+
 	@Field
 	private List<Relations> relations;
+
 	@Field
 	private String emailAddress;
+
 	@Field
 	private String doctorId;
+
 	@Field
 	private String locationId;
+
 	@Field
 	private String hospitalId;
+
 	@Field
 	private String addressId;
+
 	@Field
 	private String secMobile;
+
 	@Field
 	private String adhaarId;
+
 	@Field
 	private String panCardNumber;
+
 	@Field
 	private String drivingLicenseId;
+
 	@Field
 	private String insuranceId;
+
 	@Field
 	private String insuranceName;
+
 	@Field
 	private String userId;
+
 	@Field
 	private List<String> notes;
+
 	@Field
 	private String PID;
+
 	@Field
 	private Long registrationDate;
 

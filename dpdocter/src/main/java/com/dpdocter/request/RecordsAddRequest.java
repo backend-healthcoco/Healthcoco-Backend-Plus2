@@ -5,11 +5,17 @@ import com.dpdocter.beans.FileDetails;
 public class RecordsAddRequest {
 
 	private String patientId;
+
 	private String doctorId;
+
 	private Long createdDate;
+
 	private String description;
+
 	private FileDetails fileDetails;
+
 	private String locationId;
+
 	private String hospitalId;
 
 	public String getPatientId() {

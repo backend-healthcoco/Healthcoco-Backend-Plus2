@@ -2,6 +2,7 @@ package com.dpdocter.beans;
 
 public class Speciality {
 	private String id;
+
 	private String speciality;
 
 	public String getId() {

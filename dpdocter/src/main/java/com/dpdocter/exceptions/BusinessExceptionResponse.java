@@ -5,7 +5,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class BusinessExceptionResponse {
 	private ServiceError errorCode;
+
 	private String data;
+
 	private String errMsg;
 
 	public BusinessExceptionResponse() {

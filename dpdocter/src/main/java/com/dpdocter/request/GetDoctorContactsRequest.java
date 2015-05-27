@@ -4,11 +4,17 @@ import java.util.List;
 
 public class GetDoctorContactsRequest {
 	private String doctorId;
+
 	private String locationId;
+
 	private String hospitalId;
+
 	private Boolean blocked = false;
+
 	private int page;
+
 	private int size;
+
 	private List<String> groups;
 
 	public String getLocationId() {

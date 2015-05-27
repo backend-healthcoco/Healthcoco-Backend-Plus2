@@ -9,12 +9,16 @@ public class HospitalCollection {
 
 	@Id
 	private String id;
+
 	@Field
 	private String hospitalName;
+
 	@Field
 	private String hospitalPhoneNumber;
+
 	@Field
 	private String hospitalImageUrl;
+
 	@Field
 	private String hospitalDescription;
 

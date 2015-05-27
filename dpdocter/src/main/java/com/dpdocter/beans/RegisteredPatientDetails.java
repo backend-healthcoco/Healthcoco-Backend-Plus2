@@ -5,17 +5,27 @@ import java.util.List;
 public class RegisteredPatientDetails {
 
 	private String firstName;
+
 	private String lastName;
+
 	private String middleName;
+
 	private String imageUrl;
+
 	private DOB dob;
 
 	private String userId;
+
 	private String userName;
+
 	private String mobileNumber;
+
 	private String gender;
+
 	private Patient patient;
+
 	private Address address;
+
 	private List<String> groups;
 
 	public String getUserId() {

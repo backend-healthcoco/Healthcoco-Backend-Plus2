@@ -10,6 +10,7 @@ import java.util.List;
 public class Response<T> {
 
 	private T data;
+
 	private List<T> dataList;
 
 	public T getData() {
