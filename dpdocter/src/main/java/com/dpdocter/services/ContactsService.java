@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dpdocter.beans.Group;
 import com.dpdocter.beans.PatientCard;
+import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.request.ExportContactsRequest;
 import com.dpdocter.request.GetDoctorContactsRequest;
 import com.dpdocter.request.ImportContactsRequest;
@@ -36,5 +37,7 @@ public interface ContactsService {
 	List<Group> getAllGroups(String doctorId, String createdTime);
 
 	List<PatientCard> getDoctorContacts(String doctorId, String createdTime);
+
+	List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId, String createdTime);
 
 }

@@ -19,6 +19,7 @@ import com.dpdocter.beans.Address;
 import com.dpdocter.beans.ClinicAddress;
 import com.dpdocter.beans.ClinicProfile;
 import com.dpdocter.beans.ClinicTiming;
+import com.dpdocter.beans.Group;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.Reference;
@@ -28,6 +29,7 @@ import com.dpdocter.beans.User;
 import com.dpdocter.collections.AddressCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DoctorContactCollection;
+import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientAdmissionCollection;
 import com.dpdocter.collections.PatientCollection;
@@ -43,6 +45,7 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.AddressRepository;
 import com.dpdocter.repository.DoctorContactsRepository;
 import com.dpdocter.repository.DoctorRepository;
+import com.dpdocter.repository.GroupRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientGroupRepository;
@@ -89,8 +92,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Autowired
 	private MailBodyGenerator mailBodyGenerator;
 
-	/*@Autowired
-	private GroupRepository groupRepository;*/
+	@Autowired
+	private GroupRepository groupRepository;
 
 	@Autowired
 	private PatientGroupRepository patientGroupRepository;
@@ -132,6 +135,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	public RegisteredPatientDetails registerNewPatient(PatientRegistrationRequest request) {
 		RegisteredPatientDetails registeredPatientDetails = null;
+		List<GroupCollection> groupCollections = null;
+		List<Group> groups = null;
 		try {
 			// get role of specified type
 			RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.PATIENT.getRole());
@@ -171,6 +176,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			BeanUtil.map(request, patientCollection);
 			patientCollection.setUserId(userCollection.getId());
 			patientCollection.setRegistrationDate(request.getDateOfVisit());
+			patientCollection.setCreatedTime(new Date());
 			patientCollection.setPID(request.getPatientNumber());
 			if (addressCollection != null) {
 				patientCollection.setAddressId(addressCollection.getId());
@@ -222,7 +228,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 				BeanUtil.map(addressCollection, address);
 				registeredPatientDetails.setAddress(address);
 			}
-			registeredPatientDetails.setGroups(request.getGroups());
+			groupCollections = (List<GroupCollection>) groupRepository.findAll(request.getGroups());
+			groups = new ArrayList<Group>();
+			BeanUtil.map(groupCollections, groups);
+			/*registeredPatientDetails.setGroups(request.getGroups());*/
+			registeredPatientDetails.setGroups(groups);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -233,6 +243,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 	public RegisteredPatientDetails registerExistingPatient(PatientRegistrationRequest request) {
 		RegisteredPatientDetails registeredPatientDetails = null;
 		PatientCollection patientCollection = null;
+		List<GroupCollection> groupCollections = null;
+		List<Group> groups = null;
 		try {
 			// save address
 			AddressCollection addressCollection = null;
@@ -257,6 +269,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				patientCollection.setAddressId(addressCollection.getId());
 			}
 			patientCollection.setPID(request.getPatientNumber());
+			patientCollection.setCreatedTime(new Date());
 			patientCollection.setRegistrationDate(request.getDateOfVisit());
 			patientCollection = patientRepository.save(patientCollection);
 
@@ -312,7 +325,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 				BeanUtil.map(addressCollection, address);
 				registeredPatientDetails.setAddress(address);
 			}
-			registeredPatientDetails.setGroups(request.getGroups());
+			groupCollections = (List<GroupCollection>) groupRepository.findAll(request.getGroups());
+			groups = new ArrayList<Group>();
+			BeanUtil.map(groupCollections, groups);
+			/*registeredPatientDetails.setGroups(request.getGroups());*/
+			registeredPatientDetails.setGroups(groups);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -363,6 +380,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	public RegisteredPatientDetails getPatientProfileByUserId(String userId, String doctorId, String locationId, String hospitalId) {
 		RegisteredPatientDetails registeredPatientDetails = null;
+		List<GroupCollection> groupCollections = null;
+		List<Group> groups = null;
 		try {
 			UserCollection userCollection = userRepository.findOne(userId);
 			if (userCollection != null) {
@@ -385,8 +404,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 					Address address = new Address();
 					BeanUtil.map(addressCollection, address);
 					registeredPatientDetails.setAddress(address);
-
-					registeredPatientDetails.setGroups((List<String>) groupIds);
+					groupCollections = (List<GroupCollection>) groupRepository.findAll((List<String>) groupIds);
+					groups = new ArrayList<Group>();
+					BeanUtil.map(groupCollections, groups);
+					/*registeredPatientDetails.setGroups((List<String>) groupIds);*/
+					registeredPatientDetails.setGroups(groups);
 				}
 			}
 		} catch (Exception e) {

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Group;
 import com.dpdocter.beans.PatientCard;
+import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.ExportContactsRequest;
@@ -75,6 +76,32 @@ public class ContactsApi {
 		doctorContactsResponse.setTotalSize(ttlCount);
 		Response<DoctorContactsResponse> response = new Response<DoctorContactsResponse>();
 		response.setData(doctorContactsResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_HANDHELD_DOCTOR_SPECIFIC)
+	@GET
+	public Response<RegisteredPatientDetails> getDoctorContactsHandheld(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, createdTime)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id, Created Time Cannot Be Empty");
+		}
+		return doctorContactsHandheld(doctorId, null, null, createdTime);
+	}
+
+	@Path(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_HANDHELD)
+	@GET
+	public Response<RegisteredPatientDetails> getDoctorContactsHandheld(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+			@PathParam("hospitalId") String hospitalId, @PathParam("createdTime") String createdTime) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, createdTime)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id, Location Id, Hospital Id, Created Time Cannot Be Empty");
+		}
+		return doctorContactsHandheld(doctorId, locationId, hospitalId, createdTime);
+	}
+
+	private Response<RegisteredPatientDetails> doctorContactsHandheld(String doctorId, String locationId, String hospitalId, String createdTime) {
+		List<RegisteredPatientDetails> registeredPatientDetails = contactsService.getDoctorContactsHandheld(doctorId, locationId, hospitalId, createdTime);
+		Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
+		response.setDataList(registeredPatientDetails);
 		return response;
 	}
 

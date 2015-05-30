@@ -17,8 +17,12 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.Address;
 import com.dpdocter.beans.Group;
+import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PatientCard;
+import com.dpdocter.beans.RegisteredPatientDetails;
+import com.dpdocter.collections.AddressCollection;
 import com.dpdocter.collections.DoctorContactCollection;
 import com.dpdocter.collections.ExportContactsRequestCollection;
 import com.dpdocter.collections.GroupCollection;
@@ -31,6 +35,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.reflections.ReflectionUtil;
+import com.dpdocter.repository.AddressRepository;
 import com.dpdocter.repository.DoctorContactsRepository;
 import com.dpdocter.repository.ExportContactsRequestRepository;
 import com.dpdocter.repository.GroupRepository;
@@ -76,6 +81,9 @@ public class ContactsServiceImpl implements ContactsService {
 
 	@Autowired
 	private ExportContactsRequestRepository exportContactsRequestRepository;
+
+	@Autowired
+	private AddressRepository addressRepository;
 
 	@Autowired
 	private FileManager fileManager;
@@ -414,6 +422,63 @@ public class ContactsServiceImpl implements ContactsService {
 			throw new BusinessException(ServiceError.Unknown, "Error While Retrieving Groups");
 		}
 		return groups;
+	}
+
+	@Override
+	public List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId, String createdTime) {
+		List<RegisteredPatientDetails> registeredPatientDetails = null;
+		List<PatientCollection> patientCollections = null;
+		List<GroupCollection> groupCollections = null;
+		List<Group> groups = null;
+		try {
+			long createdTimeStamp = Long.parseLong(createdTime);
+			if (locationId == null && hospitalId == null) {
+				patientCollections = patientRepository.findByDoctorId(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+			} else {
+				patientCollections = patientRepository.findByDoctorIdLocationIdAndHospitalId(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
+						new Sort(Sort.Direction.DESC, "createdTime"));
+			}
+
+			if (!patientCollections.isEmpty()) {
+				registeredPatientDetails = new ArrayList<RegisteredPatientDetails>();
+				for (PatientCollection patientCollection : patientCollections) {
+					UserCollection userCollection = userRepository.findOne(patientCollection.getUserId());
+					AddressCollection addressCollection = new AddressCollection();
+					if (patientCollection.getAddressId() != null) {
+						addressCollection = addressRepository.findOne(patientCollection.getAddressId());
+					}
+					List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getId());
+					@SuppressWarnings("unchecked")
+					Collection<String> groupIds = CollectionUtils.collect(patientGroupCollections, new BeanToPropertyValueTransformer("groupId"));
+					RegisteredPatientDetails registeredPatientDetail = new RegisteredPatientDetails();
+					BeanUtil.map(userCollection, registeredPatientDetail);
+					registeredPatientDetail.setUserId(userCollection.getId());
+					Patient patient = new Patient();
+					BeanUtil.map(patientCollection, patient);
+					patient.setPatientId(patientCollection.getId());
+					registeredPatientDetail.setPatient(patient);
+					Address address = new Address();
+					BeanUtil.map(addressCollection, address);
+					registeredPatientDetail.setAddress(address);
+					groupCollections = (List<GroupCollection>) groupRepository.findAll((List<String>) groupIds);
+					groups = new ArrayList<Group>();
+					BeanUtil.map(groupCollections, groups);
+					registeredPatientDetail.setGroups(groups);
+
+					registeredPatientDetail.setDoctorId(patientCollection.getDoctorId());
+					registeredPatientDetail.setLocationId(patientCollection.getLocationId());
+					registeredPatientDetail.setHospitalId(registeredPatientDetail.getHospitalId());
+					registeredPatientDetail.setCreatedTime(patientCollection.getCreatedTime());
+
+					registeredPatientDetails.add(registeredPatientDetail);
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return registeredPatientDetails;
 	}
 
 }

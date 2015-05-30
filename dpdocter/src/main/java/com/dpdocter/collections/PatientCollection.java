@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.beans.Relations;
 
 @Document(collection = "patient_cl")
-public class PatientCollection {
+public class PatientCollection extends GenericCollection {
 
 	@Id
 	private String id;
