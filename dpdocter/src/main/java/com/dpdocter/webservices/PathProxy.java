@@ -47,6 +47,10 @@ public interface PathProxy {
 
 		public static final String DOCTOR_CONTACTS_DOCTOR_SPECIFIC_CREATED_TIME = "/doctorcontacts/get/{doctorId}/{createdTime}";
 
+		public static final String DOCTOR_CONTACTS_HANDHELD_DOCTOR_SPECIFIC = "/doctorcontacts/handheld/{doctorId}/{createdTime}";
+
+		public static final String DOCTOR_CONTACTS_HANDHELD = "/doctorcontacts/handheld/{doctorId}/{locationId}/{hospitalId}/{createdTime}";
+
 		public static final String BLOCK_CONTACT = "/doctorcontacts/block/{doctorId}/{patientId}";
 
 		public static final String ADD_GROUP = "/doctorcontacts/addgroup";

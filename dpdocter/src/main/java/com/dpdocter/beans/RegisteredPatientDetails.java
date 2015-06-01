@@ -2,7 +2,9 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-public class RegisteredPatientDetails {
+import com.dpdocter.collections.GenericCollection;
+
+public class RegisteredPatientDetails extends GenericCollection {
 
 	private String firstName;
 
@@ -26,7 +28,15 @@ public class RegisteredPatientDetails {
 
 	private Address address;
 
-	private List<String> groups;
+	/*private List<String> groups;*/
+
+	private List<Group> groups;
+
+	private String doctorId;
+
+	private String locationId;
+
+	private String hospitalId;
 
 	public String getUserId() {
 		return userId;
@@ -76,11 +86,19 @@ public class RegisteredPatientDetails {
 		this.address = address;
 	}
 
-	public List<String> getGroups() {
+	/*public List<String> getGroups() {
 		return groups;
 	}
 
 	public void setGroups(List<String> groups) {
+		this.groups = groups;
+	}*/
+
+	public List<Group> getGroups() {
+		return groups;
+	}
+
+	public void setGroups(List<Group> groups) {
 		this.groups = groups;
 	}
 
@@ -124,11 +142,36 @@ public class RegisteredPatientDetails {
 		this.dob = dob;
 	}
 
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
 	@Override
 	public String toString() {
 		return "RegisteredPatientDetails [firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", imageUrl=" + imageUrl
 				+ ", dob=" + dob + ", userId=" + userId + ", userName=" + userName + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", patient="
-				+ patient + ", address=" + address + ", groups=" + groups + "]";
+				+ patient + ", address=" + address + ", groups=" + groups + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + "]";
 	}
 
 }
