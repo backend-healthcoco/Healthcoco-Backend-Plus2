@@ -5,9 +5,10 @@ import java.util.List;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 
 import com.dpdocter.beans.Strength;
+import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.DrugTypeEnum;
 
-public class DrugAddEditResponse {
+public class DrugAddEditResponse extends GenericCollection {
 	private String id;
 
 	private DrugTypeEnum drugType;

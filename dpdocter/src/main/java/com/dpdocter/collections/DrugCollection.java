@@ -2,6 +2,7 @@ package com.dpdocter.collections;
 
 import java.util.List;
 
+import org.codehaus.jackson.map.deser.CreatorContainer;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -11,7 +12,7 @@ import com.dpdocter.beans.Strength;
 import com.dpdocter.enums.DrugTypeEnum;
 
 @Document(collection = "drug_cl")
-public class DrugCollection {
+public class DrugCollection extends GenericCollection {
 	@Id
 	private String id;
 

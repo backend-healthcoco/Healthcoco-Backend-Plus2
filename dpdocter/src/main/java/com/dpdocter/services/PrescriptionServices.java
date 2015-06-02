@@ -40,4 +40,8 @@ public interface PrescriptionServices {
 
 	List<Prescription> getPrescriptionsByIds(List<String> prescriptionIds);
 
+	List<TemplateGetResponse> getTemplates(String doctorId, String hospitalId, String locationId, String createdTime);
+
+	List<DrugAddEditResponse> getDrugs(String doctorId, String hospitalId, String locationId, String createdTime);
+
 }

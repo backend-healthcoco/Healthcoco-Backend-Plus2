@@ -207,6 +207,14 @@ public interface PathProxy {
 
 		public static final String GET_DRUG_ID = "getDrugDetails/{drugId}";
 
+		public static final String GET_DRUGS_DOCTOR_SPECIFIC = "getDrugDetails/{doctorId}";
+
+		public static final String GET_DRUGS_DOCTOR_SPECIFIC_CT = "getDrugDetails/{doctorId}/{createdTime}";
+
+		public static final String GET_DRUGS_ALL_FIELDS = "getDrugDetails/{doctorId}/{hospitalId}/{locationId}";
+
+		public static final String GET_DRUGS_ALL_FIELDS_CT = "getDrugDetails/{doctorId}/{hospitalId}/{locationId}/{createdTime}";
+
 		public static final String DELETE_GLOBAL_DRUG = "deleteDrug/{drugId}";
 
 		public static final String ADD_TEMPLATE = "addTemplate";
@@ -215,7 +223,15 @@ public interface PathProxy {
 
 		public static final String DELETE_TEMPLATE = "deleteTemplate/{templateId}/{doctorId}/{hospitalId}/{locationId}";
 
-		public static final String GET_TEMPLATE = "getTemplate/{templateId}/{doctorId}/{hospitalId}/{locationId}";
+		public static final String GET_TEMPLATE_TEMPLATE_ID = "getTemplate/{templateId}/{doctorId}/{hospitalId}/{locationId}";
+
+		public static final String GET_TEMPLATE_DOCTOR_SPECIFIC = "getTemplate/{doctorId}";
+
+		public static final String GET_TEMPLATE_ALL_FIELDS = "getTemplate/{doctorId}/{hospitalId}/{locationId}";
+
+		public static final String GET_TEMPLATE_DOCTOR_SPECIFIC_CT = "getTemplate/{doctorId}/{createdTime}";
+
+		public static final String GET_TEMPLATE_ALL_FIELDS_CT = "getTemplate/{doctorId}/{hospitalId}/{locationId}/{createdTime}";
 
 		public static final String ADD_PRESCRIPTION = "addPrescription";
 

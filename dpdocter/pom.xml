@@ -9,10 +9,9 @@
 	<url>http://maven.apache.org</url>
 
 	<profiles>
-
 		<profile>
 			<id>local</id>
-			
+
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -26,9 +25,6 @@
 					</resource>
 				</resources>
 			</build>
-
-
-
 		</profile>
 
 		<profile>
@@ -67,8 +63,8 @@
 				</resources>
 			</build>
 		</profile>
-
 	</profiles>
+
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -102,7 +98,6 @@
 			<artifactId>spring-core</artifactId>
 			<version>3.2.12.RELEASE</version>
 		</dependency>
-
 
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -258,8 +253,8 @@
 					</execution>
 				</executions>
 				<configuration>
-					 <licence>UHJvamVjdHxkcGRvY3Rlci5kcGRvY3RlcnwyMDE2LTA1LTE5fHRydWUjTUMwQ0ZRQ0REYVhWU0dyNlJMSFhWSnE5TGtlN1NoM3dZZ0lVVjNIQjRDR0hBTVBJR2pWaW1TWlE4ZVE0WnBZPQ==</licence>
-					 
+					<licence>UHJvamVjdHxkcGRvY3Rlci5kcGRvY3RlcnwyMDE2LTA1LTE5fHRydWUjTUMwQ0ZRQ0REYVhWU0dyNlJMSFhWSnE5TGtlN1NoM3dZZ0lVVjNIQjRDR0hBTVBJR2pWaW1TWlE4ZVE0WnBZPQ==</licence>
+
 					<output>
 						<title>DP Doctor API</title>
 						<html>
@@ -270,6 +265,7 @@
 			</plugin>
 		</plugins>
 	</build>
+
 	<pluginRepositories>
 		<pluginRepository>
 			<id>miredot</id>

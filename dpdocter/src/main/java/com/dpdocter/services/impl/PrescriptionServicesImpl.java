@@ -34,6 +34,7 @@ import com.dpdocter.response.PrescriptionAddEditResponse;
 import com.dpdocter.response.TemplateAddEditResponse;
 import com.dpdocter.response.TemplateGetResponse;
 import com.dpdocter.services.PrescriptionServices;
+import common.util.web.DPDoctorUtils;
 import common.util.web.PrescriptionUtils;
 
 @Service
@@ -54,6 +55,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		UUID drugCode = UUID.randomUUID();
 		drugCollection.setDrugCode(drugCode.toString());
 		try {
+			drugCollection.setCreatedTime(new Date());
 			drugCollection = drugRepository.save(drugCollection);
 			response = new DrugAddEditResponse();
 			BeanUtil.map(drugCollection, response);
@@ -69,6 +71,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		DrugCollection drugCollection = new DrugCollection();
 		BeanUtil.map(request, drugCollection);
 		try {
+			drugCollection.setCreatedTime(new Date());
 			drugCollection = drugRepository.save(drugCollection);
 			response = new DrugAddEditResponse();
 			BeanUtil.map(drugCollection, response);
@@ -148,6 +151,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		TemplateCollection templateCollection = new TemplateCollection();
 		BeanUtil.map(request, templateCollection);
 		try {
+			templateCollection.setCreatedTime(new Date());
 			templateCollection = templateRepository.save(templateCollection);
 			response = new TemplateAddEditResponse();
 			BeanUtil.map(templateCollection, response);
@@ -163,6 +167,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		TemplateCollection templateCollection = new TemplateCollection();
 		BeanUtil.map(request, templateCollection);
 		try {
+			templateCollection.setCreatedTime(new Date());
 			templateCollection = templateRepository.save(templateCollection);
 			response = new TemplateAddEditResponse();
 			BeanUtil.map(templateCollection, response);
@@ -384,4 +389,81 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return prescriptions;
 	}
 
+	@Override
+	public List<TemplateGetResponse> getTemplates(String doctorId, String hospitalId, String locationId, String createdTime) {
+		List<TemplateGetResponse> response = null;
+		List<TemplateCollection> templateCollections = null;
+		try {
+			if (DPDoctorUtils.anyStringEmpty(createdTime)) {
+				if (hospitalId == null && locationId == null) {
+					templateCollections = templateRepository.getTemplates(doctorId, new Sort(Sort.Direction.DESC, "createdTime"));
+				} else {
+					templateCollections = templateRepository.getTemplates(doctorId, hospitalId, locationId, new Sort(Sort.Direction.DESC, "createdTime"));
+				}
+			} else {
+				long createdTimeStamp = Long.parseLong(createdTime);
+				if (hospitalId == null && locationId == null) {
+					templateCollections = templateRepository.getTemplates(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+				} else {
+					templateCollections = templateRepository.getTemplates(doctorId, hospitalId, locationId, new Date(createdTimeStamp), new Sort(
+							Sort.Direction.DESC, "createdTime"));
+				}
+			}
+			if (templateCollections.isEmpty()) {
+				response = new ArrayList<TemplateGetResponse>();
+				for (TemplateCollection templateCollection : templateCollections) {
+					TemplateGetResponse template = new TemplateGetResponse();
+					BeanUtil.map(templateCollection, template);
+					int i = 0;
+					for (TemplateItem item : templateCollection.getItems()) {
+						DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
+						TemplateDrug drug = new TemplateDrug();
+						BeanUtil.map(drugCollection, drug);
+						template.getItems().get(i).setDrug(drug);
+						i++;
+					}
+					response.add(template);
+				}
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "Template Not Found");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Template");
+		}
+		return response;
+	}
+
+	@Override
+	public List<DrugAddEditResponse> getDrugs(String doctorId, String hospitalId, String locationId, String createdTime) {
+		List<DrugAddEditResponse> response = null;
+		List<DrugCollection> drugCollections = null;
+		try {
+			if (DPDoctorUtils.anyStringEmpty(createdTime)) {
+				if (hospitalId == null && locationId == null) {
+					drugCollections = drugRepository.getDrugs(doctorId, new Sort(Sort.Direction.DESC, "createdTime"));
+				} else {
+					drugCollections = drugRepository.getDrugs(doctorId, hospitalId, locationId, new Sort(Sort.Direction.DESC, "createdTime"));
+				}
+			} else {
+				long createdTimeStamp = Long.parseLong(createdTime);
+				if (hospitalId == null && locationId == null) {
+					drugCollections = drugRepository.getDrugs(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+				} else {
+					drugCollections = drugRepository.getDrugs(doctorId, hospitalId, locationId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
+							"createdTime"));
+				}
+			}
+			if (!drugCollections.isEmpty()) {
+				response = new ArrayList<DrugAddEditResponse>();
+				BeanUtil.map(drugCollections, response);
+			} else {
+				throw new BusinessException(ServiceError.Unknown, "No Drugs Found");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
+		}
+		return response;
+	}
 }

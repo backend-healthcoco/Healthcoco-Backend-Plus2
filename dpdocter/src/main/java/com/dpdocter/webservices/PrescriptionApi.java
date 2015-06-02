@@ -25,6 +25,7 @@ import com.dpdocter.response.PrescriptionAddEditResponse;
 import com.dpdocter.response.TemplateAddEditResponse;
 import com.dpdocter.response.TemplateGetResponse;
 import com.dpdocter.services.PrescriptionServices;
+import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
 @Component
@@ -96,6 +97,51 @@ public class PrescriptionApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.PrescriptionUrls.GET_DRUGS_DOCTOR_SPECIFIC)
+	@GET
+	public Response<DrugAddEditResponse> getAllDrugs(@PathParam("doctorId") String doctorId) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
+		}
+		return getDrugs(doctorId, null, null, null);
+	}
+
+	@Path(value = PathProxy.PrescriptionUrls.GET_DRUGS_DOCTOR_SPECIFIC_CT)
+	@GET
+	public Response<DrugAddEditResponse> getAllDrugs(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, createdTime)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Created Time Cannot Be Empty");
+		}
+		return getDrugs(doctorId, null, null, createdTime);
+	}
+
+	@Path(value = PathProxy.PrescriptionUrls.GET_DRUGS_ALL_FIELDS)
+	@GET
+	public Response<DrugAddEditResponse> getAllDrugs(@PathParam("doctorId") String doctorId, @PathParam("hospitalId") String hospitalId,
+			@PathParam("locationId") String locationId) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, hospitalId, locationId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		return getDrugs(doctorId, hospitalId, locationId, null);
+	}
+
+	@Path(value = PathProxy.PrescriptionUrls.GET_DRUGS_ALL_FIELDS_CT)
+	@GET
+	public Response<DrugAddEditResponse> getAllDrugs(@PathParam("doctorId") String doctorId, @PathParam("hospitalId") String hospitalId,
+			@PathParam("locationId") String locationId, @PathParam("createdTime") String createdTime) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, hospitalId, locationId, createdTime)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Hospital Id, Location Id, Created Time Cannot Be Empty");
+		}
+		return getDrugs(doctorId, hospitalId, locationId, createdTime);
+	}
+
+	private Response<DrugAddEditResponse> getDrugs(String doctorId, String hospitalId, String locationId, String createdTime) {
+		List<DrugAddEditResponse> drugs = prescriptionServices.getDrugs(doctorId, hospitalId, locationId, createdTime);
+		Response<DrugAddEditResponse> response = new Response<DrugAddEditResponse>();
+		response.setDataList(drugs);
+		return response;
+	}
+
 	@Path(value = PathProxy.PrescriptionUrls.ADD_TEMPLATE)
 	@POST
 	public Response<TemplateAddEditResponse> addTemplate(TemplateAddEditRequest request) {
@@ -133,16 +179,61 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.GET_TEMPLATE)
+	@Path(value = PathProxy.PrescriptionUrls.GET_TEMPLATE_TEMPLATE_ID)
 	@GET
 	public Response<TemplateGetResponse> getTemplate(@PathParam(value = "templateId") String templateId, @PathParam(value = "doctorId") String doctorId,
 			@PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "locationId") String locationId) {
-		if (StringUtils.isEmpty(templateId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
+		if (DPDoctorUtils.anyStringEmpty(templateId, doctorId, hospitalId, locationId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Template Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
 		TemplateGetResponse templateGetResponse = prescriptionServices.getTemplate(templateId, doctorId, hospitalId, locationId);
 		Response<TemplateGetResponse> response = new Response<TemplateGetResponse>();
 		response.setData(templateGetResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.PrescriptionUrls.GET_TEMPLATE_DOCTOR_SPECIFIC)
+	@GET
+	public Response<TemplateGetResponse> getAllTemplates(@PathParam(value = "doctorId") String doctorId) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
+		}
+		return getTemplates(doctorId, null, null, null);
+	}
+
+	@Path(value = PathProxy.PrescriptionUrls.GET_TEMPLATE_DOCTOR_SPECIFIC_CT)
+	@GET
+	public Response<TemplateGetResponse> getAllTemplates(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "createdTime") String createdTime) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Created Time Cannot Be Empty");
+		}
+		return getTemplates(doctorId, null, null, createdTime);
+	}
+
+	@Path(value = PathProxy.PrescriptionUrls.GET_TEMPLATE_ALL_FIELDS)
+	@GET
+	public Response<TemplateGetResponse> getAllTemplates(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "hospitalId") String hospitalId,
+			@PathParam(value = "locationId") String locationId) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		return getTemplates(doctorId, hospitalId, locationId, null);
+	}
+
+	@Path(value = PathProxy.PrescriptionUrls.GET_TEMPLATE_ALL_FIELDS_CT)
+	@GET
+	public Response<TemplateGetResponse> getAllTemplates(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "hospitalId") String hospitalId,
+			@PathParam(value = "locationId") String locationId, @PathParam(value = "createdTime") String createdTime) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, hospitalId, locationId, createdTime)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Hospital Id, Location Id, Created Time Cannot Be Empty");
+		}
+		return getTemplates(doctorId, hospitalId, locationId, createdTime);
+	}
+
+	private Response<TemplateGetResponse> getTemplates(String doctorId, String hospitalId, String locationId, String createdTime) {
+		List<TemplateGetResponse> templates = prescriptionServices.getTemplates(doctorId, hospitalId, locationId, createdTime);
+		Response<TemplateGetResponse> response = new Response<TemplateGetResponse>();
+		response.setDataList(templates);
 		return response;
 	}
 

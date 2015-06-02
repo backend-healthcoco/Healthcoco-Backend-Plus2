@@ -431,12 +431,21 @@ public class ContactsServiceImpl implements ContactsService {
 		List<GroupCollection> groupCollections = null;
 		List<Group> groups = null;
 		try {
-			long createdTimeStamp = Long.parseLong(createdTime);
-			if (locationId == null && hospitalId == null) {
-				patientCollections = patientRepository.findByDoctorId(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+			if (DPDoctorUtils.anyStringEmpty(createdTime)) {
+				if (locationId == null && hospitalId == null) {
+					patientCollections = patientRepository.findByDoctorId(doctorId, new Sort(Sort.Direction.DESC, "createdTime"));
+				} else {
+					patientCollections = patientRepository.findByDoctorIdLocationIdAndHospitalId(doctorId, locationId, hospitalId, new Sort(
+							Sort.Direction.DESC, "createdTime"));
+				}
 			} else {
-				patientCollections = patientRepository.findByDoctorIdLocationIdAndHospitalId(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-						new Sort(Sort.Direction.DESC, "createdTime"));
+				long createdTimeStamp = Long.parseLong(createdTime);
+				if (locationId == null && hospitalId == null) {
+					patientCollections = patientRepository.findByDoctorId(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+				} else {
+					patientCollections = patientRepository.findByDoctorIdLocationIdAndHospitalId(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
+							new Sort(Sort.Direction.DESC, "createdTime"));
+				}
 			}
 
 			if (!patientCollections.isEmpty()) {

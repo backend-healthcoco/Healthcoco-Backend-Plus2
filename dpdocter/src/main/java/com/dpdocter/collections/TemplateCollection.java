@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.beans.TemplateItem;
 
 @Document(collection = "template_cl")
-public class TemplateCollection {
+public class TemplateCollection extends GenericCollection {
 	@Field
 	private String id;
 

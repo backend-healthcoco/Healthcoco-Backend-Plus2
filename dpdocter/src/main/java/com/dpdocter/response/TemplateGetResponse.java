@@ -3,8 +3,9 @@ package com.dpdocter.response;
 import java.util.List;
 
 import com.dpdocter.beans.TemplateGetItem;
+import com.dpdocter.collections.GenericCollection;
 
-public class TemplateGetResponse {
+public class TemplateGetResponse extends GenericCollection {
 	private String id;
 
 	private String name;
