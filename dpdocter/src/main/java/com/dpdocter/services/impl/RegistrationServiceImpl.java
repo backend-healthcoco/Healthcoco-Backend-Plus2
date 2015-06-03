@@ -61,6 +61,7 @@ import com.dpdocter.services.GenerateUniqueUserNameService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.RegistrationService;
+import common.util.web.DPDoctorUtils;
 
 @Service
 public class RegistrationServiceImpl implements RegistrationService {
@@ -177,7 +178,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 			patientCollection.setUserId(userCollection.getId());
 			patientCollection.setRegistrationDate(request.getDateOfVisit());
 			patientCollection.setCreatedTime(new Date());
-			patientCollection.setPID(request.getPatientNumber());
+			if (!DPDoctorUtils.anyStringEmpty(request.getPatientNumber())) {
+				patientCollection.setPID(request.getPatientNumber());
+			} else {
+				patientCollection.setPID(patientIdGenerator(request.getDoctorId(), request.getLocationId(), request.getHospitalId()));
+			}
 			if (addressCollection != null) {
 				patientCollection.setAddressId(addressCollection.getId());
 			}
@@ -259,8 +264,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					request.getLocationId(), request.getHospitalId());
 			if (patientCollection != null) {
 				String patientId = patientCollection.getId();
-				
-				
+
 				BeanUtil.map(request, patientCollection);
 				patientCollection.setId(patientId);
 			} else {
@@ -272,7 +276,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 			}
 			patientCollection.setRelations(request.getRelations());
 			patientCollection.setNotes(request.getNotes());
-			patientCollection.setPID(request.getPatientNumber());
+			if (!DPDoctorUtils.anyStringEmpty(request.getPatientNumber())) {
+				patientCollection.setPID(request.getPatientNumber());
+			} else {
+				patientCollection.setPID(patientIdGenerator(request.getDoctorId(), request.getLocationId(), request.getHospitalId()));
+			}
 			patientCollection.setCreatedTime(new Date());
 			patientCollection.setRegistrationDate(request.getDateOfVisit());
 			patientCollection = patientRepository.save(patientCollection);
