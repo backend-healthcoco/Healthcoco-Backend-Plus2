@@ -19,7 +19,7 @@ public interface DrugRepository extends MongoRepository<DrugCollection, String> 
 	@Query("{'doctorId': ?0}")
 	List<DrugCollection> getDrugs(String doctorId, Sort sort);
 
-	@Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'createdTime': {'$gte': ?1}}")
+	@Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'createdTime': {'$gte': ?3}}")
 	List<DrugCollection> getDrugs(String doctorId, String hospitalId, String locationId, Date date, Sort sort);
 
 	@Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2}")

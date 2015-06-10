@@ -3,6 +3,7 @@ package com.dpdocter.services.impl;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
@@ -11,6 +12,7 @@ import org.apache.commons.collections.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.MailAttachment;
@@ -34,6 +36,7 @@ import com.dpdocter.request.TagRecordRequest;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.RecordsService;
+import common.util.web.DPDoctorUtils;
 
 @Service
 public class RecordsServiceImpl implements RecordsService {
@@ -72,6 +75,7 @@ public class RecordsServiceImpl implements RecordsService {
 			// save records
 			RecordsCollection recordsCollection = new RecordsCollection();
 			BeanUtil.map(request, recordsCollection);
+			recordsCollection.setCreatedTime(new Date());
 			recordsCollection.setRecordsUrl(recordUrl);
 			recordsCollection.setRecordsPath(recordPath);
 			recordsCollection.setRecordsLable(getFileNameFromImageURL(recordUrl));
@@ -313,4 +317,37 @@ public class RecordsServiceImpl implements RecordsService {
 		return records;
 	}
 
+	@Override
+	public List<Records> searchRecords(String doctorId, String locationId, String hospitalId, String createdTime) {
+		List<Records> records = null;
+		List<RecordsTagsCollection> recordsTagsCollections = null;
+		try {
+			if (DPDoctorUtils.anyStringEmpty(createdTime)) {
+				if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
+					recordsTagsCollections = recordsTagsRepository.findAll(doctorId, new Sort(Sort.Direction.DESC, "createdTime"));
+				} else {
+					recordsTagsCollections = recordsTagsRepository.findAll(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"));
+				}
+			} else {
+				long createdTimeStamp = Long.parseLong(createdTime);
+				if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
+					recordsTagsCollections = recordsTagsRepository.findAll(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+				} else {
+					recordsTagsCollections = recordsTagsRepository.findAll(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(
+							Sort.Direction.DESC, "createdTime"));
+				}
+			}
+
+			if (recordsTagsCollections != null && !recordsTagsCollections.isEmpty()) {
+				records = new ArrayList<Records>();
+				BeanUtil.map(recordsTagsCollections, records);
+			} else {
+				throw new BusinessException(ServiceError.Unknown, "No Records Found");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return records;
+	}
 }

@@ -121,7 +121,13 @@ public interface PathProxy {
 
 		public static final String GET_CLINICAL_NOTES_ID = "/getbyid/{clinicalNotesId}";
 
-		public static final String GET_CLINICAL_NOTES = "/get/{doctorId}/{locationId}/{hospitalId}/{patientId}/{isOTPVarified}";
+		public static final String GET_CLINICAL_NOTES_DOCTOR_ID = "get/{doctorId}/{patientId}/{isOTPVerified}";
+
+		public static final String GET_CLINICAL_NOTES_DOCTOR_ID_CT = "get/{doctorId}/{patientId}/{createdTime}/{isOTPVerified}";
+
+		public static final String GET_CLINICAL_NOTES = "/get/{doctorId}/{locationId}/{hospitalId}/{patientId}/{isOTPVerified}";
+
+		public static final String GET_CLINICAL_NOTES_CT = "/get/{doctorId}/{locationId}/{hospitalId}/{patientId}/{createdTime}/{isOTPVerified}";
 
 		public static final String ADD_COMPLAINT = "/addcomplaint";
 
@@ -180,6 +186,14 @@ public interface PathProxy {
 
 		public static final String SEARCH_RECORD = "/search";
 
+		public static final String SEARCH_RECORD_DOCTOR_ID = "/search/{doctorId}";
+
+		public static final String SEARCH_RECORD_DOCTOR_ID_CT = "/search/{doctorId}/{createdTime}";
+
+		public static final String SEARCH_RECORD_ALL_FIELDS = "/search/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String SEARCH_RECORD_ALL_FIELDS_CT = "/search/{doctorId}/{locationId}/{hospitalId}/{createdTime}";
+
 		public static final String CREATE_TAG = "/createtag";
 
 		public static final String GET_ALL_TAGS = "/getalltags/{doctorId}/{locationId}/{hospitalId}";
@@ -205,7 +219,9 @@ public interface PathProxy {
 
 		public static final String DELETE_DRUG = "deleteDrug/{drugId}/{doctorId}/{hospitalId}/{locationId}";
 
-		public static final String GET_DRUG_ID = "getDrugDetails/{drugId}";
+		/*public static final String GET_DRUG_ID = "getDrugDetails/{drugId}";*/
+
+		public static final String GET_DRUG_ID = "getDrugs/{drugId}";
 
 		public static final String GET_DRUGS_DOCTOR_SPECIFIC = "getDrugDetails/{doctorId}";
 
@@ -225,13 +241,13 @@ public interface PathProxy {
 
 		public static final String GET_TEMPLATE_TEMPLATE_ID = "getTemplate/{templateId}/{doctorId}/{hospitalId}/{locationId}";
 
-		public static final String GET_TEMPLATE_DOCTOR_SPECIFIC = "getTemplate/{doctorId}";
+		public static final String GET_TEMPLATE_DOCTOR_SPECIFIC = "getTemplates/{doctorId}";
 
-		public static final String GET_TEMPLATE_ALL_FIELDS = "getTemplate/{doctorId}/{hospitalId}/{locationId}";
+		public static final String GET_TEMPLATE_ALL_FIELDS = "getTemplates/{doctorId}/{hospitalId}/{locationId}";
 
-		public static final String GET_TEMPLATE_DOCTOR_SPECIFIC_CT = "getTemplate/{doctorId}/{createdTime}";
+		public static final String GET_TEMPLATE_DOCTOR_SPECIFIC_CT = "getTemplates/{doctorId}/{createdTime}";
 
-		public static final String GET_TEMPLATE_ALL_FIELDS_CT = "getTemplate/{doctorId}/{hospitalId}/{locationId}/{createdTime}";
+		public static final String GET_TEMPLATE_ALL_FIELDS_CT = "getTemplates/{doctorId}/{hospitalId}/{locationId}/{createdTime}";
 
 		public static final String ADD_PRESCRIPTION = "addPrescription";
 

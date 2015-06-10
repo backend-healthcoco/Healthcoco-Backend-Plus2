@@ -25,6 +25,7 @@ import com.dpdocter.request.RecordsAddRequest;
 import com.dpdocter.request.RecordsSearchRequest;
 import com.dpdocter.request.TagRecordRequest;
 import com.dpdocter.services.RecordsService;
+import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
 @Component
@@ -71,6 +72,51 @@ public class RecordsApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		List<Records> records = recordsService.searchRecords(request);
+		Response<Records> response = new Response<Records>();
+		response.setDataList(records);
+		return response;
+	}
+
+	@Path(value = PathProxy.RecordsUrls.SEARCH_RECORD_DOCTOR_ID)
+	@GET
+	public Response<Records> getRecords(@PathParam("doctorId") String doctorId) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
+		}
+		return searchRecords(doctorId, null, null, null);
+	}
+
+	@Path(value = PathProxy.RecordsUrls.SEARCH_RECORD_DOCTOR_ID_CT)
+	@GET
+	public Response<Records> getRecords(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Created Time Cannot Be Empty");
+		}
+		return searchRecords(doctorId, null, null, createdTime);
+	}
+
+	@Path(value = PathProxy.RecordsUrls.SEARCH_RECORD_ALL_FIELDS)
+	@GET
+	public Response<Records> getRecords(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+			@PathParam("hospitalId") String hospitalId) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Location Id, Hospital Id Cannot Be Empty");
+		}
+		return searchRecords(doctorId, locationId, hospitalId, null);
+	}
+
+	@Path(value = PathProxy.RecordsUrls.SEARCH_RECORD_ALL_FIELDS_CT)
+	@GET
+	public Response<Records> getRecords(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+			@PathParam("hospitalId") String hospitalId, @PathParam("createdTime") String createdTime) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Location Id, Hospital Id, and Created Time Cannot Be Empty");
+		}
+		return searchRecords(doctorId, locationId, hospitalId, createdTime);
+	}
+
+	private Response<Records> searchRecords(String doctorId, String locationId, String hospitalId, String createdTime) {
+		List<Records> records = recordsService.searchRecords(doctorId, locationId, hospitalId, createdTime);
 		Response<Records> response = new Response<Records>();
 		response.setDataList(records);
 		return response;

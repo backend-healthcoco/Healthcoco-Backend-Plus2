@@ -1,6 +1,8 @@
 package com.dpdocter.beans;
 
-public class Records {
+import com.dpdocter.collections.GenericCollection;
+
+public class Records extends GenericCollection {
 	private String id;
 
 	private String recordsUrl;

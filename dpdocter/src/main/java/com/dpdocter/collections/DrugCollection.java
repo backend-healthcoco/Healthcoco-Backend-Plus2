@@ -2,9 +2,7 @@ package com.dpdocter.collections;
 
 import java.util.List;
 
-import org.codehaus.jackson.map.deser.CreatorContainer;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -32,15 +30,15 @@ public class DrugCollection extends GenericCollection {
 	private List<String> genericNames;
 
 	@Field
-	@Indexed(sparse = true)
+	/*@Indexed(sparse = true)*/
 	private String doctorId;
 
 	@Field
-	@Indexed(sparse = true)
+	/*@Indexed(sparse = true)*/
 	private String hospitalId;
 
 	@Field
-	@Indexed(sparse = true)
+	/*@Indexed(sparse = true)*/
 	private String locationId;
 
 	@Field

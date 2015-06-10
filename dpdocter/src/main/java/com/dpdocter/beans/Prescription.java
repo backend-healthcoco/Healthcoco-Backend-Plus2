@@ -2,7 +2,9 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-public class Prescription {
+import com.dpdocter.collections.GenericCollection;
+
+public class Prescription extends GenericCollection {
 	private String id;
 
 	private String name;

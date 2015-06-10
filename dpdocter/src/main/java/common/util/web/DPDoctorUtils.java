@@ -13,4 +13,15 @@ public class DPDoctorUtils {
 		}
 		return result;
 	}
+
+	public static boolean allStringsEmpty(String... values) {
+		boolean result = true;
+		for (String value : values) {
+			if (!StringUtils.isEmpty(value)) {
+				result = false;
+				break;
+			}
+		}
+		return result;
+	}
 }

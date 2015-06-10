@@ -34,4 +34,6 @@ public interface RecordsService {
 
 	void deleteRecord(String recordId);
 
+	List<Records> searchRecords(String doctorId, String locationId, String hospitalId, String createdTime);
+
 }

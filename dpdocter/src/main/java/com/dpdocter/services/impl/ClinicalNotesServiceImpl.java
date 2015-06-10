@@ -3,6 +3,7 @@ package com.dpdocter.services.impl;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
@@ -11,6 +12,7 @@ import org.apache.commons.collections.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +47,7 @@ import com.dpdocter.request.ClinicalNotesAddRequest;
 import com.dpdocter.request.ClinicalNotesEditRequest;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.FileManager;
+import common.util.web.DPDoctorUtils;
 
 @Service
 public class ClinicalNotesServiceImpl implements ClinicalNotesService {
@@ -88,6 +91,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			// save clinical notes.
 			ClinicalNotesCollection clinicalNotesCollection = new ClinicalNotesCollection();
 			BeanUtil.map(request, clinicalNotesCollection);
+			clinicalNotesCollection.setCreatedTime(new Date());
 			/*	if(request.getDiagrams() != null){
 					List<String> diagramUrls = new ArrayList<String>();
 					List<String> diagramPaths = new ArrayList<String>();;
@@ -226,6 +230,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		try {
 			ClinicalNotesCollection clinicalNotesCollection = new ClinicalNotesCollection();
 			BeanUtil.map(request, clinicalNotesCollection);
+			clinicalNotesCollection.setCreatedTime(new Date());
 			if (request.getDiagrams() != null) {
 				List<String> diagramUrls = new ArrayList<String>();
 				List<String> diagramPaths = new ArrayList<String>();
@@ -266,10 +271,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	}
 
-	public List<ClinicalNotes> getPatientsClinicalNotesWithVarifiedOTP(String patientId) {
+	public List<ClinicalNotes> getPatientsClinicalNotesWithVerifiedOTP(String patientId, String createdTime) {
 		List<ClinicalNotes> clinicalNotesList = null;
+		List<PatientClinicalNotesCollection> patientClinicalNotesCollections = null;
 		try {
-			List<PatientClinicalNotesCollection> patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId);
+			if (createdTime != null) {
+				long createdTimeStamp = Long.parseLong(createdTime);
+				patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Date(createdTimeStamp), new Sort(
+						Sort.Direction.DESC, "createdTime"));
+			} else {
+				patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Sort(Sort.Direction.DESC, "createdTime"));
+			}
+
 			if (patientClinicalNotesCollections != null) {
 				@SuppressWarnings("unchecked")
 				Collection<String> clinicalNotesIds = CollectionUtils.collect(patientClinicalNotesCollections, new BeanToPropertyValueTransformer(
@@ -291,21 +304,40 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return clinicalNotesList;
 	}
 
-	public List<ClinicalNotes> getPatientsClinicalNotesWithoutVarifiedOTP(String patientId, String doctorId, String locationId, String hospitalId) {
+	public List<ClinicalNotes> getPatientsClinicalNotesWithoutVerifiedOTP(String patientId, String doctorId, String locationId, String hospitalId,
+			String createdTime) {
 		List<ClinicalNotes> clinicalNotesList = null;
+		List<PatientClinicalNotesCollection> patientClinicalNotesCollections = null;
 		try {
-			List<PatientClinicalNotesCollection> patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId);
+			if (createdTime != null) {
+				long createdTimeStamp = Long.parseLong(createdTime);
+				patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Date(createdTimeStamp), new Sort(
+						Sort.Direction.DESC, "createdTime"));
+			} else {
+				patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Sort(Sort.Direction.DESC, "createdTime"));
+			}
 			if (patientClinicalNotesCollections != null) {
 				@SuppressWarnings("unchecked")
 				Collection<String> clinicalNotesIds = CollectionUtils.collect(patientClinicalNotesCollections, new BeanToPropertyValueTransformer(
 						"clinicalNotesId"));
 				clinicalNotesList = new ArrayList<ClinicalNotes>();
-				for (String clinicalNotesId : clinicalNotesIds) {
-					ClinicalNotes clinicalNotes = getNotesById(clinicalNotesId);
-					if (clinicalNotes != null) {
-						if (clinicalNotes.getDoctorId().equals(doctorId) && clinicalNotes.getLocationId().equals(locationId)
-								&& clinicalNotes.getHospitalId().equals(hospitalId)) {
-							clinicalNotesList.add(clinicalNotes);
+				if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
+					for (String clinicalNotesId : clinicalNotesIds) {
+						ClinicalNotes clinicalNotes = getNotesById(clinicalNotesId);
+						if (clinicalNotes != null) {
+							if (clinicalNotes.getDoctorId().equals(doctorId)) {
+								clinicalNotesList.add(clinicalNotes);
+							}
+						}
+					}
+				} else {
+					for (String clinicalNotesId : clinicalNotesIds) {
+						ClinicalNotes clinicalNotes = getNotesById(clinicalNotesId);
+						if (clinicalNotes != null) {
+							if (clinicalNotes.getDoctorId().equals(doctorId) && clinicalNotes.getLocationId().equals(locationId)
+									&& clinicalNotes.getHospitalId().equals(hospitalId)) {
+								clinicalNotesList.add(clinicalNotes);
+							}
 						}
 					}
 				}

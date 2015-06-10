@@ -3,8 +3,10 @@ package com.dpdocter.beans;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
+import com.dpdocter.collections.GenericCollection;
+
 @JsonSerialize(include = Inclusion.NON_DEFAULT)
-public class Group {
+public class Group extends GenericCollection {
 	private String id;
 
 	private String name;

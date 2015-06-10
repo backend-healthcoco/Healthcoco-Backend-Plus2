@@ -73,16 +73,43 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_DOCTOR_ID)
+	@GET
+	public Response<ClinicalNotes> getNotes(@PathParam("doctorId") String doctorId, @PathParam("patientId") String patientId,
+			@PathParam("isOTPVerified") boolean isOTPVerified) {
+		return getAllNotes(doctorId, null, null, patientId, null, isOTPVerified);
+	}
+
+	@Path(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_DOCTOR_ID_CT)
+	@GET
+	public Response<ClinicalNotes> getNotes(@PathParam("doctorId") String doctorId, @PathParam("patientId") String patientId,
+			@PathParam("createdTime") String createdTime, @PathParam("isOTPVerified") boolean isOTPVerified) {
+		return getAllNotes(doctorId, null, null, patientId, null, isOTPVerified);
+	}
+
 	@Path(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES)
 	@GET
 	public Response<ClinicalNotes> getNotes(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 			@PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "patientId") String patientId,
-			@PathParam(value = "isOTPVarified") boolean isOTPVarified) {
+			@PathParam(value = "isOTPVerified") boolean isOTPVerified) {
+		return getAllNotes(doctorId, locationId, hospitalId, patientId, null, isOTPVerified);
+	}
+
+	@Path(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_CT)
+	@GET
+	public Response<ClinicalNotes> getNotes(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "patientId") String patientId, @PathParam("createdTime") String createdTime,
+			@PathParam(value = "isOTPVerified") boolean isOTPVerified) {
+		return getAllNotes(doctorId, null, null, patientId, createdTime, isOTPVerified);
+	}
+
+	private Response<ClinicalNotes> getAllNotes(String doctorId, String locationId, String hospitalId, String patientId, String createdTime,
+			boolean isOTPVerified) {
 		List<ClinicalNotes> clinicalNotes = null;
-		if (isOTPVarified) {
-			clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithVarifiedOTP(patientId);
+		if (isOTPVerified) {
+			clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithVerifiedOTP(patientId, createdTime);
 		} else {
-			clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVarifiedOTP(patientId, doctorId, locationId, hospitalId);
+			clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(patientId, doctorId, locationId, hospitalId, createdTime);
 		}
 
 		Response<ClinicalNotes> response = new Response<ClinicalNotes>();
