@@ -122,6 +122,16 @@ public class RecordsApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.RecordsUrls.GET_RECORD_COUNT)
+	@GET
+	public Response<Integer> getRecordCount(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+			@PathParam("hospitalId") String hospitalId) {
+		Integer recordCount = recordsService.getRecordCount(doctorId, locationId, hospitalId);
+		Response<Integer> response = new Response<Integer>();
+		response.setData(recordCount);
+		return response;
+	}
+
 	@Path(value = PathProxy.RecordsUrls.CHANGE_LABEL_RECORD)
 	@POST
 	public Response<Boolean> changeLabel(ChangeRecordLabelRequest request) {

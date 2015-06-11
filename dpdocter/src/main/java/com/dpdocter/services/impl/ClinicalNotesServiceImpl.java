@@ -659,4 +659,16 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return observations;
 	}
 
+	@Override
+	public Integer getClinicalNotesCount(String doctorId, String locationId, String hospitalId) {
+		Integer clinicalNotesCount = 0;
+		try {
+			clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCount(doctorId, hospitalId, locationId);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Clinical Notes Count");
+		}
+		return clinicalNotesCount;
+	}
+
 }

@@ -117,6 +117,16 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.ClinicalNotesUrls.GET_CLINIC_NOTES_COUNT)
+	@GET
+	public Response<Integer> getClinicalNotesCount(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId) {
+		Integer clinicalNotesCount = clinicalNotesService.getClinicalNotesCount(doctorId, locationId, hospitalId);
+		Response<Integer> response = new Response<Integer>();
+		response.setData(clinicalNotesCount);
+		return response;
+	}
+
 	@Path(value = PathProxy.ClinicalNotesUrls.ADD_COMPLAINT)
 	@POST
 	public Response<Complaint> addComplaint(Complaint request) {

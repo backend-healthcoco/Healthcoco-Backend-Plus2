@@ -57,4 +57,6 @@ public interface ClinicalNotesService {
 
 	List<Observation> getCustomObservations(String doctorId, String locationId, String hospitalId, int page, int size);
 
+	Integer getClinicalNotesCount(String doctorId, String locationId, String hospitalId);
+
 }

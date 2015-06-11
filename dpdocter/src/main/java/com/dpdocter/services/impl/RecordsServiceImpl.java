@@ -320,27 +320,27 @@ public class RecordsServiceImpl implements RecordsService {
 	@Override
 	public List<Records> searchRecords(String doctorId, String locationId, String hospitalId, String createdTime) {
 		List<Records> records = null;
-		List<RecordsTagsCollection> recordsTagsCollections = null;
+		List<RecordsCollection> recordsCollections = null;
 		try {
 			if (DPDoctorUtils.anyStringEmpty(createdTime)) {
 				if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
-					recordsTagsCollections = recordsTagsRepository.findAll(doctorId, new Sort(Sort.Direction.DESC, "createdTime"));
+					recordsCollections = recordsRepository.findAll(doctorId, false, new Sort(Sort.Direction.DESC, "createdTime"));
 				} else {
-					recordsTagsCollections = recordsTagsRepository.findAll(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"));
+					recordsCollections = recordsRepository.findAll(doctorId, locationId, hospitalId, false, new Sort(Sort.Direction.DESC, "createdTime"));
 				}
 			} else {
 				long createdTimeStamp = Long.parseLong(createdTime);
 				if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
-					recordsTagsCollections = recordsTagsRepository.findAll(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+					recordsCollections = recordsRepository.findAll(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
 				} else {
-					recordsTagsCollections = recordsTagsRepository.findAll(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(
+					recordsCollections = recordsRepository.findAll(doctorId, locationId, hospitalId, new Date(createdTimeStamp), false, new Sort(
 							Sort.Direction.DESC, "createdTime"));
 				}
 			}
 
-			if (recordsTagsCollections != null && !recordsTagsCollections.isEmpty()) {
+			if (recordsCollections != null && !recordsCollections.isEmpty()) {
 				records = new ArrayList<Records>();
-				BeanUtil.map(recordsTagsCollections, records);
+				BeanUtil.map(recordsCollections, records);
 			} else {
 				throw new BusinessException(ServiceError.Unknown, "No Records Found");
 			}
@@ -349,5 +349,17 @@ public class RecordsServiceImpl implements RecordsService {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return records;
+	}
+
+	@Override
+	public Integer getRecordCount(String doctorId, String locationId, String hospitalId) {
+		Integer recordCount = 0;
+		try {
+			recordCount = recordsRepository.getRecordCount(doctorId, hospitalId, locationId, false);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Records Count");
+		}
+		return recordCount;
 	}
 }

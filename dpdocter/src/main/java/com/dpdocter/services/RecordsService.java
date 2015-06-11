@@ -36,4 +36,6 @@ public interface RecordsService {
 
 	List<Records> searchRecords(String doctorId, String locationId, String hospitalId, String createdTime);
 
+	Integer getRecordCount(String doctorId, String locationId, String hospitalId);
+
 }

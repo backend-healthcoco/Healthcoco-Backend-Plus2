@@ -466,4 +466,16 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		return response;
 	}
+
+	@Override
+	public Integer getPrescriptionCount(String doctorId, String locationId, String hospitalId) {
+		Integer prescriptionCount = 0;
+		try {
+			prescriptionCount = prescriptionRepository.getPrescriptionCount(doctorId, hospitalId, locationId, false);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Prescription Count");
+		}
+		return prescriptionCount;
+	}
 }
