@@ -170,18 +170,20 @@ public class ContactsServiceImpl implements ContactsService {
 		List<PatientCard> patientCards = new ArrayList<PatientCard>();
 		for (PatientCollection patientCollection : patientCollections) {
 			UserCollection userCollection = userRepository.findOne(patientCollection.getUserId());
-			List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getId());
-			@SuppressWarnings("unchecked")
-			Collection<String> groupIds = CollectionUtils.collect(patientGroupCollections, new BeanToPropertyValueTransformer("groupId"));
-			List<Group> groups = new ArrayList<Group>();
-			List<GroupCollection> groupCollections = (List<GroupCollection>) groupRepository.findAll(groupIds);
-			BeanUtil.map(groupCollections, groups);
-			PatientCard patientCard = new PatientCard();
-			BeanUtil.map(patientCollection, patientCard);
-			BeanUtil.map(userCollection, patientCard);
-			patientCard.setGroups(groups);
-			patientCard.setDob(userCollection.getDob());
-			patientCards.add(patientCard);
+			if(userCollection != null){
+				List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getId());
+				@SuppressWarnings("unchecked")
+				Collection<String> groupIds = CollectionUtils.collect(patientGroupCollections, new BeanToPropertyValueTransformer("groupId"));
+				List<Group> groups = new ArrayList<Group>();
+				List<GroupCollection> groupCollections = (List<GroupCollection>) groupRepository.findAll(groupIds);
+				BeanUtil.map(groupCollections, groups);
+				PatientCard patientCard = new PatientCard();
+				BeanUtil.map(patientCollection, patientCard);
+				BeanUtil.map(userCollection, patientCard);
+				patientCard.setGroups(groups);
+				patientCard.setDob(userCollection.getDob());
+				patientCards.add(patientCard);
+			}
 		}
 		return patientCards;
 	}
