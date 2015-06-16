@@ -38,10 +38,6 @@ public class RecordsApi {
 
 	@POST
 	@Path(value = PathProxy.RecordsUrls.ADD_RECORDS)
-	// public Response<Records> addRecords(RecordsAddRequest
-	// request,@FormDataParam("file") InputStream
-	// fileInputStream,@FormDataParam("file") FormDataContentDisposition
-	// contentDispositionHeader){
 	public Response<Records> addRecords(RecordsAddRequest request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -77,7 +73,7 @@ public class RecordsApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecordsUrls.SEARCH_RECORD_DOCTOR_ID)
+	/*@Path(value = PathProxy.RecordsUrls.SEARCH_RECORD_DOCTOR_ID)
 	@GET
 	public Response<Records> getRecords(@PathParam("doctorId") String doctorId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
@@ -120,7 +116,7 @@ public class RecordsApi {
 		Response<Records> response = new Response<Records>();
 		response.setDataList(records);
 		return response;
-	}
+	}*/
 
 	@Path(value = PathProxy.RecordsUrls.GET_RECORD_COUNT)
 	@GET
@@ -213,6 +209,18 @@ public class RecordsApi {
 		ResponseBuilder response = javax.ws.rs.core.Response.ok((Object) file);
 		response.header("Content-Disposition", "attachment; filename=" + file.getName());
 		return response.build();
+	}
+
+	@Path(value = PathProxy.RecordsUrls.EDIT_DESCRIPTION)
+	@GET
+	public Response<Boolean> editDescription(@PathParam("recordId") String recordId, @PathParam("description") String description) {
+		if (DPDoctorUtils.anyStringEmpty(recordId, description)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Record Id, and Description Cannot Be Empty");
+		}
+		boolean editDescriptionResponse = recordsService.editDescription(recordId, description);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(editDescriptionResponse);
+		return response;
 	}
 
 }

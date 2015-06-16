@@ -38,4 +38,6 @@ public interface RecordsService {
 
 	Integer getRecordCount(String doctorId, String locationId, String hospitalId);
 
+	boolean editDescription(String recordId, String description);
+
 }

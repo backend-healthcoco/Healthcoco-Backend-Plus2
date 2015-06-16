@@ -59,4 +59,14 @@ public interface ClinicalNotesService {
 
 	Integer getClinicalNotesCount(String doctorId, String locationId, String hospitalId);
 
+	List<Complaint> getComplaints(String doctorId, String createdTime);
+
+	List<Investigation> getInvestigations(String doctorId, String createdTime);
+
+	List<Observation> getObservations(String doctorId, String createdTime);
+
+	List<Diagnosis> getDiagnosis(String doctorId, String createdTime);
+
+	List<Notes> getNotes(String doctorId, String createdTime);
+
 }

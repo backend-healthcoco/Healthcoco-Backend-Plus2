@@ -163,6 +163,16 @@ public interface PathProxy {
 
 		public static final String GET_CUSTOM_OBSERVATIONS = "getCustomObservations/{doctorId}/{locationId}/{hospitalId}/{page}/{size}";
 
+		public static final String GET_COMPLAINTS = "getComplaints/{doctorId}/{createdTime}";
+
+		public static final String GET_INVESTIGATIONS = "getInvestigations/{doctorId}/{createdTime}";
+
+		public static final String GET_OBSERVATIONS = "getObservations/{doctorId}/{createdTime}";
+
+		public static final String GET_DIAGNOSIS = "getDiagnosis/{doctorId}/{createdTime}";
+
+		public static final String GET_NOTES = "getNotes/{doctorId}/{createdTime}";
+
 	}
 
 	public static final String FORGOT_PASSWORD_BASE_URL = BASE_URL + "/forgotPassword";
@@ -211,6 +221,8 @@ public interface PathProxy {
 		public static final String DOWNLOAD_RECORD = "/downloadrecord/{recordId}";
 
 		public static final String DELETE_TAG = "/deletetag/{tagid}";
+
+		public static final String EDIT_DESCRIPTION = "editDescription/{recordId}/{description}";
 
 	}
 

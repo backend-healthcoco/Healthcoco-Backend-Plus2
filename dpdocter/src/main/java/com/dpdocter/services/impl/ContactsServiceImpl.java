@@ -170,7 +170,7 @@ public class ContactsServiceImpl implements ContactsService {
 		List<PatientCard> patientCards = new ArrayList<PatientCard>();
 		for (PatientCollection patientCollection : patientCollections) {
 			UserCollection userCollection = userRepository.findOne(patientCollection.getUserId());
-			if(userCollection != null){
+			if (userCollection != null) {
 				List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getId());
 				@SuppressWarnings("unchecked")
 				Collection<String> groupIds = CollectionUtils.collect(patientGroupCollections, new BeanToPropertyValueTransformer("groupId"));

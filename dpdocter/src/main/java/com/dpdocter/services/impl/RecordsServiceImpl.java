@@ -123,17 +123,6 @@ public class RecordsServiceImpl implements RecordsService {
 
 	public void tagRecord(TagRecordRequest request) {
 		try {
-			/*	//save tags
-				List<TagsCollection> tagsCollections = null;
-				if(request.getTags() != null){
-					tagsCollections = new ArrayList<TagsCollection>();
-					for(Tags tag : request.getTags()){
-					TagsCollection tagsCollection =new TagsCollection();
-					BeanUtil.map(tag, tagsCollection);
-					tagsCollection = tagsRepository.save(tagsCollection);
-					tagsCollections.add(tagsCollection);
-				}*/
-			// save recrds tags map
 			List<RecordsTagsCollection> recordsTagsCollections = new ArrayList<RecordsTagsCollection>();
 			for (String tagId : request.getTags()) {
 				RecordsTagsCollection recordsTagsCollection = new RecordsTagsCollection();
@@ -168,18 +157,24 @@ public class RecordsServiceImpl implements RecordsService {
 
 	public List<Records> searchRecords(RecordsSearchRequest request) {
 		List<Records> records = null;
+		List<RecordsCollection> recordsCollections = null;
 		try {
 			if (request.getTagId() != null) {
 				List<RecordsTagsCollection> recordsTagsCollections = recordsTagsRepository.findByTagsId(request.getTagId());
 				@SuppressWarnings("unchecked")
 				Collection<String> recordIds = CollectionUtils.collect(recordsTagsCollections, new BeanToPropertyValueTransformer("recordsId"));
 				@SuppressWarnings("unchecked")
-				List<RecordsCollection> recordsCollections = IteratorUtils.toList(recordsRepository.findAll(recordIds).iterator());
+				List<RecordsCollection> recordCollections = IteratorUtils.toList(recordsRepository.findAll(recordIds).iterator());
 				records = new ArrayList<Records>();
-				BeanUtil.map(recordsCollections, records);
+				BeanUtil.map(recordCollections, records);
 			} else {
-				List<RecordsCollection> recordsCollections = recordsRepository.findRecords(request.getDoctorId(), request.getLocationId(),
-						request.getHospitalId(), false);
+				if (request.getCreatedTime() != null) {
+					long createdTimeStamp = Long.parseLong(request.getCreatedTime());
+					recordsCollections = recordsRepository.findRecords(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), new Date(
+							createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
+				} else {
+					recordsCollections = recordsRepository.findRecords(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), false);
+				}
 				records = new ArrayList<Records>();
 				BeanUtil.map(recordsCollections, records);
 			}
@@ -361,5 +356,26 @@ public class RecordsServiceImpl implements RecordsService {
 			throw new BusinessException(ServiceError.Unknown, "Error while getting Records Count");
 		}
 		return recordCount;
+	}
+
+	@Override
+	public boolean editDescription(String recordId, String description) {
+		RecordsCollection record = null;
+		boolean response = false;
+		try {
+			record = recordsRepository.findOne(recordId);
+			if (record != null) {
+				record.setDescription(description);
+				recordsRepository.save(record);
+				response = true;
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "No record found for the given record id");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while editing description");
+		}
+		return response;
 	}
 }

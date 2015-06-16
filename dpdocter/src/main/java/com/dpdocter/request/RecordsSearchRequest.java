@@ -11,6 +11,8 @@ public class RecordsSearchRequest {
 
 	private String hospitalId;
 
+	private String createdTime;
+
 	public String getLocationId() {
 		return locationId;
 	}
@@ -49,6 +51,14 @@ public class RecordsSearchRequest {
 
 	public void setTagId(String tagId) {
 		this.tagId = tagId;
+	}
+
+	public String getCreatedTime() {
+		return createdTime;
+	}
+
+	public void setCreatedTime(String createdTime) {
+		this.createdTime = createdTime;
 	}
 
 	@Override

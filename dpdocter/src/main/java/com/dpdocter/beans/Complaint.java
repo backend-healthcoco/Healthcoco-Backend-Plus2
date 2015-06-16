@@ -1,6 +1,8 @@
 package com.dpdocter.beans;
 
-public class Complaint {
+import com.dpdocter.collections.GenericCollection;
+
+public class Complaint extends GenericCollection {
 
 	private String id;
 

@@ -17,6 +17,11 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.ClinicalNotes;
+import com.dpdocter.beans.ClinicalNotesComplaint;
+import com.dpdocter.beans.ClinicalNotesDiagnosis;
+import com.dpdocter.beans.ClinicalNotesInvestigation;
+import com.dpdocter.beans.ClinicalNotesNote;
+import com.dpdocter.beans.ClinicalNotesObservation;
 import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.Diagnosis;
 import com.dpdocter.beans.Diagram;
@@ -87,29 +92,104 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	public ClinicalNotes addNotes(ClinicalNotesAddRequest request) {
 		ClinicalNotes clinicalNotes = null;
+		List<String> complaintIds = null;
+		List<String> observationIds = null;
+		List<String> investigationIds = null;
+		List<String> noteIds = null;
+		List<String> diagnosisIds = null;
+		Date createdTime = new Date();
 		try {
 			// save clinical notes.
 			ClinicalNotesCollection clinicalNotesCollection = new ClinicalNotesCollection();
 			BeanUtil.map(request, clinicalNotesCollection);
-			clinicalNotesCollection.setCreatedTime(new Date());
-			/*	if(request.getDiagrams() != null){
-					List<String> diagramUrls = new ArrayList<String>();
-					List<String> diagramPaths = new ArrayList<String>();;
-					for(FileDetails diagram : request.getDiagrams()){
-						String path = request.getPatientId() + File.separator + "clinical-notes-diagrams";
-						//save image
-						String diagramUrl = fileManager.saveImageAndReturnImageUrl(diagram,path);
-						String fileName = diagram.getFileName()
-								+ "." + diagram.getFileExtension();
-						String diagramPath = imageResource + File.separator + path + File.separator + fileName;
-						diagramUrls.add(diagramUrl);
-						diagramPaths.add(diagramPath);
-					}
-					
-					clinicalNotesCollection.setDiagrams(diagramUrls);
-					clinicalNotesCollection.setDiagramsPaths(diagramPaths);
-				}*/
 
+			complaintIds = new ArrayList<String>();
+			for (ClinicalNotesComplaint complaint : request.getComplaints()) {
+				if (DPDoctorUtils.anyStringEmpty(complaint.getId())) {
+					ComplaintCollection complaintCollection = new ComplaintCollection();
+					BeanUtil.map(complaint, complaintCollection);
+					complaintCollection.setDoctorId(request.getDoctorId());
+					complaintCollection.setHospitalId(request.getHospitalId());
+					complaintCollection.setLocationId(request.getLocationId());
+					complaintCollection.setCreatedTime(createdTime);
+					complaintCollection = complaintRepository.save(complaintCollection);
+					complaintIds.add(complaintCollection.getId());
+				} else {
+					complaintIds.add(complaint.getId());
+				}
+			}
+
+			observationIds = new ArrayList<String>();
+			for (ClinicalNotesObservation observation : request.getObservations()) {
+				if (DPDoctorUtils.anyStringEmpty(observation.getId())) {
+					ObservationCollection observationCollection = new ObservationCollection();
+					BeanUtil.map(observation, observationCollection);
+					observationCollection.setDoctorId(request.getDoctorId());
+					observationCollection.setHospitalId(request.getHospitalId());
+					observationCollection.setLocationId(request.getLocationId());
+					observationCollection.setCreatedTime(createdTime);
+					observationCollection = observationRepository.save(observationCollection);
+					observationIds.add(observationCollection.getId());
+				} else {
+					observationIds.add(observation.getId());
+				}
+			}
+
+			investigationIds = new ArrayList<String>();
+			for (ClinicalNotesInvestigation investigation : request.getInvestigations()) {
+				if (DPDoctorUtils.anyStringEmpty(investigation.getId())) {
+					InvestigationCollection investigationCollection = new InvestigationCollection();
+					BeanUtil.map(investigation, investigationCollection);
+					investigationCollection.setDoctorId(request.getDoctorId());
+					investigationCollection.setHospitalId(request.getHospitalId());
+					investigationCollection.setLocationId(request.getLocationId());
+					investigationCollection.setCreatedTime(createdTime);
+					investigationCollection = investigationRepository.save(investigationCollection);
+					investigationIds.add(investigationCollection.getId());
+				} else {
+					investigationIds.add(investigation.getId());
+				}
+			}
+
+			noteIds = new ArrayList<String>();
+			for (ClinicalNotesNote note : request.getNotes()) {
+				if (DPDoctorUtils.anyStringEmpty(note.getId())) {
+					NotesCollection notesCollection = new NotesCollection();
+					BeanUtil.map(note, notesCollection);
+					notesCollection.setDoctorId(request.getDoctorId());
+					notesCollection.setHospitalId(request.getHospitalId());
+					notesCollection.setLocationId(request.getLocationId());
+					notesCollection.setCreatedTime(createdTime);
+					notesCollection = notesRepository.save(notesCollection);
+					noteIds.add(notesCollection.getId());
+				} else {
+					noteIds.add(note.getId());
+				}
+			}
+
+			diagnosisIds = new ArrayList<String>();
+			for (ClinicalNotesDiagnosis diagnosis : request.getDiagnosis()) {
+				if (DPDoctorUtils.anyStringEmpty(diagnosis.getId())) {
+					DiagnosisCollection diagnosisCollection = new DiagnosisCollection();
+					BeanUtil.map(diagnosis, diagnosisCollection);
+					diagnosisCollection.setDoctorId(request.getDoctorId());
+					diagnosisCollection.setHospitalId(request.getHospitalId());
+					diagnosisCollection.setLocationId(request.getLocationId());
+					diagnosisCollection.setCreatedTime(createdTime);
+					diagnosisCollection = diagnosisRepository.save(diagnosisCollection);
+					diagnosisIds.add(diagnosisCollection.getId());
+				} else {
+					diagnosisIds.add(diagnosis.getId());
+				}
+			}
+
+			clinicalNotesCollection.setComplaints(complaintIds);
+			clinicalNotesCollection.setInvestigation(investigationIds);
+			clinicalNotesCollection.setObservation(observationIds);
+			clinicalNotesCollection.setDiagnoses(diagnosisIds);
+			clinicalNotesCollection.setNotes(noteIds);
+
+			clinicalNotesCollection.setCreatedTime(createdTime);
 			clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
 			if (clinicalNotesCollection != null) {
 				if (request.getId() == null) {
@@ -669,6 +749,84 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Clinical Notes Count");
 		}
 		return clinicalNotesCount;
+	}
+
+	@Override
+	public List<Complaint> getComplaints(String doctorId, String createdTime) {
+		List<Complaint> response = null;
+		List<ComplaintCollection> complaintCollections = null;
+		try {
+			long createdTimeStamp = Long.parseLong(createdTime);
+			complaintCollections = complaintRepository
+					.findComplaints(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
+			BeanUtil.map(complaintCollections, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
+		}
+		return response;
+	}
+
+	@Override
+	public List<Investigation> getInvestigations(String doctorId, String createdTime) {
+		List<Investigation> response = null;
+		List<InvestigationCollection> investigationCollections = null;
+		try {
+			long createdTimeStamp = Long.parseLong(createdTime);
+			investigationCollections = investigationRepository.findInvestigations(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC,
+					"createdTime"));
+			BeanUtil.map(investigationCollections, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Investigations");
+		}
+		return response;
+	}
+
+	@Override
+	public List<Observation> getObservations(String doctorId, String createdTime) {
+		List<Observation> response = null;
+		List<ObservationCollection> observationCollections = null;
+		try {
+			long createdTimeStamp = Long.parseLong(createdTime);
+			observationCollections = observationRepository.findObservations(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC,
+					"createdTime"));
+			BeanUtil.map(observationCollections, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Observations");
+		}
+		return response;
+	}
+
+	@Override
+	public List<Diagnosis> getDiagnosis(String doctorId, String createdTime) {
+		List<Diagnosis> response = null;
+		List<DiagnosisCollection> diagnosisCollections = null;
+		try {
+			long createdTimeStamp = Long.parseLong(createdTime);
+			diagnosisCollections = diagnosisRepository.findDiagnosis(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
+			BeanUtil.map(diagnosisCollections, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnosis");
+		}
+		return response;
+	}
+
+	@Override
+	public List<Notes> getNotes(String doctorId, String createdTime) {
+		List<Notes> response = null;
+		List<NotesCollection> notesCollections = null;
+		try {
+			long createdTimeStamp = Long.parseLong(createdTime);
+			notesCollections = notesRepository.findNotes(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
+			BeanUtil.map(notesCollections, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Notes");
+		}
+		return response;
 	}
 
 }

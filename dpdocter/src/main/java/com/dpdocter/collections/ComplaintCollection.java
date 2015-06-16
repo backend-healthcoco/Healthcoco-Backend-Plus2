@@ -4,7 +4,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "complaint_cl")
-public class ComplaintCollection {
+public class ComplaintCollection extends GenericCollection {
 	@Field
 	private String id;
 

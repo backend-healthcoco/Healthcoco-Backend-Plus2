@@ -1,6 +1,8 @@
 package com.dpdocter.beans;
 
-public class Notes {
+import com.dpdocter.collections.GenericCollection;
+
+public class Notes extends GenericCollection {
 
 	private String id;
 

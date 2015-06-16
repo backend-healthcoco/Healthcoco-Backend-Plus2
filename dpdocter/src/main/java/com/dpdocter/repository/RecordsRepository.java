@@ -13,8 +13,11 @@ import com.dpdocter.collections.RecordsCollection;
 
 @Repository
 public interface RecordsRepository extends MongoRepository<RecordsCollection, String>, PagingAndSortingRepository<RecordsCollection, String> {
-	@Query("{'doctorId':?0,'locationId':?1,'hospitalId':?2,'isDeleted':?3}")
+	@Query("{'doctorId': ?0,'locationId': ?1,'hospitalId': ?2,'isDeleted': ?3}")
 	List<RecordsCollection> findRecords(String doctorId, String locationId, String hospitalId, boolean isDeleted);
+
+	@Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'createdTime': {'$gte': ?3}, 'isDeleted': ?4}")
+	List<RecordsCollection> findRecords(String doctorId, String locationId, String hospitalId, Date date, boolean isDeleted, Sort sort);
 
 	@Query("{'id':?0}")
 	RecordsCollection findByRecordId(String recordId);

@@ -2,22 +2,28 @@ package com.dpdocter.request;
 
 import java.util.List;
 
+import com.dpdocter.beans.ClinicalNotesComplaint;
+import com.dpdocter.beans.ClinicalNotesDiagnosis;
+import com.dpdocter.beans.ClinicalNotesInvestigation;
+import com.dpdocter.beans.ClinicalNotesNote;
+import com.dpdocter.beans.ClinicalNotesObservation;
+
 public class ClinicalNotesAddRequest {
 	private String id;
 
 	private String patientId;
 
-	private List<String> complaints;
+	private List<ClinicalNotesComplaint> complaints;
 
-	private List<String> observation;
+	private List<ClinicalNotesObservation> observations;
 
-	private List<String> investigation;
+	private List<ClinicalNotesInvestigation> investigations;
 
-	private List<String> diagnoses;
+	private List<ClinicalNotesDiagnosis> diagnosis;
+
+	private List<ClinicalNotesNote> notes;
 
 	private List<String> diagrams;
-
-	private List<String> notes;
 
 	private String doctorId;
 
@@ -43,36 +49,44 @@ public class ClinicalNotesAddRequest {
 		this.patientId = patientId;
 	}
 
-	public List<String> getComplaints() {
+	public List<ClinicalNotesComplaint> getComplaints() {
 		return complaints;
 	}
 
-	public void setComplaints(List<String> complaints) {
+	public void setComplaints(List<ClinicalNotesComplaint> complaints) {
 		this.complaints = complaints;
 	}
 
-	public List<String> getObservation() {
-		return observation;
+	public List<ClinicalNotesObservation> getObservations() {
+		return observations;
 	}
 
-	public void setObservation(List<String> observation) {
-		this.observation = observation;
+	public void setObservations(List<ClinicalNotesObservation> observations) {
+		this.observations = observations;
 	}
 
-	public List<String> getInvestigation() {
-		return investigation;
+	public List<ClinicalNotesInvestigation> getInvestigations() {
+		return investigations;
 	}
 
-	public void setInvestigation(List<String> investigation) {
-		this.investigation = investigation;
+	public void setInvestigations(List<ClinicalNotesInvestigation> investigations) {
+		this.investigations = investigations;
 	}
 
-	public List<String> getDiagnoses() {
-		return diagnoses;
+	public List<ClinicalNotesDiagnosis> getDiagnosis() {
+		return diagnosis;
 	}
 
-	public void setDiagnoses(List<String> diagnoses) {
-		this.diagnoses = diagnoses;
+	public void setDiagnosis(List<ClinicalNotesDiagnosis> diagnosis) {
+		this.diagnosis = diagnosis;
+	}
+
+	public List<ClinicalNotesNote> getNotes() {
+		return notes;
+	}
+
+	public void setNotes(List<ClinicalNotesNote> notes) {
+		this.notes = notes;
 	}
 
 	public List<String> getDiagrams() {
@@ -81,14 +95,6 @@ public class ClinicalNotesAddRequest {
 
 	public void setDiagrams(List<String> diagrams) {
 		this.diagrams = diagrams;
-	}
-
-	public List<String> getNotes() {
-		return notes;
-	}
-
-	public void setNotes(List<String> notes) {
-		this.notes = notes;
 	}
 
 	public String getDoctorId() {
@@ -125,8 +131,8 @@ public class ClinicalNotesAddRequest {
 
 	@Override
 	public String toString() {
-		return "ClinicalNotesAddRequest [id=" + id + ", patientId=" + patientId + ", complaints=" + complaints + ", observation=" + observation
-				+ ", investigation=" + investigation + ", diagnoses=" + diagnoses + ", diagrams=" + diagrams + ", notes=" + notes + ", doctorId=" + doctorId
+		return "ClinicalNotesAddRequest [id=" + id + ", patientId=" + patientId + ", complaints=" + complaints + ", observations=" + observations
+				+ ", investigations=" + investigations + ", diagnosis=" + diagnosis + ", notes=" + notes + ", diagrams=" + diagrams + ", doctorId=" + doctorId
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", createdDate=" + createdDate + "]";
 	}
 

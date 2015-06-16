@@ -292,4 +292,49 @@ public class ClinicalNotesApi {
 		response.setData(true);
 		return response;
 	}
+
+	@Path(value = PathProxy.ClinicalNotesUrls.GET_COMPLAINTS)
+	@GET
+	public Response<Complaint> getComplaints(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
+		List<Complaint> complaints = clinicalNotesService.getComplaints(doctorId, createdTime);
+		Response<Complaint> response = new Response<Complaint>();
+		response.setDataList(complaints);
+		return response;
+	}
+
+	@Path(value = PathProxy.ClinicalNotesUrls.GET_INVESTIGATIONS)
+	@GET
+	public Response<Investigation> getInvestigations(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
+		List<Investigation> investigations = clinicalNotesService.getInvestigations(doctorId, createdTime);
+		Response<Investigation> response = new Response<Investigation>();
+		response.setDataList(investigations);
+		return response;
+	}
+
+	@Path(value = PathProxy.ClinicalNotesUrls.GET_OBSERVATIONS)
+	@GET
+	public Response<Observation> getObservations(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
+		List<Observation> observations = clinicalNotesService.getObservations(doctorId, createdTime);
+		Response<Observation> response = new Response<Observation>();
+		response.setDataList(observations);
+		return response;
+	}
+
+	@Path(value = PathProxy.ClinicalNotesUrls.GET_DIAGNOSIS)
+	@GET
+	public Response<Diagnosis> getDiagnosis(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
+		List<Diagnosis> diagnosis = clinicalNotesService.getDiagnosis(doctorId, createdTime);
+		Response<Diagnosis> response = new Response<Diagnosis>();
+		response.setDataList(diagnosis);
+		return response;
+	}
+
+	@Path(value = PathProxy.ClinicalNotesUrls.GET_NOTES)
+	@GET
+	public Response<Notes> getNotes(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
+		List<Notes> notes = clinicalNotesService.getNotes(doctorId, createdTime);
+		Response<Notes> response = new Response<Notes>();
+		response.setDataList(notes);
+		return response;
+	}
 }
