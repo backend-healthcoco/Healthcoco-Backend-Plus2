@@ -327,6 +327,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 			UserCollection userCollection = userRepository.findOne(request.getUserId());
 			registeredPatientDetails = new RegisteredPatientDetails();
 			BeanUtil.map(userCollection, registeredPatientDetails);
+			if (request.getImage() != null) {
+				String path = "profile-images";
+				// save image
+				String imageUrl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
+				userCollection.setImageUrl(imageUrl);
+				registeredPatientDetails.setImageUrl(imageUrl);
+			}
 			registeredPatientDetails.setUserId(userCollection.getId());
 			Patient patient = new Patient();
 			BeanUtil.map(patientCollection, patient);
