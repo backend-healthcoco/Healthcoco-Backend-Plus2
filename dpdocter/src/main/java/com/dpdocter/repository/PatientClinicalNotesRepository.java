@@ -14,7 +14,6 @@ import com.dpdocter.collections.PatientClinicalNotesCollection;
 public interface PatientClinicalNotesRepository extends MongoRepository<PatientClinicalNotesCollection, String> {
 	List<PatientClinicalNotesCollection> findByClinicalNotesId(String clinicalNotesId);
 
-	@Query("{'patientId': ?0")
 	List<PatientClinicalNotesCollection> findByPatientId(String patientId, Sort sort);
 
 	@Query("{'patientId': ?0, 'createdTime': {'$gte': ?1}}")
