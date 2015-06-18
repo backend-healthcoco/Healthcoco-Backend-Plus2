@@ -829,4 +829,19 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 	}
 
+	@Override
+	public List<Diagram> getDiagrams(String doctorId, String createdTime) {
+		List<Diagram> response = null;
+		List<DiagramsCollection> diagramsCollections = null;
+		try {
+			long createdTimeStamp = Long.parseLong(createdTime);
+			diagramsCollections = diagramsRepository.findDiagrams(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
+			BeanUtil.map(diagramsCollections, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagrams");
+		}
+		return response;
+	}
+
 }

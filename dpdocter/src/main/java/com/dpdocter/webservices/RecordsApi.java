@@ -16,7 +16,9 @@ import javax.ws.rs.core.Response.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.Records;
+import com.dpdocter.beans.RecordsDescription;
 import com.dpdocter.beans.Tags;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -212,14 +214,23 @@ public class RecordsApi {
 	}
 
 	@Path(value = PathProxy.RecordsUrls.EDIT_DESCRIPTION)
-	@GET
-	public Response<Boolean> editDescription(@PathParam("recordId") String recordId, @PathParam("description") String description) {
-		if (DPDoctorUtils.anyStringEmpty(recordId, description)) {
+	@POST
+	public Response<Boolean> editDescription(RecordsDescription recordsDescription) {
+		if (DPDoctorUtils.anyStringEmpty(recordsDescription.getId(), recordsDescription.getDescription())) {
 			throw new BusinessException(ServiceError.InvalidInput, "Record Id, and Description Cannot Be Empty");
 		}
-		boolean editDescriptionResponse = recordsService.editDescription(recordId, description);
+		boolean editDescriptionResponse = recordsService.editDescription(recordsDescription);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(editDescriptionResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.RecordsUrls.GET_FLEXIBLE_COUNTS)
+	@POST
+	public Response<FlexibleCounts> getCounts(FlexibleCounts flexibleCounts) {
+		FlexibleCounts flexibleCountsResponse = recordsService.getFlexibleCounts(flexibleCounts);
+		Response<FlexibleCounts> response = new Response<FlexibleCounts>();
+		response.setData(flexibleCountsResponse);
 		return response;
 	}
 

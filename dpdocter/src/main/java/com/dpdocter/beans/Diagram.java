@@ -1,6 +1,8 @@
 package com.dpdocter.beans;
 
-public class Diagram {
+import com.dpdocter.collections.GenericCollection;
+
+public class Diagram extends GenericCollection {
 	private String id;
 
 	private String diagramUrl;

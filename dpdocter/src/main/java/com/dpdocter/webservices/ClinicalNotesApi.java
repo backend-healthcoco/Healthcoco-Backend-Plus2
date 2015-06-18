@@ -337,4 +337,13 @@ public class ClinicalNotesApi {
 		response.setDataList(notes);
 		return response;
 	}
+
+	@Path(value = PathProxy.ClinicalNotesUrls.GET_DIAGRAMS)
+	@GET
+	public Response<Diagram> getDiagrams(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
+		List<Diagram> diagrams = clinicalNotesService.getDiagrams(doctorId, createdTime);
+		Response<Diagram> response = new Response<Diagram>();
+		response.setDataList(diagrams);
+		return response;
+	}
 }

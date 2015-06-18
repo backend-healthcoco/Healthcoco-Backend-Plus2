@@ -3,7 +3,9 @@ package com.dpdocter.services;
 import java.io.File;
 import java.util.List;
 
+import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.Records;
+import com.dpdocter.beans.RecordsDescription;
 import com.dpdocter.beans.Tags;
 import com.dpdocter.request.RecordsAddRequest;
 import com.dpdocter.request.RecordsSearchRequest;
@@ -38,6 +40,8 @@ public interface RecordsService {
 
 	Integer getRecordCount(String doctorId, String locationId, String hospitalId);
 
-	boolean editDescription(String recordId, String description);
+	boolean editDescription(RecordsDescription recordsDescription);
+
+	FlexibleCounts getFlexibleCounts(FlexibleCounts flexibleCounts);
 
 }

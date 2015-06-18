@@ -15,8 +15,11 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.Count;
+import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Records;
+import com.dpdocter.beans.RecordsDescription;
 import com.dpdocter.beans.Tags;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.RecordsCollection;
@@ -33,8 +36,10 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.RecordsAddRequest;
 import com.dpdocter.request.RecordsSearchRequest;
 import com.dpdocter.request.TagRecordRequest;
+import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.MailService;
+import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.RecordsService;
 import common.util.web.DPDoctorUtils;
 
@@ -60,6 +65,12 @@ public class RecordsServiceImpl implements RecordsService {
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private ClinicalNotesService clinicalNotesService;
+
+	@Autowired
+	private PrescriptionServices prescriptionService;
 
 	@Value(value = "${IMAGE_RESOURCE}")
 	private String imageResource;
@@ -359,13 +370,13 @@ public class RecordsServiceImpl implements RecordsService {
 	}
 
 	@Override
-	public boolean editDescription(String recordId, String description) {
+	public boolean editDescription(RecordsDescription recordsDescription) {
 		RecordsCollection record = null;
 		boolean response = false;
 		try {
-			record = recordsRepository.findOne(recordId);
+			record = recordsRepository.findOne(recordsDescription.getId());
 			if (record != null) {
-				record.setDescription(description);
+				record.setDescription(recordsDescription.getDescription());
 				recordsRepository.save(record);
 				response = true;
 			} else {
@@ -377,5 +388,40 @@ public class RecordsServiceImpl implements RecordsService {
 			throw new BusinessException(ServiceError.Unknown, "Error while editing description");
 		}
 		return response;
+	}
+
+	@Override
+	public FlexibleCounts getFlexibleCounts(FlexibleCounts flexibleCounts) {
+		String doctorId = flexibleCounts.getDoctorId();
+		String locationId = flexibleCounts.getLocationId();
+		String hospitalId = flexibleCounts.getHospitalId();
+
+		List<Count> counts = flexibleCounts.getCounts();
+		try {
+			for (Count count : counts) {
+				switch (count.getCountFor()) {
+				case PRESCRIPTIONS:
+					count.setValue(prescriptionService.getPrescriptionCount(doctorId, locationId, hospitalId));
+					break;
+				case RECORDS:
+					count.setValue(getRecordCount(doctorId, locationId, hospitalId));
+					break;
+				case NOTES:
+					count.setValue(clinicalNotesService.getClinicalNotesCount(doctorId, locationId, hospitalId));
+					break;
+				default:
+					break;
+				}
+			}
+
+			flexibleCounts.setCounts(counts);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting counts");
+		}
+
+		return flexibleCounts;
+
 	}
 }

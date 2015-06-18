@@ -173,6 +173,8 @@ public interface PathProxy {
 
 		public static final String GET_NOTES = "getNotes/{doctorId}/{createdTime}";
 
+		public static final String GET_DIAGRAMS = "getDiagrams/{doctorId}/{createdTime}";
+
 	}
 
 	public static final String FORGOT_PASSWORD_BASE_URL = BASE_URL + "/forgotPassword";
@@ -222,7 +224,9 @@ public interface PathProxy {
 
 		public static final String DELETE_TAG = "/deletetag/{tagid}";
 
-		public static final String EDIT_DESCRIPTION = "editDescription/{recordId}/{description}";
+		public static final String EDIT_DESCRIPTION = "editDescription";
+
+		public static final String GET_FLEXIBLE_COUNTS = "getFlexibleCounts";
 
 	}
 

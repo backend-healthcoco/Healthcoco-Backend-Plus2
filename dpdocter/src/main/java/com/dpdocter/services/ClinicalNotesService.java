@@ -69,4 +69,6 @@ public interface ClinicalNotesService {
 
 	List<Notes> getNotes(String doctorId, String createdTime);
 
+	List<Diagram> getDiagrams(String doctorId, String createdTime);
+
 }
