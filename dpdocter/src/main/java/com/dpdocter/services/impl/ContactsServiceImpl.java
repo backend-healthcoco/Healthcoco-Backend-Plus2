@@ -182,6 +182,7 @@ public class ContactsServiceImpl implements ContactsService {
 				BeanUtil.map(userCollection, patientCard);
 				patientCard.setGroups(groups);
 				patientCard.setDob(userCollection.getDob());
+				patientCard.setDoctorSepecificPatientId(patientCollection.getId());
 				patientCards.add(patientCard);
 			}
 		}
