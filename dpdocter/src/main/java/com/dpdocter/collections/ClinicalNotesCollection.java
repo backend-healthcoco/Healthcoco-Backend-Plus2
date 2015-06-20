@@ -16,10 +16,10 @@ public class ClinicalNotesCollection extends GenericCollection {
 	private List<String> notes;
 
 	@Field
-	private List<String> observation;
+	private List<String> observations;
 
 	@Field
-	private List<String> investigation;
+	private List<String> investigations;
 
 	@Field
 	private List<String> diagnoses;
@@ -64,20 +64,20 @@ public class ClinicalNotesCollection extends GenericCollection {
 		this.notes = notes;
 	}
 
-	public List<String> getObservation() {
-		return observation;
+	public List<String> getObservations() {
+		return observations;
 	}
 
-	public void setObservation(List<String> observation) {
-		this.observation = observation;
+	public void setObservations(List<String> observations) {
+		this.observations = observations;
 	}
 
-	public List<String> getInvestigation() {
-		return investigation;
+	public List<String> getInvestigations() {
+		return investigations;
 	}
 
-	public void setInvestigation(List<String> investigation) {
-		this.investigation = investigation;
+	public void setInvestigations(List<String> investigations) {
+		this.investigations = investigations;
 	}
 
 	public List<String> getDiagnoses() {
@@ -154,9 +154,9 @@ public class ClinicalNotesCollection extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "ClinicalNotesCollection [id=" + id + ", notes=" + notes + ", observation=" + observation + ", investigation=" + investigation + ", diagnoses="
-				+ diagnoses + ", complaints=" + complaints + ", diagrams=" + diagrams + ", diagramsPaths=" + diagramsPaths + ", comments=" + comments
-				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", createdDate=" + createdDate + "]";
+		return "ClinicalNotesCollection [id=" + id + ", notes=" + notes + ", observations=" + observations + ", investigations=" + investigations
+				+ ", diagnoses=" + diagnoses + ", complaints=" + complaints + ", diagrams=" + diagrams + ", diagramsPaths=" + diagramsPaths + ", comments="
+				+ comments + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", createdDate=" + createdDate + "]";
 	}
 
 }

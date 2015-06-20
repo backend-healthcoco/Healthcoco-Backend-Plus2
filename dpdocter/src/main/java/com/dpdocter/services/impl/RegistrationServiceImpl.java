@@ -213,12 +213,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 				doctorContactCollection.setContactId(patientCollection.getId());
 				doctorContactsRepository.save(doctorContactCollection);
 			}
-			if (patientCollection.getEmailAddress() != null) {
+			/*if (patientCollection.getEmailAddress() != null) {
 				// send activation email
 				String body = mailBodyGenerator.generatePatientRegistrationEmailBody(userCollection.getUserName(), userCollection.getPassword(),
 						userCollection.getFirstName(), userCollection.getLastName());
 				mailService.sendEmail(patientCollection.getEmailAddress(), signupSubject, body, null);
-			}
+			}*/
 			// send SMS logic
 			// TODO
 			registeredPatientDetails = new RegisteredPatientDetails();
@@ -534,7 +534,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			Long to = dateFormat.parse(endDate).getTime();
 			List<PatientCollection> patientCollections = patientRepository.findTodaysRegisteredPatient(doctorId, locationId, hospitalId, from, to);
 			int patientCount = 0;
-			if (patientCollections != null) {
+			if (CollectionUtils.isNotEmpty(patientCollections)) {
 				patientCount = patientCollections.size();
 			}
 

@@ -40,7 +40,7 @@ public class PatientCard {
 	private String locationId;
 
 	private String hospitalId;
-	
+
 	private String doctorSepecificPatientId;
 
 	public String getId() {
@@ -194,8 +194,6 @@ public class PatientCard {
 	public void setHospitalId(String hospitalId) {
 		this.hospitalId = hospitalId;
 	}
-	
-	
 
 	public String getDoctorSepecificPatientId() {
 		return doctorSepecificPatientId;
@@ -207,19 +205,11 @@ public class PatientCard {
 
 	@Override
 	public String toString() {
-		return "PatientCard [id=" + id + ", firstName=" + firstName
-				+ ", lastName=" + lastName + ", middleName=" + middleName
-				+ ", userName=" + userName + ", emailAddress=" + emailAddress
-				+ ", imageUrl=" + imageUrl + ", bloodGroup=" + bloodGroup
-				+ ", PID=" + PID + ", gender=" + gender + ", mobileNumber="
-				+ mobileNumber + ", secPhoneNumber=" + secPhoneNumber
-				+ ", dob=" + dob + ", count=" + count + ", dateOfVisit="
-				+ dateOfVisit + ", groups=" + groups + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", doctorSepecificPatientId=" + doctorSepecificPatientId
-				+ "]";
+		return "PatientCard [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", userName=" + userName
+				+ ", emailAddress=" + emailAddress + ", imageUrl=" + imageUrl + ", bloodGroup=" + bloodGroup + ", PID=" + PID + ", gender=" + gender
+				+ ", mobileNumber=" + mobileNumber + ", secPhoneNumber=" + secPhoneNumber + ", dob=" + dob + ", count=" + count + ", dateOfVisit="
+				+ dateOfVisit + ", groups=" + groups + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", doctorSepecificPatientId=" + doctorSepecificPatientId + "]";
 	}
-
-	
 
 }

@@ -50,6 +50,7 @@ import com.dpdocter.request.ImportContactsRequest;
 import com.dpdocter.request.SearchRequest;
 import com.dpdocter.services.ContactsService;
 import com.dpdocter.services.FileManager;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -215,6 +216,7 @@ public class ContactsServiceImpl implements ContactsService {
 		return filteredDoctorContactCollection;
 	}
 
+	@SuppressWarnings("unused")
 	private List<DoctorContactCollection> filterContactsByGroup(List<String> groupIds, List<DoctorContactCollection> doctorContactCollections) throws Exception {
 		Collection<String> patientIds = getPatientIdsForGroups(groupIds);
 		List<DoctorContactCollection> filteredDoctorContactCollection = new ArrayList<DoctorContactCollection>();

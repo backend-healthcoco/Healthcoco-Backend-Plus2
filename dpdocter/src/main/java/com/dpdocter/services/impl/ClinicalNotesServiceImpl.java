@@ -184,8 +184,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 
 			clinicalNotesCollection.setComplaints(complaintIds);
-			clinicalNotesCollection.setInvestigation(investigationIds);
-			clinicalNotesCollection.setObservation(observationIds);
+			clinicalNotesCollection.setInvestigations(investigationIds);
+			clinicalNotesCollection.setObservations(observationIds);
 			clinicalNotesCollection.setDiagnoses(diagnosisIds);
 			clinicalNotesCollection.setNotes(noteIds);
 
@@ -239,7 +239,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 				@SuppressWarnings("unchecked")
 				List<ObservationCollection> observationCollections = IteratorUtils.toList(observationRepository.findAll(
-						clinicalNotesCollection.getObservation()).iterator());
+						clinicalNotesCollection.getObservations()).iterator());
 				if (observationCollections != null) {
 					List<Observation> observations = new ArrayList<Observation>();
 					for (ObservationCollection observationCollection : observationCollections) {
@@ -254,7 +254,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 				@SuppressWarnings("unchecked")
 				List<InvestigationCollection> investigationCollections = IteratorUtils.toList(investigationRepository.findAll(
-						clinicalNotesCollection.getInvestigation()).iterator());
+						clinicalNotesCollection.getInvestigations()).iterator());
 				if (investigationCollections != null) {
 					List<Investigation> investigations = new ArrayList<Investigation>();
 					for (InvestigationCollection investigationCollection : investigationCollections) {
