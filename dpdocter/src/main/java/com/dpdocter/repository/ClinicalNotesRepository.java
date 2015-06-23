@@ -1,5 +1,7 @@
 package com.dpdocter.repository;
 
+import java.util.List;
+
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -12,5 +14,8 @@ public interface ClinicalNotesRepository extends MongoRepository<ClinicalNotesCo
 
 	@Query(value = "{'doctorId' : ?0, 'hospitalId' : ?1, 'locationId' : ?2}", count = true)
 	Integer getClinicalNotesCount(String doctorId, String hospitalId, String locationId);
+
+	@Query(value = "{'doctorId' : ?0, 'hospitalId' : ?1, 'locationId' : ?2}")
+	List<ClinicalNotesCollection> getClinicalNotes(String doctorId, String hospitalId, String locationId);
 
 }

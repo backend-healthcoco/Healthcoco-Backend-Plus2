@@ -358,10 +358,10 @@ public class RecordsServiceImpl implements RecordsService {
 	}
 
 	@Override
-	public Integer getRecordCount(String doctorId, String locationId, String hospitalId) {
+	public Integer getRecordCount(String doctorId, String patientId, String locationId, String hospitalId) {
 		Integer recordCount = 0;
 		try {
-			recordCount = recordsRepository.getRecordCount(doctorId, hospitalId, locationId, false);
+			recordCount = recordsRepository.getRecordCount(doctorId, patientId, hospitalId, locationId, false);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error while getting Records Count");
@@ -395,27 +395,26 @@ public class RecordsServiceImpl implements RecordsService {
 		String doctorId = flexibleCounts.getDoctorId();
 		String locationId = flexibleCounts.getLocationId();
 		String hospitalId = flexibleCounts.getHospitalId();
+		String patientId = flexibleCounts.getPatientId();
 
 		List<Count> counts = flexibleCounts.getCounts();
 		try {
 			for (Count count : counts) {
 				switch (count.getCountFor()) {
 				case PRESCRIPTIONS:
-					count.setValue(prescriptionService.getPrescriptionCount(doctorId, locationId, hospitalId));
+					count.setValue(prescriptionService.getPrescriptionCount(doctorId, patientId, locationId, hospitalId));
 					break;
 				case RECORDS:
-					count.setValue(getRecordCount(doctorId, locationId, hospitalId));
+					count.setValue(getRecordCount(doctorId, patientId, locationId, hospitalId));
 					break;
 				case NOTES:
-					count.setValue(clinicalNotesService.getClinicalNotesCount(doctorId, locationId, hospitalId));
+					count.setValue(clinicalNotesService.getClinicalNotesCount(doctorId, patientId, locationId, hospitalId));
 					break;
 				default:
 					break;
 				}
 			}
-
 			flexibleCounts.setCounts(counts);
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error while getting counts");

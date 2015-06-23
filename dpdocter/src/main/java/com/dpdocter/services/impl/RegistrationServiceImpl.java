@@ -414,6 +414,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					@SuppressWarnings("unchecked")
 					Collection<String> groupIds = CollectionUtils.collect(patientGroupCollections, new BeanToPropertyValueTransformer("groupId"));
 					registeredPatientDetails = new RegisteredPatientDetails();
+					BeanUtil.map(patientCollection, registeredPatientDetails);
 					BeanUtil.map(userCollection, registeredPatientDetails);
 					registeredPatientDetails.setUserId(userCollection.getId());
 					Patient patient = new Patient();

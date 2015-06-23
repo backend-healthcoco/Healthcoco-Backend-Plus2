@@ -24,7 +24,7 @@ public interface PrescriptionRepository extends MongoRepository<PrescriptionColl
 	@Query("{'patientId' : ?0, 'createdTime' : {'$gte' : ?1}, 'isDeleted' : ?2}")
 	List<PrescriptionCollection> getPrescription(String patientId, Date date, Boolean isDeleted, Sort sort);
 
-	@Query(value = "{'doctorId' : ?0, 'hospitalId' : ?1, 'locationId' : ?2, 'isDeleted' : ?3}", count = true)
-	Integer getPrescriptionCount(String doctorId, String hospitalId, String locationId, Boolean isDeleted);
+	@Query(value = "{'doctorId' : ?0, 'patientId': ?1, 'hospitalId' : ?2, 'locationId' : ?3, 'isDeleted' : ?4}", count = true)
+	Integer getPrescriptionCount(String doctorId, String patientId, String hospitalId, String locationId, Boolean isDeleted);
 
 }

@@ -306,9 +306,9 @@ public class PrescriptionApi {
 
 	@Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_COUNT)
 	@GET
-	public Response<Integer> getPrescriptionCount(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId) {
-		Integer prescriptionCount = prescriptionServices.getPrescriptionCount(doctorId, locationId, hospitalId);
+	public Response<Integer> getPrescriptionCount(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "patientId") String patientId,
+			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
+		Integer prescriptionCount = prescriptionServices.getPrescriptionCount(doctorId, patientId, locationId, hospitalId);
 		Response<Integer> response = new Response<Integer>();
 		response.setData(prescriptionCount);
 		return response;

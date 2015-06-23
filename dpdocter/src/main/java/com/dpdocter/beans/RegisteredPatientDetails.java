@@ -28,8 +28,6 @@ public class RegisteredPatientDetails extends GenericCollection {
 
 	private Address address;
 
-	/*private List<String> groups;*/
-
 	private List<Group> groups;
 
 	private String doctorId;
@@ -37,6 +35,8 @@ public class RegisteredPatientDetails extends GenericCollection {
 	private String locationId;
 
 	private String hospitalId;
+
+	private String PID;
 
 	public String getUserId() {
 		return userId;
@@ -85,14 +85,6 @@ public class RegisteredPatientDetails extends GenericCollection {
 	public void setAddress(Address address) {
 		this.address = address;
 	}
-
-	/*public List<String> getGroups() {
-		return groups;
-	}
-
-	public void setGroups(List<String> groups) {
-		this.groups = groups;
-	}*/
 
 	public List<Group> getGroups() {
 		return groups;
@@ -166,12 +158,20 @@ public class RegisteredPatientDetails extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
+	public String getPID() {
+		return PID;
+	}
+
+	public void setPID(String pID) {
+		PID = pID;
+	}
+
 	@Override
 	public String toString() {
 		return "RegisteredPatientDetails [firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", imageUrl=" + imageUrl
 				+ ", dob=" + dob + ", userId=" + userId + ", userName=" + userName + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", patient="
 				+ patient + ", address=" + address + ", groups=" + groups + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + "]";
+				+ hospitalId + ", PID=" + PID + "]";
 	}
 
 }

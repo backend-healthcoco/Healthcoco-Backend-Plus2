@@ -468,10 +468,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	@Override
-	public Integer getPrescriptionCount(String doctorId, String locationId, String hospitalId) {
+	public Integer getPrescriptionCount(String doctorId, String patientId, String locationId, String hospitalId) {
 		Integer prescriptionCount = 0;
 		try {
-			prescriptionCount = prescriptionRepository.getPrescriptionCount(doctorId, hospitalId, locationId, false);
+			prescriptionCount = prescriptionRepository.getPrescriptionCount(doctorId, patientId, hospitalId, locationId, false);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Prescription Count");

@@ -740,10 +740,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
 
 	@Override
-	public Integer getClinicalNotesCount(String doctorId, String locationId, String hospitalId) {
+	public Integer getClinicalNotesCount(String doctorId, String patientId, String locationId, String hospitalId) {
+		List<ClinicalNotesCollection> clinicalNotesCollections = null;
 		Integer clinicalNotesCount = 0;
 		try {
-			clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCount(doctorId, hospitalId, locationId);
+			clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(doctorId, hospitalId, locationId);
+			@SuppressWarnings("unchecked")
+			List<String> clinicalNotesIds = (List<String>) CollectionUtils.collect(clinicalNotesCollections, new BeanToPropertyValueTransformer("id"));
+			clinicalNotesCount = patientClinicalNotesRepository.findCount(patientId, clinicalNotesIds);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Clinical Notes Count");

@@ -129,7 +129,7 @@ public interface PathProxy {
 
 		public static final String GET_CLINICAL_NOTES_CT = "/get/{doctorId}/{locationId}/{hospitalId}/{patientId}/{createdTime}/{isOTPVerified}";
 
-		public static final String GET_CLINIC_NOTES_COUNT = "getClinicalNotesCount/{doctorId}/{locationId}/{hospitalId}";
+		public static final String GET_CLINIC_NOTES_COUNT = "getClinicalNotesCount/{doctorId}/{patientId}/{locationId}/{hospitalId}";
 
 		public static final String ADD_COMPLAINT = "/addcomplaint";
 
@@ -208,7 +208,7 @@ public interface PathProxy {
 
 		public static final String SEARCH_RECORD_ALL_FIELDS_CT = "/search/{doctorId}/{locationId}/{hospitalId}/{createdTime}";
 
-		public static final String GET_RECORD_COUNT = "getRecordCount/{doctorId}/{locationId}/{hospitalId}";
+		public static final String GET_RECORD_COUNT = "getRecordCount/{doctorId}/{patientId}/{locationId}/{hospitalId}";
 
 		public static final String CREATE_TAG = "/createtag";
 
@@ -277,7 +277,7 @@ public interface PathProxy {
 
 		public static final String GET_PRESCRIPTION_CREATED_TIME = "getPrescription/{doctorId}/{hospitalId}/{locationId}/{patientId}/{isOTPVarified}/{createdTime}";
 
-		public static final String GET_PRESCRIPTION_COUNT = "getPrescriptionCount/{doctorId}/{locationId}/{hospitalId}";
+		public static final String GET_PRESCRIPTION_COUNT = "getPrescriptionCount/{doctorId}/{patientId}/{locationId}/{hospitalId}";
 
 	}
 

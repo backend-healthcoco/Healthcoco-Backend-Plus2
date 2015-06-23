@@ -44,6 +44,6 @@ public interface PrescriptionServices {
 
 	List<DrugAddEditResponse> getDrugs(String doctorId, String hospitalId, String locationId, String createdTime);
 
-	Integer getPrescriptionCount(String doctorId, String locationId, String hospitalId);
+	Integer getPrescriptionCount(String doctorId, String patientId, String locationId, String hospitalId);
 
 }

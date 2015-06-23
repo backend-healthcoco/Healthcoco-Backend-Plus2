@@ -9,6 +9,8 @@ public class FlexibleCounts {
 
 	private String locationId;
 
+	private String patientId;
+
 	private List<Count> counts;
 
 	public String getDoctorId() {
@@ -35,6 +37,14 @@ public class FlexibleCounts {
 		this.locationId = locationId;
 	}
 
+	public String getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
+
 	public List<Count> getCounts() {
 		return counts;
 	}
@@ -45,7 +55,8 @@ public class FlexibleCounts {
 
 	@Override
 	public String toString() {
-		return "FlexibleCountsRequest [doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", counts=" + counts + "]";
+		return "FlexibleCounts [doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", patientId=" + patientId + ", counts="
+				+ counts + "]";
 	}
 
 }

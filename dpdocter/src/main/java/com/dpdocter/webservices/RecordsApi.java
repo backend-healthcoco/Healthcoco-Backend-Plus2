@@ -122,9 +122,9 @@ public class RecordsApi {
 
 	@Path(value = PathProxy.RecordsUrls.GET_RECORD_COUNT)
 	@GET
-	public Response<Integer> getRecordCount(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
-			@PathParam("hospitalId") String hospitalId) {
-		Integer recordCount = recordsService.getRecordCount(doctorId, locationId, hospitalId);
+	public Response<Integer> getRecordCount(@PathParam("doctorId") String doctorId, @PathParam("patientId") String patientId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+		Integer recordCount = recordsService.getRecordCount(doctorId, patientId, locationId, hospitalId);
 		Response<Integer> response = new Response<Integer>();
 		response.setData(recordCount);
 		return response;

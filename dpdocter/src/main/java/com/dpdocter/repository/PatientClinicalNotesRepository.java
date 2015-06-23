@@ -19,4 +19,10 @@ public interface PatientClinicalNotesRepository extends MongoRepository<PatientC
 	@Query("{'patientId': ?0, 'createdTime': {'$gte': ?1}}")
 	List<PatientClinicalNotesCollection> findByPatientId(String patientId, Date date, Sort sort);
 
+	@Query("{'patientId': ?0, 'clinicalNotesId': {'$in': ?1}}")
+	List<PatientClinicalNotesCollection> findAll(String patientId, List<String> clinicalNotesIds);
+
+	@Query(value = "{'patientId': ?0, 'clinicalNotesId': {'$in': ?1}}", count = true)
+	Integer findCount(String patientId, List<String> clinicalNotesIds);
+
 }
