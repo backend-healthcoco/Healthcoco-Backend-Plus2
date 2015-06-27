@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.dpdocter.enums.DirectionEnum;
 
-public class PrescriptionItemDetails {
+public class PrescriptionItemDetail {
 	private Drug drug;
 
 	private Duration duration;

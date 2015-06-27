@@ -14,9 +14,10 @@ import org.springframework.stereotype.Service;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionItem;
-import com.dpdocter.beans.PrescriptionItemDetails;
+import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.TemplateDrug;
 import com.dpdocter.beans.TemplateItem;
+import com.dpdocter.beans.TemplateItemDetail;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.TemplateCollection;
@@ -31,7 +32,9 @@ import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.request.TemplateAddEditRequest;
 import com.dpdocter.response.DrugAddEditResponse;
 import com.dpdocter.response.PrescriptionAddEditResponse;
+import com.dpdocter.response.PrescriptionAddEditResponseDetails;
 import com.dpdocter.response.TemplateAddEditResponse;
+import com.dpdocter.response.TemplateAddEditResponseDetails;
 import com.dpdocter.response.TemplateGetResponse;
 import com.dpdocter.services.PrescriptionServices;
 import common.util.web.DPDoctorUtils;
@@ -323,9 +326,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					if (prescriptionCollection.getItems() != null) {
 						Prescription prescription = new Prescription();
 						BeanUtil.map(prescriptionCollection, prescription);
-						List<PrescriptionItemDetails> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetails>();
+						List<PrescriptionItemDetail> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetail>();
 						for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
-							PrescriptionItemDetails prescriptionItemDetails = new PrescriptionItemDetails();
+							PrescriptionItemDetail prescriptionItemDetails = new PrescriptionItemDetail();
 							BeanUtil.map(prescriptionItem, prescriptionItemDetails);
 							DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
 							Drug drug = new Drug();
@@ -364,9 +367,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					if (prescriptionCollection.getItems() != null) {
 						Prescription prescription = new Prescription();
 						BeanUtil.map(prescriptionCollection, prescription);
-						List<PrescriptionItemDetails> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetails>();
+						List<PrescriptionItemDetail> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetail>();
 						for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
-							PrescriptionItemDetails prescriptionItemDetails = new PrescriptionItemDetails();
+							PrescriptionItemDetail prescriptionItemDetails = new PrescriptionItemDetail();
 							BeanUtil.map(prescriptionItem, prescriptionItemDetails);
 							DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
 							Drug drug = new Drug();
@@ -477,5 +480,49 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Prescription Count");
 		}
 		return prescriptionCount;
+	}
+
+	@Override
+	public TemplateAddEditResponseDetails addTemplateHandheld(TemplateAddEditRequest request) {
+		TemplateAddEditResponseDetails response = null;
+		TemplateAddEditResponse template = addTemplate(request);
+		if (template != null) {
+			response = new TemplateAddEditResponseDetails();
+			BeanUtil.map(template, response);
+			List<TemplateItemDetail> templateItemDetails = new ArrayList<TemplateItemDetail>();
+			for (TemplateItem templateItem : template.getItems()) {
+				TemplateItemDetail templateItemDetail = new TemplateItemDetail();
+				BeanUtil.map(templateItem, templateItemDetail);
+				DrugCollection drugCollection = drugRepository.findOne(templateItem.getDrugId());
+				Drug drug = new Drug();
+				BeanUtil.map(drugCollection, drug);
+				templateItemDetail.setDrug(drug);
+				templateItemDetails.add(templateItemDetail);
+			}
+			response.setItems(templateItemDetails);
+		}
+		return response;
+	}
+
+	@Override
+	public PrescriptionAddEditResponseDetails addPrescriptionHandheld(PrescriptionAddEditRequest request) {
+		PrescriptionAddEditResponseDetails response = null;
+		PrescriptionAddEditResponse prescription = addPrescription(request);
+		if (prescription != null) {
+			response = new PrescriptionAddEditResponseDetails();
+			BeanUtil.map(prescription, response);
+			List<PrescriptionItemDetail> prescriptionItemDetails = new ArrayList<PrescriptionItemDetail>();
+			for (PrescriptionItem prescriptionItem : prescription.getItems()) {
+				PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
+				BeanUtil.map(prescriptionItem, prescriptionItemDetail);
+				DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
+				Drug drug = new Drug();
+				BeanUtil.map(drugCollection, drug);
+				prescriptionItemDetail.setDrug(drug);
+				prescriptionItemDetails.add(prescriptionItemDetail);
+			}
+			response.setItems(prescriptionItemDetails);
+		}
+		return response;
 	}
 }

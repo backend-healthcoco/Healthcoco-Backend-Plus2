@@ -8,7 +8,9 @@ import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.request.TemplateAddEditRequest;
 import com.dpdocter.response.DrugAddEditResponse;
 import com.dpdocter.response.PrescriptionAddEditResponse;
+import com.dpdocter.response.PrescriptionAddEditResponseDetails;
 import com.dpdocter.response.TemplateAddEditResponse;
+import com.dpdocter.response.TemplateAddEditResponseDetails;
 import com.dpdocter.response.TemplateGetResponse;
 
 public interface PrescriptionServices {
@@ -45,5 +47,9 @@ public interface PrescriptionServices {
 	List<DrugAddEditResponse> getDrugs(String doctorId, String hospitalId, String locationId, String createdTime);
 
 	Integer getPrescriptionCount(String doctorId, String patientId, String locationId, String hospitalId);
+
+	TemplateAddEditResponseDetails addTemplateHandheld(TemplateAddEditRequest request);
+
+	PrescriptionAddEditResponseDetails addPrescriptionHandheld(PrescriptionAddEditRequest request);
 
 }

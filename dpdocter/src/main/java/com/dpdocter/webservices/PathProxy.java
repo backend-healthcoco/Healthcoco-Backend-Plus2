@@ -253,6 +253,8 @@ public interface PathProxy {
 
 		public static final String ADD_TEMPLATE = "addTemplate";
 
+		public static final String ADD_TEMPLATE_HANDHELD = "addTemplateHandheld";
+
 		public static final String EDIT_TEMPLATE = "editTemplate";
 
 		public static final String DELETE_TEMPLATE = "deleteTemplate/{templateId}/{doctorId}/{hospitalId}/{locationId}";
@@ -268,6 +270,8 @@ public interface PathProxy {
 		public static final String GET_TEMPLATE_ALL_FIELDS_CT = "getTemplates/{doctorId}/{hospitalId}/{locationId}/{createdTime}";
 
 		public static final String ADD_PRESCRIPTION = "addPrescription";
+
+		public static final String ADD_PRESCRIPTION_HANDHELD = "addPrescriptionHandheld";
 
 		public static final String EDIT_PRESCRIPTION = "editPrescription";
 

@@ -22,7 +22,9 @@ import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.request.TemplateAddEditRequest;
 import com.dpdocter.response.DrugAddEditResponse;
 import com.dpdocter.response.PrescriptionAddEditResponse;
+import com.dpdocter.response.PrescriptionAddEditResponseDetails;
 import com.dpdocter.response.TemplateAddEditResponse;
+import com.dpdocter.response.TemplateAddEditResponseDetails;
 import com.dpdocter.response.TemplateGetResponse;
 import com.dpdocter.services.PrescriptionServices;
 import common.util.web.DPDoctorUtils;
@@ -154,6 +156,18 @@ public class PrescriptionApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.PrescriptionUrls.ADD_TEMPLATE_HANDHELD)
+	@POST
+	public Response<TemplateAddEditResponseDetails> addTemplateHandheld(TemplateAddEditRequest request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
+		}
+		TemplateAddEditResponseDetails templateAddEditResponse = prescriptionServices.addTemplateHandheld(request);
+		Response<TemplateAddEditResponseDetails> response = new Response<TemplateAddEditResponseDetails>();
+		response.setData(templateAddEditResponse);
+		return response;
+	}
+
 	@Path(value = PathProxy.PrescriptionUrls.EDIT_TEMPLATE)
 	@POST
 	public Response<TemplateAddEditResponse> editTemplate(TemplateAddEditRequest request) {
@@ -245,6 +259,19 @@ public class PrescriptionApi {
 		}
 		PrescriptionAddEditResponse prescriptionAddEditResponse = prescriptionServices.addPrescription(request);
 		Response<PrescriptionAddEditResponse> response = new Response<PrescriptionAddEditResponse>();
+		response.setData(prescriptionAddEditResponse);
+		return response;
+
+	}
+
+	@Path(value = PathProxy.PrescriptionUrls.ADD_PRESCRIPTION_HANDHELD)
+	@POST
+	public Response<PrescriptionAddEditResponseDetails> addPrescriptionHandheld(PrescriptionAddEditRequest request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
+		}
+		PrescriptionAddEditResponseDetails prescriptionAddEditResponse = prescriptionServices.addPrescriptionHandheld(request);
+		Response<PrescriptionAddEditResponseDetails> response = new Response<PrescriptionAddEditResponseDetails>();
 		response.setData(prescriptionAddEditResponse);
 		return response;
 
