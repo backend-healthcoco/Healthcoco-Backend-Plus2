@@ -412,7 +412,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							Sort.Direction.DESC, "createdTime"));
 				}
 			}
-			if (templateCollections.isEmpty()) {
+			if (!templateCollections.isEmpty()) {
 				response = new ArrayList<TemplateGetResponse>();
 				for (TemplateCollection templateCollection : templateCollections) {
 					TemplateGetResponse template = new TemplateGetResponse();

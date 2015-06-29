@@ -464,8 +464,12 @@ public class ContactsServiceImpl implements ContactsService {
 					@SuppressWarnings("unchecked")
 					Collection<String> groupIds = CollectionUtils.collect(patientGroupCollections, new BeanToPropertyValueTransformer("groupId"));
 					RegisteredPatientDetails registeredPatientDetail = new RegisteredPatientDetails();
-					BeanUtil.map(userCollection, registeredPatientDetail);
-					registeredPatientDetail.setUserId(userCollection.getId());
+					if (userCollection != null) {
+						BeanUtil.map(userCollection, registeredPatientDetail);
+						if (userCollection.getId() != null) {
+							registeredPatientDetail.setUserId(userCollection.getId());
+						}
+					}
 					Patient patient = new Patient();
 					BeanUtil.map(patientCollection, patient);
 					patient.setPatientId(patientCollection.getId());
