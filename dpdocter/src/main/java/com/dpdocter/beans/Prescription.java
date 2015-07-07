@@ -9,7 +9,7 @@ public class Prescription extends GenericCollection {
 
 	private String name;
 
-	private List<PrescriptionItemDetail> itemList;
+	private List<PrescriptionItemDetail> items;
 
 	public String getId() {
 		return id;
@@ -27,17 +27,17 @@ public class Prescription extends GenericCollection {
 		this.name = name;
 	}
 
-	public List<PrescriptionItemDetail> getItemList() {
-		return itemList;
+	public List<PrescriptionItemDetail> getItems() {
+		return items;
 	}
 
-	public void setItemList(List<PrescriptionItemDetail> itemList) {
-		this.itemList = itemList;
+	public void setItems(List<PrescriptionItemDetail> items) {
+		this.items = items;
 	}
 
 	@Override
 	public String toString() {
-		return "Prescription [id=" + id + ", name=" + name + ", itemList=" + itemList + "]";
+		return "Prescription [id=" + id + ", name=" + name + ", items=" + items + "]";
 	}
 
 }

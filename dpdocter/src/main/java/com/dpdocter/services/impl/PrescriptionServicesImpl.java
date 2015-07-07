@@ -330,13 +330,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
 							PrescriptionItemDetail prescriptionItemDetails = new PrescriptionItemDetail();
 							BeanUtil.map(prescriptionItem, prescriptionItemDetails);
-							DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
-							Drug drug = new Drug();
-							BeanUtil.map(drugCollection, drug);
-							prescriptionItemDetails.setDrug(drug);
+							if (prescriptionItem.getDrugId() != null) {
+								DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
+								Drug drug = new Drug();
+								BeanUtil.map(drugCollection, drug);
+								prescriptionItemDetails.setDrug(drug);
+							}
 							prescriptionItemDetailsList.add(prescriptionItemDetails);
 						}
-						prescription.setItemList(prescriptionItemDetailsList);
+						prescription.setItems(prescriptionItemDetailsList);
 						prescriptions.add(prescription);
 					}
 
@@ -377,7 +379,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							prescriptionItemDetails.setDrug(drug);
 							prescriptionItemDetailsList.add(prescriptionItemDetails);
 						}
-						prescription.setItemList(prescriptionItemDetailsList);
+						prescription.setItems(prescriptionItemDetailsList);
 						prescriptions.add(prescription);
 					}
 

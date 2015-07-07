@@ -22,7 +22,7 @@ public interface RecordsRepository extends MongoRepository<RecordsCollection, St
 	@Query("{'id':?0}")
 	RecordsCollection findByRecordId(String recordId);
 
-	@Query(value = "{'doctorId':?0, 'patientId': ?1, 'hospitalId':?2, 'locationId':?3, 'isDeleted':?4}", count = true)
+	@Query(value = "{'doctorId': ?0, 'patientId': ?1, 'hospitalId':?2, 'locationId': ?3, 'isDeleted': ?4}", count = true)
 	Integer getRecordCount(String doctorId, String patientId, String hospitalId, String locationId, boolean isDeleted);
 
 	@Query("{'doctorId': ?0, 'isDeleted': ?1}")

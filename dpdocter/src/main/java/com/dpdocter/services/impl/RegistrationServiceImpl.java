@@ -186,6 +186,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if (addressCollection != null) {
 				patientCollection.setAddressId(addressCollection.getId());
 			}
+			patientCollection.setNotes(request.getNotes());
 			patientCollection = patientRepository.save(patientCollection);
 
 			// save Patient visit.

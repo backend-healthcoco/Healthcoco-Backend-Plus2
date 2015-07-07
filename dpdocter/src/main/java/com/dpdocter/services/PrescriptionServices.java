@@ -2,6 +2,8 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import org.springframework.data.mongodb.repository.Query;
+
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.request.DrugAddEditRequest;
 import com.dpdocter.request.PrescriptionAddEditRequest;
@@ -46,6 +48,7 @@ public interface PrescriptionServices {
 
 	List<DrugAddEditResponse> getDrugs(String doctorId, String hospitalId, String locationId, String createdTime);
 
+	@Query(value = "{'doctorId': ?0, 'patientId': ?1, 'locationId': ?2, 'hospitalId': ?3}", count = true)
 	Integer getPrescriptionCount(String doctorId, String patientId, String locationId, String hospitalId);
 
 	TemplateAddEditResponseDetails addTemplateHandheld(TemplateAddEditRequest request);

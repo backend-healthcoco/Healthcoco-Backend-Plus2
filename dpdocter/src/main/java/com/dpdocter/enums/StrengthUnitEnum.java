@@ -1,7 +1,7 @@
 package com.dpdocter.enums;
 
 public enum StrengthUnitEnum {
-	MG("MG");
+	MG("MG"), GM("GM");
 
 	private String strengthUnit;
 

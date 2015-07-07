@@ -307,7 +307,7 @@ public class PrescriptionApi {
 	@GET
 	public Response<Prescription> getPrescription(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "hospitalId") String hospitalId,
 			@PathParam(value = "locationId") String locationId, @PathParam(value = "patientId") String patientId,
-			@PathParam(value = "{isOTPVarified}") boolean isOTPVarified) {
+			@PathParam(value = "isOTPVarified") boolean isOTPVarified) {
 		if (StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
@@ -321,7 +321,7 @@ public class PrescriptionApi {
 	@GET
 	public Response<Prescription> getPrescription(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "hospitalId") String hospitalId,
 			@PathParam(value = "locationId") String locationId, @PathParam(value = "patientId") String patientId,
-			@PathParam(value = "{isOTPVarified}") boolean isOTPVarified, @PathParam(value = "createdTime") String createdTime) {
+			@PathParam(value = "isOTPVarified") boolean isOTPVarified, @PathParam(value = "createdTime") String createdTime) {
 		if (StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
