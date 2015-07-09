@@ -181,10 +181,11 @@ public class RecordsServiceImpl implements RecordsService {
 			} else {
 				if (request.getCreatedTime() != null) {
 					long createdTimeStamp = Long.parseLong(request.getCreatedTime());
-					recordsCollections = recordsRepository.findRecords(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), new Date(
-							createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
+					recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
+							request.getHospitalId(), new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
 				} else {
-					recordsCollections = recordsRepository.findRecords(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), false);
+					recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
+							request.getHospitalId(), false, new Sort(Sort.Direction.DESC, "createdTime"));
 				}
 				records = new ArrayList<Records>();
 				BeanUtil.map(recordsCollections, records);

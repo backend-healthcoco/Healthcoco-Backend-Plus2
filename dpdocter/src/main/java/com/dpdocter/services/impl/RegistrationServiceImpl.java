@@ -229,6 +229,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 			BeanUtil.map(patientCollection, patient);
 			patient.setPatientId(patientCollection.getId());
 			registeredPatientDetails.setPatient(patient);
+			registeredPatientDetails.setPID(patientCollection.getPID());
+			registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
 			Address address = new Address();
 			if (addressCollection != null) {
 				BeanUtil.map(addressCollection, address);
@@ -340,6 +342,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 			BeanUtil.map(patientCollection, patient);
 			patient.setPatientId(patientCollection.getId());
 			registeredPatientDetails.setPatient(patient);
+			registeredPatientDetails.setPID(patientCollection.getPID());
+			registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
 			Address address = new Address();
 			if (addressCollection != null) {
 				BeanUtil.map(addressCollection, address);
