@@ -1,0 +1,225 @@
+-http://localhost:8080/dpdocter/api/v1/history/addDisease
+
+Request - [
+    {
+        "description": "Test Description",
+        "disease": "Jaundice",
+        "doctorId": "D12345",
+        "hospitalId": "H12345",
+        "id": null,
+        "locationId": "L12345"
+    },
+    {
+        "description": "Test Description",
+        "disease": "Pneumonia",
+        "doctorId": "D12345",
+        "hospitalId": "H12345",
+        "id": null,
+        "locationId": "L12345"
+    }
+]
+
+Response - {
+    "data": null,
+    "dataList": [
+        {
+            "description": "Test Description",
+            "disease": "Jaundice",
+            "doctorId": "D12345",
+            "hospitalId": "H12345",
+            "id": "554289802736e064d83c96af",
+            "locationId": "L12345"
+        },
+        {
+            "description": "Test Description",
+            "disease": "Pneumonia",
+            "doctorId": "D12345",
+            "hospitalId": "H12345",
+            "id": "554289802736e064d83c96b0",
+            "locationId": "L12345"
+        }
+    ]
+}
+
+-http://localhost:8080/dpdocter/api/v1/history/editDisease
+
+Request - {
+    "description": "Test Description",
+    "disease": "Pneumonia (Cold)",
+    "doctorId": "D12345",
+    "hospitalId": "H12345",
+    "id": "554289802736e064d83c96b0",
+    "locationId": "L12345"
+}
+
+Response - {
+    "data": {
+        "description": "Test Description",
+        "disease": "Pneumonia (Cold)",
+        "doctorId": "D12345",
+        "hospitalId": "H12345",
+        "id": "554289802736e064d83c96b0",
+        "locationId": "L12345"
+    },
+    "dataList": null
+}
+
+-http://localhost:8080/dpdocter/api/v1/history/deleteDisease/554289802736e064d83c96b0/D12345/H12345/L12345
+
+Request - http://localhost:8080/dpdocter/api/v1/history/deleteDisease/{diseaseId}/{doctorId}/{hospitalId}/{locationId}
+
+Response - {
+    "data": true,
+    "dataList": null
+}
+
+-http://localhost:8080/dpdocter/api/v1/history/getDiseases/D12345/H12345/L12345
+
+Request - http://localhost:8080/dpdocter/api/v1/history/getDiseases/{doctorId}/{hospitalId}/{locationId}
+
+Response - {
+    "data": null,
+    "dataList": [
+        {
+            "description": "Test Description",
+            "disease": "Jaundice",
+            "id": "554289802736e064d83c96af"
+        },
+        {
+            "description": "Test Description",
+            "disease": "Pneumonia (Cold)",
+            "id": "554289802736e064d83c96b0"
+        }
+    ]
+}
+
+-http://localhost:8080/dpdocter/api/v1/history/addReportToHistory/RP12345/P12345/D12345/H12345/L12345
+
+Request - http://localhost:8080/dpdocter/api/v1/history/addReportToHistory/{reportId}/{patientId}/{doctorId}/{hospitalId}/{locationId}
+
+Response - {
+  "dataList": null,
+  "data": true
+}
+
+-http://localhost:8080/dpdocter/api/v1/history/addClinicalNotesToHistory/CN12345/P12345/D12345/H12345/L12345
+
+Request - http://localhost:8080/dpdocter/api/v1/history/addClinicalNotesToHistory/{clinicalNotesId}/{patientId}/{doctorId}/{hospitalId}/{locationId}
+
+Response - {
+  "dataList": null,
+  "data": true
+}
+
+-http://localhost:8080/dpdocter/api/v1/history/addPrescriptionToHistory/PR12345/P12345/D12345/H12345/L12345
+
+Request - http://localhost:8080/dpdocter/api/v1/history/addPrescriptionToHistory/{prescriptionId}/{patientId}/{doctorId}/{hospitalId}/{locationId}
+
+Response - {
+  "dataList": null,
+  "data": true
+}
+
+-http://localhost:8080/dpdocter/api/v1/history/assignMedicalHistory/554289802736e064d83c96af/P12345/D12345/H12345/L12345
+
+Request - http://localhost:8080/dpdocter/api/v1/history/assignMedicalHistory/{diseaseId}/{patientId}/{doctorId}/{hospitalId}/{locationId}
+
+Response - {
+  "dataList": null,
+  "data": true
+}
+
+-http://localhost:8080/dpdocter/api/v1/history/assignFamilyHistory/554289802736e064d83c96af/P12345/D12345/H12345/L12345
+
+Request - http://localhost:8080/dpdocter/api/v1/history/assignFamilyHistory/{diseaseId}/{patientId}/{doctorId}/{hospitalId}/{locationId}
+
+Response - {
+  "dataList": null,
+  "data": true
+}
+
+-http://localhost:8080/dpdocter/api/v1/history/addSpecialNotes
+
+Request - {
+    "doctorId": "D12345",
+    "hospitalId": "H12345",
+    "locationId": "L12345",
+    "patientId": "P12345",
+    "specialNotes": [
+        "Take rest",
+        "Test Notes"
+    ]
+}
+
+Response - {
+  "dataList": null,
+  "data": true
+}
+
+-http://localhost:8080/dpdocter/api/v1/history/removeReports/RP12345/P12345/D12345/H12345/L12345
+
+Request - http://localhost:8080/dpdocter/api/v1/history/removeReports/{reportId}/{patientId}/{doctorId}/{hospitalId}/{locationId}
+
+Response - {
+  "dataList": null,
+  "data": true
+}
+
+-http://localhost:8080/dpdocter/api/v1/history/removeClinicalNotes/CN12345/P12345/D12345/H12345/L12345
+
+Request - http://localhost:8080/dpdocter/api/v1/history/removeClinicalNotes/{clinicalNotesId}/{patientId}/{doctorId}/{hospitalId}/{locationId}
+
+Response - {
+  "dataList": null,
+  "data": true
+}
+
+-http://localhost:8080/dpdocter/api/v1/history/removePrescription/PR12345/P12345/D12345/H12345/L12345
+
+Request - http://localhost:8080/dpdocter/api/v1/history/removePrescription/{prescriptionId}/{patientId}/{doctorId}/{hospitalId}/{locationId}
+
+Response - {
+  "dataList": null,
+  "data": true
+}
+
+-http://localhost:8080/dpdocter/api/v1/history/removeMedicalHistory/554289802736e064d83c96af/P12345/D12345/H12345/L12345
+
+Request - http://localhost:8080/dpdocter/api/v1/history/removeMedicalHistory/{diseaseId}/{patientId}/{doctorId}/{hospitalId}/{locationId}
+
+Response - {
+  "dataList": null,
+  "data": true
+}
+
+-http://localhost:8080/dpdocter/api/v1/history/removeFamilyHistory/554289802736e064d83c96af/P12345/D12345/H12345/L12345
+
+Request - http://localhost:8080/dpdocter/api/v1/history/removeFamilyHistory/{diseaseId}/{patientId}/{doctorId}/{hospitalId}/{locationId}
+
+Response - {
+  "dataList": null,
+  "data": true
+}
+
+-http://localhost:8080/dpdocter/api/v1/history/getPatientHistoryOtp/P12345/D12345/H12345/L12345/PRESCRIPTIONS/true
+
+Request - http://localhost:8080/dpdocter/api/v1/history/getPatientHistoryOtp/{PatientId}/{DoctorId}/{HospitalId}/{LocationId}/{historyFilter}/{otpVerified}
+
+Response - {
+  "dataList": [
+    {
+      "specialNotes": null,
+      "patientId": "P12345",
+      "doctorId": "D12345",
+      "hospitalId": "H12345",
+      "locationId": "L12345",
+      "prescriptions": [],
+      "reports": null,
+      "clinicalNotes": null,
+      "medicalhistory": [],
+      "familyhistory": null,
+      "id": "55428ca027366fa1f06ff609"
+    }
+  ],
+  "data": null
+}
