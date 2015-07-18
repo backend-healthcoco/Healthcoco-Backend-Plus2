@@ -16,9 +16,10 @@
 	<context:property-placeholder
 		location="classpath:jdbc.properties,classpath:mail.properties,classpath:commons.properties"
 		ignore-unresolvable="true" />
-
+	<import resource="application-context-solr.xml" />
 	<import resource="database-connection.xml" />
 	<import resource="classpath:mail-config.xml" />
+	
 	<mongo:repositories base-package="com.dpdocter.repository" />
 
 

@@ -364,5 +364,22 @@ public interface PathProxy {
 
 		public static final String ADD_EDIT_APPOINTMENT_SLOT = "clinicProfile/addEditAppointmentSlot";
 	}
+	
+	
+	public static final String SOLR_BASEURL = BASE_URL + "/solr";
+	public interface SolrTemp {
+		public static final String ADD = "/add";
+		
+		public static final String DELETE = "/delete";
+		
+		public static final String SEARCH = "/search/{text}";
+		
+		public static final String ADD1 = "/add1";
+		
+		public static final String SEARCH1 = "/search1/{text}";
+
+		
+	}
+
 
 }
