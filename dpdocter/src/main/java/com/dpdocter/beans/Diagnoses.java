@@ -2,11 +2,11 @@ package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
 
-public class Diagnosis extends GenericCollection {
+public class Diagnoses extends GenericCollection {
 
 	private String id;
 
-	private String diagnosis;
+	private String diagnoses;
 
 	private String doctorId;
 
@@ -46,17 +46,17 @@ public class Diagnosis extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
-	public String getDiagnosis() {
-		return diagnosis;
+	public String getDiagnoses() {
+		return diagnoses;
 	}
 
-	public void setDiagnosis(String diagnosis) {
-		this.diagnosis = diagnosis;
+	public void setDiagnoses(String diagnoses) {
+		this.diagnoses = diagnoses;
 	}
 
 	@Override
 	public String toString() {
-		return "Diagnosis [id=" + id + ", diagnosis=" + diagnosis + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+		return "Diagnoses [id=" + id + ", diagnoses=" + diagnoses + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ "]";
 	}
 

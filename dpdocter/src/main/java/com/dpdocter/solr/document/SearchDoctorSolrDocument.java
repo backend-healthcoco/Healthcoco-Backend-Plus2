@@ -1,29 +1,23 @@
-package com.dpdocter.solr.repository;
+package com.dpdocter.solr.document;
 
 import org.apache.solr.client.solrj.beans.Field;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.solr.core.mapping.SolrDocument;
 
-@SolrDocument(solrCoreName="collection1")
+@SolrDocument(solrCoreName = "collection1")
 public class SearchDoctorSolrDocument {
 	@Id
-    @Field
-    private String id;
- 
-    @Field
-    private String name;
-    
-    
-    @Field
-    private String title;
-    
-    @Field
-    private String doctorSpecification;
-    
-    
-    
-    
-    
+	@Field
+	private String id;
+
+	@Field
+	private String name;
+
+	@Field
+	private String title;
+
+	@Field
+	private String doctorSpecification;
 
 	public String getDoctorSpecification() {
 		return doctorSpecification;
@@ -57,9 +51,4 @@ public class SearchDoctorSolrDocument {
 		this.name = name;
 	}
 
-
-
-    
-    
-    
 }

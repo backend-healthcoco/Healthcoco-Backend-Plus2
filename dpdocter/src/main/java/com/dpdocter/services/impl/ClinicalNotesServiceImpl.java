@@ -23,7 +23,7 @@ import com.dpdocter.beans.ClinicalNotesInvestigation;
 import com.dpdocter.beans.ClinicalNotesNote;
 import com.dpdocter.beans.ClinicalNotesObservation;
 import com.dpdocter.beans.Complaint;
-import com.dpdocter.beans.Diagnosis;
+import com.dpdocter.beans.Diagnoses;
 import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Investigation;
@@ -271,9 +271,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				List<DiagnosisCollection> diagnosisCollections = IteratorUtils.toList(diagnosisRepository.findAll(clinicalNotesCollection.getDiagnoses())
 						.iterator());
 				if (diagnosisCollections != null) {
-					List<Diagnosis> diagnosisList = new ArrayList<Diagnosis>();
+					List<Diagnoses> diagnosisList = new ArrayList<Diagnoses>();
 					for (DiagnosisCollection diagnosisCollection : diagnosisCollections) {
-						Diagnosis diagnosis = new Diagnosis();
+						Diagnoses diagnosis = new Diagnoses();
 						BeanUtil.map(diagnosisCollection, diagnosis);
 						diagnosis.setDoctorId(null);
 						diagnosis.setHospitalId(null);
@@ -470,7 +470,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return investigation;
 	}
 
-	public Diagnosis addEditDiagnosis(Diagnosis diagnosis) {
+	public Diagnoses addEditDiagnosis(Diagnoses diagnosis) {
 		try {
 			DiagnosisCollection diagnosisCollection = new DiagnosisCollection();
 			BeanUtil.map(diagnosis, diagnosisCollection);
@@ -683,13 +683,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
 
 	@Override
-	public List<Diagnosis> getCustomDiagnosis(String doctorId, String locationId, String hospitalId, int page, int size) {
+	public List<Diagnoses> getCustomDiagnosis(String doctorId, String locationId, String hospitalId, int page, int size) {
 		List<DiagnosisCollection> diagnosisCollections = null;
-		List<Diagnosis> diagnosis = null;
+		List<Diagnoses> diagnosis = null;
 		try {
 			diagnosisCollections = diagnosisRepository.findCustomDiagnosis(doctorId, locationId, hospitalId, false, new PageRequest(page, size));
 			if (diagnosisCollections != null) {
-				diagnosis = new ArrayList<Diagnosis>();
+				diagnosis = new ArrayList<Diagnoses>();
 				BeanUtil.map(diagnosisCollections, diagnosis);
 			} else {
 				throw new BusinessException(ServiceError.NotFound, "No Diagnosis Found");
@@ -804,8 +804,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
 
 	@Override
-	public List<Diagnosis> getDiagnosis(String doctorId, String createdTime) {
-		List<Diagnosis> response = null;
+	public List<Diagnoses> getDiagnosis(String doctorId, String createdTime) {
+		List<Diagnoses> response = null;
 		List<DiagnosisCollection> diagnosisCollections = null;
 		try {
 			long createdTimeStamp = Long.parseLong(createdTime);

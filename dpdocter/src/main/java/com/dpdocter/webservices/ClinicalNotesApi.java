@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.Complaint;
-import com.dpdocter.beans.Diagnosis;
+import com.dpdocter.beans.Diagnoses;
 import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.Investigation;
 import com.dpdocter.beans.Notes;
@@ -195,22 +195,22 @@ public class ClinicalNotesApi {
 
 	@Path(value = PathProxy.ClinicalNotesUrls.ADD_DIAGNOSIS)
 	@POST
-	public Response<Diagnosis> addDiagnosis(Diagnosis request) {
-		Diagnosis diagnosis = clinicalNotesService.addEditDiagnosis(request);
-		Response<Diagnosis> response = new Response<Diagnosis>();
+	public Response<Diagnoses> addDiagnosis(Diagnoses request) {
+		Diagnoses diagnosis = clinicalNotesService.addEditDiagnosis(request);
+		Response<Diagnoses> response = new Response<Diagnoses>();
 		response.setData(diagnosis);
 		return response;
 	}
 
 	@Path(value = PathProxy.ClinicalNotesUrls.GET_CUSTOM_DIAGNOSIS)
 	@GET
-	public Response<Diagnosis> getCustomDiagnosis(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+	public Response<Diagnoses> getCustomDiagnosis(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 			@PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "page") int page, @PathParam(value = "size") int size) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id, Location Id, or Hospital Id Cannot Be Empty");
 		}
-		List<Diagnosis> customDiagnosis = clinicalNotesService.getCustomDiagnosis(doctorId, locationId, hospitalId, page, size);
-		Response<Diagnosis> response = new Response<Diagnosis>();
+		List<Diagnoses> customDiagnosis = clinicalNotesService.getCustomDiagnosis(doctorId, locationId, hospitalId, page, size);
+		Response<Diagnoses> response = new Response<Diagnoses>();
 		response.setDataList(customDiagnosis);
 		return response;
 	}
@@ -322,9 +322,9 @@ public class ClinicalNotesApi {
 
 	@Path(value = PathProxy.ClinicalNotesUrls.GET_DIAGNOSIS)
 	@GET
-	public Response<Diagnosis> getDiagnosis(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
-		List<Diagnosis> diagnosis = clinicalNotesService.getDiagnosis(doctorId, createdTime);
-		Response<Diagnosis> response = new Response<Diagnosis>();
+	public Response<Diagnoses> getDiagnosis(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
+		List<Diagnoses> diagnosis = clinicalNotesService.getDiagnosis(doctorId, createdTime);
+		Response<Diagnoses> response = new Response<Diagnoses>();
 		response.setDataList(diagnosis);
 		return response;
 	}

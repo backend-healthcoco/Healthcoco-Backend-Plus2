@@ -1,22 +1,22 @@
-package com.dpdocter.solr.repository;
+package com.dpdocter.solr.document;
 
 import org.apache.solr.client.solrj.beans.Field;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.solr.core.mapping.SolrDocument;
 
-@SolrDocument(solrCoreName="doctor")
+@SolrDocument(solrCoreName = "doctor")
 public class DoctorCoreDemoDocument {
-	
+
 	@Id
 	@Field
 	private String id;
-	
+
 	@Field
 	private String doctorSpecification;
-	
+
 	@Field
 	private String title;
-	
+
 	@Field
 	private String name;
 
@@ -51,7 +51,5 @@ public class DoctorCoreDemoDocument {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	
-	
-	
+
 }

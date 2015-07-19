@@ -8,20 +8,21 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.solr.repository.DoctorCoreDemoDocument;
+import com.dpdocter.solr.document.DoctorCoreDemoDocument;
+import com.dpdocter.solr.document.SearchDoctorSolrDocument;
 import com.dpdocter.solr.repository.DoctorCoreDemoRepository;
 import com.dpdocter.solr.repository.DoctorSearchSolrRepository;
-import com.dpdocter.solr.repository.SearchDoctorSolrDocument;
 import com.dpdocter.solr.services.DoctorSearchSolrService;
+
 @Service
-public class DoctorSearchSolrServiceImpl  implements DoctorSearchSolrService{
+public class DoctorSearchSolrServiceImpl implements DoctorSearchSolrService {
 
 	@Resource
 	private DoctorSearchSolrRepository doctorSearchSolrRepository;
-	
+
 	@Resource
 	private DoctorCoreDemoRepository doctorCoreDemoRepository;
-	
+
 	@Override
 	public void addToIndex(SearchDoctorSolrDocument searchDoctorSolrDocument) {
 		try {
@@ -30,7 +31,7 @@ public class DoctorSearchSolrServiceImpl  implements DoctorSearchSolrService{
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error occured while saving");
 		}
-		
+
 	}
 
 	@Override
@@ -40,7 +41,7 @@ public class DoctorSearchSolrServiceImpl  implements DoctorSearchSolrService{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	@Override
@@ -63,7 +64,7 @@ public class DoctorSearchSolrServiceImpl  implements DoctorSearchSolrService{
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error occured while saving");
 		}
-		
+
 	}
 
 	@Override
@@ -77,7 +78,5 @@ public class DoctorSearchSolrServiceImpl  implements DoctorSearchSolrService{
 		}
 		return doctorCoreDemoDocuments;
 	}
-	
-	
 
 }

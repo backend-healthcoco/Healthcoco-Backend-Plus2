@@ -9,7 +9,7 @@
 
 	<!-- Enable Solr repositories and configure repository base package -->
 	<solr:repositories base-package="com.dpdocter.solr.repository"
-		multicore-support="true" solr-template-ref="solrTemplate"/>
+		multicore-support="true" solr-template-ref="solrTemplate" />
 
 	<!-- Bean definitions for the prod profile -->
 	<beans>
@@ -26,6 +26,13 @@
 				<list>
 					<value>collection1</value>
 					<value>doctor</value>
+					<value>complaints</value>
+					<value>diagnoses</value>
+					<value>notes</value>
+					<value>diagrams</value>
+					<value>investigations</value>
+					<value>observations</value>
+					<value>drugs</value>
 				</list>
 			</constructor-arg>
 		</bean>

@@ -1,6 +1,5 @@
 package com.dpdocter.tests;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.dpdocter.beans.Duration;
@@ -11,7 +10,6 @@ import com.dpdocter.enums.DirectionEnum;
 import com.dpdocter.enums.DrugTypeEnum;
 import com.dpdocter.enums.DurationUnitEnum;
 import com.dpdocter.enums.StrengthUnitEnum;
-import com.dpdocter.request.DoctorProfilePictureAddEditRequest;
 import com.dpdocter.request.DrugAddEditRequest;
 import com.dpdocter.request.PatientProfilePicChangeRequest;
 import com.dpdocter.request.RecordsSearchRequest;
@@ -55,31 +53,31 @@ public class GeneralTests {
 		strength.setValue("2");
 
 		request3.setStrength(strength);
-		
+
 		System.out.println(Converter.ObjectToJSON(request3));
-		
+
 		TemplateAddEditRequest request4 = new TemplateAddEditRequest();
-		
+
 		request4.setDoctorId("5525ef96e4b077dfc168369b");
 		request4.setHospitalId("5525ef96e4b077dfc16836a0");
 		request4.setLocationId("555260322736b2b121087651");
 		request4.setName("Custom Drug Template");
-		
+
 		TemplateItem templateItem = new TemplateItem();
 		templateItem.setDirection(Arrays.asList(DirectionEnum.WITH_WATER));
 		templateItem.setDosage("1-1-1");
 		templateItem.setDrugId("559e5586e4b0f47f6a993334");
-		
+
 		Duration duration = new Duration();
-		
+
 		duration.setUnit(DurationUnitEnum.WEEK);
 		duration.setValue("1");
-		
+
 		templateItem.setDuration(duration);
 		templateItem.setInstructions("Template Instructions");
-		
+
 		request4.setItems(Arrays.asList(templateItem));
-		
+
 		System.out.println(Converter.ObjectToJSON(request4));
 	}
 }

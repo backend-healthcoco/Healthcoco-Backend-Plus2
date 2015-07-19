@@ -1,7 +1,6 @@
 package com.dpdocter.tests;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,13 +11,15 @@ import org.apache.commons.io.IOUtils;
 
 public class Base64Test {
 	public static void main(String[] args) {
-		
+
 		String txt = null;
 		try {
 			txt = FileUtils.readFileToString(new File("/home/veeraj/pdf-file.txt"));
-			
-			//txt = Base64.encodeBase64String(IOUtils.toByteArray(new FileInputStream("/home/veeraj/image.jpg")));
-		//	FileUtils.writeStringToFile(new File("/home/veeraj/encodedString.txt"), txt);
+
+			// txt = Base64.encodeBase64String(IOUtils.toByteArray(new
+			// FileInputStream("/home/veeraj/image.jpg")));
+			// FileUtils.writeStringToFile(new
+			// File("/home/veeraj/encodedString.txt"), txt);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

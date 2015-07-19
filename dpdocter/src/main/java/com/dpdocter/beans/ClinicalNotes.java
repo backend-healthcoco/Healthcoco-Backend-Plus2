@@ -14,7 +14,7 @@ public class ClinicalNotes extends GenericCollection {
 
 	private List<Investigation> investigations;
 
-	private List<Diagnosis> diagnoses;
+	private List<Diagnoses> diagnoses;
 
 	private Long createdDate;
 
@@ -60,11 +60,11 @@ public class ClinicalNotes extends GenericCollection {
 		this.investigations = investigations;
 	}
 
-	public List<Diagnosis> getDiagnoses() {
+	public List<Diagnoses> getDiagnoses() {
 		return diagnoses;
 	}
 
-	public void setDiagnoses(List<Diagnosis> diagnoses) {
+	public void setDiagnoses(List<Diagnoses> diagnoses) {
 		this.diagnoses = diagnoses;
 	}
 

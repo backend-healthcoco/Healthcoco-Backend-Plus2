@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.repository.Query;
 
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.Complaint;
-import com.dpdocter.beans.Diagnosis;
+import com.dpdocter.beans.Diagnoses;
 import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.Investigation;
 import com.dpdocter.beans.Notes;
@@ -33,7 +33,7 @@ public interface ClinicalNotesService {
 
 	Investigation addEditInvestigation(Investigation investigation);
 
-	Diagnosis addEditDiagnosis(Diagnosis diagnosis);
+	Diagnoses addEditDiagnosis(Diagnoses diagnosis);
 
 	Notes addEditNotes(Notes notes);
 
@@ -53,7 +53,7 @@ public interface ClinicalNotesService {
 
 	List<Complaint> getCustomComplaints(String doctorId, String locationId, String hospitalId, int page, int size);
 
-	List<Diagnosis> getCustomDiagnosis(String doctorId, String locationId, String hospitalId, int page, int size);
+	List<Diagnoses> getCustomDiagnosis(String doctorId, String locationId, String hospitalId, int page, int size);
 
 	List<Investigation> getCustomInvestigations(String doctorId, String locationId, String hospitalId, int page, int size);
 
@@ -68,7 +68,7 @@ public interface ClinicalNotesService {
 
 	List<Observation> getObservations(String doctorId, String createdTime);
 
-	List<Diagnosis> getDiagnosis(String doctorId, String createdTime);
+	List<Diagnoses> getDiagnosis(String doctorId, String createdTime);
 
 	List<Notes> getNotes(String doctorId, String createdTime);
 
