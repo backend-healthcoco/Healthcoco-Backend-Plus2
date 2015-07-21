@@ -24,4 +24,12 @@ public class DPDoctorUtils {
 		}
 		return result;
 	}
+
+	public static String getPrefixedNumber(int number) {
+		String result = String.valueOf(number);
+		if (number < 10) {
+			result = "0" + result;
+		}
+		return result;
+	}
 }

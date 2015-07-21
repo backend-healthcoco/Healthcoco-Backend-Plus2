@@ -2,14 +2,11 @@ package com.dpdocter.beans;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 
-import com.dpdocter.enums.StrengthUnitEnum;
-
 @JsonAutoDetect
 public class Strength {
-
 	private String value;
 
-	private StrengthUnitEnum unit;
+	private DrugStrengthUnit unit;
 
 	public String getValue() {
 		return value;
@@ -19,11 +16,11 @@ public class Strength {
 		this.value = value;
 	}
 
-	public StrengthUnitEnum getUnit() {
+	public DrugStrengthUnit getUnit() {
 		return unit;
 	}
 
-	public void setUnit(StrengthUnitEnum unit) {
+	public void setUnit(DrugStrengthUnit unit) {
 		this.unit = unit;
 	}
 

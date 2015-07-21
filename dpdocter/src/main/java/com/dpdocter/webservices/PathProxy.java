@@ -283,6 +283,14 @@ public interface PathProxy {
 
 		public static final String GET_PRESCRIPTION_COUNT = "getPrescriptionCount/{doctorId}/{patientId}/{locationId}/{hospitalId}";
 
+		public static final String GET_ALL_DRUG_TYPE = "getAllDrugType";
+
+		public static final String GET_ALL_DRUG_STRENGTH_UNIT = "getAllDrugStrengthUnit";
+
+		public static final String GET_ALL_DRUG_DURATION_UNIT = "getAllDrugDurationUnit";
+
+		public static final String GET_ALL_DRUG_DIRECTION_UNIT = "getAllDrugDirection";
+
 	}
 
 	public static final String HISTORY_BASE_URL = BASE_URL + "/history";

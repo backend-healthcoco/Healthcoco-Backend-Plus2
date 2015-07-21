@@ -2,8 +2,6 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-import com.dpdocter.enums.DirectionEnum;
-
 public class TemplateItem {
 	private String drugId;
 
@@ -11,7 +9,7 @@ public class TemplateItem {
 
 	private String dosage;
 
-	private List<DirectionEnum> direction;
+	private List<DrugDirection> direction;
 
 	private String instructions;
 
@@ -39,11 +37,11 @@ public class TemplateItem {
 		this.dosage = dosage;
 	}
 
-	public List<DirectionEnum> getDirection() {
+	public List<DrugDirection> getDirection() {
 		return direction;
 	}
 
-	public void setDirection(List<DirectionEnum> direction) {
+	public void setDirection(List<DrugDirection> direction) {
 		this.direction = direction;
 	}
 

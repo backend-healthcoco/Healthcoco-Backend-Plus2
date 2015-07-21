@@ -11,7 +11,7 @@ public class PrescriptionItem {
 
 	private String dosage;
 
-	private List<DirectionEnum> direction;
+	private List<DrugDirection> direction;
 
 	private String instructions;
 
@@ -39,11 +39,11 @@ public class PrescriptionItem {
 		this.dosage = dosage;
 	}
 
-	public List<DirectionEnum> getDirection() {
+	public List<DrugDirection> getDirection() {
 		return direction;
 	}
 
-	public void setDirection(List<DirectionEnum> direction) {
+	public void setDirection(List<DrugDirection> direction) {
 		this.direction = direction;
 	}
 

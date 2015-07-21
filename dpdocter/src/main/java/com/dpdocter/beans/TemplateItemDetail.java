@@ -11,7 +11,7 @@ public class TemplateItemDetail {
 
 	private String dosage;
 
-	private List<DirectionEnum> direction;
+	private List<DrugDirection> direction;
 
 	private String instructions;
 
@@ -39,11 +39,11 @@ public class TemplateItemDetail {
 		this.dosage = dosage;
 	}
 
-	public List<DirectionEnum> getDirection() {
+	public List<DrugDirection> getDirection() {
 		return direction;
 	}
 
-	public void setDirection(List<DirectionEnum> direction) {
+	public void setDirection(List<DrugDirection> direction) {
 		this.direction = direction;
 	}
 
@@ -57,7 +57,7 @@ public class TemplateItemDetail {
 
 	@Override
 	public String toString() {
-		return "TemplateItemHandheld [drug=" + drug + ", duration=" + duration + ", dosage=" + dosage + ", direction=" + direction + ", instructions="
+		return "TemplateItemDetail [drug=" + drug + ", duration=" + duration + ", dosage=" + dosage + ", direction=" + direction + ", instructions="
 				+ instructions + "]";
 	}
 

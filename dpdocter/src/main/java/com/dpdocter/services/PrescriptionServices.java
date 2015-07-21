@@ -4,6 +4,10 @@ import java.util.List;
 
 import org.springframework.data.mongodb.repository.Query;
 
+import com.dpdocter.beans.DrugDirection;
+import com.dpdocter.beans.DrugDurationUnit;
+import com.dpdocter.beans.DrugStrengthUnit;
+import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.request.DrugAddEditRequest;
 import com.dpdocter.request.PrescriptionAddEditRequest;
@@ -13,7 +17,6 @@ import com.dpdocter.response.PrescriptionAddEditResponse;
 import com.dpdocter.response.PrescriptionAddEditResponseDetails;
 import com.dpdocter.response.TemplateAddEditResponse;
 import com.dpdocter.response.TemplateAddEditResponseDetails;
-import com.dpdocter.response.TemplateGetResponse;
 
 public interface PrescriptionServices {
 	DrugAddEditResponse addDrug(DrugAddEditRequest request);
@@ -32,7 +35,7 @@ public interface PrescriptionServices {
 
 	Boolean deleteTemplate(String templateId, String doctorId, String hospitalId, String locationId);
 
-	TemplateGetResponse getTemplate(String templateId, String doctorId, String hospitalId, String locationId);
+	TemplateAddEditResponseDetails getTemplate(String templateId, String doctorId, String hospitalId, String locationId);
 
 	PrescriptionAddEditResponse addPrescription(PrescriptionAddEditRequest request);
 
@@ -44,7 +47,7 @@ public interface PrescriptionServices {
 
 	List<Prescription> getPrescriptionsByIds(List<String> prescriptionIds);
 
-	List<TemplateGetResponse> getTemplates(String doctorId, String hospitalId, String locationId, String createdTime);
+	List<TemplateAddEditResponseDetails> getTemplates(String doctorId, String hospitalId, String locationId, String createdTime);
 
 	List<DrugAddEditResponse> getDrugs(String doctorId, String hospitalId, String locationId, String createdTime);
 
@@ -54,5 +57,13 @@ public interface PrescriptionServices {
 	TemplateAddEditResponseDetails addTemplateHandheld(TemplateAddEditRequest request);
 
 	PrescriptionAddEditResponseDetails addPrescriptionHandheld(PrescriptionAddEditRequest request);
+
+	List<DrugType> getAllDrugType();
+
+	List<DrugStrengthUnit> getAllDrugStrengthUnit();
+
+	List<DrugDurationUnit> getAllDrugDurationUnit();
+
+	List<DrugDirection> getAllDrugDirection();
 
 }

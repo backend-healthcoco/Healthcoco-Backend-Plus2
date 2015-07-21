@@ -10,21 +10,33 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.ls.LSInput;
 
 import com.dpdocter.beans.Drug;
+import com.dpdocter.beans.DrugDirection;
+import com.dpdocter.beans.DrugDurationUnit;
+import com.dpdocter.beans.DrugStrengthUnit;
+import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.PrescriptionItemDetail;
-import com.dpdocter.beans.TemplateDrug;
 import com.dpdocter.beans.TemplateItem;
 import com.dpdocter.beans.TemplateItemDetail;
 import com.dpdocter.collections.DrugCollection;
+import com.dpdocter.collections.DrugDirectionCollection;
+import com.dpdocter.collections.DrugDurationUnitCollection;
+import com.dpdocter.collections.DrugStrengthUnitCollection;
+import com.dpdocter.collections.DrugTypeCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.TemplateCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DrugDirectionRepository;
+import com.dpdocter.repository.DrugDurationUnitRepository;
 import com.dpdocter.repository.DrugRepository;
+import com.dpdocter.repository.DrugStrengthUnitRepository;
+import com.dpdocter.repository.DrugTypeRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.TemplateRepository;
 import com.dpdocter.request.DrugAddEditRequest;
@@ -35,8 +47,9 @@ import com.dpdocter.response.PrescriptionAddEditResponse;
 import com.dpdocter.response.PrescriptionAddEditResponseDetails;
 import com.dpdocter.response.TemplateAddEditResponse;
 import com.dpdocter.response.TemplateAddEditResponseDetails;
-import com.dpdocter.response.TemplateGetResponse;
 import com.dpdocter.services.PrescriptionServices;
+import com.sun.mail.util.BEncoderStream;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.PrescriptionUtils;
 
@@ -44,6 +57,18 @@ import common.util.web.PrescriptionUtils;
 public class PrescriptionServicesImpl implements PrescriptionServices {
 	@Autowired
 	private DrugRepository drugRepository;
+
+	@Autowired
+	private DrugDirectionRepository drugDirectionRepository;
+
+	@Autowired
+	private DrugStrengthUnitRepository drugStrengthRepository;
+
+	@Autowired
+	private DrugTypeRepository drugTypeRepository;
+
+	@Autowired
+	private DrugDurationUnitRepository drugDurationRepository;
 
 	@Autowired
 	private TemplateRepository templateRepository;
@@ -209,18 +234,18 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	public TemplateGetResponse getTemplate(String templateId, String doctorId, String hospitalId, String locationId) {
-		TemplateGetResponse response = null;
+	public TemplateAddEditResponseDetails getTemplate(String templateId, String doctorId, String hospitalId, String locationId) {
+		TemplateAddEditResponseDetails response = null;
 		TemplateCollection templateCollection = new TemplateCollection();
 		try {
 			templateCollection = templateRepository.getTemplate(templateId, doctorId, hospitalId, locationId);
 			if (templateCollection != null) {
-				response = new TemplateGetResponse();
+				response = new TemplateAddEditResponseDetails();
 				BeanUtil.map(templateCollection, response);
 				int i = 0;
 				for (TemplateItem item : templateCollection.getItems()) {
 					DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
-					TemplateDrug drug = new TemplateDrug();
+					Drug drug = new Drug();
 					BeanUtil.map(drugCollection, drug);
 					response.getItems().get(i).setDrug(drug);
 					i++;
@@ -395,8 +420,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	@Override
-	public List<TemplateGetResponse> getTemplates(String doctorId, String hospitalId, String locationId, String createdTime) {
-		List<TemplateGetResponse> response = null;
+	public List<TemplateAddEditResponseDetails> getTemplates(String doctorId, String hospitalId, String locationId, String createdTime) {
+		List<TemplateAddEditResponseDetails> response = null;
 		List<TemplateCollection> templateCollections = null;
 		try {
 			if (DPDoctorUtils.anyStringEmpty(createdTime)) {
@@ -415,14 +440,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				}
 			}
 			if (!templateCollections.isEmpty()) {
-				response = new ArrayList<TemplateGetResponse>();
+				response = new ArrayList<TemplateAddEditResponseDetails>();
 				for (TemplateCollection templateCollection : templateCollections) {
-					TemplateGetResponse template = new TemplateGetResponse();
+					TemplateAddEditResponseDetails template = new TemplateAddEditResponseDetails();
 					BeanUtil.map(templateCollection, template);
 					int i = 0;
 					for (TemplateItem item : templateCollection.getItems()) {
 						DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
-						TemplateDrug drug = new TemplateDrug();
+						Drug drug = new Drug();
 						BeanUtil.map(drugCollection, drug);
 						template.getItems().get(i).setDrug(drug);
 						i++;
@@ -524,6 +549,74 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				prescriptionItemDetails.add(prescriptionItemDetail);
 			}
 			response.setItems(prescriptionItemDetails);
+		}
+		return response;
+	}
+
+	@Override
+	public List<DrugType> getAllDrugType() {
+		List<DrugType> response = null;
+		List<DrugTypeCollection> drugTypeCollections = null;
+		try {
+			drugTypeCollections = drugTypeRepository.findAll();
+			if (drugTypeCollections != null) {
+				response = new ArrayList<DrugType>();
+				BeanUtil.map(drugTypeCollections, response);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Types");
+		}
+		return response;
+	}
+
+	@Override
+	public List<DrugStrengthUnit> getAllDrugStrengthUnit() {
+		List<DrugStrengthUnit> response = null;
+		List<DrugStrengthUnitCollection> drugStrengthUnitCollections = null;
+		try {
+			drugStrengthUnitCollections = drugStrengthRepository.findAll();
+			if (drugStrengthUnitCollections != null) {
+				response = new ArrayList<DrugStrengthUnit>();
+				BeanUtil.map(drugStrengthUnitCollections, response);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Strength Units");
+		}
+		return response;
+	}
+
+	@Override
+	public List<DrugDurationUnit> getAllDrugDurationUnit() {
+		List<DrugDurationUnit> response = null;
+		List<DrugDurationUnitCollection> drugDurationUnitCollections = null;
+		try {
+			drugDurationUnitCollections = drugDurationRepository.findAll();
+			if (drugDurationUnitCollections != null) {
+				response = new ArrayList<DrugDurationUnit>();
+				BeanUtil.map(drugDurationUnitCollections, response);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Duration Units");
+		}
+		return response;
+	}
+
+	@Override
+	public List<DrugDirection> getAllDrugDirection() {
+		List<DrugDirection> response = null;
+		List<DrugDirectionCollection> drugDirectionCollections = null;
+		try {
+			drugDirectionCollections = drugDirectionRepository.findAll();
+			if (drugDirectionCollections != null) {
+				response = new ArrayList<DrugDirection>();
+				BeanUtil.map(drugDirectionCollections, response);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Directions");
 		}
 		return response;
 	}

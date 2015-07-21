@@ -14,6 +14,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.DrugDirection;
+import com.dpdocter.beans.DrugDurationUnit;
+import com.dpdocter.beans.DrugStrengthUnit;
+import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -26,7 +30,6 @@ import com.dpdocter.response.PrescriptionAddEditResponse;
 import com.dpdocter.response.PrescriptionAddEditResponseDetails;
 import com.dpdocter.response.TemplateAddEditResponse;
 import com.dpdocter.response.TemplateAddEditResponseDetails;
-import com.dpdocter.response.TemplateGetResponse;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.solr.document.SolrDrugDocument;
 import com.dpdocter.solr.services.SolrPrescriptionService;
@@ -218,20 +221,21 @@ public class PrescriptionApi {
 
 	@Path(value = PathProxy.PrescriptionUrls.GET_TEMPLATE_TEMPLATE_ID)
 	@GET
-	public Response<TemplateGetResponse> getTemplate(@PathParam(value = "templateId") String templateId, @PathParam(value = "doctorId") String doctorId,
-			@PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "locationId") String locationId) {
+	public Response<TemplateAddEditResponseDetails> getTemplate(@PathParam(value = "templateId") String templateId,
+			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "hospitalId") String hospitalId,
+			@PathParam(value = "locationId") String locationId) {
 		if (DPDoctorUtils.anyStringEmpty(templateId, doctorId, hospitalId, locationId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Template Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		TemplateGetResponse templateGetResponse = prescriptionServices.getTemplate(templateId, doctorId, hospitalId, locationId);
-		Response<TemplateGetResponse> response = new Response<TemplateGetResponse>();
+		TemplateAddEditResponseDetails templateGetResponse = prescriptionServices.getTemplate(templateId, doctorId, hospitalId, locationId);
+		Response<TemplateAddEditResponseDetails> response = new Response<TemplateAddEditResponseDetails>();
 		response.setData(templateGetResponse);
 		return response;
 	}
 
 	@Path(value = PathProxy.PrescriptionUrls.GET_TEMPLATE_DOCTOR_SPECIFIC)
 	@GET
-	public Response<TemplateGetResponse> getAllTemplates(@PathParam(value = "doctorId") String doctorId) {
+	public Response<TemplateAddEditResponseDetails> getAllTemplates(@PathParam(value = "doctorId") String doctorId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
 		}
@@ -240,7 +244,8 @@ public class PrescriptionApi {
 
 	@Path(value = PathProxy.PrescriptionUrls.GET_TEMPLATE_DOCTOR_SPECIFIC_CT)
 	@GET
-	public Response<TemplateGetResponse> getAllTemplates(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "createdTime") String createdTime) {
+	public Response<TemplateAddEditResponseDetails> getAllTemplates(@PathParam(value = "doctorId") String doctorId,
+			@PathParam(value = "createdTime") String createdTime) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Created Time Cannot Be Empty");
 		}
@@ -249,8 +254,8 @@ public class PrescriptionApi {
 
 	@Path(value = PathProxy.PrescriptionUrls.GET_TEMPLATE_ALL_FIELDS)
 	@GET
-	public Response<TemplateGetResponse> getAllTemplates(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "locationId") String locationId) {
+	public Response<TemplateAddEditResponseDetails> getAllTemplates(@PathParam(value = "doctorId") String doctorId,
+			@PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "locationId") String locationId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
@@ -259,17 +264,18 @@ public class PrescriptionApi {
 
 	@Path(value = PathProxy.PrescriptionUrls.GET_TEMPLATE_ALL_FIELDS_CT)
 	@GET
-	public Response<TemplateGetResponse> getAllTemplates(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "locationId") String locationId, @PathParam(value = "createdTime") String createdTime) {
+	public Response<TemplateAddEditResponseDetails> getAllTemplates(@PathParam(value = "doctorId") String doctorId,
+			@PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "createdTime") String createdTime) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, hospitalId, locationId, createdTime)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Hospital Id, Location Id, Created Time Cannot Be Empty");
 		}
 		return getTemplates(doctorId, hospitalId, locationId, createdTime);
 	}
 
-	private Response<TemplateGetResponse> getTemplates(String doctorId, String hospitalId, String locationId, String createdTime) {
-		List<TemplateGetResponse> templates = prescriptionServices.getTemplates(doctorId, hospitalId, locationId, createdTime);
-		Response<TemplateGetResponse> response = new Response<TemplateGetResponse>();
+	private Response<TemplateAddEditResponseDetails> getTemplates(String doctorId, String hospitalId, String locationId, String createdTime) {
+		List<TemplateAddEditResponseDetails> templates = prescriptionServices.getTemplates(doctorId, hospitalId, locationId, createdTime);
+		Response<TemplateAddEditResponseDetails> response = new Response<TemplateAddEditResponseDetails>();
 		response.setDataList(templates);
 		return response;
 	}
@@ -361,6 +367,36 @@ public class PrescriptionApi {
 		Integer prescriptionCount = prescriptionServices.getPrescriptionCount(doctorId, patientId, locationId, hospitalId);
 		Response<Integer> response = new Response<Integer>();
 		response.setData(prescriptionCount);
+		return response;
+	}
+
+	@Path(value = PathProxy.PrescriptionUrls.GET_ALL_DRUG_TYPE)
+	@GET
+	public Response<DrugType> getAllDrugType() {
+		List<DrugType> drugTypes = prescriptionServices.getAllDrugType();
+		Response<DrugType> response = new Response<DrugType>();
+		response.setDataList(drugTypes);
+		return response;
+	}
+
+	public Response<DrugStrengthUnit> getAllDrugStrengthUnit() {
+		List<DrugStrengthUnit> drugStrengths = prescriptionServices.getAllDrugStrengthUnit();
+		Response<DrugStrengthUnit> response = new Response<DrugStrengthUnit>();
+		response.setDataList(drugStrengths);
+		return response;
+	}
+
+	public Response<DrugDurationUnit> getAllDrugDurationUnit() {
+		List<DrugDurationUnit> drugDurations = prescriptionServices.getAllDrugDurationUnit();
+		Response<DrugDurationUnit> response = new Response<DrugDurationUnit>();
+		response.setDataList(drugDurations);
+		return response;
+	}
+
+	public Response<DrugDirection> getAllDrugDirection() {
+		List<DrugDirection> drugDirections = prescriptionServices.getAllDrugDirection();
+		Response<DrugDirection> response = new Response<DrugDirection>();
+		response.setDataList(drugDirections);
 		return response;
 	}
 

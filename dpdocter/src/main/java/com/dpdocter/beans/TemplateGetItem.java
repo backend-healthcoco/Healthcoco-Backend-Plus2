@@ -5,7 +5,7 @@ import java.util.List;
 import com.dpdocter.enums.DirectionEnum;
 
 public class TemplateGetItem {
-	private TemplateDrug drug;
+	private Drug drug;
 
 	private Duration duration;
 
@@ -15,11 +15,11 @@ public class TemplateGetItem {
 
 	private String instructions;
 
-	public TemplateDrug getDrug() {
+	public Drug getDrug() {
 		return drug;
 	}
 
-	public void setDrug(TemplateDrug drug) {
+	public void setDrug(Drug drug) {
 		this.drug = drug;
 	}
 

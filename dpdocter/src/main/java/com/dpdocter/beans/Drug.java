@@ -2,13 +2,10 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-import com.dpdocter.enums.DrugTypeEnum;
-
 public class Drug {
-
 	private String id;
 
-	private DrugTypeEnum drugType;
+	private DrugType drugType;
 
 	private String drugName;
 
@@ -28,11 +25,11 @@ public class Drug {
 		this.id = id;
 	}
 
-	public DrugTypeEnum getDrugType() {
+	public DrugType getDrugType() {
 		return drugType;
 	}
 
-	public void setDrugType(DrugTypeEnum drugType) {
+	public void setDrugType(DrugType drugType) {
 		this.drugType = drugType;
 	}
 

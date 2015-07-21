@@ -4,14 +4,14 @@ import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonManagedReference;
 
+import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.Strength;
 import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.enums.DrugTypeEnum;
 
 public class DrugAddEditResponse extends GenericCollection {
 	private String id;
 
-	private DrugTypeEnum drugType;
+	private DrugType drugType;
 
 	private String drugName;
 
@@ -38,11 +38,11 @@ public class DrugAddEditResponse extends GenericCollection {
 		this.id = id;
 	}
 
-	public DrugTypeEnum getDrugType() {
+	public DrugType getDrugType() {
 		return drugType;
 	}
 
-	public void setDrugType(DrugTypeEnum drugType) {
+	public void setDrugType(DrugType drugType) {
 		this.drugType = drugType;
 	}
 

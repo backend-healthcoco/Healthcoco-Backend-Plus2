@@ -3,13 +3,13 @@ package com.dpdocter.request;
 import java.util.List;
 import java.util.UUID;
 
+import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.Strength;
-import com.dpdocter.enums.DrugTypeEnum;
 
 public class DrugAddEditRequest {
 	private String id;
 
-	private DrugTypeEnum drugType;
+	private DrugType drugType;
 
 	private String drugName;
 
@@ -35,11 +35,11 @@ public class DrugAddEditRequest {
 		this.id = id;
 	}
 
-	public DrugTypeEnum getDrugType() {
+	public DrugType getDrugType() {
 		return drugType;
 	}
 
-	public void setDrugType(DrugTypeEnum drugType) {
+	public void setDrugType(DrugType drugType) {
 		this.drugType = drugType;
 	}
 

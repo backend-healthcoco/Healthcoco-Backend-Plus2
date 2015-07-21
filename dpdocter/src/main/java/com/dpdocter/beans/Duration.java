@@ -1,11 +1,9 @@
 package com.dpdocter.beans;
 
-import com.dpdocter.enums.DurationUnitEnum;
-
 public class Duration {
 	private String value;
 
-	private DurationUnitEnum unit;
+	private DrugDurationUnit durationUnit;
 
 	public String getValue() {
 		return value;
@@ -15,17 +13,17 @@ public class Duration {
 		this.value = value;
 	}
 
-	public DurationUnitEnum getUnit() {
-		return unit;
+	public DrugDurationUnit getDurationUnit() {
+		return durationUnit;
 	}
 
-	public void setUnit(DurationUnitEnum unit) {
-		this.unit = unit;
+	public void setDurationUnit(DrugDurationUnit durationUnit) {
+		this.durationUnit = durationUnit;
 	}
 
 	@Override
 	public String toString() {
-		return "Duration [value=" + value + ", unit=" + unit + "]";
+		return "Duration [value=" + value + ", durationUnit=" + durationUnit + "]";
 	}
 
 }
