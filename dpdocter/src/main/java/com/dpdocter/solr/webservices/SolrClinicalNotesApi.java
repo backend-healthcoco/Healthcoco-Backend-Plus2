@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -15,26 +14,26 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.solr.document.SolrComplaints;
-import com.dpdocter.solr.document.SolrDiagnoses;
-import com.dpdocter.solr.document.SolrDiagrams;
-import com.dpdocter.solr.document.SolrInvestigations;
-import com.dpdocter.solr.document.SolrNotes;
-import com.dpdocter.solr.document.SolrObservations;
+import com.dpdocter.solr.document.SolrComplaintsDocument;
+import com.dpdocter.solr.document.SolrDiagnosesDocument;
+import com.dpdocter.solr.document.SolrDiagramsDocument;
+import com.dpdocter.solr.document.SolrInvestigationsDocument;
+import com.dpdocter.solr.document.SolrNotesDocument;
+import com.dpdocter.solr.document.SolrObservationsDocument;
 import com.dpdocter.solr.services.SolrClinicalNotesService;
 import com.dpdocter.webservices.PathProxy;
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
 @Component
-@Path(PathProxy.SOLR_BASEURL)
+@Path(PathProxy.SOLR_CLINICAL_NOTES_BASEURL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class SolrClinicalNotesApi {
 	@Autowired
 	private SolrClinicalNotesService solrClinicalNotesService;
 
-	@Path(value = PathProxy.SolrClinicalNotesUrls.ADD_COMPLAINTS)
+	/*@Path(value = PathProxy.SolrClinicalNotesUrls.ADD_COMPLAINTS)
 	@POST
 	public Response<Boolean> addComplaints(SolrComplaints request) {
 		if (request == null) {
@@ -68,21 +67,21 @@ public class SolrClinicalNotesApi {
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(deleteComplaintsResponse);
 		return response;
-	}
+	}*/
 
 	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_COMPLAINTS)
 	@GET
-	public Response<SolrComplaints> searchComplaints(@PathParam(value = "searchTerm") String searchTerm) {
+	public Response<SolrComplaintsDocument> searchComplaints(@PathParam(value = "searchTerm") String searchTerm) {
 		if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<SolrComplaints> complaints = solrClinicalNotesService.searchComplaints(searchTerm);
-		Response<SolrComplaints> response = new Response<SolrComplaints>();
+		List<SolrComplaintsDocument> complaints = solrClinicalNotesService.searchComplaints(searchTerm);
+		Response<SolrComplaintsDocument> response = new Response<SolrComplaintsDocument>();
 		response.setDataList(complaints);
 		return response;
 	}
 
-	@Path(value = PathProxy.SolrClinicalNotesUrls.ADD_DIAGNOSES)
+	/*@Path(value = PathProxy.SolrClinicalNotesUrls.ADD_DIAGNOSES)
 	@POST
 	public Response<Boolean> addDiagnoses(SolrDiagnoses request) {
 		if (request == null) {
@@ -116,21 +115,21 @@ public class SolrClinicalNotesApi {
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(deleteDiagnosesResponse);
 		return response;
-	}
+	}*/
 
 	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_DIAGNOSES)
 	@GET
-	public Response<SolrDiagnoses> searchDiagnoses(@PathParam(value = "searchTerm") String searchTerm) {
+	public Response<SolrDiagnosesDocument> searchDiagnoses(@PathParam(value = "searchTerm") String searchTerm) {
 		if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<SolrDiagnoses> diagnoses = solrClinicalNotesService.searchDiagnoses(searchTerm);
-		Response<SolrDiagnoses> response = new Response<SolrDiagnoses>();
+		List<SolrDiagnosesDocument> diagnoses = solrClinicalNotesService.searchDiagnoses(searchTerm);
+		Response<SolrDiagnosesDocument> response = new Response<SolrDiagnosesDocument>();
 		response.setDataList(diagnoses);
 		return response;
 	}
 
-	@Path(value = PathProxy.SolrClinicalNotesUrls.ADD_NOTES)
+	/*@Path(value = PathProxy.SolrClinicalNotesUrls.ADD_NOTES)
 	@POST
 	public Response<Boolean> addNotes(SolrNotes request) {
 		if (request == null) {
@@ -165,19 +164,19 @@ public class SolrClinicalNotesApi {
 		response.setData(deleteNotesResponse);
 		return response;
 	}
-
+*/
 	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_NOTES)
 	@GET
-	public Response<SolrNotes> searchNotes(@PathParam(value = "searchTerm") String searchTerm) {
+	public Response<SolrNotesDocument> searchNotes(@PathParam(value = "searchTerm") String searchTerm) {
 		if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<SolrNotes> notes = solrClinicalNotesService.searchNotes(searchTerm);
-		Response<SolrNotes> response = new Response<SolrNotes>();
+		List<SolrNotesDocument> notes = solrClinicalNotesService.searchNotes(searchTerm);
+		Response<SolrNotesDocument> response = new Response<SolrNotesDocument>();
 		response.setDataList(notes);
 		return response;
 	}
-
+/*
 	@Path(value = PathProxy.SolrClinicalNotesUrls.ADD_DIAGRAMS)
 	@POST
 	public Response<Boolean> addDiagrams(SolrDiagrams request) {
@@ -213,20 +212,20 @@ public class SolrClinicalNotesApi {
 		response.setData(deleteDiagramsResponse);
 		return response;
 	}
-
+*/
 	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_DIAGRAMS)
 	@GET
-	public Response<SolrDiagrams> searchDiagrams(@PathParam(value = "searchTerm") String searchTerm) {
+	public Response<SolrDiagramsDocument> searchDiagrams(@PathParam(value = "searchTerm") String searchTerm) {
 		if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<SolrDiagrams> diagrams = solrClinicalNotesService.searchDiagrams(searchTerm);
-		Response<SolrDiagrams> response = new Response<SolrDiagrams>();
+		List<SolrDiagramsDocument> diagrams = solrClinicalNotesService.searchDiagrams(searchTerm);
+		Response<SolrDiagramsDocument> response = new Response<SolrDiagramsDocument>();
 		response.setDataList(diagrams);
 		return response;
 	}
 
-	@Path(value = PathProxy.SolrClinicalNotesUrls.ADD_INVESTIGATIONS)
+/*	@Path(value = PathProxy.SolrClinicalNotesUrls.ADD_INVESTIGATIONS)
 	@POST
 	public Response<Boolean> addInvestigations(SolrInvestigations request) {
 		if (request == null) {
@@ -261,20 +260,20 @@ public class SolrClinicalNotesApi {
 		response.setData(deleteInvestigationsResponse);
 		return response;
 	}
-
+*/
 	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_INVESTIGATIONS)
 	@GET
-	public Response<SolrInvestigations> searchInvestigations(@PathParam(value = "searchTerm") String searchTerm) {
+	public Response<SolrInvestigationsDocument> searchInvestigations(@PathParam(value = "searchTerm") String searchTerm) {
 		if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<SolrInvestigations> investigations = solrClinicalNotesService.searchInvestigations(searchTerm);
-		Response<SolrInvestigations> response = new Response<SolrInvestigations>();
+		List<SolrInvestigationsDocument> investigations = solrClinicalNotesService.searchInvestigations(searchTerm);
+		Response<SolrInvestigationsDocument> response = new Response<SolrInvestigationsDocument>();
 		response.setDataList(investigations);
 		return response;
 	}
 
-	@Path(value = PathProxy.SolrClinicalNotesUrls.ADD_INVESTIGATIONS)
+/*	@Path(value = PathProxy.SolrClinicalNotesUrls.ADD_INVESTIGATIONS)
 	@POST
 	public Response<Boolean> addInvestigations(SolrObservations request) {
 		if (request == null) {
@@ -309,15 +308,15 @@ public class SolrClinicalNotesApi {
 		response.setData(deleteObservationsResponse);
 		return response;
 	}
-
+*/
 	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_OBSERVATIONS)
 	@GET
-	public Response<SolrObservations> searchObservations(@PathParam(value = "searchTerm") String searchTerm) {
+	public Response<SolrObservationsDocument> searchObservations(@PathParam(value = "searchTerm") String searchTerm) {
 		if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<SolrObservations> observations = solrClinicalNotesService.searchObservations(searchTerm);
-		Response<SolrObservations> response = new Response<SolrObservations>();
+		List<SolrObservationsDocument> observations = solrClinicalNotesService.searchObservations(searchTerm);
+		Response<SolrObservationsDocument> response = new Response<SolrObservationsDocument>();
 		response.setDataList(observations);
 		return response;
 	}

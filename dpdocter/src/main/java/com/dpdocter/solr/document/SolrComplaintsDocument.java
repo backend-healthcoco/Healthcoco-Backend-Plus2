@@ -4,14 +4,14 @@ import org.apache.solr.client.solrj.beans.Field;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.solr.core.mapping.SolrDocument;
 
-@SolrDocument(solrCoreName = "investigations")
-public class SolrInvestigations {
+@SolrDocument(solrCoreName = "complaints")
+public class SolrComplaintsDocument {
 	@Id
 	@Field
 	private String id;
 
 	@Field
-	private String investigation;
+	private String complaint;
 
 	public String getId() {
 		return id;
@@ -21,17 +21,17 @@ public class SolrInvestigations {
 		this.id = id;
 	}
 
-	public String getInvestigation() {
-		return investigation;
+	public String getComplaint() {
+		return complaint;
 	}
 
-	public void setInvestigation(String investigation) {
-		this.investigation = investigation;
+	public void setComplaint(String complaint) {
+		this.complaint = complaint;
 	}
 
 	@Override
 	public String toString() {
-		return "SolrInvestigations [id=" + id + ", investigation=" + investigation + "]";
+		return "SolrComplaints [id=" + id + ", complaint=" + complaint + "]";
 	}
 
 }

@@ -2,16 +2,16 @@ package com.dpdocter.solr.services;
 
 import java.util.List;
 
-import com.dpdocter.solr.document.SolrDrug;
+import com.dpdocter.solr.document.SolrDrugDocument;
 
 public interface SolrPrescriptionService {
 
-	boolean addDrug(SolrDrug request);
+	boolean addDrug(SolrDrugDocument request);
 
-	boolean editDrug(SolrDrug request);
+	boolean editDrug(SolrDrugDocument request);
 
 	boolean deleteDrug(String id);
 
-	List<SolrDrug> searchDrug(String searchTerm);
+	List<SolrDrugDocument> searchDrug(String searchTerm);
 
 }

@@ -1,4 +1,4 @@
-package com.dpdocter.solr.webservices;
+/*package com.dpdocter.solr.webservices;
 
 import java.util.List;
 
@@ -83,3 +83,4 @@ public class SolrSearchApi {
 	}
 
 }
+*/

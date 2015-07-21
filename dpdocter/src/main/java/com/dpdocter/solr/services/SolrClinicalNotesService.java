@@ -2,61 +2,61 @@ package com.dpdocter.solr.services;
 
 import java.util.List;
 
-import com.dpdocter.solr.document.SolrComplaints;
-import com.dpdocter.solr.document.SolrDiagnoses;
-import com.dpdocter.solr.document.SolrDiagrams;
-import com.dpdocter.solr.document.SolrInvestigations;
-import com.dpdocter.solr.document.SolrNotes;
-import com.dpdocter.solr.document.SolrObservations;
+import com.dpdocter.solr.document.SolrComplaintsDocument;
+import com.dpdocter.solr.document.SolrDiagnosesDocument;
+import com.dpdocter.solr.document.SolrDiagramsDocument;
+import com.dpdocter.solr.document.SolrInvestigationsDocument;
+import com.dpdocter.solr.document.SolrNotesDocument;
+import com.dpdocter.solr.document.SolrObservationsDocument;
 
 public interface SolrClinicalNotesService {
 
-	boolean addComplaints(SolrComplaints request);
+	boolean addComplaints(SolrComplaintsDocument request);
 
-	boolean editComplaints(SolrComplaints request);
+	boolean editComplaints(SolrComplaintsDocument request);
 
 	boolean deleteComplaints(String id);
 
-	List<SolrComplaints> searchComplaints(String searchTerm);
+	List<SolrComplaintsDocument> searchComplaints(String searchTerm);
 
-	boolean addDiagnoses(SolrDiagnoses request);
+	boolean addDiagnoses(SolrDiagnosesDocument request);
 
-	boolean editDiagnoses(SolrDiagnoses request);
+	boolean editDiagnoses(SolrDiagnosesDocument request);
 
 	boolean deleteDiagnoses(String id);
 
-	List<SolrDiagnoses> searchDiagnoses(String searchTerm);
+	List<SolrDiagnosesDocument> searchDiagnoses(String searchTerm);
 
-	boolean addNotes(SolrNotes request);
+	boolean addNotes(SolrNotesDocument request);
 
-	boolean editNotes(SolrNotes request);
+	boolean editNotes(SolrNotesDocument request);
 
 	boolean deleteNotes(String id);
 
-	List<SolrNotes> searchNotes(String searchTerm);
+	List<SolrNotesDocument> searchNotes(String searchTerm);
 
-	boolean addDiagrams(SolrDiagrams request);
+	boolean addDiagrams(SolrDiagramsDocument request);
 
-	boolean editDiagrams(SolrDiagrams request);
+	boolean editDiagrams(SolrDiagramsDocument request);
 
 	boolean deleteDiagrams(String id);
 
-	List<SolrDiagrams> searchDiagrams(String searchTerm);
+	List<SolrDiagramsDocument> searchDiagrams(String searchTerm);
 
-	boolean addInvestigations(SolrInvestigations request);
+	boolean addInvestigations(SolrInvestigationsDocument request);
 
-	boolean editInvestigations(SolrInvestigations request);
+	boolean editInvestigations(SolrInvestigationsDocument request);
 
 	boolean deleteInvestigations(String id);
 
-	List<SolrInvestigations> searchInvestigations(String searchTerm);
+	List<SolrInvestigationsDocument> searchInvestigations(String searchTerm);
 
-	boolean addObservations(SolrObservations request);
+	boolean addObservations(SolrObservationsDocument request);
 
-	boolean editObservations(SolrObservations request);
+	boolean editObservations(SolrObservationsDocument request);
 
 	boolean deleteObservations(String id);
 
-	List<SolrObservations> searchObservations(String searchTerm);
+	List<SolrObservationsDocument> searchObservations(String searchTerm);
 
 }

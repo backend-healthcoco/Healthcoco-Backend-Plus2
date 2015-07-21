@@ -5,9 +5,9 @@ import java.util.List;
 import org.springframework.data.solr.repository.Query;
 import org.springframework.data.solr.repository.SolrCrudRepository;
 
-import com.dpdocter.solr.document.SolrComplaints;
+import com.dpdocter.solr.document.SolrComplaintsDocument;
 
-public interface SolrComplaintsRepository extends SolrCrudRepository<SolrComplaints, String> {
+public interface SolrComplaintsRepository extends SolrCrudRepository<SolrComplaintsDocument, String> {
 	@Query("complaint:*?0*")
-	public List<SolrComplaints> find(String searchTerm);
+	public List<SolrComplaintsDocument> findByQueryAnnotation(String searchTerm);
 }

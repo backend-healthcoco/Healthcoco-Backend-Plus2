@@ -22,9 +22,18 @@ import com.dpdocter.beans.Notes;
 import com.dpdocter.beans.Observation;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.ClinicalNotesAddRequest;
 import com.dpdocter.request.ClinicalNotesEditRequest;
 import com.dpdocter.services.ClinicalNotesService;
+import com.dpdocter.solr.document.SolrComplaintsDocument;
+import com.dpdocter.solr.document.SolrDiagnosesDocument;
+import com.dpdocter.solr.document.SolrDiagramsDocument;
+import com.dpdocter.solr.document.SolrInvestigationsDocument;
+import com.dpdocter.solr.document.SolrNotesDocument;
+import com.dpdocter.solr.document.SolrObservationsDocument;
+import com.dpdocter.solr.services.SolrClinicalNotesService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -36,6 +45,9 @@ public class ClinicalNotesApi {
 
 	@Autowired
 	private ClinicalNotesService clinicalNotesService;
+	
+	@Autowired
+	private SolrClinicalNotesService solrClinicalNotesService;
 
 	@Path(value = PathProxy.ClinicalNotesUrls.SAVE_CLINICAL_NOTE)
 	@POST
@@ -131,6 +143,18 @@ public class ClinicalNotesApi {
 	@POST
 	public Response<Complaint> addComplaint(Complaint request) {
 		Complaint complaint = clinicalNotesService.addEditComplaint(request);
+		
+		//Below service call will add or edit complaint in solr index.
+		
+		SolrComplaintsDocument solrComplaints = new SolrComplaintsDocument();
+		BeanUtil.map(complaint, solrComplaints);
+		if(request.getId() == null){
+			solrClinicalNotesService.addComplaints(solrComplaints);
+		}else{
+			solrClinicalNotesService.editComplaints(solrComplaints);
+		}
+		
+		
 		Response<Complaint> response = new Response<Complaint>();
 		response.setData(complaint);
 		return response;
@@ -153,6 +177,14 @@ public class ClinicalNotesApi {
 	@POST
 	public Response<Observation> addObservation(Observation request) {
 		Observation observation = clinicalNotesService.addEditObservation(request);
+		
+		SolrObservationsDocument solrObservations = new SolrObservationsDocument();
+		BeanUtil.map(observation, solrObservations);
+		if(request.getId() == null){
+			solrClinicalNotesService.addObservations(solrObservations);
+		}else{
+			solrClinicalNotesService.editObservations(solrObservations);
+		}
 		Response<Observation> response = new Response<Observation>();
 		response.setData(observation);
 		return response;
@@ -175,6 +207,14 @@ public class ClinicalNotesApi {
 	@POST
 	public Response<Investigation> addInvestigation(Investigation request) {
 		Investigation investigation = clinicalNotesService.addEditInvestigation(request);
+		
+		SolrInvestigationsDocument solrInvestigations = new SolrInvestigationsDocument();
+		BeanUtil.map(investigation, solrInvestigations);
+		if(request.getId() == null){
+			solrClinicalNotesService.addInvestigations(solrInvestigations);
+		}else{
+			solrClinicalNotesService.editInvestigations(solrInvestigations);
+		}
 		Response<Investigation> response = new Response<Investigation>();
 		response.setData(investigation);
 		return response;
@@ -197,6 +237,16 @@ public class ClinicalNotesApi {
 	@POST
 	public Response<Diagnoses> addDiagnosis(Diagnoses request) {
 		Diagnoses diagnosis = clinicalNotesService.addEditDiagnosis(request);
+		
+		//Add diagnosis in solr index.
+		SolrDiagnosesDocument solrDiagnoses = new SolrDiagnosesDocument();
+		BeanUtil.map(diagnosis, solrDiagnoses);
+		if(request.getId() == null){
+			solrClinicalNotesService.addDiagnoses(solrDiagnoses);
+		}else{
+			solrClinicalNotesService.editDiagnoses(solrDiagnoses);
+		}
+		
 		Response<Diagnoses> response = new Response<Diagnoses>();
 		response.setData(diagnosis);
 		return response;
@@ -219,6 +269,16 @@ public class ClinicalNotesApi {
 	@POST
 	public Response<Notes> addNotes(Notes request) {
 		Notes notes = clinicalNotesService.addEditNotes(request);
+		
+		//add notes in solr index.
+		SolrNotesDocument solrNotes = new SolrNotesDocument();
+		BeanUtil.map(notes, solrNotes);
+		if(request.getId() == null){
+			solrClinicalNotesService.addNotes(solrNotes);
+		}else{
+			solrClinicalNotesService.editNotes(solrNotes);
+		}
+		
 		Response<Notes> response = new Response<Notes>();
 		response.setData(notes);
 		return response;
@@ -228,6 +288,15 @@ public class ClinicalNotesApi {
 	@POST
 	public Response<Diagram> addDiagram(Diagram request) {
 		Diagram diagram = clinicalNotesService.addEditDiagram(request);
+		
+		SolrDiagramsDocument solrDiagrams = new SolrDiagramsDocument();
+		BeanUtil.map(diagram, solrDiagrams);
+		if(request.getId() == null){
+			solrClinicalNotesService.addDiagrams(solrDiagrams);
+		}else{
+			solrClinicalNotesService.editDiagrams(solrDiagrams);
+		}
+		
 		Response<Diagram> response = new Response<Diagram>();
 		response.setData(diagram);
 		return response;
@@ -238,6 +307,8 @@ public class ClinicalNotesApi {
 	public Response<Boolean> deleteComplaint(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
 		clinicalNotesService.deleteComplaint(id, doctorId, locationId, hospitalId);
+		//Delete complaint in solr index.
+		solrClinicalNotesService.deleteComplaints(id);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(true);
 		return response;
@@ -248,6 +319,7 @@ public class ClinicalNotesApi {
 	public Response<Boolean> deleteObservation(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
 		clinicalNotesService.deleteObservation(id, doctorId, locationId, hospitalId);
+		solrClinicalNotesService.deleteObservations(id);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(true);
 		return response;
@@ -258,6 +330,8 @@ public class ClinicalNotesApi {
 	public Response<Boolean> deleteInvestigation(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
 		clinicalNotesService.deleteInvestigation(id, doctorId, locationId, hospitalId);
+		
+		solrClinicalNotesService.deleteInvestigations(id);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(true);
 		return response;
@@ -268,6 +342,9 @@ public class ClinicalNotesApi {
 	public Response<Boolean> deleteDiagnosis(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
 		clinicalNotesService.deleteDiagnosis(id, doctorId, locationId, hospitalId);
+		
+		//delete diagnosis in solr index.
+		solrClinicalNotesService.deleteDiagnoses(id);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(true);
 		return response;
@@ -278,6 +355,9 @@ public class ClinicalNotesApi {
 	public Response<Boolean> deleteNote(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
 		clinicalNotesService.deleteNotes(id, doctorId, locationId, hospitalId);
+		
+		//delete notes in solr index.
+		solrClinicalNotesService.deleteNotes(id);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(true);
 		return response;
@@ -288,6 +368,8 @@ public class ClinicalNotesApi {
 	public Response<Boolean> deleteDiagram(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
 		clinicalNotesService.deleteDiagram(id, doctorId, locationId, hospitalId);
+		
+		solrClinicalNotesService.deleteDiagrams(id);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(true);
 		return response;

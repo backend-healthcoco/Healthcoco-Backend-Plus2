@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.solr.document.SolrDrug;
+import com.dpdocter.solr.document.SolrDrugDocument;
 import com.dpdocter.solr.repository.SolrDrugRepository;
 import com.dpdocter.solr.services.SolrPrescriptionService;
 
@@ -17,20 +17,20 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	private SolrDrugRepository solrDrugRepository;
 
 	@Override
-	public boolean addDrug(SolrDrug request) {
+	public boolean addDrug(SolrDrugDocument request) {
 		boolean response = false;
 		try {
 			solrDrugRepository.save(request);
 			response = true;
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug in Solr");
 		}
 		return response;
 	}
 
 	@Override
-	public boolean editDrug(SolrDrug request) {
+	public boolean editDrug(SolrDrugDocument request) {
 		boolean response = false;
 		try {
 			solrDrugRepository.save(request);
@@ -56,8 +56,8 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	}
 
 	@Override
-	public List<SolrDrug> searchDrug(String searchTerm) {
-		List<SolrDrug> response = null;
+	public List<SolrDrugDocument> searchDrug(String searchTerm) {
+		List<SolrDrugDocument> response = null;
 		try {
 			response = solrDrugRepository.find(searchTerm);
 		} catch (Exception e) {

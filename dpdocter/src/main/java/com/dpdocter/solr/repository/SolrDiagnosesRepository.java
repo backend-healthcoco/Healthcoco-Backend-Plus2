@@ -5,9 +5,9 @@ import java.util.List;
 import org.springframework.data.solr.repository.Query;
 import org.springframework.data.solr.repository.SolrCrudRepository;
 
-import com.dpdocter.solr.document.SolrDiagnoses;
+import com.dpdocter.solr.document.SolrDiagnosesDocument;
 
-public interface SolrDiagnosesRepository extends SolrCrudRepository<SolrDiagnoses, String> {
+public interface SolrDiagnosesRepository extends SolrCrudRepository<SolrDiagnosesDocument, String> {
 	@Query("diagnosis:*?0*")
-	public List<SolrDiagnoses> find(String searchTerm);
+	public List<SolrDiagnosesDocument> find(String searchTerm);
 }

@@ -6,7 +6,7 @@ public class Diagnoses extends GenericCollection {
 
 	private String id;
 
-	private String diagnoses;
+	private String diagnosis;
 
 	private String doctorId;
 
@@ -46,18 +46,22 @@ public class Diagnoses extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
-	public String getDiagnoses() {
-		return diagnoses;
+	
+
+	public String getDiagnosis() {
+		return diagnosis;
 	}
 
-	public void setDiagnoses(String diagnoses) {
-		this.diagnoses = diagnoses;
+	public void setDiagnosis(String diagnosis) {
+		this.diagnosis = diagnosis;
 	}
 
 	@Override
 	public String toString() {
-		return "Diagnoses [id=" + id + ", diagnoses=" + diagnoses + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ "]";
+		return "Diagnoses [id=" + id + ", diagnosis=" + diagnosis
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + "]";
 	}
 
+	
 }

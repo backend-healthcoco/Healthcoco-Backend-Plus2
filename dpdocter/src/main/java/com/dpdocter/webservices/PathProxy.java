@@ -110,7 +110,8 @@ public interface PathProxy {
 		public static final String UPDATE_CLINIC_TIMING = "settings/updateClinicTiming";
 	}
 
-	public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";
+	public static final String CLINICAL_NOTES_BASE_URL = BASE_URL
+			+ "/clinicalNotes";
 
 	public interface ClinicalNotesUrls {
 		public static final String SAVE_CLINICAL_NOTE = "/save";
@@ -177,7 +178,8 @@ public interface PathProxy {
 
 	}
 
-	public static final String FORGOT_PASSWORD_BASE_URL = BASE_URL + "/forgotPassword";
+	public static final String FORGOT_PASSWORD_BASE_URL = BASE_URL
+			+ "/forgotPassword";
 
 	public interface ForgotPasswordUrls {
 		public static final String FORGOT_PASSWORD_DOCTOR = "/forgotPasswordDoctor";
@@ -230,7 +232,8 @@ public interface PathProxy {
 
 	}
 
-	public static final String PRESCRIPTION_BASE_URL = BASE_URL + "/prescription";
+	public static final String PRESCRIPTION_BASE_URL = BASE_URL
+			+ "/prescription";
 
 	public interface PrescriptionUrls {
 		public static final String ADD_DRUG = "addDrug";
@@ -365,77 +368,41 @@ public interface PathProxy {
 		public static final String ADD_EDIT_APPOINTMENT_SLOT = "clinicProfile/addEditAppointmentSlot";
 	}
 
-	public static final String SOLR_BASEURL = BASE_URL + "/solr";
+	/*
+	 * public interface SolrTemp { public static final String ADD = "/add";
+	 * 
+	 * public static final String DELETE = "/delete";
+	 * 
+	 * public static final String SEARCH = "/search/{text}";
+	 * 
+	 * public static final String ADD1 = "/add1";
+	 * 
+	 * public static final String SEARCH1 = "/search1/{text}";
+	 * 
+	 * }
+	 */
 
-	public interface SolrTemp {
-		public static final String ADD = "/add";
-
-		public static final String DELETE = "/delete";
-
-		public static final String SEARCH = "/search/{text}";
-
-		public static final String ADD1 = "/add1";
-
-		public static final String SEARCH1 = "/search1/{text}";
-
-	}
+	public static final String SOLR_CLINICAL_NOTES_BASEURL = BASE_URL
+			+ "/solr/clinicalNotes";
 
 	public interface SolrClinicalNotesUrls {
-		public static final String ADD_COMPLAINTS = "addComplaints";
-
-		public static final String EDIT_COMPLAINTS = "editComplaints";
-
-		public static final String DELETE_COMPLAINTS = "deleteComplaints/{id}";
-
 		public static final String SEARCH_COMPLAINTS = "searchComplaints/{searchTerm}";
-
-		public static final String ADD_DIAGNOSES = "addDiagnoses";
-
-		public static final String EDIT_DIAGNOSES = "editDiagnoses";
-
-		public static final String DELETE_DIAGNOSES = "deleteDiagnoses/{id}";
 
 		public static final String SEARCH_DIAGNOSES = "searchDiagnoses/{searchTerm}";
 
-		public static final String ADD_NOTES = "addNotes";
-
-		public static final String EDIT_NOTES = "editNotes";
-
-		public static final String DELETE_NOTES = "deleteNotes/{id}";
-
 		public static final String SEARCH_NOTES = "searchNotes/{searchTerm}";
-
-		public static final String ADD_DIAGRAMS = "addDiagrams";
-
-		public static final String EDIT_DIAGRAMS = "editDiagrams";
-
-		public static final String DELETE_DIAGRAMS = "deleteDiagrams/{id}";
 
 		public static final String SEARCH_DIAGRAMS = "searchDiagrams/{searchTerm}";
 
-		public static final String ADD_INVESTIGATIONS = "addInvestigations";
-
-		public static final String EDIT_INVESTIGATIONS = "editInvestigations";
-
-		public static final String DELETE_INVESTIGATIONS = "deleteInvestigations/{id}";
-
 		public static final String SEARCH_INVESTIGATIONS = "searchInvestigations/{searchTerm}";
-
-		public static final String ADD_OBSERVATIONS = "addObservations";
-
-		public static final String EDIT_OBSERVATIONS = "editObservations";
-
-		public static final String DELETE_OBSERVATIONS = "deleteObservations/{id}";
 
 		public static final String SEARCH_OBSERVATIONS = "searchObservations/{searchTerm}";
 	}
 
+	public static final String SOLR_PRESCRIPTION_BASEURL = BASE_URL
+			+ "/solr/prescription";
+
 	public interface SolrPrescriptionUrls {
-		public static final String ADD_DRUG = "addDrug";
-
-		public static final String EDIT_DRUG = "editDrug";
-
-		public static final String DELETE_DRUG = "deleteDrug/{id}";
 
 		public static final String SEARCH_DRUG = "searchDrug/{searchTerm}";
 	}

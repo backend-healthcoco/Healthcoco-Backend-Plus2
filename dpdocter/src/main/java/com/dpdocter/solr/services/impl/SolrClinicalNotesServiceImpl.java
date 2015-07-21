@@ -7,12 +7,12 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.solr.document.SolrComplaints;
-import com.dpdocter.solr.document.SolrDiagnoses;
-import com.dpdocter.solr.document.SolrDiagrams;
-import com.dpdocter.solr.document.SolrInvestigations;
-import com.dpdocter.solr.document.SolrNotes;
-import com.dpdocter.solr.document.SolrObservations;
+import com.dpdocter.solr.document.SolrComplaintsDocument;
+import com.dpdocter.solr.document.SolrDiagnosesDocument;
+import com.dpdocter.solr.document.SolrDiagramsDocument;
+import com.dpdocter.solr.document.SolrInvestigationsDocument;
+import com.dpdocter.solr.document.SolrNotesDocument;
+import com.dpdocter.solr.document.SolrObservationsDocument;
 import com.dpdocter.solr.repository.SolrComplaintsRepository;
 import com.dpdocter.solr.repository.SolrDiagnosesRepository;
 import com.dpdocter.solr.repository.SolrDiagramsRepository;
@@ -42,7 +42,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	private SolrObservationsRepository solrObservationsRepository;
 
 	@Override
-	public boolean addComplaints(SolrComplaints request) {
+	public boolean addComplaints(SolrComplaintsDocument request) {
 		boolean response = false;
 		try {
 			solrComplaintsRepository.save(request);
@@ -55,7 +55,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	}
 
 	@Override
-	public boolean editComplaints(SolrComplaints request) {
+	public boolean editComplaints(SolrComplaintsDocument request) {
 		boolean response = false;
 		try {
 			solrComplaintsRepository.save(request);
@@ -81,10 +81,10 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	}
 
 	@Override
-	public List<SolrComplaints> searchComplaints(String searchTerm) {
-		List<SolrComplaints> response = null;
+	public List<SolrComplaintsDocument> searchComplaints(String searchTerm) {
+		List<SolrComplaintsDocument> response = null;
 		try {
-			response = solrComplaintsRepository.find(searchTerm);
+			response = solrComplaintsRepository.findByQueryAnnotation(searchTerm);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Complaints");
@@ -93,7 +93,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	}
 
 	@Override
-	public boolean addDiagnoses(SolrDiagnoses request) {
+	public boolean addDiagnoses(SolrDiagnosesDocument request) {
 		boolean response = false;
 		try {
 			solrDiagnosesRepository.save(request);
@@ -106,7 +106,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	}
 
 	@Override
-	public boolean editDiagnoses(SolrDiagnoses request) {
+	public boolean editDiagnoses(SolrDiagnosesDocument request) {
 		boolean response = false;
 		try {
 			solrDiagnosesRepository.save(request);
@@ -132,8 +132,8 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	}
 
 	@Override
-	public List<SolrDiagnoses> searchDiagnoses(String searchTerm) {
-		List<SolrDiagnoses> response = null;
+	public List<SolrDiagnosesDocument> searchDiagnoses(String searchTerm) {
+		List<SolrDiagnosesDocument> response = null;
 		try {
 			response = solrDiagnosesRepository.find(searchTerm);
 		} catch (Exception e) {
@@ -144,7 +144,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	}
 
 	@Override
-	public boolean addNotes(SolrNotes request) {
+	public boolean addNotes(SolrNotesDocument request) {
 		boolean response = false;
 		try {
 			solrNotesRepository.save(request);
@@ -157,7 +157,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	}
 
 	@Override
-	public boolean editNotes(SolrNotes request) {
+	public boolean editNotes(SolrNotesDocument request) {
 		boolean response = false;
 		try {
 			solrNotesRepository.save(request);
@@ -183,8 +183,8 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	}
 
 	@Override
-	public List<SolrNotes> searchNotes(String searchTerm) {
-		List<SolrNotes> response = null;
+	public List<SolrNotesDocument> searchNotes(String searchTerm) {
+		List<SolrNotesDocument> response = null;
 		try {
 			response = solrNotesRepository.find(searchTerm);
 		} catch (Exception e) {
@@ -195,7 +195,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	}
 
 	@Override
-	public boolean addDiagrams(SolrDiagrams request) {
+	public boolean addDiagrams(SolrDiagramsDocument request) {
 		boolean response = false;
 		try {
 			solrDiagramsRepository.save(request);
@@ -208,7 +208,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	}
 
 	@Override
-	public boolean editDiagrams(SolrDiagrams request) {
+	public boolean editDiagrams(SolrDiagramsDocument request) {
 		boolean response = false;
 		try {
 			solrDiagramsRepository.save(request);
@@ -234,8 +234,8 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	}
 
 	@Override
-	public List<SolrDiagrams> searchDiagrams(String searchTerm) {
-		List<SolrDiagrams> response = null;
+	public List<SolrDiagramsDocument> searchDiagrams(String searchTerm) {
+		List<SolrDiagramsDocument> response = null;
 		try {
 			response = solrDiagramsRepository.find(searchTerm);
 		} catch (Exception e) {
@@ -246,7 +246,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	}
 
 	@Override
-	public boolean addInvestigations(SolrInvestigations request) {
+	public boolean addInvestigations(SolrInvestigationsDocument request) {
 		boolean response = false;
 		try {
 			solrInvestigationsRepository.save(request);
@@ -259,7 +259,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	}
 
 	@Override
-	public boolean editInvestigations(SolrInvestigations request) {
+	public boolean editInvestigations(SolrInvestigationsDocument request) {
 		boolean response = false;
 		try {
 			solrInvestigationsRepository.save(request);
@@ -285,8 +285,8 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	}
 
 	@Override
-	public List<SolrInvestigations> searchInvestigations(String searchTerm) {
-		List<SolrInvestigations> response = null;
+	public List<SolrInvestigationsDocument> searchInvestigations(String searchTerm) {
+		List<SolrInvestigationsDocument> response = null;
 		try {
 			response = solrInvestigationsRepository.find(searchTerm);
 		} catch (Exception e) {
@@ -297,7 +297,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	}
 
 	@Override
-	public boolean addObservations(SolrObservations request) {
+	public boolean addObservations(SolrObservationsDocument request) {
 		boolean response = false;
 		try {
 			solrObservationsRepository.save(request);
@@ -310,7 +310,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	}
 
 	@Override
-	public boolean editObservations(SolrObservations request) {
+	public boolean editObservations(SolrObservationsDocument request) {
 		boolean response = false;
 		try {
 			solrObservationsRepository.save(request);
@@ -336,8 +336,8 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	}
 
 	@Override
-	public List<SolrObservations> searchObservations(String searchTerm) {
-		List<SolrObservations> response = null;
+	public List<SolrObservationsDocument> searchObservations(String searchTerm) {
+		List<SolrObservationsDocument> response = null;
 		try {
 			response = solrObservationsRepository.find(searchTerm);
 		} catch (Exception e) {
