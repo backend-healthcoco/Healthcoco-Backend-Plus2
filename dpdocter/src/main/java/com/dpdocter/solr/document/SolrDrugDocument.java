@@ -27,8 +27,6 @@ public class SolrDrugDocument {
 		this.id = id;
 	}
 
-	
-
 	public String getDrugName() {
 		return drugName;
 	}
@@ -45,7 +43,6 @@ public class SolrDrugDocument {
 		this.description = description;
 	}
 
-
 	public String getDrugCode() {
 		return drugCode;
 	}
@@ -56,11 +53,7 @@ public class SolrDrugDocument {
 
 	@Override
 	public String toString() {
-		return "SolrDrugDocument [id=" + id + ", drugName=" + drugName
-				+ ", description=" + description + ", drugCode=" + drugCode
-				+ "]";
+		return "SolrDrugDocument [id=" + id + ", drugName=" + drugName + ", description=" + description + ", drugCode=" + drugCode + "]";
 	}
-
- 
 
 }

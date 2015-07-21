@@ -110,8 +110,7 @@ public interface PathProxy {
 		public static final String UPDATE_CLINIC_TIMING = "settings/updateClinicTiming";
 	}
 
-	public static final String CLINICAL_NOTES_BASE_URL = BASE_URL
-			+ "/clinicalNotes";
+	public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";
 
 	public interface ClinicalNotesUrls {
 		public static final String SAVE_CLINICAL_NOTE = "/save";
@@ -178,8 +177,7 @@ public interface PathProxy {
 
 	}
 
-	public static final String FORGOT_PASSWORD_BASE_URL = BASE_URL
-			+ "/forgotPassword";
+	public static final String FORGOT_PASSWORD_BASE_URL = BASE_URL + "/forgotPassword";
 
 	public interface ForgotPasswordUrls {
 		public static final String FORGOT_PASSWORD_DOCTOR = "/forgotPasswordDoctor";
@@ -232,8 +230,7 @@ public interface PathProxy {
 
 	}
 
-	public static final String PRESCRIPTION_BASE_URL = BASE_URL
-			+ "/prescription";
+	public static final String PRESCRIPTION_BASE_URL = BASE_URL + "/prescription";
 
 	public interface PrescriptionUrls {
 		public static final String ADD_DRUG = "addDrug";
@@ -382,8 +379,7 @@ public interface PathProxy {
 	 * }
 	 */
 
-	public static final String SOLR_CLINICAL_NOTES_BASEURL = BASE_URL
-			+ "/solr/clinicalNotes";
+	public static final String SOLR_CLINICAL_NOTES_BASEURL = BASE_URL + "/solr/clinicalNotes";
 
 	public interface SolrClinicalNotesUrls {
 		public static final String SEARCH_COMPLAINTS = "searchComplaints/{searchTerm}";
@@ -399,8 +395,7 @@ public interface PathProxy {
 		public static final String SEARCH_OBSERVATIONS = "searchObservations/{searchTerm}";
 	}
 
-	public static final String SOLR_PRESCRIPTION_BASEURL = BASE_URL
-			+ "/solr/prescription";
+	public static final String SOLR_PRESCRIPTION_BASEURL = BASE_URL + "/solr/prescription";
 
 	public interface SolrPrescriptionUrls {
 

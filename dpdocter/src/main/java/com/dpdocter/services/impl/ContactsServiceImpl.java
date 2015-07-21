@@ -134,13 +134,20 @@ public class ContactsServiceImpl implements ContactsService {
 			@SuppressWarnings("unchecked")
 			Collection<String> patientIds = CollectionUtils.collect(doctorContactCollections, new BeanToPropertyValueTransformer("contactId"));
 
-			/*	List<PatientGroupCollection> patientGroupCollections = (List<PatientGroupCollection>) patientGroupRepository
-						.findByPatientId((List<String>) patientIds);*/
+			/*
+			 * List<PatientGroupCollection> patientGroupCollections =
+			 * (List<PatientGroupCollection>) patientGroupRepository
+			 * .findByPatientId((List<String>) patientIds);
+			 */
 
-			/*@SuppressWarnings("unchecked")
-			List<String> groupIds = (List<String>) CollectionUtils.collect(patientGroupCollections, new BeanToPropertyValueTransformer("groupId"));
-
-			doctorContactCollections = filterContactsByGroup(groupIds, doctorContactCollections);*/
+			/*
+			 * @SuppressWarnings("unchecked") List<String> groupIds =
+			 * (List<String>) CollectionUtils.collect(patientGroupCollections,
+			 * new BeanToPropertyValueTransformer("groupId"));
+			 * 
+			 * doctorContactCollections = filterContactsByGroup(groupIds,
+			 * doctorContactCollections);
+			 */
 
 			List<PatientCard> patientCards = getSpecifiedPatientCards(patientIds, doctorId, null, null);
 			return patientCards;

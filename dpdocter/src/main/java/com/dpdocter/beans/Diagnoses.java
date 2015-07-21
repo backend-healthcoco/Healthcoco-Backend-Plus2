@@ -46,8 +46,6 @@ public class Diagnoses extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
-	
-
 	public String getDiagnosis() {
 		return diagnosis;
 	}
@@ -58,10 +56,8 @@ public class Diagnoses extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "Diagnoses [id=" + id + ", diagnosis=" + diagnosis
-				+ ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + "]";
+		return "Diagnoses [id=" + id + ", diagnosis=" + diagnosis + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ "]";
 	}
 
-	
 }

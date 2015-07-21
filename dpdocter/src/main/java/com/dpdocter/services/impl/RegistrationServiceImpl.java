@@ -214,12 +214,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 				doctorContactCollection.setContactId(patientCollection.getId());
 				doctorContactsRepository.save(doctorContactCollection);
 			}
-			/*if (patientCollection.getEmailAddress() != null) {
-				// send activation email
-				String body = mailBodyGenerator.generatePatientRegistrationEmailBody(userCollection.getUserName(), userCollection.getPassword(),
-						userCollection.getFirstName(), userCollection.getLastName());
-				mailService.sendEmail(patientCollection.getEmailAddress(), signupSubject, body, null);
-			}*/
+			/*
+			 * if (patientCollection.getEmailAddress() != null) { // send
+			 * activation email String body =
+			 * mailBodyGenerator.generatePatientRegistrationEmailBody
+			 * (userCollection.getUserName(), userCollection.getPassword(),
+			 * userCollection.getFirstName(), userCollection.getLastName());
+			 * mailService.sendEmail(patientCollection.getEmailAddress(),
+			 * signupSubject, body, null); }
+			 */
 			// send SMS logic
 			// TODO
 			registeredPatientDetails = new RegisteredPatientDetails();
@@ -239,7 +242,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			groupCollections = (List<GroupCollection>) groupRepository.findAll(request.getGroups());
 			groups = new ArrayList<Group>();
 			BeanUtil.map(groupCollections, groups);
-			/*registeredPatientDetails.setGroups(request.getGroups());*/
+			/* registeredPatientDetails.setGroups(request.getGroups()); */
 			registeredPatientDetails.setGroups(groups);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -352,7 +355,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			groupCollections = (List<GroupCollection>) groupRepository.findAll(request.getGroups());
 			groups = new ArrayList<Group>();
 			BeanUtil.map(groupCollections, groups);
-			/*registeredPatientDetails.setGroups(request.getGroups());*/
+			/* registeredPatientDetails.setGroups(request.getGroups()); */
 			registeredPatientDetails.setGroups(groups);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -432,7 +435,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 					groupCollections = (List<GroupCollection>) groupRepository.findAll((List<String>) groupIds);
 					groups = new ArrayList<Group>();
 					BeanUtil.map(groupCollections, groups);
-					/*registeredPatientDetails.setGroups((List<String>) groupIds);*/
+					/*
+					 * registeredPatientDetails.setGroups((List<String>)
+					 * groupIds);
+					 */
 					registeredPatientDetails.setGroups(groups);
 				}
 			}
@@ -549,7 +555,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 			String patientInitial = doctor.getPatientInitial();
 			int patientCounter = doctor.getPatientCounter();
 
-			/*generatedId = "P" + "-" + currentDay + currentMonth + currentYear + "-" + patientCount + 1;*/
+			/*
+			 * generatedId = "P" + "-" + currentDay + currentMonth + currentYear
+			 * + "-" + patientCount + 1;
+			 */
 
 			generatedId = patientInitial + "-" + currentDay + currentMonth + currentYear + "-" + (patientCounter + patientCount + 1);
 

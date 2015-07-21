@@ -19,7 +19,7 @@
 	<import resource="application-context-solr.xml" />
 	<import resource="database-connection.xml" />
 	<import resource="classpath:mail-config.xml" />
-	
+
 	<mongo:repositories base-package="com.dpdocter.repository" />
 
 

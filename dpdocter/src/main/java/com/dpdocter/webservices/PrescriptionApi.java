@@ -30,7 +30,6 @@ import com.dpdocter.response.TemplateGetResponse;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.solr.document.SolrDrugDocument;
 import com.dpdocter.solr.services.SolrPrescriptionService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -41,7 +40,7 @@ import common.util.web.Response;
 public class PrescriptionApi {
 	@Autowired
 	private PrescriptionServices prescriptionServices;
-	
+
 	@Autowired
 	private SolrPrescriptionService solrPrescriptionService;
 
@@ -52,8 +51,8 @@ public class PrescriptionApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 		}
 		DrugAddEditResponse drugAddEditResponse = prescriptionServices.addDrug(request);
-		
-		//Below service call will add the drug in solr index.
+
+		// Below service call will add the drug in solr index.
 		SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
 		BeanUtil.map(drugAddEditResponse, solrDrugDocument);
 		solrPrescriptionService.addDrug(solrDrugDocument);
@@ -69,12 +68,12 @@ public class PrescriptionApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 		}
 		DrugAddEditResponse drugAddEditResponse = prescriptionServices.editDrug(request);
-		
-		//Below service call will add the drug in solr index.
+
+		// Below service call will add the drug in solr index.
 		SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
 		BeanUtil.map(drugAddEditResponse, solrDrugDocument);
 		solrPrescriptionService.editDrug(solrDrugDocument);
-		
+
 		Response<DrugAddEditResponse> response = new Response<DrugAddEditResponse>();
 		response.setData(drugAddEditResponse);
 		return response;
@@ -88,8 +87,8 @@ public class PrescriptionApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Drug Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
 		Boolean drugDeleteResponse = prescriptionServices.deleteDrug(drugId, doctorId, hospitalId, locationId);
-		
-		//Below service call will delete the drug in solr index.
+
+		// Below service call will delete the drug in solr index.
 		solrPrescriptionService.deleteDrug(drugId);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(drugDeleteResponse);
@@ -103,8 +102,8 @@ public class PrescriptionApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Drug Id, Doctor Id Cannot Be Empty");
 		}
 		Boolean drugDeleteResponse = prescriptionServices.deleteDrug(drugId);
-		
-		//Below service call will delete the drug in solr index.
+
+		// Below service call will delete the drug in solr index.
 		solrPrescriptionService.deleteDrug(drugId);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(drugDeleteResponse);

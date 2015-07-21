@@ -68,16 +68,17 @@ public class PatientCollection extends GenericCollection {
 	@Field
 	private Long registrationDate;
 
-	/*@Field
-	private String firstName;
-	@Field
-	private String lastName;
-	@Field
-	private String middleName;
-	@Field
-	private String imageUrl;
-	@Field
-	private DOB dob;*/
+	/*
+	 * @Field private String firstName;
+	 * 
+	 * @Field private String lastName;
+	 * 
+	 * @Field private String middleName;
+	 * 
+	 * @Field private String imageUrl;
+	 * 
+	 * @Field private DOB dob;
+	 */
 	public String getId() {
 		return id;
 	}

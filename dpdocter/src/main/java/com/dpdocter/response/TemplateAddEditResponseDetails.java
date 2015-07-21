@@ -3,8 +3,9 @@ package com.dpdocter.response;
 import java.util.List;
 
 import com.dpdocter.beans.TemplateItemDetail;
+import com.dpdocter.collections.GenericCollection;
 
-public class TemplateAddEditResponseDetails {
+public class TemplateAddEditResponseDetails extends GenericCollection {
 	private String id;
 
 	private String name;
