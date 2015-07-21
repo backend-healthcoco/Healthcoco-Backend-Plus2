@@ -11,9 +11,7 @@
 	<profiles>
 		<profile>
 			<id>local</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
+			
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -31,6 +29,9 @@
 
 		<profile>
 			<id>stagging</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -48,6 +49,7 @@
 
 		<profile>
 			<id>production</id>
+			
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>

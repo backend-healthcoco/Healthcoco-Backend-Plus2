@@ -2,8 +2,6 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-import com.dpdocter.enums.DirectionEnum;
-
 public class TemplateItemDetail {
 	private Drug drug;
 

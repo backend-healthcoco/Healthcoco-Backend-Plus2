@@ -10,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.w3c.dom.ls.LSInput;
 
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.DrugDirection;
@@ -48,8 +47,6 @@ import com.dpdocter.response.PrescriptionAddEditResponseDetails;
 import com.dpdocter.response.TemplateAddEditResponse;
 import com.dpdocter.response.TemplateAddEditResponseDetails;
 import com.dpdocter.services.PrescriptionServices;
-import com.sun.mail.util.BEncoderStream;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.PrescriptionUtils;
 
