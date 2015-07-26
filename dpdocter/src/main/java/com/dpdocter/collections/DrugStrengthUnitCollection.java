@@ -12,6 +12,18 @@ public class DrugStrengthUnitCollection {
 	@Field
 	private String unit;
 
+	@Field
+	private String doctorId;
+
+	@Field
+	private String locationId;
+
+	@Field
+	private String hospitalId;
+
+	@Field
+	private boolean isDeleted = false;
+
 	public String getId() {
 		return id;
 	}
@@ -28,9 +40,42 @@ public class DrugStrengthUnitCollection {
 		this.unit = unit;
 	}
 
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public boolean isDeleted() {
+		return isDeleted;
+	}
+
+	public void setIsDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
 	@Override
 	public String toString() {
-		return "DrugStrengthUnitCollection [id=" + id + ", unit=" + unit + "]";
+		return "DrugStrengthUnitCollection [id=" + id + ", unit=" + unit + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", isDeleted=" + isDeleted + "]";
 	}
 
 }

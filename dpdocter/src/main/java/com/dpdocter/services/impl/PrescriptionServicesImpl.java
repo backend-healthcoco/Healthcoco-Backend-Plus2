@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.DrugDirection;
+import com.dpdocter.beans.DrugDosage;
 import com.dpdocter.beans.DrugDurationUnit;
 import com.dpdocter.beans.DrugStrengthUnit;
 import com.dpdocter.beans.DrugType;
@@ -23,6 +24,7 @@ import com.dpdocter.beans.TemplateItem;
 import com.dpdocter.beans.TemplateItemDetail;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.DrugDirectionCollection;
+import com.dpdocter.collections.DrugDosageCollection;
 import com.dpdocter.collections.DrugDurationUnitCollection;
 import com.dpdocter.collections.DrugStrengthUnitCollection;
 import com.dpdocter.collections.DrugTypeCollection;
@@ -32,6 +34,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DrugDirectionRepository;
+import com.dpdocter.repository.DrugDosageRepository;
 import com.dpdocter.repository.DrugDurationUnitRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.DrugStrengthUnitRepository;
@@ -39,14 +42,25 @@ import com.dpdocter.repository.DrugTypeRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.TemplateRepository;
 import com.dpdocter.request.DrugAddEditRequest;
+import com.dpdocter.request.DrugDirectionAddEditRequest;
+import com.dpdocter.request.DrugDosageAddEditRequest;
+import com.dpdocter.request.DrugDurationUnitAddEditRequest;
+import com.dpdocter.request.DrugStrengthAddEditRequest;
+import com.dpdocter.request.DrugTypeAddEditRequest;
 import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.request.TemplateAddEditRequest;
 import com.dpdocter.response.DrugAddEditResponse;
+import com.dpdocter.response.DrugDirectionAddEditResponse;
+import com.dpdocter.response.DrugDosageAddEditResponse;
+import com.dpdocter.response.DrugDurationUnitAddEditResponse;
+import com.dpdocter.response.DrugStrengthAddEditResponse;
+import com.dpdocter.response.DrugTypeAddEditResponse;
 import com.dpdocter.response.PrescriptionAddEditResponse;
 import com.dpdocter.response.PrescriptionAddEditResponseDetails;
 import com.dpdocter.response.TemplateAddEditResponse;
 import com.dpdocter.response.TemplateAddEditResponseDetails;
 import com.dpdocter.services.PrescriptionServices;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.PrescriptionUtils;
 
@@ -65,13 +79,16 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	private DrugTypeRepository drugTypeRepository;
 
 	@Autowired
-	private DrugDurationUnitRepository drugDurationRepository;
+	private DrugDurationUnitRepository drugDurationUnitRepository;
 
 	@Autowired
 	private TemplateRepository templateRepository;
 
 	@Autowired
 	private PrescriptionRepository prescriptionRepository;
+	
+	@Autowired
+	private DrugDosageRepository drugDosageRepository;
 
 	public DrugAddEditResponse addDrug(DrugAddEditRequest request) {
 		DrugAddEditResponse response = null;
@@ -568,6 +585,24 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	@Override
+	public List<DrugType> getCustomDrugType(String doctorId, String locationId, String hospitalId) {
+		
+		List<DrugType> response = null;
+		List<DrugTypeCollection> drugTypeCollections = null;
+		try {
+			drugTypeCollections = drugTypeRepository.findByDoctorIdAndLocationIdAndHospitalIdCustomDrugType(doctorId,locationId,hospitalId);
+			if (drugTypeCollections != null) {
+				response = new ArrayList<DrugType>();
+				BeanUtil.map(drugTypeCollections, response);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Custom Drug Types");
+		}
+		return response;
+	}
+	
+	@Override
 	public List<DrugStrengthUnit> getAllDrugStrengthUnit() {
 		List<DrugStrengthUnit> response = null;
 		List<DrugStrengthUnitCollection> drugStrengthUnitCollections = null;
@@ -585,11 +620,80 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	@Override
+	public List<DrugStrengthUnit> getCustomDrugStrengthUnit(String doctorId, String locationId, String hospitalId) {
+		List<DrugStrengthUnit> response = null;
+		List<DrugStrengthUnitCollection> drugStrengthUnitCollections = null;
+		try {
+			drugStrengthUnitCollections = drugStrengthRepository.findByDoctorIdAndLocationIdAndHospitalIdCustomDrugStrengthUnit(doctorId,locationId,hospitalId);
+			if (drugStrengthUnitCollections != null) {
+				response = new ArrayList<DrugStrengthUnit>();
+				BeanUtil.map(drugStrengthUnitCollections, response);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Custom Drug Strength Unit");
+		}
+		return response;
+
+	}
+
+	@Override
+	public List<DrugDosage> getAllDrugDosage() {
+		List<DrugDosage> response = null;
+		List<DrugDosageCollection> drugDosageCollections = null;
+		try {
+			drugDosageCollections = drugDosageRepository.findAll();
+			if (drugDosageCollections != null) {
+				response = new ArrayList<DrugDosage>();
+				BeanUtil.map(drugDosageCollections, response);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Dosage");
+		}
+		return response;
+	}
+
+	@Override
+	public List<DrugDosage> getCustomDrugDosage(String doctorId, String locationId, String hospitalId) {
+		List<DrugDosage> response = null;
+		List<DrugDosageCollection> drugDosageCollections = null;
+		try {
+			drugDosageCollections = drugDosageRepository.findByDoctorIdAndLocationIdAndHospitalIdCustomDrugDosage(doctorId,locationId,hospitalId);
+			if (drugDosageCollections != null) {
+				response = new ArrayList<DrugDosage>();
+				BeanUtil.map(drugDosageCollections, response);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Custom Drug Dosage");
+		}
+		return response;
+	}
+
+	@Override
 	public List<DrugDurationUnit> getAllDrugDurationUnit() {
 		List<DrugDurationUnit> response = null;
 		List<DrugDurationUnitCollection> drugDurationUnitCollections = null;
 		try {
-			drugDurationUnitCollections = drugDurationRepository.findAll();
+			drugDurationUnitCollections = drugDurationUnitRepository.findAll();
+			if (drugDurationUnitCollections != null) {
+				response = new ArrayList<DrugDurationUnit>();
+				BeanUtil.map(drugDurationUnitCollections, response);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Duration Units");
+		}
+		return response;
+	}
+
+	@Override
+	public List<DrugDurationUnit> getCustomDrugDurationUnit(String doctorId, String locationId, String hospitalId) {
+		List<DrugDurationUnit> response = null;
+		List<DrugDurationUnitCollection> drugDurationUnitCollections = null;
+		try {
+			drugDurationUnitCollections = drugDurationUnitRepository.findByDoctorIdAndLocationIdAndHospitalIdCustomDrugDurationUnit(doctorId,locationId,hospitalId);
 			if (drugDurationUnitCollections != null) {
 				response = new ArrayList<DrugDurationUnit>();
 				BeanUtil.map(drugDurationUnitCollections, response);
@@ -617,4 +721,318 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		return response;
 	}
+	
+	@Override
+	public List<DrugDirection> getCustomDrugDirection(String doctorId, String locationId, String hospitalId) {
+		List<DrugDirection> response = null;
+		List<DrugDirectionCollection> drugDirectionCollections = null;
+		try {
+			drugDirectionCollections = drugDirectionRepository.findByDoctorIdAndLocationIdAndHospitalIdCustomDrugdirection(doctorId,locationId,hospitalId);
+			if (drugDirectionCollections != null) {
+				response = new ArrayList<DrugDirection>();
+				BeanUtil.map(drugDirectionCollections, response);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Custom Getting Drug Directions");
+		}
+		return response;
+	}
+
+	@Override
+	public DrugTypeAddEditResponse addDrugType(DrugTypeAddEditRequest request){
+		DrugTypeAddEditResponse response = null;
+
+		DrugTypeCollection drugTypeCollection=new DrugTypeCollection();
+		BeanUtil.map(request, drugTypeCollection);
+		try {
+			drugTypeCollection = drugTypeRepository.save(drugTypeCollection);
+			response = new DrugTypeAddEditResponse();
+			BeanUtil.map(drugTypeCollection, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug Type");
+		}
+		return response;
+
+	}
+	
+	@Override
+	public DrugTypeAddEditResponse editDrugType(DrugTypeAddEditRequest request) {
+		
+		DrugTypeAddEditResponse response = null;
+
+		DrugTypeCollection drugTypeCollection=new DrugTypeCollection();
+		BeanUtil.map(request, drugTypeCollection);
+		try {
+			drugTypeCollection = drugTypeRepository.save(drugTypeCollection);
+			response = new DrugTypeAddEditResponse();
+			BeanUtil.map(drugTypeCollection, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Drug Type");
+		}
+		return response;
+
+	}
+
+	@Override
+	public Boolean deleteDrugType(String drugTypeId) {
+		
+		Boolean response = false;
+		DrugTypeCollection drugTypeCollection = null;
+		try {
+			drugTypeCollection = drugTypeRepository.findOne(drugTypeId);
+			if (drugTypeCollection != null) {
+				drugTypeCollection.setIsDeleted(true);
+				drugTypeCollection = drugTypeRepository.save(drugTypeCollection);
+				response = true;
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "Drug Type Not Found");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug Type");
+		}
+		return response;
+	}
+
+	@Override
+	public DrugStrengthAddEditResponse addDrugStrength(DrugStrengthAddEditRequest request) {
+		
+		DrugStrengthAddEditResponse response = null;
+		
+		DrugStrengthUnitCollection drugStrengthUnitCollection=new DrugStrengthUnitCollection();
+		BeanUtil.map(request, drugStrengthUnitCollection);
+		try{
+			drugStrengthUnitCollection = drugStrengthRepository.save(drugStrengthUnitCollection);
+			response = new DrugStrengthAddEditResponse();
+			BeanUtil.map(drugStrengthUnitCollection, response);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug Strength");
+		}
+		return response;
+	}
+
+	@Override
+	public DrugStrengthAddEditResponse editDrugStrength(DrugStrengthAddEditRequest request) {
+		
+		DrugStrengthAddEditResponse response = null;
+				
+				DrugStrengthUnitCollection drugStrengthUnitCollection=new DrugStrengthUnitCollection();
+				BeanUtil.map(request, drugStrengthUnitCollection);
+				try{
+					drugStrengthUnitCollection = drugStrengthRepository.save(drugStrengthUnitCollection);
+					response = new DrugStrengthAddEditResponse();
+					BeanUtil.map(drugStrengthUnitCollection, response);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+					throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Drug Strength");
+				}
+		 return response;
+	}
+
+	@Override
+	public Boolean deleteDrugStrength(String drugStrengthId) {
+		
+		Boolean response = false;
+		DrugStrengthUnitCollection drugStrengthCollection = null;
+		try {
+			drugStrengthCollection = drugStrengthRepository.findOne(drugStrengthId);
+			if (drugStrengthCollection != null) {
+				drugStrengthCollection.setIsDeleted(true);
+				drugStrengthCollection = drugStrengthRepository.save(drugStrengthCollection);
+				response = true;
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "Drug Strength Not Found");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug Strength");
+		}
+		return response;
+	}
+
+	@Override
+	public DrugDosageAddEditResponse addDrugDosage(DrugDosageAddEditRequest request) {
+		
+		DrugDosageAddEditResponse response = null;
+				
+				DrugDosageCollection drugDosageCollection=new DrugDosageCollection();
+				BeanUtil.map(request, drugDosageCollection);
+				try{
+					drugDosageCollection = drugDosageRepository.save(drugDosageCollection);
+					response = new DrugDosageAddEditResponse();
+					BeanUtil.map(drugDosageCollection, response);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+					throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug Dosage");
+			}
+		return response;
+	}
+	
+	@Override
+	public DrugDosageAddEditResponse editDrugDosage(DrugDosageAddEditRequest request) {
+		
+		DrugDosageAddEditResponse response = null;
+		
+		DrugDosageCollection drugDosageCollection=new DrugDosageCollection();
+		BeanUtil.map(request, drugDosageCollection);
+		try{
+			drugDosageCollection = drugDosageRepository.save(drugDosageCollection);
+			response = new DrugDosageAddEditResponse();
+			BeanUtil.map(drugDosageCollection, response);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editin Drug Dosage");
+	}
+		return response;
+	}
+
+	@Override
+	public Boolean deleteDrugDosage(String drugDosageId) {
+		Boolean response = false;
+		DrugDosageCollection drugDosageCollection = null;
+		try {
+			drugDosageCollection = drugDosageRepository.findOne(drugDosageId);
+			if (drugDosageCollection != null) {
+				drugDosageCollection.setIsDeleted(true);
+				drugDosageCollection = drugDosageRepository.save(drugDosageCollection);
+				response = true;
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "Drug Dosage Not Found");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug Dosage");
+		}
+		return response;
+	}
+
+
+	@Override
+	public DrugDirectionAddEditResponse addDrugDirection(DrugDirectionAddEditRequest request) {
+		
+		DrugDirectionAddEditResponse response = null;
+				
+				DrugDirectionCollection drugDirectionCollection=new DrugDirectionCollection();
+				BeanUtil.map(request, drugDirectionCollection);
+				try{
+					drugDirectionCollection = drugDirectionRepository.save(drugDirectionCollection);
+					response = new DrugDirectionAddEditResponse();
+					BeanUtil.map(drugDirectionCollection, response);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+					throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug Direction");
+				}
+				return response;
+	}
+
+	
+	@Override
+	public DrugDirectionAddEditResponse editDrugDirection(DrugDirectionAddEditRequest request) {
+		
+		DrugDirectionAddEditResponse response = null;
+		
+		DrugDirectionCollection drugDirectionCollection=new DrugDirectionCollection();
+		BeanUtil.map(request, drugDirectionCollection);
+		try{
+			drugDirectionCollection = drugDirectionRepository.save(drugDirectionCollection);
+			response = new DrugDirectionAddEditResponse();
+			BeanUtil.map(drugDirectionCollection, response);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Drug Direction");
+		}
+		return response;
+
+	}
+
+	@Override
+	public Boolean deleteDrugDirection(String drugDirectionId) {
+		Boolean response = false;
+		DrugDirectionCollection drugDirectionCollection = null;
+		try {
+			drugDirectionCollection = drugDirectionRepository.findOne(drugDirectionId);
+			if (drugDirectionCollection != null) {
+				drugDirectionCollection.setIsDeleted(true);
+				drugDirectionCollection = drugDirectionRepository.save(drugDirectionCollection);
+				response = true;
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "Drug Dosage Not Found");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug Direction");
+		}
+		return response;
+	}
+	
+	@Override
+	public DrugDurationUnitAddEditResponse addDrugDurationUnit(DrugDurationUnitAddEditRequest request) {
+		
+		DrugDurationUnitAddEditResponse response = null;
+				
+				DrugDurationUnitCollection drugDurationUnitCollection=new DrugDurationUnitCollection();
+				BeanUtil.map(request, drugDurationUnitCollection);
+				try{
+					drugDurationUnitCollection = drugDurationUnitRepository.save(drugDurationUnitCollection);
+					response = new DrugDurationUnitAddEditResponse();
+					BeanUtil.map(drugDurationUnitCollection, response);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+					throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug Duration Unit");
+				}
+				return response;
+	}
+
+	
+	@Override
+	public DrugDurationUnitAddEditResponse editDrugDurationUnit(DrugDurationUnitAddEditRequest request) {
+		
+		DrugDurationUnitAddEditResponse response = null;
+		
+		DrugDurationUnitCollection drugDurationUnitCollection=new DrugDurationUnitCollection();
+		BeanUtil.map(request, drugDurationUnitCollection);
+		try{
+			drugDurationUnitCollection = drugDurationUnitRepository.save(drugDurationUnitCollection);
+			response = new DrugDurationUnitAddEditResponse();
+			BeanUtil.map(drugDurationUnitCollection, response);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Drug Duration Unit");
+		}
+		return response;
+
+	}
+
+	@Override
+	public Boolean deleteDrugDurationUnit(String drugDurationUnitId) {
+		Boolean response = false;
+		DrugDurationUnitCollection drugDurationUnitCollection = null;
+		try {
+			drugDurationUnitCollection = drugDurationUnitRepository.findOne(drugDurationUnitId);
+			if (drugDurationUnitCollection != null) {
+				drugDurationUnitCollection.setIsDeleted(true);
+				drugDurationUnitCollection = drugDurationUnitRepository.save(drugDurationUnitCollection);
+				response = true;
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "Drug Duration Unit Not Found");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug Duration Unit");
+		}
+		return response;
+	}
+
 }

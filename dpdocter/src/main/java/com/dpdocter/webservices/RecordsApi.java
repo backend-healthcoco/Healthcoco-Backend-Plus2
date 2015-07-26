@@ -24,6 +24,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.ChangeRecordLabelRequest;
 import com.dpdocter.request.RecordsAddRequest;
+import com.dpdocter.request.RecordsEditRequest;
 import com.dpdocter.request.RecordsSearchRequest;
 import com.dpdocter.request.TagRecordRequest;
 import com.dpdocter.services.RecordsService;
@@ -234,6 +235,20 @@ public class RecordsApi {
 		Response<FlexibleCounts> response = new Response<FlexibleCounts>();
 		response.setData(flexibleCountsResponse);
 		return response;
+	}
+	
+	@Path(value = PathProxy.RecordsUrls.EDIT_RECORD)
+	@POST
+	public Response<Records> editRecords(RecordsEditRequest request){
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Records records = recordsService.editRecord(request);
+		Response<Records> response = new Response<Records>();
+		response.setData(records);
+		return response;
+		
 	}
 
 }

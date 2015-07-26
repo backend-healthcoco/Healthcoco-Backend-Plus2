@@ -11,6 +11,18 @@ public class DrugTypeCollection {
 
 	@Field
 	private String type;
+	
+	@Field
+	private String doctorId;
+
+	@Field
+	private String locationId;
+
+	@Field
+	private String hospitalId;
+
+	@Field
+	private boolean isDeleted = false;
 
 	public String getId() {
 		return id;
@@ -28,9 +40,42 @@ public class DrugTypeCollection {
 		this.type = type;
 	}
 
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public boolean isDeleted() {
+		return isDeleted;
+	}
+
+	public void setIsDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
 	@Override
 	public String toString() {
-		return "DrugTypeCollection [id=" + id + ", type=" + type + "]";
+		return "DrugTypeCollection [id=" + id + ", type=" + type + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", isDeleted=" + isDeleted + "]";
 	}
 
 }

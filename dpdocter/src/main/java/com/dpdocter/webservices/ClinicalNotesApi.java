@@ -426,4 +426,13 @@ public class ClinicalNotesApi {
 		response.setDataList(diagrams);
 		return response;
 	}
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.GET_GLOBAL_DIAGRAMS)
+	@GET
+	public Response<Diagram> getGlobalDiagrams(@PathParam("createdTime") String createdTime) {
+		List<Diagram> diagrams = clinicalNotesService.getGlobalDiagrams(createdTime);
+		Response<Diagram> response = new Response<Diagram>();
+		response.setDataList(diagrams);
+		return response;
+	}
 }

@@ -1,9 +1,10 @@
-package com.dpdocter.beans;
+package com.dpdocter.response;
 
-public class DrugType {
+public class DrugDosageAddEditResponse {
+
 	private String id;
 
-	private String type;
+	private String dosage;
 
 	private String doctorId;
 
@@ -19,13 +20,14 @@ public class DrugType {
 		this.id = id;
 	}
 
-	public String getType() {
-		return type;
+	public String getDosage() {
+		return dosage;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setDosage(String dosage) {
+		this.dosage = dosage;
 	}
+	
 
 	public String getDoctorId() {
 		return doctorId;
@@ -53,8 +55,8 @@ public class DrugType {
 
 	@Override
 	public String toString() {
-		return "DrugType [id=" + id + ", type=" + type + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + "]";
+		return "DrugDosageAddEditResponse [id=" + id + ", dosage=" + dosage + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + "]";
 	}
-
+	
 }

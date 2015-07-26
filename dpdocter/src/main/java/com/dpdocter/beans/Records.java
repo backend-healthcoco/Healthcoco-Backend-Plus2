@@ -8,6 +8,8 @@ public class Records extends GenericCollection {
 	private String recordsUrl;
 
 	private String recordsLable;
+	
+	private String recordsType;
 
 	private String description;
 
@@ -37,6 +39,14 @@ public class Records extends GenericCollection {
 		this.recordsLable = recordsLable;
 	}
 
+	public String getRecordsType() {
+		return recordsType;
+	}
+
+	public void setRecordsType(String recordsType) {
+		this.recordsType = recordsType;
+	}
+
 	public String getDescription() {
 		return description;
 	}
@@ -55,8 +65,8 @@ public class Records extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "Records [id=" + id + ", recordsUrl=" + recordsUrl + ", recordsLable=" + recordsLable + ", description=" + description + ", createdDate="
-				+ createdDate + "]";
+		return "Records [id=" + id + ", recordsUrl=" + recordsUrl + ", recordsLable=" + recordsLable + ", recordsType="
+				+ recordsType + ", description=" + description + ", createdDate=" + createdDate + "]";
 	}
 
 }

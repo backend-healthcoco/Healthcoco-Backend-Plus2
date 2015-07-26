@@ -1,9 +1,10 @@
-package com.dpdocter.beans;
+package com.dpdocter.request;
 
-public class DrugType {
+public class DrugDirectionAddEditRequest {
+
 	private String id;
 
-	private String type;
+	private String direction;
 
 	private String doctorId;
 
@@ -19,12 +20,12 @@ public class DrugType {
 		this.id = id;
 	}
 
-	public String getType() {
-		return type;
+	public String getDirection() {
+		return direction;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setDirection(String direction) {
+		this.direction = direction;
 	}
 
 	public String getDoctorId() {
@@ -53,8 +54,8 @@ public class DrugType {
 
 	@Override
 	public String toString() {
-		return "DrugType [id=" + id + ", type=" + type + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + "]";
+		return "DrugDirectionAddEditRequest [id=" + id + ", direction=" + direction + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
 	}
 
 }

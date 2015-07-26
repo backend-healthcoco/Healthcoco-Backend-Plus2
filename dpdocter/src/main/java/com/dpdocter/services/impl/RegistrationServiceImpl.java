@@ -558,6 +558,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			generatedId = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay) + DPDoctorUtils.getPrefixedNumber(currentMonth)
 					+ DPDoctorUtils.getPrefixedNumber(currentYear % 100) + DPDoctorUtils.getPrefixedNumber(patientCounter + patientCount + 1);
 
+			updatePatientInitialAndCounter(doctorId, patientInitial, patientCounter+1);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());

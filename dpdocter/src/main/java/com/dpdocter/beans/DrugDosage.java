@@ -1,15 +1,17 @@
 package com.dpdocter.beans;
 
-public class DrugType {
-	private String id;
+public class DrugDosage {
+	
+	String id;
+	
+	String value;
+	
+	String doctorId;
 
-	private String type;
+	String locationId;
 
-	private String doctorId;
+	String hospitalId;
 
-	private String locationId;
-
-	private String hospitalId;
 
 	public String getId() {
 		return id;
@@ -19,12 +21,12 @@ public class DrugType {
 		this.id = id;
 	}
 
-	public String getType() {
-		return type;
+	public String getValue() {
+		return value;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setValue(String value) {
+		this.value = value;
 	}
 
 	public String getDoctorId() {
@@ -53,7 +55,7 @@ public class DrugType {
 
 	@Override
 	public String toString() {
-		return "DrugType [id=" + id + ", type=" + type + ", doctorId=" + doctorId + ", locationId=" + locationId
+		return "DrugDosage [id=" + id + ", value=" + value + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + "]";
 	}
 

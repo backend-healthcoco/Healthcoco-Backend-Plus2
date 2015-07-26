@@ -5,6 +5,12 @@ public class DrugDirection {
 
 	private String direction;
 
+	private String doctorId;
+
+	private String locationId;
+
+	private String hospitalId;
+
 	public String getId() {
 		return id;
 	}
@@ -21,9 +27,34 @@ public class DrugDirection {
 		this.direction = direction;
 	}
 
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
 	@Override
 	public String toString() {
-		return "DrugDirection [id=" + id + ", direction=" + direction + "]";
+		return "DrugDirection [id=" + id + ", direction=" + direction + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + "]";
 	}
 
 }

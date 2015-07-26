@@ -16,6 +16,8 @@ public class Diagram extends GenericCollection {
 	private String hospitalId;
 
 	private FileDetails diagram;
+	
+	private String fileExtension;
 
 	public String getId() {
 		return id;
@@ -73,10 +75,19 @@ public class Diagram extends GenericCollection {
 		this.diagram = diagram;
 	}
 
+	public String getFileExtension() {
+		return fileExtension;
+	}
+
+	public void setFileExtension(String fileExtension) {
+		this.fileExtension = fileExtension;
+	}
+
 	@Override
 	public String toString() {
-		return "Diagram [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", diagram=" + diagram + "]";
+		return "Diagram [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", diagram=" + diagram
+				+ ", fileExtension=" + fileExtension + "]";
 	}
 
 }

@@ -175,6 +175,8 @@ public interface PathProxy {
 
 		public static final String GET_DIAGRAMS = "getDiagrams/{doctorId}/{createdTime}";
 
+		public static final String GET_GLOBAL_DIAGRAMS = "getGlobalDiagrams/{createdTime}";
+
 	}
 
 	public static final String FORGOT_PASSWORD_BASE_URL = BASE_URL + "/forgotPassword";
@@ -227,6 +229,8 @@ public interface PathProxy {
 		public static final String EDIT_DESCRIPTION = "editDescription";
 
 		public static final String GET_FLEXIBLE_COUNTS = "getFlexibleCounts";
+		
+		public static final String EDIT_RECORD = "/editRecord";
 
 	}
 
@@ -284,12 +288,54 @@ public interface PathProxy {
 		public static final String GET_PRESCRIPTION_COUNT = "getPrescriptionCount/{doctorId}/{patientId}/{locationId}/{hospitalId}";
 
 		public static final String GET_ALL_DRUG_TYPE = "getAllDrugType";
+		
+		public static final String GET_CUSTOM_DRUG_TYPE = "getCustomDrugType/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String GET_ALL_DRUG_STRENGTH_UNIT = "getAllDrugStrengthUnit";
 
+		public static final String GET_CUSTOM_DRUG_STRENGTH_UNIT = "getCustomDrugStrengthUnit/{doctorId}/{locationId}/{hospitalId}";
+		
+		public static final String GET_ALL_DRUG_DOSAGE = "getAllDrugDosage";
+
+		public static final String GET_CUSTOM_DRUG_DOSAGE = "getAllDrugDosage/{doctorId}/{locationId}/{hospitalId}";
+
 		public static final String GET_ALL_DRUG_DURATION_UNIT = "getAllDrugDurationUnit";
+		
+		public static final String GET_CUSTOM_DRUG_DURATION_UNIT = "getCustomDrugDurationUnit/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String GET_ALL_DRUG_DIRECTION_UNIT = "getAllDrugDirection";
+		
+		public static final String GET_CUSTOM_DRUG_DIRECTION_UNIT = "getCustomDrugDirection/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String ADD_DRUG_TYPE = "addDrugType";
+		
+		public static final String EDIT_DRUG_TYPE = "editDrugType";
+		
+		public static final String DELETE_DRUG_TYPE = "deleteDrugType/{drugTypeId}";
+
+		public static final String ADD_DRUG_STRENGTH = "addDrugStrength";
+		
+		public static final String EDIT_DRUG_STRENGTH = "editDrugStrength";
+		
+		public static final String DELETE_DRUG_STRENGTH = "deleteDrugStrength/{drugStrengthId}";
+
+		public static final String ADD_DRUG_DOSAGE = "addDrugDosage";
+		
+		public static final String EDIT_DRUG_DOSAGE = "editDrugDosage";
+
+		public static final String DELETE_DRUG_DOSAGE = "deleteDrugDosage/{drugDosageId}";
+
+		public static final String ADD_DRUG_DIRECTION = "addDrugDirection";
+
+		public static final String EDIT_DRUG_DIRECTION = "editDrugDirection";
+
+		public static final String DELETE_DRUG_DIRECTION = "deleteDrugDirection/{drugDirectionId}";
+
+		public static final String ADD_DRUG_DURATION_UNIT = "addDrugDurationUnit";
+
+		public static final String EDIT_DRUG_DURATION_UNIT = "editDrugDurationUnit";
+
+		public static final String DELETE_DRUG_DURATION_UNIT = "deleteDrugDurationUnit";
 
 	}
 

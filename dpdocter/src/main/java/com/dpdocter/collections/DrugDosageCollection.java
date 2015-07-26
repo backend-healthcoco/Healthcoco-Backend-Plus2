@@ -4,14 +4,15 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection = "drug_duration_unit_cl")
-public class DrugDurationUnitCollection {
+@Document(collection = "drug_dosage_cl")
+public class DrugDosageCollection {
+
 	@Id
 	private String id;
 
 	@Field
-	private String unit;
-
+	private String dosage;
+	
 	@Field
 	private String doctorId;
 
@@ -24,6 +25,7 @@ public class DrugDurationUnitCollection {
 	@Field
 	private boolean isDeleted = false;
 
+
 	public String getId() {
 		return id;
 	}
@@ -32,14 +34,14 @@ public class DrugDurationUnitCollection {
 		this.id = id;
 	}
 
-	public String getUnit() {
-		return unit;
+	public String getDosage() {
+		return dosage;
 	}
 
-	public void setUnit(String unit) {
-		this.unit = unit;
+	public void setDosage(String dosage) {
+		this.dosage = dosage;
 	}
-
+	
 	public String getDoctorId() {
 		return doctorId;
 	}
@@ -64,6 +66,7 @@ public class DrugDurationUnitCollection {
 		this.hospitalId = hospitalId;
 	}
 
+
 	public boolean isDeleted() {
 		return isDeleted;
 	}
@@ -74,7 +77,7 @@ public class DrugDurationUnitCollection {
 
 	@Override
 	public String toString() {
-		return "DrugDurationUnitCollection [id=" + id + ", unit=" + unit + ", doctorId=" + doctorId + ", locationId="
+		return "DrugDosageCollection [id=" + id + ", dosage=" + dosage + ", doctorId=" + doctorId + ", locationId="
 				+ locationId + ", hospitalId=" + hospitalId + ", isDeleted=" + isDeleted + "]";
 	}
 

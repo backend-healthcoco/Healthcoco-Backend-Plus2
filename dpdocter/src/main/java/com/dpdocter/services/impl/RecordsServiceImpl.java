@@ -34,6 +34,7 @@ import com.dpdocter.repository.RecordsTagsRepository;
 import com.dpdocter.repository.TagsRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.RecordsAddRequest;
+import com.dpdocter.request.RecordsEditRequest;
 import com.dpdocter.request.RecordsSearchRequest;
 import com.dpdocter.request.TagRecordRequest;
 import com.dpdocter.services.ClinicalNotesService;
@@ -86,12 +87,46 @@ public class RecordsServiceImpl implements RecordsService {
 			// save records
 			RecordsCollection recordsCollection = new RecordsCollection();
 			BeanUtil.map(request, recordsCollection);
+			System.out.println(request.getRecordsType()+""+recordsCollection.getRecordsType());
 			recordsCollection.setCreatedTime(new Date());
+			recordsCollection.setCreatedDate(new Date().getTime());
 			recordsCollection.setRecordsUrl(recordUrl);
 			recordsCollection.setRecordsPath(recordPath);
 			recordsCollection.setRecordsLable(getFileNameFromImageURL(recordUrl));
 			recordsCollection = recordsRepository.save(recordsCollection);
 			Records records = new Records();
+			BeanUtil.map(recordsCollection, records);
+			System.out.println(records.getRecordsType());
+			return records;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+
+		}
+
+	}
+	
+	public Records editRecord(RecordsEditRequest request) {
+		
+		Records records=new Records();
+		try {
+			RecordsCollection recordsCollection = new RecordsCollection();
+			BeanUtil.map(request, recordsCollection);
+//			recordsCollection.setCreatedTime(new Date());
+			if(request.getFileDetails()!=null){
+				String path = request.getPatientId() + File.separator + "records";
+				// save image
+				String recordUrl = fileManager.saveImageAndReturnImageUrl(request.getFileDetails(), path);
+				String fileName = request.getFileDetails().getFileName() + "." + request.getFileDetails().getFileExtension();
+				String recordPath = imageResource + File.separator + path + File.separator + fileName;
+
+				recordsCollection.setRecordsUrl(recordUrl);
+				recordsCollection.setRecordsPath(recordPath);
+				recordsCollection.setRecordsLable(getFileNameFromImageURL(recordUrl));
+				
+			}
+			// save records
+			recordsCollection = recordsRepository.save(recordsCollection);
 			BeanUtil.map(recordsCollection, records);
 			return records;
 		} catch (Exception e) {
@@ -101,6 +136,7 @@ public class RecordsServiceImpl implements RecordsService {
 		}
 
 	}
+
 
 	public void emailRecordToPatient(String recordId, String emailAddr) {
 		try {

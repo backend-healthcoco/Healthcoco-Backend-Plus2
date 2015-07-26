@@ -2,7 +2,7 @@ package com.dpdocter.request;
 
 import com.dpdocter.beans.FileDetails;
 
-public class RecordsAddRequest {
+public class RecordsEditRequest {
 
 	private String patientId;
 
@@ -17,8 +17,6 @@ public class RecordsAddRequest {
 	private String locationId;
 
 	private String hospitalId;
-	
-	private String recordsType;
 
 	public String getPatientId() {
 		return patientId;
@@ -76,18 +74,10 @@ public class RecordsAddRequest {
 		this.hospitalId = hospitalId;
 	}
 
-	public String getRecordsType() {
-		return recordsType;
-	}
-
-	public void setRecordsType(String recordsType) {
-		this.recordsType = recordsType;
-	}
-
 	@Override
 	public String toString() {
-		return "RecordsAddRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", createdDate=" + createdDate
-				+ ", description=" + description + ", fileDetails=" + fileDetails + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", recordsType=" + recordsType + "]";
+		return "RecordsEditRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", createdDate=" + createdDate + ", description=" + description
+				+ ", fileDetails=" + fileDetails + ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
 	}
+
 }

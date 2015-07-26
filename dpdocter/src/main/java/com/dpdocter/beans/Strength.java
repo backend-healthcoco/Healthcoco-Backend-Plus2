@@ -6,7 +6,7 @@ import org.codehaus.jackson.annotate.JsonAutoDetect;
 public class Strength {
 	private String value;
 
-	private DrugStrengthUnit unit;
+	private DrugStrengthUnit strengthUnit;
 
 	public String getValue() {
 		return value;
@@ -16,17 +16,17 @@ public class Strength {
 		this.value = value;
 	}
 
-	public DrugStrengthUnit getUnit() {
-		return unit;
+	public DrugStrengthUnit getStrengthUnit() {
+		return strengthUnit;
 	}
 
-	public void setUnit(DrugStrengthUnit unit) {
-		this.unit = unit;
+	public void setStrengthUnit(DrugStrengthUnit strengthUnit) {
+		this.strengthUnit = strengthUnit;
 	}
 
 	@Override
 	public String toString() {
-		return "Strength [value=" + value + ", unit=" + unit + "]";
+		return "Strength [value=" + value + ", strengthUnit=" + strengthUnit + "]";
 	}
 
-}
+	}

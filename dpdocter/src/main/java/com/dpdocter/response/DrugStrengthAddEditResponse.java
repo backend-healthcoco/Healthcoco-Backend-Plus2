@@ -1,28 +1,16 @@
-package com.dpdocter.collections;
+package com.dpdocter.response;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
+public class DrugStrengthAddEditResponse {
 
-@Document(collection = "drug_duration_unit_cl")
-public class DrugDurationUnitCollection {
-	@Id
 	private String id;
 
-	@Field
 	private String unit;
 
-	@Field
 	private String doctorId;
 
-	@Field
 	private String locationId;
 
-	@Field
 	private String hospitalId;
-
-	@Field
-	private boolean isDeleted = false;
 
 	public String getId() {
 		return id;
@@ -40,6 +28,7 @@ public class DrugDurationUnitCollection {
 		this.unit = unit;
 	}
 
+	
 	public String getDoctorId() {
 		return doctorId;
 	}
@@ -64,18 +53,10 @@ public class DrugDurationUnitCollection {
 		this.hospitalId = hospitalId;
 	}
 
-	public boolean isDeleted() {
-		return isDeleted;
-	}
-
-	public void setIsDeleted(boolean isDeleted) {
-		this.isDeleted = isDeleted;
-	}
-
 	@Override
 	public String toString() {
-		return "DrugDurationUnitCollection [id=" + id + ", unit=" + unit + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", isDeleted=" + isDeleted + "]";
+		return "DrugStrengthAddEditResponse [id=" + id + ", unit=" + unit + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + "]";
 	}
-
+	
 }

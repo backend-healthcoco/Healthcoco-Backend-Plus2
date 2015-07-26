@@ -20,6 +20,9 @@ public class RecordsCollection extends GenericCollection {
 	private String recordsLable;
 
 	@Field
+	private String recordsType;
+	
+	@Field
 	private String description;
 
 	@Field
@@ -70,6 +73,14 @@ public class RecordsCollection extends GenericCollection {
 
 	public void setRecordsLable(String recordsLable) {
 		this.recordsLable = recordsLable;
+	}
+
+	public String getRecordsType() {
+		return recordsType;
+	}
+
+	public void setRecordsType(String recordsType) {
+		this.recordsType = recordsType;
 	}
 
 	public String getDescription() {
@@ -130,9 +141,10 @@ public class RecordsCollection extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "RecordsCollection [id=" + id + ", recordsUrl=" + recordsUrl + ", recordsPath=" + recordsPath + ", recordsLable=" + recordsLable
-				+ ", description=" + description + ", patientId=" + patientId + ", doctorId=" + doctorId + ", createdDate=" + createdDate + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", isDeleted=" + isDeleted + "]";
+		return "RecordsCollection [id=" + id + ", recordsUrl=" + recordsUrl + ", recordsPath=" + recordsPath
+				+ ", recordsLable=" + recordsLable + ", recordsType=" + recordsType + ", description=" + description
+				+ ", patientId=" + patientId + ", doctorId=" + doctorId + ", createdDate=" + createdDate
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", isDeleted=" + isDeleted + "]";
 	}
 
 }

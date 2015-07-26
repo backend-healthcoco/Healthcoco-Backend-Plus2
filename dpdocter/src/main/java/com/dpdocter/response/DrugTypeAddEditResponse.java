@@ -1,8 +1,10 @@
-package com.dpdocter.beans;
+package com.dpdocter.response;
 
-public class DrugType {
+import com.dpdocter.collections.GenericCollection;
+
+public class DrugTypeAddEditResponse extends GenericCollection{
+
 	private String id;
-
 	private String type;
 
 	private String doctorId;
@@ -53,8 +55,9 @@ public class DrugType {
 
 	@Override
 	public String toString() {
-		return "DrugType [id=" + id + ", type=" + type + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + "]";
+		return "DrugTypeAddEditResponse [id=" + id + ", type=" + type + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + "]";
 	}
 
+	
 }

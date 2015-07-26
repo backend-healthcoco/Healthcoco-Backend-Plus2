@@ -8,6 +8,7 @@ import com.dpdocter.beans.Records;
 import com.dpdocter.beans.RecordsDescription;
 import com.dpdocter.beans.Tags;
 import com.dpdocter.request.RecordsAddRequest;
+import com.dpdocter.request.RecordsEditRequest;
 import com.dpdocter.request.RecordsSearchRequest;
 import com.dpdocter.request.TagRecordRequest;
 
@@ -43,5 +44,7 @@ public interface RecordsService {
 	boolean editDescription(RecordsDescription recordsDescription);
 
 	FlexibleCounts getFlexibleCounts(FlexibleCounts flexibleCounts);
+
+	Records editRecord(RecordsEditRequest request);
 
 }

@@ -1,8 +1,9 @@
-package com.dpdocter.beans;
+package com.dpdocter.request;
 
-public class DrugType {
+public class DrugTypeAddEditRequest {
+	
 	private String id;
-
+	
 	private String type;
 
 	private String doctorId;
@@ -53,8 +54,10 @@ public class DrugType {
 
 	@Override
 	public String toString() {
-		return "DrugType [id=" + id + ", type=" + type + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + "]";
+		return "DrugTypeAddEditRequest [id=" + id + ", type=" + type + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + "]";
 	}
+
+	
 
 }

@@ -505,7 +505,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			BeanUtil.map(diagram, diagramsCollection);
 			diagramsCollection = diagramsRepository.save(diagramsCollection);
 			BeanUtil.map(diagramsCollection, diagram);
-			diagram.setDiagram(null);
+//			diagram.setDiagram(null);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -832,15 +833,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return response;
 	}
-
 	@Override
 	public List<Diagram> getDiagrams(String doctorId, String createdTime) {
-		List<Diagram> response = null;
+		List<Diagram> response = new ArrayList<Diagram>();
 		List<DiagramsCollection> diagramsCollections = null;
 		try {
 			long createdTimeStamp = Long.parseLong(createdTime);
 			diagramsCollections = diagramsRepository.findDiagrams(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
-			BeanUtil.map(diagramsCollections, response);
+			
+			BeanUtil.map(diagramsCollections,response);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagrams");
@@ -848,4 +849,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 	}
 
+	@Override
+	public List<Diagram> getGlobalDiagrams(String createdTime) {
+		List<Diagram> response = new ArrayList<Diagram>();
+		List<DiagramsCollection> diagramsCollections = null;
+		try {
+			long createdTimeStamp = Long.parseLong(createdTime);
+			diagramsCollections = diagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+			BeanUtil.map(diagramsCollections, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Global Diagrams");
+		}
+		return response;
+	}
 }

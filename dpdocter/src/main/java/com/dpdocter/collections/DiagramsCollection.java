@@ -1,5 +1,7 @@
 package com.dpdocter.collections;
 
+import java.util.Date;
+
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -23,6 +25,12 @@ public class DiagramsCollection {
 
 	@Field
 	private String hospitalId;
+	
+	@Field
+	private String fileExtension;
+
+	@Field
+	private Date createdTime;
 
 	@Field
 	private boolean isDeleted = false;
@@ -75,6 +83,22 @@ public class DiagramsCollection {
 		this.tags = tags;
 	}
 
+	public String getFileExtension() {
+		return fileExtension;
+	}
+
+	public void setFileExtension(String fileExtension) {
+		this.fileExtension = fileExtension;
+	}
+
+	public Date getCreatedTime() {
+		return createdTime;
+	}
+
+	public void setCreatedTime(Date createdTime) {
+		this.createdTime = createdTime;
+	}
+
 	public boolean isDeleted() {
 		return isDeleted;
 	}
@@ -85,8 +109,9 @@ public class DiagramsCollection {
 
 	@Override
 	public String toString() {
-		return "DiagramsCollection [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", isDeleted=" + isDeleted + "]";
+		return "DiagramsCollection [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + ", doctorId="
+				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", fileExtension="
+				+ fileExtension + ", isDeleted=" + isDeleted + "]";
 	}
 
 }
