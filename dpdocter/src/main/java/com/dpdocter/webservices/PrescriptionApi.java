@@ -512,8 +512,6 @@ public class PrescriptionApi {
 		}
 		Boolean drugTypeDeleteResponse = prescriptionServices.deleteDrugType(drugTypeId);
 
-		// Below service call will delete the drug in solr index.
-//		solrPrescriptionService.deleteDrug(drugTypeId);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(drugTypeDeleteResponse);
 		return response;
@@ -553,8 +551,6 @@ public class PrescriptionApi {
 		}
 		Boolean drugStrengthDeleteResponse = prescriptionServices.deleteDrugStrength(drugStrengthId);
 
-		// Below service call will delete the drug in solr index.
-//		solrPrescriptionService.deleteDrug(drugStrengthId);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(drugStrengthDeleteResponse);
 		return response;
@@ -594,8 +590,6 @@ public class PrescriptionApi {
 		}
 		Boolean drugDosageDeleteResponse = prescriptionServices.deleteDrugDosage(drugDosageId);
 
-		// Below service call will delete the drug in solr index.
-//		solrPrescriptionService.deleteDrugDosage(drugDosageId);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(drugDosageDeleteResponse);
 		return response;
@@ -635,8 +629,6 @@ public class PrescriptionApi {
 		}
 		Boolean drugDirectionDeleteResponse = prescriptionServices.deleteDrugDirection(drugDirectionId);
 
-		// Below service call will delete the drug in solr index.
-//		solrPrescriptionService.deleteDrugDirection(drugDirectionId);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(drugDirectionDeleteResponse);
 		return response;
@@ -676,8 +668,6 @@ public class PrescriptionApi {
 		}
 		Boolean drugDurationUnitDeleteResponse = prescriptionServices.deleteDrugDurationUnit(drugDurationUnitId);
 
-		// Below service call will delete the drug in solr index.
-//		solrPrescriptionService.deleteDrugDurationUnit(drugDurationUnitId);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(drugDurationUnitDeleteResponse);
 		return response;
