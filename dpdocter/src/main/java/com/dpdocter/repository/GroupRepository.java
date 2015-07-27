@@ -12,16 +12,16 @@ import com.dpdocter.collections.GroupCollection;
 
 @Repository
 public interface GroupRepository extends MongoRepository<GroupCollection, String> {
-	@Query("{'doctorId': ?0}")
-	public List<GroupCollection> findByDoctorId(String doctorId, Sort sort);
+    @Query("{'doctorId': ?0}")
+    public List<GroupCollection> findByDoctorId(String doctorId, Sort sort);
 
-	@Query("{'doctorId': ?0, 'createdTime': {'$gte': ?1}}")
-	public List<GroupCollection> findByDoctorId(String doctorId, Date date, Sort sort);
+    @Query("{'doctorId': ?0, 'createdTime': {'$gte': ?1}}")
+    public List<GroupCollection> findByDoctorId(String doctorId, Date date, Sort sort);
 
-	@Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'isDeleted': ?3}")
-	public List<GroupCollection> findByDoctorIdPatientIdHospitalId(String doctorId, String locationId, String hospitalId, boolean isDeleted, Sort sort);
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'isDeleted': ?3}")
+    public List<GroupCollection> findByDoctorIdPatientIdHospitalId(String doctorId, String locationId, String hospitalId, boolean isDeleted, Sort sort);
 
-	@Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'isDeleted': ?3, 'createdTime': {'$gte': ?4}}")
-	public List<GroupCollection> findByDoctorIdPatientIdHospitalId(String doctorId, String locationId, String hospitalId, boolean isDeleted, Date date,
-			Sort sort);
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'isDeleted': ?3, 'createdTime': {'$gte': ?4}}")
+    public List<GroupCollection> findByDoctorIdPatientIdHospitalId(String doctorId, String locationId, String hospitalId, boolean isDeleted, Date date,
+	    Sort sort);
 }

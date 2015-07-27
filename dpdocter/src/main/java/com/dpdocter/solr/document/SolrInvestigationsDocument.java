@@ -6,32 +6,32 @@ import org.springframework.data.solr.core.mapping.SolrDocument;
 
 @SolrDocument(solrCoreName = "investigations")
 public class SolrInvestigationsDocument {
-	@Id
-	@Field
-	private String id;
+    @Id
+    @Field
+    private String id;
 
-	@Field
-	private String investigation;
+    @Field
+    private String investigation;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getInvestigation() {
-		return investigation;
-	}
+    public String getInvestigation() {
+	return investigation;
+    }
 
-	public void setInvestigation(String investigation) {
-		this.investigation = investigation;
-	}
+    public void setInvestigation(String investigation) {
+	this.investigation = investigation;
+    }
 
-	@Override
-	public String toString() {
-		return "SolrInvestigations [id=" + id + ", investigation=" + investigation + "]";
-	}
+    @Override
+    public String toString() {
+	return "SolrInvestigations [id=" + id + ", investigation=" + investigation + "]";
+    }
 
 }

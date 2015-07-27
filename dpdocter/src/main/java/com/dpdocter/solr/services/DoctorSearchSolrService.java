@@ -6,13 +6,13 @@ import com.dpdocter.solr.document.DoctorCoreDemoDocument;
 import com.dpdocter.solr.document.SearchDoctorSolrDocument;
 
 public interface DoctorSearchSolrService {
-	public void addToIndex(SearchDoctorSolrDocument searchDoctorSolrDocument);
+    public void addToIndex(SearchDoctorSolrDocument searchDoctorSolrDocument);
 
-	public void addToIndex(DoctorCoreDemoDocument doctorCoreDemoDocument);
+    public void addToIndex(DoctorCoreDemoDocument doctorCoreDemoDocument);
 
-	public void deleteFromIndex(String id);
+    public void deleteFromIndex(String id);
 
-	List<SearchDoctorSolrDocument> findByQueryName(String text);
+    List<SearchDoctorSolrDocument> findByQueryName(String text);
 
-	List<DoctorCoreDemoDocument> findByQueryName1(String text);
+    List<DoctorCoreDemoDocument> findByQueryName1(String text);
 }

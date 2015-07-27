@@ -20,36 +20,36 @@ import com.dpdocter.services.MailService;
 @Service
 public class MailServiceImpl implements MailService {
 
-	@Autowired
-	private JavaMailSender javaMailSender;
+    @Autowired
+    private JavaMailSender javaMailSender;
 
-	@Value(value = "${mail.from}")
-	private String from;
+    @Value(value = "${mail.from}")
+    private String from;
 
-	/**
-	 * @param String
-	 *            to
-	 * @param String
-	 *            subject
-	 * @param String
-	 *            body
-	 * @param MailAttachment
-	 *            (Optional) - If any attachment is to be send with mail else
-	 *            should be NULL. This method sends Simple mails,MIME mails
-	 */
-	public void sendEmail(String to, String subject, String body, MailAttachment mailAttachment) throws MessagingException {
+    /**
+     * @param String
+     *            to
+     * @param String
+     *            subject
+     * @param String
+     *            body
+     * @param MailAttachment
+     *            (Optional) - If any attachment is to be send with mail else
+     *            should be NULL. This method sends Simple mails,MIME mails
+     */
+    public void sendEmail(String to, String subject, String body, MailAttachment mailAttachment) throws MessagingException {
 
-		MimeMessage message = javaMailSender.createMimeMessage();
+	MimeMessage message = javaMailSender.createMimeMessage();
 
-		MimeMessageHelper helper = new MimeMessageHelper(message, true);
-		helper.setFrom(from);
-		helper.setTo(to);
-		helper.setSubject(subject);
-		helper.setText(body);
-		if (mailAttachment != null) {
-			helper.addAttachment(mailAttachment.getAttachmentName(), mailAttachment.getFileSystemResource());
-		}
-		javaMailSender.send(message);
+	MimeMessageHelper helper = new MimeMessageHelper(message, true);
+	helper.setFrom(from);
+	helper.setTo(to);
+	helper.setSubject(subject);
+	helper.setText(body);
+	if (mailAttachment != null) {
+	    helper.addAttachment(mailAttachment.getAttachmentName(), mailAttachment.getFileSystemResource());
 	}
+	javaMailSender.send(message);
+    }
 
 }

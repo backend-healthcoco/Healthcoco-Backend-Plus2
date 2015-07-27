@@ -3,70 +3,70 @@ package com.dpdocter.beans;
 import com.dpdocter.collections.GenericCollection;
 
 public class Records extends GenericCollection {
-	private String id;
+    private String id;
 
-	private String recordsUrl;
+    private String recordsUrl;
 
-	private String recordsLable;
-	
-	private String recordsType;
+    private String recordsLable;
 
-	private String description;
+    private String recordsType;
 
-	private Long createdDate;
+    private String description;
 
-	public String getId() {
-		return id;
-	}
+    private Long createdDate;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public String getRecordsUrl() {
-		return recordsUrl;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public void setRecordsUrl(String recordsUrl) {
-		this.recordsUrl = recordsUrl;
-	}
+    public String getRecordsUrl() {
+	return recordsUrl;
+    }
 
-	public String getRecordsLable() {
-		return recordsLable;
-	}
+    public void setRecordsUrl(String recordsUrl) {
+	this.recordsUrl = recordsUrl;
+    }
 
-	public void setRecordsLable(String recordsLable) {
-		this.recordsLable = recordsLable;
-	}
+    public String getRecordsLable() {
+	return recordsLable;
+    }
 
-	public String getRecordsType() {
-		return recordsType;
-	}
+    public void setRecordsLable(String recordsLable) {
+	this.recordsLable = recordsLable;
+    }
 
-	public void setRecordsType(String recordsType) {
-		this.recordsType = recordsType;
-	}
+    public String getRecordsType() {
+	return recordsType;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public void setRecordsType(String recordsType) {
+	this.recordsType = recordsType;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public String getDescription() {
+	return description;
+    }
 
-	public Long getCreatedDate() {
-		return createdDate;
-	}
+    public void setDescription(String description) {
+	this.description = description;
+    }
 
-	public void setCreatedDate(Long createdDate) {
-		this.createdDate = createdDate;
-	}
+    public Long getCreatedDate() {
+	return createdDate;
+    }
 
-	@Override
-	public String toString() {
-		return "Records [id=" + id + ", recordsUrl=" + recordsUrl + ", recordsLable=" + recordsLable + ", recordsType="
-				+ recordsType + ", description=" + description + ", createdDate=" + createdDate + "]";
-	}
+    public void setCreatedDate(Long createdDate) {
+	this.createdDate = createdDate;
+    }
+
+    @Override
+    public String toString() {
+	return "Records [id=" + id + ", recordsUrl=" + recordsUrl + ", recordsLable=" + recordsLable + ", recordsType=" + recordsType + ", description="
+		+ description + ", createdDate=" + createdDate + "]";
+    }
 
 }

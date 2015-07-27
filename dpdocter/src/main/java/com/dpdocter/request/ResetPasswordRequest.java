@@ -1,29 +1,29 @@
 package com.dpdocter.request;
 
 public class ResetPasswordRequest {
-	private String userId;
+    private String userId;
 
-	private String password;
+    private String password;
 
-	public String getUserId() {
-		return userId;
-	}
+    public String getUserId() {
+	return userId;
+    }
 
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
+    public void setUserId(String userId) {
+	this.userId = userId;
+    }
 
-	public String getPassword() {
-		return password;
-	}
+    public String getPassword() {
+	return password;
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    public void setPassword(String password) {
+	this.password = password;
+    }
 
-	@Override
-	public String toString() {
-		return "ResetPasswordRequest [userId=" + userId + ", password=" + password + "]";
-	}
+    @Override
+    public String toString() {
+	return "ResetPasswordRequest [userId=" + userId + ", password=" + password + "]";
+    }
 
 }

@@ -4,80 +4,80 @@ import java.util.List;
 
 public class ClinicProfile {
 
-	private String id;
+    private String id;
 
-	private String locationName;
+    private String locationName;
 
-	private String tagLine;
+    private String tagLine;
 
-	private List<String> specialization;
+    private List<String> specialization;
 
-	private String locationEmailAddress;
+    private String locationEmailAddress;
 
-	private String websiteUrl;
+    private String websiteUrl;
 
-	private String landmarkDetails;
+    private String landmarkDetails;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getLocationName() {
-		return locationName;
-	}
+    public String getLocationName() {
+	return locationName;
+    }
 
-	public void setLocationName(String locationName) {
-		this.locationName = locationName;
-	}
+    public void setLocationName(String locationName) {
+	this.locationName = locationName;
+    }
 
-	public String getTagLine() {
-		return tagLine;
-	}
+    public String getTagLine() {
+	return tagLine;
+    }
 
-	public void setTagLine(String tagLine) {
-		this.tagLine = tagLine;
-	}
+    public void setTagLine(String tagLine) {
+	this.tagLine = tagLine;
+    }
 
-	public List<String> getSpecialization() {
-		return specialization;
-	}
+    public List<String> getSpecialization() {
+	return specialization;
+    }
 
-	public void setSpecialization(List<String> specialization) {
-		this.specialization = specialization;
-	}
+    public void setSpecialization(List<String> specialization) {
+	this.specialization = specialization;
+    }
 
-	public String getLocationEmailAddress() {
-		return locationEmailAddress;
-	}
+    public String getLocationEmailAddress() {
+	return locationEmailAddress;
+    }
 
-	public void setLocationEmailAddress(String locationEmailAddress) {
-		this.locationEmailAddress = locationEmailAddress;
-	}
+    public void setLocationEmailAddress(String locationEmailAddress) {
+	this.locationEmailAddress = locationEmailAddress;
+    }
 
-	public String getWebsiteUrl() {
-		return websiteUrl;
-	}
+    public String getWebsiteUrl() {
+	return websiteUrl;
+    }
 
-	public void setWebsiteUrl(String websiteUrl) {
-		this.websiteUrl = websiteUrl;
-	}
+    public void setWebsiteUrl(String websiteUrl) {
+	this.websiteUrl = websiteUrl;
+    }
 
-	public String getLandmarkDetails() {
-		return landmarkDetails;
-	}
+    public String getLandmarkDetails() {
+	return landmarkDetails;
+    }
 
-	public void setLandmarkDetails(String landmarkDetails) {
-		this.landmarkDetails = landmarkDetails;
-	}
+    public void setLandmarkDetails(String landmarkDetails) {
+	this.landmarkDetails = landmarkDetails;
+    }
 
-	@Override
-	public String toString() {
-		return "ClinicProfile [id=" + id + ", locationName=" + locationName + ", tagLine=" + tagLine + ", specialization=" + specialization
-				+ ", locationEmailAddress=" + locationEmailAddress + ", websiteUrl=" + websiteUrl + ", landmarkDetails=" + landmarkDetails + "]";
-	}
+    @Override
+    public String toString() {
+	return "ClinicProfile [id=" + id + ", locationName=" + locationName + ", tagLine=" + tagLine + ", specialization=" + specialization
+		+ ", locationEmailAddress=" + locationEmailAddress + ", websiteUrl=" + websiteUrl + ", landmarkDetails=" + landmarkDetails + "]";
+    }
 
 }

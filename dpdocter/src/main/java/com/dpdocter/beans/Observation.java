@@ -4,60 +4,60 @@ import com.dpdocter.collections.GenericCollection;
 
 public class Observation extends GenericCollection {
 
-	private String id;
+    private String id;
 
-	private String observation;
+    private String observation;
 
-	private String doctorId;
+    private String doctorId;
 
-	private String locationId;
+    private String locationId;
 
-	private String hospitalId;
+    private String hospitalId;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getObservation() {
-		return observation;
-	}
+    public String getObservation() {
+	return observation;
+    }
 
-	public void setObservation(String observation) {
-		this.observation = observation;
-	}
+    public void setObservation(String observation) {
+	this.observation = observation;
+    }
 
-	public String getDoctorId() {
-		return doctorId;
-	}
+    public String getDoctorId() {
+	return doctorId;
+    }
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
+    }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
 
-	public String getHospitalId() {
-		return hospitalId;
-	}
+    public String getHospitalId() {
+	return hospitalId;
+    }
 
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
 
-	@Override
-	public String toString() {
-		return "Observation [id=" + id + ", observation=" + observation + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + "]";
-	}
+    @Override
+    public String toString() {
+	return "Observation [id=" + id + ", observation=" + observation + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+		+ hospitalId + "]";
+    }
 
 }

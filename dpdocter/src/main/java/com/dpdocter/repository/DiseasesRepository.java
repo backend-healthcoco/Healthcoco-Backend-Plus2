@@ -9,7 +9,7 @@ import com.dpdocter.collections.DiseasesCollection;
 
 public interface DiseasesRepository extends MongoRepository<DiseasesCollection, String> {
 
-	@Query("{'doctorId':?0,'locationId':?1,'hospitalId':?2}")
-	List<DiseasesCollection> findDiseases(String doctorId, String locationId, String hospitalId);
+    @Query("{'doctorId':?0,'locationId':?1,'hospitalId':?2}")
+    List<DiseasesCollection> findDiseases(String doctorId, String locationId, String hospitalId);
 
 }

@@ -52,13 +52,12 @@ import common.util.web.Response;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class PrescriptionApi {
-	
+
     @Autowired
     private PrescriptionServices prescriptionServices;
 
-	@Autowired
-	private SolrPrescriptionService solrPrescriptionService;
-
+    @Autowired
+    private SolrPrescriptionService solrPrescriptionService;
 
     @Path(value = PathProxy.PrescriptionUrls.ADD_DRUG)
     @POST
@@ -348,15 +347,15 @@ public class PrescriptionApi {
     @Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION)
     @GET
     public Response<Prescription> getPrescription(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "hospitalId") String hospitalId,
-    @PathParam(value = "locationId") String locationId, @PathParam(value = "patientId") String patientId,
-    @PathParam(value = "isOTPVarified") boolean isOTPVarified) {
- if (StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
-    throw new BusinessException(ServiceError.InvalidInput, "Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
- }
- List<Prescription> prescriptions = prescriptionServices.getPrescriptions(doctorId, hospitalId, locationId, patientId, null, isOTPVarified);
- Response<Prescription> response = new Response<Prescription>();
- response.setDataList(prescriptions);
- return response;
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "patientId") String patientId,
+	    @PathParam(value = "isOTPVarified") boolean isOTPVarified) {
+	if (StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+	}
+	List<Prescription> prescriptions = prescriptionServices.getPrescriptions(doctorId, hospitalId, locationId, patientId, null, isOTPVarified);
+	Response<Prescription> response = new Response<Prescription>();
+	response.setDataList(prescriptions);
+	return response;
     }
 
     @Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_CREATED_TIME)
@@ -392,284 +391,284 @@ public class PrescriptionApi {
 	return response;
     }
 
+    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_TYPE)
+    @GET
+    public Response<DrugType> getCustomDrugType(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+	    @PathParam(value = "hospitalId") String hospitalId) {
+	List<DrugType> drugTypes = prescriptionServices.getCustomDrugType(doctorId, locationId, hospitalId);
+	Response<DrugType> response = new Response<DrugType>();
+	response.setDataList(drugTypes);
+	return response;
+    }
 
-	@Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_TYPE)
-	@GET
-	public Response<DrugType> getCustomDrugType(@PathParam(value = "doctorId") String doctorId,	@PathParam(value = "locationId") String locationId, 
-			@PathParam(value = "hospitalId") String hospitalId) {
-		List<DrugType> drugTypes = prescriptionServices.getCustomDrugType(doctorId,locationId,hospitalId);
-		Response<DrugType> response = new Response<DrugType>();
-		response.setDataList(drugTypes);
-		return response;
+    @Path(value = PathProxy.PrescriptionUrls.GET_ALL_DRUG_STRENGTH_UNIT)
+    @GET
+    public Response<DrugStrengthUnit> getAllDrugStrengthUnit() {
+	List<DrugStrengthUnit> drugStrengths = prescriptionServices.getAllDrugStrengthUnit();
+	Response<DrugStrengthUnit> response = new Response<DrugStrengthUnit>();
+	response.setDataList(drugStrengths);
+	return response;
+    }
+
+    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_STRENGTH_UNIT)
+    @GET
+    public Response<DrugStrengthUnit> getCustomDrugStrengthUnit(@PathParam(value = "doctorId") String doctorId,
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
+	List<DrugStrengthUnit> drugStrengths = prescriptionServices.getCustomDrugStrengthUnit(doctorId, locationId, hospitalId);
+	Response<DrugStrengthUnit> response = new Response<DrugStrengthUnit>();
+	response.setDataList(drugStrengths);
+	return response;
+    }
+
+    @Path(value = PathProxy.PrescriptionUrls.GET_ALL_DRUG_DOSAGE)
+    @GET
+    public Response<DrugDosage> getAllDrugDosage() {
+	List<DrugDosage> drugDosage = prescriptionServices.getAllDrugDosage();
+	Response<DrugDosage> response = new Response<DrugDosage>();
+	response.setDataList(drugDosage);
+	return response;
+    }
+
+    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_DOSAGE)
+    @GET
+    public Response<DrugDosage> getAllDrugDosage(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+	    @PathParam(value = "hospitalId") String hospitalId) {
+	List<DrugDosage> drugDosage = prescriptionServices.getCustomDrugDosage(doctorId, locationId, hospitalId);
+	Response<DrugDosage> response = new Response<DrugDosage>();
+	response.setDataList(drugDosage);
+	return response;
+    }
+
+    @Path(value = PathProxy.PrescriptionUrls.GET_ALL_DRUG_DURATION_UNIT)
+    @GET
+    public Response<DrugDurationUnit> getAllDrugDurationUnit() {
+	List<DrugDurationUnit> drugDurations = prescriptionServices.getAllDrugDurationUnit();
+	Response<DrugDurationUnit> response = new Response<DrugDurationUnit>();
+	response.setDataList(drugDurations);
+	return response;
+    }
+
+    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_DURATION_UNIT)
+    @GET
+    public Response<DrugDurationUnit> getAllDrugDurationUnit(@PathParam(value = "doctorId") String doctorId,
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
+	List<DrugDurationUnit> drugDurations = prescriptionServices.getCustomDrugDurationUnit(doctorId, locationId, hospitalId);
+	Response<DrugDurationUnit> response = new Response<DrugDurationUnit>();
+	response.setDataList(drugDurations);
+	return response;
+    }
+
+    @Path(value = PathProxy.PrescriptionUrls.GET_ALL_DRUG_DIRECTION_UNIT)
+    @GET
+    public Response<DrugDirection> getAllDrugDirection() {
+	List<DrugDirection> drugDirections = prescriptionServices.getAllDrugDirection();
+	Response<DrugDirection> response = new Response<DrugDirection>();
+	response.setDataList(drugDirections);
+	return response;
+    }
+
+    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_DIRECTION_UNIT)
+    @GET
+    public Response<DrugDirection> getAllDrugDirection(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+	    @PathParam(value = "hospitalId") String hospitalId) {
+	List<DrugDirection> drugDirections = prescriptionServices.getCustomDrugDirection(doctorId, locationId, hospitalId);
+	Response<DrugDirection> response = new Response<DrugDirection>();
+	response.setDataList(drugDirections);
+	return response;
+    }
+
+    @Path(value = PathProxy.PrescriptionUrls.ADD_DRUG_TYPE)
+    @POST
+    public Response<DrugTypeAddEditResponse> addDrugType(DrugTypeAddEditRequest request) {
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
-	
-	@Path(value = PathProxy.PrescriptionUrls.GET_ALL_DRUG_STRENGTH_UNIT)
-	@GET
-	public Response<DrugStrengthUnit> getAllDrugStrengthUnit() {
-		List<DrugStrengthUnit> drugStrengths = prescriptionServices.getAllDrugStrengthUnit();
-		Response<DrugStrengthUnit> response = new Response<DrugStrengthUnit>();
-		response.setDataList(drugStrengths);
-		return response;
+	DrugTypeAddEditResponse drugTypeAddEditResponse = prescriptionServices.addDrugType(request);
+
+	Response<DrugTypeAddEditResponse> response = new Response<DrugTypeAddEditResponse>();
+	response.setData(drugTypeAddEditResponse);
+	return response;
+    }
+
+    @Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_TYPE)
+    @POST
+    public Response<DrugTypeAddEditResponse> editDrugType(DrugTypeAddEditRequest request) {
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
+	DrugTypeAddEditResponse drugTypeAddEditResponse = prescriptionServices.editDrugType(request);
 
-	@Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_STRENGTH_UNIT)
-	@GET
-	public Response<DrugStrengthUnit> getCustomDrugStrengthUnit(@PathParam(value = "doctorId") String doctorId,	@PathParam(value = "locationId") String locationId, 
-			@PathParam(value = "hospitalId") String hospitalId) {
-		List<DrugStrengthUnit> drugStrengths = prescriptionServices.getCustomDrugStrengthUnit(doctorId,locationId,hospitalId);
-		Response<DrugStrengthUnit> response = new Response<DrugStrengthUnit>();
-		response.setDataList(drugStrengths);
-		return response;
+	Response<DrugTypeAddEditResponse> response = new Response<DrugTypeAddEditResponse>();
+	response.setData(drugTypeAddEditResponse);
+	return response;
+    }
+
+    @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_TYPE)
+    @GET
+    public Response<Boolean> deleteDrugType(@PathParam(value = "drugTypeId") String drugTypeId) {
+	if (StringUtils.isEmpty(drugTypeId)) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Drug Type Id Cannot Be Empty");
 	}
-	
-	@Path(value = PathProxy.PrescriptionUrls.GET_ALL_DRUG_DOSAGE)
-	@GET
-	public Response<DrugDosage> getAllDrugDosage() {
-		List<DrugDosage> drugDosage = prescriptionServices.getAllDrugDosage();
-		Response<DrugDosage> response = new Response<DrugDosage>();
-		response.setDataList(drugDosage);
-		return response;
+	Boolean drugTypeDeleteResponse = prescriptionServices.deleteDrugType(drugTypeId);
+
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(drugTypeDeleteResponse);
+	return response;
+    }
+
+    @Path(value = PathProxy.PrescriptionUrls.ADD_DRUG_STRENGTH)
+    @POST
+    public Response<DrugStrengthAddEditResponse> addDrugStrength(DrugStrengthAddEditRequest request) {
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
-	
-	@Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_DOSAGE)
-	@GET
-	public Response<DrugDosage> getAllDrugDosage(@PathParam(value = "doctorId") String doctorId,	@PathParam(value = "locationId") String locationId, 
-			@PathParam(value = "hospitalId") String hospitalId) {
-		List<DrugDosage> drugDosage = prescriptionServices.getCustomDrugDosage(doctorId,locationId,hospitalId);
-		Response<DrugDosage> response = new Response<DrugDosage>();
-		response.setDataList(drugDosage);
-		return response;
+	DrugStrengthAddEditResponse drugStrengthAddEditResponse = prescriptionServices.addDrugStrength(request);
+
+	Response<DrugStrengthAddEditResponse> response = new Response<DrugStrengthAddEditResponse>();
+	response.setData(drugStrengthAddEditResponse);
+	return response;
+    }
+
+    @Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_STRENGTH)
+    @POST
+    public Response<DrugStrengthAddEditResponse> editDrugStrength(DrugStrengthAddEditRequest request) {
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
-	
-	@Path(value = PathProxy.PrescriptionUrls.GET_ALL_DRUG_DURATION_UNIT)
-	@GET
-	public Response<DrugDurationUnit> getAllDrugDurationUnit() {
-		List<DrugDurationUnit> drugDurations = prescriptionServices.getAllDrugDurationUnit();
-		Response<DrugDurationUnit> response = new Response<DrugDurationUnit>();
-		response.setDataList(drugDurations);
-		return response;
+	DrugStrengthAddEditResponse drugStrengthAddEditResponse = prescriptionServices.editDrugStrength(request);
+
+	Response<DrugStrengthAddEditResponse> response = new Response<DrugStrengthAddEditResponse>();
+	response.setData(drugStrengthAddEditResponse);
+	return response;
+    }
+
+    @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_STRENGTH)
+    @GET
+    public Response<Boolean> deleteDrugStrength(@PathParam(value = "drugStrengthId") String drugStrengthId) {
+	if (StringUtils.isEmpty(drugStrengthId)) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Drug Strength Id Cannot Be Empty");
 	}
-	
-	@Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_DURATION_UNIT)
-	@GET
-	public Response<DrugDurationUnit> getAllDrugDurationUnit(@PathParam(value = "doctorId") String doctorId,	@PathParam(value = "locationId") String locationId, 
-			@PathParam(value = "hospitalId") String hospitalId) {
-		List<DrugDurationUnit> drugDurations = prescriptionServices.getCustomDrugDurationUnit(doctorId,locationId,hospitalId);
-		Response<DrugDurationUnit> response = new Response<DrugDurationUnit>();
-		response.setDataList(drugDurations);
-		return response;
+	Boolean drugStrengthDeleteResponse = prescriptionServices.deleteDrugStrength(drugStrengthId);
+
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(drugStrengthDeleteResponse);
+	return response;
+    }
+
+    @Path(value = PathProxy.PrescriptionUrls.ADD_DRUG_DOSAGE)
+    @POST
+    public Response<DrugDosageAddEditResponse> addDrugDosage(DrugDosageAddEditRequest request) {
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
+	DrugDosageAddEditResponse drugDosageAddEditResponse = prescriptionServices.addDrugDosage(request);
 
-	@Path(value = PathProxy.PrescriptionUrls.GET_ALL_DRUG_DIRECTION_UNIT)
-	@GET
-	public Response<DrugDirection> getAllDrugDirection() {
-		List<DrugDirection> drugDirections = prescriptionServices.getAllDrugDirection();
-		Response<DrugDirection> response = new Response<DrugDirection>();
-		response.setDataList(drugDirections);
-		return response;
+	Response<DrugDosageAddEditResponse> response = new Response<DrugDosageAddEditResponse>();
+	response.setData(drugDosageAddEditResponse);
+	return response;
+    }
+
+    @Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DOSAGE)
+    @POST
+    public Response<DrugDosageAddEditResponse> editDrugDosage(DrugDosageAddEditRequest request) {
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
-	
-	@Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_DIRECTION_UNIT)
-	@GET
-	public Response<DrugDirection> getAllDrugDirection(@PathParam(value = "doctorId") String doctorId,	@PathParam(value = "locationId") String locationId, 
-			@PathParam(value = "hospitalId") String hospitalId) {
-		List<DrugDirection> drugDirections = prescriptionServices.getCustomDrugDirection(doctorId,locationId,hospitalId);
-		Response<DrugDirection> response = new Response<DrugDirection>();
-		response.setDataList(drugDirections);
-		return response;
+	DrugDosageAddEditResponse drugDosageAddEditResponse = prescriptionServices.editDrugDosage(request);
+
+	Response<DrugDosageAddEditResponse> response = new Response<DrugDosageAddEditResponse>();
+	response.setData(drugDosageAddEditResponse);
+	return response;
+    }
+
+    @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DOSAGE)
+    @GET
+    public Response<Boolean> deleteDrugDosage(@PathParam(value = "drugDosageId") String drugDosageId) {
+	if (StringUtils.isEmpty(drugDosageId)) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Drug Dosage Id Cannot Be Empty");
 	}
-	@Path(value = PathProxy.PrescriptionUrls.ADD_DRUG_TYPE)
-	@POST
-	public Response<DrugTypeAddEditResponse> addDrugType(DrugTypeAddEditRequest request) {
-		if (request == null) {
-			throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
-		}
-		DrugTypeAddEditResponse drugTypeAddEditResponse = prescriptionServices.addDrugType(request);
+	Boolean drugDosageDeleteResponse = prescriptionServices.deleteDrugDosage(drugDosageId);
 
-		Response<DrugTypeAddEditResponse> response = new Response<DrugTypeAddEditResponse>();
-		response.setData(drugTypeAddEditResponse);
-		return response;
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(drugDosageDeleteResponse);
+	return response;
+    }
+
+    @Path(value = PathProxy.PrescriptionUrls.ADD_DRUG_DIRECTION)
+    @POST
+    public Response<DrugDirectionAddEditResponse> addDrugDirection(DrugDirectionAddEditRequest request) {
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
+	DrugDirectionAddEditResponse drugDirectionAddEditResponse = prescriptionServices.addDrugDirection(request);
 
-	@Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_TYPE)
-	@POST
-	public Response<DrugTypeAddEditResponse> editDrugType(DrugTypeAddEditRequest request) {
-		if (request == null) {
-			throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
-		}
-		DrugTypeAddEditResponse drugTypeAddEditResponse = prescriptionServices.editDrugType(request);
+	Response<DrugDirectionAddEditResponse> response = new Response<DrugDirectionAddEditResponse>();
+	response.setData(drugDirectionAddEditResponse);
+	return response;
+    }
 
-		Response<DrugTypeAddEditResponse> response = new Response<DrugTypeAddEditResponse>();
-		response.setData(drugTypeAddEditResponse);
-		return response;
+    @Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DIRECTION)
+    @POST
+    public Response<DrugDirectionAddEditResponse> editDrugDirection(DrugDirectionAddEditRequest request) {
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
-	
-	@Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_TYPE)
-	@GET
-	public Response<Boolean> deleteDrugType(@PathParam(value = "drugTypeId") String drugTypeId) {
-		if (StringUtils.isEmpty(drugTypeId)) {
-			throw new BusinessException(ServiceError.InvalidInput, "Drug Type Id Cannot Be Empty");
-		}
-		Boolean drugTypeDeleteResponse = prescriptionServices.deleteDrugType(drugTypeId);
+	DrugDirectionAddEditResponse drugDirectionAddEditResponse = prescriptionServices.editDrugDirection(request);
 
-		Response<Boolean> response = new Response<Boolean>();
-		response.setData(drugTypeDeleteResponse);
-		return response;
+	Response<DrugDirectionAddEditResponse> response = new Response<DrugDirectionAddEditResponse>();
+	response.setData(drugDirectionAddEditResponse);
+	return response;
+    }
+
+    @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DIRECTION)
+    @GET
+    public Response<Boolean> deleteDrugDirection(@PathParam(value = "drugDirectionId") String drugDirectionId) {
+	if (StringUtils.isEmpty(drugDirectionId)) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Drug Direction Id Cannot Be Empty");
 	}
+	Boolean drugDirectionDeleteResponse = prescriptionServices.deleteDrugDirection(drugDirectionId);
 
-	@Path(value = PathProxy.PrescriptionUrls.ADD_DRUG_STRENGTH)
-	@POST
-	public Response<DrugStrengthAddEditResponse> addDrugStrength(DrugStrengthAddEditRequest request) {
-		if (request == null) {
-			throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
-		}
-		DrugStrengthAddEditResponse drugStrengthAddEditResponse = prescriptionServices.addDrugStrength(request);
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(drugDirectionDeleteResponse);
+	return response;
+    }
 
-		Response<DrugStrengthAddEditResponse> response = new Response<DrugStrengthAddEditResponse>();
-		response.setData(drugStrengthAddEditResponse);
-		return response;
+    @Path(value = PathProxy.PrescriptionUrls.ADD_DRUG_DURATION_UNIT)
+    @POST
+    public Response<DrugDurationUnitAddEditResponse> addDrugDurationUnit(DrugDurationUnitAddEditRequest request) {
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
+	DrugDurationUnitAddEditResponse drugDurationUnitAddEditResponse = prescriptionServices.addDrugDurationUnit(request);
 
-	@Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_STRENGTH)
-	@POST
-	public Response<DrugStrengthAddEditResponse> editDrugStrength(DrugStrengthAddEditRequest request) {
-		if (request == null) {
-			throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
-		}
-		DrugStrengthAddEditResponse drugStrengthAddEditResponse = prescriptionServices.editDrugStrength(request);
+	Response<DrugDurationUnitAddEditResponse> response = new Response<DrugDurationUnitAddEditResponse>();
+	response.setData(drugDurationUnitAddEditResponse);
+	return response;
+    }
 
-		Response<DrugStrengthAddEditResponse> response = new Response<DrugStrengthAddEditResponse>();
-		response.setData(drugStrengthAddEditResponse);
-		return response;
+    @Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DURATION_UNIT)
+    @POST
+    public Response<DrugDurationUnitAddEditResponse> editDrugDurationUnit(DrugDurationUnitAddEditRequest request) {
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
+	DrugDurationUnitAddEditResponse drugDurationUnitAddEditResponse = prescriptionServices.editDrugDurationUnit(request);
 
-	@Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_STRENGTH)
-	@GET
-	public Response<Boolean> deleteDrugStrength(@PathParam(value = "drugStrengthId") String drugStrengthId) {
-		if (StringUtils.isEmpty(drugStrengthId)) {
-			throw new BusinessException(ServiceError.InvalidInput, "Drug Strength Id Cannot Be Empty");
-		}
-		Boolean drugStrengthDeleteResponse = prescriptionServices.deleteDrugStrength(drugStrengthId);
+	Response<DrugDurationUnitAddEditResponse> response = new Response<DrugDurationUnitAddEditResponse>();
+	response.setData(drugDurationUnitAddEditResponse);
+	return response;
+    }
 
-		Response<Boolean> response = new Response<Boolean>();
-		response.setData(drugStrengthDeleteResponse);
-		return response;
+    @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DURATION_UNIT)
+    @GET
+    public Response<Boolean> deleteDrugDurationUnit(@PathParam(value = "drugDurationUnitId") String drugDurationUnitId) {
+	if (StringUtils.isEmpty(drugDurationUnitId)) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Drug Duration Unit Id Cannot Be Empty");
 	}
+	Boolean drugDurationUnitDeleteResponse = prescriptionServices.deleteDrugDurationUnit(drugDurationUnitId);
 
-	@Path(value = PathProxy.PrescriptionUrls.ADD_DRUG_DOSAGE)
-	@POST
-	public Response<DrugDosageAddEditResponse> addDrugDosage(DrugDosageAddEditRequest request) {
-		if (request == null) {
-			throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
-		}
-		DrugDosageAddEditResponse drugDosageAddEditResponse = prescriptionServices.addDrugDosage(request);
-
-		Response<DrugDosageAddEditResponse> response = new Response<DrugDosageAddEditResponse>();
-		response.setData(drugDosageAddEditResponse);
-		return response;
-	}
-
-	@Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DOSAGE)
-	@POST
-	public Response<DrugDosageAddEditResponse> editDrugDosage(DrugDosageAddEditRequest request) {
-		if (request == null) {
-			throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
-		}
-		DrugDosageAddEditResponse drugDosageAddEditResponse = prescriptionServices.editDrugDosage(request);
-
-		Response<DrugDosageAddEditResponse> response = new Response<DrugDosageAddEditResponse>();
-		response.setData(drugDosageAddEditResponse);
-		return response;
-	}
-	
-	@Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DOSAGE)
-	@GET
-	public Response<Boolean> deleteDrugDosage(@PathParam(value = "drugDosageId") String drugDosageId) {
-		if (StringUtils.isEmpty(drugDosageId)) {
-			throw new BusinessException(ServiceError.InvalidInput, "Drug Dosage Id Cannot Be Empty");
-		}
-		Boolean drugDosageDeleteResponse = prescriptionServices.deleteDrugDosage(drugDosageId);
-
-		Response<Boolean> response = new Response<Boolean>();
-		response.setData(drugDosageDeleteResponse);
-		return response;
-	}
-	
-	@Path(value = PathProxy.PrescriptionUrls.ADD_DRUG_DIRECTION)
-	@POST
-	public Response<DrugDirectionAddEditResponse> addDrugDirection(DrugDirectionAddEditRequest request) {
-		if (request == null) {
-			throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
-		}
-		DrugDirectionAddEditResponse drugDirectionAddEditResponse = prescriptionServices.addDrugDirection(request);
-
-		Response<DrugDirectionAddEditResponse> response = new Response<DrugDirectionAddEditResponse>();
-		response.setData(drugDirectionAddEditResponse);
-		return response;
-	}
-
-	@Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DIRECTION)
-	@POST
-	public Response<DrugDirectionAddEditResponse> editDrugDirection(DrugDirectionAddEditRequest request) {
-		if (request == null) {
-			throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
-		}
-		DrugDirectionAddEditResponse drugDirectionAddEditResponse = prescriptionServices.editDrugDirection(request);
-
-		Response<DrugDirectionAddEditResponse> response = new Response<DrugDirectionAddEditResponse>();
-		response.setData(drugDirectionAddEditResponse);
-		return response;
-	}
-	
-	@Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DIRECTION)
-	@GET
-	public Response<Boolean> deleteDrugDirection(@PathParam(value = "drugDirectionId") String drugDirectionId) {
-		if (StringUtils.isEmpty(drugDirectionId)) {
-			throw new BusinessException(ServiceError.InvalidInput, "Drug Direction Id Cannot Be Empty");
-		}
-		Boolean drugDirectionDeleteResponse = prescriptionServices.deleteDrugDirection(drugDirectionId);
-
-		Response<Boolean> response = new Response<Boolean>();
-		response.setData(drugDirectionDeleteResponse);
-		return response;
-	} 
-	
-	@Path(value = PathProxy.PrescriptionUrls.ADD_DRUG_DURATION_UNIT)
-	@POST
-	public Response<DrugDurationUnitAddEditResponse> addDrugDurationUnit(DrugDurationUnitAddEditRequest request) {
-		if (request == null) {
-			throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
-		}
-		DrugDurationUnitAddEditResponse drugDurationUnitAddEditResponse = prescriptionServices.addDrugDurationUnit(request);
-
-		Response<DrugDurationUnitAddEditResponse> response = new Response<DrugDurationUnitAddEditResponse>();
-		response.setData(drugDurationUnitAddEditResponse);
-		return response;
-	}
-
-	@Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DURATION_UNIT)
-	@POST
-	public Response<DrugDurationUnitAddEditResponse> editDrugDurationUnit(DrugDurationUnitAddEditRequest request) {
-		if (request == null) {
-			throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
-		}
-		DrugDurationUnitAddEditResponse drugDurationUnitAddEditResponse = prescriptionServices.editDrugDurationUnit(request);
-
-		Response<DrugDurationUnitAddEditResponse> response = new Response<DrugDurationUnitAddEditResponse>();
-		response.setData(drugDurationUnitAddEditResponse);
-		return response;
-	}
-	
-	@Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DURATION_UNIT)
-	@GET
-	public Response<Boolean> deleteDrugDurationUnit(@PathParam(value = "drugDurationUnitId") String drugDurationUnitId) {
-		if (StringUtils.isEmpty(drugDurationUnitId)) {
-			throw new BusinessException(ServiceError.InvalidInput, "Drug Duration Unit Id Cannot Be Empty");
-		}
-		Boolean drugDurationUnitDeleteResponse = prescriptionServices.deleteDrugDurationUnit(drugDurationUnitId);
-
-		Response<Boolean> response = new Response<Boolean>();
-		response.setData(drugDurationUnitDeleteResponse);
-		return response;
-	} 
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(drugDurationUnitDeleteResponse);
+	return response;
+    }
 }

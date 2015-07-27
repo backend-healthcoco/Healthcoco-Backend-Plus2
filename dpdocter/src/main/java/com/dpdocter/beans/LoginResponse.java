@@ -5,52 +5,52 @@ import java.util.List;
 
 public class LoginResponse {
 
-	private User user;
+    private User user;
 
-	private List<Hospital> hospitals = null;
+    private List<Hospital> hospitals = null;
 
-	private String role;
+    private String role;
 
-	private Boolean isTempPassword = false;
+    private Boolean isTempPassword = false;
 
-	public String getRole() {
-		return role;
+    public String getRole() {
+	return role;
+    }
+
+    public void setRole(String role) {
+	this.role = role;
+    }
+
+    public User getUser() {
+	return user;
+    }
+
+    public void setUser(User user) {
+	this.user = user;
+    }
+
+    public List<Hospital> getHospitals() {
+	if (hospitals == null) {
+	    hospitals = new ArrayList<Hospital>();
 	}
+	return hospitals;
+    }
 
-	public void setRole(String role) {
-		this.role = role;
-	}
+    public void setHospitals(List<Hospital> hospitals) {
+	this.hospitals = hospitals;
+    }
 
-	public User getUser() {
-		return user;
-	}
+    public Boolean getIsTempPassword() {
+	return isTempPassword;
+    }
 
-	public void setUser(User user) {
-		this.user = user;
-	}
+    public void setIsTempPassword(Boolean isTempPassword) {
+	this.isTempPassword = isTempPassword;
+    }
 
-	public List<Hospital> getHospitals() {
-		if (hospitals == null) {
-			hospitals = new ArrayList<Hospital>();
-		}
-		return hospitals;
-	}
-
-	public void setHospitals(List<Hospital> hospitals) {
-		this.hospitals = hospitals;
-	}
-
-	public Boolean getIsTempPassword() {
-		return isTempPassword;
-	}
-
-	public void setIsTempPassword(Boolean isTempPassword) {
-		this.isTempPassword = isTempPassword;
-	}
-
-	@Override
-	public String toString() {
-		return "LoginResponse [user=" + user + ", hospitals=" + hospitals + ", role=" + role + ", tempPassword=" + isTempPassword + "]";
-	}
+    @Override
+    public String toString() {
+	return "LoginResponse [user=" + user + ", hospitals=" + hospitals + ", role=" + role + ", tempPassword=" + isTempPassword + "]";
+    }
 
 }

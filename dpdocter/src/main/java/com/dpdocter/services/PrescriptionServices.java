@@ -30,93 +30,93 @@ import com.dpdocter.response.TemplateAddEditResponse;
 import com.dpdocter.response.TemplateAddEditResponseDetails;
 
 public interface PrescriptionServices {
-	DrugAddEditResponse addDrug(DrugAddEditRequest request);
+    DrugAddEditResponse addDrug(DrugAddEditRequest request);
 
-	DrugAddEditResponse editDrug(DrugAddEditRequest request);
+    DrugAddEditResponse editDrug(DrugAddEditRequest request);
 
-	Boolean deleteDrug(String drugId, String doctorId, String hospitalId, String locationIdString);
+    Boolean deleteDrug(String drugId, String doctorId, String hospitalId, String locationIdString);
 
-	Boolean deleteDrug(String drugId);
+    Boolean deleteDrug(String drugId);
 
-	DrugAddEditResponse getDrugById(String drugId);
+    DrugAddEditResponse getDrugById(String drugId);
 
-	TemplateAddEditResponse addTemplate(TemplateAddEditRequest request);
+    TemplateAddEditResponse addTemplate(TemplateAddEditRequest request);
 
-	TemplateAddEditResponse editTemplate(TemplateAddEditRequest request);
+    TemplateAddEditResponse editTemplate(TemplateAddEditRequest request);
 
-	Boolean deleteTemplate(String templateId, String doctorId, String hospitalId, String locationId);
+    Boolean deleteTemplate(String templateId, String doctorId, String hospitalId, String locationId);
 
-	TemplateAddEditResponseDetails getTemplate(String templateId, String doctorId, String hospitalId, String locationId);
+    TemplateAddEditResponseDetails getTemplate(String templateId, String doctorId, String hospitalId, String locationId);
 
-	PrescriptionAddEditResponse addPrescription(PrescriptionAddEditRequest request);
+    PrescriptionAddEditResponse addPrescription(PrescriptionAddEditRequest request);
 
-	PrescriptionAddEditResponse editPrescription(PrescriptionAddEditRequest request);
+    PrescriptionAddEditResponse editPrescription(PrescriptionAddEditRequest request);
 
-	Boolean deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId, String patientId);
+    Boolean deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId, String patientId);
 
-	List<Prescription> getPrescriptions(String doctorId, String hospitalId, String locationId, String patientId, String createdTime, boolean isOTPVarified);
+    List<Prescription> getPrescriptions(String doctorId, String hospitalId, String locationId, String patientId, String createdTime, boolean isOTPVarified);
 
-	List<Prescription> getPrescriptionsByIds(List<String> prescriptionIds);
+    List<Prescription> getPrescriptionsByIds(List<String> prescriptionIds);
 
-	List<TemplateAddEditResponseDetails> getTemplates(String doctorId, String hospitalId, String locationId, String createdTime);
+    List<TemplateAddEditResponseDetails> getTemplates(String doctorId, String hospitalId, String locationId, String createdTime);
 
-	List<DrugAddEditResponse> getDrugs(String doctorId, String hospitalId, String locationId, String createdTime);
+    List<DrugAddEditResponse> getDrugs(String doctorId, String hospitalId, String locationId, String createdTime);
 
-	@Query(value = "{'doctorId': ?0, 'patientId': ?1, 'locationId': ?2, 'hospitalId': ?3}", count = true)
-	Integer getPrescriptionCount(String doctorId, String patientId, String locationId, String hospitalId);
+    @Query(value = "{'doctorId': ?0, 'patientId': ?1, 'locationId': ?2, 'hospitalId': ?3}", count = true)
+    Integer getPrescriptionCount(String doctorId, String patientId, String locationId, String hospitalId);
 
-	TemplateAddEditResponseDetails addTemplateHandheld(TemplateAddEditRequest request);
+    TemplateAddEditResponseDetails addTemplateHandheld(TemplateAddEditRequest request);
 
-	PrescriptionAddEditResponseDetails addPrescriptionHandheld(PrescriptionAddEditRequest request);
+    PrescriptionAddEditResponseDetails addPrescriptionHandheld(PrescriptionAddEditRequest request);
 
-	List<DrugType> getAllDrugType();
+    List<DrugType> getAllDrugType();
 
-	List<DrugType> getCustomDrugType(String doctorId, String locationId, String hospitalId);
+    List<DrugType> getCustomDrugType(String doctorId, String locationId, String hospitalId);
 
-	List<DrugStrengthUnit> getAllDrugStrengthUnit();
-	
-	List<DrugStrengthUnit> getCustomDrugStrengthUnit(String doctorId, String locationId, String hospitalId);
+    List<DrugStrengthUnit> getAllDrugStrengthUnit();
 
-	List<DrugDosage> getAllDrugDosage();
+    List<DrugStrengthUnit> getCustomDrugStrengthUnit(String doctorId, String locationId, String hospitalId);
 
-	List<DrugDosage> getCustomDrugDosage(String doctorId, String locationId, String hospitalId);
+    List<DrugDosage> getAllDrugDosage();
 
-	List<DrugDurationUnit> getAllDrugDurationUnit();
+    List<DrugDosage> getCustomDrugDosage(String doctorId, String locationId, String hospitalId);
 
-	List<DrugDurationUnit> getCustomDrugDurationUnit(String doctorId, String locationId, String hospitalId);
-	
-	List<DrugDirection> getAllDrugDirection();
+    List<DrugDurationUnit> getAllDrugDurationUnit();
 
-	List<DrugDirection> getCustomDrugDirection(String doctorId, String locationId, String hospitalId);
-	
-	DrugTypeAddEditResponse addDrugType(DrugTypeAddEditRequest request);
+    List<DrugDurationUnit> getCustomDrugDurationUnit(String doctorId, String locationId, String hospitalId);
 
-	DrugStrengthAddEditResponse addDrugStrength(DrugStrengthAddEditRequest request);
+    List<DrugDirection> getAllDrugDirection();
 
-	DrugDosageAddEditResponse addDrugDosage(DrugDosageAddEditRequest request);
+    List<DrugDirection> getCustomDrugDirection(String doctorId, String locationId, String hospitalId);
 
-	DrugDirectionAddEditResponse addDrugDirection(DrugDirectionAddEditRequest request);
+    DrugTypeAddEditResponse addDrugType(DrugTypeAddEditRequest request);
 
-	DrugTypeAddEditResponse editDrugType(DrugTypeAddEditRequest request);
+    DrugStrengthAddEditResponse addDrugStrength(DrugStrengthAddEditRequest request);
 
-	DrugStrengthAddEditResponse editDrugStrength(DrugStrengthAddEditRequest request);
+    DrugDosageAddEditResponse addDrugDosage(DrugDosageAddEditRequest request);
 
-	DrugDosageAddEditResponse editDrugDosage(DrugDosageAddEditRequest request);
+    DrugDirectionAddEditResponse addDrugDirection(DrugDirectionAddEditRequest request);
 
-	DrugDirectionAddEditResponse editDrugDirection(DrugDirectionAddEditRequest request);
+    DrugTypeAddEditResponse editDrugType(DrugTypeAddEditRequest request);
 
-	Boolean deleteDrugType(String drugTypeId);
+    DrugStrengthAddEditResponse editDrugStrength(DrugStrengthAddEditRequest request);
 
-	Boolean deleteDrugStrength(String drugStrengthId);
+    DrugDosageAddEditResponse editDrugDosage(DrugDosageAddEditRequest request);
 
-	Boolean deleteDrugDosage(String drugDosageId);
+    DrugDirectionAddEditResponse editDrugDirection(DrugDirectionAddEditRequest request);
 
-	Boolean deleteDrugDirection(String drugDirectionId);
+    Boolean deleteDrugType(String drugTypeId);
 
-	DrugDurationUnitAddEditResponse addDrugDurationUnit(DrugDurationUnitAddEditRequest request);
+    Boolean deleteDrugStrength(String drugStrengthId);
 
-	DrugDurationUnitAddEditResponse editDrugDurationUnit(DrugDurationUnitAddEditRequest request);
+    Boolean deleteDrugDosage(String drugDosageId);
 
-	Boolean deleteDrugDurationUnit(String drugDurationUnitId);
-	
+    Boolean deleteDrugDirection(String drugDirectionId);
+
+    DrugDurationUnitAddEditResponse addDrugDurationUnit(DrugDurationUnitAddEditRequest request);
+
+    DrugDurationUnitAddEditResponse editDrugDurationUnit(DrugDurationUnitAddEditRequest request);
+
+    Boolean deleteDrugDurationUnit(String drugDurationUnitId);
+
 }

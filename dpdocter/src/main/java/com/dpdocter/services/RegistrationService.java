@@ -13,34 +13,34 @@ import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.ReferenceResponse;
 
 public interface RegistrationService {
-	User checkIfPatientExist(PatientRegistrationRequest request);
+    User checkIfPatientExist(PatientRegistrationRequest request);
 
-	RegisteredPatientDetails registerNewPatient(PatientRegistrationRequest request);
+    RegisteredPatientDetails registerNewPatient(PatientRegistrationRequest request);
 
-	RegisteredPatientDetails registerExistingPatient(PatientRegistrationRequest request);
+    RegisteredPatientDetails registerExistingPatient(PatientRegistrationRequest request);
 
-	List<User> getUsersByPhoneNumber(String phoneNumber, String locationId, String hospitalId);
+    List<User> getUsersByPhoneNumber(String phoneNumber, String locationId, String hospitalId);
 
-	RegisteredPatientDetails getPatientProfileByUserId(String userId, String doctorId, String locationId, String hospitalId);
+    RegisteredPatientDetails getPatientProfileByUserId(String userId, String doctorId, String locationId, String hospitalId);
 
-	Reference addEditReference(Reference referrence);
+    Reference addEditReference(Reference referrence);
 
-	void deleteReferrence(String referrenceId);
+    void deleteReferrence(String referrenceId);
 
-	ReferenceResponse getReferences(String doctorId, String locationId, String hospitalId);
+    ReferenceResponse getReferences(String doctorId, String locationId, String hospitalId);
 
-	String patientIdGenerator(String doctorId, String locationId, String hospitalId);
+    String patientIdGenerator(String doctorId, String locationId, String hospitalId);
 
-	ReferenceResponse getCustomReferences(String doctorId, String locationId, String hospitalId);
+    ReferenceResponse getCustomReferences(String doctorId, String locationId, String hospitalId);
 
-	Boolean updatePatientInitialAndCounter(String doctorId, String patientInitial, int patientCounter);
+    Boolean updatePatientInitialAndCounter(String doctorId, String patientInitial, int patientCounter);
 
-	Location getClinicDetails(String clinicId);
+    Location getClinicDetails(String clinicId);
 
-	ClinicProfile updateClinicProfile(ClinicProfile request);
+    ClinicProfile updateClinicProfile(ClinicProfile request);
 
-	ClinicAddress updateClinicAddress(ClinicAddress request);
+    ClinicAddress updateClinicAddress(ClinicAddress request);
 
-	ClinicTiming updateClinicTiming(ClinicTiming request);
+    ClinicTiming updateClinicTiming(ClinicTiming request);
 
 }

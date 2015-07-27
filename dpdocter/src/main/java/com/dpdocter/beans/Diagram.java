@@ -3,91 +3,90 @@ package com.dpdocter.beans;
 import com.dpdocter.collections.GenericCollection;
 
 public class Diagram extends GenericCollection {
-	private String id;
+    private String id;
 
-	private String diagramUrl;
+    private String diagramUrl;
 
-	private String tags;
+    private String tags;
 
-	private String doctorId;
+    private String doctorId;
 
-	private String locationId;
+    private String locationId;
 
-	private String hospitalId;
+    private String hospitalId;
 
-	private FileDetails diagram;
-	
-	private String fileExtension;
+    private FileDetails diagram;
 
-	public String getId() {
-		return id;
-	}
+    private String fileExtension;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public String getDiagramUrl() {
-		return diagramUrl;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public void setDiagramUrl(String diagramUrl) {
-		this.diagramUrl = diagramUrl;
-	}
+    public String getDiagramUrl() {
+	return diagramUrl;
+    }
 
-	public String getTags() {
-		return tags;
-	}
+    public void setDiagramUrl(String diagramUrl) {
+	this.diagramUrl = diagramUrl;
+    }
 
-	public void setTags(String tags) {
-		this.tags = tags;
-	}
+    public String getTags() {
+	return tags;
+    }
 
-	public String getDoctorId() {
-		return doctorId;
-	}
+    public void setTags(String tags) {
+	this.tags = tags;
+    }
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
+    public String getDoctorId() {
+	return doctorId;
+    }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	public String getHospitalId() {
-		return hospitalId;
-	}
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
 
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
+    public String getHospitalId() {
+	return hospitalId;
+    }
 
-	public FileDetails getDiagram() {
-		return diagram;
-	}
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
 
-	public void setDiagram(FileDetails diagram) {
-		this.diagram = diagram;
-	}
+    public FileDetails getDiagram() {
+	return diagram;
+    }
 
-	public String getFileExtension() {
-		return fileExtension;
-	}
+    public void setDiagram(FileDetails diagram) {
+	this.diagram = diagram;
+    }
 
-	public void setFileExtension(String fileExtension) {
-		this.fileExtension = fileExtension;
-	}
+    public String getFileExtension() {
+	return fileExtension;
+    }
 
-	@Override
-	public String toString() {
-		return "Diagram [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", diagram=" + diagram
-				+ ", fileExtension=" + fileExtension + "]";
-	}
+    public void setFileExtension(String fileExtension) {
+	this.fileExtension = fileExtension;
+    }
+
+    @Override
+    public String toString() {
+	return "Diagram [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + ", doctorId=" + doctorId + ", locationId=" + locationId
+		+ ", hospitalId=" + hospitalId + ", diagram=" + diagram + ", fileExtension=" + fileExtension + "]";
+    }
 
 }

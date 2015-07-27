@@ -11,9 +11,9 @@ import com.dpdocter.collections.RecordsTagsCollection;
 
 @Repository
 public interface RecordsTagsRepository extends MongoRepository<RecordsTagsCollection, String> {
-	List<RecordsTagsCollection> findByTagsId(String tagsId);
+    List<RecordsTagsCollection> findByTagsId(String tagsId);
 
-	@Query("{'doctorId': ?0}")
-	List<RecordsTagsCollection> findAll(String doctorId, Sort sort);
+    @Query("{'doctorId': ?0}")
+    List<RecordsTagsCollection> findAll(String doctorId, Sort sort);
 
 }

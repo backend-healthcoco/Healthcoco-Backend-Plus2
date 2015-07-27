@@ -5,39 +5,39 @@ import java.util.List;
 import com.dpdocter.collections.GenericCollection;
 
 public class Prescription extends GenericCollection {
-	private String id;
+    private String id;
 
-	private String name;
+    private String name;
 
-	private List<PrescriptionItemDetail> items;
+    private List<PrescriptionItemDetail> items;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+	return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+	this.name = name;
+    }
 
-	public List<PrescriptionItemDetail> getItems() {
-		return items;
-	}
+    public List<PrescriptionItemDetail> getItems() {
+	return items;
+    }
 
-	public void setItems(List<PrescriptionItemDetail> items) {
-		this.items = items;
-	}
+    public void setItems(List<PrescriptionItemDetail> items) {
+	this.items = items;
+    }
 
-	@Override
-	public String toString() {
-		return "Prescription [id=" + id + ", name=" + name + ", items=" + items + "]";
-	}
+    @Override
+    public String toString() {
+	return "Prescription [id=" + id + ", name=" + name + ", items=" + items + "]";
+    }
 
 }

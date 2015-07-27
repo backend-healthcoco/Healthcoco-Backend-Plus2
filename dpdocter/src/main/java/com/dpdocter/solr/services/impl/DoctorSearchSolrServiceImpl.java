@@ -17,66 +17,66 @@ import com.dpdocter.solr.services.DoctorSearchSolrService;
 @Service
 public class DoctorSearchSolrServiceImpl implements DoctorSearchSolrService {
 
-	@Resource
-	private DoctorSearchSolrRepository doctorSearchSolrRepository;
+    @Resource
+    private DoctorSearchSolrRepository doctorSearchSolrRepository;
 
-	@Resource
-	private DoctorCoreDemoRepository doctorCoreDemoRepository;
+    @Resource
+    private DoctorCoreDemoRepository doctorCoreDemoRepository;
 
-	@Override
-	public void addToIndex(SearchDoctorSolrDocument searchDoctorSolrDocument) {
-		try {
-			doctorSearchSolrRepository.save(searchDoctorSolrDocument);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error occured while saving");
-		}
-
+    @Override
+    public void addToIndex(SearchDoctorSolrDocument searchDoctorSolrDocument) {
+	try {
+	    doctorSearchSolrRepository.save(searchDoctorSolrDocument);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error occured while saving");
 	}
 
-	@Override
-	public void deleteFromIndex(String id) {
-		try {
-			doctorSearchSolrRepository.delete(id);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+    }
 
+    @Override
+    public void deleteFromIndex(String id) {
+	try {
+	    doctorSearchSolrRepository.delete(id);
+	} catch (Exception e) {
+	    e.printStackTrace();
 	}
 
-	@Override
-	public List<SearchDoctorSolrDocument> findByQueryName(String text) {
-		List<SearchDoctorSolrDocument> searchDoctorSolrDocuments = null;
-		try {
-			searchDoctorSolrDocuments = doctorSearchSolrRepository.findByQueryAnnotation(text);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error occured while searching");
-		}
-		return searchDoctorSolrDocuments;
+    }
+
+    @Override
+    public List<SearchDoctorSolrDocument> findByQueryName(String text) {
+	List<SearchDoctorSolrDocument> searchDoctorSolrDocuments = null;
+	try {
+	    searchDoctorSolrDocuments = doctorSearchSolrRepository.findByQueryAnnotation(text);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error occured while searching");
+	}
+	return searchDoctorSolrDocuments;
+    }
+
+    @Override
+    public void addToIndex(DoctorCoreDemoDocument doctorCoreDemoDocument) {
+	try {
+	    doctorCoreDemoRepository.save(doctorCoreDemoDocument);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error occured while saving");
 	}
 
-	@Override
-	public void addToIndex(DoctorCoreDemoDocument doctorCoreDemoDocument) {
-		try {
-			doctorCoreDemoRepository.save(doctorCoreDemoDocument);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error occured while saving");
-		}
+    }
 
+    @Override
+    public List<DoctorCoreDemoDocument> findByQueryName1(String text) {
+	List<DoctorCoreDemoDocument> doctorCoreDemoDocuments = null;
+	try {
+	    doctorCoreDemoDocuments = doctorCoreDemoRepository.findByQueryAnnotation(text);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error occured while searching");
 	}
-
-	@Override
-	public List<DoctorCoreDemoDocument> findByQueryName1(String text) {
-		List<DoctorCoreDemoDocument> doctorCoreDemoDocuments = null;
-		try {
-			doctorCoreDemoDocuments = doctorCoreDemoRepository.findByQueryAnnotation(text);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error occured while searching");
-		}
-		return doctorCoreDemoDocuments;
-	}
+	return doctorCoreDemoDocuments;
+    }
 
 }

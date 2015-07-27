@@ -10,177 +10,177 @@ import com.dpdocter.beans.DOB;
 @Document(collection = "user_cl")
 public class UserCollection {
 
-	@Id
-	private String id;
+    @Id
+    private String id;
 
-	@Field
-	private String title;
+    @Field
+    private String title;
 
-	@Field
-	private String firstName;
+    @Field
+    private String firstName;
 
-	@Field
-	private String lastName;
+    @Field
+    private String lastName;
 
-	@Field
-	private String middleName;
+    @Field
+    private String middleName;
 
-	@Indexed(unique = true)
-	private String userName;
+    @Indexed(unique = true)
+    private String userName;
 
-	@Field
-	private String password;
+    @Field
+    private String password;
 
-	@Field
-	private String emailAddress;
+    @Field
+    private String emailAddress;
 
-	@Field
-	private String mobileNumber;
+    @Field
+    private String mobileNumber;
 
-	@Field
-	private String gender;
+    @Field
+    private String gender;
 
-	@Field
-	private String imageUrl;
+    @Field
+    private String imageUrl;
 
-	@Field
-	private DOB dob;
+    @Field
+    private DOB dob;
 
-	@Field
-	private Boolean isActive = false;
+    @Field
+    private Boolean isActive = false;
 
-	@Field
-	private Boolean isTempPassword = true;
+    @Field
+    private Boolean isTempPassword = true;
 
-	@Field
-	private Boolean isVerified = false;
+    @Field
+    private Boolean isVerified = false;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getTitle() {
-		return title;
-	}
+    public String getTitle() {
+	return title;
+    }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public void setTitle(String title) {
+	this.title = title;
+    }
 
-	public String getUserName() {
-		return userName;
-	}
+    public String getUserName() {
+	return userName;
+    }
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
+    public void setUserName(String userName) {
+	this.userName = userName;
+    }
 
-	public String getPassword() {
-		return password;
-	}
+    public String getPassword() {
+	return password;
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    public void setPassword(String password) {
+	this.password = password;
+    }
 
-	public String getMobileNumber() {
-		return mobileNumber;
-	}
+    public String getMobileNumber() {
+	return mobileNumber;
+    }
 
-	public void setMobileNumber(String mobileNumber) {
-		this.mobileNumber = mobileNumber;
-	}
+    public void setMobileNumber(String mobileNumber) {
+	this.mobileNumber = mobileNumber;
+    }
 
-	public String getGender() {
-		return gender;
-	}
+    public String getGender() {
+	return gender;
+    }
 
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
+    public void setGender(String gender) {
+	this.gender = gender;
+    }
 
-	public Boolean getIsActive() {
-		return isActive;
-	}
+    public Boolean getIsActive() {
+	return isActive;
+    }
 
-	public void setIsActive(Boolean isActive) {
-		this.isActive = isActive;
-	}
+    public void setIsActive(Boolean isActive) {
+	this.isActive = isActive;
+    }
 
-	public String getFirstName() {
-		return firstName;
-	}
+    public String getFirstName() {
+	return firstName;
+    }
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
+    public void setFirstName(String firstName) {
+	this.firstName = firstName;
+    }
 
-	public String getLastName() {
-		return lastName;
-	}
+    public String getLastName() {
+	return lastName;
+    }
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+    public void setLastName(String lastName) {
+	this.lastName = lastName;
+    }
 
-	public String getMiddleName() {
-		return middleName;
-	}
+    public String getMiddleName() {
+	return middleName;
+    }
 
-	public void setMiddleName(String middleName) {
-		this.middleName = middleName;
-	}
+    public void setMiddleName(String middleName) {
+	this.middleName = middleName;
+    }
 
-	public String getImageUrl() {
-		return imageUrl;
-	}
+    public String getImageUrl() {
+	return imageUrl;
+    }
 
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
-	}
+    public void setImageUrl(String imageUrl) {
+	this.imageUrl = imageUrl;
+    }
 
-	public DOB getDob() {
-		return dob;
-	}
+    public DOB getDob() {
+	return dob;
+    }
 
-	public void setDob(DOB dob) {
-		this.dob = dob;
-	}
+    public void setDob(DOB dob) {
+	this.dob = dob;
+    }
 
-	public String getEmailAddress() {
-		return emailAddress;
-	}
+    public String getEmailAddress() {
+	return emailAddress;
+    }
 
-	public void setEmailAddress(String emailAddress) {
-		this.emailAddress = emailAddress;
-	}
+    public void setEmailAddress(String emailAddress) {
+	this.emailAddress = emailAddress;
+    }
 
-	public Boolean getIsTempPassword() {
-		return isTempPassword;
-	}
+    public Boolean getIsTempPassword() {
+	return isTempPassword;
+    }
 
-	public void setIsTempPassword(Boolean isTempPassword) {
-		this.isTempPassword = isTempPassword;
-	}
+    public void setIsTempPassword(Boolean isTempPassword) {
+	this.isTempPassword = isTempPassword;
+    }
 
-	public Boolean getIsVerified() {
-		return isVerified;
-	}
+    public Boolean getIsVerified() {
+	return isVerified;
+    }
 
-	public void setIsVerified(Boolean isVerified) {
-		this.isVerified = isVerified;
-	}
+    public void setIsVerified(Boolean isVerified) {
+	this.isVerified = isVerified;
+    }
 
-	@Override
-	public String toString() {
-		return "UserCollection [id=" + id + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName
-				+ ", userName=" + userName + ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender="
-				+ gender + ", imageUrl=" + imageUrl + ", dob=" + dob + ", isActive=" + isActive + ", isTempPassword=" + isTempPassword + ", isVerified="
-				+ isVerified + "]";
-	}
+    @Override
+    public String toString() {
+	return "UserCollection [id=" + id + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName
+		+ ", userName=" + userName + ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender="
+		+ gender + ", imageUrl=" + imageUrl + ", dob=" + dob + ", isActive=" + isActive + ", isTempPassword=" + isTempPassword + ", isVerified="
+		+ isVerified + "]";
+    }
 
 }

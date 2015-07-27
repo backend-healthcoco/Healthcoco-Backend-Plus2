@@ -8,110 +8,109 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document(collection = "diagrams_cl")
 public class DiagramsCollection {
 
-	@Field
-	private String id;
+    @Field
+    private String id;
 
-	@Field
-	private String diagramUrl;
+    @Field
+    private String diagramUrl;
 
-	@Field
-	private String tags;
+    @Field
+    private String tags;
 
-	@Field
-	private String doctorId;
+    @Field
+    private String doctorId;
 
-	@Field
-	private String locationId;
+    @Field
+    private String locationId;
 
-	@Field
-	private String hospitalId;
-	
-	@Field
-	private String fileExtension;
+    @Field
+    private String hospitalId;
 
-	@Field
-	private Date createdTime;
+    @Field
+    private String fileExtension;
 
-	@Field
-	private boolean isDeleted = false;
+    @Field
+    private Date createdTime;
 
-	public String getId() {
-		return id;
-	}
+    @Field
+    private boolean isDeleted = false;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public String getDiagramUrl() {
-		return diagramUrl;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public void setDiagramUrl(String diagramUrl) {
-		this.diagramUrl = diagramUrl;
-	}
+    public String getDiagramUrl() {
+	return diagramUrl;
+    }
 
-	public String getDoctorId() {
-		return doctorId;
-	}
+    public void setDiagramUrl(String diagramUrl) {
+	this.diagramUrl = diagramUrl;
+    }
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
+    public String getDoctorId() {
+	return doctorId;
+    }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	public String getHospitalId() {
-		return hospitalId;
-	}
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
 
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
+    public String getHospitalId() {
+	return hospitalId;
+    }
 
-	public String getTags() {
-		return tags;
-	}
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
 
-	public void setTags(String tags) {
-		this.tags = tags;
-	}
+    public String getTags() {
+	return tags;
+    }
 
-	public String getFileExtension() {
-		return fileExtension;
-	}
+    public void setTags(String tags) {
+	this.tags = tags;
+    }
 
-	public void setFileExtension(String fileExtension) {
-		this.fileExtension = fileExtension;
-	}
+    public String getFileExtension() {
+	return fileExtension;
+    }
 
-	public Date getCreatedTime() {
-		return createdTime;
-	}
+    public void setFileExtension(String fileExtension) {
+	this.fileExtension = fileExtension;
+    }
 
-	public void setCreatedTime(Date createdTime) {
-		this.createdTime = createdTime;
-	}
+    public Date getCreatedTime() {
+	return createdTime;
+    }
 
-	public boolean isDeleted() {
-		return isDeleted;
-	}
+    public void setCreatedTime(Date createdTime) {
+	this.createdTime = createdTime;
+    }
 
-	public void setDeleted(boolean isDeleted) {
-		this.isDeleted = isDeleted;
-	}
+    public boolean isDeleted() {
+	return isDeleted;
+    }
 
-	@Override
-	public String toString() {
-		return "DiagramsCollection [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + ", doctorId="
-				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", fileExtension="
-				+ fileExtension + ", isDeleted=" + isDeleted + "]";
-	}
+    public void setDeleted(boolean isDeleted) {
+	this.isDeleted = isDeleted;
+    }
+
+    @Override
+    public String toString() {
+	return "DiagramsCollection [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + ", doctorId=" + doctorId + ", locationId=" + locationId
+		+ ", hospitalId=" + hospitalId + ", fileExtension=" + fileExtension + ", isDeleted=" + isDeleted + "]";
+    }
 
 }

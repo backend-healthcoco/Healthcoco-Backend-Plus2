@@ -4,9 +4,9 @@ import com.dpdocter.beans.LoginResponse;
 import com.dpdocter.request.LoginRequest;
 
 public interface LoginService {
-	LoginResponse login(LoginRequest request);
+    LoginResponse login(LoginRequest request);
 
-	Boolean verifyUser(String userId);
+    Boolean verifyUser(String userId);
 
-	String otpGenerator(String mobileNumber);
+    String otpGenerator(String mobileNumber);
 }

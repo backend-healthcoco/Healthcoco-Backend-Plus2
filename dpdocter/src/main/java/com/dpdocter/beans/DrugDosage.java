@@ -1,62 +1,60 @@
 package com.dpdocter.beans;
 
 public class DrugDosage {
-	
-	String id;
-	
-	String value;
-	
-	String doctorId;
 
-	String locationId;
+    String id;
 
-	String hospitalId;
+    String value;
 
+    String doctorId;
 
-	public String getId() {
-		return id;
-	}
+    String locationId;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    String hospitalId;
 
-	public String getValue() {
-		return value;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setValue(String value) {
-		this.value = value;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getDoctorId() {
-		return doctorId;
-	}
+    public String getValue() {
+	return value;
+    }
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
+    public void setValue(String value) {
+	this.value = value;
+    }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public String getDoctorId() {
+	return doctorId;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
+    }
 
-	public String getHospitalId() {
-		return hospitalId;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
 
-	@Override
-	public String toString() {
-		return "DrugDosage [id=" + id + ", value=" + value + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + "]";
-	}
+    public String getHospitalId() {
+	return hospitalId;
+    }
+
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
+
+    @Override
+    public String toString() {
+	return "DrugDosage [id=" + id + ", value=" + value + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
+    }
 
 }

@@ -4,60 +4,60 @@ import com.dpdocter.collections.GenericCollection;
 
 public class Diagnoses extends GenericCollection {
 
-	private String id;
+    private String id;
 
-	private String diagnosis;
+    private String diagnosis;
 
-	private String doctorId;
+    private String doctorId;
 
-	private String locationId;
+    private String locationId;
 
-	private String hospitalId;
+    private String hospitalId;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getDoctorId() {
-		return doctorId;
-	}
+    public String getDoctorId() {
+	return doctorId;
+    }
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
+    }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
 
-	public String getHospitalId() {
-		return hospitalId;
-	}
+    public String getHospitalId() {
+	return hospitalId;
+    }
 
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
 
-	public String getDiagnosis() {
-		return diagnosis;
-	}
+    public String getDiagnosis() {
+	return diagnosis;
+    }
 
-	public void setDiagnosis(String diagnosis) {
-		this.diagnosis = diagnosis;
-	}
+    public void setDiagnosis(String diagnosis) {
+	this.diagnosis = diagnosis;
+    }
 
-	@Override
-	public String toString() {
-		return "Diagnoses [id=" + id + ", diagnosis=" + diagnosis + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ "]";
-	}
+    @Override
+    public String toString() {
+	return "Diagnoses [id=" + id + ", diagnosis=" + diagnosis + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+		+ "]";
+    }
 
 }

@@ -1,16 +1,16 @@
 package com.dpdocter.enums;
 
 public enum TimeUnit {
-	MINS("MINS");
+    MINS("MINS");
 
-	private String timeUnit;
+    private String timeUnit;
 
-	TimeUnit(String timeUnit) {
-		this.timeUnit = timeUnit;
-	}
+    TimeUnit(String timeUnit) {
+	this.timeUnit = timeUnit;
+    }
 
-	public String getTimeUnit() {
-		return timeUnit;
-	}
+    public String getTimeUnit() {
+	return timeUnit;
+    }
 
 }

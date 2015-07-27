@@ -7,42 +7,42 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document(collection = "role_cl")
 public class RoleCollection {
 
-	@Id
-	private String id;
+    @Id
+    private String id;
 
-	@Field
-	private String role;
+    @Field
+    private String role;
 
-	@Field
-	private String description;
+    @Field
+    private String description;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getRole() {
-		return role;
-	}
+    public String getRole() {
+	return role;
+    }
 
-	public void setRole(String role) {
-		this.role = role;
-	}
+    public void setRole(String role) {
+	this.role = role;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+	return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+	this.description = description;
+    }
 
-	@Override
-	public String toString() {
-		return "RoleCollection [id=" + id + ", role=" + role + ", description=" + description + "]";
-	}
+    @Override
+    public String toString() {
+	return "RoleCollection [id=" + id + ", role=" + role + ", description=" + description + "]";
+    }
 
 }

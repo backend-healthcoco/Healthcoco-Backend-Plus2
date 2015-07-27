@@ -6,76 +6,76 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "drug_type_cl")
 public class DrugTypeCollection {
-	@Id
-	private String id;
+    @Id
+    private String id;
 
-	@Field
-	private String type;
-	
-	@Field
-	private String doctorId;
+    @Field
+    private String type;
 
-	@Field
-	private String locationId;
+    @Field
+    private String doctorId;
 
-	@Field
-	private String hospitalId;
+    @Field
+    private String locationId;
 
-	@Field
-	private boolean isDeleted = false;
+    @Field
+    private String hospitalId;
 
-	public String getId() {
-		return id;
-	}
+    @Field
+    private boolean isDeleted = false;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public String getType() {
+	return type;
+    }
 
-	public String getDoctorId() {
-		return doctorId;
-	}
+    public void setType(String type) {
+	this.type = type;
+    }
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
+    public String getDoctorId() {
+	return doctorId;
+    }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	public String getHospitalId() {
-		return hospitalId;
-	}
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
 
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
+    public String getHospitalId() {
+	return hospitalId;
+    }
 
-	public boolean isDeleted() {
-		return isDeleted;
-	}
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
 
-	public void setIsDeleted(boolean isDeleted) {
-		this.isDeleted = isDeleted;
-	}
+    public boolean isDeleted() {
+	return isDeleted;
+    }
 
-	@Override
-	public String toString() {
-		return "DrugTypeCollection [id=" + id + ", type=" + type + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", isDeleted=" + isDeleted + "]";
-	}
+    public void setIsDeleted(boolean isDeleted) {
+	this.isDeleted = isDeleted;
+    }
+
+    @Override
+    public String toString() {
+	return "DrugTypeCollection [id=" + id + ", type=" + type + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+		+ ", isDeleted=" + isDeleted + "]";
+    }
 
 }

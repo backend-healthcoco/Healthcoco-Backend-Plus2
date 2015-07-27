@@ -13,38 +13,38 @@ import com.dpdocter.request.RecordsSearchRequest;
 import com.dpdocter.request.TagRecordRequest;
 
 public interface RecordsService {
-	Records addRecord(RecordsAddRequest request);
+    Records addRecord(RecordsAddRequest request);
 
-	void tagRecord(TagRecordRequest request);
+    void tagRecord(TagRecordRequest request);
 
-	void changeReportLabel(String recordId, String label);
+    void changeReportLabel(String recordId, String label);
 
-	List<Records> searchRecords(RecordsSearchRequest request);
+    List<Records> searchRecords(RecordsSearchRequest request);
 
-	List<Records> getRecordsByIds(List<String> recordIds);
+    List<Records> getRecordsByIds(List<String> recordIds);
 
-	void emailRecordToPatient(String recordId, String emailAddr);
+    void emailRecordToPatient(String recordId, String emailAddr);
 
-	Tags addEditTag(Tags tags);
+    Tags addEditTag(Tags tags);
 
-	void deleteTag(String tagId);
+    void deleteTag(String tagId);
 
-	List<Tags> getAllTags(String doctorId, String locationId, String hospitalId);
+    List<Tags> getAllTags(String doctorId, String locationId, String hospitalId);
 
-	String getPatientEmailAddress(String patientId);
+    String getPatientEmailAddress(String patientId);
 
-	File getRecordFile(String recordId);
+    File getRecordFile(String recordId);
 
-	void deleteRecord(String recordId);
+    void deleteRecord(String recordId);
 
-	List<Records> searchRecords(String doctorId, String locationId, String hospitalId, String createdTime);
+    List<Records> searchRecords(String doctorId, String locationId, String hospitalId, String createdTime);
 
-	Integer getRecordCount(String doctorId, String patientId, String locationId, String hospitalId);
+    Integer getRecordCount(String doctorId, String patientId, String locationId, String hospitalId);
 
-	boolean editDescription(RecordsDescription recordsDescription);
+    boolean editDescription(RecordsDescription recordsDescription);
 
-	FlexibleCounts getFlexibleCounts(FlexibleCounts flexibleCounts);
+    FlexibleCounts getFlexibleCounts(FlexibleCounts flexibleCounts);
 
-	Records editRecord(RecordsEditRequest request);
+    Records editRecord(RecordsEditRequest request);
 
 }

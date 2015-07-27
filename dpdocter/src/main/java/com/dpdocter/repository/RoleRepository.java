@@ -10,6 +10,6 @@ import com.dpdocter.collections.RoleCollection;
  */
 @Repository
 public interface RoleRepository extends MongoRepository<RoleCollection, String> {
-	public RoleCollection findByRole(String role);
+    public RoleCollection findByRole(String role);
 
 }

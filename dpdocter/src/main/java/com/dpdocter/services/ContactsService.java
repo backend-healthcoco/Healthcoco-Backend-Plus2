@@ -12,32 +12,32 @@ import com.dpdocter.request.SearchRequest;
 
 public interface ContactsService {
 
-	List<PatientCard> getDoctorContacts(GetDoctorContactsRequest request);
+    List<PatientCard> getDoctorContacts(GetDoctorContactsRequest request);
 
-	void blockPatient(String patientId, String docterId);
+    void blockPatient(String patientId, String docterId);
 
-	Group addEditGroup(Group group);
+    Group addEditGroup(Group group);
 
-	Boolean deleteGroup(String groupId);
+    Boolean deleteGroup(String groupId);
 
-	List<PatientCard> searchPatients(SearchRequest request);
+    List<PatientCard> searchPatients(SearchRequest request);
 
-	List<PatientCard> getDoctorsRecentlyVisitedContacts(String doctorId, int size, int page);
+    List<PatientCard> getDoctorsRecentlyVisitedContacts(String doctorId, int size, int page);
 
-	List<PatientCard> getDoctorsMostVisitedContacts(String doctorId, int size, int page);
+    List<PatientCard> getDoctorsMostVisitedContacts(String doctorId, int size, int page);
 
-	int getContactsTotalSize(GetDoctorContactsRequest request);
+    int getContactsTotalSize(GetDoctorContactsRequest request);
 
-	List<Group> getAllGroups(String doctorId, String locationId, String hospitalId, String createdTime);
+    List<Group> getAllGroups(String doctorId, String locationId, String hospitalId, String createdTime);
 
-	Boolean importContacts(ImportContactsRequest request);
+    Boolean importContacts(ImportContactsRequest request);
 
-	Boolean exportContacts(ExportContactsRequest request);
+    Boolean exportContacts(ExportContactsRequest request);
 
-	List<Group> getAllGroups(String doctorId, String createdTime);
+    List<Group> getAllGroups(String doctorId, String createdTime);
 
-	List<PatientCard> getDoctorContacts(String doctorId, String createdTime);
+    List<PatientCard> getDoctorContacts(String doctorId, String createdTime);
 
-	List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId, String createdTime);
+    List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId, String createdTime);
 
 }

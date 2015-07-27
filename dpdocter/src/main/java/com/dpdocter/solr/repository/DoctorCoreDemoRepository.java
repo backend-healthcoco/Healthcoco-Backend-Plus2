@@ -9,6 +9,6 @@ import com.dpdocter.solr.document.DoctorCoreDemoDocument;
 
 public interface DoctorCoreDemoRepository extends SolrCrudRepository<DoctorCoreDemoDocument, String> {
 
-	@Query("name:*?0* OR title:*?0* OR doctorSpecification:*?0*")
-	public List<DoctorCoreDemoDocument> findByQueryAnnotation(String searchTerm);
+    @Query("name:*?0* OR title:*?0* OR doctorSpecification:*?0*")
+    public List<DoctorCoreDemoDocument> findByQueryAnnotation(String searchTerm);
 }

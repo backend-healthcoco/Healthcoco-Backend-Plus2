@@ -10,24 +10,24 @@ import com.dpdocter.beans.Reference;
 
 public class Converter {
 
-	public static String ObjectToJSON(Object value) {
-		ObjectMapper objectMapper = new ObjectMapper();
-		String JSONResult = "";
-		try {
-			JSONResult = objectMapper.writeValueAsString(value);
-		} catch (JsonGenerationException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return JSONResult;
+    public static String ObjectToJSON(Object value) {
+	ObjectMapper objectMapper = new ObjectMapper();
+	String JSONResult = "";
+	try {
+	    JSONResult = objectMapper.writeValueAsString(value);
+	} catch (JsonGenerationException e) {
+	    e.printStackTrace();
+	} catch (JsonMappingException e) {
+	    e.printStackTrace();
+	} catch (IOException e) {
+	    e.printStackTrace();
 	}
+	return JSONResult;
+    }
 
-	public static void main(String[] args) {
-		String JSONResult = ObjectToJSON(new Reference());
+    public static void main(String[] args) {
+	String JSONResult = ObjectToJSON(new Reference());
 
-		System.out.println(JSONResult);
-	}
+	System.out.println(JSONResult);
+    }
 }

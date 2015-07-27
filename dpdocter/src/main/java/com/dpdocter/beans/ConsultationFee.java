@@ -3,29 +3,29 @@ package com.dpdocter.beans;
 import com.dpdocter.enums.Currency;
 
 public class ConsultationFee {
-	private int amount;
+    private int amount;
 
-	private Currency currency;
+    private Currency currency;
 
-	public int getAmount() {
-		return amount;
-	}
+    public int getAmount() {
+	return amount;
+    }
 
-	public void setAmount(int amount) {
-		this.amount = amount;
-	}
+    public void setAmount(int amount) {
+	this.amount = amount;
+    }
 
-	public Currency getCurrency() {
-		return currency;
-	}
+    public Currency getCurrency() {
+	return currency;
+    }
 
-	public void setCurrency(Currency currency) {
-		this.currency = currency;
-	}
+    public void setCurrency(Currency currency) {
+	this.currency = currency;
+    }
 
-	@Override
-	public String toString() {
-		return "ConsultationFee [amount=" + amount + ", currency=" + currency + "]";
-	}
+    @Override
+    public String toString() {
+	return "ConsultationFee [amount=" + amount + ", currency=" + currency + "]";
+    }
 
 }

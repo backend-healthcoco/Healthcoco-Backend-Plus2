@@ -7,17 +7,17 @@ import com.dpdocter.request.PatientProfilePicChangeRequest;
 import com.dpdocter.request.PatientSignUpRequest;
 
 public interface SignUpService {
-	Boolean activateUser(String userId);
+    Boolean activateUser(String userId);
 
-	DoctorSignUp doctorSignUp(DoctorSignupRequest request);
+    DoctorSignUp doctorSignUp(DoctorSignupRequest request);
 
-	User patientSignUp(PatientSignUpRequest request);
+    User patientSignUp(PatientSignUpRequest request);
 
-	Boolean checkUserNameExist(String username);
+    Boolean checkUserNameExist(String username);
 
-	Boolean checkMobileNumExist(String mobileNum);
+    Boolean checkMobileNumExist(String mobileNum);
 
-	Boolean checkEmailAddressExist(String email);
+    Boolean checkEmailAddressExist(String email);
 
-	User patientProfilePicChange(PatientProfilePicChangeRequest request);
+    User patientProfilePicChange(PatientProfilePicChangeRequest request);
 }

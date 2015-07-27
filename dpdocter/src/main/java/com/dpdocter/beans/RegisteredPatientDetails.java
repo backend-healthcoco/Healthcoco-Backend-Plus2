@@ -6,172 +6,172 @@ import com.dpdocter.collections.GenericCollection;
 
 public class RegisteredPatientDetails extends GenericCollection {
 
-	private String firstName;
+    private String firstName;
 
-	private String lastName;
+    private String lastName;
 
-	private String middleName;
+    private String middleName;
 
-	private String imageUrl;
+    private String imageUrl;
 
-	private DOB dob;
+    private DOB dob;
 
-	private String userId;
+    private String userId;
 
-	private String userName;
+    private String userName;
 
-	private String mobileNumber;
+    private String mobileNumber;
 
-	private String gender;
+    private String gender;
 
-	private Patient patient;
+    private Patient patient;
 
-	private Address address;
+    private Address address;
 
-	private List<Group> groups;
+    private List<Group> groups;
 
-	private String doctorId;
+    private String doctorId;
 
-	private String locationId;
+    private String locationId;
 
-	private String hospitalId;
+    private String hospitalId;
 
-	private String PID;
+    private String PID;
 
-	public String getUserId() {
-		return userId;
-	}
+    public String getUserId() {
+	return userId;
+    }
 
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
+    public void setUserId(String userId) {
+	this.userId = userId;
+    }
 
-	public String getUserName() {
-		return userName;
-	}
+    public String getUserName() {
+	return userName;
+    }
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
+    public void setUserName(String userName) {
+	this.userName = userName;
+    }
 
-	public String getMobileNumber() {
-		return mobileNumber;
-	}
+    public String getMobileNumber() {
+	return mobileNumber;
+    }
 
-	public void setMobileNumber(String mobileNumber) {
-		this.mobileNumber = mobileNumber;
-	}
+    public void setMobileNumber(String mobileNumber) {
+	this.mobileNumber = mobileNumber;
+    }
 
-	public String getGender() {
-		return gender;
-	}
+    public String getGender() {
+	return gender;
+    }
 
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
+    public void setGender(String gender) {
+	this.gender = gender;
+    }
 
-	public Patient getPatient() {
-		return patient;
-	}
+    public Patient getPatient() {
+	return patient;
+    }
 
-	public void setPatient(Patient patient) {
-		this.patient = patient;
-	}
+    public void setPatient(Patient patient) {
+	this.patient = patient;
+    }
 
-	public Address getAddress() {
-		return address;
-	}
+    public Address getAddress() {
+	return address;
+    }
 
-	public void setAddress(Address address) {
-		this.address = address;
-	}
+    public void setAddress(Address address) {
+	this.address = address;
+    }
 
-	public List<Group> getGroups() {
-		return groups;
-	}
+    public List<Group> getGroups() {
+	return groups;
+    }
 
-	public void setGroups(List<Group> groups) {
-		this.groups = groups;
-	}
+    public void setGroups(List<Group> groups) {
+	this.groups = groups;
+    }
 
-	public String getFirstName() {
-		return firstName;
-	}
+    public String getFirstName() {
+	return firstName;
+    }
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
+    public void setFirstName(String firstName) {
+	this.firstName = firstName;
+    }
 
-	public String getLastName() {
-		return lastName;
-	}
+    public String getLastName() {
+	return lastName;
+    }
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+    public void setLastName(String lastName) {
+	this.lastName = lastName;
+    }
 
-	public String getMiddleName() {
-		return middleName;
-	}
+    public String getMiddleName() {
+	return middleName;
+    }
 
-	public void setMiddleName(String middleName) {
-		this.middleName = middleName;
-	}
+    public void setMiddleName(String middleName) {
+	this.middleName = middleName;
+    }
 
-	public String getImageUrl() {
-		return imageUrl;
-	}
+    public String getImageUrl() {
+	return imageUrl;
+    }
 
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
-	}
+    public void setImageUrl(String imageUrl) {
+	this.imageUrl = imageUrl;
+    }
 
-	public DOB getDob() {
-		return dob;
-	}
+    public DOB getDob() {
+	return dob;
+    }
 
-	public void setDob(DOB dob) {
-		this.dob = dob;
-	}
+    public void setDob(DOB dob) {
+	this.dob = dob;
+    }
 
-	public String getDoctorId() {
-		return doctorId;
-	}
+    public String getDoctorId() {
+	return doctorId;
+    }
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
+    }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
 
-	public String getHospitalId() {
-		return hospitalId;
-	}
+    public String getHospitalId() {
+	return hospitalId;
+    }
 
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
 
-	public String getPID() {
-		return PID;
-	}
+    public String getPID() {
+	return PID;
+    }
 
-	public void setPID(String pID) {
-		PID = pID;
-	}
+    public void setPID(String pID) {
+	PID = pID;
+    }
 
-	@Override
-	public String toString() {
-		return "RegisteredPatientDetails [firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", imageUrl=" + imageUrl
-				+ ", dob=" + dob + ", userId=" + userId + ", userName=" + userName + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", patient="
-				+ patient + ", address=" + address + ", groups=" + groups + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + ", PID=" + PID + "]";
-	}
+    @Override
+    public String toString() {
+	return "RegisteredPatientDetails [firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", imageUrl=" + imageUrl
+		+ ", dob=" + dob + ", userId=" + userId + ", userName=" + userName + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", patient="
+		+ patient + ", address=" + address + ", groups=" + groups + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+		+ hospitalId + ", PID=" + PID + "]";
+    }
 
 }

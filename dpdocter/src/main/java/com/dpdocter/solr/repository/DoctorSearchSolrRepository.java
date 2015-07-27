@@ -9,9 +9,9 @@ import com.dpdocter.solr.document.SearchDoctorSolrDocument;
 
 public interface DoctorSearchSolrRepository extends SolrCrudRepository<SearchDoctorSolrDocument, String> {
 
-	// List<SearchDoctorSolrDocument>
-	// findByDoctorNameContainsOrLocationNameContains
+    // List<SearchDoctorSolrDocument>
+    // findByDoctorNameContainsOrLocationNameContains
 
-	@Query("name:*?0* OR title:*?0* OR doctorSpecification:*?0*")
-	public List<SearchDoctorSolrDocument> findByQueryAnnotation(String searchTerm);
+    @Query("name:*?0* OR title:*?0* OR doctorSpecification:*?0*")
+    public List<SearchDoctorSolrDocument> findByQueryAnnotation(String searchTerm);
 }

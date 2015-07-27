@@ -57,810 +57,829 @@ import common.util.web.DPDoctorUtils;
 @Service
 public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
-	@Autowired
-	private ClinicalNotesRepository clinicalNotesRepository;
+    @Autowired
+    private ClinicalNotesRepository clinicalNotesRepository;
 
-	@Autowired
-	private PatientClinicalNotesRepository patientClinicalNotesRepository;
+    @Autowired
+    private PatientClinicalNotesRepository patientClinicalNotesRepository;
 
-	@Autowired
-	private ComplaintRepository complaintRepository;
+    @Autowired
+    private ComplaintRepository complaintRepository;
 
-	@Autowired
-	private ObservationRepository observationRepository;
+    @Autowired
+    private ObservationRepository observationRepository;
 
-	@Autowired
-	private InvestigationRepository investigationRepository;
+    @Autowired
+    private InvestigationRepository investigationRepository;
 
-	@Autowired
-	private DiagnosisRepository diagnosisRepository;
+    @Autowired
+    private DiagnosisRepository diagnosisRepository;
 
-	@Autowired
-	private NotesRepository notesRepository;
+    @Autowired
+    private NotesRepository notesRepository;
 
-	@Autowired
-	private DiagramsRepository diagramsRepository;
+    @Autowired
+    private DiagramsRepository diagramsRepository;
 
-	@Autowired
-	private FileManager fileManager;
+    @Autowired
+    private FileManager fileManager;
 
-	@Autowired
-	private MongoTemplate mongoTemplate;
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
-	@Value(value = "${IMAGE_RESOURCE}")
-	private String imageResource;
+    @Value(value = "${IMAGE_RESOURCE}")
+    private String imageResource;
 
-	public ClinicalNotes addNotes(ClinicalNotesAddRequest request) {
-		ClinicalNotes clinicalNotes = null;
-		List<String> complaintIds = null;
-		List<String> observationIds = null;
-		List<String> investigationIds = null;
-		List<String> noteIds = null;
-		List<String> diagnosisIds = null;
-		Date createdTime = new Date();
-		try {
-			// save clinical notes.
-			ClinicalNotesCollection clinicalNotesCollection = new ClinicalNotesCollection();
-			BeanUtil.map(request, clinicalNotesCollection);
+    public ClinicalNotes addNotes(ClinicalNotesAddRequest request) {
+	ClinicalNotes clinicalNotes = null;
+	List<String> complaintIds = null;
+	List<String> observationIds = null;
+	List<String> investigationIds = null;
+	List<String> noteIds = null;
+	List<String> diagnosisIds = null;
+	Date createdTime = new Date();
+	long createdDate = createdTime.getTime();
+	try {
+	    // save clinical notes.
+	    ClinicalNotesCollection clinicalNotesCollection = new ClinicalNotesCollection();
+	    BeanUtil.map(request, clinicalNotesCollection);
 
-			complaintIds = new ArrayList<String>();
-			for (ClinicalNotesComplaint complaint : request.getComplaints()) {
-				if (DPDoctorUtils.anyStringEmpty(complaint.getId())) {
-					ComplaintCollection complaintCollection = new ComplaintCollection();
-					BeanUtil.map(complaint, complaintCollection);
-					complaintCollection.setDoctorId(request.getDoctorId());
-					complaintCollection.setHospitalId(request.getHospitalId());
-					complaintCollection.setLocationId(request.getLocationId());
-					complaintCollection.setCreatedTime(createdTime);
-					complaintCollection = complaintRepository.save(complaintCollection);
-					complaintIds.add(complaintCollection.getId());
-				} else {
-					complaintIds.add(complaint.getId());
-				}
-			}
+	    complaintIds = new ArrayList<String>();
+	    for (ClinicalNotesComplaint complaint : request.getComplaints()) {
+		if (DPDoctorUtils.anyStringEmpty(complaint.getId())) {
+		    ComplaintCollection complaintCollection = new ComplaintCollection();
+		    BeanUtil.map(complaint, complaintCollection);
+		    complaintCollection.setDoctorId(request.getDoctorId());
+		    complaintCollection.setHospitalId(request.getHospitalId());
+		    complaintCollection.setLocationId(request.getLocationId());
+		    complaintCollection.setCreatedTime(createdTime);
+		    complaintCollection = complaintRepository.save(complaintCollection);
+		    complaintIds.add(complaintCollection.getId());
+		} else {
+		    complaintIds.add(complaint.getId());
+		}
+	    }
 
-			observationIds = new ArrayList<String>();
-			for (ClinicalNotesObservation observation : request.getObservations()) {
-				if (DPDoctorUtils.anyStringEmpty(observation.getId())) {
-					ObservationCollection observationCollection = new ObservationCollection();
-					BeanUtil.map(observation, observationCollection);
-					observationCollection.setDoctorId(request.getDoctorId());
-					observationCollection.setHospitalId(request.getHospitalId());
-					observationCollection.setLocationId(request.getLocationId());
-					observationCollection.setCreatedTime(createdTime);
-					observationCollection = observationRepository.save(observationCollection);
-					observationIds.add(observationCollection.getId());
-				} else {
-					observationIds.add(observation.getId());
-				}
-			}
+	    observationIds = new ArrayList<String>();
+	    for (ClinicalNotesObservation observation : request.getObservations()) {
+		if (DPDoctorUtils.anyStringEmpty(observation.getId())) {
+		    ObservationCollection observationCollection = new ObservationCollection();
+		    BeanUtil.map(observation, observationCollection);
+		    observationCollection.setDoctorId(request.getDoctorId());
+		    observationCollection.setHospitalId(request.getHospitalId());
+		    observationCollection.setLocationId(request.getLocationId());
+		    observationCollection.setCreatedTime(createdTime);
+		    observationCollection = observationRepository.save(observationCollection);
+		    observationIds.add(observationCollection.getId());
+		} else {
+		    observationIds.add(observation.getId());
+		}
+	    }
 
-			investigationIds = new ArrayList<String>();
-			for (ClinicalNotesInvestigation investigation : request.getInvestigations()) {
-				if (DPDoctorUtils.anyStringEmpty(investigation.getId())) {
-					InvestigationCollection investigationCollection = new InvestigationCollection();
-					BeanUtil.map(investigation, investigationCollection);
-					investigationCollection.setDoctorId(request.getDoctorId());
-					investigationCollection.setHospitalId(request.getHospitalId());
-					investigationCollection.setLocationId(request.getLocationId());
-					investigationCollection.setCreatedTime(createdTime);
-					investigationCollection = investigationRepository.save(investigationCollection);
-					investigationIds.add(investigationCollection.getId());
-				} else {
-					investigationIds.add(investigation.getId());
-				}
-			}
+	    investigationIds = new ArrayList<String>();
+	    for (ClinicalNotesInvestigation investigation : request.getInvestigations()) {
+		if (DPDoctorUtils.anyStringEmpty(investigation.getId())) {
+		    InvestigationCollection investigationCollection = new InvestigationCollection();
+		    BeanUtil.map(investigation, investigationCollection);
+		    investigationCollection.setDoctorId(request.getDoctorId());
+		    investigationCollection.setHospitalId(request.getHospitalId());
+		    investigationCollection.setLocationId(request.getLocationId());
+		    investigationCollection.setCreatedTime(createdTime);
+		    investigationCollection = investigationRepository.save(investigationCollection);
+		    investigationIds.add(investigationCollection.getId());
+		} else {
+		    investigationIds.add(investigation.getId());
+		}
+	    }
 
-			noteIds = new ArrayList<String>();
-			for (ClinicalNotesNote note : request.getNotes()) {
-				if (DPDoctorUtils.anyStringEmpty(note.getId())) {
-					NotesCollection notesCollection = new NotesCollection();
-					BeanUtil.map(note, notesCollection);
-					notesCollection.setDoctorId(request.getDoctorId());
-					notesCollection.setHospitalId(request.getHospitalId());
-					notesCollection.setLocationId(request.getLocationId());
-					notesCollection.setCreatedTime(createdTime);
-					notesCollection = notesRepository.save(notesCollection);
-					noteIds.add(notesCollection.getId());
-				} else {
-					noteIds.add(note.getId());
-				}
-			}
+	    noteIds = new ArrayList<String>();
+	    for (ClinicalNotesNote note : request.getNotes()) {
+		if (DPDoctorUtils.anyStringEmpty(note.getId())) {
+		    NotesCollection notesCollection = new NotesCollection();
+		    BeanUtil.map(note, notesCollection);
+		    notesCollection.setDoctorId(request.getDoctorId());
+		    notesCollection.setHospitalId(request.getHospitalId());
+		    notesCollection.setLocationId(request.getLocationId());
+		    notesCollection.setCreatedTime(createdTime);
+		    notesCollection = notesRepository.save(notesCollection);
+		    noteIds.add(notesCollection.getId());
+		} else {
+		    noteIds.add(note.getId());
+		}
+	    }
 
-			diagnosisIds = new ArrayList<String>();
-			for (ClinicalNotesDiagnosis diagnosis : request.getDiagnosis()) {
-				if (DPDoctorUtils.anyStringEmpty(diagnosis.getId())) {
-					DiagnosisCollection diagnosisCollection = new DiagnosisCollection();
-					BeanUtil.map(diagnosis, diagnosisCollection);
-					diagnosisCollection.setDoctorId(request.getDoctorId());
-					diagnosisCollection.setHospitalId(request.getHospitalId());
-					diagnosisCollection.setLocationId(request.getLocationId());
-					diagnosisCollection.setCreatedTime(createdTime);
-					diagnosisCollection = diagnosisRepository.save(diagnosisCollection);
-					diagnosisIds.add(diagnosisCollection.getId());
-				} else {
-					diagnosisIds.add(diagnosis.getId());
-				}
-			}
+	    diagnosisIds = new ArrayList<String>();
+	    for (ClinicalNotesDiagnosis diagnosis : request.getDiagnoses()) {
+		if (DPDoctorUtils.anyStringEmpty(diagnosis.getId())) {
+		    DiagnosisCollection diagnosisCollection = new DiagnosisCollection();
+		    BeanUtil.map(diagnosis, diagnosisCollection);
+		    diagnosisCollection.setDoctorId(request.getDoctorId());
+		    diagnosisCollection.setHospitalId(request.getHospitalId());
+		    diagnosisCollection.setLocationId(request.getLocationId());
+		    diagnosisCollection.setCreatedTime(createdTime);
+		    diagnosisCollection = diagnosisRepository.save(diagnosisCollection);
+		    diagnosisIds.add(diagnosisCollection.getId());
+		} else {
+		    diagnosisIds.add(diagnosis.getId());
+		}
+	    }
 
-			clinicalNotesCollection.setComplaints(complaintIds);
-			clinicalNotesCollection.setInvestigations(investigationIds);
-			clinicalNotesCollection.setObservations(observationIds);
-			clinicalNotesCollection.setDiagnoses(diagnosisIds);
-			clinicalNotesCollection.setNotes(noteIds);
+	    clinicalNotesCollection.setComplaints(complaintIds);
+	    clinicalNotesCollection.setInvestigations(investigationIds);
+	    clinicalNotesCollection.setObservations(observationIds);
+	    clinicalNotesCollection.setDiagnoses(diagnosisIds);
+	    clinicalNotesCollection.setNotes(noteIds);
 
-			clinicalNotesCollection.setCreatedTime(createdTime);
-			clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
-			if (clinicalNotesCollection != null) {
-				if (request.getId() == null) {
-					// map the clinical notes with patient
-					PatientClinicalNotesCollection patientClinicalNotesCollection = new PatientClinicalNotesCollection();
-					patientClinicalNotesCollection.setClinicalNotesId(clinicalNotesCollection.getId());
-					patientClinicalNotesCollection.setPatientId(request.getPatientId());
-					patientClinicalNotesRepository.save(patientClinicalNotesCollection);
-				}
-
-			}
-			clinicalNotes = new ClinicalNotes();
-			BeanUtil.map(clinicalNotesCollection, clinicalNotes);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    clinicalNotesCollection.setCreatedTime(createdTime);
+	    clinicalNotesCollection.setCreatedDate(createdDate);
+	    clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
+	    if (clinicalNotesCollection != null) {
+		if (request.getId() == null) {
+		    // map the clinical notes with patient
+		    PatientClinicalNotesCollection patientClinicalNotesCollection = new PatientClinicalNotesCollection();
+		    patientClinicalNotesCollection.setClinicalNotesId(clinicalNotesCollection.getId());
+		    patientClinicalNotesCollection.setPatientId(request.getPatientId());
+		    patientClinicalNotesRepository.save(patientClinicalNotesCollection);
 		}
 
-		return clinicalNotes;
+	    }
+	    clinicalNotes = new ClinicalNotes();
+	    BeanUtil.map(clinicalNotesCollection, clinicalNotes);
+
+	    // Setting detail of complaints, investigations, observations,
+	    // diagnoses, notes and diagrams into response.
+	    List<Complaint> complaints = IteratorUtils.toList(complaintRepository.findAll(complaintIds).iterator());
+	    List<Investigation> investigations = IteratorUtils.toList(investigationRepository.findAll(investigationIds).iterator());
+	    List<Observation> observations = IteratorUtils.toList(observationRepository.findAll(observationIds).iterator());
+	    List<Diagnoses> diagnoses = IteratorUtils.toList(diagnosisRepository.findAll(diagnosisIds).iterator());
+	    List<Notes> notes = IteratorUtils.toList(notesRepository.findAll(noteIds).iterator());
+	    List<Diagram> diagrams = IteratorUtils.toList(diagramsRepository.findAll(request.getDiagrams()).iterator());
+
+	    clinicalNotes.setComplaints(complaints);
+	    clinicalNotes.setInvestigations(investigations);
+	    clinicalNotes.setObservations(observations);
+	    clinicalNotes.setDiagnoses(diagnoses);
+	    clinicalNotes.setNotes(notes);
+	    clinicalNotes.setDiagrams(diagrams);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
-	public ClinicalNotes getNotesById(String id) {
-		ClinicalNotes clinicalNote = null;
-		try {
-			ClinicalNotesCollection clinicalNotesCollection = clinicalNotesRepository.findOne(id);
-			if (clinicalNotesCollection != null) {
-				clinicalNote = new ClinicalNotes();
-				clinicalNote.setDoctorId(clinicalNotesCollection.getDoctorId());
-				clinicalNote.setHospitalId(clinicalNotesCollection.getHospitalId());
-				clinicalNote.setLocationId(clinicalNotesCollection.getLocationId());
-				clinicalNote.setId(id);
-				@SuppressWarnings("unchecked")
-				List<ComplaintCollection> complaintCollections = IteratorUtils.toList(complaintRepository.findAll(clinicalNotesCollection.getComplaints())
-						.iterator());
-				if (complaintCollections != null) {
-					List<Complaint> complaints = new ArrayList<Complaint>();
-					for (ComplaintCollection complaintCollection : complaintCollections) {
-						Complaint complaint = new Complaint();
-						complaint.setComplaint(complaintCollection.getComplaint());
-						BeanUtil.map(complaintCollection, complaint);
-						complaint.setDoctorId(null);
-						complaint.setHospitalId(null);
-						complaint.setLocationId(null);
-						complaints.add(complaint);
-					}
-					clinicalNote.setComplaints(complaints);
-				}
-				@SuppressWarnings("unchecked")
-				List<ObservationCollection> observationCollections = IteratorUtils.toList(observationRepository.findAll(
-						clinicalNotesCollection.getObservations()).iterator());
-				if (observationCollections != null) {
-					List<Observation> observations = new ArrayList<Observation>();
-					for (ObservationCollection observationCollection : observationCollections) {
-						Observation observation = new Observation();
-						BeanUtil.map(observationCollection, observation);
-						observation.setDoctorId(null);
-						observation.setHospitalId(null);
-						observation.setLocationId(null);
-						observations.add(observation);
-					}
-					clinicalNote.setObservations(observations);
-				}
-				@SuppressWarnings("unchecked")
-				List<InvestigationCollection> investigationCollections = IteratorUtils.toList(investigationRepository.findAll(
-						clinicalNotesCollection.getInvestigations()).iterator());
-				if (investigationCollections != null) {
-					List<Investigation> investigations = new ArrayList<Investigation>();
-					for (InvestigationCollection investigationCollection : investigationCollections) {
-						Investigation investigation = new Investigation();
-						BeanUtil.map(investigationCollection, investigation);
-						investigation.setDoctorId(null);
-						investigation.setHospitalId(null);
-						investigation.setLocationId(null);
-						investigations.add(investigation);
-					}
-					clinicalNote.setInvestigations(investigations);
-				}
-				@SuppressWarnings("unchecked")
-				List<DiagnosisCollection> diagnosisCollections = IteratorUtils.toList(diagnosisRepository.findAll(clinicalNotesCollection.getDiagnoses())
-						.iterator());
-				if (diagnosisCollections != null) {
-					List<Diagnoses> diagnosisList = new ArrayList<Diagnoses>();
-					for (DiagnosisCollection diagnosisCollection : diagnosisCollections) {
-						Diagnoses diagnosis = new Diagnoses();
-						BeanUtil.map(diagnosisCollection, diagnosis);
-						diagnosis.setDoctorId(null);
-						diagnosis.setHospitalId(null);
-						diagnosis.setLocationId(null);
-						diagnosisList.add(diagnosis);
-					}
-					clinicalNote.setDiagnoses(diagnosisList);
-				}
-				@SuppressWarnings("unchecked")
-				List<DiagramsCollection> diagramsCollections = IteratorUtils.toList(diagramsRepository.findAll(clinicalNotesCollection.getDiagrams())
-						.iterator());
-				if (diagramsCollections != null) {
-					List<Diagram> diagrams = new ArrayList<Diagram>();
-					for (DiagramsCollection diagramsCollection : diagramsCollections) {
-						Diagram diagram = new Diagram();
-						BeanUtil.map(diagramsCollection, diagrams);
-						diagram.setDoctorId(null);
-						diagram.setHospitalId(null);
-						diagram.setLocationId(null);
-						diagrams.add(diagram);
-					}
-					clinicalNote.setDiagrams(diagrams);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return clinicalNote;
-	}
+	return clinicalNotes;
+    }
 
-	public ClinicalNotes editNotes(ClinicalNotesEditRequest request) {
-		ClinicalNotes clinicalNotes = null;
-		try {
-			ClinicalNotesCollection clinicalNotesCollection = new ClinicalNotesCollection();
-			BeanUtil.map(request, clinicalNotesCollection);
-			clinicalNotesCollection.setCreatedTime(new Date());
-			if (request.getDiagrams() != null) {
-				List<String> diagramUrls = new ArrayList<String>();
-				List<String> diagramPaths = new ArrayList<String>();
-				for (FileDetails diagram : request.getDiagrams()) {
-					String path = request.getPatientId() + File.separator + "clinical-notes-diagrams";
-					// save image
-					String diagramUrl = fileManager.saveImageAndReturnImageUrl(diagram, path);
-					String fileName = diagram.getFileName() + "." + diagram.getFileExtension();
-					String diagramPath = imageResource + File.separator + path + File.separator + fileName;
-					diagramUrls.add(diagramUrl);
-					diagramPaths.add(diagramPath);
-				}
-
-				clinicalNotesCollection.setDiagrams(diagramUrls);
-				clinicalNotesCollection.setDiagramsPaths(diagramPaths);
-			}
-
-			clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
-			BeanUtil.map(clinicalNotesCollection, clinicalNotes);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return clinicalNotes;
-	}
-
-	public void deleteNote(String id) {
-		try {
-			List<PatientClinicalNotesCollection> patientClinicalNotesCollections = patientClinicalNotesRepository.findByClinicalNotesId(id);
-			if (patientClinicalNotesCollections != null) {
-				patientClinicalNotesRepository.delete(patientClinicalNotesCollections);
-			}
-			clinicalNotesRepository.delete(id);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-
-	}
-
-	public List<ClinicalNotes> getPatientsClinicalNotesWithVerifiedOTP(String patientId, String createdTime) {
-		List<ClinicalNotes> clinicalNotesList = null;
-		List<PatientClinicalNotesCollection> patientClinicalNotesCollections = null;
-		try {
-			if (createdTime != null) {
-				long createdTimeStamp = Long.parseLong(createdTime);
-				patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Date(createdTimeStamp), new Sort(
-						Sort.Direction.DESC, "createdTime"));
-			} else {
-				patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Sort(Sort.Direction.DESC, "createdTime"));
-			}
-
-			if (patientClinicalNotesCollections != null) {
-				@SuppressWarnings("unchecked")
-				Collection<String> clinicalNotesIds = CollectionUtils.collect(patientClinicalNotesCollections, new BeanToPropertyValueTransformer(
-						"clinicalNotesId"));
-				clinicalNotesList = new ArrayList<ClinicalNotes>();
-				for (String clinicalNotesId : clinicalNotesIds) {
-					ClinicalNotes clinicalNotes = getNotesById(clinicalNotesId);
-					if (clinicalNotes != null) {
-						clinicalNotesList.add(clinicalNotes);
-					}
-				}
-			} else {
-				throw new BusinessException(ServiceError.Unknown, "No Clinical Notes found for patient Id : " + patientId);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return clinicalNotesList;
-	}
-
-	public List<ClinicalNotes> getPatientsClinicalNotesWithoutVerifiedOTP(String patientId, String doctorId, String locationId, String hospitalId,
-			String createdTime) {
-		List<ClinicalNotes> clinicalNotesList = null;
-		List<PatientClinicalNotesCollection> patientClinicalNotesCollections = null;
-		try {
-			if (createdTime != null) {
-				long createdTimeStamp = Long.parseLong(createdTime);
-				patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Date(createdTimeStamp), new Sort(
-						Sort.Direction.DESC, "createdTime"));
-			} else {
-				patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Sort(Sort.Direction.DESC, "createdTime"));
-			}
-			if (patientClinicalNotesCollections != null) {
-				@SuppressWarnings("unchecked")
-				Collection<String> clinicalNotesIds = CollectionUtils.collect(patientClinicalNotesCollections, new BeanToPropertyValueTransformer(
-						"clinicalNotesId"));
-				clinicalNotesList = new ArrayList<ClinicalNotes>();
-				if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
-					for (String clinicalNotesId : clinicalNotesIds) {
-						ClinicalNotes clinicalNotes = getNotesById(clinicalNotesId);
-						if (clinicalNotes != null) {
-							if (clinicalNotes.getDoctorId().equals(doctorId)) {
-								clinicalNotesList.add(clinicalNotes);
-							}
-						}
-					}
-				} else {
-					for (String clinicalNotesId : clinicalNotesIds) {
-						ClinicalNotes clinicalNotes = getNotesById(clinicalNotesId);
-						if (clinicalNotes != null) {
-							if (clinicalNotes.getDoctorId().equals(doctorId) && clinicalNotes.getLocationId().equals(locationId)
-									&& clinicalNotes.getHospitalId().equals(hospitalId)) {
-								clinicalNotesList.add(clinicalNotes);
-							}
-						}
-					}
-				}
-			} else {
-				throw new BusinessException(ServiceError.Unknown, "No Clinical Notes found for patient Id : " + patientId);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return clinicalNotesList;
-	}
-
-	public Complaint addEditComplaint(Complaint complaint) {
-		try {
-			ComplaintCollection complaintCollection = new ComplaintCollection();
-			BeanUtil.map(complaint, complaintCollection);
-			complaintCollection = complaintRepository.save(complaintCollection);
+    public ClinicalNotes getNotesById(String id) {
+	ClinicalNotes clinicalNote = null;
+	try {
+	    ClinicalNotesCollection clinicalNotesCollection = clinicalNotesRepository.findOne(id);
+	    if (clinicalNotesCollection != null) {
+		clinicalNote = new ClinicalNotes();
+		clinicalNote.setDoctorId(clinicalNotesCollection.getDoctorId());
+		clinicalNote.setHospitalId(clinicalNotesCollection.getHospitalId());
+		clinicalNote.setLocationId(clinicalNotesCollection.getLocationId());
+		clinicalNote.setId(id);
+		@SuppressWarnings("unchecked")
+		List<ComplaintCollection> complaintCollections = IteratorUtils.toList(complaintRepository.findAll(clinicalNotesCollection.getComplaints())
+			.iterator());
+		if (complaintCollections != null) {
+		    List<Complaint> complaints = new ArrayList<Complaint>();
+		    for (ComplaintCollection complaintCollection : complaintCollections) {
+			Complaint complaint = new Complaint();
+			complaint.setComplaint(complaintCollection.getComplaint());
 			BeanUtil.map(complaintCollection, complaint);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+			complaint.setDoctorId(null);
+			complaint.setHospitalId(null);
+			complaint.setLocationId(null);
+			complaints.add(complaint);
+		    }
+		    clinicalNote.setComplaints(complaints);
 		}
-		return complaint;
-	}
-
-	public Observation addEditObservation(Observation observation) {
-		try {
-			ObservationCollection observationCollection = new ObservationCollection();
-			BeanUtil.map(observation, observationCollection);
-			observationCollection = observationRepository.save(observationCollection);
+		@SuppressWarnings("unchecked")
+		List<ObservationCollection> observationCollections = IteratorUtils.toList(observationRepository.findAll(
+			clinicalNotesCollection.getObservations()).iterator());
+		if (observationCollections != null) {
+		    List<Observation> observations = new ArrayList<Observation>();
+		    for (ObservationCollection observationCollection : observationCollections) {
+			Observation observation = new Observation();
 			BeanUtil.map(observationCollection, observation);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+			observation.setDoctorId(null);
+			observation.setHospitalId(null);
+			observation.setLocationId(null);
+			observations.add(observation);
+		    }
+		    clinicalNote.setObservations(observations);
 		}
-		return observation;
-	}
-
-	public Investigation addEditInvestigation(Investigation investigation) {
-		try {
-			InvestigationCollection investigationCollection = new InvestigationCollection();
-			BeanUtil.map(investigation, investigationCollection);
-			investigationCollection = investigationRepository.save(investigationCollection);
+		@SuppressWarnings("unchecked")
+		List<InvestigationCollection> investigationCollections = IteratorUtils.toList(investigationRepository.findAll(
+			clinicalNotesCollection.getInvestigations()).iterator());
+		if (investigationCollections != null) {
+		    List<Investigation> investigations = new ArrayList<Investigation>();
+		    for (InvestigationCollection investigationCollection : investigationCollections) {
+			Investigation investigation = new Investigation();
 			BeanUtil.map(investigationCollection, investigation);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+			investigation.setDoctorId(null);
+			investigation.setHospitalId(null);
+			investigation.setLocationId(null);
+			investigations.add(investigation);
+		    }
+		    clinicalNote.setInvestigations(investigations);
 		}
-		return investigation;
-	}
-
-	public Diagnoses addEditDiagnosis(Diagnoses diagnosis) {
-		try {
-			DiagnosisCollection diagnosisCollection = new DiagnosisCollection();
-			BeanUtil.map(diagnosis, diagnosisCollection);
-			diagnosisCollection = diagnosisRepository.save(diagnosisCollection);
+		@SuppressWarnings("unchecked")
+		List<DiagnosisCollection> diagnosisCollections = IteratorUtils.toList(diagnosisRepository.findAll(clinicalNotesCollection.getDiagnoses())
+			.iterator());
+		if (diagnosisCollections != null) {
+		    List<Diagnoses> diagnosisList = new ArrayList<Diagnoses>();
+		    for (DiagnosisCollection diagnosisCollection : diagnosisCollections) {
+			Diagnoses diagnosis = new Diagnoses();
 			BeanUtil.map(diagnosisCollection, diagnosis);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+			diagnosis.setDoctorId(null);
+			diagnosis.setHospitalId(null);
+			diagnosis.setLocationId(null);
+			diagnosisList.add(diagnosis);
+		    }
+		    clinicalNote.setDiagnoses(diagnosisList);
 		}
-		return diagnosis;
+		@SuppressWarnings("unchecked")
+		List<DiagramsCollection> diagramsCollections = IteratorUtils.toList(diagramsRepository.findAll(clinicalNotesCollection.getDiagrams())
+			.iterator());
+		if (diagramsCollections != null) {
+		    List<Diagram> diagrams = new ArrayList<Diagram>();
+		    for (DiagramsCollection diagramsCollection : diagramsCollections) {
+			Diagram diagram = new Diagram();
+			BeanUtil.map(diagramsCollection, diagrams);
+			diagram.setDoctorId(null);
+			diagram.setHospitalId(null);
+			diagram.setLocationId(null);
+			diagrams.add(diagram);
+		    }
+		    clinicalNote.setDiagrams(diagrams);
+		}
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return clinicalNote;
+    }
+
+    public ClinicalNotes editNotes(ClinicalNotesEditRequest request) {
+	ClinicalNotes clinicalNotes = null;
+	try {
+	    ClinicalNotesCollection clinicalNotesCollection = new ClinicalNotesCollection();
+	    BeanUtil.map(request, clinicalNotesCollection);
+	    clinicalNotesCollection.setCreatedTime(new Date());
+	    if (request.getDiagrams() != null) {
+		List<String> diagramUrls = new ArrayList<String>();
+		List<String> diagramPaths = new ArrayList<String>();
+		for (FileDetails diagram : request.getDiagrams()) {
+		    String path = request.getPatientId() + File.separator + "clinical-notes-diagrams";
+		    // save image
+		    String diagramUrl = fileManager.saveImageAndReturnImageUrl(diagram, path);
+		    String fileName = diagram.getFileName() + "." + diagram.getFileExtension();
+		    String diagramPath = imageResource + File.separator + path + File.separator + fileName;
+		    diagramUrls.add(diagramUrl);
+		    diagramPaths.add(diagramPath);
+		}
+
+		clinicalNotesCollection.setDiagrams(diagramUrls);
+		clinicalNotesCollection.setDiagramsPaths(diagramPaths);
+	    }
+
+	    clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
+	    BeanUtil.map(clinicalNotesCollection, clinicalNotes);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return clinicalNotes;
+    }
+
+    public void deleteNote(String id) {
+	try {
+	    List<PatientClinicalNotesCollection> patientClinicalNotesCollections = patientClinicalNotesRepository.findByClinicalNotesId(id);
+	    if (patientClinicalNotesCollections != null) {
+		patientClinicalNotesRepository.delete(patientClinicalNotesCollections);
+	    }
+	    clinicalNotesRepository.delete(id);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
-	public Notes addEditNotes(Notes notes) {
-		try {
-			NotesCollection notesCollection = new NotesCollection();
-			BeanUtil.map(notes, notesCollection);
-			notesCollection = notesRepository.save(notesCollection);
-			BeanUtil.map(notesCollection, notes);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+    }
+
+    public List<ClinicalNotes> getPatientsClinicalNotesWithVerifiedOTP(String patientId, String createdTime) {
+	List<ClinicalNotes> clinicalNotesList = null;
+	List<PatientClinicalNotesCollection> patientClinicalNotesCollections = null;
+	try {
+	    if (createdTime != null) {
+		long createdTimeStamp = Long.parseLong(createdTime);
+		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Date(createdTimeStamp), new Sort(
+			Sort.Direction.DESC, "createdTime"));
+	    } else {
+		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Sort(Sort.Direction.DESC, "createdTime"));
+	    }
+
+	    if (patientClinicalNotesCollections != null) {
+		@SuppressWarnings("unchecked")
+		Collection<String> clinicalNotesIds = CollectionUtils.collect(patientClinicalNotesCollections, new BeanToPropertyValueTransformer(
+			"clinicalNotesId"));
+		clinicalNotesList = new ArrayList<ClinicalNotes>();
+		for (String clinicalNotesId : clinicalNotesIds) {
+		    ClinicalNotes clinicalNotes = getNotesById(clinicalNotesId);
+		    if (clinicalNotes != null) {
+			clinicalNotesList.add(clinicalNotes);
+		    }
 		}
-		return notes;
+	    } else {
+		throw new BusinessException(ServiceError.Unknown, "No Clinical Notes found for patient Id : " + patientId);
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return clinicalNotesList;
+    }
 
-	public Diagram addEditDiagram(Diagram diagram) {
-		try {
-			String path = "clinicalNotes" + File.separator + "diagrams";
-			String diagramUrl = fileManager.saveImageAndReturnImageUrl(diagram.getDiagram(), path);
-			diagram.setDiagramUrl(diagramUrl);
-			DiagramsCollection diagramsCollection = new DiagramsCollection();
-			BeanUtil.map(diagram, diagramsCollection);
-			diagramsCollection = diagramsRepository.save(diagramsCollection);
-			BeanUtil.map(diagramsCollection, diagram);
-//			diagram.setDiagram(null);
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return diagram;
-	}
-
-	public void deleteComplaint(String id, String doctorId, String locationId, String hospitalId) {
-		try {
-			ComplaintCollection complaintCollection = complaintRepository.findOne(id);
-			if (complaintCollection != null) {
-				if (complaintCollection.getDoctorId() != null && complaintCollection.getHospitalId() != null && complaintCollection.getLocationId() != null) {
-					if (complaintCollection.getDoctorId().equals(doctorId) && complaintCollection.getHospitalId().equals(hospitalId)
-							&& complaintCollection.getLocationId().equals(locationId)) {
-						complaintCollection.setDeleted(true);
-						complaintRepository.save(complaintCollection);
-					} else {
-						throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
-					}
-				} else {
-					throw new BusinessException(ServiceError.Unknown, "Cant delete Global Complaint.");
-				}
-
-			} else {
-				throw new BusinessException(ServiceError.Unknown, "Complaint not found!");
+    public List<ClinicalNotes> getPatientsClinicalNotesWithoutVerifiedOTP(String patientId, String doctorId, String locationId, String hospitalId,
+	    String createdTime) {
+	List<ClinicalNotes> clinicalNotesList = null;
+	List<PatientClinicalNotesCollection> patientClinicalNotesCollections = null;
+	try {
+	    if (createdTime != null) {
+		long createdTimeStamp = Long.parseLong(createdTime);
+		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Date(createdTimeStamp), new Sort(
+			Sort.Direction.DESC, "createdTime"));
+	    } else {
+		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Sort(Sort.Direction.DESC, "createdTime"));
+	    }
+	    if (patientClinicalNotesCollections != null) {
+		@SuppressWarnings("unchecked")
+		Collection<String> clinicalNotesIds = CollectionUtils.collect(patientClinicalNotesCollections, new BeanToPropertyValueTransformer(
+			"clinicalNotesId"));
+		clinicalNotesList = new ArrayList<ClinicalNotes>();
+		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
+		    for (String clinicalNotesId : clinicalNotesIds) {
+			ClinicalNotes clinicalNotes = getNotesById(clinicalNotesId);
+			if (clinicalNotes != null) {
+			    if (clinicalNotes.getDoctorId().equals(doctorId)) {
+				clinicalNotesList.add(clinicalNotes);
+			    }
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-
-	}
-
-	public void deleteObservation(String id, String doctorId, String locationId, String hospitalId) {
-		try {
-			ObservationCollection observationCollection = observationRepository.findOne(id);
-			if (observationCollection != null) {
-				if (observationCollection.getDoctorId() != null && observationCollection.getHospitalId() != null
-						&& observationCollection.getLocationId() != null) {
-					if (observationCollection.getDoctorId().equals(doctorId) && observationCollection.getHospitalId().equals(hospitalId)
-							&& observationCollection.getLocationId().equals(locationId)) {
-						observationCollection.setDeleted(true);
-						observationRepository.save(observationCollection);
-					} else {
-						throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
-					}
-				} else {
-					throw new BusinessException(ServiceError.Unknown, "Cant delete Global Observation.");
-				}
-			} else {
-				throw new BusinessException(ServiceError.Unknown, "Observation not found!");
+		    }
+		} else {
+		    for (String clinicalNotesId : clinicalNotesIds) {
+			ClinicalNotes clinicalNotes = getNotesById(clinicalNotesId);
+			if (clinicalNotes != null) {
+			    if (clinicalNotes.getDoctorId().equals(doctorId) && clinicalNotes.getLocationId().equals(locationId)
+				    && clinicalNotes.getHospitalId().equals(hospitalId)) {
+				clinicalNotesList.add(clinicalNotes);
+			    }
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		    }
 		}
+	    } else {
+		throw new BusinessException(ServiceError.Unknown, "No Clinical Notes found for patient Id : " + patientId);
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return clinicalNotesList;
+    }
+
+    public Complaint addEditComplaint(Complaint complaint) {
+	try {
+	    ComplaintCollection complaintCollection = new ComplaintCollection();
+	    BeanUtil.map(complaint, complaintCollection);
+	    complaintCollection = complaintRepository.save(complaintCollection);
+	    BeanUtil.map(complaintCollection, complaint);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return complaint;
+    }
+
+    public Observation addEditObservation(Observation observation) {
+	try {
+	    ObservationCollection observationCollection = new ObservationCollection();
+	    BeanUtil.map(observation, observationCollection);
+	    observationCollection = observationRepository.save(observationCollection);
+	    BeanUtil.map(observationCollection, observation);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return observation;
+    }
+
+    public Investigation addEditInvestigation(Investigation investigation) {
+	try {
+	    InvestigationCollection investigationCollection = new InvestigationCollection();
+	    BeanUtil.map(investigation, investigationCollection);
+	    investigationCollection = investigationRepository.save(investigationCollection);
+	    BeanUtil.map(investigationCollection, investigation);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return investigation;
+    }
+
+    public Diagnoses addEditDiagnosis(Diagnoses diagnosis) {
+	try {
+	    DiagnosisCollection diagnosisCollection = new DiagnosisCollection();
+	    BeanUtil.map(diagnosis, diagnosisCollection);
+	    diagnosisCollection = diagnosisRepository.save(diagnosisCollection);
+	    BeanUtil.map(diagnosisCollection, diagnosis);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return diagnosis;
+    }
+
+    public Notes addEditNotes(Notes notes) {
+	try {
+	    NotesCollection notesCollection = new NotesCollection();
+	    BeanUtil.map(notes, notesCollection);
+	    notesCollection = notesRepository.save(notesCollection);
+	    BeanUtil.map(notesCollection, notes);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return notes;
+    }
+
+    public Diagram addEditDiagram(Diagram diagram) {
+	try {
+	    String path = "clinicalNotes" + File.separator + "diagrams";
+	    String diagramUrl = fileManager.saveImageAndReturnImageUrl(diagram.getDiagram(), path);
+	    diagram.setDiagramUrl(diagramUrl);
+	    DiagramsCollection diagramsCollection = new DiagramsCollection();
+	    BeanUtil.map(diagram, diagramsCollection);
+	    diagramsCollection = diagramsRepository.save(diagramsCollection);
+	    BeanUtil.map(diagramsCollection, diagram);
+	    // diagram.setDiagram(null);
+
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return diagram;
+    }
+
+    public void deleteComplaint(String id, String doctorId, String locationId, String hospitalId) {
+	try {
+	    ComplaintCollection complaintCollection = complaintRepository.findOne(id);
+	    if (complaintCollection != null) {
+		if (complaintCollection.getDoctorId() != null && complaintCollection.getHospitalId() != null && complaintCollection.getLocationId() != null) {
+		    if (complaintCollection.getDoctorId().equals(doctorId) && complaintCollection.getHospitalId().equals(hospitalId)
+			    && complaintCollection.getLocationId().equals(locationId)) {
+			complaintCollection.setDeleted(true);
+			complaintRepository.save(complaintCollection);
+		    } else {
+			throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
+		    }
+		} else {
+		    throw new BusinessException(ServiceError.Unknown, "Cant delete Global Complaint.");
+		}
+
+	    } else {
+		throw new BusinessException(ServiceError.Unknown, "Complaint not found!");
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
-	public void deleteInvestigation(String id, String doctorId, String locationId, String hospitalId) {
-		try {
-			InvestigationCollection investigationCollection = investigationRepository.findOne(id);
-			if (investigationCollection != null) {
-				if (investigationCollection.getDoctorId() != null && investigationCollection.getHospitalId() != null
-						&& investigationCollection.getLocationId() != null) {
-					if (investigationCollection.getDoctorId().equals(doctorId) && investigationCollection.getHospitalId().equals(hospitalId)
-							&& investigationCollection.getLocationId().equals(locationId)) {
-						investigationCollection.setDeleted(true);
-						investigationRepository.save(investigationCollection);
-					} else {
-						throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
-					}
-				} else {
-					throw new BusinessException(ServiceError.Unknown, "Cant delete Global Investigation.");
-				}
-			} else {
-				throw new BusinessException(ServiceError.Unknown, "Investigation not found!");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-	}
+    }
 
-	public void deleteDiagnosis(String id, String doctorId, String locationId, String hospitalId) {
-		try {
-			DiagnosisCollection diagnosisCollection = diagnosisRepository.findOne(id);
-			if (diagnosisCollection != null) {
-				if (diagnosisCollection.getDoctorId() != null && diagnosisCollection.getHospitalId() != null && diagnosisCollection.getLocationId() != null) {
-					if (diagnosisCollection.getDoctorId().equals(doctorId) && diagnosisCollection.getHospitalId().equals(hospitalId)
-							&& diagnosisCollection.getLocationId().equals(locationId)) {
-						diagnosisCollection.setDeleted(true);
-						diagnosisRepository.save(diagnosisCollection);
-					} else {
-						throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
-					}
-				} else {
-					throw new BusinessException(ServiceError.Unknown, "Cant delete Global Diagnosis.");
-				}
-			} else {
-				throw new BusinessException(ServiceError.Unknown, "Diagnosis not found!");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+    public void deleteObservation(String id, String doctorId, String locationId, String hospitalId) {
+	try {
+	    ObservationCollection observationCollection = observationRepository.findOne(id);
+	    if (observationCollection != null) {
+		if (observationCollection.getDoctorId() != null && observationCollection.getHospitalId() != null
+			&& observationCollection.getLocationId() != null) {
+		    if (observationCollection.getDoctorId().equals(doctorId) && observationCollection.getHospitalId().equals(hospitalId)
+			    && observationCollection.getLocationId().equals(locationId)) {
+			observationCollection.setDeleted(true);
+			observationRepository.save(observationCollection);
+		    } else {
+			throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
+		    }
+		} else {
+		    throw new BusinessException(ServiceError.Unknown, "Cant delete Global Observation.");
 		}
+	    } else {
+		throw new BusinessException(ServiceError.Unknown, "Observation not found!");
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+    }
 
-	public void deleteNotes(String id, String doctorId, String locationId, String hospitalId) {
-		try {
-			NotesCollection notesCollection = notesRepository.findOne(id);
-			if (notesCollection != null) {
-				if (notesCollection.getDoctorId() != null && notesCollection.getHospitalId() != null && notesCollection.getLocationId() != null) {
-					if (notesCollection.getDoctorId().equals(doctorId) && notesCollection.getHospitalId().equals(hospitalId)
-							&& notesCollection.getLocationId().equals(locationId)) {
-						notesCollection.setDeleted(true);
-						notesRepository.save(notesCollection);
-					} else {
-						throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
-					}
-				} else {
-					throw new BusinessException(ServiceError.Unknown, "Cant delete Global Notes.");
-				}
-
-			} else {
-				throw new BusinessException(ServiceError.Unknown, "Notes not found!");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+    public void deleteInvestigation(String id, String doctorId, String locationId, String hospitalId) {
+	try {
+	    InvestigationCollection investigationCollection = investigationRepository.findOne(id);
+	    if (investigationCollection != null) {
+		if (investigationCollection.getDoctorId() != null && investigationCollection.getHospitalId() != null
+			&& investigationCollection.getLocationId() != null) {
+		    if (investigationCollection.getDoctorId().equals(doctorId) && investigationCollection.getHospitalId().equals(hospitalId)
+			    && investigationCollection.getLocationId().equals(locationId)) {
+			investigationCollection.setDeleted(true);
+			investigationRepository.save(investigationCollection);
+		    } else {
+			throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
+		    }
+		} else {
+		    throw new BusinessException(ServiceError.Unknown, "Cant delete Global Investigation.");
 		}
+	    } else {
+		throw new BusinessException(ServiceError.Unknown, "Investigation not found!");
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+    }
 
-	public void deleteDiagram(String id, String doctorId, String locationId, String hospitalId) {
-		try {
-			DiagramsCollection diagramsCollection = diagramsRepository.findOne(id);
-			if (diagramsCollection != null) {
-				if (diagramsCollection.getDoctorId() != null && diagramsCollection.getHospitalId() != null && diagramsCollection.getLocationId() != null) {
-					if (diagramsCollection.getDoctorId().equals(doctorId) && diagramsCollection.getHospitalId().equals(hospitalId)
-							&& diagramsCollection.getLocationId().equals(locationId)) {
-						diagramsCollection.setDeleted(true);
-						diagramsRepository.save(diagramsCollection);
-					} else {
-						throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
-					}
-				} else {
-					throw new BusinessException(ServiceError.Unknown, "Cant delete Global Diagram.");
-				}
+    public void deleteDiagnosis(String id, String doctorId, String locationId, String hospitalId) {
+	try {
+	    DiagnosisCollection diagnosisCollection = diagnosisRepository.findOne(id);
+	    if (diagnosisCollection != null) {
+		if (diagnosisCollection.getDoctorId() != null && diagnosisCollection.getHospitalId() != null && diagnosisCollection.getLocationId() != null) {
+		    if (diagnosisCollection.getDoctorId().equals(doctorId) && diagnosisCollection.getHospitalId().equals(hospitalId)
+			    && diagnosisCollection.getLocationId().equals(locationId)) {
+			diagnosisCollection.setDeleted(true);
+			diagnosisRepository.save(diagnosisCollection);
+		    } else {
+			throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
+		    }
+		} else {
+		    throw new BusinessException(ServiceError.Unknown, "Cant delete Global Diagnosis.");
+		}
+	    } else {
+		throw new BusinessException(ServiceError.Unknown, "Diagnosis not found!");
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+    }
 
-			} else {
-				throw new BusinessException(ServiceError.Unknown, "Diagram not found!");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+    public void deleteNotes(String id, String doctorId, String locationId, String hospitalId) {
+	try {
+	    NotesCollection notesCollection = notesRepository.findOne(id);
+	    if (notesCollection != null) {
+		if (notesCollection.getDoctorId() != null && notesCollection.getHospitalId() != null && notesCollection.getLocationId() != null) {
+		    if (notesCollection.getDoctorId().equals(doctorId) && notesCollection.getHospitalId().equals(hospitalId)
+			    && notesCollection.getLocationId().equals(locationId)) {
+			notesCollection.setDeleted(true);
+			notesRepository.save(notesCollection);
+		    } else {
+			throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
+		    }
+		} else {
+		    throw new BusinessException(ServiceError.Unknown, "Cant delete Global Notes.");
 		}
-	}
 
-	@Override
-	public List<Complaint> getCustomComplaints(String doctorId, String locationId, String hospitalId, int page, int size) {
-		List<ComplaintCollection> complaintCollections = null;
-		List<Complaint> complaints = null;
-		try {
-			complaintCollections = complaintRepository.findCustomComplaints(doctorId, locationId, hospitalId, false, new PageRequest(page, size));
-			if (complaintCollections != null) {
-				complaints = new ArrayList<Complaint>();
-				BeanUtil.map(complaintCollections, complaints);
-			} else {
-				throw new BusinessException(ServiceError.NotFound, "No Complaints Found");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
-		}
-		return complaints;
+	    } else {
+		throw new BusinessException(ServiceError.Unknown, "Notes not found!");
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+    }
 
-	@Override
-	public List<Diagnoses> getCustomDiagnosis(String doctorId, String locationId, String hospitalId, int page, int size) {
-		List<DiagnosisCollection> diagnosisCollections = null;
-		List<Diagnoses> diagnosis = null;
-		try {
-			diagnosisCollections = diagnosisRepository.findCustomDiagnosis(doctorId, locationId, hospitalId, false, new PageRequest(page, size));
-			if (diagnosisCollections != null) {
-				diagnosis = new ArrayList<Diagnoses>();
-				BeanUtil.map(diagnosisCollections, diagnosis);
-			} else {
-				throw new BusinessException(ServiceError.NotFound, "No Diagnosis Found");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnosis");
+    public void deleteDiagram(String id, String doctorId, String locationId, String hospitalId) {
+	try {
+	    DiagramsCollection diagramsCollection = diagramsRepository.findOne(id);
+	    if (diagramsCollection != null) {
+		if (diagramsCollection.getDoctorId() != null && diagramsCollection.getHospitalId() != null && diagramsCollection.getLocationId() != null) {
+		    if (diagramsCollection.getDoctorId().equals(doctorId) && diagramsCollection.getHospitalId().equals(hospitalId)
+			    && diagramsCollection.getLocationId().equals(locationId)) {
+			diagramsCollection.setDeleted(true);
+			diagramsRepository.save(diagramsCollection);
+		    } else {
+			throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
+		    }
+		} else {
+		    throw new BusinessException(ServiceError.Unknown, "Cant delete Global Diagram.");
 		}
-		return diagnosis;
-	}
 
-	@Override
-	public List<Investigation> getCustomInvestigations(String doctorId, String locationId, String hospitalId, int page, int size) {
-		List<InvestigationCollection> investigationCollections = null;
-		List<Investigation> investigations = null;
-		try {
-			investigationCollections = investigationRepository.findCustomInvestigations(doctorId, locationId, hospitalId, false, new PageRequest(page, size));
-			if (investigationCollections != null) {
-				investigations = new ArrayList<Investigation>();
-				BeanUtil.map(investigationCollections, investigations);
-			} else {
-				throw new BusinessException(ServiceError.NotFound, "No Investigation Found");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Investigations");
-		}
-		return investigations;
+	    } else {
+		throw new BusinessException(ServiceError.Unknown, "Diagram not found!");
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+    }
 
-	@Override
-	public List<Observation> getCustomObservations(String doctorId, String locationId, String hospitalId, int page, int size) {
-		List<ObservationCollection> observationCollections = null;
-		List<Observation> observations = null;
-		try {
-			observationCollections = observationRepository.findCustomObservations(doctorId, locationId, hospitalId, false, new PageRequest(page, size));
-			if (observationCollections != null) {
-				observations = new ArrayList<Observation>();
-				BeanUtil.map(observationCollections, observations);
-			} else {
-				throw new BusinessException(ServiceError.NotFound, "No Observations Found");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Observations");
-		}
-		return observations;
+    @Override
+    public List<Complaint> getCustomComplaints(String doctorId, String locationId, String hospitalId, int page, int size) {
+	List<ComplaintCollection> complaintCollections = null;
+	List<Complaint> complaints = null;
+	try {
+	    complaintCollections = complaintRepository.findCustomComplaints(doctorId, locationId, hospitalId, false, new PageRequest(page, size));
+	    if (complaintCollections != null) {
+		complaints = new ArrayList<Complaint>();
+		BeanUtil.map(complaintCollections, complaints);
+	    } else {
+		throw new BusinessException(ServiceError.NotFound, "No Complaints Found");
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
 	}
+	return complaints;
+    }
 
-	@Override
-	public Integer getClinicalNotesCount(String doctorId, String patientId, String locationId, String hospitalId) {
-		List<ClinicalNotesCollection> clinicalNotesCollections = null;
-		Integer clinicalNotesCount = 0;
-		try {
-			clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(doctorId, hospitalId, locationId);
-			@SuppressWarnings("unchecked")
-			List<String> clinicalNotesIds = (List<String>) CollectionUtils.collect(clinicalNotesCollections, new BeanToPropertyValueTransformer("id"));
-			clinicalNotesCount = patientClinicalNotesRepository.findCount(patientId, clinicalNotesIds);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Clinical Notes Count");
-		}
-		return clinicalNotesCount;
+    @Override
+    public List<Diagnoses> getCustomDiagnosis(String doctorId, String locationId, String hospitalId, int page, int size) {
+	List<DiagnosisCollection> diagnosisCollections = null;
+	List<Diagnoses> diagnosis = null;
+	try {
+	    diagnosisCollections = diagnosisRepository.findCustomDiagnosis(doctorId, locationId, hospitalId, false, new PageRequest(page, size));
+	    if (diagnosisCollections != null) {
+		diagnosis = new ArrayList<Diagnoses>();
+		BeanUtil.map(diagnosisCollections, diagnosis);
+	    } else {
+		throw new BusinessException(ServiceError.NotFound, "No Diagnosis Found");
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnosis");
 	}
+	return diagnosis;
+    }
 
-	@Override
-	public List<Complaint> getComplaints(String doctorId, String createdTime) {
-		List<Complaint> response = null;
-		List<ComplaintCollection> complaintCollections = null;
-		try {
-			long createdTimeStamp = Long.parseLong(createdTime);
-			complaintCollections = complaintRepository
-					.findComplaints(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
-			BeanUtil.map(complaintCollections, response);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
-		}
-		return response;
+    @Override
+    public List<Investigation> getCustomInvestigations(String doctorId, String locationId, String hospitalId, int page, int size) {
+	List<InvestigationCollection> investigationCollections = null;
+	List<Investigation> investigations = null;
+	try {
+	    investigationCollections = investigationRepository.findCustomInvestigations(doctorId, locationId, hospitalId, false, new PageRequest(page, size));
+	    if (investigationCollections != null) {
+		investigations = new ArrayList<Investigation>();
+		BeanUtil.map(investigationCollections, investigations);
+	    } else {
+		throw new BusinessException(ServiceError.NotFound, "No Investigation Found");
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Investigations");
 	}
+	return investigations;
+    }
 
-	@Override
-	public List<Investigation> getInvestigations(String doctorId, String createdTime) {
-		List<Investigation> response = null;
-		List<InvestigationCollection> investigationCollections = null;
-		try {
-			long createdTimeStamp = Long.parseLong(createdTime);
-			investigationCollections = investigationRepository.findInvestigations(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC,
-					"createdTime"));
-			BeanUtil.map(investigationCollections, response);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Investigations");
-		}
-		return response;
+    @Override
+    public List<Observation> getCustomObservations(String doctorId, String locationId, String hospitalId, int page, int size) {
+	List<ObservationCollection> observationCollections = null;
+	List<Observation> observations = null;
+	try {
+	    observationCollections = observationRepository.findCustomObservations(doctorId, locationId, hospitalId, false, new PageRequest(page, size));
+	    if (observationCollections != null) {
+		observations = new ArrayList<Observation>();
+		BeanUtil.map(observationCollections, observations);
+	    } else {
+		throw new BusinessException(ServiceError.NotFound, "No Observations Found");
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Observations");
 	}
+	return observations;
+    }
 
-	@Override
-	public List<Observation> getObservations(String doctorId, String createdTime) {
-		List<Observation> response = null;
-		List<ObservationCollection> observationCollections = null;
-		try {
-			long createdTimeStamp = Long.parseLong(createdTime);
-			observationCollections = observationRepository.findObservations(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC,
-					"createdTime"));
-			BeanUtil.map(observationCollections, response);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Observations");
-		}
-		return response;
+    @Override
+    public Integer getClinicalNotesCount(String doctorId, String patientId, String locationId, String hospitalId) {
+	List<ClinicalNotesCollection> clinicalNotesCollections = null;
+	Integer clinicalNotesCount = 0;
+	try {
+	    clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(doctorId, hospitalId, locationId);
+	    @SuppressWarnings("unchecked")
+	    List<String> clinicalNotesIds = (List<String>) CollectionUtils.collect(clinicalNotesCollections, new BeanToPropertyValueTransformer("id"));
+	    clinicalNotesCount = patientClinicalNotesRepository.findCount(patientId, clinicalNotesIds);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Clinical Notes Count");
 	}
+	return clinicalNotesCount;
+    }
 
-	@Override
-	public List<Diagnoses> getDiagnosis(String doctorId, String createdTime) {
-		List<Diagnoses> response = null;
-		List<DiagnosisCollection> diagnosisCollections = null;
-		try {
-			long createdTimeStamp = Long.parseLong(createdTime);
-			diagnosisCollections = diagnosisRepository.findDiagnosis(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
-			BeanUtil.map(diagnosisCollections, response);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnosis");
-		}
-		return response;
+    @Override
+    public List<Complaint> getComplaints(String doctorId, String createdTime) {
+	List<Complaint> response = null;
+	List<ComplaintCollection> complaintCollections = null;
+	try {
+	    long createdTimeStamp = Long.parseLong(createdTime);
+	    complaintCollections = complaintRepository
+		    .findComplaints(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
+	    BeanUtil.map(complaintCollections, response);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
 	}
+	return response;
+    }
 
-	@Override
-	public List<Notes> getNotes(String doctorId, String createdTime) {
-		List<Notes> response = null;
-		List<NotesCollection> notesCollections = null;
-		try {
-			long createdTimeStamp = Long.parseLong(createdTime);
-			notesCollections = notesRepository.findNotes(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
-			BeanUtil.map(notesCollections, response);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Notes");
-		}
-		return response;
+    @Override
+    public List<Investigation> getInvestigations(String doctorId, String createdTime) {
+	List<Investigation> response = null;
+	List<InvestigationCollection> investigationCollections = null;
+	try {
+	    long createdTimeStamp = Long.parseLong(createdTime);
+	    investigationCollections = investigationRepository.findInvestigations(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC,
+		    "createdTime"));
+	    BeanUtil.map(investigationCollections, response);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Investigations");
 	}
-	@Override
-	public List<Diagram> getDiagrams(String doctorId, String createdTime) {
-		List<Diagram> response = new ArrayList<Diagram>();
-		List<DiagramsCollection> diagramsCollections = null;
-		try {
-			long createdTimeStamp = Long.parseLong(createdTime);
-			diagramsCollections = diagramsRepository.findDiagrams(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
-			
-			BeanUtil.map(diagramsCollections,response);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagrams");
-		}
-		return response;
-	}
+	return response;
+    }
 
-	@Override
-	public List<Diagram> getGlobalDiagrams(String createdTime) {
-		List<Diagram> response = new ArrayList<Diagram>();
-		List<DiagramsCollection> diagramsCollections = null;
-		try {
-			long createdTimeStamp = Long.parseLong(createdTime);
-			diagramsCollections = diagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
-			BeanUtil.map(diagramsCollections, response);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Global Diagrams");
-		}
-		return response;
+    @Override
+    public List<Observation> getObservations(String doctorId, String createdTime) {
+	List<Observation> response = null;
+	List<ObservationCollection> observationCollections = null;
+	try {
+	    long createdTimeStamp = Long.parseLong(createdTime);
+	    observationCollections = observationRepository.findObservations(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC,
+		    "createdTime"));
+	    BeanUtil.map(observationCollections, response);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Observations");
 	}
+	return response;
+    }
+
+    @Override
+    public List<Diagnoses> getDiagnosis(String doctorId, String createdTime) {
+	List<Diagnoses> response = null;
+	List<DiagnosisCollection> diagnosisCollections = null;
+	try {
+	    long createdTimeStamp = Long.parseLong(createdTime);
+	    diagnosisCollections = diagnosisRepository.findDiagnosis(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
+	    BeanUtil.map(diagnosisCollections, response);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnosis");
+	}
+	return response;
+    }
+
+    @Override
+    public List<Notes> getNotes(String doctorId, String createdTime) {
+	List<Notes> response = null;
+	List<NotesCollection> notesCollections = null;
+	try {
+	    long createdTimeStamp = Long.parseLong(createdTime);
+	    notesCollections = notesRepository.findNotes(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
+	    BeanUtil.map(notesCollections, response);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Notes");
+	}
+	return response;
+    }
+
+    @Override
+    public List<Diagram> getDiagrams(String doctorId, String createdTime) {
+	List<Diagram> response = new ArrayList<Diagram>();
+	List<DiagramsCollection> diagramsCollections = null;
+	try {
+	    long createdTimeStamp = Long.parseLong(createdTime);
+	    diagramsCollections = diagramsRepository.findDiagrams(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
+
+	    BeanUtil.map(diagramsCollections, response);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagrams");
+	}
+	return response;
+    }
+
+    @Override
+    public List<Diagram> getGlobalDiagrams(String createdTime) {
+	List<Diagram> response = new ArrayList<Diagram>();
+	List<DiagramsCollection> diagramsCollections = null;
+	try {
+	    long createdTimeStamp = Long.parseLong(createdTime);
+	    diagramsCollections = diagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+	    BeanUtil.map(diagramsCollections, response);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Global Diagrams");
+	}
+	return response;
+    }
 }

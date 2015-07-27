@@ -7,144 +7,143 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document(collection = "records_cl")
 public class RecordsCollection extends GenericCollection {
 
-	@Id
-	private String id;
+    @Id
+    private String id;
 
-	@Field
-	private String recordsUrl;
+    @Field
+    private String recordsUrl;
 
-	@Field
-	private String recordsPath;
+    @Field
+    private String recordsPath;
 
-	@Field
-	private String recordsLable;
+    @Field
+    private String recordsLable;
 
-	@Field
-	private String recordsType;
-	
-	@Field
-	private String description;
+    @Field
+    private String recordsType;
 
-	@Field
-	private String patientId;
+    @Field
+    private String description;
 
-	@Field
-	private String doctorId;
+    @Field
+    private String patientId;
 
-	@Field
-	private Long createdDate;
+    @Field
+    private String doctorId;
 
-	@Field
-	private String locationId;
+    @Field
+    private Long createdDate;
 
-	@Field
-	private String hospitalId;
+    @Field
+    private String locationId;
 
-	@Field
-	private boolean isDeleted = false;
+    @Field
+    private String hospitalId;
 
-	public String getId() {
-		return id;
-	}
+    @Field
+    private boolean isDeleted = false;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public String getRecordsUrl() {
-		return recordsUrl;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public void setRecordsUrl(String recordsUrl) {
-		this.recordsUrl = recordsUrl;
-	}
+    public String getRecordsUrl() {
+	return recordsUrl;
+    }
 
-	public String getRecordsPath() {
-		return recordsPath;
-	}
+    public void setRecordsUrl(String recordsUrl) {
+	this.recordsUrl = recordsUrl;
+    }
 
-	public void setRecordsPath(String recordsPath) {
-		this.recordsPath = recordsPath;
-	}
+    public String getRecordsPath() {
+	return recordsPath;
+    }
 
-	public String getRecordsLable() {
-		return recordsLable;
-	}
+    public void setRecordsPath(String recordsPath) {
+	this.recordsPath = recordsPath;
+    }
 
-	public void setRecordsLable(String recordsLable) {
-		this.recordsLable = recordsLable;
-	}
+    public String getRecordsLable() {
+	return recordsLable;
+    }
 
-	public String getRecordsType() {
-		return recordsType;
-	}
+    public void setRecordsLable(String recordsLable) {
+	this.recordsLable = recordsLable;
+    }
 
-	public void setRecordsType(String recordsType) {
-		this.recordsType = recordsType;
-	}
+    public String getRecordsType() {
+	return recordsType;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public void setRecordsType(String recordsType) {
+	this.recordsType = recordsType;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public String getDescription() {
+	return description;
+    }
 
-	public String getPatientId() {
-		return patientId;
-	}
+    public void setDescription(String description) {
+	this.description = description;
+    }
 
-	public void setPatientId(String patientId) {
-		this.patientId = patientId;
-	}
+    public String getPatientId() {
+	return patientId;
+    }
 
-	public String getDoctorId() {
-		return doctorId;
-	}
+    public void setPatientId(String patientId) {
+	this.patientId = patientId;
+    }
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
+    public String getDoctorId() {
+	return doctorId;
+    }
 
-	public Long getCreatedDate() {
-		return createdDate;
-	}
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
+    }
 
-	public void setCreatedDate(Long createdDate) {
-		this.createdDate = createdDate;
-	}
+    public Long getCreatedDate() {
+	return createdDate;
+    }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public void setCreatedDate(Long createdDate) {
+	this.createdDate = createdDate;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	public String getHospitalId() {
-		return hospitalId;
-	}
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
 
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
+    public String getHospitalId() {
+	return hospitalId;
+    }
 
-	public boolean isDeleted() {
-		return isDeleted;
-	}
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
 
-	public void setDeleted(boolean isDeleted) {
-		this.isDeleted = isDeleted;
-	}
+    public boolean isDeleted() {
+	return isDeleted;
+    }
 
-	@Override
-	public String toString() {
-		return "RecordsCollection [id=" + id + ", recordsUrl=" + recordsUrl + ", recordsPath=" + recordsPath
-				+ ", recordsLable=" + recordsLable + ", recordsType=" + recordsType + ", description=" + description
-				+ ", patientId=" + patientId + ", doctorId=" + doctorId + ", createdDate=" + createdDate
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", isDeleted=" + isDeleted + "]";
-	}
+    public void setDeleted(boolean isDeleted) {
+	this.isDeleted = isDeleted;
+    }
+
+    @Override
+    public String toString() {
+	return "RecordsCollection [id=" + id + ", recordsUrl=" + recordsUrl + ", recordsPath=" + recordsPath + ", recordsLable=" + recordsLable
+		+ ", recordsType=" + recordsType + ", description=" + description + ", patientId=" + patientId + ", doctorId=" + doctorId + ", createdDate="
+		+ createdDate + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", isDeleted=" + isDeleted + "]";
+    }
 
 }

@@ -25,47 +25,47 @@ import common.util.web.Response;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class SolrPrescriptionApi {
-	@Autowired
-	private SolrPrescriptionService solrPrescriptionService;
+    @Autowired
+    private SolrPrescriptionService solrPrescriptionService;
 
-	/*
-	 * @Path(value = PathProxy.SolrPrescriptionUrls.ADD_DRUG)
-	 * 
-	 * @POST public Response<Boolean> addDrug(SolrDrug request) { if (request ==
-	 * null) { throw new BusinessException(ServiceError.InvalidInput,
-	 * "Invalid Input"); } boolean addDrugResponse =
-	 * solrPrescriptionService.addDrug(request); Response<Boolean> response =
-	 * new Response<Boolean>(); response.setData(addDrugResponse); return
-	 * response; }
-	 * 
-	 * @Path(value = PathProxy.SolrPrescriptionUrls.EDIT_DRUG)
-	 * 
-	 * @POST public Response<Boolean> editDrug(SolrDrug request) { if (request
-	 * == null) { throw new BusinessException(ServiceError.InvalidInput,
-	 * "Invalid Input"); } boolean editDrugResponse =
-	 * solrPrescriptionService.editDrug(request); Response<Boolean> response =
-	 * new Response<Boolean>(); response.setData(editDrugResponse); return
-	 * response; }
-	 * 
-	 * @Path(value = PathProxy.SolrPrescriptionUrls.DELETE_DRUG)
-	 * 
-	 * @GET public Response<Boolean> deleteDrug(@PathParam(value = "id") String
-	 * id) { if (DPDoctorUtils.anyStringEmpty(id)) { throw new
-	 * BusinessException(ServiceError.InvalidInput, "Invalid Input"); } boolean
-	 * deleteDrugResponse = solrPrescriptionService.deleteDrug(id);
-	 * Response<Boolean> response = new Response<Boolean>();
-	 * response.setData(deleteDrugResponse); return response; }
-	 */
+    /*
+     * @Path(value = PathProxy.SolrPrescriptionUrls.ADD_DRUG)
+     * 
+     * @POST public Response<Boolean> addDrug(SolrDrug request) { if (request ==
+     * null) { throw new BusinessException(ServiceError.InvalidInput,
+     * "Invalid Input"); } boolean addDrugResponse =
+     * solrPrescriptionService.addDrug(request); Response<Boolean> response =
+     * new Response<Boolean>(); response.setData(addDrugResponse); return
+     * response; }
+     * 
+     * @Path(value = PathProxy.SolrPrescriptionUrls.EDIT_DRUG)
+     * 
+     * @POST public Response<Boolean> editDrug(SolrDrug request) { if (request
+     * == null) { throw new BusinessException(ServiceError.InvalidInput,
+     * "Invalid Input"); } boolean editDrugResponse =
+     * solrPrescriptionService.editDrug(request); Response<Boolean> response =
+     * new Response<Boolean>(); response.setData(editDrugResponse); return
+     * response; }
+     * 
+     * @Path(value = PathProxy.SolrPrescriptionUrls.DELETE_DRUG)
+     * 
+     * @GET public Response<Boolean> deleteDrug(@PathParam(value = "id") String
+     * id) { if (DPDoctorUtils.anyStringEmpty(id)) { throw new
+     * BusinessException(ServiceError.InvalidInput, "Invalid Input"); } boolean
+     * deleteDrugResponse = solrPrescriptionService.deleteDrug(id);
+     * Response<Boolean> response = new Response<Boolean>();
+     * response.setData(deleteDrugResponse); return response; }
+     */
 
-	@Path(value = PathProxy.SolrPrescriptionUrls.SEARCH_DRUG)
-	@GET
-	public Response<SolrDrugDocument> searchDrug(@PathParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-		}
-		List<SolrDrugDocument> complaints = solrPrescriptionService.searchDrug(searchTerm);
-		Response<SolrDrugDocument> response = new Response<SolrDrugDocument>();
-		response.setDataList(complaints);
-		return response;
+    @Path(value = PathProxy.SolrPrescriptionUrls.SEARCH_DRUG)
+    @GET
+    public Response<SolrDrugDocument> searchDrug(@PathParam(value = "searchTerm") String searchTerm) {
+	if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
+	List<SolrDrugDocument> complaints = solrPrescriptionService.searchDrug(searchTerm);
+	Response<SolrDrugDocument> response = new Response<SolrDrugDocument>();
+	response.setDataList(complaints);
+	return response;
+    }
 }

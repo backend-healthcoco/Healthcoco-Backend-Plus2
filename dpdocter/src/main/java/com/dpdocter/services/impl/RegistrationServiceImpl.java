@@ -66,597 +66,597 @@ import common.util.web.DPDoctorUtils;
 @Service
 public class RegistrationServiceImpl implements RegistrationService {
 
-	@Autowired
-	private UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-	@Autowired
-	private RoleRepository roleRepository;
+    @Autowired
+    private RoleRepository roleRepository;
 
-	@Autowired
-	private UserRoleRepository userRoleRepository;
+    @Autowired
+    private UserRoleRepository userRoleRepository;
 
-	@Autowired
-	private AddressRepository addressRepository;
+    @Autowired
+    private AddressRepository addressRepository;
 
-	@Autowired
-	private PatientRepository patientRepository;
+    @Autowired
+    private PatientRepository patientRepository;
 
-	@Autowired
-	private PatientAdmissionRepository patientAdmissionRepository;
+    @Autowired
+    private PatientAdmissionRepository patientAdmissionRepository;
 
-	@Autowired
-	private GenerateUniqueUserNameService generateUniqueUserNameService;
+    @Autowired
+    private GenerateUniqueUserNameService generateUniqueUserNameService;
 
-	@Autowired
-	private MailService mailService;
+    @Autowired
+    private MailService mailService;
 
-	@Autowired
-	private MailBodyGenerator mailBodyGenerator;
+    @Autowired
+    private MailBodyGenerator mailBodyGenerator;
 
-	@Autowired
-	private GroupRepository groupRepository;
+    @Autowired
+    private GroupRepository groupRepository;
 
-	@Autowired
-	private PatientGroupRepository patientGroupRepository;
+    @Autowired
+    private PatientGroupRepository patientGroupRepository;
 
-	@Autowired
-	private DoctorContactsRepository doctorContactsRepository;
+    @Autowired
+    private DoctorContactsRepository doctorContactsRepository;
 
-	@Autowired
-	private ReferenceRepository referrenceRepository;
+    @Autowired
+    private ReferenceRepository referrenceRepository;
 
-	@Autowired
-	private FileManager fileManager;
+    @Autowired
+    private FileManager fileManager;
 
-	@Autowired
-	private DoctorRepository doctorRepository;
+    @Autowired
+    private DoctorRepository doctorRepository;
 
-	@Autowired
-	private LocationRepository locationRepository;
+    @Autowired
+    private LocationRepository locationRepository;
 
-	@Value(value = "${mail.signup.subject.activation}")
-	private String signupSubject;
+    @Value(value = "${mail.signup.subject.activation}")
+    private String signupSubject;
 
-	public User checkIfPatientExist(PatientRegistrationRequest request) {
-		try {
-			UserCollection userCollection = userRepository.checkPatient(request.getFirstName(), request.getMiddleName(), request.getLastName(),
-					request.getEmailAddress(), request.getMobileNumber());
-			if (userCollection != null) {
-				User user = new User();
-				BeanUtil.map(userCollection, user);
-				return user;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return null;
-
+    public User checkIfPatientExist(PatientRegistrationRequest request) {
+	try {
+	    UserCollection userCollection = userRepository.checkPatient(request.getFirstName(), request.getMiddleName(), request.getLastName(),
+		    request.getEmailAddress(), request.getMobileNumber());
+	    if (userCollection != null) {
+		User user = new User();
+		BeanUtil.map(userCollection, user);
+		return user;
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return null;
 
-	public RegisteredPatientDetails registerNewPatient(PatientRegistrationRequest request) {
-		RegisteredPatientDetails registeredPatientDetails = null;
-		List<GroupCollection> groupCollections = null;
-		List<Group> groups = null;
-		try {
-			// get role of specified type
-			RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.PATIENT.getRole());
-			if (roleCollection == null) {
-				throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
-			}
-			// save user
-			UserCollection userCollection = new UserCollection();
-			BeanUtil.map(request, userCollection);
-			User user = new User();
-			BeanUtil.map(request, user);
-			String uniqueUserName = generateUniqueUserNameService.generate(user);
-			userCollection.setUserName(uniqueUserName);
-			userCollection.setPassword(generateRandomAlphanumericString(10));
-			if (request.getImage() != null) {
-				String path = "profile-images";
-				// save image
-				String imageUrl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
-				userCollection.setImageUrl(imageUrl);
-			}
-			userCollection = userRepository.save(userCollection);
+    }
 
-			// assign roles
-			UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), roleCollection.getId());
-			userRoleRepository.save(userRoleCollection);
+    public RegisteredPatientDetails registerNewPatient(PatientRegistrationRequest request) {
+	RegisteredPatientDetails registeredPatientDetails = null;
+	List<GroupCollection> groupCollections = null;
+	List<Group> groups = null;
+	try {
+	    // get role of specified type
+	    RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.PATIENT.getRole());
+	    if (roleCollection == null) {
+		throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
+	    }
+	    // save user
+	    UserCollection userCollection = new UserCollection();
+	    BeanUtil.map(request, userCollection);
+	    User user = new User();
+	    BeanUtil.map(request, user);
+	    String uniqueUserName = generateUniqueUserNameService.generate(user);
+	    userCollection.setUserName(uniqueUserName);
+	    userCollection.setPassword(generateRandomAlphanumericString(10));
+	    if (request.getImage() != null) {
+		String path = "profile-images";
+		// save image
+		String imageUrl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
+		userCollection.setImageUrl(imageUrl);
+	    }
+	    userCollection = userRepository.save(userCollection);
 
-			// save address
-			AddressCollection addressCollection = null;
-			if (request.getAddress() != null) {
-				addressCollection = new AddressCollection();
-				BeanUtil.map(request.getAddress(), addressCollection);
-				addressCollection.setUserId(userCollection.getId());
-				addressCollection = addressRepository.save(addressCollection);
-			}
-			// save Patient Info
-			PatientCollection patientCollection = new PatientCollection();
-			BeanUtil.map(request, patientCollection);
-			patientCollection.setUserId(userCollection.getId());
-			patientCollection.setRegistrationDate(request.getDateOfVisit());
-			patientCollection.setCreatedTime(new Date());
-			if (!DPDoctorUtils.anyStringEmpty(request.getPatientNumber())) {
-				patientCollection.setPID(request.getPatientNumber());
-			} else {
-				patientCollection.setPID(patientIdGenerator(request.getDoctorId(), request.getLocationId(), request.getHospitalId()));
-			}
-			if (addressCollection != null) {
-				patientCollection.setAddressId(addressCollection.getId());
-			}
-			patientCollection.setNotes(request.getNotes());
-			patientCollection = patientRepository.save(patientCollection);
+	    // assign roles
+	    UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), roleCollection.getId());
+	    userRoleRepository.save(userRoleCollection);
 
-			// save Patient visit.
-			PatientAdmissionCollection patientAdmissionCollection = new PatientAdmissionCollection();
-			BeanUtil.map(request, patientAdmissionCollection);
-			patientAdmissionCollection.setUserId(userCollection.getId());
-			patientAdmissionCollection.setPatientId(patientCollection.getId());
-			patientAdmissionCollection.setDoctorId(request.getDoctorId());
-			patientAdmissionRepository.save(patientAdmissionCollection);
+	    // save address
+	    AddressCollection addressCollection = null;
+	    if (request.getAddress() != null) {
+		addressCollection = new AddressCollection();
+		BeanUtil.map(request.getAddress(), addressCollection);
+		addressCollection.setUserId(userCollection.getId());
+		addressCollection = addressRepository.save(addressCollection);
+	    }
+	    // save Patient Info
+	    PatientCollection patientCollection = new PatientCollection();
+	    BeanUtil.map(request, patientCollection);
+	    patientCollection.setUserId(userCollection.getId());
+	    patientCollection.setRegistrationDate(request.getDateOfVisit());
+	    patientCollection.setCreatedTime(new Date());
+	    if (!DPDoctorUtils.anyStringEmpty(request.getPatientNumber())) {
+		patientCollection.setPID(request.getPatientNumber());
+	    } else {
+		patientCollection.setPID(patientIdGenerator(request.getDoctorId(), request.getLocationId(), request.getHospitalId()));
+	    }
+	    if (addressCollection != null) {
+		patientCollection.setAddressId(addressCollection.getId());
+	    }
+	    patientCollection.setNotes(request.getNotes());
+	    patientCollection = patientRepository.save(patientCollection);
 
-			// assign groups
-			if (request.getGroups() != null) {
-				for (String group : request.getGroups()) {
-					PatientGroupCollection patientGroupCollection = new PatientGroupCollection();
-					patientGroupCollection.setGroupId(group);
-					patientGroupCollection.setPatientId(patientCollection.getId());
-					patientGroupRepository.save(patientGroupCollection);
-				}
-			}
-			// add into doctor contact
-			if (request.getDoctorId() != null) {
-				DoctorContactCollection doctorContactCollection = new DoctorContactCollection();
-				doctorContactCollection.setCreatedTime(new Date());
-				doctorContactCollection.setDoctorId(request.getDoctorId());
-				doctorContactCollection.setContactId(patientCollection.getId());
-				doctorContactsRepository.save(doctorContactCollection);
-			}
-			/*
-			 * if (patientCollection.getEmailAddress() != null) { // send
-			 * activation email String body =
-			 * mailBodyGenerator.generatePatientRegistrationEmailBody
-			 * (userCollection.getUserName(), userCollection.getPassword(),
-			 * userCollection.getFirstName(), userCollection.getLastName());
-			 * mailService.sendEmail(patientCollection.getEmailAddress(),
-			 * signupSubject, body, null); }
-			 */
-			// send SMS logic
-			// TODO
-			registeredPatientDetails = new RegisteredPatientDetails();
-			BeanUtil.map(userCollection, registeredPatientDetails);
-			registeredPatientDetails.setUserId(userCollection.getId());
-			Patient patient = new Patient();
-			BeanUtil.map(patientCollection, patient);
-			patient.setPatientId(patientCollection.getId());
-			registeredPatientDetails.setPatient(patient);
-			registeredPatientDetails.setPID(patientCollection.getPID());
-			registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
-			Address address = new Address();
-			if (addressCollection != null) {
-				BeanUtil.map(addressCollection, address);
-				registeredPatientDetails.setAddress(address);
-			}
-			groupCollections = (List<GroupCollection>) groupRepository.findAll(request.getGroups());
-			groups = new ArrayList<Group>();
-			BeanUtil.map(groupCollections, groups);
-			/* registeredPatientDetails.setGroups(request.getGroups()); */
-			registeredPatientDetails.setGroups(groups);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    // save Patient visit.
+	    PatientAdmissionCollection patientAdmissionCollection = new PatientAdmissionCollection();
+	    BeanUtil.map(request, patientAdmissionCollection);
+	    patientAdmissionCollection.setUserId(userCollection.getId());
+	    patientAdmissionCollection.setPatientId(patientCollection.getId());
+	    patientAdmissionCollection.setDoctorId(request.getDoctorId());
+	    patientAdmissionRepository.save(patientAdmissionCollection);
+
+	    // assign groups
+	    if (request.getGroups() != null) {
+		for (String group : request.getGroups()) {
+		    PatientGroupCollection patientGroupCollection = new PatientGroupCollection();
+		    patientGroupCollection.setGroupId(group);
+		    patientGroupCollection.setPatientId(patientCollection.getId());
+		    patientGroupRepository.save(patientGroupCollection);
 		}
-		return registeredPatientDetails;
+	    }
+	    // add into doctor contact
+	    if (request.getDoctorId() != null) {
+		DoctorContactCollection doctorContactCollection = new DoctorContactCollection();
+		doctorContactCollection.setCreatedTime(new Date());
+		doctorContactCollection.setDoctorId(request.getDoctorId());
+		doctorContactCollection.setContactId(patientCollection.getId());
+		doctorContactsRepository.save(doctorContactCollection);
+	    }
+	    /*
+	     * if (patientCollection.getEmailAddress() != null) { // send
+	     * activation email String body =
+	     * mailBodyGenerator.generatePatientRegistrationEmailBody
+	     * (userCollection.getUserName(), userCollection.getPassword(),
+	     * userCollection.getFirstName(), userCollection.getLastName());
+	     * mailService.sendEmail(patientCollection.getEmailAddress(),
+	     * signupSubject, body, null); }
+	     */
+	    // send SMS logic
+	    // TODO
+	    registeredPatientDetails = new RegisteredPatientDetails();
+	    BeanUtil.map(userCollection, registeredPatientDetails);
+	    registeredPatientDetails.setUserId(userCollection.getId());
+	    Patient patient = new Patient();
+	    BeanUtil.map(patientCollection, patient);
+	    patient.setPatientId(patientCollection.getId());
+	    registeredPatientDetails.setPatient(patient);
+	    registeredPatientDetails.setPID(patientCollection.getPID());
+	    registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
+	    Address address = new Address();
+	    if (addressCollection != null) {
+		BeanUtil.map(addressCollection, address);
+		registeredPatientDetails.setAddress(address);
+	    }
+	    groupCollections = (List<GroupCollection>) groupRepository.findAll(request.getGroups());
+	    groups = new ArrayList<Group>();
+	    BeanUtil.map(groupCollections, groups);
+	    /* registeredPatientDetails.setGroups(request.getGroups()); */
+	    registeredPatientDetails.setGroups(groups);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return registeredPatientDetails;
+    }
 
-	public RegisteredPatientDetails registerExistingPatient(PatientRegistrationRequest request) {
-		RegisteredPatientDetails registeredPatientDetails = null;
-		PatientCollection patientCollection = null;
-		List<GroupCollection> groupCollections = null;
-		List<Group> groups = null;
-		try {
-			// save address
-			AddressCollection addressCollection = null;
-			if (request.getAddress() != null) {
-				addressCollection = new AddressCollection();
-				BeanUtil.map(request.getAddress(), addressCollection);
-				addressCollection.setUserId(request.getUserId());
-				addressCollection = addressRepository.save(addressCollection);
-			}
-			// save Patient Info
-			patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(request.getUserId(), request.getDoctorId(),
-					request.getLocationId(), request.getHospitalId());
+    public RegisteredPatientDetails registerExistingPatient(PatientRegistrationRequest request) {
+	RegisteredPatientDetails registeredPatientDetails = null;
+	PatientCollection patientCollection = null;
+	List<GroupCollection> groupCollections = null;
+	List<Group> groups = null;
+	try {
+	    // save address
+	    AddressCollection addressCollection = null;
+	    if (request.getAddress() != null) {
+		addressCollection = new AddressCollection();
+		BeanUtil.map(request.getAddress(), addressCollection);
+		addressCollection.setUserId(request.getUserId());
+		addressCollection = addressRepository.save(addressCollection);
+	    }
+	    // save Patient Info
+	    patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(request.getUserId(), request.getDoctorId(),
+		    request.getLocationId(), request.getHospitalId());
+	    if (patientCollection != null) {
+		String patientId = patientCollection.getId();
+
+		BeanUtil.map(request, patientCollection);
+		patientCollection.setId(patientId);
+	    } else {
+		patientCollection = new PatientCollection();
+		BeanUtil.map(request, patientCollection);
+	    }
+	    if (addressCollection != null) {
+		patientCollection.setAddressId(addressCollection.getId());
+	    }
+	    patientCollection.setRelations(request.getRelations());
+	    patientCollection.setNotes(request.getNotes());
+	    if (!DPDoctorUtils.anyStringEmpty(request.getPatientNumber())) {
+		patientCollection.setPID(request.getPatientNumber());
+	    } else {
+		patientCollection.setPID(patientIdGenerator(request.getDoctorId(), request.getLocationId(), request.getHospitalId()));
+	    }
+	    patientCollection.setCreatedTime(new Date());
+	    patientCollection.setRegistrationDate(request.getDateOfVisit());
+	    patientCollection = patientRepository.save(patientCollection);
+
+	    // save patient admission
+	    PatientAdmissionCollection patientAdmissionCollection = null;
+	    patientAdmissionCollection = patientAdmissionRepository.findByPatientIdAndDoctorId(patientCollection.getId(), request.getDoctorId());
+	    if (patientAdmissionCollection == null) {
+		patientAdmissionCollection = new PatientAdmissionCollection();
+		BeanUtil.map(request, patientAdmissionCollection);
+		patientAdmissionCollection.setUserId(request.getUserId());
+		patientAdmissionCollection.setPatientId(patientCollection.getId());
+		patientAdmissionRepository.save(patientAdmissionCollection);
+	    }
+	    // assign groups
+	    if (request.getGroups() != null) {
+		List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getId());
+		if (patientGroupCollections != null) {
+		    for (PatientGroupCollection patientGroupCollection : patientGroupCollections) {
+			patientGroupRepository.delete(patientGroupCollection);
+		    }
+		}
+		for (String group : request.getGroups()) {
+		    PatientGroupCollection patientGroupCollection = new PatientGroupCollection();
+		    patientGroupCollection.setGroupId(group);
+		    patientGroupCollection.setPatientId(patientCollection.getId());
+		    patientGroupRepository.save(patientGroupCollection);
+		}
+
+	    }
+	    // add into doctor contact
+	    if (request.getDoctorId() != null) {
+		DoctorContactCollection doctorContactCollection = null;
+		doctorContactCollection = doctorContactsRepository.findByDoctorIdAndContactId(request.getDoctorId(), patientCollection.getId());
+		if (doctorContactCollection == null) {
+		    doctorContactCollection = new DoctorContactCollection();
+		    doctorContactCollection.setCreatedTime(new Date());
+		    doctorContactCollection.setDoctorId(request.getDoctorId());
+		    doctorContactCollection.setContactId(patientCollection.getId());
+		    doctorContactsRepository.save(doctorContactCollection);
+		}
+
+	    }
+	    UserCollection userCollection = userRepository.findOne(request.getUserId());
+	    registeredPatientDetails = new RegisteredPatientDetails();
+	    BeanUtil.map(userCollection, registeredPatientDetails);
+	    if (request.getImage() != null) {
+		String path = "profile-images";
+		// save image
+		String imageUrl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
+		userCollection.setImageUrl(imageUrl);
+		registeredPatientDetails.setImageUrl(imageUrl);
+	    }
+	    registeredPatientDetails.setUserId(userCollection.getId());
+	    Patient patient = new Patient();
+	    BeanUtil.map(patientCollection, patient);
+	    patient.setPatientId(patientCollection.getId());
+	    registeredPatientDetails.setPatient(patient);
+	    registeredPatientDetails.setPID(patientCollection.getPID());
+	    registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
+	    Address address = new Address();
+	    if (addressCollection != null) {
+		BeanUtil.map(addressCollection, address);
+		registeredPatientDetails.setAddress(address);
+	    }
+	    groupCollections = (List<GroupCollection>) groupRepository.findAll(request.getGroups());
+	    groups = new ArrayList<Group>();
+	    BeanUtil.map(groupCollections, groups);
+	    /* registeredPatientDetails.setGroups(request.getGroups()); */
+	    registeredPatientDetails.setGroups(groups);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return registeredPatientDetails;
+    }
+
+    public List<User> getUsersByPhoneNumber(String phoneNumber, String locationId, String hospitalId) {
+	List<User> users = null;
+	try {
+	    List<UserCollection> userCollections = userRepository.findByMobileNumber(phoneNumber);
+	    if (userCollections != null) {
+		users = new ArrayList<User>();
+		for (UserCollection userCollection : userCollections) {
+		    User user = new User();
+		    BeanUtil.map(userCollection, user);
+		    if (locationId != null && hospitalId != null) {
+			PatientCollection patientCollection = patientRepository.findByUserId(userCollection.getId());
 			if (patientCollection != null) {
-				String patientId = patientCollection.getId();
-
-				BeanUtil.map(request, patientCollection);
-				patientCollection.setId(patientId);
+			    if (patientCollection.getLocationId() != null && patientCollection.getHospitalId() != null) {
+				if (patientCollection.getLocationId().equals(locationId) && patientCollection.getHospitalId().equals(hospitalId)) {
+				    user.setIsPartOfClinic(true);
+				} else {
+				    user.setIsPartOfClinic(false);
+				}
+			    } else {
+				user.setIsPartOfClinic(false);
+			    }
 			} else {
-				patientCollection = new PatientCollection();
-				BeanUtil.map(request, patientCollection);
+			    user.setIsPartOfClinic(false);
 			}
-			if (addressCollection != null) {
-				patientCollection.setAddressId(addressCollection.getId());
-			}
-			patientCollection.setRelations(request.getRelations());
-			patientCollection.setNotes(request.getNotes());
-			if (!DPDoctorUtils.anyStringEmpty(request.getPatientNumber())) {
-				patientCollection.setPID(request.getPatientNumber());
-			} else {
-				patientCollection.setPID(patientIdGenerator(request.getDoctorId(), request.getLocationId(), request.getHospitalId()));
-			}
-			patientCollection.setCreatedTime(new Date());
-			patientCollection.setRegistrationDate(request.getDateOfVisit());
-			patientCollection = patientRepository.save(patientCollection);
-
-			// save patient admission
-			PatientAdmissionCollection patientAdmissionCollection = null;
-			patientAdmissionCollection = patientAdmissionRepository.findByPatientIdAndDoctorId(patientCollection.getId(), request.getDoctorId());
-			if (patientAdmissionCollection == null) {
-				patientAdmissionCollection = new PatientAdmissionCollection();
-				BeanUtil.map(request, patientAdmissionCollection);
-				patientAdmissionCollection.setUserId(request.getUserId());
-				patientAdmissionCollection.setPatientId(patientCollection.getId());
-				patientAdmissionRepository.save(patientAdmissionCollection);
-			}
-			// assign groups
-			if (request.getGroups() != null) {
-				List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getId());
-				if (patientGroupCollections != null) {
-					for (PatientGroupCollection patientGroupCollection : patientGroupCollections) {
-						patientGroupRepository.delete(patientGroupCollection);
-					}
-				}
-				for (String group : request.getGroups()) {
-					PatientGroupCollection patientGroupCollection = new PatientGroupCollection();
-					patientGroupCollection.setGroupId(group);
-					patientGroupCollection.setPatientId(patientCollection.getId());
-					patientGroupRepository.save(patientGroupCollection);
-				}
-
-			}
-			// add into doctor contact
-			if (request.getDoctorId() != null) {
-				DoctorContactCollection doctorContactCollection = null;
-				doctorContactCollection = doctorContactsRepository.findByDoctorIdAndContactId(request.getDoctorId(), patientCollection.getId());
-				if (doctorContactCollection == null) {
-					doctorContactCollection = new DoctorContactCollection();
-					doctorContactCollection.setCreatedTime(new Date());
-					doctorContactCollection.setDoctorId(request.getDoctorId());
-					doctorContactCollection.setContactId(patientCollection.getId());
-					doctorContactsRepository.save(doctorContactCollection);
-				}
-
-			}
-			UserCollection userCollection = userRepository.findOne(request.getUserId());
-			registeredPatientDetails = new RegisteredPatientDetails();
-			BeanUtil.map(userCollection, registeredPatientDetails);
-			if (request.getImage() != null) {
-				String path = "profile-images";
-				// save image
-				String imageUrl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
-				userCollection.setImageUrl(imageUrl);
-				registeredPatientDetails.setImageUrl(imageUrl);
-			}
-			registeredPatientDetails.setUserId(userCollection.getId());
-			Patient patient = new Patient();
-			BeanUtil.map(patientCollection, patient);
-			patient.setPatientId(patientCollection.getId());
-			registeredPatientDetails.setPatient(patient);
-			registeredPatientDetails.setPID(patientCollection.getPID());
-			registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
-			Address address = new Address();
-			if (addressCollection != null) {
-				BeanUtil.map(addressCollection, address);
-				registeredPatientDetails.setAddress(address);
-			}
-			groupCollections = (List<GroupCollection>) groupRepository.findAll(request.getGroups());
-			groups = new ArrayList<Group>();
-			BeanUtil.map(groupCollections, groups);
-			/* registeredPatientDetails.setGroups(request.getGroups()); */
-			registeredPatientDetails.setGroups(groups);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return registeredPatientDetails;
-	}
-
-	public List<User> getUsersByPhoneNumber(String phoneNumber, String locationId, String hospitalId) {
-		List<User> users = null;
-		try {
-			List<UserCollection> userCollections = userRepository.findByMobileNumber(phoneNumber);
-			if (userCollections != null) {
-				users = new ArrayList<User>();
-				for (UserCollection userCollection : userCollections) {
-					User user = new User();
-					BeanUtil.map(userCollection, user);
-					if (locationId != null && hospitalId != null) {
-						PatientCollection patientCollection = patientRepository.findByUserId(userCollection.getId());
-						if (patientCollection != null) {
-							if (patientCollection.getLocationId() != null && patientCollection.getHospitalId() != null) {
-								if (patientCollection.getLocationId().equals(locationId) && patientCollection.getHospitalId().equals(hospitalId)) {
-									user.setIsPartOfClinic(true);
-								} else {
-									user.setIsPartOfClinic(false);
-								}
-							} else {
-								user.setIsPartOfClinic(false);
-							}
-						} else {
-							user.setIsPartOfClinic(false);
-						}
-					}
-					users.add(user);
-				}
-
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return users;
-	}
-
-	private String generateRandomAlphanumericString(int count) {
-		return RandomStringUtils.randomAlphabetic(count);
-	}
-
-	public RegisteredPatientDetails getPatientProfileByUserId(String userId, String doctorId, String locationId, String hospitalId) {
-		RegisteredPatientDetails registeredPatientDetails = null;
-		List<GroupCollection> groupCollections = null;
-		List<Group> groups = null;
-		try {
-			UserCollection userCollection = userRepository.findOne(userId);
-			if (userCollection != null) {
-				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userId, doctorId, locationId, hospitalId);
-				if (patientCollection != null) {
-					AddressCollection addressCollection = new AddressCollection();
-					if (patientCollection.getAddressId() != null) {
-						addressCollection = addressRepository.findOne(patientCollection.getAddressId());
-					}
-					List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getId());
-					@SuppressWarnings("unchecked")
-					Collection<String> groupIds = CollectionUtils.collect(patientGroupCollections, new BeanToPropertyValueTransformer("groupId"));
-					registeredPatientDetails = new RegisteredPatientDetails();
-					BeanUtil.map(patientCollection, registeredPatientDetails);
-					BeanUtil.map(userCollection, registeredPatientDetails);
-					registeredPatientDetails.setUserId(userCollection.getId());
-					Patient patient = new Patient();
-					BeanUtil.map(patientCollection, patient);
-					patient.setPatientId(patientCollection.getId());
-					registeredPatientDetails.setPatient(patient);
-					Address address = new Address();
-					BeanUtil.map(addressCollection, address);
-					registeredPatientDetails.setAddress(address);
-					groupCollections = (List<GroupCollection>) groupRepository.findAll((List<String>) groupIds);
-					groups = new ArrayList<Group>();
-					BeanUtil.map(groupCollections, groups);
-					/*
-					 * registeredPatientDetails.setGroups((List<String>)
-					 * groupIds);
-					 */
-					registeredPatientDetails.setGroups(groups);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return registeredPatientDetails;
-	}
-
-	public Reference addEditReference(Reference reference) {
-		try {
-			ReferencesCollection referrencesCollection = new ReferencesCollection();
-			BeanUtil.map(reference, referrencesCollection);
-			referrencesCollection = referrenceRepository.save(referrencesCollection);
-			BeanUtil.map(referrencesCollection, reference);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return reference;
-	}
-
-	public void deleteReferrence(String referenceId) {
-		try {
-			ReferencesCollection referrencesCollection = referrenceRepository.findOne(referenceId);
-			if (referrencesCollection != null) {
-				referrencesCollection.setDeleted(true);
-				referrenceRepository.save(referrencesCollection);
-			} else {
-				throw new BusinessException(ServiceError.Unknown, "Invalid Referrence Id!");
-			}
-		} catch (BusinessException be) {
-			be.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, be.getMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		    }
+		    users.add(user);
 		}
 
-	}
+	    }
 
-	public ReferenceResponse getReferences(String doctorId, String locationId, String hospitalId) {
-		ReferenceResponse response = null;
-		try {
-			List<ReferencesCollection> referrencesCollections = referrenceRepository.findByDoctorIdAndLocationIdAndHospitalId(doctorId, locationId, hospitalId,
-					false);
-			if (referrencesCollections != null) {
-				response = new ReferenceResponse();
-				List<ReferenceDetail> referenceDetails = new ArrayList<ReferenceDetail>();
-				for (ReferencesCollection ref : referrencesCollections) {
-					ReferenceDetail referenceDetail = new ReferenceDetail();
-					BeanUtil.map(ref, referenceDetail);
-					referenceDetails.add(referenceDetail);
-				}
-				response.setDoctorId(doctorId);
-				response.setHospitalId(hospitalId);
-				response.setLocationId(locationId);
-				response.setReferenceDetails(referenceDetails);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return users;
+    }
+
+    private String generateRandomAlphanumericString(int count) {
+	return RandomStringUtils.randomAlphabetic(count);
+    }
+
+    public RegisteredPatientDetails getPatientProfileByUserId(String userId, String doctorId, String locationId, String hospitalId) {
+	RegisteredPatientDetails registeredPatientDetails = null;
+	List<GroupCollection> groupCollections = null;
+	List<Group> groups = null;
+	try {
+	    UserCollection userCollection = userRepository.findOne(userId);
+	    if (userCollection != null) {
+		PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userId, doctorId, locationId, hospitalId);
+		if (patientCollection != null) {
+		    AddressCollection addressCollection = new AddressCollection();
+		    if (patientCollection.getAddressId() != null) {
+			addressCollection = addressRepository.findOne(patientCollection.getAddressId());
+		    }
+		    List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getId());
+		    @SuppressWarnings("unchecked")
+		    Collection<String> groupIds = CollectionUtils.collect(patientGroupCollections, new BeanToPropertyValueTransformer("groupId"));
+		    registeredPatientDetails = new RegisteredPatientDetails();
+		    BeanUtil.map(patientCollection, registeredPatientDetails);
+		    BeanUtil.map(userCollection, registeredPatientDetails);
+		    registeredPatientDetails.setUserId(userCollection.getId());
+		    Patient patient = new Patient();
+		    BeanUtil.map(patientCollection, patient);
+		    patient.setPatientId(patientCollection.getId());
+		    registeredPatientDetails.setPatient(patient);
+		    Address address = new Address();
+		    BeanUtil.map(addressCollection, address);
+		    registeredPatientDetails.setAddress(address);
+		    groupCollections = (List<GroupCollection>) groupRepository.findAll((List<String>) groupIds);
+		    groups = new ArrayList<Group>();
+		    BeanUtil.map(groupCollections, groups);
+		    /*
+		     * registeredPatientDetails.setGroups((List<String>)
+		     * groupIds);
+		     */
+		    registeredPatientDetails.setGroups(groups);
 		}
-		return response;
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return registeredPatientDetails;
+    }
+
+    public Reference addEditReference(Reference reference) {
+	try {
+	    ReferencesCollection referrencesCollection = new ReferencesCollection();
+	    BeanUtil.map(reference, referrencesCollection);
+	    referrencesCollection = referrenceRepository.save(referrencesCollection);
+	    BeanUtil.map(referrencesCollection, reference);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return reference;
+    }
+
+    public void deleteReferrence(String referenceId) {
+	try {
+	    ReferencesCollection referrencesCollection = referrenceRepository.findOne(referenceId);
+	    if (referrencesCollection != null) {
+		referrencesCollection.setDeleted(true);
+		referrenceRepository.save(referrencesCollection);
+	    } else {
+		throw new BusinessException(ServiceError.Unknown, "Invalid Referrence Id!");
+	    }
+	} catch (BusinessException be) {
+	    be.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, be.getMessage());
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
-	public ReferenceResponse getCustomReferences(String doctorId, String locationId, String hospitalId) {
-		ReferenceResponse response = null;
-		try {
-			List<ReferencesCollection> referrencesCollections = referrenceRepository.findByDoctorIdAndLocationIdAndHospitalIdCustomReferences(doctorId,
-					locationId, hospitalId, false);
-			if (referrencesCollections != null) {
-				response = new ReferenceResponse();
-				List<ReferenceDetail> referenceDetails = new ArrayList<ReferenceDetail>();
-				for (ReferencesCollection ref : referrencesCollections) {
-					ReferenceDetail referenceDetail = new ReferenceDetail();
-					BeanUtil.map(ref, referenceDetail);
-					referenceDetails.add(referenceDetail);
-				}
-				response.setDoctorId(doctorId);
-				response.setHospitalId(hospitalId);
-				response.setLocationId(locationId);
-				response.setReferenceDetails(referenceDetails);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+    }
+
+    public ReferenceResponse getReferences(String doctorId, String locationId, String hospitalId) {
+	ReferenceResponse response = null;
+	try {
+	    List<ReferencesCollection> referrencesCollections = referrenceRepository.findByDoctorIdAndLocationIdAndHospitalId(doctorId, locationId, hospitalId,
+		    false);
+	    if (referrencesCollections != null) {
+		response = new ReferenceResponse();
+		List<ReferenceDetail> referenceDetails = new ArrayList<ReferenceDetail>();
+		for (ReferencesCollection ref : referrencesCollections) {
+		    ReferenceDetail referenceDetail = new ReferenceDetail();
+		    BeanUtil.map(ref, referenceDetail);
+		    referenceDetails.add(referenceDetail);
 		}
-		return response;
+		response.setDoctorId(doctorId);
+		response.setHospitalId(hospitalId);
+		response.setLocationId(locationId);
+		response.setReferenceDetails(referenceDetails);
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return response;
+    }
 
-	public String patientIdGenerator(String doctorId, String locationId, String hospitalId) {
-		String generatedId = null;
-		try {
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-			int currentDay = localCalendar.get(Calendar.DATE);
-			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-			int currentYear = localCalendar.get(Calendar.YEAR);
-
-			String startDate = currentDay + "-" + currentMonth + "-" + currentYear + " 00:00:00";
-			String endDate = currentDay + "-" + currentMonth + "-" + currentYear + " 23:59:59";
-			SimpleDateFormat dateFormat = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
-			Long from = dateFormat.parse(startDate).getTime();
-			Long to = dateFormat.parse(endDate).getTime();
-			List<PatientCollection> patientCollections = patientRepository.findTodaysRegisteredPatient(doctorId, locationId, hospitalId, from, to);
-			int patientCount = 0;
-			if (CollectionUtils.isNotEmpty(patientCollections)) {
-				patientCount = patientCollections.size();
-			}
-
-			DoctorCollection doctor = doctorRepository.findByUserId(doctorId);
-
-			String patientInitial = doctor.getPatientInitial();
-			int patientCounter = doctor.getPatientCounter();
-
-			generatedId = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay) + DPDoctorUtils.getPrefixedNumber(currentMonth)
-					+ DPDoctorUtils.getPrefixedNumber(currentYear % 100) + DPDoctorUtils.getPrefixedNumber(patientCounter + patientCount + 1);
-
-			updatePatientInitialAndCounter(doctorId, patientInitial, patientCounter+1);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+    public ReferenceResponse getCustomReferences(String doctorId, String locationId, String hospitalId) {
+	ReferenceResponse response = null;
+	try {
+	    List<ReferencesCollection> referrencesCollections = referrenceRepository.findByDoctorIdAndLocationIdAndHospitalIdCustomReferences(doctorId,
+		    locationId, hospitalId, false);
+	    if (referrencesCollections != null) {
+		response = new ReferenceResponse();
+		List<ReferenceDetail> referenceDetails = new ArrayList<ReferenceDetail>();
+		for (ReferencesCollection ref : referrencesCollections) {
+		    ReferenceDetail referenceDetail = new ReferenceDetail();
+		    BeanUtil.map(ref, referenceDetail);
+		    referenceDetails.add(referenceDetail);
 		}
-		return generatedId;
+		response.setDoctorId(doctorId);
+		response.setHospitalId(hospitalId);
+		response.setLocationId(locationId);
+		response.setReferenceDetails(referenceDetails);
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return response;
+    }
 
-	@Override
-	public Boolean updatePatientInitialAndCounter(String doctorId, String patientInitial, int patientCounter) {
-		Boolean response = false;
-		DoctorCollection doctor = null;
-		try {
-			doctor = doctorRepository.findByUserId(doctorId);
-			if (doctor != null) {
-				doctor.setPatientInitial(patientInitial);
-				doctor.setPatientCounter(patientCounter);
-				doctor = doctorRepository.save(doctor);
-				response = true;
-			} else {
-				throw new BusinessException(ServiceError.NotFound, "Doctor Not Found");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error While Updating Patient Initial and Counter");
-		}
-		return response;
-	}
+    public String patientIdGenerator(String doctorId, String locationId, String hospitalId) {
+	String generatedId = null;
+	try {
+	    Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+	    int currentDay = localCalendar.get(Calendar.DATE);
+	    int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+	    int currentYear = localCalendar.get(Calendar.YEAR);
 
-	@Override
-	public Location getClinicDetails(String clinicId) {
-		Location location = null;
-		LocationCollection locationCollection = null;
-		try {
-			locationCollection = locationRepository.findOne(clinicId);
-			if (locationCollection != null) {
-				location = new Location();
-				BeanUtil.map(locationCollection, location);
-			} else {
-				throw new BusinessException(ServiceError.NotFound, "No Location Found For The Location Id");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error While Retrieving Location Details");
-		}
-		return location;
-	}
+	    String startDate = currentDay + "-" + currentMonth + "-" + currentYear + " 00:00:00";
+	    String endDate = currentDay + "-" + currentMonth + "-" + currentYear + " 23:59:59";
+	    SimpleDateFormat dateFormat = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
+	    Long from = dateFormat.parse(startDate).getTime();
+	    Long to = dateFormat.parse(endDate).getTime();
+	    List<PatientCollection> patientCollections = patientRepository.findTodaysRegisteredPatient(doctorId, locationId, hospitalId, from, to);
+	    int patientCount = 0;
+	    if (CollectionUtils.isNotEmpty(patientCollections)) {
+		patientCount = patientCollections.size();
+	    }
 
-	@Override
-	public ClinicProfile updateClinicProfile(ClinicProfile request) {
-		ClinicProfile response = null;
-		LocationCollection locationCollection = null;
-		try {
-			locationCollection = locationRepository.findOne(request.getId());
-			BeanUtil.map(request, locationCollection);
-			locationCollection.setSpecialization(request.getSpecialization());
-			locationCollection = locationRepository.save(locationCollection);
-			response = new ClinicProfile();
-			BeanUtil.map(locationCollection, response);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error While Updating Clinic Details");
-		}
-		return response;
-	}
+	    DoctorCollection doctor = doctorRepository.findByUserId(doctorId);
 
-	@Override
-	public ClinicAddress updateClinicAddress(ClinicAddress request) {
-		ClinicAddress response = null;
-		LocationCollection locationCollection = null;
-		try {
-			locationCollection = locationRepository.findOne(request.getId());
-			BeanUtil.map(request, locationCollection);
-			locationCollection = locationRepository.save(locationCollection);
-			response = new ClinicAddress();
-			BeanUtil.map(locationCollection, response);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error While Updating Clinic Details");
-		}
-		return response;
-	}
+	    String patientInitial = doctor.getPatientInitial();
+	    int patientCounter = doctor.getPatientCounter();
 
-	@Override
-	public ClinicTiming updateClinicTiming(ClinicTiming request) {
-		ClinicTiming response = null;
-		LocationCollection locationCollection = null;
-		try {
-			locationCollection = locationRepository.findOne(request.getId());
-			BeanUtil.map(request, locationCollection);
-			locationCollection.setWorkingSchedules(request.getWorkingSchedules());
-			locationCollection = locationRepository.save(locationCollection);
-			response = new ClinicTiming();
-			BeanUtil.map(locationCollection, response);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error While Updating Clinic Details");
-		}
-		return response;
+	    generatedId = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay) + DPDoctorUtils.getPrefixedNumber(currentMonth)
+		    + DPDoctorUtils.getPrefixedNumber(currentYear % 100) + DPDoctorUtils.getPrefixedNumber(patientCounter + patientCount + 1);
+
+	    updatePatientInitialAndCounter(doctorId, patientInitial, patientCounter + 1);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return generatedId;
+    }
+
+    @Override
+    public Boolean updatePatientInitialAndCounter(String doctorId, String patientInitial, int patientCounter) {
+	Boolean response = false;
+	DoctorCollection doctor = null;
+	try {
+	    doctor = doctorRepository.findByUserId(doctorId);
+	    if (doctor != null) {
+		doctor.setPatientInitial(patientInitial);
+		doctor.setPatientCounter(patientCounter);
+		doctor = doctorRepository.save(doctor);
+		response = true;
+	    } else {
+		throw new BusinessException(ServiceError.NotFound, "Doctor Not Found");
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error While Updating Patient Initial and Counter");
+	}
+	return response;
+    }
+
+    @Override
+    public Location getClinicDetails(String clinicId) {
+	Location location = null;
+	LocationCollection locationCollection = null;
+	try {
+	    locationCollection = locationRepository.findOne(clinicId);
+	    if (locationCollection != null) {
+		location = new Location();
+		BeanUtil.map(locationCollection, location);
+	    } else {
+		throw new BusinessException(ServiceError.NotFound, "No Location Found For The Location Id");
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error While Retrieving Location Details");
+	}
+	return location;
+    }
+
+    @Override
+    public ClinicProfile updateClinicProfile(ClinicProfile request) {
+	ClinicProfile response = null;
+	LocationCollection locationCollection = null;
+	try {
+	    locationCollection = locationRepository.findOne(request.getId());
+	    BeanUtil.map(request, locationCollection);
+	    locationCollection.setSpecialization(request.getSpecialization());
+	    locationCollection = locationRepository.save(locationCollection);
+	    response = new ClinicProfile();
+	    BeanUtil.map(locationCollection, response);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error While Updating Clinic Details");
+	}
+	return response;
+    }
+
+    @Override
+    public ClinicAddress updateClinicAddress(ClinicAddress request) {
+	ClinicAddress response = null;
+	LocationCollection locationCollection = null;
+	try {
+	    locationCollection = locationRepository.findOne(request.getId());
+	    BeanUtil.map(request, locationCollection);
+	    locationCollection = locationRepository.save(locationCollection);
+	    response = new ClinicAddress();
+	    BeanUtil.map(locationCollection, response);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error While Updating Clinic Details");
+	}
+	return response;
+    }
+
+    @Override
+    public ClinicTiming updateClinicTiming(ClinicTiming request) {
+	ClinicTiming response = null;
+	LocationCollection locationCollection = null;
+	try {
+	    locationCollection = locationRepository.findOne(request.getId());
+	    BeanUtil.map(request, locationCollection);
+	    locationCollection.setWorkingSchedules(request.getWorkingSchedules());
+	    locationCollection = locationRepository.save(locationCollection);
+	    response = new ClinicTiming();
+	    BeanUtil.map(locationCollection, response);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error While Updating Clinic Details");
+	}
+	return response;
+    }
 
 }

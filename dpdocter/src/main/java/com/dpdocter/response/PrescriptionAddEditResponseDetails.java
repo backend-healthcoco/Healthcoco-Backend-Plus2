@@ -5,90 +5,90 @@ import java.util.List;
 import com.dpdocter.beans.PrescriptionItemDetail;
 
 public class PrescriptionAddEditResponseDetails {
-	private String id;
+    private String id;
 
-	private String name;
+    private String name;
 
-	private String doctorId;
+    private String doctorId;
 
-	private String locationId;
+    private String locationId;
 
-	private String hospitalId;
+    private String hospitalId;
 
-	private List<PrescriptionItemDetail> items;
+    private List<PrescriptionItemDetail> items;
 
-	private String patientId;
+    private String patientId;
 
-	private String prescriptionCode;
+    private String prescriptionCode;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+	return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+	this.name = name;
+    }
 
-	public String getDoctorId() {
-		return doctorId;
-	}
+    public String getDoctorId() {
+	return doctorId;
+    }
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
+    }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
 
-	public String getHospitalId() {
-		return hospitalId;
-	}
+    public String getHospitalId() {
+	return hospitalId;
+    }
 
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
 
-	public List<PrescriptionItemDetail> getItems() {
-		return items;
-	}
+    public List<PrescriptionItemDetail> getItems() {
+	return items;
+    }
 
-	public void setItems(List<PrescriptionItemDetail> items) {
-		this.items = items;
-	}
+    public void setItems(List<PrescriptionItemDetail> items) {
+	this.items = items;
+    }
 
-	public String getPatientId() {
-		return patientId;
-	}
+    public String getPatientId() {
+	return patientId;
+    }
 
-	public void setPatientId(String patientId) {
-		this.patientId = patientId;
-	}
+    public void setPatientId(String patientId) {
+	this.patientId = patientId;
+    }
 
-	public String getPrescriptionCode() {
-		return prescriptionCode;
-	}
+    public String getPrescriptionCode() {
+	return prescriptionCode;
+    }
 
-	public void setPrescriptionCode(String prescriptionCode) {
-		this.prescriptionCode = prescriptionCode;
-	}
+    public void setPrescriptionCode(String prescriptionCode) {
+	this.prescriptionCode = prescriptionCode;
+    }
 
-	@Override
-	public String toString() {
-		return "PrescriptionAddEditResponseDetails [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + ", items=" + items + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + "]";
-	}
+    @Override
+    public String toString() {
+	return "PrescriptionAddEditResponseDetails [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+		+ hospitalId + ", items=" + items + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + "]";
+    }
 
 }

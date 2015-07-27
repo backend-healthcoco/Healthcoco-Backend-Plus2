@@ -6,12 +6,12 @@ import com.dpdocter.solr.document.SolrDrugDocument;
 
 public interface SolrPrescriptionService {
 
-	boolean addDrug(SolrDrugDocument request);
+    boolean addDrug(SolrDrugDocument request);
 
-	boolean editDrug(SolrDrugDocument request);
+    boolean editDrug(SolrDrugDocument request);
 
-	boolean deleteDrug(String id);
+    boolean deleteDrug(String id);
 
-	List<SolrDrugDocument> searchDrug(String searchTerm);
+    List<SolrDrugDocument> searchDrug(String searchTerm);
 
 }

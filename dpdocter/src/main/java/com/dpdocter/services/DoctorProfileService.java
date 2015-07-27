@@ -17,44 +17,44 @@ import com.dpdocter.request.DoctorSpecialityAddEditRequest;
 
 public interface DoctorProfileService {
 
-	Boolean addEditName(String doctorId, String title, String fname, String mname, String lname);
+    Boolean addEditName(String doctorId, String title, String fname, String mname, String lname);
 
-	Boolean addEditExperience(String doctorId, String experience);
+    Boolean addEditExperience(String doctorId, String experience);
 
-	Boolean addEditContact(DoctorContactAddEditRequest request);
+    Boolean addEditContact(DoctorContactAddEditRequest request);
 
-	Boolean addEditEducation(DoctorEducationAddEditRequest request);
+    Boolean addEditEducation(DoctorEducationAddEditRequest request);
 
-	Boolean addEditMedicalCouncils(List<MedicalCouncil> medicalCouncils);
+    Boolean addEditMedicalCouncils(List<MedicalCouncil> medicalCouncils);
 
-	List<MedicalCouncil> getMedicalCouncils();
+    List<MedicalCouncil> getMedicalCouncils();
 
-	Boolean addEditSpeciality(DoctorSpecialityAddEditRequest request);
+    Boolean addEditSpeciality(DoctorSpecialityAddEditRequest request);
 
-	Boolean addEditAchievement(DoctorAchievementAddEditRequest request);
+    Boolean addEditAchievement(DoctorAchievementAddEditRequest request);
 
-	Boolean addEditProfessionalStatement(String doctorId, String professionalStatement);
+    Boolean addEditProfessionalStatement(String doctorId, String professionalStatement);
 
-	Boolean addEditRegistrationDetail(DoctorRegistrationAddEditRequest request);
+    Boolean addEditRegistrationDetail(DoctorRegistrationAddEditRequest request);
 
-	Boolean addEditExperienceDetail(DoctorExperienceAddEditRequest request);
+    Boolean addEditExperienceDetail(DoctorExperienceAddEditRequest request);
 
-	String addEditProfilePicture(DoctorProfilePictureAddEditRequest request);
+    String addEditProfilePicture(DoctorProfilePictureAddEditRequest request);
 
-	DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId);
+    DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId);
 
-	Boolean insertProfessionalMemberships(List<ProfessionalMembership> professionalMemberships);
+    Boolean insertProfessionalMemberships(List<ProfessionalMembership> professionalMemberships);
 
-	List<ProfessionalMembership> getProfessionalMemberships();
+    List<ProfessionalMembership> getProfessionalMemberships();
 
-	Boolean addEditProfessionalMembership(DoctorProfessionalAddEditRequest request);
+    Boolean addEditProfessionalMembership(DoctorProfessionalAddEditRequest request);
 
-	Boolean addEditAppointmentNumbers(DoctorClinicProfile request);
+    Boolean addEditAppointmentNumbers(DoctorClinicProfile request);
 
-	Boolean addEditVisitingTime(DoctorClinicProfile request);
+    Boolean addEditVisitingTime(DoctorClinicProfile request);
 
-	Boolean addEditConsultationFee(DoctorClinicProfile request);
+    Boolean addEditConsultationFee(DoctorClinicProfile request);
 
-	Boolean addEditAppointmentSlot(DoctorClinicProfile request);
+    Boolean addEditAppointmentSlot(DoctorClinicProfile request);
 
 }

@@ -10,11 +10,11 @@ import com.dpdocter.collections.TagsCollection;
 
 @Repository
 public interface TagsRepository extends MongoRepository<TagsCollection, String> {
-	List<TagsCollection> findByDoctorId(String doctorId);
+    List<TagsCollection> findByDoctorId(String doctorId);
 
-	@Query("{'doctorId':?0,'locationId':?1}")
-	List<TagsCollection> findByDoctorIdAndlocationId(String doctorId, String locationId);
+    @Query("{'doctorId':?0,'locationId':?1}")
+    List<TagsCollection> findByDoctorIdAndlocationId(String doctorId, String locationId);
 
-	@Query("{'doctorId':?0,'locationId':?1,'hospitalId':?2}")
-	List<TagsCollection> findByDoctorIdAndlocationIdAndHospitalId(String doctorId, String locationId, String hospitalId);
+    @Query("{'doctorId':?0,'locationId':?1,'hospitalId':?2}")
+    List<TagsCollection> findByDoctorIdAndlocationIdAndHospitalId(String doctorId, String locationId, String hospitalId);
 }

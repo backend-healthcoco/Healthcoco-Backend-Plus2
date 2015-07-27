@@ -6,54 +6,54 @@ import org.springframework.data.solr.core.mapping.SolrDocument;
 
 @SolrDocument(solrCoreName = "drugs")
 public class SolrDrugDocument {
-	@Id
-	@Field
-	private String id;
+    @Id
+    @Field
+    private String id;
 
-	@Field
-	private String drugName;
+    @Field
+    private String drugName;
 
-	@Field
-	private String description;
+    @Field
+    private String description;
 
-	@Field
-	private String drugCode;
+    @Field
+    private String drugCode;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getDrugName() {
-		return drugName;
-	}
+    public String getDrugName() {
+	return drugName;
+    }
 
-	public void setDrugName(String drugName) {
-		this.drugName = drugName;
-	}
+    public void setDrugName(String drugName) {
+	this.drugName = drugName;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+	return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+	this.description = description;
+    }
 
-	public String getDrugCode() {
-		return drugCode;
-	}
+    public String getDrugCode() {
+	return drugCode;
+    }
 
-	public void setDrugCode(String drugCode) {
-		this.drugCode = drugCode;
-	}
+    public void setDrugCode(String drugCode) {
+	this.drugCode = drugCode;
+    }
 
-	@Override
-	public String toString() {
-		return "SolrDrugDocument [id=" + id + ", drugName=" + drugName + ", description=" + description + ", drugCode=" + drugCode + "]";
-	}
+    @Override
+    public String toString() {
+	return "SolrDrugDocument [id=" + id + ", drugName=" + drugName + ", description=" + description + ", drugCode=" + drugCode + "]";
+    }
 
 }

@@ -7,42 +7,42 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document(collection = "records_tags_cl")
 public class RecordsTagsCollection {
 
-	@Id
-	private String id;
+    @Id
+    private String id;
 
-	@Field
-	private String recordsId;
+    @Field
+    private String recordsId;
 
-	@Field
-	private String tagsId;
+    @Field
+    private String tagsId;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getrecordsId() {
-		return recordsId;
-	}
+    public String getrecordsId() {
+	return recordsId;
+    }
 
-	public void setrecordsId(String recordsId) {
-		this.recordsId = recordsId;
-	}
+    public void setrecordsId(String recordsId) {
+	this.recordsId = recordsId;
+    }
 
-	public String getTagsId() {
-		return tagsId;
-	}
+    public String getTagsId() {
+	return tagsId;
+    }
 
-	public void setTagsId(String tagsId) {
-		this.tagsId = tagsId;
-	}
+    public void setTagsId(String tagsId) {
+	this.tagsId = tagsId;
+    }
 
-	@Override
-	public String toString() {
-		return "recordsTagsCollection [id=" + id + ", recordsId=" + recordsId + ", tagsId=" + tagsId + "]";
-	}
+    @Override
+    public String toString() {
+	return "recordsTagsCollection [id=" + id + ", recordsId=" + recordsId + ", tagsId=" + tagsId + "]";
+    }
 
 }

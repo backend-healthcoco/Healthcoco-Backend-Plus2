@@ -22,54 +22,54 @@ import common.util.web.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class ForgotPasswordApi {
 
-	@Autowired
-	private ForgotPasswordService forgotPasswordService;
+    @Autowired
+    private ForgotPasswordService forgotPasswordService;
 
-	@Path(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_DOCTOR)
-	@POST
-	public Response<String> forgotPassword(ForgotUsernamePasswordRequest request) {
-		if (request == null) {
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-		}
-		forgotPasswordService.forgotPasswordForDoctor(request);
-		Response<String> response = new Response<String>();
-		response.setData("RESET YOUR PASSWORD FROM EMAIL ADDRESS");
-		return response;
+    @Path(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_DOCTOR)
+    @POST
+    public Response<String> forgotPassword(ForgotUsernamePasswordRequest request) {
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
+	forgotPasswordService.forgotPasswordForDoctor(request);
+	Response<String> response = new Response<String>();
+	response.setData("RESET YOUR PASSWORD FROM EMAIL ADDRESS");
+	return response;
+    }
 
-	@Path(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_PATIENT)
-	@POST
-	public Response<Boolean> forgotPasswordForPatient(ForgotUsernamePasswordRequest request) {
-		if (request == null) {
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-		}
-		boolean flag = forgotPasswordService.forgotPasswordForPatient(request);
-		Response<Boolean> response = new Response<Boolean>();
-		response.setData(flag);
-		return response;
+    @Path(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_PATIENT)
+    @POST
+    public Response<Boolean> forgotPasswordForPatient(ForgotUsernamePasswordRequest request) {
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
+	boolean flag = forgotPasswordService.forgotPasswordForPatient(request);
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(flag);
+	return response;
+    }
 
-	@Path(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD)
-	@POST
-	public Response<String> resetPassword(ResetPasswordRequest request) {
-		if (request == null) {
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-		}
-		forgotPasswordService.resetPassword(request);
-		Response<String> response = new Response<String>();
-		response.setData("PASSWORD CHANGED SUCCESSFULLY.");
-		return response;
+    @Path(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD)
+    @POST
+    public Response<String> resetPassword(ResetPasswordRequest request) {
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
+	forgotPasswordService.resetPassword(request);
+	Response<String> response = new Response<String>();
+	response.setData("PASSWORD CHANGED SUCCESSFULLY.");
+	return response;
+    }
 
-	@Path(value = PathProxy.ForgotPasswordUrls.FORGOT_USERNAME)
-	@POST
-	public Response<Boolean> forgotUsername(ForgotUsernamePasswordRequest request) {
-		if (request == null) {
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-		}
-		boolean flag = forgotPasswordService.forgotUsername(request);
-		Response<Boolean> response = new Response<Boolean>();
-		response.setData(flag);
-		return response;
+    @Path(value = PathProxy.ForgotPasswordUrls.FORGOT_USERNAME)
+    @POST
+    public Response<Boolean> forgotUsername(ForgotUsernamePasswordRequest request) {
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
+	boolean flag = forgotPasswordService.forgotUsername(request);
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(flag);
+	return response;
+    }
 }

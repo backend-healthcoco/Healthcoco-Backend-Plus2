@@ -9,112 +9,112 @@ import com.dpdocter.beans.Strength;
 import com.dpdocter.collections.GenericCollection;
 
 public class DrugAddEditResponse extends GenericCollection {
-	private String id;
+    private String id;
 
-	private DrugType drugType;
+    private DrugType drugType;
 
-	private String drugName;
+    private String drugName;
 
-	private String description;
+    private String description;
 
-	@JsonManagedReference
-	private Strength strength;
+    @JsonManagedReference
+    private Strength strength;
 
-	private List<String> genericNames;
+    private List<String> genericNames;
 
-	private String doctorId;
+    private String doctorId;
 
-	private String hospitalId;
+    private String hospitalId;
 
-	private String locationId;
+    private String locationId;
 
-	private String drugCode;
+    private String drugCode;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public DrugType getDrugType() {
-		return drugType;
-	}
+    public DrugType getDrugType() {
+	return drugType;
+    }
 
-	public void setDrugType(DrugType drugType) {
-		this.drugType = drugType;
-	}
+    public void setDrugType(DrugType drugType) {
+	this.drugType = drugType;
+    }
 
-	public String getDrugName() {
-		return drugName;
-	}
+    public String getDrugName() {
+	return drugName;
+    }
 
-	public void setDrugName(String drugName) {
-		this.drugName = drugName;
-	}
+    public void setDrugName(String drugName) {
+	this.drugName = drugName;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+	return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+	this.description = description;
+    }
 
-	public Strength getStrength() {
-		return strength;
-	}
+    public Strength getStrength() {
+	return strength;
+    }
 
-	public void setStrength(Strength strength) {
-		this.strength = strength;
-	}
+    public void setStrength(Strength strength) {
+	this.strength = strength;
+    }
 
-	public List<String> getGenericNames() {
-		return genericNames;
-	}
+    public List<String> getGenericNames() {
+	return genericNames;
+    }
 
-	public void setGenericNames(List<String> genericNames) {
-		this.genericNames = genericNames;
-	}
+    public void setGenericNames(List<String> genericNames) {
+	this.genericNames = genericNames;
+    }
 
-	public String getDoctorId() {
-		return doctorId;
-	}
+    public String getDoctorId() {
+	return doctorId;
+    }
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
+    }
 
-	public String getHospitalId() {
-		return hospitalId;
-	}
+    public String getHospitalId() {
+	return hospitalId;
+    }
 
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
 
-	public String getDrugCode() {
-		return drugCode;
-	}
+    public String getDrugCode() {
+	return drugCode;
+    }
 
-	public void setDrugCode(String drugCode) {
-		this.drugCode = drugCode;
-	}
+    public void setDrugCode(String drugCode) {
+	this.drugCode = drugCode;
+    }
 
-	@Override
-	public String toString() {
-		return "DrugAddEditResponse [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", description=" + description + ", strength="
-				+ strength + ", genericNames=" + genericNames + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId
-				+ ", drugCode=" + drugCode + "]";
-	}
+    @Override
+    public String toString() {
+	return "DrugAddEditResponse [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", description=" + description + ", strength="
+		+ strength + ", genericNames=" + genericNames + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId
+		+ ", drugCode=" + drugCode + "]";
+    }
 
 }

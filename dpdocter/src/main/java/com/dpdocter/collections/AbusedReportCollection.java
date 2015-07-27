@@ -7,53 +7,53 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document(collection = "abused_report_cl")
 public class AbusedReportCollection {
 
-	@Id
-	private String id;
+    @Id
+    private String id;
 
-	@Field
-	private String abusedBy;
+    @Field
+    private String abusedBy;
 
-	@Field
-	private String abusedTo;
+    @Field
+    private String abusedTo;
 
-	@Field
-	private String reason;
+    @Field
+    private String reason;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getAbusedBy() {
-		return abusedBy;
-	}
+    public String getAbusedBy() {
+	return abusedBy;
+    }
 
-	public void setAbusedBy(String abusedBy) {
-		this.abusedBy = abusedBy;
-	}
+    public void setAbusedBy(String abusedBy) {
+	this.abusedBy = abusedBy;
+    }
 
-	public String getAbusedTo() {
-		return abusedTo;
-	}
+    public String getAbusedTo() {
+	return abusedTo;
+    }
 
-	public void setAbusedTo(String abusedTo) {
-		this.abusedTo = abusedTo;
-	}
+    public void setAbusedTo(String abusedTo) {
+	this.abusedTo = abusedTo;
+    }
 
-	public String getReason() {
-		return reason;
-	}
+    public String getReason() {
+	return reason;
+    }
 
-	public void setReason(String reason) {
-		this.reason = reason;
-	}
+    public void setReason(String reason) {
+	this.reason = reason;
+    }
 
-	@Override
-	public String toString() {
-		return "AbusedReportCollection [id=" + id + ", abusedBy=" + abusedBy + ", abusedTo=" + abusedTo + ", reason=" + reason + "]";
-	}
+    @Override
+    public String toString() {
+	return "AbusedReportCollection [id=" + id + ", abusedBy=" + abusedBy + ", abusedTo=" + abusedTo + ", reason=" + reason + "]";
+    }
 
 }

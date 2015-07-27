@@ -8,6 +8,6 @@ import org.springframework.data.solr.repository.SolrCrudRepository;
 import com.dpdocter.solr.document.SolrDiagramsDocument;
 
 public interface SolrDiagramsRepository extends SolrCrudRepository<SolrDiagramsDocument, String> {
-	@Query("diagramUrl:*?0* OR tags:*?0*")
-	public List<SolrDiagramsDocument> find(String searchTerm);
+    @Query("diagramUrl:*?0* OR tags:*?0*")
+    public List<SolrDiagramsDocument> find(String searchTerm);
 }

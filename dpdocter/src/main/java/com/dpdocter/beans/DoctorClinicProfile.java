@@ -3,81 +3,81 @@ package com.dpdocter.beans;
 import java.util.List;
 
 public class DoctorClinicProfile {
-	private String id;
+    private String id;
 
-	private String userLocationId;
+    private String userLocationId;
 
-	private String clinicAddress;
+    private String clinicAddress;
 
-	private List<String> appointmentBookingNumber;
+    private List<String> appointmentBookingNumber;
 
-	private ConsultationFee consultationFee;
+    private ConsultationFee consultationFee;
 
-	private AppointmentSlot appointmentSlot;
+    private AppointmentSlot appointmentSlot;
 
-	private List<WorkingSchedule> workingSchedules;
+    private List<WorkingSchedule> workingSchedules;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getUserLocationId() {
-		return userLocationId;
-	}
+    public String getUserLocationId() {
+	return userLocationId;
+    }
 
-	public void setUserLocationId(String userLocationId) {
-		this.userLocationId = userLocationId;
-	}
+    public void setUserLocationId(String userLocationId) {
+	this.userLocationId = userLocationId;
+    }
 
-	public String getClinicAddress() {
-		return clinicAddress;
-	}
+    public String getClinicAddress() {
+	return clinicAddress;
+    }
 
-	public void setClinicAddress(String clinicAddress) {
-		this.clinicAddress = clinicAddress;
-	}
+    public void setClinicAddress(String clinicAddress) {
+	this.clinicAddress = clinicAddress;
+    }
 
-	public List<String> getAppointmentBookingNumber() {
-		return appointmentBookingNumber;
-	}
+    public List<String> getAppointmentBookingNumber() {
+	return appointmentBookingNumber;
+    }
 
-	public void setAppointmentBookingNumber(List<String> appointmentBookingNumber) {
-		this.appointmentBookingNumber = appointmentBookingNumber;
-	}
+    public void setAppointmentBookingNumber(List<String> appointmentBookingNumber) {
+	this.appointmentBookingNumber = appointmentBookingNumber;
+    }
 
-	public ConsultationFee getConsultationFee() {
-		return consultationFee;
-	}
+    public ConsultationFee getConsultationFee() {
+	return consultationFee;
+    }
 
-	public void setConsultationFee(ConsultationFee consultationFee) {
-		this.consultationFee = consultationFee;
-	}
+    public void setConsultationFee(ConsultationFee consultationFee) {
+	this.consultationFee = consultationFee;
+    }
 
-	public AppointmentSlot getAppointmentSlot() {
-		return appointmentSlot;
-	}
+    public AppointmentSlot getAppointmentSlot() {
+	return appointmentSlot;
+    }
 
-	public void setAppointmentSlot(AppointmentSlot appointmentSlot) {
-		this.appointmentSlot = appointmentSlot;
-	}
+    public void setAppointmentSlot(AppointmentSlot appointmentSlot) {
+	this.appointmentSlot = appointmentSlot;
+    }
 
-	public List<WorkingSchedule> getWorkingSchedules() {
-		return workingSchedules;
-	}
+    public List<WorkingSchedule> getWorkingSchedules() {
+	return workingSchedules;
+    }
 
-	public void setWorkingSchedules(List<WorkingSchedule> workingSchedules) {
-		this.workingSchedules = workingSchedules;
-	}
+    public void setWorkingSchedules(List<WorkingSchedule> workingSchedules) {
+	this.workingSchedules = workingSchedules;
+    }
 
-	@Override
-	public String toString() {
-		return "DoctorClinicProfile [id=" + id + ", userLocationId=" + userLocationId + ", clinicAddress=" + clinicAddress + ", appointmentBookingNumber="
-				+ appointmentBookingNumber + ", consultationFee=" + consultationFee + ", appointmentSlot=" + appointmentSlot + ", workingSchedules="
-				+ workingSchedules + "]";
-	}
+    @Override
+    public String toString() {
+	return "DoctorClinicProfile [id=" + id + ", userLocationId=" + userLocationId + ", clinicAddress=" + clinicAddress + ", appointmentBookingNumber="
+		+ appointmentBookingNumber + ", consultationFee=" + consultationFee + ", appointmentSlot=" + appointmentSlot + ", workingSchedules="
+		+ workingSchedules + "]";
+    }
 
 }

@@ -6,31 +6,31 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "speciality_cl")
 public class SpecialityCollection {
-	@Id
-	private String id;
+    @Id
+    private String id;
 
-	@Field
-	private String speciality;
+    @Field
+    private String speciality;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getSpeciality() {
-		return speciality;
-	}
+    public String getSpeciality() {
+	return speciality;
+    }
 
-	public void setSpeciality(String speciality) {
-		this.speciality = speciality;
-	}
+    public void setSpeciality(String speciality) {
+	this.speciality = speciality;
+    }
 
-	@Override
-	public String toString() {
-		return "SpecialityCollection [id=" + id + ", speciality=" + speciality + "]";
-	}
+    @Override
+    public String toString() {
+	return "SpecialityCollection [id=" + id + ", speciality=" + speciality + "]";
+    }
 
 }
