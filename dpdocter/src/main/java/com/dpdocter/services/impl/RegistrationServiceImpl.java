@@ -61,6 +61,8 @@ import com.dpdocter.services.GenerateUniqueUserNameService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.RegistrationService;
+import com.dpdocter.solr.services.SolrRegistrationService;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -233,6 +235,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    patient.setPatientId(patientCollection.getId());
 	    registeredPatientDetails.setPatient(patient);
 	    registeredPatientDetails.setPID(patientCollection.getPID());
+	    registeredPatientDetails.setDoctorId(patientCollection.getDoctorId());
+	    registeredPatientDetails.setLocationId(patientCollection.getLocationId());
+	    registeredPatientDetails.setHospitalId(patientCollection.getHospitalId());
 	    registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
 	    Address address = new Address();
 	    if (addressCollection != null) {
@@ -346,6 +351,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    patient.setPatientId(patientCollection.getId());
 	    registeredPatientDetails.setPatient(patient);
 	    registeredPatientDetails.setPID(patientCollection.getPID());
+	    registeredPatientDetails.setDoctorId(patientCollection.getDoctorId());
+	    registeredPatientDetails.setLocationId(patientCollection.getLocationId());
+	    registeredPatientDetails.setHospitalId(patientCollection.getHospitalId());
 	    registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
 	    Address address = new Address();
 	    if (addressCollection != null) {

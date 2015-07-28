@@ -16,27 +16,31 @@ public class GeneralTests {
 	String patientId = "55661e9ab732a94e37e2d0ab";
 	request.setPatientId(patientId);
 
-	ClinicalNotesComplaint complaint = new ClinicalNotesComplaint();
-	complaint.setComplaint("Test Complaints");
-	request.setComplaints(Arrays.asList(complaint));
+	ClinicalNotesComplaint complaint1 = new ClinicalNotesComplaint();
+	ClinicalNotesComplaint complaint2 = new ClinicalNotesComplaint();
+	ClinicalNotesComplaint complaint3 = new ClinicalNotesComplaint();
+	complaint1.setComplaint("Test Complaint 1");
+	complaint2.setComplaint("Test Complaint 2");
+	complaint3.setComplaint("Test Complaint 3");
+	request.setComplaints(Arrays.asList(complaint1, complaint2, complaint3));
 
-	ClinicalNotesObservation observation = new ClinicalNotesObservation();
+	/*ClinicalNotesObservation observation = new ClinicalNotesObservation();
 	observation.setObservation("Test Observations");
-	request.setObservations(Arrays.asList(observation));
+	request.setObservations(Arrays.asList(observation));*/
 
-	ClinicalNotesInvestigation investigation = new ClinicalNotesInvestigation();
+	/*ClinicalNotesInvestigation investigation = new ClinicalNotesInvestigation();
 	investigation.setInvestigation("Test Investigation");
-	request.setInvestigations(Arrays.asList(investigation));
+	request.setInvestigations(Arrays.asList(investigation));*/
 
-	ClinicalNotesDiagnosis diagnosis = new ClinicalNotesDiagnosis();
+	/*ClinicalNotesDiagnosis diagnosis = new ClinicalNotesDiagnosis();
 	diagnosis.setDiagnosis("Test Diagnosis");
-	request.setDiagnoses(Arrays.asList(diagnosis));
+	request.setDiagnoses(Arrays.asList(diagnosis));*/
 
-	ClinicalNotesNote notes = new ClinicalNotesNote();
+	/*ClinicalNotesNote notes = new ClinicalNotesNote();
 	notes.setNote("Test Note");
-	request.setNotes(Arrays.asList(notes));
+	request.setNotes(Arrays.asList(notes));*/
 
-	request.setDiagrams(Arrays.asList("Test Diagram Link"));
+	/*request.setDiagrams(Arrays.asList("Test Diagram Link"));*/
 
 	String doctorId = "5566220cb732a94e37e2d0ac";
 	request.setDoctorId(doctorId);

@@ -11,6 +11,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.ClinicAddress;
@@ -22,9 +23,13 @@ import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.ReferenceResponse;
 import com.dpdocter.services.RegistrationService;
+import com.dpdocter.solr.document.SolrPatientDocument;
+import com.dpdocter.solr.services.SolrRegistrationService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -39,6 +44,9 @@ public class RegistrationApi {
     @Autowired
     private RegistrationService registrationService;
 
+    @Autowired
+    private SolrRegistrationService solrRegistrationService;
+
     @Path(value = PathProxy.RegistrationUrls.PATIENT_REGISTER)
     @POST
     public Response<RegisteredPatientDetails> patientRegister(PatientRegistrationRequest request) {
@@ -50,11 +58,27 @@ public class RegistrationApi {
 	// User user = registrationService.checkIfPatientExist(request);
 	if (request.getUserId() == null) {
 	    registeredPatientDetails = registrationService.registerNewPatient(request);
+	    solrRegistrationService.addPatient(getSolrPatientDocument(registeredPatientDetails));
 	} else {
 	    registeredPatientDetails = registrationService.registerExistingPatient(request);
+	    solrRegistrationService.editPatient(getSolrPatientDocument(registeredPatientDetails));
 	}
 	response.setData(registeredPatientDetails);
 	return response;
+    }
+
+    private SolrPatientDocument getSolrPatientDocument(RegisteredPatientDetails patient) {
+	SolrPatientDocument solrPatientDocument = null;
+	try {
+	    solrPatientDocument = new SolrPatientDocument();
+	    BeanUtil.map(patient.getAddress(), solrPatientDocument);
+	    BeanUtil.map(patient.getPatient(), solrPatientDocument);
+	    BeanUtil.map(patient, solrPatientDocument);
+	    solrPatientDocument.setId(patient.getPatient().getPatientId());
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+	return solrPatientDocument;
     }
 
     @Path(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM)

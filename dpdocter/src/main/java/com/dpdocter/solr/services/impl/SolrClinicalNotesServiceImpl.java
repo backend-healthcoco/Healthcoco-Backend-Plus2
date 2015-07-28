@@ -211,7 +211,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
     public boolean editDiagrams(SolrDiagramsDocument request) {
 	boolean response = false;
 	try {
-	    // solrDiagramsRepository.save(request);
+	    solrDiagramsRepository.save(request);
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();

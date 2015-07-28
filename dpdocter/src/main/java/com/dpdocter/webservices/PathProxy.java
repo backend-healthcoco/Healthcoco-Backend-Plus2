@@ -455,4 +455,10 @@ public interface PathProxy {
 
 	public static final String SEARCH_DRUG = "searchDrug/{searchTerm}";
     }
+
+    public static final String SOLR_REGISTRATION_BASEURL = BASE_URL + "/solr/registration";
+
+    public interface SolrRegistrationUrls {
+	public static final String SEARCH_PATIENT = "searchPatient/{doctorId}/{locationId}/{hospitalId}/{searchTerm}";
+    }
 }
