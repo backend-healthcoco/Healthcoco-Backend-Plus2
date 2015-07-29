@@ -11,7 +11,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.ClinicAddress;
@@ -29,7 +28,6 @@ import com.dpdocter.response.ReferenceResponse;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.solr.document.SolrPatientDocument;
 import com.dpdocter.solr.services.SolrRegistrationService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -65,20 +63,6 @@ public class RegistrationApi {
 	}
 	response.setData(registeredPatientDetails);
 	return response;
-    }
-
-    private SolrPatientDocument getSolrPatientDocument(RegisteredPatientDetails patient) {
-	SolrPatientDocument solrPatientDocument = null;
-	try {
-	    solrPatientDocument = new SolrPatientDocument();
-	    BeanUtil.map(patient.getAddress(), solrPatientDocument);
-	    BeanUtil.map(patient.getPatient(), solrPatientDocument);
-	    BeanUtil.map(patient, solrPatientDocument);
-	    solrPatientDocument.setId(patient.getPatient().getPatientId());
-	} catch (Exception e) {
-	    e.printStackTrace();
-	}
-	return solrPatientDocument;
     }
 
     @Path(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM)
@@ -281,5 +265,19 @@ public class RegistrationApi {
 	Response<ClinicTiming> response = new Response<ClinicTiming>();
 	response.setData(clinicTimingUpdateResponse);
 	return response;
+    }
+
+    private SolrPatientDocument getSolrPatientDocument(RegisteredPatientDetails patient) {
+	SolrPatientDocument solrPatientDocument = null;
+	try {
+	    solrPatientDocument = new SolrPatientDocument();
+	    BeanUtil.map(patient.getAddress(), solrPatientDocument);
+	    BeanUtil.map(patient.getPatient(), solrPatientDocument);
+	    BeanUtil.map(patient, solrPatientDocument);
+	    solrPatientDocument.setId(patient.getPatient().getPatientId());
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+	return solrPatientDocument;
     }
 }

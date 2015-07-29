@@ -6,9 +6,6 @@ import org.apache.solr.client.solrj.beans.Field;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.solr.core.mapping.SolrDocument;
 
-import com.dpdocter.beans.DOB;
-import com.dpdocter.collections.GenericCollection;
-
 @SolrDocument(solrCoreName = "patients")
 public class SolrPatientDocument {
 
@@ -44,7 +41,7 @@ public class SolrPatientDocument {
     private String emailAddress;
 
     @Field
-    private DOB dob;
+    private String dob;
 
     @Field
     private String city;
@@ -156,11 +153,11 @@ public class SolrPatientDocument {
 	this.emailAddress = emailAddress;
     }
 
-    public DOB getDob() {
+    public String getDob() {
 	return dob;
     }
 
-    public void setDob(DOB dob) {
+    public void setDob(String dob) {
 	this.dob = dob;
     }
 
