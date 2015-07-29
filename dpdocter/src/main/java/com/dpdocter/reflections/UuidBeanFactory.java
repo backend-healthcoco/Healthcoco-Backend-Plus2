@@ -6,6 +6,7 @@ import org.dozer.BeanFactory;
 
 public class UuidBeanFactory implements BeanFactory {
 
+    @Override
     public Object createBean(Object sourceBean, Class<?> destinationType, String mapId) {
 	if (sourceBean == null) {
 	    return null;

@@ -89,6 +89,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     @Autowired
     private DrugDosageRepository drugDosageRepository;
 
+    @Override
     public DrugAddEditResponse addDrug(DrugAddEditRequest request) {
 	DrugAddEditResponse response = null;
 	DrugCollection drugCollection = new DrugCollection();
@@ -107,6 +108,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	return response;
     }
 
+    @Override
     public DrugAddEditResponse editDrug(DrugAddEditRequest request) {
 	DrugAddEditResponse response = null;
 	DrugCollection drugCollection = new DrugCollection();
@@ -123,6 +125,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	return response;
     }
 
+    @Override
     public Boolean deleteDrug(String drugId, String doctorId, String hospitalId, String locationId) {
 	Boolean response = false;
 	DrugCollection drugCollection = null;
@@ -151,6 +154,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	return response;
     }
 
+    @Override
     public Boolean deleteDrug(String drugId) {
 	Boolean response = false;
 	DrugCollection drugCollection = null;
@@ -170,6 +174,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	return response;
     }
 
+    @Override
     public DrugAddEditResponse getDrugById(String drugId) {
 	DrugAddEditResponse drugAddEditResponse = null;
 	try {
@@ -187,6 +192,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	return drugAddEditResponse;
     }
 
+    @Override
     public TemplateAddEditResponse addTemplate(TemplateAddEditRequest request) {
 	TemplateAddEditResponse response = null;
 	TemplateCollection templateCollection = new TemplateCollection();
@@ -203,6 +209,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	return response;
     }
 
+    @Override
     public TemplateAddEditResponse editTemplate(TemplateAddEditRequest request) {
 	TemplateAddEditResponse response = null;
 	TemplateCollection templateCollection = new TemplateCollection();
@@ -219,6 +226,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	return response;
     }
 
+    @Override
     public Boolean deleteTemplate(String templateId, String doctorId, String hospitalId, String locationId) {
 	Boolean response = false;
 	TemplateCollection templateCollection = null;
@@ -247,6 +255,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	return response;
     }
 
+    @Override
     public TemplateAddEditResponseDetails getTemplate(String templateId, String doctorId, String hospitalId, String locationId) {
 	TemplateAddEditResponseDetails response = null;
 	TemplateCollection templateCollection = new TemplateCollection();
@@ -273,6 +282,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	return response;
     }
 
+    @Override
     public PrescriptionAddEditResponse addPrescription(PrescriptionAddEditRequest request) {
 	PrescriptionAddEditResponse response = null;
 	PrescriptionCollection prescriptionCollection = new PrescriptionCollection();
@@ -290,6 +300,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	return response;
     }
 
+    @Override
     public PrescriptionAddEditResponse editPrescription(PrescriptionAddEditRequest request) {
 	PrescriptionAddEditResponse response = null;
 	PrescriptionCollection prescriptionCollection = new PrescriptionCollection();
@@ -306,6 +317,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	return response;
     }
 
+    @Override
     public Boolean deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId, String patientId) {
 	Boolean response = false;
 	PrescriptionCollection prescriptionCollection = null;
@@ -335,6 +347,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	return response;
     }
 
+    @Override
     public List<Prescription> getPrescriptions(String doctorId, String hospitalId, String locationId, String patientId, String createdTime,
 	    boolean isOTPVerified) {
 	List<PrescriptionCollection> prescriptionCollections = null;
@@ -391,6 +404,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	return prescriptions;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public List<Prescription> getPrescriptionsByIds(List<String> prescriptionIds) {
 	List<PrescriptionCollection> prescriptionCollections = null;

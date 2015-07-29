@@ -38,6 +38,7 @@ public class ReflectionUtil {
 	}
 	try {
 	    iterateFields(to, new FieldFoundCallback() {
+		@Override
 		public void field(Object o, Field field) throws Exception {
 		    Class<?> fieldType = field.getType();
 		    if (!isPrimeType(fieldType) && primeOnly) {
@@ -78,6 +79,7 @@ public class ReflectionUtil {
 
     public static void iterateFields(final Class<?> clazz, final Object o, final FieldFoundCallback callback) throws Exception {
 	iterateClassTree(clazz, new ClassCallback() {
+	    @Override
 	    public void classFound(Class<?> cls) throws Exception {
 		for (Field field : cls.getDeclaredFields()) {
 		    callback.field(o, field);
@@ -92,6 +94,7 @@ public class ReflectionUtil {
 
     private static void iterateMethods(final Class<?> clazz, final Object o, final MethodFoundCallback callback) throws Exception {
 	iterateClassTree(clazz, new ClassCallback() {
+	    @Override
 	    public void classFound(Class<?> cls) {
 		for (Method method : cls.getDeclaredMethods()) {
 		    callback.method(o, method);
@@ -121,6 +124,7 @@ public class ReflectionUtil {
     public static void iterateAnnotatedFields(final Class<?> clazz, final Object o, final Class<?> annoClass, final AnnotatedFieldCallback callback)
 	    throws Exception {
 	iterateClassTree(clazz, new ClassCallback() {
+	    @Override
 	    public void classFound(Class<?> cls) throws Exception {
 		for (Field field : cls.getDeclaredFields()) {
 		    for (Annotation fieldAnnot : field.getAnnotations()) {
@@ -137,6 +141,7 @@ public class ReflectionUtil {
     private static void iterateAnnotatedFields(final Class<?> clazz, final Object o, final Class<?> annoClass, final Class<?> fieldType,
 	    final AnnotatedFieldCallback callback) throws Exception {
 	iterateClassTree(clazz, new ClassCallback() {
+	    @Override
 	    public void classFound(Class<?> cls) throws Exception {
 		for (Field field : cls.getDeclaredFields()) {
 		    Class<?> type = field.getType();
@@ -157,6 +162,7 @@ public class ReflectionUtil {
     private static void iterateAnnotatedMethods(final Class<?> clazz, final Object o, final Class<?> annoClass, final AnnotatedMethodCallback callback)
 	    throws Exception {
 	iterateClassTree(clazz, new ClassCallback() {
+	    @Override
 	    public void classFound(Class<?> cls) throws Exception {
 		for (Method method : cls.getDeclaredMethods()) {
 		    for (Annotation methodAnnot : method.getAnnotations()) {
@@ -172,6 +178,7 @@ public class ReflectionUtil {
 
     public static void setAnnotatedFields(final Object o, final Class<?> annoClass, final Object fieldValue) throws Exception {
 	iterateAnnotatedFields(o, annoClass, new AnnotatedFieldCallback() {
+	    @Override
 	    public void field(Object obj, Field field) throws IllegalArgumentException, IllegalAccessException {
 		field.setAccessible(true);
 		field.set(obj, fieldValue);
@@ -181,6 +188,7 @@ public class ReflectionUtil {
 
     public static void setAnnotatedFields(final Object o, final Class<?> annoClass, final Class<?> fieldType, final Object fieldValue) throws Exception {
 	iterateAnnotatedFields(o, annoClass, fieldType, new AnnotatedFieldCallback() {
+	    @Override
 	    public void field(Object obj, Field field) throws IllegalArgumentException, IllegalAccessException {
 		field.setAccessible(true);
 		field.set(obj, fieldValue);
@@ -217,6 +225,7 @@ public class ReflectionUtil {
 	final ArrayList<Method> holder = new ArrayList<Method>();
 	iterateClassTree(cls, new ClassCallback() {
 
+	    @Override
 	    public void classFound(Class<?> clazz) throws Exception {
 		try {
 		    Method method = clazz.getMethod(name, parmTypes);
@@ -273,6 +282,7 @@ public class ReflectionUtil {
 	final ArrayList<Field> holder = new ArrayList<Field>();
 	iterateClassTree(clazz, new ClassCallback() {
 
+	    @Override
 	    public void classFound(Class<?> clazz) throws Exception {
 		try {
 		    Field field = clazz.getDeclaredField(fieldName);
@@ -291,6 +301,7 @@ public class ReflectionUtil {
     public static Method getMethod(Class clazz, final String methodName, final Class<?> parameterTypes) throws Exception {
 	final ArrayList<Method> holder = new ArrayList<Method>();
 	iterateClassTree(clazz, new ClassCallback() {
+	    @Override
 	    public void classFound(Class<?> clazz) throws Exception {
 		try {
 		    Method method = clazz.getDeclaredMethod(methodName, parameterTypes);

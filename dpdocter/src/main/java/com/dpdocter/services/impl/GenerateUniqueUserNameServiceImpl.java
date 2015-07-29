@@ -21,6 +21,7 @@ public class GenerateUniqueUserNameServiceImpl implements GenerateUniqueUserName
     @Autowired
     private UserRepository userRepository;
 
+    @Override
     public String generate(User user) {
 	// UserCollection userCollection =
 	// userRepository.findByUserName(user.get)

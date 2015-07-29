@@ -52,7 +52,6 @@ import com.dpdocter.request.ClinicalNotesAddRequest;
 import com.dpdocter.request.ClinicalNotesEditRequest;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.FileManager;
-
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -91,6 +90,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     @Value(value = "${IMAGE_RESOURCE}")
     private String imageResource;
 
+    @Override
     @SuppressWarnings("unchecked")
     public ClinicalNotes addNotes(ClinicalNotesAddRequest request) {
 	ClinicalNotes clinicalNotes = null;
@@ -236,6 +236,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return clinicalNotes;
     }
 
+    @Override
     public ClinicalNotes getNotesById(String id) {
 	ClinicalNotes clinicalNote = null;
 	try {
@@ -330,6 +331,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return clinicalNote;
     }
 
+    @Override
     public ClinicalNotes editNotes(ClinicalNotesEditRequest request) {
 	ClinicalNotes clinicalNotes = null;
 	try {
@@ -362,6 +364,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return clinicalNotes;
     }
 
+    @Override
     public void deleteNote(String id) {
 	try {
 	    List<PatientClinicalNotesCollection> patientClinicalNotesCollections = patientClinicalNotesRepository.findByClinicalNotesId(id);
@@ -376,6 +379,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
     }
 
+    @Override
     public List<ClinicalNotes> getPatientsClinicalNotesWithVerifiedOTP(String patientId, String createdTime) {
 	List<ClinicalNotes> clinicalNotesList = null;
 	List<PatientClinicalNotesCollection> patientClinicalNotesCollections = null;
@@ -409,6 +413,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return clinicalNotesList;
     }
 
+    @Override
     public List<ClinicalNotes> getPatientsClinicalNotesWithoutVerifiedOTP(String patientId, String doctorId, String locationId, String hospitalId,
 	    String createdTime) {
 	List<ClinicalNotes> clinicalNotesList = null;
@@ -456,6 +461,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return clinicalNotesList;
     }
 
+    @Override
     public Complaint addEditComplaint(Complaint complaint) {
 	try {
 	    ComplaintCollection complaintCollection = new ComplaintCollection();
@@ -469,6 +475,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return complaint;
     }
 
+    @Override
     public Observation addEditObservation(Observation observation) {
 	try {
 	    ObservationCollection observationCollection = new ObservationCollection();
@@ -482,6 +489,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return observation;
     }
 
+    @Override
     public Investigation addEditInvestigation(Investigation investigation) {
 	try {
 	    InvestigationCollection investigationCollection = new InvestigationCollection();
@@ -495,6 +503,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return investigation;
     }
 
+    @Override
     public Diagnoses addEditDiagnosis(Diagnoses diagnosis) {
 	try {
 	    DiagnosisCollection diagnosisCollection = new DiagnosisCollection();
@@ -508,6 +517,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return diagnosis;
     }
 
+    @Override
     public Notes addEditNotes(Notes notes) {
 	try {
 	    NotesCollection notesCollection = new NotesCollection();
@@ -521,6 +531,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return notes;
     }
 
+    @Override
     public Diagram addEditDiagram(Diagram diagram) {
 	try {
 	    String path = "clinicalNotes" + File.separator + "diagrams";
@@ -539,6 +550,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return diagram;
     }
 
+    @Override
     public void deleteComplaint(String id, String doctorId, String locationId, String hospitalId) {
 	try {
 	    ComplaintCollection complaintCollection = complaintRepository.findOne(id);
@@ -565,6 +577,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
     }
 
+    @Override
     public void deleteObservation(String id, String doctorId, String locationId, String hospitalId) {
 	try {
 	    ObservationCollection observationCollection = observationRepository.findOne(id);
@@ -590,6 +603,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
     }
 
+    @Override
     public void deleteInvestigation(String id, String doctorId, String locationId, String hospitalId) {
 	try {
 	    InvestigationCollection investigationCollection = investigationRepository.findOne(id);
@@ -615,6 +629,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
     }
 
+    @Override
     public void deleteDiagnosis(String id, String doctorId, String locationId, String hospitalId) {
 	try {
 	    DiagnosisCollection diagnosisCollection = diagnosisRepository.findOne(id);
@@ -639,6 +654,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
     }
 
+    @Override
     public void deleteNotes(String id, String doctorId, String locationId, String hospitalId) {
 	try {
 	    NotesCollection notesCollection = notesRepository.findOne(id);
@@ -664,6 +680,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
     }
 
+    @Override
     public void deleteDiagram(String id, String doctorId, String locationId, String hospitalId) {
 	try {
 	    DiagramsCollection diagramsCollection = diagramsRepository.findOne(id);

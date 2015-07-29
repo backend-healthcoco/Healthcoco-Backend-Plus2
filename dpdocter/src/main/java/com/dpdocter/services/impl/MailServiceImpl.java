@@ -37,6 +37,7 @@ public class MailServiceImpl implements MailService {
      *            (Optional) - If any attachment is to be send with mail else
      *            should be NULL. This method sends Simple mails,MIME mails
      */
+    @Override
     public void sendEmail(String to, String subject, String body, MailAttachment mailAttachment) throws MessagingException {
 
 	MimeMessage message = javaMailSender.createMimeMessage();

@@ -211,7 +211,7 @@ public class RecordsApi {
 	    ResponseBuilder response = javax.ws.rs.core.Response.status(Status.BAD_REQUEST);
 	    return response.build();
 	}
-	ResponseBuilder response = javax.ws.rs.core.Response.ok((Object) file);
+	ResponseBuilder response = javax.ws.rs.core.Response.ok(file);
 	response.header("Content-Disposition", "attachment; filename=" + file.getName());
 	return response.build();
     }

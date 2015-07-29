@@ -10,6 +10,7 @@ import com.dpdocter.services.MailBodyGenerator;
 @Service
 public class MailBodyGeneratorImpl implements MailBodyGenerator {
 
+    @Override
     public String generateActivationEmailBody(String userName, String fName, String mName, String lName) throws Exception {
 	StringBuffer body = new StringBuffer();
 	body.append("Dear " + fName + " " + lName + ", \n");
@@ -17,6 +18,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	return body.toString();
     }
 
+    @Override
     public String generateForgotPasswordEmailBody(String userName, String fName, String mName, String lName, String userId) {
 	StringBuffer body = new StringBuffer();
 	body.append("Dear " + fName + " " + lName + ", \n");
@@ -24,6 +26,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	return body.toString();
     }
 
+    @Override
     public String generatePatientRegistrationEmailBody(String userName, String password, String firstName, String lastName) {
 	StringBuffer body = new StringBuffer();
 	body.append("Dear " + firstName + " " + lastName + ", \n");
@@ -31,6 +34,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	return body.toString();
     }
 
+    @Override
     public String generateForgotUsernameEmailBody(List<UserCollection> userCollection) {
 	StringBuffer body = new StringBuffer();
 	body.append("Hi, \n Below are your usernames \n");

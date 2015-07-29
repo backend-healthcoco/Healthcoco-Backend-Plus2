@@ -50,6 +50,7 @@ public class ServiceException extends Exception {
 	    return statusCode;
 	}
 
+	@Override
 	public String toString() {
 	    return String.valueOf(statusCode);
 	}

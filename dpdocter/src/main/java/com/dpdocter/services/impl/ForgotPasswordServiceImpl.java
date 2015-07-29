@@ -33,6 +33,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     @Autowired
     private MailBodyGenerator mailBodyGenerator;
 
+    @Override
     public ForgotPasswordResponse forgotPasswordForDoctor(ForgotUsernamePasswordRequest request) {
 	try {
 	    UserCollection userCollection = null;
@@ -63,6 +64,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	}
     }
 
+    @Override
     public Boolean forgotPasswordForPatient(ForgotUsernamePasswordRequest request) {
 	Boolean flag = false;
 	try {
@@ -95,6 +97,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	return flag;
     }
 
+    @Override
     public ForgotPasswordResponse getEmailAndMobNumberOfPatient(String username) {
 	try {
 	    UserCollection userCollection = null;
@@ -117,6 +120,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	}
     }
 
+    @Override
     public void resetPassword(ResetPasswordRequest request) {
 	try {
 	    UserCollection userCollection = userRepository.findOne(request.getUserId());
@@ -130,6 +134,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
     }
 
+    @Override
     public Boolean forgotUsername(ForgotUsernamePasswordRequest request) {
 	boolean flag = false;
 	try {

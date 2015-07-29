@@ -96,6 +96,7 @@ public class ContactsServiceImpl implements ContactsService {
      * @param blocked
      * @return List of Patient cards
      */
+    @Override
     public List<PatientCard> getDoctorContacts(GetDoctorContactsRequest request) {
 	List<DoctorContactCollection> doctorContactCollections = null;
 	try {
@@ -117,6 +118,7 @@ public class ContactsServiceImpl implements ContactsService {
 	}
     }
 
+    @Override
     public List<PatientCard> getDoctorContacts(String doctorId, String createdTime) {
 	List<DoctorContactCollection> doctorContactCollections = null;
 	try {
@@ -236,6 +238,7 @@ public class ContactsServiceImpl implements ContactsService {
 	return filteredDoctorContactCollection;
     }
 
+    @Override
     public void blockPatient(String patientId, String docterId) {
 	try {
 	    DoctorContactCollection doctorContactCollection = doctorContactsRepository.findByDoctorIdAndContactId(docterId, patientId);
@@ -252,6 +255,7 @@ public class ContactsServiceImpl implements ContactsService {
 	}
     }
 
+    @Override
     public Group addEditGroup(Group group) {
 	try {
 	    GroupCollection groupCollection = new GroupCollection();
@@ -266,6 +270,7 @@ public class ContactsServiceImpl implements ContactsService {
 	}
     }
 
+    @Override
     public Boolean deleteGroup(String groupId) {
 	Boolean response = false;
 	GroupCollection groupCollection = null;
@@ -285,6 +290,7 @@ public class ContactsServiceImpl implements ContactsService {
 	return response;
     }
 
+    @Override
     public List<PatientCard> searchPatients(SearchRequest request) {
 	try {
 
@@ -294,6 +300,7 @@ public class ContactsServiceImpl implements ContactsService {
 	return null;
     }
 
+    @Override
     public List<PatientCard> getDoctorsRecentlyVisitedContacts(String doctorId, int size, int page) {
 	try {
 	    List<PatientAdmissionCollection> patientAdmissionCollections = patientAdmissionRepository.findDistinctPatientByDoctorId(doctorId, new PageRequest(
@@ -311,6 +318,7 @@ public class ContactsServiceImpl implements ContactsService {
 	return null;
     }
 
+    @Override
     public List<PatientCard> getDoctorsMostVisitedContacts(String doctorId, int size, int page) {
 	try {
 
@@ -320,6 +328,7 @@ public class ContactsServiceImpl implements ContactsService {
 	return null;
     }
 
+    @Override
     public int getContactsTotalSize(GetDoctorContactsRequest request) {
 	List<DoctorContactCollection> doctorContactCollections = null;
 	try {
@@ -345,6 +354,7 @@ public class ContactsServiceImpl implements ContactsService {
     /**
      * This service gives lists of all groups for doctor.
      */
+    @Override
     public List<Group> getAllGroups(String doctorId, String locationId, String hospitalId, String createdTime) {
 	List<Group> groups = null;
 	List<GroupCollection> groupCollections = null;
@@ -484,7 +494,7 @@ public class ContactsServiceImpl implements ContactsService {
 		    Address address = new Address();
 		    BeanUtil.map(addressCollection, address);
 		    registeredPatientDetail.setAddress(address);
-		    groupCollections = (List<GroupCollection>) groupRepository.findAll((List<String>) groupIds);
+		    groupCollections = (List<GroupCollection>) groupRepository.findAll(groupIds);
 		    groups = new ArrayList<Group>();
 		    BeanUtil.map(groupCollections, groups);
 		    registeredPatientDetail.setGroups(groups);
