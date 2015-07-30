@@ -96,6 +96,7 @@ public class ContactsServiceImpl implements ContactsService {
      * @param blocked
      * @return List of Patient cards
      */
+    @Override
     public List<PatientCard> getDoctorContacts(GetDoctorContactsRequest request) {
 	List<DoctorContactCollection> doctorContactCollections = null;
 	try {
@@ -117,50 +118,52 @@ public class ContactsServiceImpl implements ContactsService {
 	}
     }
 
+    @Override
     public List<PatientCard> getDoctorContacts(String doctorId, String createdTime, boolean isDeleted) {
-	List<DoctorContactCollection> doctorContactCollections = null;
-	try {
-	    if (DPDoctorUtils.anyStringEmpty(createdTime)) {
-		if(isDeleted)doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, new Sort(Sort.Direction.DESC, "createdTime"));
-		
-		if(isDeleted)doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"));
-	    } else {
-		long createdTimestamp = Long.parseLong(createdTime);
-		if(isDeleted)
-			doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, new Date(createdTimestamp), new Sort(
-			Sort.Direction.DESC, "createdTime"));
-		else
-			doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, isDeleted, new Date(createdTimestamp), new Sort(
-					Sort.Direction.DESC, "createdTime"));
-	    }
 
-	    if (doctorContactCollections.isEmpty()) {
-		return null;
-	    }
-	    @SuppressWarnings("unchecked")
-	    Collection<String> patientIds = CollectionUtils.collect(doctorContactCollections, new BeanToPropertyValueTransformer("contactId"));
-
-	    /*
-	     * List<PatientGroupCollection> patientGroupCollections =
-	     * (List<PatientGroupCollection>) patientGroupRepository
-	     * .findByPatientId((List<String>) patientIds);
-	     */
-
-	    /*
-	     * @SuppressWarnings("unchecked") List<String> groupIds =
-	     * (List<String>) CollectionUtils.collect(patientGroupCollections,
-	     * new BeanToPropertyValueTransformer("groupId"));
-	     * 
-	     * doctorContactCollections = filterContactsByGroup(groupIds,
-	     * doctorContactCollections);
-	     */
-
-	    List<PatientCard> patientCards = getSpecifiedPatientCards(patientIds, doctorId, null, null);
-	    return patientCards;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-	}
+	    	List<DoctorContactCollection> doctorContactCollections = null;
+		try {
+		    if (DPDoctorUtils.anyStringEmpty(createdTime)) {
+			if(isDeleted)doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, new Sort(Sort.Direction.DESC, "createdTime"));
+			
+			if(isDeleted)doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"));
+		    } else {
+			long createdTimestamp = Long.parseLong(createdTime);
+			if(isDeleted)
+				doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, new Date(createdTimestamp), new Sort(
+				Sort.Direction.DESC, "createdTime"));
+			else
+				doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, isDeleted, new Date(createdTimestamp), new Sort(
+						Sort.Direction.DESC, "createdTime"));
+		    }
+	
+		    if (doctorContactCollections.isEmpty()) {
+			return null;
+		    }
+		    @SuppressWarnings("unchecked")
+		    Collection<String> patientIds = CollectionUtils.collect(doctorContactCollections, new BeanToPropertyValueTransformer("contactId"));
+	
+		    /*
+		     * List<PatientGroupCollection> patientGroupCollections =
+		     * (List<PatientGroupCollection>) patientGroupRepository
+		     * .findByPatientId((List<String>) patientIds);
+		     */
+	
+		    /*
+		     * @SuppressWarnings("unchecked") List<String> groupIds =
+		     * (List<String>) CollectionUtils.collect(patientGroupCollections,
+		     * new BeanToPropertyValueTransformer("groupId"));
+		     * 
+		     * doctorContactCollections = filterContactsByGroup(groupIds,
+		     * doctorContactCollections);
+		     */
+	
+		    List<PatientCard> patientCards = getSpecifiedPatientCards(patientIds, doctorId, null, null);
+		    return patientCards;
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
 
     }
 
@@ -242,6 +245,7 @@ public class ContactsServiceImpl implements ContactsService {
 	return filteredDoctorContactCollection;
     }
 
+    @Override
     public void blockPatient(String patientId, String docterId) {
 	try {
 	    DoctorContactCollection doctorContactCollection = doctorContactsRepository.findByDoctorIdAndContactId(docterId, patientId);
@@ -258,6 +262,7 @@ public class ContactsServiceImpl implements ContactsService {
 	}
     }
 
+    @Override
     public Group addEditGroup(Group group) {
 	try {
 	    GroupCollection groupCollection = new GroupCollection();
@@ -272,6 +277,7 @@ public class ContactsServiceImpl implements ContactsService {
 	}
     }
 
+    @Override
     public Boolean deleteGroup(String groupId) {
 	Boolean response = false;
 	GroupCollection groupCollection = null;
@@ -291,6 +297,7 @@ public class ContactsServiceImpl implements ContactsService {
 	return response;
     }
 
+    @Override
     public List<PatientCard> searchPatients(SearchRequest request) {
 	try {
 
@@ -300,6 +307,7 @@ public class ContactsServiceImpl implements ContactsService {
 	return null;
     }
 
+    @Override
     public List<PatientCard> getDoctorsRecentlyVisitedContacts(String doctorId, int size, int page) {
 	try {
 	    List<PatientAdmissionCollection> patientAdmissionCollections = patientAdmissionRepository.findDistinctPatientByDoctorId(doctorId, new PageRequest(
@@ -317,6 +325,7 @@ public class ContactsServiceImpl implements ContactsService {
 	return null;
     }
 
+    @Override
     public List<PatientCard> getDoctorsMostVisitedContacts(String doctorId, int size, int page) {
 	try {
 
@@ -326,6 +335,7 @@ public class ContactsServiceImpl implements ContactsService {
 	return null;
     }
 
+    @Override
     public int getContactsTotalSize(GetDoctorContactsRequest request) {
 	List<DoctorContactCollection> doctorContactCollections = null;
 	try {
@@ -351,40 +361,41 @@ public class ContactsServiceImpl implements ContactsService {
     /**
      * This service gives lists of all groups for doctor.
      */
+    @Override
     public List<Group> getAllGroups(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted) {
-	List<Group> groups = null;
-	List<GroupCollection> groupCollections = null;
-	try {
-	    if (DPDoctorUtils.anyStringEmpty(createdTime)) {
-	    	if(isDeleted)
-	    		groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC,
-	    			"createdTime"));
-	    	else 
-	    		groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC,
-	    			"createdTime"));
-	    } else {
-		long createdTimestamp = Long.parseLong(createdTime);
-			if(isDeleted)
-				groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId, new Date(createdTimestamp),
-						new Sort(Sort.Direction.DESC, "createdTime"));
-			else
-				groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId, isDeleted, new Date(createdTimestamp),
-						new Sort(Sort.Direction.DESC, "createdTime"));
-	    }
-
-	    if (groupCollections != null) {
-		groups = new ArrayList<Group>();
-		for (GroupCollection groupCollection : groupCollections) {
-		    Group group = new Group();
-		    ReflectionUtil.copy(group, groupCollection);
-		    groups.add(group);
-		}
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-	}
-	return groups;
+			List<Group> groups = null;
+			List<GroupCollection> groupCollections = null;
+			try {
+			    if (DPDoctorUtils.anyStringEmpty(createdTime)) {
+			    	if(isDeleted)
+			    		groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC,
+			    			"createdTime"));
+			    	else 
+			    		groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC,
+			    			"createdTime"));
+			    } else {
+				long createdTimestamp = Long.parseLong(createdTime);
+					if(isDeleted)
+						groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId, new Date(createdTimestamp),
+								new Sort(Sort.Direction.DESC, "createdTime"));
+					else
+						groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId, isDeleted, new Date(createdTimestamp),
+								new Sort(Sort.Direction.DESC, "createdTime"));
+			    }
+		
+			    if (groupCollections != null) {
+				groups = new ArrayList<Group>();
+				for (GroupCollection groupCollection : groupCollections) {
+				    Group group = new Group();
+				    ReflectionUtil.copy(group, groupCollection);
+				    groups.add(group);
+				}
+			    }
+			} catch (Exception e) {
+			    e.printStackTrace();
+			    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+			}
+			return groups;
     }
 
     @Override
@@ -512,7 +523,7 @@ public class ContactsServiceImpl implements ContactsService {
 		    Address address = new Address();
 		    BeanUtil.map(addressCollection, address);
 		    registeredPatientDetail.setAddress(address);
-		    groupCollections = (List<GroupCollection>) groupRepository.findAll((List<String>) groupIds);
+		    groupCollections = (List<GroupCollection>) groupRepository.findAll(groupIds);
 		    groups = new ArrayList<Group>();
 		    BeanUtil.map(groupCollections, groups);
 		    registeredPatientDetail.setGroups(groups);

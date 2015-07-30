@@ -117,6 +117,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Value(value = "${mail.signup.subject.activation}")
     private String signupSubject;
 
+    @Override
     public User checkIfPatientExist(PatientRegistrationRequest request) {
 	try {
 	    UserCollection userCollection = userRepository.checkPatient(request.getFirstName(), request.getMiddleName(), request.getLastName(),
@@ -134,6 +135,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     }
 
+    @Override
     public RegisteredPatientDetails registerNewPatient(PatientRegistrationRequest request) {
 	RegisteredPatientDetails registeredPatientDetails = null;
 	List<GroupCollection> groupCollections = null;
@@ -233,6 +235,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    patient.setPatientId(patientCollection.getId());
 	    registeredPatientDetails.setPatient(patient);
 	    registeredPatientDetails.setPID(patientCollection.getPID());
+	    registeredPatientDetails.setDoctorId(patientCollection.getDoctorId());
+	    registeredPatientDetails.setLocationId(patientCollection.getLocationId());
+	    registeredPatientDetails.setHospitalId(patientCollection.getHospitalId());
 	    registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
 	    Address address = new Address();
 	    if (addressCollection != null) {
@@ -251,6 +256,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	return registeredPatientDetails;
     }
 
+    @Override
     public RegisteredPatientDetails registerExistingPatient(PatientRegistrationRequest request) {
 	RegisteredPatientDetails registeredPatientDetails = null;
 	PatientCollection patientCollection = null;
@@ -346,6 +352,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    patient.setPatientId(patientCollection.getId());
 	    registeredPatientDetails.setPatient(patient);
 	    registeredPatientDetails.setPID(patientCollection.getPID());
+	    registeredPatientDetails.setDoctorId(patientCollection.getDoctorId());
+	    registeredPatientDetails.setLocationId(patientCollection.getLocationId());
+	    registeredPatientDetails.setHospitalId(patientCollection.getHospitalId());
 	    registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
 	    Address address = new Address();
 	    if (addressCollection != null) {
@@ -364,6 +373,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	return registeredPatientDetails;
     }
 
+    @Override
     public List<User> getUsersByPhoneNumber(String phoneNumber, String locationId, String hospitalId) {
 	List<User> users = null;
 	try {
@@ -405,6 +415,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	return RandomStringUtils.randomAlphabetic(count);
     }
 
+    @Override
     public RegisteredPatientDetails getPatientProfileByUserId(String userId, String doctorId, String locationId, String hospitalId) {
 	RegisteredPatientDetails registeredPatientDetails = null;
 	List<GroupCollection> groupCollections = null;
@@ -432,7 +443,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    Address address = new Address();
 		    BeanUtil.map(addressCollection, address);
 		    registeredPatientDetails.setAddress(address);
-		    groupCollections = (List<GroupCollection>) groupRepository.findAll((List<String>) groupIds);
+		    groupCollections = (List<GroupCollection>) groupRepository.findAll(groupIds);
 		    groups = new ArrayList<Group>();
 		    BeanUtil.map(groupCollections, groups);
 		    /*
@@ -449,6 +460,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	return registeredPatientDetails;
     }
 
+    @Override
     public Reference addEditReference(Reference reference) {
 	try {
 	    ReferencesCollection referrencesCollection = new ReferencesCollection();
@@ -462,6 +474,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	return reference;
     }
 
+    @Override
     public void deleteReferrence(String referenceId) {
 	try {
 	    ReferencesCollection referrencesCollection = referrenceRepository.findOne(referenceId);
@@ -481,6 +494,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     }
 
+    @Override
     public ReferenceResponse getReferences(String doctorId, String locationId, String hospitalId) {
 	ReferenceResponse response = null;
 	try {
@@ -506,6 +520,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	return response;
     }
 
+    @Override
     public ReferenceResponse getCustomReferences(String doctorId, String locationId, String hospitalId) {
 	ReferenceResponse response = null;
 	try {
@@ -531,6 +546,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	return response;
     }
 
+    @Override
     public String patientIdGenerator(String doctorId, String locationId, String hospitalId) {
 	String generatedId = null;
 	try {

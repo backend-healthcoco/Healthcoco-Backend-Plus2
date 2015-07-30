@@ -85,7 +85,7 @@ public class JacksonUtil {
 	ObjectMapper jsonProcessor = new ObjectMapper();
 	jsonProcessor.configure(Feature.WRITE_NULL_PROPERTIES, false);
 	jsonProcessor.configure(org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-	return (T) jsonProcessor.readValue(sr, clazz);
+	return jsonProcessor.readValue(sr, clazz);
     }
 
     public static <T> List<T> json2List(String str, TypeReference<List<T>> typeRef) throws JsonParseException, JsonMappingException, IOException {

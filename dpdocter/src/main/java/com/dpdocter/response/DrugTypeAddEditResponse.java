@@ -5,6 +5,7 @@ import com.dpdocter.collections.GenericCollection;
 public class DrugTypeAddEditResponse extends GenericCollection {
 
     private String id;
+
     private String type;
 
     private String doctorId;

@@ -90,6 +90,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     @Value(value = "${IMAGE_RESOURCE}")
     private String imageResource;
 
+    @Override
+    @SuppressWarnings("unchecked")
     public ClinicalNotes addNotes(ClinicalNotesAddRequest request) {
 	ClinicalNotes clinicalNotes = null;
 	List<String> complaintIds = null;
@@ -105,82 +107,82 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    BeanUtil.map(request, clinicalNotesCollection);
 
 	    complaintIds = new ArrayList<String>();
-	    for (ClinicalNotesComplaint complaint : request.getComplaints()) {
-		if (DPDoctorUtils.anyStringEmpty(complaint.getId())) {
-		    ComplaintCollection complaintCollection = new ComplaintCollection();
-		    BeanUtil.map(complaint, complaintCollection);
-		    complaintCollection.setDoctorId(request.getDoctorId());
-		    complaintCollection.setHospitalId(request.getHospitalId());
-		    complaintCollection.setLocationId(request.getLocationId());
-		    complaintCollection.setCreatedTime(createdTime);
-		    complaintCollection = complaintRepository.save(complaintCollection);
-		    complaintIds.add(complaintCollection.getId());
-		} else {
-		    complaintIds.add(complaint.getId());
+	    if (request.getComplaints() != null && !request.getComplaints().isEmpty()) {
+		for (ClinicalNotesComplaint complaint : request.getComplaints()) {
+		    if (DPDoctorUtils.anyStringEmpty(complaint.getId())) {
+			ComplaintCollection complaintCollection = new ComplaintCollection();
+			BeanUtil.map(complaint, complaintCollection);
+			BeanUtil.map(request, complaintCollection);
+			complaintCollection.setCreatedTime(createdTime);
+			complaintCollection = complaintRepository.save(complaintCollection);
+			complaintIds.add(complaintCollection.getId());
+		    } else {
+			complaintIds.add(complaint.getId());
+		    }
 		}
 	    }
 
 	    observationIds = new ArrayList<String>();
-	    for (ClinicalNotesObservation observation : request.getObservations()) {
-		if (DPDoctorUtils.anyStringEmpty(observation.getId())) {
-		    ObservationCollection observationCollection = new ObservationCollection();
-		    BeanUtil.map(observation, observationCollection);
-		    observationCollection.setDoctorId(request.getDoctorId());
-		    observationCollection.setHospitalId(request.getHospitalId());
-		    observationCollection.setLocationId(request.getLocationId());
-		    observationCollection.setCreatedTime(createdTime);
-		    observationCollection = observationRepository.save(observationCollection);
-		    observationIds.add(observationCollection.getId());
-		} else {
-		    observationIds.add(observation.getId());
+	    if (request.getObservations() != null && !request.getObservations().isEmpty()) {
+		for (ClinicalNotesObservation observation : request.getObservations()) {
+		    if (DPDoctorUtils.anyStringEmpty(observation.getId())) {
+			ObservationCollection observationCollection = new ObservationCollection();
+			BeanUtil.map(observation, observationCollection);
+			BeanUtil.map(request, observationCollection);
+			observationCollection.setCreatedTime(createdTime);
+			observationCollection = observationRepository.save(observationCollection);
+			observationIds.add(observationCollection.getId());
+		    } else {
+			observationIds.add(observation.getId());
+		    }
 		}
 	    }
 
 	    investigationIds = new ArrayList<String>();
-	    for (ClinicalNotesInvestigation investigation : request.getInvestigations()) {
-		if (DPDoctorUtils.anyStringEmpty(investigation.getId())) {
-		    InvestigationCollection investigationCollection = new InvestigationCollection();
-		    BeanUtil.map(investigation, investigationCollection);
-		    investigationCollection.setDoctorId(request.getDoctorId());
-		    investigationCollection.setHospitalId(request.getHospitalId());
-		    investigationCollection.setLocationId(request.getLocationId());
-		    investigationCollection.setCreatedTime(createdTime);
-		    investigationCollection = investigationRepository.save(investigationCollection);
-		    investigationIds.add(investigationCollection.getId());
-		} else {
-		    investigationIds.add(investigation.getId());
+	    if (request.getInvestigations() != null && !request.getInvestigations().isEmpty()) {
+		for (ClinicalNotesInvestigation investigation : request.getInvestigations()) {
+		    if (DPDoctorUtils.anyStringEmpty(investigation.getId())) {
+			InvestigationCollection investigationCollection = new InvestigationCollection();
+			BeanUtil.map(investigation, investigationCollection);
+			BeanUtil.map(request, investigationCollection);
+			investigationCollection.setCreatedTime(createdTime);
+			investigationCollection = investigationRepository.save(investigationCollection);
+			investigationIds.add(investigationCollection.getId());
+		    } else {
+			investigationIds.add(investigation.getId());
+		    }
 		}
 	    }
 
 	    noteIds = new ArrayList<String>();
-	    for (ClinicalNotesNote note : request.getNotes()) {
-		if (DPDoctorUtils.anyStringEmpty(note.getId())) {
-		    NotesCollection notesCollection = new NotesCollection();
-		    BeanUtil.map(note, notesCollection);
-		    notesCollection.setDoctorId(request.getDoctorId());
-		    notesCollection.setHospitalId(request.getHospitalId());
-		    notesCollection.setLocationId(request.getLocationId());
-		    notesCollection.setCreatedTime(createdTime);
-		    notesCollection = notesRepository.save(notesCollection);
-		    noteIds.add(notesCollection.getId());
-		} else {
-		    noteIds.add(note.getId());
+	    if (request.getNotes() != null && !request.getNotes().isEmpty()) {
+		for (ClinicalNotesNote note : request.getNotes()) {
+		    if (DPDoctorUtils.anyStringEmpty(note.getId())) {
+			NotesCollection notesCollection = new NotesCollection();
+			BeanUtil.map(note, notesCollection);
+			BeanUtil.map(request, notesCollection);
+			notesCollection.setCreatedTime(createdTime);
+			notesCollection = notesRepository.save(notesCollection);
+			noteIds.add(notesCollection.getId());
+		    } else {
+			noteIds.add(note.getId());
+		    }
 		}
 	    }
 
 	    diagnosisIds = new ArrayList<String>();
-	    for (ClinicalNotesDiagnosis diagnosis : request.getDiagnoses()) {
-		if (DPDoctorUtils.anyStringEmpty(diagnosis.getId())) {
-		    DiagnosisCollection diagnosisCollection = new DiagnosisCollection();
-		    BeanUtil.map(diagnosis, diagnosisCollection);
-		    diagnosisCollection.setDoctorId(request.getDoctorId());
-		    diagnosisCollection.setHospitalId(request.getHospitalId());
-		    diagnosisCollection.setLocationId(request.getLocationId());
-		    diagnosisCollection.setCreatedTime(createdTime);
-		    diagnosisCollection = diagnosisRepository.save(diagnosisCollection);
-		    diagnosisIds.add(diagnosisCollection.getId());
-		} else {
-		    diagnosisIds.add(diagnosis.getId());
+	    if (request.getDiagnoses() != null && !request.getDiagnoses().isEmpty()) {
+		for (ClinicalNotesDiagnosis diagnosis : request.getDiagnoses()) {
+		    if (DPDoctorUtils.anyStringEmpty(diagnosis.getId())) {
+			DiagnosisCollection diagnosisCollection = new DiagnosisCollection();
+			BeanUtil.map(diagnosis, diagnosisCollection);
+			BeanUtil.map(request, diagnosisCollection);
+			diagnosisCollection.setCreatedTime(createdTime);
+			diagnosisCollection = diagnosisRepository.save(diagnosisCollection);
+			diagnosisIds.add(diagnosisCollection.getId());
+		    } else {
+			diagnosisIds.add(diagnosis.getId());
+		    }
 		}
 	    }
 
@@ -213,7 +215,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    List<Observation> observations = IteratorUtils.toList(observationRepository.findAll(observationIds).iterator());
 	    List<Diagnoses> diagnoses = IteratorUtils.toList(diagnosisRepository.findAll(diagnosisIds).iterator());
 	    List<Notes> notes = IteratorUtils.toList(notesRepository.findAll(noteIds).iterator());
-	    List<Diagram> diagrams = IteratorUtils.toList(diagramsRepository.findAll(request.getDiagrams()).iterator());
+	    List<Diagram> diagrams = null;
+	    if (request.getDiagrams() != null && !request.getDiagrams().isEmpty()) {
+		diagrams = IteratorUtils.toList(diagramsRepository.findAll(request.getDiagrams()).iterator());
+	    } else {
+		diagrams = new ArrayList<Diagram>();
+	    }
 
 	    clinicalNotes.setComplaints(complaints);
 	    clinicalNotes.setInvestigations(investigations);
@@ -229,6 +236,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return clinicalNotes;
     }
 
+    @Override
     public ClinicalNotes getNotesById(String id) {
 	ClinicalNotes clinicalNote = null;
 	try {
@@ -323,6 +331,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return clinicalNote;
     }
 
+    @Override
     public ClinicalNotes editNotes(ClinicalNotesEditRequest request) {
 	ClinicalNotes clinicalNotes = null;
 	try {
@@ -355,6 +364,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return clinicalNotes;
     }
 
+    @Override
     public void deleteNote(String id) {
 	try {
 	    List<PatientClinicalNotesCollection> patientClinicalNotesCollections = patientClinicalNotesRepository.findByClinicalNotesId(id);
@@ -368,7 +378,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
 
     }
-
+    
+    @Override
     public List<ClinicalNotes> getPatientsClinicalNotesWithVerifiedOTP(String patientId, String createdTime, boolean isDeleted) {
 		List<ClinicalNotes> clinicalNotesList = null;
 		List<PatientClinicalNotesCollection> patientClinicalNotesCollections = null;
@@ -409,6 +420,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return clinicalNotesList;
     }
 
+    @Override
     public List<ClinicalNotes> getPatientsClinicalNotesWithoutVerifiedOTP(String patientId, String doctorId, String locationId, String hospitalId,
 	    String createdTime, boolean isDeleted) {
 	List<ClinicalNotes> clinicalNotesList = null;
@@ -456,6 +468,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return clinicalNotesList;
     }
 
+    @Override
     public Complaint addEditComplaint(Complaint complaint) {
 	try {
 	    ComplaintCollection complaintCollection = new ComplaintCollection();
@@ -469,6 +482,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return complaint;
     }
 
+    @Override
     public Observation addEditObservation(Observation observation) {
 	try {
 	    ObservationCollection observationCollection = new ObservationCollection();
@@ -482,6 +496,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return observation;
     }
 
+    @Override
     public Investigation addEditInvestigation(Investigation investigation) {
 	try {
 	    InvestigationCollection investigationCollection = new InvestigationCollection();
@@ -495,6 +510,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return investigation;
     }
 
+    @Override
     public Diagnoses addEditDiagnosis(Diagnoses diagnosis) {
 	try {
 	    DiagnosisCollection diagnosisCollection = new DiagnosisCollection();
@@ -508,6 +524,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return diagnosis;
     }
 
+    @Override
     public Notes addEditNotes(Notes notes) {
 	try {
 	    NotesCollection notesCollection = new NotesCollection();
@@ -521,6 +538,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return notes;
     }
 
+    @Override
     public Diagram addEditDiagram(Diagram diagram) {
 	try {
 	    String path = "clinicalNotes" + File.separator + "diagrams";
@@ -539,6 +557,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return diagram;
     }
 
+    @Override
     public void deleteComplaint(String id, String doctorId, String locationId, String hospitalId) {
 	try {
 	    ComplaintCollection complaintCollection = complaintRepository.findOne(id);
@@ -565,6 +584,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
     }
 
+    @Override
     public void deleteObservation(String id, String doctorId, String locationId, String hospitalId) {
 	try {
 	    ObservationCollection observationCollection = observationRepository.findOne(id);
@@ -590,6 +610,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
     }
 
+    @Override
     public void deleteInvestigation(String id, String doctorId, String locationId, String hospitalId) {
 	try {
 	    InvestigationCollection investigationCollection = investigationRepository.findOne(id);
@@ -615,6 +636,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
     }
 
+    @Override
     public void deleteDiagnosis(String id, String doctorId, String locationId, String hospitalId) {
 	try {
 	    DiagnosisCollection diagnosisCollection = diagnosisRepository.findOne(id);
@@ -639,6 +661,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
     }
 
+    @Override
     public void deleteNotes(String id, String doctorId, String locationId, String hospitalId) {
 	try {
 	    NotesCollection notesCollection = notesRepository.findOne(id);
@@ -664,6 +687,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
     }
 
+    @Override
     public void deleteDiagram(String id, String doctorId, String locationId, String hospitalId) {
 	try {
 	    DiagramsCollection diagramsCollection = diagramsRepository.findOne(id);

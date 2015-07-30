@@ -33,6 +33,7 @@
 					<value>investigations</value>
 					<value>observations</value>
 					<value>drugs</value>
+					<value>patients</value>
 				</list>
 			</constructor-arg>
 		</bean>

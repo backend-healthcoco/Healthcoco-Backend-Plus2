@@ -95,6 +95,7 @@ public class SignUpServiceImpl implements SignUpService {
      *            Id
      * @return Boolean This method activates the user account.
      */
+    @Override
     public Boolean activateUser(String userId) {
 	try {
 	    UserCollection userCollection = userRepository.findOne(userId);
@@ -113,6 +114,7 @@ public class SignUpServiceImpl implements SignUpService {
 
     }
 
+    @Override
     public DoctorSignUp doctorSignUp(DoctorSignupRequest request) {
 	DoctorSignUp response = null;
 
@@ -194,6 +196,7 @@ public class SignUpServiceImpl implements SignUpService {
 	return response;
     }
 
+    @Override
     public User patientSignUp(PatientSignUpRequest request) {
 	User user = null;
 	try {
@@ -250,6 +253,7 @@ public class SignUpServiceImpl implements SignUpService {
 	return user;
     }
 
+    @Override
     public Boolean checkUserNameExist(String username) {
 	try {
 	    UserCollection userCollection = userRepository.findByUserName(username);
@@ -263,6 +267,7 @@ public class SignUpServiceImpl implements SignUpService {
 	}
     }
 
+    @Override
     public Boolean checkMobileNumExist(String mobileNum) {
 	try {
 	    List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNum);
@@ -281,6 +286,7 @@ public class SignUpServiceImpl implements SignUpService {
 
     }
 
+    @Override
     public Boolean checkEmailAddressExist(String email) {
 	try {
 	    List<UserCollection> userCollections = userRepository.findByEmailAddressIgnoreCase(email);
@@ -298,6 +304,7 @@ public class SignUpServiceImpl implements SignUpService {
 	}
     }
 
+    @Override
     public User patientProfilePicChange(PatientProfilePicChangeRequest request) {
 	User user = null;
 	try {

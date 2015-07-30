@@ -13,6 +13,7 @@ public class BeanUtil {
     static {
 	MAPPER = new DozerBeanMapper();
 	BeanMappingBuilder builder = new BeanMappingBuilder() {
+	    @Override
 	    protected void configure() {
 		mapping(UUID.class, UUID.class, TypeMappingOptions.oneWay(), TypeMappingOptions.beanFactory(UuidBeanFactory.class.getName()),
 			TypeMappingOptions.relationshipType(RelationshipType.NON_CUMULATIVE));

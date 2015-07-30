@@ -44,6 +44,7 @@ public class HistoryServicesImpl implements HistoryServices {
     @Autowired
     private ClinicalNotesService clinicalNotesService;
 
+    @Override
     public List<DiseaseAddEditResponse> addDiseases(List<DiseaseAddEditRequest> request) {
 	List<DiseaseAddEditResponse> response = null;
 	List<DiseasesCollection> diseases = new ArrayList<DiseasesCollection>();
@@ -59,6 +60,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	return response;
     }
 
+    @Override
     public DiseaseAddEditResponse editDiseases(DiseaseAddEditRequest request) {
 	DiseaseAddEditResponse response = null;
 	DiseasesCollection disease = new DiseasesCollection();
@@ -74,6 +76,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	return response;
     }
 
+    @Override
     public Boolean deleteDisease(String diseaseId, String doctorId, String hospitalId, String locationId) {
 	Boolean response = false;
 	DiseasesCollection disease = null;
@@ -101,6 +104,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	return response;
     }
 
+    @Override
     public boolean addReportToHistory(String reportId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	try {
@@ -138,6 +142,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	return true;
     }
 
+    @Override
     public boolean addClinicalNotesToHistory(String clinicalNotesId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	try {
@@ -176,6 +181,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	return true;
     }
 
+    @Override
     public boolean addPrescriptionToHistory(String prescriptionId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	try {
@@ -214,6 +220,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	return true;
     }
 
+    @Override
     public boolean assignMedicalHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	try {
@@ -251,6 +258,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	return true;
     }
 
+    @Override
     public boolean assignFamilyHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	try {
@@ -288,6 +296,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	return true;
     }
 
+    @Override
     public boolean addSpecialNotes(List<String> specialNotes, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	try {
@@ -318,6 +327,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	return true;
     }
 
+    @Override
     public boolean removeReports(String reportId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	try {
@@ -348,6 +358,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	return true;
     }
 
+    @Override
     public boolean removeClinicalNotes(String clinicalNotesId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	try {
@@ -378,6 +389,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	return true;
     }
 
+    @Override
     public boolean removePrescription(String prescriptionId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	try {
@@ -408,6 +420,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	return true;
     }
 
+    @Override
     public boolean removeMedicalHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	try {
@@ -438,6 +451,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	return true;
     }
 
+    @Override
     public boolean removeFamilyHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	try {
@@ -482,6 +496,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	}
     }
 
+    @Override
     public List<DiseaseListResponse> getDiseases(String doctorId, String hospitalId, String locationId) {
 	List<DiseaseListResponse> diseaseListResponses = null;
 	try {
@@ -502,6 +517,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	return diseaseListResponses;
     }
 
+    @Override
     public HistoryDetailsResponse getPatientHistoryDetailsWithoutVerifiedOTP(String patientId, String doctorId, String hospitalId, String locationId,
 	    String historyFilter) {
 	HistoryDetailsResponse response = null;
@@ -562,6 +578,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	return response;
     }
 
+    @Override
     public List<HistoryDetailsResponse> getPatientHistoryDetailsWithVerifiedOTP(String patientId, String doctorId, String hospitalId, String locationId,
 	    String historyFilter) {
 	List<HistoryDetailsResponse> response = null;
@@ -622,6 +639,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	return response;
     }
 
+    @Override
     public List<DiseaseListResponse> getDiseasesByIds(List<String> diseasesIds) {
 	List<DiseaseListResponse> diseaseListResponses = null;
 	try {
