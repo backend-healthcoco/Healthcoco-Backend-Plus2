@@ -76,4 +76,5 @@ public class ComplaintCollection extends GenericCollection {
 	return "ComplaintCollection [id=" + id + ", complaint=" + complaint + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
 		+ hospitalId + ", isDeleted=" + isDeleted + "]";
     }
+
 }

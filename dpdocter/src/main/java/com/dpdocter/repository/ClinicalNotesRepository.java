@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import com.dpdocter.collections.ClinicalNotesCollection;
 
-@Repository
 public interface ClinicalNotesRepository extends MongoRepository<ClinicalNotesCollection, String>, PagingAndSortingRepository<ClinicalNotesCollection, String> {
 
     @Query(value = "{'doctorId' : ?0, 'hospitalId' : ?1, 'locationId' : ?2}", count = true)

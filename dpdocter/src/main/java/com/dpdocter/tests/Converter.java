@@ -11,11 +11,6 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.request.DoctorSignupRequest;
-import com.dpdocter.request.ForgotUsernamePasswordRequest;
-import com.dpdocter.request.PatientSignUpRequest;
-import com.dpdocter.webservices.PathProxy;
-
 @Component
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -36,18 +31,4 @@ public class Converter {
 	return JSONResult;
     }
 
-    public static void main(String[] args) {
-	String JSONResult = ObjectToJSON(new DoctorSignupRequest());
-	System.out.println("Doctor Signup : " + PathProxy.SIGNUP_BASE_URL + PathProxy.SignUpUrls.DOCTOR_SIGNUP);
-	System.out.println("Doctor Signup Request : " + JSONResult);
-	JSONResult = ObjectToJSON(new PatientSignUpRequest());
-	System.out.println("Patient Signup : " + PathProxy.SIGNUP_BASE_URL + PathProxy.SignUpUrls.PATIENT_SIGNUP);
-	System.out.println("Patient Signup Request : " + JSONResult);
-
-	ForgotUsernamePasswordRequest request = new ForgotUsernamePasswordRequest();
-	request.setEmailAddress("");
-	request.setMobileNumber("0123456789");
-	request.setUsername("");
-	System.out.println(ObjectToJSON(request));
-    }
 }
