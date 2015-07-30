@@ -20,6 +20,8 @@ public class RecordsAddRequest {
 
     private String recordsType;
 
+    private String createdBy;
+    
     public String getPatientId() {
 	return patientId;
     }
@@ -84,9 +86,18 @@ public class RecordsAddRequest {
 	this.recordsType = recordsType;
     }
 
-    @Override
-    public String toString() {
-	return "RecordsAddRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", createdDate=" + createdDate + ", description=" + description
-		+ ", fileDetails=" + fileDetails + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", recordsType=" + recordsType + "]";
-    }
+    public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	@Override
+	public String toString() {
+		return "RecordsAddRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", createdDate=" + createdDate
+				+ ", description=" + description + ", fileDetails=" + fileDetails + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", recordsType=" + recordsType + ", createdBy=" + createdBy + "]";
+	}
 }

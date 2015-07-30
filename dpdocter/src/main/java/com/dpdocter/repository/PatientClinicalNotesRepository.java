@@ -14,12 +14,13 @@ import com.dpdocter.collections.PatientClinicalNotesCollection;
 public interface PatientClinicalNotesRepository extends MongoRepository<PatientClinicalNotesCollection, String> {
     List<PatientClinicalNotesCollection> findByClinicalNotesId(String clinicalNotesId);
 
+    @Query("{'patientId': ?0}")
     List<PatientClinicalNotesCollection> findByPatientId(String patientId, Sort sort);
 
     @Query("{'patientId': ?0, 'createdTime': {'$gte': ?1}}")
     List<PatientClinicalNotesCollection> findByPatientId(String patientId, Date date, Sort sort);
 
-    @Query("{'patientId': ?0, 'createdTime': {'$gte': ?1}, 'isDeleted': ?2}")
+    @Query("{'patientId': ?0, 'isDeleted': ?1, 'createdTime': {'$gte': ?2}}")
     List<PatientClinicalNotesCollection> findByPatientId(String patientId, boolean isDeleted, Date date, Sort sort);
 
     @Query("{'patientId': ?0, 'isDeleted': ?1}")

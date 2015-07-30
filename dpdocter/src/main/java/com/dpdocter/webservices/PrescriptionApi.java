@@ -1,6 +1,5 @@
 package com.dpdocter.webservices;
 
-import java.beans.Visibility;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -13,7 +12,6 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.DrugDirection;
@@ -49,7 +47,6 @@ import com.dpdocter.services.PatientTrackService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.solr.document.SolrDrugDocument;
 import com.dpdocter.solr.services.SolrPrescriptionService;
-import com.sun.mail.util.BEncoderStream;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;

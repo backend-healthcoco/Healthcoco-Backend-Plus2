@@ -1,6 +1,7 @@
 package com.dpdocter.services.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.PatientTrack;
 import com.dpdocter.collections.PatientTrackCollection;
@@ -10,6 +11,7 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.PatientTrackRepository;
 import com.dpdocter.services.PatientTrackService;
 
+@Service
 public class PatientTrackServiceImpl implements PatientTrackService {
 
     @Autowired
