@@ -56,20 +56,27 @@ public class ContactsApi {
     @Path(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_DOCTOR_SPECIFIC)
     @GET
     public Response<DoctorContactsResponse> getDoctorContacts(@PathParam("doctorId") String doctorId) {
-	return doctorContacts(doctorId, null);
+	return doctorContacts(doctorId, null, true);
     }
 
     @Path(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_DOCTOR_SPECIFIC_CREATED_TIME)
     @GET
     public Response<DoctorContactsResponse> getDoctorContacts(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
-	return doctorContacts(doctorId, createdTime);
+	return doctorContacts(doctorId, createdTime, true);
     }
 
-    private Response<DoctorContactsResponse> doctorContacts(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
+    @Path(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_DOCTOR_SPECIFIC_CREATED_TIME_ISDELETED)
+    @GET
+    public Response<DoctorContactsResponse> getDoctorContacts(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
+    		@PathParam("isDeleted") boolean isDeleted) {
+	return doctorContacts(doctorId, createdTime, isDeleted);
+    }
+    
+    private Response<DoctorContactsResponse> doctorContacts(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime, boolean isDeleted) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id Cannot Be Empty");
 	}
-	List<PatientCard> patientCards = contactsService.getDoctorContacts(doctorId, createdTime);
+	List<PatientCard> patientCards = contactsService.getDoctorContacts(doctorId, createdTime, isDeleted);
 	int ttlCount = patientCards.size();
 	DoctorContactsResponse doctorContactsResponse = new DoctorContactsResponse();
 	doctorContactsResponse.setPatientCards(patientCards);
@@ -85,9 +92,19 @@ public class ContactsApi {
 	if (DPDoctorUtils.anyStringEmpty(doctorId, createdTime)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id, Created Time Cannot Be Empty");
 	}
-	return doctorContactsHandheld(doctorId, null, null, createdTime);
+	return doctorContactsHandheld(doctorId, null, null, createdTime, true);
     }
 
+    @Path(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_HANDHELD_DOCTOR_SPECIFIC_ISDELETED)
+    @GET
+    public Response<RegisteredPatientDetails> getDoctorContactsHandheld(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
+    		@PathParam("isDeleted") boolean isDeleted) {
+	if (DPDoctorUtils.anyStringEmpty(doctorId, createdTime)) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id, Created Time Cannot Be Empty");
+	}
+	return doctorContactsHandheld(doctorId, null, null, createdTime, isDeleted);
+    }
+    
     @Path(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_HANDHELD)
     @GET
     public Response<RegisteredPatientDetails> getDoctorContactsHandheld(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
@@ -95,11 +112,21 @@ public class ContactsApi {
 	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, createdTime)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id, Location Id, Hospital Id, Created Time Cannot Be Empty");
 	}
-	return doctorContactsHandheld(doctorId, locationId, hospitalId, createdTime);
+	return doctorContactsHandheld(doctorId, locationId, hospitalId, createdTime, true);
+    }
+    
+    @Path(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_HANDHELD_ISDELETED)
+    @GET
+    public Response<RegisteredPatientDetails> getDoctorContactsHandheld(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+	    @PathParam("hospitalId") String hospitalId, @PathParam("createdTime") String createdTime, @PathParam("isDeleted") boolean isDeleted) {
+	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, createdTime)) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id, Location Id, Hospital Id, Created Time Cannot Be Empty");
+	}
+	return doctorContactsHandheld(doctorId, locationId, hospitalId, createdTime, isDeleted);
     }
 
-    private Response<RegisteredPatientDetails> doctorContactsHandheld(String doctorId, String locationId, String hospitalId, String createdTime) {
-	List<RegisteredPatientDetails> registeredPatientDetails = contactsService.getDoctorContactsHandheld(doctorId, locationId, hospitalId, createdTime);
+    private Response<RegisteredPatientDetails> doctorContactsHandheld(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted) {
+	List<RegisteredPatientDetails> registeredPatientDetails = contactsService.getDoctorContactsHandheld(doctorId, locationId, hospitalId, createdTime, isDeleted);
 	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 	response.setDataList(registeredPatientDetails);
 	return response;
@@ -178,18 +205,25 @@ public class ContactsApi {
     @GET
     public Response<Group> getAllGroups(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
 	    @PathParam("hospitalId") String hospitalId) {
-	return getGroups(doctorId, locationId, hospitalId, null);
+	return getGroups(doctorId, locationId, hospitalId, null, true);
     }
 
     @Path(value = PathProxy.ContactsUrls.GET_ALL_GROUPS_CREATED_TIME)
     @GET
     public Response<Group> getAllGroups(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
 	    @PathParam("hospitalId") String hospitalId, @PathParam("createdTime") String createdTime) {
-	return getGroups(doctorId, locationId, hospitalId, createdTime);
+	return getGroups(doctorId, locationId, hospitalId, createdTime, true);
+    }
+    
+    @Path(value = PathProxy.ContactsUrls.GET_ALL_GROUPS_CREATED_TIME_ISDELETED)
+    @GET
+    public Response<Group> getAllGroups(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+	    @PathParam("hospitalId") String hospitalId, @PathParam("createdTime") String createdTime, @PathParam("isDeleted") boolean isDeleted) {
+	return getGroups(doctorId, locationId, hospitalId, createdTime, isDeleted);
     }
 
-    private Response<Group> getGroups(String doctorId, String locationId, String hospitalId, String createdTime) {
-	List<Group> groups = contactsService.getAllGroups(doctorId, locationId, hospitalId, createdTime);
+    private Response<Group> getGroups(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted) {
+	List<Group> groups = contactsService.getAllGroups(doctorId, locationId, hospitalId, createdTime, isDeleted);
 	if (groups != null) {
 	    for (Group group : groups) {
 		GetDoctorContactsRequest getDoctorContactsRequest = new GetDoctorContactsRequest();
@@ -209,20 +243,27 @@ public class ContactsApi {
     @Path(value = PathProxy.ContactsUrls.GET_ALL_DOCTOR_SPECIFIC_GROUPS)
     @GET
     public Response<Group> getAllGroups(@PathParam("doctorId") String doctorId) {
-	return getGroups(doctorId, null);
+	return getGroups(doctorId, null, true);
     }
 
     @Path(value = PathProxy.ContactsUrls.GET_ALL_DOCTOR_SPECIFIC_GROUPS_CREATED_TIME)
     @GET
     public Response<Group> getAllGroups(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
-	return getGroups(doctorId, createdTime);
+	return getGroups(doctorId, createdTime, true);
+    }
+    
+    @Path(value = PathProxy.ContactsUrls.GET_ALL_DOCTOR_SPECIFIC_GROUPS_CREATED_TIME_ISDELETED)
+    @GET
+    public Response<Group> getAllGroups(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
+    		@PathParam("isDeleted") boolean isDeleted) {
+	return getGroups(doctorId, createdTime, isDeleted);
     }
 
-    private Response<Group> getGroups(String doctorId, String createdTime) {
+    private Response<Group> getGroups(String doctorId, String createdTime, boolean isDeleted) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id Cannot Be Empty");
 	}
-	List<Group> groups = contactsService.getAllGroups(doctorId, createdTime);
+	List<Group> groups = contactsService.getAllGroups(doctorId, createdTime, isDeleted);
 	Response<Group> response = new Response<Group>();
 	response.setDataList(groups);
 	return response;

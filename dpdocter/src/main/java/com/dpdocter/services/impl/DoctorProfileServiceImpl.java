@@ -37,6 +37,7 @@ import com.dpdocter.request.DoctorAchievementAddEditRequest;
 import com.dpdocter.request.DoctorContactAddEditRequest;
 import com.dpdocter.request.DoctorEducationAddEditRequest;
 import com.dpdocter.request.DoctorExperienceAddEditRequest;
+import com.dpdocter.request.DoctorNameAddEditRequest;
 import com.dpdocter.request.DoctorProfessionalAddEditRequest;
 import com.dpdocter.request.DoctorProfilePictureAddEditRequest;
 import com.dpdocter.request.DoctorRegistrationAddEditRequest;
@@ -72,16 +73,18 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     private FileManager fileManager;
 
     @Override
-    public Boolean addEditName(String doctorId, String title, String fname, String mname, String lname) {
+    public Boolean addEditName(DoctorNameAddEditRequest request) {
 	UserCollection userCollection = null;
+	DoctorCollection doctorCollection = null;
 	Boolean response = false;
 	try {
-	    userCollection = userRepository.findOne(doctorId);
-	    userCollection.setTitle(title);
-	    userCollection.setFirstName(fname);
-	    userCollection.setMiddleName(mname);
-	    userCollection.setLastName(lname);
+	    userCollection = userRepository.findOne(request.getDoctorId());
+	    doctorCollection = doctorRepository.findByUserId(request.getDoctorId());
+	    BeanUtil.map(request, userCollection);
+	    BeanUtil.map(request, doctorCollection);
 	    userRepository.save(userCollection);
+	    doctorRepository.save(doctorCollection);
+	    
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();

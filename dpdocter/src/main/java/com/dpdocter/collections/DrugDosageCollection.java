@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "drug_dosage_cl")
-public class DrugDosageCollection {
+public class DrugDosageCollection extends GenericCollection{
 
     @Id
     private String id;

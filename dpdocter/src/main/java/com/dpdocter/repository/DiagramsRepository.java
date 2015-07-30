@@ -10,6 +10,10 @@ import org.springframework.data.mongodb.repository.Query;
 import com.dpdocter.collections.DiagramsCollection;
 
 public interface DiagramsRepository extends MongoRepository<DiagramsCollection, String> {
+	
+	@Query("{'doctorId': ?0, 'createdTime': {'$gte': ?1}}")
+    List<DiagramsCollection> findDiagrams(String doctorId, Date date, Sort sort);
+
     @Query("{'doctorId': ?0, 'createdTime': {'$gte': ?1}, 'isDeleted': ?2}")
     List<DiagramsCollection> findDiagrams(String doctorId, Date date, boolean isDeleted, Sort sort);
 

@@ -15,6 +15,9 @@ public interface ComplaintRepository extends MongoRepository<ComplaintCollection
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'isDeleted': ?3}")
     List<ComplaintCollection> findCustomComplaints(String doctorId, String locationId, String hospitalId, boolean isDeleted, PageRequest pageRequest);
 
+    @Query("{'doctorId': ?0, 'createdTime': {'$gte': ?1}}")
+    List<ComplaintCollection> findComplaints(String doctorId, Date date, Sort sort);
+    
     @Query("{'doctorId': ?0, 'createdTime': {'$gte': ?1}, 'isDeleted': ?2}")
     List<ComplaintCollection> findComplaints(String doctorId, Date date, boolean isDeleted, Sort sort);
 }

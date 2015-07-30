@@ -54,13 +54,13 @@ public interface PrescriptionServices {
 
     Boolean deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId, String patientId);
 
-    List<Prescription> getPrescriptions(String doctorId, String hospitalId, String locationId, String patientId, String createdTime, boolean isOTPVarified);
+    List<Prescription> getPrescriptions(String doctorId, String hospitalId, String locationId, String patientId, String createdTime, boolean isOTPVarified, boolean isDeleted);
 
     List<Prescription> getPrescriptionsByIds(List<String> prescriptionIds);
 
-    List<TemplateAddEditResponseDetails> getTemplates(String doctorId, String hospitalId, String locationId, String createdTime);
+    List<TemplateAddEditResponseDetails> getTemplates(String doctorId, String hospitalId, String locationId, String createdTime, boolean isDeleted);
 
-    List<DrugAddEditResponse> getDrugs(String doctorId, String hospitalId, String locationId, String createdTime);
+    List<DrugAddEditResponse> getDrugs(String doctorId, String hospitalId, String locationId, String createdTime, boolean isDeleted);
 
     @Query(value = "{'doctorId': ?0, 'patientId': ?1, 'locationId': ?2, 'hospitalId': ?3}", count = true)
     Integer getPrescriptionCount(String doctorId, String patientId, String locationId, String hospitalId);
@@ -71,23 +71,23 @@ public interface PrescriptionServices {
 
     List<DrugType> getAllDrugType();
 
-    List<DrugType> getCustomDrugType(String doctorId, String locationId, String hospitalId);
+    List<DrugType> getDrugType(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted);
 
     List<DrugStrengthUnit> getAllDrugStrengthUnit();
 
-    List<DrugStrengthUnit> getCustomDrugStrengthUnit(String doctorId, String locationId, String hospitalId);
+    List<DrugStrengthUnit> getDrugStrengthUnit(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted);
 
     List<DrugDosage> getAllDrugDosage();
 
-    List<DrugDosage> getCustomDrugDosage(String doctorId, String locationId, String hospitalId);
+    List<DrugDosage> getDrugDosage(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted);
 
     List<DrugDurationUnit> getAllDrugDurationUnit();
 
-    List<DrugDurationUnit> getCustomDrugDurationUnit(String doctorId, String locationId, String hospitalId);
+    List<DrugDurationUnit> getDrugDurationUnit(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted);
 
     List<DrugDirection> getAllDrugDirection();
 
-    List<DrugDirection> getCustomDrugDirection(String doctorId, String locationId, String hospitalId);
+    List<DrugDirection> getDrugDirection(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted);
 
     DrugTypeAddEditResponse addDrugType(DrugTypeAddEditRequest request);
 

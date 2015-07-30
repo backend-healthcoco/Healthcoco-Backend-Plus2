@@ -1,6 +1,8 @@
 package com.dpdocter.response;
 
-public class DrugStrengthAddEditResponse {
+import com.dpdocter.collections.GenericCollection;
+
+public class DrugStrengthAddEditResponse extends GenericCollection{
 
     private String id;
 

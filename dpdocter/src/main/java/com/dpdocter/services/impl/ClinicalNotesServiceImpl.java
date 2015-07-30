@@ -369,41 +369,48 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
     }
 
-    public List<ClinicalNotes> getPatientsClinicalNotesWithVerifiedOTP(String patientId, String createdTime) {
-	List<ClinicalNotes> clinicalNotesList = null;
-	List<PatientClinicalNotesCollection> patientClinicalNotesCollections = null;
-	try {
-	    if (createdTime != null) {
-		long createdTimeStamp = Long.parseLong(createdTime);
-		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Date(createdTimeStamp), new Sort(
-			Sort.Direction.DESC, "createdTime"));
-	    } else {
-		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Sort(Sort.Direction.DESC, "createdTime"));
-	    }
-
-	    if (patientClinicalNotesCollections != null) {
-		@SuppressWarnings("unchecked")
-		Collection<String> clinicalNotesIds = CollectionUtils.collect(patientClinicalNotesCollections, new BeanToPropertyValueTransformer(
-			"clinicalNotesId"));
-		clinicalNotesList = new ArrayList<ClinicalNotes>();
-		for (String clinicalNotesId : clinicalNotesIds) {
-		    ClinicalNotes clinicalNotes = getNotesById(clinicalNotesId);
-		    if (clinicalNotes != null) {
-			clinicalNotesList.add(clinicalNotes);
+    public List<ClinicalNotes> getPatientsClinicalNotesWithVerifiedOTP(String patientId, String createdTime, boolean isDeleted) {
+		List<ClinicalNotes> clinicalNotesList = null;
+		List<PatientClinicalNotesCollection> patientClinicalNotesCollections = null;
+		try {
+		    if (createdTime != null) {
+			long createdTimeStamp = Long.parseLong(createdTime);
+			
+			if(isDeleted)
+				patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+			else 
+				patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, isDeleted, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+			
+		    } else {
+		    	if(isDeleted)
+		    		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Sort(Sort.Direction.DESC, "createdTime"));
+		    	else
+		    		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"));
 		    }
+	
+		    if (patientClinicalNotesCollections != null) {
+			@SuppressWarnings("unchecked")
+			Collection<String> clinicalNotesIds = CollectionUtils.collect(patientClinicalNotesCollections, new BeanToPropertyValueTransformer(
+				"clinicalNotesId"));
+			clinicalNotesList = new ArrayList<ClinicalNotes>();
+			for (String clinicalNotesId : clinicalNotesIds) {
+			    ClinicalNotes clinicalNotes = getNotesById(clinicalNotesId);
+			    if (clinicalNotes != null) {
+				clinicalNotesList.add(clinicalNotes);
+			    }
+			}
+		    } else {
+			throw new BusinessException(ServiceError.Unknown, "No Clinical Notes found for patient Id : " + patientId);
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
-	    } else {
-		throw new BusinessException(ServiceError.Unknown, "No Clinical Notes found for patient Id : " + patientId);
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-	}
-	return clinicalNotesList;
+		return clinicalNotesList;
     }
 
     public List<ClinicalNotes> getPatientsClinicalNotesWithoutVerifiedOTP(String patientId, String doctorId, String locationId, String hospitalId,
-	    String createdTime) {
+	    String createdTime, boolean isDeleted) {
 	List<ClinicalNotes> clinicalNotesList = null;
 	List<PatientClinicalNotesCollection> patientClinicalNotesCollections = null;
 	try {
@@ -775,13 +782,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
-    public List<Complaint> getComplaints(String doctorId, String createdTime) {
-	List<Complaint> response = null;
+    public List<Complaint> getComplaints(String doctorId, String createdTime, boolean isDeleted) {
+	List<Complaint> response = new ArrayList<Complaint>();
 	List<ComplaintCollection> complaintCollections = null;
 	try {
 	    long createdTimeStamp = Long.parseLong(createdTime);
-	    complaintCollections = complaintRepository
-		    .findComplaints(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
+	    if(isDeleted)
+	    	complaintCollections = complaintRepository.findComplaints(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+	    else 
+	    	complaintCollections = complaintRepository.findComplaints(doctorId, new Date(createdTimeStamp), isDeleted, new Sort(Sort.Direction.DESC, "createdTime"));
 	    BeanUtil.map(complaintCollections, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -791,13 +800,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
-    public List<Investigation> getInvestigations(String doctorId, String createdTime) {
-	List<Investigation> response = null;
+    public List<Investigation> getInvestigations(String doctorId, String createdTime, boolean isDeleted) {
+	List<Investigation> response = new ArrayList<Investigation>();
 	List<InvestigationCollection> investigationCollections = null;
 	try {
 	    long createdTimeStamp = Long.parseLong(createdTime);
-	    investigationCollections = investigationRepository.findInvestigations(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC,
+	    if(isDeleted)
+	    	investigationCollections = investigationRepository.findInvestigations(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
 		    "createdTime"));
+	    else investigationCollections = investigationRepository.findInvestigations(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC,
+			    "createdTime"));
+	    	
 	    BeanUtil.map(investigationCollections, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -807,13 +820,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
-    public List<Observation> getObservations(String doctorId, String createdTime) {
-	List<Observation> response = null;
+    public List<Observation> getObservations(String doctorId, String createdTime, boolean isDeleted) {
+	List<Observation> response = new ArrayList<Observation>();
 	List<ObservationCollection> observationCollections = null;
 	try {
 	    long createdTimeStamp = Long.parseLong(createdTime);
-	    observationCollections = observationRepository.findObservations(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC,
+	    if(isDeleted)
+	    	observationCollections = observationRepository.findObservations(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
 		    "createdTime"));
+	    else 
+	    	observationCollections = observationRepository.findObservations(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC,
+	    		    "createdTime"));
+	    	    
 	    BeanUtil.map(observationCollections, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -823,12 +841,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
-    public List<Diagnoses> getDiagnosis(String doctorId, String createdTime) {
-	List<Diagnoses> response = null;
+    public List<Diagnoses> getDiagnosis(String doctorId, String createdTime, boolean isDeleted) {
+	List<Diagnoses> response = new ArrayList<Diagnoses>();
 	List<DiagnosisCollection> diagnosisCollections = null;
 	try {
 	    long createdTimeStamp = Long.parseLong(createdTime);
-	    diagnosisCollections = diagnosisRepository.findDiagnosis(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
+	    if(isDeleted)   diagnosisCollections = diagnosisRepository.findDiagnosis(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+	    
+	    else if(isDeleted)   diagnosisCollections = diagnosisRepository.findDiagnosis(doctorId, new Date(createdTimeStamp), isDeleted, new Sort(Sort.Direction.DESC, "createdTime"));
 	    BeanUtil.map(diagnosisCollections, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -838,12 +858,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
-    public List<Notes> getNotes(String doctorId, String createdTime) {
-	List<Notes> response = null;
+    public List<Notes> getNotes(String doctorId, String createdTime, boolean isDeleted) {
+	List<Notes> response = new ArrayList<Notes>();
 	List<NotesCollection> notesCollections = null;
 	try {
 	    long createdTimeStamp = Long.parseLong(createdTime);
-	    notesCollections = notesRepository.findNotes(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
+	    if(isDeleted) notesCollections = notesRepository.findNotes(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+	    else notesCollections = notesRepository.findNotes(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
 	    BeanUtil.map(notesCollections, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -853,13 +874,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
-    public List<Diagram> getDiagrams(String doctorId, String createdTime) {
+    public List<Diagram> getDiagrams(String doctorId, String createdTime, boolean isDeleted) {
 	List<Diagram> response = new ArrayList<Diagram>();
 	List<DiagramsCollection> diagramsCollections = null;
 	try {
 	    long createdTimeStamp = Long.parseLong(createdTime);
-	    diagramsCollections = diagramsRepository.findDiagrams(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
-
+	    
+	    if(isDeleted) diagramsCollections = diagramsRepository.findDiagrams(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+	    else diagramsCollections = diagramsRepository.findDiagrams(doctorId, new Date(createdTimeStamp), isDeleted, new Sort(Sort.Direction.DESC, "createdTime"));
 	    BeanUtil.map(diagramsCollections, response);
 	} catch (Exception e) {
 	    e.printStackTrace();

@@ -10,6 +10,7 @@ import com.dpdocter.request.DoctorAchievementAddEditRequest;
 import com.dpdocter.request.DoctorContactAddEditRequest;
 import com.dpdocter.request.DoctorEducationAddEditRequest;
 import com.dpdocter.request.DoctorExperienceAddEditRequest;
+import com.dpdocter.request.DoctorNameAddEditRequest;
 import com.dpdocter.request.DoctorProfessionalAddEditRequest;
 import com.dpdocter.request.DoctorProfilePictureAddEditRequest;
 import com.dpdocter.request.DoctorRegistrationAddEditRequest;
@@ -17,7 +18,7 @@ import com.dpdocter.request.DoctorSpecialityAddEditRequest;
 
 public interface DoctorProfileService {
 
-    Boolean addEditName(String doctorId, String title, String fname, String mname, String lname);
+    Boolean addEditName(DoctorNameAddEditRequest request);
 
     Boolean addEditExperience(String doctorId, String experience);
 

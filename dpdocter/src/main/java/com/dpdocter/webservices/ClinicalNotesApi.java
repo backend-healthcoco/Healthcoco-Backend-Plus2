@@ -88,14 +88,21 @@ public class ClinicalNotesApi {
     @GET
     public Response<ClinicalNotes> getNotes(@PathParam("doctorId") String doctorId, @PathParam("patientId") String patientId,
 	    @PathParam("isOTPVerified") boolean isOTPVerified) {
-	return getAllNotes(doctorId, null, null, patientId, null, isOTPVerified);
+	return getAllNotes(doctorId, null, null, patientId, null, isOTPVerified, true);
     }
 
     @Path(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_DOCTOR_ID_CT)
     @GET
     public Response<ClinicalNotes> getNotes(@PathParam("doctorId") String doctorId, @PathParam("patientId") String patientId,
 	    @PathParam("createdTime") String createdTime, @PathParam("isOTPVerified") boolean isOTPVerified) {
-	return getAllNotes(doctorId, null, null, patientId, null, isOTPVerified);
+	return getAllNotes(doctorId, null, null, patientId, null, isOTPVerified, true);
+    }
+    
+    @Path(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_DOCTOR_ID_CT_ISDELETED)
+    @GET
+    public Response<ClinicalNotes> getNotes(@PathParam("doctorId") String doctorId, @PathParam("patientId") String patientId,
+	    @PathParam("createdTime") String createdTime, @PathParam("isOTPVerified") boolean isOTPVerified, @PathParam(value = "isDeleted") boolean isDeleted) {
+	return getAllNotes(doctorId, null, null, patientId, null, isOTPVerified, isDeleted);
     }
 
     @Path(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES)
@@ -103,7 +110,7 @@ public class ClinicalNotesApi {
     public Response<ClinicalNotes> getNotes(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "isOTPVerified") boolean isOTPVerified) {
-	return getAllNotes(doctorId, locationId, hospitalId, patientId, null, isOTPVerified);
+	return getAllNotes(doctorId, locationId, hospitalId, patientId, null, isOTPVerified, true);
     }
 
     @Path(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_CT)
@@ -111,16 +118,16 @@ public class ClinicalNotesApi {
     public Response<ClinicalNotes> getNotes(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "patientId") String patientId, @PathParam("createdTime") String createdTime,
 	    @PathParam(value = "isOTPVerified") boolean isOTPVerified) {
-	return getAllNotes(doctorId, null, null, patientId, createdTime, isOTPVerified);
+	return getAllNotes(doctorId, null, null, patientId, createdTime, isOTPVerified, true);
     }
 
     private Response<ClinicalNotes> getAllNotes(String doctorId, String locationId, String hospitalId, String patientId, String createdTime,
-	    boolean isOTPVerified) {
+	    boolean isOTPVerified, boolean isDeleted) {
 	List<ClinicalNotes> clinicalNotes = null;
 	if (isOTPVerified) {
-	    clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithVerifiedOTP(patientId, createdTime);
+	    clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithVerifiedOTP(patientId, createdTime, isDeleted);
 	} else {
-	    clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(patientId, doctorId, locationId, hospitalId, createdTime);
+	    clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(patientId, doctorId, locationId, hospitalId, createdTime, isDeleted);
 	}
 
 	Response<ClinicalNotes> response = new Response<ClinicalNotes>();
@@ -376,7 +383,17 @@ public class ClinicalNotesApi {
     @Path(value = PathProxy.ClinicalNotesUrls.GET_COMPLAINTS)
     @GET
     public Response<Complaint> getComplaints(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
-	List<Complaint> complaints = clinicalNotesService.getComplaints(doctorId, createdTime);
+	List<Complaint> complaints = clinicalNotesService.getComplaints(doctorId, createdTime, true);
+	Response<Complaint> response = new Response<Complaint>();
+	response.setDataList(complaints);
+	return response;
+    }
+    
+    @Path(value = PathProxy.ClinicalNotesUrls.GET_COMPLAINTS_ISDELETED)
+    @GET
+    public Response<Complaint> getComplaints(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime, 
+    		@PathParam("isDeleted") boolean isDeleted) {
+	List<Complaint> complaints = clinicalNotesService.getComplaints(doctorId, createdTime, isDeleted);
 	Response<Complaint> response = new Response<Complaint>();
 	response.setDataList(complaints);
 	return response;
@@ -385,7 +402,17 @@ public class ClinicalNotesApi {
     @Path(value = PathProxy.ClinicalNotesUrls.GET_INVESTIGATIONS)
     @GET
     public Response<Investigation> getInvestigations(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
-	List<Investigation> investigations = clinicalNotesService.getInvestigations(doctorId, createdTime);
+	List<Investigation> investigations = clinicalNotesService.getInvestigations(doctorId, createdTime, true);
+	Response<Investigation> response = new Response<Investigation>();
+	response.setDataList(investigations);
+	return response;
+    }
+
+    @Path(value = PathProxy.ClinicalNotesUrls.GET_INVESTIGATIONS_ISDELETED)
+    @GET
+    public Response<Investigation> getInvestigations(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
+    		@PathParam("isDeleted") boolean isDeleted) {
+	List<Investigation> investigations = clinicalNotesService.getInvestigations(doctorId, createdTime, isDeleted);
 	Response<Investigation> response = new Response<Investigation>();
 	response.setDataList(investigations);
 	return response;
@@ -394,7 +421,17 @@ public class ClinicalNotesApi {
     @Path(value = PathProxy.ClinicalNotesUrls.GET_OBSERVATIONS)
     @GET
     public Response<Observation> getObservations(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
-	List<Observation> observations = clinicalNotesService.getObservations(doctorId, createdTime);
+	List<Observation> observations = clinicalNotesService.getObservations(doctorId, createdTime, true);
+	Response<Observation> response = new Response<Observation>();
+	response.setDataList(observations);
+	return response;
+    }
+
+    @Path(value = PathProxy.ClinicalNotesUrls.GET_OBSERVATIONS_ISDELETED)
+    @GET
+    public Response<Observation> getObservations(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
+    		@PathParam("isDeleted") boolean isDeleted) {
+	List<Observation> observations = clinicalNotesService.getObservations(doctorId, createdTime, isDeleted);
 	Response<Observation> response = new Response<Observation>();
 	response.setDataList(observations);
 	return response;
@@ -403,30 +440,59 @@ public class ClinicalNotesApi {
     @Path(value = PathProxy.ClinicalNotesUrls.GET_DIAGNOSIS)
     @GET
     public Response<Diagnoses> getDiagnosis(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
-	List<Diagnoses> diagnosis = clinicalNotesService.getDiagnosis(doctorId, createdTime);
+	List<Diagnoses> diagnosis = clinicalNotesService.getDiagnosis(doctorId, createdTime, true);
 	Response<Diagnoses> response = new Response<Diagnoses>();
 	response.setDataList(diagnosis);
 	return response;
     }
-
+    
+    @Path(value = PathProxy.ClinicalNotesUrls.GET_DIAGNOSIS_ISDELETED)
+    @GET
+    public Response<Diagnoses> getDiagnosis(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
+    		@PathParam("isDeleted") boolean isDeleted) {
+	List<Diagnoses> diagnosis = clinicalNotesService.getDiagnosis(doctorId, createdTime, isDeleted);
+	Response<Diagnoses> response = new Response<Diagnoses>();
+	response.setDataList(diagnosis);
+	return response;
+    }
     @Path(value = PathProxy.ClinicalNotesUrls.GET_NOTES)
     @GET
     public Response<Notes> getNotes(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
-	List<Notes> notes = clinicalNotesService.getNotes(doctorId, createdTime);
+	List<Notes> notes = clinicalNotesService.getNotes(doctorId, createdTime, true);
 	Response<Notes> response = new Response<Notes>();
 	response.setDataList(notes);
 	return response;
     }
-
+    
+//    @Path(value = PathProxy.ClinicalNotesUrls.GET_NOTES_ISDELETED)
+//    @GET
+//    public Response<Notes> getNotes(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
+//    		@PathParam("isDeleted") boolean isDeleted) {
+//	List<Notes> notes = clinicalNotesService.getNotes(doctorId, createdTime, isDeleted);
+//	Response<Notes> response = new Response<Notes>();
+//	response.setDataList(notes);
+//	return response;
+//    }
+    
     @Path(value = PathProxy.ClinicalNotesUrls.GET_DIAGRAMS)
     @GET
     public Response<Diagram> getDiagrams(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
-	List<Diagram> diagrams = clinicalNotesService.getDiagrams(doctorId, createdTime);
+	List<Diagram> diagrams = clinicalNotesService.getDiagrams(doctorId, createdTime, true);
 	Response<Diagram> response = new Response<Diagram>();
 	response.setDataList(diagrams);
 	return response;
     }
 
+    @Path(value = PathProxy.ClinicalNotesUrls.GET_DIAGRAMS_ISDELETED)
+    @GET
+    public Response<Diagram> getDiagrams(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
+    		@PathParam("isDeleted") boolean isDeleted) {
+	List<Diagram> diagrams = clinicalNotesService.getDiagrams(doctorId, createdTime, isDeleted);
+	Response<Diagram> response = new Response<Diagram>();
+	response.setDataList(diagrams);
+	return response;
+    }
+    
     @Path(value = PathProxy.ClinicalNotesUrls.GET_GLOBAL_DIAGRAMS)
     @GET
     public Response<Diagram> getGlobalDiagrams(@PathParam("createdTime") String createdTime) {

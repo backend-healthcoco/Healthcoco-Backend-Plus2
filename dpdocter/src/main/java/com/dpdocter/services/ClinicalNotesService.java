@@ -23,9 +23,9 @@ public interface ClinicalNotesService {
 
     void deleteNote(String id);
 
-    List<ClinicalNotes> getPatientsClinicalNotesWithVerifiedOTP(String patientId, String createdTime);
+    List<ClinicalNotes> getPatientsClinicalNotesWithVerifiedOTP(String patientId, String createdTime, boolean isDeleted);
 
-    List<ClinicalNotes> getPatientsClinicalNotesWithoutVerifiedOTP(String patientId, String doctorId, String locationId, String hospitalId, String createdTime);
+    List<ClinicalNotes> getPatientsClinicalNotesWithoutVerifiedOTP(String patientId, String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted);
 
     Complaint addEditComplaint(Complaint complaint);
 
@@ -62,17 +62,17 @@ public interface ClinicalNotesService {
     @Query(value = "{'doctorId': ?0, 'patientId': ?1, 'locationId': ?2, 'hospitalId': ?3}", count = true)
     Integer getClinicalNotesCount(String doctorId, String patientId, String locationId, String hospitalId);
 
-    List<Complaint> getComplaints(String doctorId, String createdTime);
+    List<Complaint> getComplaints(String doctorId, String createdTime, boolean isDeleted);
 
-    List<Investigation> getInvestigations(String doctorId, String createdTime);
+    List<Investigation> getInvestigations(String doctorId, String createdTime, boolean isDeleted);
 
-    List<Observation> getObservations(String doctorId, String createdTime);
+    List<Observation> getObservations(String doctorId, String createdTime, boolean isDeleted);
 
-    List<Diagnoses> getDiagnosis(String doctorId, String createdTime);
+    List<Diagnoses> getDiagnosis(String doctorId, String createdTime, boolean isDeleted);
 
-    List<Notes> getNotes(String doctorId, String createdTime);
+    List<Notes> getNotes(String doctorId, String createdTime, boolean isDeleted);
 
-    List<Diagram> getDiagrams(String doctorId, String createdTime);
+    List<Diagram> getDiagrams(String doctorId, String createdTime, boolean isDeleted);
 
     List<Diagram> getGlobalDiagrams(String createdTime);
 

@@ -15,6 +15,9 @@ public interface ObservationRepository extends MongoRepository<ObservationCollec
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'isDeleted': ?3}")
     List<ObservationCollection> findCustomObservations(String doctorId, String locationId, String hospitalId, boolean isDeleted, PageRequest pageRequest);
 
+    @Query("{'doctorId': ?0, 'createdTime': {'$gte': ?1}}")
+    List<ObservationCollection> findObservations(String doctorId, Date date, Sort sort);
+    
     @Query("{'doctorId': ?0, 'createdTime': {'$gte': ?1}, 'isDeleted': ?2}")
     List<ObservationCollection> findObservations(String doctorId, Date date, boolean isDeleted, Sort sort);
 }

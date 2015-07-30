@@ -117,15 +117,21 @@ public class ContactsServiceImpl implements ContactsService {
 	}
     }
 
-    public List<PatientCard> getDoctorContacts(String doctorId, String createdTime) {
+    public List<PatientCard> getDoctorContacts(String doctorId, String createdTime, boolean isDeleted) {
 	List<DoctorContactCollection> doctorContactCollections = null;
 	try {
 	    if (DPDoctorUtils.anyStringEmpty(createdTime)) {
-		doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, new Sort(Sort.Direction.DESC, "createdTime"));
+		if(isDeleted)doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, new Sort(Sort.Direction.DESC, "createdTime"));
+		
+		if(isDeleted)doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"));
 	    } else {
 		long createdTimestamp = Long.parseLong(createdTime);
-		doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, new Date(createdTimestamp), new Sort(
+		if(isDeleted)
+			doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, new Date(createdTimestamp), new Sort(
 			Sort.Direction.DESC, "createdTime"));
+		else
+			doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, isDeleted, new Date(createdTimestamp), new Sort(
+					Sort.Direction.DESC, "createdTime"));
 	    }
 
 	    if (doctorContactCollections.isEmpty()) {
@@ -345,17 +351,25 @@ public class ContactsServiceImpl implements ContactsService {
     /**
      * This service gives lists of all groups for doctor.
      */
-    public List<Group> getAllGroups(String doctorId, String locationId, String hospitalId, String createdTime) {
+    public List<Group> getAllGroups(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted) {
 	List<Group> groups = null;
 	List<GroupCollection> groupCollections = null;
 	try {
 	    if (DPDoctorUtils.anyStringEmpty(createdTime)) {
-		groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId, false, new Sort(Sort.Direction.DESC,
-			"createdTime"));
+	    	if(isDeleted)
+	    		groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC,
+	    			"createdTime"));
+	    	else 
+	    		groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC,
+	    			"createdTime"));
 	    } else {
 		long createdTimestamp = Long.parseLong(createdTime);
-		groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId, false, new Date(createdTimestamp),
-			new Sort(Sort.Direction.DESC, "createdTime"));
+			if(isDeleted)
+				groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId, new Date(createdTimestamp),
+						new Sort(Sort.Direction.DESC, "createdTime"));
+			else
+				groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId, isDeleted, new Date(createdTimestamp),
+						new Sort(Sort.Direction.DESC, "createdTime"));
 	    }
 
 	    if (groupCollections != null) {
@@ -409,15 +423,17 @@ public class ContactsServiceImpl implements ContactsService {
     }
 
     @Override
-    public List<Group> getAllGroups(String doctorId, String createdTime) {
+    public List<Group> getAllGroups(String doctorId, String createdTime, boolean isDeleted) {
 	List<Group> groups = null;
 	List<GroupCollection> groupCollections = null;
 	try {
 	    if (DPDoctorUtils.anyStringEmpty(createdTime)) {
-		groupCollections = groupRepository.findByDoctorId(doctorId, new Sort(Sort.Direction.DESC, "createdTime"));
+	    	if(isDeleted)groupCollections = groupRepository.findByDoctorId(doctorId, new Sort(Sort.Direction.DESC, "createdTime"));
+	    	else groupCollections = groupRepository.findByDoctorId(doctorId, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"));
 	    } else {
 		long createdTimeStamp = Long.parseLong(createdTime);
-		groupCollections = groupRepository.findByDoctorId(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+			if(isDeleted)groupCollections = groupRepository.findByDoctorId(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+			else groupCollections = groupRepository.findByDoctorId(doctorId, new Date(createdTimeStamp), isDeleted, new Sort(Sort.Direction.DESC, "createdTime"));
 	    }
 
 	    if (groupCollections != null) {
@@ -436,7 +452,7 @@ public class ContactsServiceImpl implements ContactsService {
     }
 
     @Override
-    public List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId, String createdTime) {
+    public List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted) {
 	List<RegisteredPatientDetails> registeredPatientDetails = null;
 	List<PatientCollection> patientCollections = null;
 	List<GroupCollection> groupCollections = null;
@@ -444,18 +460,30 @@ public class ContactsServiceImpl implements ContactsService {
 	try {
 	    if (DPDoctorUtils.anyStringEmpty(createdTime)) {
 		if (locationId == null && hospitalId == null) {
-		    patientCollections = patientRepository.findByDoctorId(doctorId, new Sort(Sort.Direction.DESC, "createdTime"));
+			if(isDeleted) patientCollections = patientRepository.findByDoctorId(doctorId, new Sort(Sort.Direction.DESC, "createdTime"));
+			else patientCollections = patientRepository.findByDoctorId(doctorId, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"));
 		} else {
-		    patientCollections = patientRepository.findByDoctorIdLocationIdAndHospitalId(doctorId, locationId, hospitalId, new Sort(
-			    Sort.Direction.DESC, "createdTime"));
+		   if(isDeleted)
+			   patientCollections = patientRepository.findByDoctorIdLocationIdAndHospitalId(doctorId, locationId, hospitalId, new Sort(
+					    Sort.Direction.DESC, "createdTime"));
+		   else 
+			   patientCollections = patientRepository.findByDoctorIdLocationIdAndHospitalId(doctorId, locationId, hospitalId, isDeleted, new Sort(
+					    Sort.Direction.DESC, "createdTime"));
 		}
 	    } else {
 		long createdTimeStamp = Long.parseLong(createdTime);
 		if (locationId == null && hospitalId == null) {
-		    patientCollections = patientRepository.findByDoctorId(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+		    if(isDeleted)
+		    	patientCollections = patientRepository.findByDoctorId(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+		    else 
+		    	patientCollections = patientRepository.findByDoctorId(doctorId, new Date(createdTimeStamp), isDeleted, new Sort(Sort.Direction.DESC, "createdTime"));
 		} else {
-		    patientCollections = patientRepository.findByDoctorIdLocationIdAndHospitalId(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-			    new Sort(Sort.Direction.DESC, "createdTime"));
+		    if(isDeleted)
+		    	patientCollections = patientRepository.findByDoctorIdLocationIdAndHospitalId(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
+					    new Sort(Sort.Direction.DESC, "createdTime"));
+		    else 
+		    	patientCollections = patientRepository.findByDoctorIdLocationIdAndHospitalId(doctorId, locationId, hospitalId, new Date(createdTimeStamp), isDeleted,
+					    new Sort(Sort.Direction.DESC, "createdTime"));
 		}
 	    }
 

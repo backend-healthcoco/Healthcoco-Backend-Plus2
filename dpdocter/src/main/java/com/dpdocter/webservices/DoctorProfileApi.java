@@ -23,6 +23,7 @@ import com.dpdocter.request.DoctorAchievementAddEditRequest;
 import com.dpdocter.request.DoctorContactAddEditRequest;
 import com.dpdocter.request.DoctorEducationAddEditRequest;
 import com.dpdocter.request.DoctorExperienceAddEditRequest;
+import com.dpdocter.request.DoctorNameAddEditRequest;
 import com.dpdocter.request.DoctorProfessionalAddEditRequest;
 import com.dpdocter.request.DoctorProfilePictureAddEditRequest;
 import com.dpdocter.request.DoctorRegistrationAddEditRequest;
@@ -41,10 +42,9 @@ public class DoctorProfileApi {
     private DoctorProfileService doctorProfileService;
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_NAME)
-    @GET
-    public Response<Boolean> addEditName(@PathParam("doctorId") String doctorId, @PathParam("title") String title, @PathParam("fname") String fname,
-	    @PathParam("mname") String mname, @PathParam("lname") String lname) {
-	Boolean addEditNameResponse = doctorProfileService.addEditName(doctorId, title, fname, mname, lname);
+    @POST
+    public Response<Boolean> addEditName(DoctorNameAddEditRequest request) {
+	Boolean addEditNameResponse = doctorProfileService.addEditName(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditNameResponse);
 	return response;
