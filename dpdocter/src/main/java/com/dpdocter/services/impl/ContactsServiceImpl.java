@@ -126,7 +126,7 @@ public class ContactsServiceImpl implements ContactsService {
 		    if (DPDoctorUtils.anyStringEmpty(createdTime)) {
 			if(isDeleted)doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, new Sort(Sort.Direction.DESC, "createdTime"));
 			
-			if(isDeleted)doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"));
+			else doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"));
 		    } else {
 			long createdTimestamp = Long.parseLong(createdTime);
 			if(isDeleted)

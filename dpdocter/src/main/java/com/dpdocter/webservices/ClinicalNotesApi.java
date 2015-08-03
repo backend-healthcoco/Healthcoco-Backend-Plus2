@@ -466,17 +466,15 @@ public class ClinicalNotesApi {
 	return response;
     }
 
-    // @Path(value = PathProxy.ClinicalNotesUrls.GET_NOTES_ISDELETED)
-    // @GET
-    // public Response<Notes> getNotes(@PathParam("doctorId") String doctorId,
-    // @PathParam("createdTime") String createdTime,
-    // @PathParam("isDeleted") boolean isDeleted) {
-    // List<Notes> notes = clinicalNotesService.getNotes(doctorId, createdTime,
-    // isDeleted);
-    // Response<Notes> response = new Response<Notes>();
-    // response.setDataList(notes);
-    // return response;
-    // }
+     @Path(value = PathProxy.ClinicalNotesUrls.GET_NOTES_ISDELETED)
+     @GET
+     public Response<Notes> getCompleteNotes(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime, @PathParam("isDeleted") boolean isDeleted) {
+     List<Notes> notes = clinicalNotesService.getNotes(doctorId, createdTime,
+     isDeleted);
+     Response<Notes> response = new Response<Notes>();
+     response.setDataList(notes);
+     return response;
+     }
 
     @Path(value = PathProxy.ClinicalNotesUrls.GET_DIAGRAMS)
     @GET

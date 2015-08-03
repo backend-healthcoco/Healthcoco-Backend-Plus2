@@ -72,12 +72,13 @@ public class ContactsApi {
 	return doctorContacts(doctorId, createdTime, isDeleted);
     }
     
-    private Response<DoctorContactsResponse> doctorContacts(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime, boolean isDeleted) {
+    private Response<DoctorContactsResponse> doctorContacts(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
+    		@PathParam("isDeleted")  boolean isDeleted) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id Cannot Be Empty");
 	}
 	List<PatientCard> patientCards = contactsService.getDoctorContacts(doctorId, createdTime, isDeleted);
-	int ttlCount = patientCards.size();
+	int ttlCount = patientCards !=null ?patientCards.size():0;
 	DoctorContactsResponse doctorContactsResponse = new DoctorContactsResponse();
 	doctorContactsResponse.setPatientCards(patientCards);
 	doctorContactsResponse.setTotalSize(ttlCount);

@@ -11,11 +11,8 @@ import com.dpdocter.collections.DrugTypeCollection;
 
 public interface DrugTypeRepository extends MongoRepository<DrugTypeCollection, String> {
 
-    @Query(value = "{'doctorId': ?0}")
-	List<DrugTypeCollection> getDrugType(String doctorId, Sort sort);
-
-    @Query("{'doctorId': ?0,'isDeleted': ?1}")
-	List<DrugTypeCollection> getDrugType(String doctorId, boolean isDeleted, Sort sort);
+    @Query("{'isDeleted': ?2}")
+	List<DrugTypeCollection> getDrugType(boolean isDeleted, Sort sort);
 
     @Query(value = "{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2}")
 	List<DrugTypeCollection> getDrugType(String doctorId, String hospitalId, String locationId, Sort sort);

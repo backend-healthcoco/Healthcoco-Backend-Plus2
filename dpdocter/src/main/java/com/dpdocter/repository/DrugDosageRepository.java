@@ -11,11 +11,8 @@ import com.dpdocter.collections.DrugDosageCollection;
 
 public interface DrugDosageRepository extends MongoRepository<DrugDosageCollection, String> {
 
-	@Query(value = "{'doctorId': ?0}")  
-	List<DrugDosageCollection> getDrugDosage(String doctorId, Sort sort);
-
-	@Query("{'doctorId': ?0,'isDeleted': ?1}")
-	List<DrugDosageCollection> getDrugDosage(String doctorId, boolean isDeleted, Sort sort);
+	@Query("{''isDeleted': ?0}")
+	List<DrugDosageCollection> getDrugDosage(boolean isDeleted, Sort sort);
 
 	@Query(value = "{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2}")
 	List<DrugDosageCollection> getDrugDosage(String doctorId, String hospitalId, String locationId, Sort sort);

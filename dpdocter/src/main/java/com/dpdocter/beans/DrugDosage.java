@@ -4,7 +4,7 @@ public class DrugDosage {
 
     String id;
 
-    String value;
+    String dosage;
 
     String doctorId;
 
@@ -20,15 +20,15 @@ public class DrugDosage {
 	this.id = id;
     }
 
-    public String getValue() {
-	return value;
-    }
+    public String getDosage() {
+		return dosage;
+	}
 
-    public void setValue(String value) {
-	this.value = value;
-    }
+	public void setDosage(String dosage) {
+		this.dosage = dosage;
+	}
 
-    public String getDoctorId() {
+	public String getDoctorId() {
 	return doctorId;
     }
 
@@ -53,8 +53,9 @@ public class DrugDosage {
     }
 
     @Override
-    public String toString() {
-	return "DrugDosage [id=" + id + ", value=" + value + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
-    }
+	public String toString() {
+		return "DrugDosage [id=" + id + ", dosage=" + dosage + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + "]";
+	}
 
 }

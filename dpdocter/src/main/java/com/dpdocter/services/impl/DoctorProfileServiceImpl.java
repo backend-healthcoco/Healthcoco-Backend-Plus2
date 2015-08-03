@@ -430,6 +430,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	Boolean response = false;
 	try {
 	    doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(request.getUserLocationId());
+	    if(doctorClinicProfileCollection == null)  	doctorClinicProfileCollection=new DoctorClinicProfileCollection();
 	    doctorClinicProfileCollection.setAppointmentBookingNumber(request.getAppointmentBookingNumber());
 	    doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 	    response = true;
@@ -446,6 +447,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	Boolean response = false;
 	try {
 	    doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(request.getUserLocationId());
+	    if(doctorClinicProfileCollection == null)  	doctorClinicProfileCollection=new DoctorClinicProfileCollection();
 	    doctorClinicProfileCollection.setWorkingSchedules(request.getWorkingSchedules());
 	    doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 	    response = true;
@@ -462,6 +464,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	Boolean response = false;
 	try {
 	    doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(request.getUserLocationId());
+	    if(doctorClinicProfileCollection == null)  	doctorClinicProfileCollection=new DoctorClinicProfileCollection();
 	    doctorClinicProfileCollection.setConsultationFee(request.getConsultationFee());
 	    doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 	    response = true;
@@ -478,6 +481,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	Boolean response = false;
 	try {
 	    doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(request.getUserLocationId());
+	    if(doctorClinicProfileCollection == null)  	doctorClinicProfileCollection=new DoctorClinicProfileCollection();
 	    doctorClinicProfileCollection.setAppointmentSlot(request.getAppointmentSlot());
 	    doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 	    response = true;
