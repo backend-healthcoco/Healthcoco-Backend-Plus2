@@ -29,8 +29,11 @@ public interface HistoryRepository extends MongoRepository<HistoryCollection, St
     HistoryCollection findByDoctorIdLocationIdHospitalIdAndPatientIdFilterByClinicalNotes(String doctorId, String locationId, String hospitalId,
 	    String patientId);
 
-    @Query(value = "{'doctorId':?0,'locationId':?1,'hospitalId':?2,'patientId':?3}", fields = "{ 'clinicalNotes' : 0, 'reports' : 0}")
+    @Query(value = "{'doctorId': ?0,'locationId': ?1,'hospitalId': ?2,'patientId': ?3}", fields = "{ 'clinicalNotes' : 0, 'reports' : 0}")
     HistoryCollection findByDoctorIdLocationIdHospitalIdAndPatientIdFilterByPrescriptions(String doctorId, String locationId, String hospitalId,
 	    String patientId);
+
+    @Query(value = "{'doctorId' : ?0, 'patientId': ?1, 'hospitalId' : ?2, 'locationId' : ?3}", count = true)
+    Integer getHistoryCount(String doctorId, String patientId, String hospitalId, String locationId);
 
 }

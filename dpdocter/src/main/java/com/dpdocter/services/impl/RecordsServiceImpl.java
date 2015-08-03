@@ -39,9 +39,11 @@ import com.dpdocter.request.RecordsSearchRequest;
 import com.dpdocter.request.TagRecordRequest;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.FileManager;
+import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.RecordsService;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -72,6 +74,9 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Autowired
     private PrescriptionServices prescriptionService;
+
+    @Autowired
+    private HistoryServices historyServices;
 
     @Value(value = "${IMAGE_RESOURCE}")
     private String imageResource;
@@ -458,6 +463,9 @@ public class RecordsServiceImpl implements RecordsService {
 		    break;
 		case NOTES:
 		    count.setValue(clinicalNotesService.getClinicalNotesCount(doctorId, patientId, locationId, hospitalId));
+		    break;
+		case HISTORY:
+		    count.setValue(historyServices.getHistoryCount(doctorId, patientId, locationId, hospitalId));
 		    break;
 		default:
 		    break;

@@ -4,23 +4,23 @@ import java.util.Date;
 
 public class GenericCollection {
     private Date createdTime;
-    
+
     private String createdBy;
 
     public Date getCreatedTime() {
-    	return createdTime;
+	return createdTime;
     }
 
     public void setCreatedTime(Date createdTime) {
-    	this.createdTime = createdTime;
+	this.createdTime = createdTime;
     }
 
-	public String getCreatedBy() {
-		return createdBy;
-	}
+    public String getCreatedBy() {
+	return createdBy;
+    }
 
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
-	}
+    public void setCreatedBy(String createdBy) {
+	this.createdBy = createdBy;
+    }
 
 }

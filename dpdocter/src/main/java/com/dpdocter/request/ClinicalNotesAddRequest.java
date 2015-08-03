@@ -34,7 +34,7 @@ public class ClinicalNotesAddRequest {
     private Long createdDate;
 
     private String createdBy;
-    
+
     public String getId() {
 	return id;
     }
@@ -132,20 +132,18 @@ public class ClinicalNotesAddRequest {
     }
 
     public String getCreatedBy() {
-		return createdBy;
-	}
+	return createdBy;
+    }
 
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
-	}
+    public void setCreatedBy(String createdBy) {
+	this.createdBy = createdBy;
+    }
 
-	@Override
-	public String toString() {
-		return "ClinicalNotesAddRequest [id=" + id + ", patientId=" + patientId + ", complaints=" + complaints
-				+ ", observations=" + observations + ", investigations=" + investigations + ", diagnoses=" + diagnoses
-				+ ", notes=" + notes + ", diagrams=" + diagrams + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", createdDate=" + createdDate + ", createdBy="
-				+ createdBy + "]";
-	}
+    @Override
+    public String toString() {
+	return "ClinicalNotesAddRequest [id=" + id + ", patientId=" + patientId + ", complaints=" + complaints + ", observations=" + observations
+		+ ", investigations=" + investigations + ", diagnoses=" + diagnoses + ", notes=" + notes + ", diagrams=" + diagrams + ", doctorId=" + doctorId
+		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", createdDate=" + createdDate + ", createdBy=" + createdBy + "]";
+    }
 
 }

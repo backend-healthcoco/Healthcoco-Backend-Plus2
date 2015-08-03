@@ -58,14 +58,14 @@ public class DoctorContactCollection extends GenericCollection {
     }
 
     public Boolean getIsDeleted() {
-		return isDeleted;
-	}
+	return isDeleted;
+    }
 
-	public void setIsDeleted(Boolean isDeleted) {
-		this.isDeleted = isDeleted;
-	}
+    public void setIsDeleted(Boolean isDeleted) {
+	this.isDeleted = isDeleted;
+    }
 
-	public Long getCreatedDate() {
+    public Long getCreatedDate() {
 	return createdDate;
     }
 
@@ -74,9 +74,9 @@ public class DoctorContactCollection extends GenericCollection {
     }
 
     @Override
-	public String toString() {
-		return "DoctorContactCollection [id=" + id + ", doctorId=" + doctorId + ", contactId=" + contactId
-				+ ", isBlocked=" + isBlocked + ", isDeleted=" + isDeleted + ", createdDate=" + createdDate + "]";
-	}
+    public String toString() {
+	return "DoctorContactCollection [id=" + id + ", doctorId=" + doctorId + ", contactId=" + contactId + ", isBlocked=" + isBlocked + ", isDeleted="
+		+ isDeleted + ", createdDate=" + createdDate + "]";
+    }
 
 }

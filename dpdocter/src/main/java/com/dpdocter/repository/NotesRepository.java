@@ -10,10 +10,10 @@ import org.springframework.data.mongodb.repository.Query;
 import com.dpdocter.collections.NotesCollection;
 
 public interface NotesRepository extends MongoRepository<NotesCollection, String> {
-	
-	@Query("{'doctorId': ?0, 'createdTime': {'$gte': ?1}}")
+
+    @Query("{'doctorId': ?0, 'createdTime': {'$gte': ?1}}")
     List<NotesCollection> findNotes(String doctorId, Date date, Sort sort);
-	
+
     @Query("{'doctorId': ?0, 'createdTime': {'$gte': ?1}, 'isDeleted': ?2}")
     List<NotesCollection> findNotes(String doctorId, Date date, boolean isDeleted, Sort sort);
 }

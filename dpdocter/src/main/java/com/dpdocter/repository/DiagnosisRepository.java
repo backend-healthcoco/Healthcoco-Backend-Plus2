@@ -17,7 +17,7 @@ public interface DiagnosisRepository extends MongoRepository<DiagnosisCollection
 
     @Query("{'doctorId': ?0, 'createdTime': {'$gte': ?1}}")
     List<DiagnosisCollection> findDiagnosis(String doctorId, Date date, Sort sort);
-    
+
     @Query("{'doctorId': ?0, 'createdTime': {'$gte': ?1}, 'isDeleted': ?2}")
     List<DiagnosisCollection> findDiagnosis(String doctorId, Date date, boolean isDeleted, Sort sort);
 }

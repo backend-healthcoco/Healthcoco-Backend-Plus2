@@ -2,61 +2,60 @@ package com.dpdocter.request;
 
 public class DoctorNameAddEditRequest {
 
-	 private String doctorId;
-	 
-	 private String title;
-	 
-	 private String firstName;
+    private String doctorId;
 
-	 private String lastName;
+    private String title;
 
-	 private String middleName;
+    private String firstName;
 
-	public String getDoctorId() {
-		return doctorId;
-	}
+    private String lastName;
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
+    private String middleName;
 
-	public String getTitle() {
-		return title;
-	}
+    public String getDoctorId() {
+	return doctorId;
+    }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
+    }
 
-	public String getFirstName() {
-		return firstName;
-	}
+    public String getTitle() {
+	return title;
+    }
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
+    public void setTitle(String title) {
+	this.title = title;
+    }
 
-	public String getLastName() {
-		return lastName;
-	}
+    public String getFirstName() {
+	return firstName;
+    }
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+    public void setFirstName(String firstName) {
+	this.firstName = firstName;
+    }
 
-	public String getMiddleName() {
-		return middleName;
-	}
+    public String getLastName() {
+	return lastName;
+    }
 
-	public void setMiddleName(String middleName) {
-		this.middleName = middleName;
-	}
+    public void setLastName(String lastName) {
+	this.lastName = lastName;
+    }
 
-	@Override
-	public String toString() {
-		return "DoctorNameAddEditRequest [doctorId=" + doctorId + ", title=" + title + ", firstName=" + firstName
-				+ ", lastName=" + lastName + ", middleName=" + middleName + "]";
-	}
+    public String getMiddleName() {
+	return middleName;
+    }
 
-	 
+    public void setMiddleName(String middleName) {
+	this.middleName = middleName;
+    }
+
+    @Override
+    public String toString() {
+	return "DoctorNameAddEditRequest [doctorId=" + doctorId + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName="
+		+ middleName + "]";
+    }
+
 }

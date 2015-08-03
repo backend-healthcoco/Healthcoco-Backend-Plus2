@@ -658,4 +658,16 @@ public class HistoryServicesImpl implements HistoryServices {
 	return diseaseListResponses;
     }
 
+    @Override
+    public Integer getHistoryCount(String doctorId, String patientId, String locationId, String hospitalId) {
+	Integer historyCount = 0;
+	try {
+	    historyCount = historyRepository.getHistoryCount(doctorId, patientId, hospitalId, locationId);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting History Count");
+	}
+	return historyCount;
+    }
+
 }

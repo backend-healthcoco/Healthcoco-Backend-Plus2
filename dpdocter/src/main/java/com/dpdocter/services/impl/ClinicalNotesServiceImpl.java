@@ -195,6 +195,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    if (request.getDiagrams() == null) {
 		diagramIds = new ArrayList<String>();
 		clinicalNotesCollection.setDiagrams(diagramIds);
+	    } else {
+		diagramIds = request.getDiagrams();
 	    }
 
 	    clinicalNotesCollection.setCreatedTime(createdTime);
@@ -248,10 +250,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    ClinicalNotesCollection clinicalNotesCollection = clinicalNotesRepository.findOne(id);
 	    if (clinicalNotesCollection != null) {
 		clinicalNote = new ClinicalNotes();
-		clinicalNote.setDoctorId(clinicalNotesCollection.getDoctorId());
-		clinicalNote.setHospitalId(clinicalNotesCollection.getHospitalId());
-		clinicalNote.setLocationId(clinicalNotesCollection.getLocationId());
-		clinicalNote.setId(id);
+		BeanUtil.map(clinicalNotesCollection, clinicalNote);
 		@SuppressWarnings("unchecked")
 		List<ComplaintCollection> complaintCollections = IteratorUtils.toList(complaintRepository.findAll(clinicalNotesCollection.getComplaints())
 			.iterator());
@@ -389,7 +388,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	List<ClinicalNotes> clinicalNotesList = null;
 	List<PatientClinicalNotesCollection> patientClinicalNotesCollections = null;
 	try {
-	    if (DPDoctorUtils.anyStringEmpty(createdTime.trim())) {
+	    if (DPDoctorUtils.anyStringEmpty(createdTime)) {
+		if (isDeleted) {
+		    patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Sort(Sort.Direction.DESC, "createdTime"));
+		} else {
+		    patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, isDeleted, new Sort(Sort.Direction.DESC,
+			    "createdTime"));
+		}
+	    } else {
 		long createdTimeStamp = Long.parseLong(createdTime);
 
 		if (isDeleted) {
@@ -398,14 +404,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} else {
 		    patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, isDeleted, new Date(createdTimeStamp),
 			    new Sort(Sort.Direction.DESC, "createdTime"));
-		}
-
-	    } else {
-		if (isDeleted) {
-		    patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Sort(Sort.Direction.DESC, "createdTime"));
-		} else {
-		    patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, isDeleted, new Sort(Sort.Direction.DESC,
-			    "createdTime"));
 		}
 	    }
 

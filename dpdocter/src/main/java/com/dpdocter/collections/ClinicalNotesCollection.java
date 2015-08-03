@@ -50,7 +50,7 @@ public class ClinicalNotesCollection extends GenericCollection {
 
     @Field
     private Boolean isDeleted = false;
- 
+
     public String getId() {
 	return id;
     }
@@ -156,19 +156,18 @@ public class ClinicalNotesCollection extends GenericCollection {
     }
 
     public Boolean getIsDeleted() {
-		return isDeleted;
-	}
+	return isDeleted;
+    }
 
-	public void setIsDeleted(Boolean isDeleted) {
-		this.isDeleted = isDeleted;
-	}
+    public void setIsDeleted(Boolean isDeleted) {
+	this.isDeleted = isDeleted;
+    }
 
-	@Override
-	public String toString() {
-		return "ClinicalNotesCollection [id=" + id + ", notes=" + notes + ", observations=" + observations
-				+ ", investigations=" + investigations + ", diagnoses=" + diagnoses + ", complaints=" + complaints
-				+ ", diagrams=" + diagrams + ", diagramsPaths=" + diagramsPaths + ", comments=" + comments
-				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", createdDate=" + createdDate + ", isDeleted=" + isDeleted + "]";
-	}
+    @Override
+    public String toString() {
+	return "ClinicalNotesCollection [id=" + id + ", notes=" + notes + ", observations=" + observations + ", investigations=" + investigations
+		+ ", diagnoses=" + diagnoses + ", complaints=" + complaints + ", diagrams=" + diagrams + ", diagramsPaths=" + diagramsPaths + ", comments="
+		+ comments + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", createdDate=" + createdDate
+		+ ", isDeleted=" + isDeleted + "]";
+    }
 }

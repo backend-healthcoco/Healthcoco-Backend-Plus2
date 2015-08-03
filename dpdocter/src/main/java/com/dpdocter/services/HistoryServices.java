@@ -46,4 +46,6 @@ public interface HistoryServices {
 
     List<HistoryDetailsResponse> getPatientHistoryDetailsWithVerifiedOTP(String patientId, String doctorId, String hospitalId, String locationId,
 	    String historyFilter);
+    
+    Integer getHistoryCount(String doctorId, String patientId, String locationId, String hospitalId);
 }

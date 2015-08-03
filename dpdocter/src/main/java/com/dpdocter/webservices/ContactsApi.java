@@ -68,17 +68,17 @@ public class ContactsApi {
     @Path(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_DOCTOR_SPECIFIC_CREATED_TIME_ISDELETED)
     @GET
     public Response<DoctorContactsResponse> getDoctorContacts(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
-    		@PathParam("isDeleted") boolean isDeleted) {
+	    @PathParam("isDeleted") boolean isDeleted) {
 	return doctorContacts(doctorId, createdTime, isDeleted);
     }
-    
+
     private Response<DoctorContactsResponse> doctorContacts(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
-    		@PathParam("isDeleted")  boolean isDeleted) {
+	    @PathParam("isDeleted") boolean isDeleted) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id Cannot Be Empty");
 	}
 	List<PatientCard> patientCards = contactsService.getDoctorContacts(doctorId, createdTime, isDeleted);
-	int ttlCount = patientCards !=null ?patientCards.size():0;
+	int ttlCount = patientCards != null ? patientCards.size() : 0;
 	DoctorContactsResponse doctorContactsResponse = new DoctorContactsResponse();
 	doctorContactsResponse.setPatientCards(patientCards);
 	doctorContactsResponse.setTotalSize(ttlCount);
@@ -99,13 +99,13 @@ public class ContactsApi {
     @Path(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_HANDHELD_DOCTOR_SPECIFIC_ISDELETED)
     @GET
     public Response<RegisteredPatientDetails> getDoctorContactsHandheld(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
-    		@PathParam("isDeleted") boolean isDeleted) {
+	    @PathParam("isDeleted") boolean isDeleted) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId, createdTime)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id, Created Time Cannot Be Empty");
 	}
 	return doctorContactsHandheld(doctorId, null, null, createdTime, isDeleted);
     }
-    
+
     @Path(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_HANDHELD)
     @GET
     public Response<RegisteredPatientDetails> getDoctorContactsHandheld(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
@@ -115,7 +115,7 @@ public class ContactsApi {
 	}
 	return doctorContactsHandheld(doctorId, locationId, hospitalId, createdTime, true);
     }
-    
+
     @Path(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_HANDHELD_ISDELETED)
     @GET
     public Response<RegisteredPatientDetails> getDoctorContactsHandheld(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
@@ -126,8 +126,10 @@ public class ContactsApi {
 	return doctorContactsHandheld(doctorId, locationId, hospitalId, createdTime, isDeleted);
     }
 
-    private Response<RegisteredPatientDetails> doctorContactsHandheld(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted) {
-	List<RegisteredPatientDetails> registeredPatientDetails = contactsService.getDoctorContactsHandheld(doctorId, locationId, hospitalId, createdTime, isDeleted);
+    private Response<RegisteredPatientDetails> doctorContactsHandheld(String doctorId, String locationId, String hospitalId, String createdTime,
+	    boolean isDeleted) {
+	List<RegisteredPatientDetails> registeredPatientDetails = contactsService.getDoctorContactsHandheld(doctorId, locationId, hospitalId, createdTime,
+		isDeleted);
 	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 	response.setDataList(registeredPatientDetails);
 	return response;
@@ -215,7 +217,7 @@ public class ContactsApi {
 	    @PathParam("hospitalId") String hospitalId, @PathParam("createdTime") String createdTime) {
 	return getGroups(doctorId, locationId, hospitalId, createdTime, true);
     }
-    
+
     @Path(value = PathProxy.ContactsUrls.GET_ALL_GROUPS_CREATED_TIME_ISDELETED)
     @GET
     public Response<Group> getAllGroups(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
@@ -252,11 +254,11 @@ public class ContactsApi {
     public Response<Group> getAllGroups(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
 	return getGroups(doctorId, createdTime, true);
     }
-    
+
     @Path(value = PathProxy.ContactsUrls.GET_ALL_DOCTOR_SPECIFIC_GROUPS_CREATED_TIME_ISDELETED)
     @GET
     public Response<Group> getAllGroups(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
-    		@PathParam("isDeleted") boolean isDeleted) {
+	    @PathParam("isDeleted") boolean isDeleted) {
 	return getGroups(doctorId, createdTime, isDeleted);
     }
 

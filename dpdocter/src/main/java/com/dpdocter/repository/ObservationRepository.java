@@ -17,7 +17,7 @@ public interface ObservationRepository extends MongoRepository<ObservationCollec
 
     @Query("{'doctorId': ?0, 'createdTime': {'$gte': ?1}}")
     List<ObservationCollection> findObservations(String doctorId, Date date, Sort sort);
-    
+
     @Query("{'doctorId': ?0, 'createdTime': {'$gte': ?1}, 'isDeleted': ?2}")
     List<ObservationCollection> findObservations(String doctorId, Date date, boolean isDeleted, Sort sort);
 }

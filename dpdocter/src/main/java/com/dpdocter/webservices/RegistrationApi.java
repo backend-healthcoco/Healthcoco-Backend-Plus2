@@ -271,8 +271,12 @@ public class RegistrationApi {
 	SolrPatientDocument solrPatientDocument = null;
 	try {
 	    solrPatientDocument = new SolrPatientDocument();
-	    BeanUtil.map(patient.getAddress(), solrPatientDocument);
-	    BeanUtil.map(patient.getPatient(), solrPatientDocument);
+	    if (patient.getAddress() != null) {
+		BeanUtil.map(patient.getAddress(), solrPatientDocument);
+	    }
+	    if (patient.getPatient() != null) {
+		BeanUtil.map(patient.getPatient(), solrPatientDocument);
+	    }
 	    BeanUtil.map(patient, solrPatientDocument);
 	    solrPatientDocument.setId(patient.getPatient().getPatientId());
 	} catch (Exception e) {

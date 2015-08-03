@@ -2,7 +2,7 @@ package com.dpdocter.response;
 
 import com.dpdocter.collections.GenericCollection;
 
-public class DrugDosageAddEditResponse extends GenericCollection{
+public class DrugDosageAddEditResponse extends GenericCollection {
 
     private String id;
 

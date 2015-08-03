@@ -20,9 +20,9 @@ public class PrescriptionAddEditRequest {
     private String patientId;
 
     private String prescriptionCode;
-    
+
     private String createdBy;
-    
+
     public String getId() {
 	return id;
     }
@@ -88,18 +88,17 @@ public class PrescriptionAddEditRequest {
     }
 
     public String getCreatedBy() {
-		return createdBy;
-	}
+	return createdBy;
+    }
 
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
-	}
+    public void setCreatedBy(String createdBy) {
+	this.createdBy = createdBy;
+    }
 
-	@Override
-	public String toString() {
-		return "PrescriptionAddEditRequest [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", items=" + items + ", patientId=" + patientId
-				+ ", prescriptionCode=" + prescriptionCode + ", createdBy=" + createdBy + "]";
-	}
+    @Override
+    public String toString() {
+	return "PrescriptionAddEditRequest [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+		+ hospitalId + ", items=" + items + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + ", createdBy=" + createdBy + "]";
+    }
 
 }

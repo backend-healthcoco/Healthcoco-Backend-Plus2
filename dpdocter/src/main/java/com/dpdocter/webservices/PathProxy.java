@@ -48,13 +48,13 @@ public interface PathProxy {
 	public static final String DOCTOR_CONTACTS_DOCTOR_SPECIFIC_CREATED_TIME = "/doctorcontacts/get/{doctorId}/{createdTime}";
 
 	public static final String DOCTOR_CONTACTS_DOCTOR_SPECIFIC_CREATED_TIME_ISDELETED = "/doctorcontacts/get/{doctorId}/{createdTime}/{isDeleted}";
-	
+
 	public static final String DOCTOR_CONTACTS_HANDHELD_DOCTOR_SPECIFIC = "/doctorcontacts/handheld/{doctorId}/{createdTime}";
-	
+
 	public static final String DOCTOR_CONTACTS_HANDHELD_DOCTOR_SPECIFIC_ISDELETED = "/doctorcontacts/handheld/{doctorId}/{createdTime}/{isDeleted}";
 
 	public static final String DOCTOR_CONTACTS_HANDHELD = "/doctorcontacts/handheld/{doctorId}/{locationId}/{hospitalId}/{createdTime}";
-	
+
 	public static final String DOCTOR_CONTACTS_HANDHELD_ISDELETED = "/doctorcontacts/handheld/{doctorId}/{locationId}/{hospitalId}/{createdTime}/{isDeleted}";
 
 	public static final String BLOCK_CONTACT = "/doctorcontacts/block/{doctorId}/{patientId}";
@@ -68,11 +68,11 @@ public interface PathProxy {
 	public static final String GET_ALL_GROUPS_CREATED_TIME = "/doctorcontacts/getallgroups/{doctorId}/{locationId}/{hospitalId}/{createdTime}";
 
 	public static final String GET_ALL_GROUPS_CREATED_TIME_ISDELETED = "/doctorcontacts/getallgroups/{doctorId}/{locationId}/{hospitalId}/{createdTime}/{isDeleted}";
-	
+
 	public static final String GET_ALL_DOCTOR_SPECIFIC_GROUPS = "doctorcontacts/getallgroups/{doctorId}";
 
 	public static final String GET_ALL_DOCTOR_SPECIFIC_GROUPS_CREATED_TIME = "doctorcontacts/getallgroups/{doctorId}/{createdTime}";
-	
+
 	public static final String GET_ALL_DOCTOR_SPECIFIC_GROUPS_CREATED_TIME_ISDELETED = "doctorcontacts/getcompletegroups/{doctorId}/{createdTime}/{isDeleted}";
 
 	public static final String DELETE_GROUP = "/doctorcontacts/deletegroup/{groupId}";
@@ -176,27 +176,27 @@ public interface PathProxy {
 	public static final String GET_CUSTOM_OBSERVATIONS = "getCustomObservations/{doctorId}/{locationId}/{hospitalId}/{page}/{size}";
 
 	public static final String GET_COMPLAINTS = "getComplaints/{doctorId}/{createdTime}";
-	
+
 	public static final String GET_COMPLAINTS_ISDELETED = "getComplaints/{doctorId}/{createdTime}/{isDeleted}";
 
 	public static final String GET_INVESTIGATIONS = "getInvestigations/{doctorId}/{createdTime}";
-	
+
 	public static final String GET_INVESTIGATIONS_ISDELETED = "getInvestigations/{doctorId}/{createdTime}/{isDeleted}";
 
 	public static final String GET_OBSERVATIONS = "getObservations/{doctorId}/{createdTime}";
-	
+
 	public static final String GET_OBSERVATIONS_ISDELETED = "getObservations/{doctorId}/{createdTime}/{isDeleted}";
 
 	public static final String GET_DIAGNOSIS = "getDiagnosis/{doctorId}/{createdTime}";
-	
+
 	public static final String GET_DIAGNOSIS_ISDELETED = "getDiagnosis/{doctorId}/{createdTime}/{isDeleted}";
 
 	public static final String GET_NOTES = "getNotes/{doctorId}/{createdTime}";
-	
+
 	public static final String GET_NOTES_ISDELETED = "getNotes/{doctorId}/{createdTime}/{isDeleted}";
 
 	public static final String GET_DIAGRAMS = "getDiagrams/{doctorId}/{createdTime}";
-	
+
 	public static final String GET_DIAGRAMS_ISDELETED = "getDiagrams/{doctorId}/{createdTime}/{isDeleted}";
 
 	public static final String GET_GLOBAL_DIAGRAMS = "getGlobalDiagrams/{createdTime}";
@@ -272,13 +272,13 @@ public interface PathProxy {
 	public static final String GET_DRUGS_DOCTOR_SPECIFIC = "getDrugDetails/{doctorId}";
 
 	public static final String GET_DRUGS_DOCTOR_SPECIFIC_CT = "getDrugDetails/{doctorId}/{createdTime}";
-	
+
 	public static final String GET_DRUGS_DOCTOR_SPECIFIC_CT_ISDELETED = "getCompleteDrugDetails/{doctorId}/{createdTime}/{isDeleted}";
 
 	public static final String GET_DRUGS_ALL_FIELDS = "getDrugDetails/{doctorId}/{hospitalId}/{locationId}";
 
 	public static final String GET_DRUGS_ALL_FIELDS_CT = "getDrugDetails/{doctorId}/{hospitalId}/{locationId}/{createdTime}";
-	
+
 	public static final String GET_DRUGS_ALL_FIELDS_CT_ISDELETED = "getDrugDetails/{doctorId}/{hospitalId}/{locationId}/{createdTime}/{isDeleted}";
 
 	public static final String DELETE_GLOBAL_DRUG = "deleteDrug/{drugId}";
@@ -298,11 +298,11 @@ public interface PathProxy {
 	public static final String GET_TEMPLATE_ALL_FIELDS = "getTemplates/{doctorId}/{hospitalId}/{locationId}";
 
 	public static final String GET_TEMPLATE_DOCTOR_SPECIFIC_CT = "getTemplates/{doctorId}/{createdTime}";
-	
+
 	public static final String GET_TEMPLATE_DOCTOR_SPECIFIC_CT_ISDELETED = "getCompleteTemplates/{doctorId}/{createdTime}/{isDeleted}";
 
 	public static final String GET_TEMPLATE_ALL_FIELDS_CT = "getTemplates/{doctorId}/{hospitalId}/{locationId}/{createdTime}";
-	
+
 	public static final String GET_TEMPLATE_ALL_FIELDS_CT_ISDELETED = "getTemplates/{doctorId}/{hospitalId}/{locationId}/{createdTime}/{isDeleted}";
 
 	public static final String ADD_PRESCRIPTION = "addPrescription";
@@ -316,7 +316,7 @@ public interface PathProxy {
 	public static final String GET_PRESCRIPTION = "getPrescription/{doctorId}/{hospitalId}/{locationId}/{patientId}/{isOTPVarified}";
 
 	public static final String GET_PRESCRIPTION_CREATED_TIME = "getPrescription/{doctorId}/{hospitalId}/{locationId}/{patientId}/{isOTPVarified}/{createdTime}";
-	
+
 	public static final String GET_PRESCRIPTION_CREATED_TIME_ISDELETED = "getPrescription/{doctorId}/{hospitalId}/{locationId}/{patientId}/{isOTPVarified}/{createdTime}/{isDeleted}";
 
 	public static final String GET_PRESCRIPTION_COUNT = "getPrescriptionCount/{doctorId}/{patientId}/{locationId}/{hospitalId}";
@@ -326,59 +326,59 @@ public interface PathProxy {
 	public static final String GET_CUSTOM_DRUG_TYPE = "getDrugType/{doctorId}/{locationId}/{hospitalId}";
 
 	public static final String GET_DRUG_TYPE_CREATED_TIME = "getDrugType/{createdTime}";
-	
+
 	public static final String GET_DRUG_TYPE_CREATED_TIME_ISDELETED = "getDrugType/{createdTime}/{isDeleted}";
 
 	public static final String GET_CUSTOM_DRUG_TYPE_CREATED_TIME = "getDrugType/{doctorId}/{locationId}/{hospitalId}/{createdTime}";
 
-	public static final String GET_CUSTOM_DRUG_TYPE_CREATED_TIME_ISDELETED= "getDrugType/{doctorId}/{locationId}/{hospitalId}/{createdTime}/{isDeleted}";
+	public static final String GET_CUSTOM_DRUG_TYPE_CREATED_TIME_ISDELETED = "getDrugType/{doctorId}/{locationId}/{hospitalId}/{createdTime}/{isDeleted}";
 
 	public static final String GET_ALL_DRUG_STRENGTH_UNIT = "getAllDrugStrengthUnit";
 
 	public static final String GET_CUSTOM_DRUG_STRENGTH_UNIT = "getDrugStrengthUnit/{doctorId}/{locationId}/{hospitalId}";
-	
+
 	public static final String GET_DRUG_STRENGTH_UNIT_CREATED_TIME = "getDrugStrengthUnit/{createdTime}";
-	
+
 	public static final String GET_DRUG_STRENGTH_UNIT_CREATED_TIME_ISDELETED = "getDrugStrengthUnit/{createdTime}/{isDeleted}";
-	
+
 	public static final String GET_CUSTOM_DRUG_STRENGTH_UNIT_CREATED_TIME = "getDrugStrengthUnit/{doctorId}/{locationId}/{hospitalId}/{createdTime}";
-	
+
 	public static final String GET_CUSTOM_DRUG_STRENGTH_UNIT_CREATED_TIME_ISDELETED = "getDrugStrengthUnit/{doctorId}/{locationId}/{hospitalId}/{createdTime}/{isDeleted}";
 
 	public static final String GET_ALL_DRUG_DOSAGE = "getAllDrugDosage";
 
 	public static final String GET_CUSTOM_DRUG_DOSAGE = "getDrugDosage/{doctorId}/{locationId}/{hospitalId}";
-	
+
 	public static final String GET_DRUG_DOSAGE_CREATED_TIME = "getDrugDosage/{createdTime}";
-	
+
 	public static final String GET_DRUG_DOSAGE_CREATED_TIME_ISDELETED = "getDrugDosage/{createdTime}/{isDeleted}";
-	
+
 	public static final String GET_CUSTOM_DRUG_DOSAGE_CREATED_TIME = "getDrugDosage/{doctorId}/{locationId}/{hospitalId}/{createdTime}";
-	
+
 	public static final String GET_CUSTOM_DRUG_DOSAGE_CREATED_TIME_ISDELETED = "getDrugDosage/{doctorId}/{locationId}/{hospitalId}/{createdTime}/{isDeleted}";
 
 	public static final String GET_ALL_DRUG_DURATION_UNIT = "getAllDrugDurationUnit";
 
 	public static final String GET_CUSTOM_DRUG_DURATION_UNIT = "getDrugDurationUnit/{doctorId}/{locationId}/{hospitalId}";
-	
+
 	public static final String GET_DRUG_DURATION_UNIT_CREATED_TIME = "getDrugDurationUnit/{createdTime}";
-	
+
 	public static final String GET_DRUG_DURATION_UNIT_CREATED_TIME_ISDELETED = "getDrugDurationUnit/{createdTime}/{isDeleted}";
-	
+
 	public static final String GET_CUSTOM_DRUG_DURATION_UNIT_CREATED_TIME = "getDrugDurationUnit/{doctorId}/{locationId}/{hospitalId}/{createdTime}";
-	
+
 	public static final String GET_CUSTOM_DRUG_DURATION_UNIT_CREATED_TIME_ISDELETED = "getDrugDurationUnit/{doctorId}/{locationId}/{hospitalId}/{createdTime}/{isDeleted}";
 
 	public static final String GET_ALL_DRUG_DIRECTION_UNIT = "getAllDrugDirection";
 
 	public static final String GET_CUSTOM_DRUG_DIRECTION_UNIT = "getDrugDirection/{doctorId}/{locationId}/{hospitalId}";
-	
+
 	public static final String GET_DRUG_DIRECTION_UNIT_CREATED_TIME = "getDrugDirection/{createdTime}";
-	
+
 	public static final String GET_DRUG_DIRECTION_UNIT_CREATED_TIME_ISDELETED = "getDrugDirection/{createdTime}/{isDeleted}";
-	
+
 	public static final String GET_CUSTOM_DRUG_DIRECTION_UNIT_CREATED_TIME = "getDrugDirection/{doctorId}/{locationId}/{hospitalId}/{createdTime}";
-	
+
 	public static final String GET_CUSTOM_DRUG_DIRECTION_UNIT_CREATED_TIME_ISDELETED = "getDrugDirection/{doctorId}/{locationId}/{hospitalId}/{createdTime}/{isDeleted}";
 
 	public static final String ADD_DRUG_TYPE = "addDrugType";

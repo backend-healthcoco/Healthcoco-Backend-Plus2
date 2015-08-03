@@ -1,7 +1,7 @@
 package com.dpdocter.enums;
 
 public enum CountFor {
-    PRESCRIPTIONS("PRESCRIPTIONS"), RECORDS("RECORDS"), NOTES("NOTES");
+    PRESCRIPTIONS("PRESCRIPTIONS"), RECORDS("RECORDS"), NOTES("NOTES"), HISTORY("HISTORY");
 
     private String countRequired;
 
