@@ -36,6 +36,9 @@ public class PrescriptionCollection extends GenericCollection {
     @Field
     private String prescriptionCode;
 
+    @Field
+    private boolean inHistory = false;
+
     public String getId() {
 	return id;
     }
@@ -108,10 +111,19 @@ public class PrescriptionCollection extends GenericCollection {
 	this.prescriptionCode = prescriptionCode;
     }
 
+    public boolean isInHistory() {
+	return inHistory;
+    }
+
+    public void setInHistory(boolean inHistory) {
+	this.inHistory = inHistory;
+    }
+
     @Override
     public String toString() {
 	return "PrescriptionCollection [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ ", isDeleted=" + isDeleted + ", items=" + items + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + "]";
+		+ ", isDeleted=" + isDeleted + ", items=" + items + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + ", inHistory="
+		+ inHistory + "]";
     }
 
 }

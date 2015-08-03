@@ -43,6 +43,9 @@ public class RecordsCollection extends GenericCollection {
     @Field
     private boolean isDeleted = false;
 
+    @Field
+    private boolean inHistory = false;
+
     public String getId() {
 	return id;
     }
@@ -139,11 +142,19 @@ public class RecordsCollection extends GenericCollection {
 	this.isDeleted = isDeleted;
     }
 
+    public boolean isInHistory() {
+	return inHistory;
+    }
+
+    public void setInHistory(boolean inHistory) {
+	this.inHistory = inHistory;
+    }
+
     @Override
     public String toString() {
 	return "RecordsCollection [id=" + id + ", recordsUrl=" + recordsUrl + ", recordsPath=" + recordsPath + ", recordsLable=" + recordsLable
 		+ ", recordsType=" + recordsType + ", description=" + description + ", patientId=" + patientId + ", doctorId=" + doctorId + ", createdDate="
-		+ createdDate + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", isDeleted=" + isDeleted + "]";
+		+ createdDate + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", isDeleted=" + isDeleted + ", inHistory=" + inHistory + "]";
     }
 
 }

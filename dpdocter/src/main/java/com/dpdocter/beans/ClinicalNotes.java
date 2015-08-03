@@ -28,6 +28,8 @@ public class ClinicalNotes extends GenericCollection {
 
     private String hospitalId;
 
+    private boolean inHistory = false;
+
     public String getId() {
 	return id;
     }
@@ -116,11 +118,19 @@ public class ClinicalNotes extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
+    public boolean isInHistory() {
+	return inHistory;
+    }
+
+    public void setInHistory(boolean inHistory) {
+	this.inHistory = inHistory;
+    }
+
     @Override
     public String toString() {
 	return "ClinicalNotes [id=" + id + ", complaints=" + complaints + ", observations=" + observations + ", investigations=" + investigations
 		+ ", diagnoses=" + diagnoses + ", createdDate=" + createdDate + ", diagrams=" + diagrams + ", notes=" + notes + ", doctorId=" + doctorId
-		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
+		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", inHistory=" + inHistory + "]";
     }
 
 }

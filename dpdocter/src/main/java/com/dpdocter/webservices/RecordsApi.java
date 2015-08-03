@@ -20,6 +20,7 @@ import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.RecordsDescription;
 import com.dpdocter.beans.Tags;
+import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.ChangeRecordLabelRequest;
@@ -27,6 +28,7 @@ import com.dpdocter.request.RecordsAddRequest;
 import com.dpdocter.request.RecordsEditRequest;
 import com.dpdocter.request.RecordsSearchRequest;
 import com.dpdocter.request.TagRecordRequest;
+import com.dpdocter.services.PatientTrackService;
 import com.dpdocter.services.RecordsService;
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -39,6 +41,9 @@ public class RecordsApi {
     @Autowired
     private RecordsService recordsService;
 
+    @Autowired
+    private PatientTrackService patientTrackService;
+
     @POST
     @Path(value = PathProxy.RecordsUrls.ADD_RECORDS)
     public Response<Records> addRecords(RecordsAddRequest request) {
@@ -47,6 +52,12 @@ public class RecordsApi {
 	}
 
 	Records records = recordsService.addRecord(request);
+
+	// patient track
+	if (records != null) {
+	    patientTrackService.addRecord(request, VisitedFor.REPORTS);
+	}
+
 	Response<Records> response = new Response<Records>();
 	response.setData(records);
 	return response;
@@ -245,6 +256,12 @@ public class RecordsApi {
 	}
 
 	Records records = recordsService.editRecord(request);
+
+	// patient track
+	if (records != null) {
+	    patientTrackService.addRecord(request, VisitedFor.REPORTS);
+	}
+
 	Response<Records> response = new Response<Records>();
 	response.setData(records);
 	return response;

@@ -14,6 +14,9 @@ import com.dpdocter.collections.PatientCollection;
 public interface PatientRepository extends MongoRepository<PatientCollection, String> {
     public PatientCollection findByUserId(String userId);
 
+    @Query("{'userId': {'$in': ?0}}")
+    List<PatientCollection> findByUserId(List<String> userIds);
+
     @Query("{'userId': ?0,'doctorId': ?1,'locationId': ?2,'hospitalId': ?3}")
     public PatientCollection findByUserIdDoctorIdLocationIdAndHospitalId(String userId, String doctorId, String locationId, String hospitalId);
 

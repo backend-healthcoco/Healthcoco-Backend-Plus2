@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.DiseaseAddEditRequest;
@@ -23,6 +24,7 @@ import com.dpdocter.response.DiseaseAddEditResponse;
 import com.dpdocter.response.DiseaseListResponse;
 import com.dpdocter.response.HistoryDetailsResponse;
 import com.dpdocter.services.HistoryServices;
+import com.dpdocter.services.PatientTrackService;
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -33,6 +35,9 @@ import common.util.web.Response;
 public class HistoryApi {
     @Autowired
     private HistoryServices historyServices;
+
+    @Autowired
+    private PatientTrackService patientTrackService;
 
     @Path(value = PathProxy.HistoryUrls.ADD_DISEASE)
     @POST
@@ -136,6 +141,10 @@ public class HistoryApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Disease Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	}
 	boolean assignMedicalHistoryResponse = historyServices.assignMedicalHistory(diseaseId, patientId, doctorId, hospitalId, locationId);
+
+	// patient track
+	patientTrackService.addRecord(patientId, doctorId, locationId, hospitalId, VisitedFor.PERSONAL_HISTORY);
+
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(assignMedicalHistoryResponse);
 	return response;
@@ -150,6 +159,10 @@ public class HistoryApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Disease Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	}
 	boolean assignFamilyHistoryResponse = historyServices.assignFamilyHistory(diseaseId, patientId, doctorId, hospitalId, locationId);
+
+	// patient track
+	patientTrackService.addRecord(patientId, doctorId, locationId, hospitalId, VisitedFor.FAMILY_HISTORY);
+
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(assignFamilyHistoryResponse);
 	return response;
@@ -163,6 +176,7 @@ public class HistoryApi {
 	}
 	boolean addSpecialNotesResponse = historyServices.addSpecialNotes(request.getSpecialNotes(), request.getPatientId(), request.getDoctorId(),
 		request.getHospitalId(), request.getLocationId());
+
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addSpecialNotesResponse);
 	return response;

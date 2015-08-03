@@ -493,6 +493,14 @@ public interface PathProxy {
 	public static final String ADD_EDIT_APPOINTMENT_SLOT = "clinicProfile/addEditAppointmentSlot";
     }
 
+    public static final String PATIENT_TRACK_BASE_URL = BASE_URL + "/patientTrack";
+
+    public interface PatientTrackUrls {
+	public static final String RECENTLY_VISITED = "recentlyVisited/{page}/{size}";
+
+	public static final String MOST_VISITED = "mostVisited/{page}/{size}";
+    }
+
     /*
      * public interface SolrTemp { public static final String ADD = "/add";
      * 

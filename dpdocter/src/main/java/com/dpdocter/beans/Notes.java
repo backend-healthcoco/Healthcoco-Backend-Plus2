@@ -14,6 +14,8 @@ public class Notes extends GenericCollection {
 
     private String hospitalId;
 
+    private boolean inHistory = false;
+
     public String getId() {
 	return id;
     }
@@ -54,9 +56,18 @@ public class Notes extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
+    public boolean isInHistory() {
+	return inHistory;
+    }
+
+    public void setInHistory(boolean inHistory) {
+	this.inHistory = inHistory;
+    }
+
     @Override
     public String toString() {
-	return "Notes [id=" + id + ", notes=" + notes + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
+	return "Notes [id=" + id + ", notes=" + notes + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", inHistory="
+		+ inHistory + "]";
     }
 
 }

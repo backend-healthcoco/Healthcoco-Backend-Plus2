@@ -19,7 +19,6 @@ import com.dpdocter.beans.DrugDosage;
 import com.dpdocter.beans.DrugDurationUnit;
 import com.dpdocter.beans.DrugStrengthUnit;
 import com.dpdocter.beans.DrugType;
-import com.dpdocter.beans.PatientTrack;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
@@ -347,12 +346,10 @@ public class PrescriptionApi {
 	}
 	PrescriptionAddEditResponse prescriptionAddEditResponse = prescriptionServices.addPrescription(request);
 
-	// patient track code
-	PatientTrack patientTrack = new PatientTrack();
-	BeanUtil.map(prescriptionAddEditResponse, patientTrack);
-	patientTrack.setVisitedFor(VisitedFor.PRESCRIPTION);
-	patientTrack.setId(null);
-	patientTrackService.addRecord(patientTrack);
+	// patient track
+	if (prescriptionAddEditResponse != null) {
+	    patientTrackService.addRecord(prescriptionAddEditResponse, VisitedFor.PRESCRIPTION);
+	}
 
 	Response<PrescriptionAddEditResponse> response = new Response<PrescriptionAddEditResponse>();
 	response.setData(prescriptionAddEditResponse);
@@ -367,6 +364,12 @@ public class PrescriptionApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
 	PrescriptionAddEditResponseDetails prescriptionAddEditResponse = prescriptionServices.addPrescriptionHandheld(request);
+
+	// patient track
+	if (prescriptionAddEditResponse != null) {
+	    patientTrackService.addRecord(prescriptionAddEditResponse, VisitedFor.PRESCRIPTION);
+	}
+
 	Response<PrescriptionAddEditResponseDetails> response = new Response<PrescriptionAddEditResponseDetails>();
 	response.setData(prescriptionAddEditResponse);
 	return response;
@@ -381,12 +384,10 @@ public class PrescriptionApi {
 	}
 	PrescriptionAddEditResponse prescriptionAddEditResponse = prescriptionServices.editPrescription(request);
 
-	// patient track code
-	PatientTrack patientTrack = new PatientTrack();
-	BeanUtil.map(prescriptionAddEditResponse, patientTrack);
-	patientTrack.setVisitedFor(VisitedFor.PRESCRIPTION);
-	patientTrack.setId(null);
-	patientTrackService.addRecord(patientTrack);
+	// patient track
+	if (prescriptionAddEditResponse != null) {
+	    patientTrackService.addRecord(prescriptionAddEditResponse, VisitedFor.PRESCRIPTION);
+	}
 
 	Response<PrescriptionAddEditResponse> response = new Response<PrescriptionAddEditResponse>();
 	response.setData(prescriptionAddEditResponse);

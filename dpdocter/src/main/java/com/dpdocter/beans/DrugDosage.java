@@ -21,14 +21,14 @@ public class DrugDosage {
     }
 
     public String getDosage() {
-		return dosage;
-	}
+	return dosage;
+    }
 
-	public void setDosage(String dosage) {
-		this.dosage = dosage;
-	}
+    public void setDosage(String dosage) {
+	this.dosage = dosage;
+    }
 
-	public String getDoctorId() {
+    public String getDoctorId() {
 	return doctorId;
     }
 
@@ -53,9 +53,8 @@ public class DrugDosage {
     }
 
     @Override
-	public String toString() {
-		return "DrugDosage [id=" + id + ", dosage=" + dosage + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + "]";
-	}
+    public String toString() {
+	return "DrugDosage [id=" + id + ", dosage=" + dosage + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
+    }
 
 }

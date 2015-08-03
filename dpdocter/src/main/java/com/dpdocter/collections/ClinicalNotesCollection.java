@@ -51,6 +51,9 @@ public class ClinicalNotesCollection extends GenericCollection {
     @Field
     private Boolean isDeleted = false;
 
+    @Field
+    private boolean inHistory = false;
+
     public String getId() {
 	return id;
     }
@@ -163,11 +166,20 @@ public class ClinicalNotesCollection extends GenericCollection {
 	this.isDeleted = isDeleted;
     }
 
+    public boolean isInHistory() {
+	return inHistory;
+    }
+
+    public void setInHistory(boolean inHistory) {
+	this.inHistory = inHistory;
+    }
+
     @Override
     public String toString() {
 	return "ClinicalNotesCollection [id=" + id + ", notes=" + notes + ", observations=" + observations + ", investigations=" + investigations
 		+ ", diagnoses=" + diagnoses + ", complaints=" + complaints + ", diagrams=" + diagrams + ", diagramsPaths=" + diagramsPaths + ", comments="
 		+ comments + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", createdDate=" + createdDate
-		+ ", isDeleted=" + isDeleted + "]";
+		+ ", isDeleted=" + isDeleted + ", inHistory=" + inHistory + "]";
     }
+
 }

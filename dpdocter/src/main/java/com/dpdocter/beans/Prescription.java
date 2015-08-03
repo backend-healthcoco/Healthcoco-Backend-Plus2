@@ -11,6 +11,8 @@ public class Prescription extends GenericCollection {
 
     private List<PrescriptionItemDetail> items;
 
+    private boolean inHistory = false;
+
     public String getId() {
 	return id;
     }
@@ -35,9 +37,17 @@ public class Prescription extends GenericCollection {
 	this.items = items;
     }
 
+    public boolean isInHistory() {
+	return inHistory;
+    }
+
+    public void setInHistory(boolean inHistory) {
+	this.inHistory = inHistory;
+    }
+
     @Override
     public String toString() {
-	return "Prescription [id=" + id + ", name=" + name + ", items=" + items + "]";
+	return "Prescription [id=" + id + ", name=" + name + ", items=" + items + ", inHistory=" + inHistory + "]";
     }
 
 }

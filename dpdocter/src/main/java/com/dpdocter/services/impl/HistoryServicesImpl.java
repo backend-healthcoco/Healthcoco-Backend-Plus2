@@ -10,14 +10,22 @@ import org.springframework.stereotype.Service;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.Records;
+import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.DiseasesCollection;
 import com.dpdocter.collections.HistoryCollection;
+import com.dpdocter.collections.NotesCollection;
+import com.dpdocter.collections.PrescriptionCollection;
+import com.dpdocter.collections.RecordsCollection;
 import com.dpdocter.enums.HistoryFilter;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.DiseasesRepository;
 import com.dpdocter.repository.HistoryRepository;
+import com.dpdocter.repository.NotesRepository;
+import com.dpdocter.repository.PrescriptionRepository;
+import com.dpdocter.repository.RecordsRepository;
 import com.dpdocter.request.DiseaseAddEditRequest;
 import com.dpdocter.response.DiseaseAddEditResponse;
 import com.dpdocter.response.DiseaseListResponse;
@@ -43,6 +51,18 @@ public class HistoryServicesImpl implements HistoryServices {
 
     @Autowired
     private ClinicalNotesService clinicalNotesService;
+
+    @Autowired
+    private RecordsRepository recordsRepository;
+
+    @Autowired
+    private ClinicalNotesRepository clinicalNotesRepository;
+
+    @Autowired
+    private PrescriptionRepository prescriptionRepository;
+
+    @Autowired
+    private NotesRepository notesRepository;
 
     @Override
     public List<DiseaseAddEditResponse> addDiseases(List<DiseaseAddEditRequest> request) {
@@ -107,6 +127,7 @@ public class HistoryServicesImpl implements HistoryServices {
     @Override
     public boolean addReportToHistory(String reportId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
+	RecordsCollection recordsCollection = null;
 	try {
 	    // check if history for this patient is already added .
 	    historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientId(doctorId, locationId, hospitalId, patientId);
@@ -134,6 +155,14 @@ public class HistoryServicesImpl implements HistoryServices {
 	    }
 	    // finally add history into db.
 	    historyRepository.save(historyCollection);
+
+	    // modify record that it has been added to history.
+	    recordsCollection = recordsRepository.findOne(reportId);
+	    if (recordsCollection != null) {
+		recordsCollection.setInHistory(true);
+		recordsRepository.save(recordsCollection);
+	    }
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -145,6 +174,7 @@ public class HistoryServicesImpl implements HistoryServices {
     @Override
     public boolean addClinicalNotesToHistory(String clinicalNotesId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
+	ClinicalNotesCollection clinicalNotesCollection = null;
 	try {
 	    // check if history for this patient is already added .
 	    historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientId(doctorId, locationId, hospitalId, patientId);
@@ -173,6 +203,14 @@ public class HistoryServicesImpl implements HistoryServices {
 	    }
 	    // finally add history into db.
 	    historyRepository.save(historyCollection);
+
+	    // modify clinical notes that it has been added to history.
+	    clinicalNotesCollection = clinicalNotesRepository.findOne(clinicalNotesId);
+	    if (clinicalNotesCollection != null) {
+		clinicalNotesCollection.setInHistory(true);
+		clinicalNotesRepository.save(clinicalNotesCollection);
+	    }
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -184,6 +222,7 @@ public class HistoryServicesImpl implements HistoryServices {
     @Override
     public boolean addPrescriptionToHistory(String prescriptionId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
+	PrescriptionCollection prescriptionCollection = null;
 	try {
 	    // check if history for this patient is already added .
 	    historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientId(doctorId, locationId, hospitalId, patientId);
@@ -212,6 +251,14 @@ public class HistoryServicesImpl implements HistoryServices {
 	    }
 	    // finally add history into db.
 	    historyRepository.save(historyCollection);
+
+	    // modify prescription that it has been added to history.
+	    prescriptionCollection = prescriptionRepository.findOne(prescriptionId);
+	    if (prescriptionCollection != null) {
+		prescriptionCollection.setInHistory(true);
+		prescriptionRepository.save(prescriptionCollection);
+	    }
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -242,7 +289,8 @@ public class HistoryServicesImpl implements HistoryServices {
 		    medicalHistoryList.add(diseaseId);
 		    historyCollection.setMedicalhistory(medicalHistoryList);
 		}
-	    } else {// if history not added for this patient.Create new history.
+	    } else {
+		// if history not added for this patient.Create new history.
 		historyCollection = new HistoryCollection(doctorId, locationId, hospitalId, patientId);
 		List<String> medicalHistoryList = new ArrayList<String>();
 		medicalHistoryList.add(diseaseId);
@@ -250,6 +298,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    }
 	    // finally add history into db.
 	    historyRepository.save(historyCollection);
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -299,6 +348,7 @@ public class HistoryServicesImpl implements HistoryServices {
     @Override
     public boolean addSpecialNotes(List<String> specialNotes, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
+	List<NotesCollection> notesCollections = null;
 	try {
 	    // check if history for this patient is already added .
 	    historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientId(doctorId, locationId, hospitalId, patientId);
@@ -319,6 +369,16 @@ public class HistoryServicesImpl implements HistoryServices {
 	    }
 	    // finally add history into db.
 	    historyRepository.save(historyCollection);
+
+	    // modify notes that they have been added to history.
+	    notesCollections = (List<NotesCollection>) notesRepository.findAll(specialNotes);
+	    if (notesCollections != null && !notesCollections.isEmpty()) {
+		for (NotesCollection note : notesCollections) {
+		    note.setInHistory(true);
+		}
+		notesRepository.save(notesCollections);
+	    }
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -330,6 +390,7 @@ public class HistoryServicesImpl implements HistoryServices {
     @Override
     public boolean removeReports(String reportId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
+	RecordsCollection recordsCollection = null;
 	try {
 	    historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientId(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
@@ -337,10 +398,16 @@ public class HistoryServicesImpl implements HistoryServices {
 		if (reports != null) {
 		    if (reports.contains(reportId)) {
 			reports.remove(reportId);
-			if (checkIfHistoryRemovedCompletly(historyCollection)) {
+			if (checkIfHistoryRemovedCompletely(historyCollection)) {
 			    historyRepository.delete(historyCollection.getId());
 			} else {
 			    historyRepository.save(historyCollection);
+			}
+			// modify records that it has been removed from history
+			recordsCollection = recordsRepository.findOne(reportId);
+			if (recordsCollection != null) {
+			    recordsCollection.setInHistory(false);
+			    recordsRepository.save(recordsCollection);
 			}
 		    } else {
 			throw new BusinessException(ServiceError.Unknown, "This reports is not found for this patient to remove. ");
@@ -361,6 +428,7 @@ public class HistoryServicesImpl implements HistoryServices {
     @Override
     public boolean removeClinicalNotes(String clinicalNotesId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
+	ClinicalNotesCollection clinicalNotesCollection = null;
 	try {
 	    historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientId(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
@@ -368,10 +436,17 @@ public class HistoryServicesImpl implements HistoryServices {
 		if (clinicalNotes != null) {
 		    if (clinicalNotes.contains(clinicalNotesId)) {
 			clinicalNotes.remove(clinicalNotesId);
-			if (checkIfHistoryRemovedCompletly(historyCollection)) {
+			if (checkIfHistoryRemovedCompletely(historyCollection)) {
 			    historyRepository.delete(historyCollection.getId());
 			} else {
 			    historyRepository.save(historyCollection);
+			}
+			// modify clinical notes that it has been removed from
+			// history.
+			clinicalNotesCollection = clinicalNotesRepository.findOne(clinicalNotesId);
+			if (clinicalNotesCollection != null) {
+			    clinicalNotesCollection.setInHistory(false);
+			    clinicalNotesRepository.save(clinicalNotesCollection);
 			}
 		    } else {
 			throw new BusinessException(ServiceError.Unknown, "This clinicalNote is not found for this patient to remove. ");
@@ -392,6 +467,7 @@ public class HistoryServicesImpl implements HistoryServices {
     @Override
     public boolean removePrescription(String prescriptionId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
+	PrescriptionCollection prescriptionCollection = null;
 	try {
 	    historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientId(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
@@ -399,10 +475,17 @@ public class HistoryServicesImpl implements HistoryServices {
 		if (prescriptions != null) {
 		    if (prescriptions.contains(prescriptionId)) {
 			prescriptions.remove(prescriptionId);
-			if (checkIfHistoryRemovedCompletly(historyCollection)) {
+			if (checkIfHistoryRemovedCompletely(historyCollection)) {
 			    historyRepository.delete(historyCollection.getId());
 			} else {
 			    historyRepository.save(historyCollection);
+			}
+			// modify prescription that it has been removed from
+			// history.
+			prescriptionCollection = prescriptionRepository.findOne(prescriptionId);
+			if (prescriptionCollection != null) {
+			    prescriptionCollection.setInHistory(false);
+			    prescriptionRepository.save(prescriptionCollection);
 			}
 		    } else {
 			throw new BusinessException(ServiceError.Unknown, "This prescription is not found for this patient to remove. ");
@@ -430,7 +513,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		if (medicalHistory != null) {
 		    if (medicalHistory.contains(diseaseId)) {
 			medicalHistory.remove(diseaseId);
-			if (checkIfHistoryRemovedCompletly(historyCollection)) {
+			if (checkIfHistoryRemovedCompletely(historyCollection)) {
 			    historyRepository.delete(historyCollection.getId());
 			} else {
 			    historyRepository.save(historyCollection);
@@ -461,7 +544,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		if (familyHistory != null) {
 		    if (familyHistory.contains(diseaseId)) {
 			familyHistory.remove(diseaseId);
-			if (checkIfHistoryRemovedCompletly(historyCollection)) {
+			if (checkIfHistoryRemovedCompletely(historyCollection)) {
 			    historyRepository.delete(historyCollection.getId());
 			} else {
 			    historyRepository.save(historyCollection);
@@ -482,7 +565,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	return true;
     }
 
-    private boolean checkIfHistoryRemovedCompletly(HistoryCollection historyCollection) {
+    private boolean checkIfHistoryRemovedCompletely(HistoryCollection historyCollection) {
 	if (historyCollection != null) {
 	    if (historyCollection.getReports() == null && historyCollection.getClinicalNotes() == null && historyCollection.getPrescriptions() == null
 		    && historyCollection.getMedicalhistory() == null && historyCollection.getFamilyhistory() == null

@@ -15,6 +15,8 @@ public class Records extends GenericCollection {
 
     private Long createdDate;
 
+    private boolean inHistory = false;
+
     public String getId() {
 	return id;
     }
@@ -63,10 +65,18 @@ public class Records extends GenericCollection {
 	this.createdDate = createdDate;
     }
 
+    public boolean isInHistory() {
+	return inHistory;
+    }
+
+    public void setInHistory(boolean inHistory) {
+	this.inHistory = inHistory;
+    }
+
     @Override
     public String toString() {
 	return "Records [id=" + id + ", recordsUrl=" + recordsUrl + ", recordsLable=" + recordsLable + ", recordsType=" + recordsType + ", description="
-		+ description + ", createdDate=" + createdDate + "]";
+		+ description + ", createdDate=" + createdDate + ", inHistory=" + inHistory + "]";
     }
 
 }

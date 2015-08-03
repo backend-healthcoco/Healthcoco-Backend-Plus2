@@ -20,12 +20,14 @@ import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.Investigation;
 import com.dpdocter.beans.Notes;
 import com.dpdocter.beans.Observation;
+import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.ClinicalNotesAddRequest;
 import com.dpdocter.request.ClinicalNotesEditRequest;
 import com.dpdocter.services.ClinicalNotesService;
+import com.dpdocter.services.PatientTrackService;
 import com.dpdocter.solr.document.SolrComplaintsDocument;
 import com.dpdocter.solr.document.SolrDiagnosesDocument;
 import com.dpdocter.solr.document.SolrDiagramsDocument;
@@ -48,10 +50,19 @@ public class ClinicalNotesApi {
     @Autowired
     private SolrClinicalNotesService solrClinicalNotesService;
 
+    @Autowired
+    private PatientTrackService patientTrackService;
+
     @Path(value = PathProxy.ClinicalNotesUrls.SAVE_CLINICAL_NOTE)
     @POST
     public Response<ClinicalNotes> addNotes(ClinicalNotesAddRequest request) {
 	ClinicalNotes clinicalNotes = clinicalNotesService.addNotes(request);
+
+	// patient track
+	if (clinicalNotes != null) {
+	    patientTrackService.addRecord(request, VisitedFor.CLINICAL_NOTES);
+	}
+
 	Response<ClinicalNotes> response = new Response<ClinicalNotes>();
 	response.setData(clinicalNotes);
 	return response;
@@ -61,6 +72,12 @@ public class ClinicalNotesApi {
     @POST
     public Response<ClinicalNotes> editNotes(ClinicalNotesEditRequest request) {
 	ClinicalNotes clinicalNotes = clinicalNotesService.editNotes(request);
+
+	// patient track
+	if (clinicalNotes != null) {
+	    patientTrackService.addRecord(request, VisitedFor.CLINICAL_NOTES);
+	}
+
 	Response<ClinicalNotes> response = new Response<ClinicalNotes>();
 	response.setData(clinicalNotes);
 	return response;
@@ -466,15 +483,15 @@ public class ClinicalNotesApi {
 	return response;
     }
 
-     @Path(value = PathProxy.ClinicalNotesUrls.GET_NOTES_ISDELETED)
-     @GET
-     public Response<Notes> getCompleteNotes(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime, @PathParam("isDeleted") boolean isDeleted) {
-     List<Notes> notes = clinicalNotesService.getNotes(doctorId, createdTime,
-     isDeleted);
-     Response<Notes> response = new Response<Notes>();
-     response.setDataList(notes);
-     return response;
-     }
+    @Path(value = PathProxy.ClinicalNotesUrls.GET_NOTES_ISDELETED)
+    @GET
+    public Response<Notes> getCompleteNotes(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
+	    @PathParam("isDeleted") boolean isDeleted) {
+	List<Notes> notes = clinicalNotesService.getNotes(doctorId, createdTime, isDeleted);
+	Response<Notes> response = new Response<Notes>();
+	response.setDataList(notes);
+	return response;
+    }
 
     @Path(value = PathProxy.ClinicalNotesUrls.GET_DIAGRAMS)
     @GET
