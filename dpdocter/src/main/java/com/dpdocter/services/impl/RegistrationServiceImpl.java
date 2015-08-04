@@ -628,7 +628,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 	LocationCollection locationCollection = null;
 	try {
 	    locationCollection = locationRepository.findOne(request.getId());
-	    if(locationCollection != null)BeanUtil.map(request, locationCollection);
+	    if (locationCollection != null)
+		BeanUtil.map(request, locationCollection);
 	    locationCollection.setSpecialization(request.getSpecialization());
 	    locationCollection = locationRepository.save(locationCollection);
 	    response = new ClinicProfile();
@@ -646,7 +647,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 	LocationCollection locationCollection = null;
 	try {
 	    locationCollection = locationRepository.findOne(request.getId());
-	    if(locationCollection != null)BeanUtil.map(request, locationCollection);
+	    if (locationCollection != null)
+		BeanUtil.map(request, locationCollection);
 	    locationCollection = locationRepository.save(locationCollection);
 	    response = new ClinicAddress();
 	    BeanUtil.map(locationCollection, response);
@@ -663,7 +665,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 	LocationCollection locationCollection = null;
 	try {
 	    locationCollection = locationRepository.findOne(request.getId());
-	    if(locationCollection != null)BeanUtil.map(request, locationCollection);
+	    if (locationCollection != null)
+		BeanUtil.map(request, locationCollection);
 	    locationCollection.setWorkingSchedules(request.getWorkingSchedules());
 	    locationCollection = locationRepository.save(locationCollection);
 	    response = new ClinicTiming();

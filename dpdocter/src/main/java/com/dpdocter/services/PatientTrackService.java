@@ -13,7 +13,7 @@ public interface PatientTrackService {
 
     boolean addRecord(String patientId, String doctorId, String locationId, String hospitalId, VisitedFor visitedFor);
 
-    List<Patient> recentlyVisited(int page, int size);
+    List<Patient> recentlyVisited(String doctorId, String locationId, String hospitalId, int page, int size);
 
-    List<Patient> mostVisited(int page, int size);
+    List<Patient> mostVisited(String doctorId, String locationId, String hospitalId, int page, int size);
 }

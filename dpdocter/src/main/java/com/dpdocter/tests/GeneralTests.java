@@ -1,18 +1,13 @@
 package com.dpdocter.tests;
 
-import com.dpdocter.request.PrescriptionAddEditRequest;
+import com.dpdocter.request.LoginRequest;
 
 public class GeneralTests {
     public static void main(String args[]) {
-	PrescriptionAddEditRequest request = new PrescriptionAddEditRequest();
+	LoginRequest request = new LoginRequest();
 
-	request.setCreatedBy("Isank");
-	request.setDoctorId("D12345");
-	request.setHospitalId("H12345");
-	request.setLocationId("L12345");
-	request.setName("Test Prescription");
-	request.setPatientId("55661e9ab732a94e37e2d0ab");
-	request.setPrescriptionCode("PRES12345");
+	request.setPassword("DRPassword123");
+	request.setUsername("varunk2006@gmail.com");
 
 	System.out.println(Converter.ObjectToJSON(request));
     }

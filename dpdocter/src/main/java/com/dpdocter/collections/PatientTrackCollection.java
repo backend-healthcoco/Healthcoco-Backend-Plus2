@@ -31,6 +31,8 @@ public class PatientTrackCollection {
     @Field
     private VisitedFor visitedFor;
 
+    private long total;
+
     public String getId() {
 	return id;
     }
@@ -87,10 +89,18 @@ public class PatientTrackCollection {
 	this.visitedFor = visitedFor;
     }
 
+    public long getTotal() {
+	return total;
+    }
+
+    public void setTotal(long total) {
+	this.total = total;
+    }
+
     @Override
     public String toString() {
 	return "PatientTrackCollection [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-		+ hospitalId + ", visitedTime=" + visitedTime + ", visitedFor=" + visitedFor + "]";
+		+ hospitalId + ", visitedTime=" + visitedTime + ", visitedFor=" + visitedFor + ", total=" + total + "]";
     }
 
 }

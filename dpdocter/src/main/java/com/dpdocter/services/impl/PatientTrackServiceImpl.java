@@ -8,7 +8,12 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.Patient;
@@ -31,6 +36,9 @@ public class PatientTrackServiceImpl implements PatientTrackService {
 
     @Autowired
     private PatientRepository patientRepository;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     @Override
     public boolean addRecord(PatientTrack request) {
@@ -87,12 +95,11 @@ public class PatientTrackServiceImpl implements PatientTrackService {
     }
 
     @Override
-    public List<Patient> recentlyVisited(int page, int size) {
+    public List<Patient> recentlyVisited(String doctorId, String locationId, String hospitalId, int page, int size) {
 	List<Patient> patients = null;
 	try {
-
-	    List<PatientTrackCollection> patientTrackCollections = patientTrackRepository.findAll(new PageRequest(page, size, Direction.DESC, "visitedTime"))
-		    .getContent();
+	    List<PatientTrackCollection> patientTrackCollections = patientTrackRepository.findAll(doctorId, locationId, hospitalId, new PageRequest(page, size,
+		    Direction.DESC, "visitedTime"));
 	    if (patientTrackCollections != null && !patientTrackCollections.isEmpty()) {
 		@SuppressWarnings("unchecked")
 		List<String> patientIds = (List<String>) CollectionUtils.collect(patientTrackCollections, new BeanToPropertyValueTransformer("patientId"));
@@ -110,9 +117,31 @@ public class PatientTrackServiceImpl implements PatientTrackService {
     }
 
     @Override
-    public List<Patient> mostVisited(int page, int size) {
-	// TODO Auto-generated method stub
-	return null;
-    }
+    public List<Patient> mostVisited(String doctorId, String locationId, String hospitalId, int page, int size) {
+	List<Patient> patients = null;
+	try {
+	    Criteria matchCriteria = Criteria.where("doctorId").is(doctorId).and("locationId").is(locationId).and("hospitalId").is(hospitalId);
+	    Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(matchCriteria), Aggregation.group("patientId").count().as("total"),
+		    Aggregation.project("total").and("patientId").previousOperation(), Aggregation.sort(Sort.Direction.DESC, "total"),
+		    Aggregation.skip(page * size), Aggregation.limit(size + 1));
 
+	    AggregationResults<PatientTrackCollection> aggregationResults = mongoTemplate.aggregate(aggregation, PatientTrackCollection.class,
+		    PatientTrackCollection.class);
+
+	    List<PatientTrackCollection> patientTrackCollections = aggregationResults.getMappedResults();
+	    if (patientTrackCollections != null && !patientTrackCollections.isEmpty()) {
+		@SuppressWarnings("unchecked")
+		List<String> patientIds = (List<String>) CollectionUtils.collect(patientTrackCollections, new BeanToPropertyValueTransformer("patientId"));
+		List<PatientCollection> patientCollections = patientRepository.findByUserId(patientIds);
+		if (patientCollections != null) {
+		    patients = new ArrayList<Patient>();
+		    BeanUtil.map(patientCollections, patients);
+		}
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error while getting most visited patients record : " + e.getCause().getMessage());
+	}
+	return patients;
+    }
 }
