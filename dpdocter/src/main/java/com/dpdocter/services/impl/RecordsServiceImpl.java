@@ -92,7 +92,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    // save records
 	    RecordsCollection recordsCollection = new RecordsCollection();
 	    BeanUtil.map(request, recordsCollection);
-	    System.out.println(request.getRecordsType() + "" + recordsCollection.getRecordsType());
+	   
 	    recordsCollection.setCreatedTime(new Date());
 	    recordsCollection.setCreatedDate(new Date().getTime());
 	    recordsCollection.setRecordsUrl(recordUrl);
@@ -101,7 +101,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    recordsCollection = recordsRepository.save(recordsCollection);
 	    Records records = new Records();
 	    BeanUtil.map(recordsCollection, records);
-	    System.out.println(records.getRecordsType());
+	   
 	    return records;
 	} catch (Exception e) {
 	    e.printStackTrace();

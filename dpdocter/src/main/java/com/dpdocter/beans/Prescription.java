@@ -12,6 +12,8 @@ public class Prescription extends GenericCollection {
     private List<PrescriptionItemDetail> items;
 
     private boolean inHistory = false;
+    
+    private boolean deleted;
 
     public String getId() {
 	return id;
@@ -45,9 +47,18 @@ public class Prescription extends GenericCollection {
 	this.inHistory = inHistory;
     }
 
-    @Override
-    public String toString() {
-	return "Prescription [id=" + id + ", name=" + name + ", items=" + items + ", inHistory=" + inHistory + "]";
-    }
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	@Override
+	public String toString() {
+		return "Prescription [id=" + id + ", name=" + name + ", items=" + items + ", inHistory=" + inHistory
+				+ ", deleted=" + deleted + "]";
+	}
 
 }

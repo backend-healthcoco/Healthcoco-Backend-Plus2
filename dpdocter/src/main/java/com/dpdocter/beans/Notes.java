@@ -6,7 +6,7 @@ public class Notes extends GenericCollection {
 
     private String id;
 
-    private String notes;
+    private String note;
 
     private String doctorId;
 
@@ -24,12 +24,12 @@ public class Notes extends GenericCollection {
 	this.id = id;
     }
 
-    public String getNotes() {
-	return notes;
+    public String getNote() {
+	return note;
     }
 
-    public void setNotes(String notes) {
-	this.notes = notes;
+    public void setNote(String note) {
+	this.note = note;
     }
 
     public String getDoctorId() {
@@ -66,7 +66,7 @@ public class Notes extends GenericCollection {
 
     @Override
     public String toString() {
-	return "Notes [id=" + id + ", notes=" + notes + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", inHistory="
+	return "Notes [id=" + id + ", note=" + note + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", inHistory="
 		+ inHistory + "]";
     }
 

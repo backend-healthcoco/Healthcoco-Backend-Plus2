@@ -21,6 +21,8 @@ public class PrescriptionAddEditResponse extends GenericCollection {
     private String patientId;
 
     private String prescriptionCode;
+    
+    private boolean deleted;
 
     public String getId() {
 	return id;
@@ -86,10 +88,19 @@ public class PrescriptionAddEditResponse extends GenericCollection {
 	this.prescriptionCode = prescriptionCode;
     }
 
-    @Override
-    public String toString() {
-	return "PrescriptionAddEditResponse [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-		+ hospitalId + ", items=" + items + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + "]";
-    }
+    public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	@Override
+	public String toString() {
+		return "PrescriptionAddEditResponse [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", items=" + items + ", patientId=" + patientId
+				+ ", prescriptionCode=" + prescriptionCode + ", deleted=" + deleted + "]";
+	}
 
 }

@@ -335,37 +335,158 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return clinicalNote;
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public ClinicalNotes editNotes(ClinicalNotesEditRequest request) {
-	ClinicalNotes clinicalNotes = null;
-	try {
-	    ClinicalNotesCollection clinicalNotesCollection = new ClinicalNotesCollection();
-	    BeanUtil.map(request, clinicalNotesCollection);
-	    clinicalNotesCollection.setCreatedTime(new Date());
-	    if (request.getDiagrams() != null) {
-		List<String> diagramUrls = new ArrayList<String>();
-		List<String> diagramPaths = new ArrayList<String>();
-		for (FileDetails diagram : request.getDiagrams()) {
-		    String path = request.getPatientId() + File.separator + "clinical-notes-diagrams";
-		    // save image
-		    String diagramUrl = fileManager.saveImageAndReturnImageUrl(diagram, path);
-		    String fileName = diagram.getFileName() + "." + diagram.getFileExtension();
-		    String diagramPath = imageResource + File.separator + path + File.separator + fileName;
-		    diagramUrls.add(diagramUrl);
-		    diagramPaths.add(diagramPath);
-		}
+    	ClinicalNotes clinicalNotes = null;
+    	List<String> complaintIds = null;
+    	List<String> observationIds = null;
+    	List<String> investigationIds = null;
+    	List<String> noteIds = null;
+    	List<String> diagnosisIds = null;
+    	List<String> diagramIds = null;
+    	Date createdTime = new Date();
+    	long createdDate = createdTime.getTime();
+    	try {
+    	    // save clinical notes.
+    	    ClinicalNotesCollection clinicalNotesCollection = new ClinicalNotesCollection();
+    	    BeanUtil.map(request, clinicalNotesCollection);
 
-		clinicalNotesCollection.setDiagrams(diagramUrls);
-		clinicalNotesCollection.setDiagramsPaths(diagramPaths);
-	    }
+    	    complaintIds = new ArrayList<String>();
+    	    if (request.getComplaints() != null && !request.getComplaints().isEmpty()) {
+    		for (ClinicalNotesComplaint complaint : request.getComplaints()) {
+    		    if (DPDoctorUtils.anyStringEmpty(complaint.getId())) {
+    			ComplaintCollection complaintCollection = new ComplaintCollection();
+    			BeanUtil.map(complaint, complaintCollection);
+    			BeanUtil.map(request, complaintCollection);
+    			complaintCollection.setCreatedTime(createdTime);
+    			complaintCollection = complaintRepository.save(complaintCollection);
+    			complaintIds.add(complaintCollection.getId());
+    		    } else {
+    			complaintIds.add(complaint.getId());
+    		    }
+    		}
+    	    }
 
-	    clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
-	    BeanUtil.map(clinicalNotesCollection, clinicalNotes);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-	}
-	return clinicalNotes;
+    	    observationIds = new ArrayList<String>();
+    	    if (request.getObservations() != null && !request.getObservations().isEmpty()) {
+    		for (ClinicalNotesObservation observation : request.getObservations()) {
+    		    if (DPDoctorUtils.anyStringEmpty(observation.getId())) {
+    			ObservationCollection observationCollection = new ObservationCollection();
+    			BeanUtil.map(observation, observationCollection);
+    			BeanUtil.map(request, observationCollection);
+    			observationCollection.setCreatedTime(createdTime);
+    			observationCollection = observationRepository.save(observationCollection);
+    			observationIds.add(observationCollection.getId());
+    		    } else {
+    			observationIds.add(observation.getId());
+    		    }
+    		}
+    	    }
+
+    	    investigationIds = new ArrayList<String>();
+    	    if (request.getInvestigations() != null && !request.getInvestigations().isEmpty()) {
+    		for (ClinicalNotesInvestigation investigation : request.getInvestigations()) {
+    		    if (DPDoctorUtils.anyStringEmpty(investigation.getId())) {
+    			InvestigationCollection investigationCollection = new InvestigationCollection();
+    			BeanUtil.map(investigation, investigationCollection);
+    			BeanUtil.map(request, investigationCollection);
+    			investigationCollection.setCreatedTime(createdTime);
+    			investigationCollection = investigationRepository.save(investigationCollection);
+    			investigationIds.add(investigationCollection.getId());
+    		    } else {
+    			investigationIds.add(investigation.getId());
+    		    }
+    		}
+    	    }
+
+    	    noteIds = new ArrayList<String>();
+    	    if (request.getNotes() != null && !request.getNotes().isEmpty()) {
+    		for (ClinicalNotesNote note : request.getNotes()) {
+    		    if (DPDoctorUtils.anyStringEmpty(note.getId())) {
+    			NotesCollection notesCollection = new NotesCollection();
+    			BeanUtil.map(note, notesCollection);
+    			BeanUtil.map(request, notesCollection);
+    			notesCollection.setCreatedTime(createdTime);
+    			notesCollection = notesRepository.save(notesCollection);
+    			noteIds.add(notesCollection.getId());
+    		    } else {
+    			noteIds.add(note.getId());
+    		    }
+    		}
+    	    }
+
+    	    diagnosisIds = new ArrayList<String>();
+    	    if (request.getDiagnoses() != null && !request.getDiagnoses().isEmpty()) {
+    		for (ClinicalNotesDiagnosis diagnosis : request.getDiagnoses()) {
+    		    if (DPDoctorUtils.anyStringEmpty(diagnosis.getId())) {
+    			DiagnosisCollection diagnosisCollection = new DiagnosisCollection();
+    			BeanUtil.map(diagnosis, diagnosisCollection);
+    			BeanUtil.map(request, diagnosisCollection);
+    			diagnosisCollection.setCreatedTime(createdTime);
+    			diagnosisCollection = diagnosisRepository.save(diagnosisCollection);
+    			diagnosisIds.add(diagnosisCollection.getId());
+    		    } else {
+    			diagnosisIds.add(diagnosis.getId());
+    		    }
+    		}
+    	    }
+
+    	    clinicalNotesCollection.setComplaints(complaintIds);
+    	    clinicalNotesCollection.setInvestigations(investigationIds);
+    	    clinicalNotesCollection.setObservations(observationIds);
+    	    clinicalNotesCollection.setDiagnoses(diagnosisIds);
+    	    clinicalNotesCollection.setNotes(noteIds);
+    	    if (request.getDiagrams() == null) {
+    		diagramIds = new ArrayList<String>();
+    		clinicalNotesCollection.setDiagrams(diagramIds);
+    	    } else {
+    		diagramIds = request.getDiagrams();
+    	    }
+
+    	    clinicalNotesCollection.setCreatedTime(createdTime);
+    	    clinicalNotesCollection.setCreatedDate(createdDate);
+    	    clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
+    	    if (clinicalNotesCollection != null) {
+    		if (request.getId() == null) {
+    		    // map the clinical notes with patient
+    		    PatientClinicalNotesCollection patientClinicalNotesCollection = new PatientClinicalNotesCollection();
+    		    patientClinicalNotesCollection.setClinicalNotesId(clinicalNotesCollection.getId());
+    		    patientClinicalNotesCollection.setPatientId(request.getPatientId());
+    		    patientClinicalNotesRepository.save(patientClinicalNotesCollection);
+    		}
+
+    	    }
+    	    clinicalNotes = new ClinicalNotes();
+    	    BeanUtil.map(clinicalNotesCollection, clinicalNotes);
+
+    	    // Setting detail of complaints, investigations, observations,
+    	    // diagnoses, notes and diagrams into response.
+    	    List<Complaint> complaints = IteratorUtils.toList(complaintRepository.findAll(complaintIds).iterator());
+    	    List<Investigation> investigations = IteratorUtils.toList(investigationRepository.findAll(investigationIds).iterator());
+    	    List<Observation> observations = IteratorUtils.toList(observationRepository.findAll(observationIds).iterator());
+    	    List<Diagnoses> diagnoses = IteratorUtils.toList(diagnosisRepository.findAll(diagnosisIds).iterator());
+    	    List<Notes> notes = IteratorUtils.toList(notesRepository.findAll(noteIds).iterator());
+    	    List<Diagram> diagrams = IteratorUtils.toList(diagramsRepository.findAll(diagramIds).iterator());
+    	    /*if (request.getDiagrams() != null && !request.getDiagrams().isEmpty()) {
+    	    diagrams = IteratorUtils.toList(diagramsRepository.findAll(request.getDiagrams()).iterator());
+    	    } else {
+    	    diagrams = new ArrayList<Diagram>();
+    	    }*/
+
+    	    clinicalNotes.setComplaints(complaints);
+    	    clinicalNotes.setInvestigations(investigations);
+    	    clinicalNotes.setObservations(observations);
+    	    clinicalNotes.setDiagnoses(diagnoses);
+    	    clinicalNotes.setNotes(notes);
+    	    clinicalNotes.setDiagrams(diagrams);
+    	} catch (Exception e) {
+    	    e.printStackTrace();
+    	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+    	}
+
+    	return clinicalNotes;
+
     }
 
     @Override
