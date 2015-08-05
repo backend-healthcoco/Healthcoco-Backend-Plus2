@@ -138,6 +138,14 @@ public class ClinicalNotesApi {
 	return getAllNotes(doctorId, locationId, hospitalId, patientId, createdTime, isOTPVerified, true);
     }
 
+    @Path(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_CT_ISDELETED)
+    @GET
+    public Response<ClinicalNotes> getNotes(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+	    @PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "patientId") String patientId, @PathParam("createdTime") String createdTime,
+	    @PathParam(value = "isOTPVerified") boolean isOTPVerified, @PathParam(value = "isDeleted") boolean isDeleted) {
+	return getAllNotes(doctorId, locationId, hospitalId, patientId, createdTime, isOTPVerified, isDeleted);
+    }
+    
     private Response<ClinicalNotes> getAllNotes(String doctorId, String locationId, String hospitalId, String patientId, String createdTime,
 	    boolean isOTPVerified, boolean isDeleted) {
 	List<ClinicalNotes> clinicalNotes = null;
