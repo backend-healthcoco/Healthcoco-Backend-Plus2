@@ -112,14 +112,14 @@ public class ClinicalNotesApi {
     @GET
     public Response<ClinicalNotes> getNotes(@PathParam("doctorId") String doctorId, @PathParam("patientId") String patientId,
 	    @PathParam("createdTime") String createdTime, @PathParam("isOTPVerified") boolean isOTPVerified) {
-	return getAllNotes(doctorId, null, null, patientId, null, isOTPVerified, true);
+	return getAllNotes(doctorId, null, null, patientId, createdTime, isOTPVerified, true);
     }
 
     @Path(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_DOCTOR_ID_CT_ISDELETED)
     @GET
     public Response<ClinicalNotes> getNotes(@PathParam("doctorId") String doctorId, @PathParam("patientId") String patientId,
 	    @PathParam("createdTime") String createdTime, @PathParam("isOTPVerified") boolean isOTPVerified, @PathParam(value = "isDeleted") boolean isDeleted) {
-	return getAllNotes(doctorId, null, null, patientId, null, isOTPVerified, isDeleted);
+	return getAllNotes(doctorId, null, null, patientId, createdTime, isOTPVerified, isDeleted);
     }
 
     @Path(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES)
@@ -145,7 +145,7 @@ public class ClinicalNotesApi {
 	    @PathParam(value = "isOTPVerified") boolean isOTPVerified, @PathParam(value = "isDeleted") boolean isDeleted) {
 	return getAllNotes(doctorId, locationId, hospitalId, patientId, createdTime, isOTPVerified, isDeleted);
     }
-    
+
     private Response<ClinicalNotes> getAllNotes(String doctorId, String locationId, String hospitalId, String patientId, String createdTime,
 	    boolean isOTPVerified, boolean isDeleted) {
 	List<ClinicalNotes> clinicalNotes = null;
@@ -177,7 +177,6 @@ public class ClinicalNotesApi {
 	Complaint complaint = clinicalNotesService.addEditComplaint(request);
 
 	// Below service call will add or edit complaint in solr index.
-
 	SolrComplaintsDocument solrComplaints = new SolrComplaintsDocument();
 	BeanUtil.map(complaint, solrComplaints);
 	if (request.getId() == null) {

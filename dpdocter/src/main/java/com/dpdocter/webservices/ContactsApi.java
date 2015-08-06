@@ -171,18 +171,18 @@ public class ContactsApi {
     @Path(value = PathProxy.ContactsUrls.ADD_GROUP)
     @POST
     public Response<Group> addGroup(Group group) {
-	group = contactsService.addEditGroup(group);
+	Group responseGroup = contactsService.addEditGroup(group);
 	Response<Group> response = new Response<Group>();
-	response.setData(group);
+	response.setData(responseGroup);
 	return response;
     }
 
     @Path(value = PathProxy.ContactsUrls.EDIT_GROUP)
     @POST
     public Response<Group> editGroup(Group group) {
-	group = contactsService.addEditGroup(group);
+	Group responseGroup = contactsService.addEditGroup(group);
 	Response<Group> response = new Response<Group>();
-	response.setData(group);
+	response.setData(responseGroup);
 	return response;
     }
 

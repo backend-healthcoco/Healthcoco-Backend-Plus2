@@ -34,16 +34,16 @@ public class NotesCollection extends GenericCollection {
     public void setId(String id) {
 	this.id = id;
     }
-    
+
     public String getNote() {
-		return note;
-	}
+	return note;
+    }
 
-	public void setNote(String note) {
-		this.note = note;
-	}
+    public void setNote(String note) {
+	this.note = note;
+    }
 
-	public String getDoctorId() {
+    public String getDoctorId() {
 	return doctorId;
     }
 
@@ -84,9 +84,9 @@ public class NotesCollection extends GenericCollection {
     }
 
     @Override
-	public String toString() {
-		return "NotesCollection [id=" + id + ", note=" + note + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", isDeleted=" + isDeleted + ", inHistory=" + inHistory + "]";
-	}
+    public String toString() {
+	return "NotesCollection [id=" + id + ", note=" + note + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+		+ ", isDeleted=" + isDeleted + ", inHistory=" + inHistory + "]";
+    }
 
 }

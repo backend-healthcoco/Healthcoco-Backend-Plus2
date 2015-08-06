@@ -18,7 +18,7 @@ public class Records extends GenericCollection {
     private boolean inHistory = false;
 
     private boolean deleted;
-    
+
     public String getId() {
 	return id;
     }
@@ -75,19 +75,18 @@ public class Records extends GenericCollection {
 	this.inHistory = inHistory;
     }
 
-	public boolean isDeleted() {
-		return deleted;
-	}
+    public boolean isDeleted() {
+	return deleted;
+    }
 
-	public void setDeleted(boolean deleted) {
-		this.deleted = deleted;
-	}
+    public void setDeleted(boolean deleted) {
+	this.deleted = deleted;
+    }
 
-	@Override
-	public String toString() {
-		return "Records [id=" + id + ", recordsUrl=" + recordsUrl + ", recordsLable=" + recordsLable + ", recordsType="
-				+ recordsType + ", description=" + description + ", createdDate=" + createdDate + ", inHistory="
-				+ inHistory + ", deleted=" + deleted + "]";
-	}
+    @Override
+    public String toString() {
+	return "Records [id=" + id + ", recordsUrl=" + recordsUrl + ", recordsLable=" + recordsLable + ", recordsType=" + recordsType + ", description="
+		+ description + ", createdDate=" + createdDate + ", inHistory=" + inHistory + ", deleted=" + deleted + "]";
+    }
 
 }

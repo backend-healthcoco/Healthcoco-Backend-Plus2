@@ -5,7 +5,7 @@ import java.util.List;
 import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.collections.GenericCollection;
 
-public class PrescriptionAddEditResponseDetails extends GenericCollection{
+public class PrescriptionAddEditResponseDetails extends GenericCollection {
     private String id;
 
     private String name;
@@ -23,7 +23,7 @@ public class PrescriptionAddEditResponseDetails extends GenericCollection{
     private String prescriptionCode;
 
     private boolean deleted;
-    
+
     public String getId() {
 	return id;
     }
@@ -88,20 +88,18 @@ public class PrescriptionAddEditResponseDetails extends GenericCollection{
 	this.prescriptionCode = prescriptionCode;
     }
 
-	public boolean isDeleted() {
-		return deleted;
-	}
+    public boolean isDeleted() {
+	return deleted;
+    }
 
-	public void setDeleted(boolean deleted) {
-		this.deleted = deleted;
-	}
+    public void setDeleted(boolean deleted) {
+	this.deleted = deleted;
+    }
 
-	@Override
-	public String toString() {
-		return "PrescriptionAddEditResponseDetails [id=" + id + ", name=" + name + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", items=" + items + ", patientId="
-				+ patientId + ", prescriptionCode=" + prescriptionCode + ", deleted=" + deleted + "]";
-	}
-
+    @Override
+    public String toString() {
+	return "PrescriptionAddEditResponseDetails [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+		+ hospitalId + ", items=" + items + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + ", deleted=" + deleted + "]";
+    }
 
 }

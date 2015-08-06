@@ -16,7 +16,6 @@ import com.dpdocter.beans.Patient;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.services.PatientTrackService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 

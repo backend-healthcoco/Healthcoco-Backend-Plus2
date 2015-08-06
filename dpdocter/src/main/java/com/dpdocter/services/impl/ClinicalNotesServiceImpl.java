@@ -25,7 +25,6 @@ import com.dpdocter.beans.ClinicalNotesObservation;
 import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.Diagnoses;
 import com.dpdocter.beans.Diagram;
-import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Investigation;
 import com.dpdocter.beans.Notes;
 import com.dpdocter.beans.Observation;
@@ -312,6 +311,22 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    }
 		    clinicalNote.setDiagnoses(diagnosisList);
 		}
+
+		@SuppressWarnings("unchecked")
+		List<NotesCollection> notesCollections = IteratorUtils.toList(notesRepository.findAll(clinicalNotesCollection.getNotes()).iterator());
+		if (notesCollections != null) {
+		    List<Notes> notes = new ArrayList<Notes>();
+		    for (NotesCollection notesCollection : notesCollections) {
+			Notes note = new Notes();
+			BeanUtil.map(notesCollection, note);
+			note.setDoctorId(null);
+			note.setLocationId(null);
+			note.setHospitalId(null);
+			notes.add(note);
+		    }
+		    clinicalNote.setNotes(notes);
+		}
+
 		@SuppressWarnings("unchecked")
 		List<DiagramsCollection> diagramsCollections = IteratorUtils.toList(diagramsRepository.findAll(clinicalNotesCollection.getDiagrams())
 			.iterator());
@@ -336,156 +351,156 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public ClinicalNotes editNotes(ClinicalNotesEditRequest request) {
-    	ClinicalNotes clinicalNotes = null;
-    	List<String> complaintIds = null;
-    	List<String> observationIds = null;
-    	List<String> investigationIds = null;
-    	List<String> noteIds = null;
-    	List<String> diagnosisIds = null;
-    	List<String> diagramIds = null;
-    	Date createdTime = new Date();
-    	long createdDate = createdTime.getTime();
-    	try {
-    	    // save clinical notes.
-    	    ClinicalNotesCollection clinicalNotesCollection = new ClinicalNotesCollection();
-    	    BeanUtil.map(request, clinicalNotesCollection);
+	ClinicalNotes clinicalNotes = null;
+	List<String> complaintIds = null;
+	List<String> observationIds = null;
+	List<String> investigationIds = null;
+	List<String> noteIds = null;
+	List<String> diagnosisIds = null;
+	List<String> diagramIds = null;
+	Date createdTime = new Date();
+	long createdDate = createdTime.getTime();
+	try {
+	    // save clinical notes.
+	    ClinicalNotesCollection clinicalNotesCollection = new ClinicalNotesCollection();
+	    BeanUtil.map(request, clinicalNotesCollection);
 
-    	    complaintIds = new ArrayList<String>();
-    	    if (request.getComplaints() != null && !request.getComplaints().isEmpty()) {
-    		for (ClinicalNotesComplaint complaint : request.getComplaints()) {
-    		    if (DPDoctorUtils.anyStringEmpty(complaint.getId())) {
-    			ComplaintCollection complaintCollection = new ComplaintCollection();
-    			BeanUtil.map(complaint, complaintCollection);
-    			BeanUtil.map(request, complaintCollection);
-    			complaintCollection.setCreatedTime(createdTime);
-    			complaintCollection = complaintRepository.save(complaintCollection);
-    			complaintIds.add(complaintCollection.getId());
-    		    } else {
-    			complaintIds.add(complaint.getId());
-    		    }
-    		}
-    	    }
+	    complaintIds = new ArrayList<String>();
+	    if (request.getComplaints() != null && !request.getComplaints().isEmpty()) {
+		for (ClinicalNotesComplaint complaint : request.getComplaints()) {
+		    if (DPDoctorUtils.anyStringEmpty(complaint.getId())) {
+			ComplaintCollection complaintCollection = new ComplaintCollection();
+			BeanUtil.map(complaint, complaintCollection);
+			BeanUtil.map(request, complaintCollection);
+			complaintCollection.setCreatedTime(createdTime);
+			complaintCollection = complaintRepository.save(complaintCollection);
+			complaintIds.add(complaintCollection.getId());
+		    } else {
+			complaintIds.add(complaint.getId());
+		    }
+		}
+	    }
 
-    	    observationIds = new ArrayList<String>();
-    	    if (request.getObservations() != null && !request.getObservations().isEmpty()) {
-    		for (ClinicalNotesObservation observation : request.getObservations()) {
-    		    if (DPDoctorUtils.anyStringEmpty(observation.getId())) {
-    			ObservationCollection observationCollection = new ObservationCollection();
-    			BeanUtil.map(observation, observationCollection);
-    			BeanUtil.map(request, observationCollection);
-    			observationCollection.setCreatedTime(createdTime);
-    			observationCollection = observationRepository.save(observationCollection);
-    			observationIds.add(observationCollection.getId());
-    		    } else {
-    			observationIds.add(observation.getId());
-    		    }
-    		}
-    	    }
+	    observationIds = new ArrayList<String>();
+	    if (request.getObservations() != null && !request.getObservations().isEmpty()) {
+		for (ClinicalNotesObservation observation : request.getObservations()) {
+		    if (DPDoctorUtils.anyStringEmpty(observation.getId())) {
+			ObservationCollection observationCollection = new ObservationCollection();
+			BeanUtil.map(observation, observationCollection);
+			BeanUtil.map(request, observationCollection);
+			observationCollection.setCreatedTime(createdTime);
+			observationCollection = observationRepository.save(observationCollection);
+			observationIds.add(observationCollection.getId());
+		    } else {
+			observationIds.add(observation.getId());
+		    }
+		}
+	    }
 
-    	    investigationIds = new ArrayList<String>();
-    	    if (request.getInvestigations() != null && !request.getInvestigations().isEmpty()) {
-    		for (ClinicalNotesInvestigation investigation : request.getInvestigations()) {
-    		    if (DPDoctorUtils.anyStringEmpty(investigation.getId())) {
-    			InvestigationCollection investigationCollection = new InvestigationCollection();
-    			BeanUtil.map(investigation, investigationCollection);
-    			BeanUtil.map(request, investigationCollection);
-    			investigationCollection.setCreatedTime(createdTime);
-    			investigationCollection = investigationRepository.save(investigationCollection);
-    			investigationIds.add(investigationCollection.getId());
-    		    } else {
-    			investigationIds.add(investigation.getId());
-    		    }
-    		}
-    	    }
+	    investigationIds = new ArrayList<String>();
+	    if (request.getInvestigations() != null && !request.getInvestigations().isEmpty()) {
+		for (ClinicalNotesInvestigation investigation : request.getInvestigations()) {
+		    if (DPDoctorUtils.anyStringEmpty(investigation.getId())) {
+			InvestigationCollection investigationCollection = new InvestigationCollection();
+			BeanUtil.map(investigation, investigationCollection);
+			BeanUtil.map(request, investigationCollection);
+			investigationCollection.setCreatedTime(createdTime);
+			investigationCollection = investigationRepository.save(investigationCollection);
+			investigationIds.add(investigationCollection.getId());
+		    } else {
+			investigationIds.add(investigation.getId());
+		    }
+		}
+	    }
 
-    	    noteIds = new ArrayList<String>();
-    	    if (request.getNotes() != null && !request.getNotes().isEmpty()) {
-    		for (ClinicalNotesNote note : request.getNotes()) {
-    		    if (DPDoctorUtils.anyStringEmpty(note.getId())) {
-    			NotesCollection notesCollection = new NotesCollection();
-    			BeanUtil.map(note, notesCollection);
-    			BeanUtil.map(request, notesCollection);
-    			notesCollection.setCreatedTime(createdTime);
-    			notesCollection = notesRepository.save(notesCollection);
-    			noteIds.add(notesCollection.getId());
-    		    } else {
-    			noteIds.add(note.getId());
-    		    }
-    		}
-    	    }
+	    noteIds = new ArrayList<String>();
+	    if (request.getNotes() != null && !request.getNotes().isEmpty()) {
+		for (ClinicalNotesNote note : request.getNotes()) {
+		    if (DPDoctorUtils.anyStringEmpty(note.getId())) {
+			NotesCollection notesCollection = new NotesCollection();
+			BeanUtil.map(note, notesCollection);
+			BeanUtil.map(request, notesCollection);
+			notesCollection.setCreatedTime(createdTime);
+			notesCollection = notesRepository.save(notesCollection);
+			noteIds.add(notesCollection.getId());
+		    } else {
+			noteIds.add(note.getId());
+		    }
+		}
+	    }
 
-    	    diagnosisIds = new ArrayList<String>();
-    	    if (request.getDiagnoses() != null && !request.getDiagnoses().isEmpty()) {
-    		for (ClinicalNotesDiagnosis diagnosis : request.getDiagnoses()) {
-    		    if (DPDoctorUtils.anyStringEmpty(diagnosis.getId())) {
-    			DiagnosisCollection diagnosisCollection = new DiagnosisCollection();
-    			BeanUtil.map(diagnosis, diagnosisCollection);
-    			BeanUtil.map(request, diagnosisCollection);
-    			diagnosisCollection.setCreatedTime(createdTime);
-    			diagnosisCollection = diagnosisRepository.save(diagnosisCollection);
-    			diagnosisIds.add(diagnosisCollection.getId());
-    		    } else {
-    			diagnosisIds.add(diagnosis.getId());
-    		    }
-    		}
-    	    }
+	    diagnosisIds = new ArrayList<String>();
+	    if (request.getDiagnoses() != null && !request.getDiagnoses().isEmpty()) {
+		for (ClinicalNotesDiagnosis diagnosis : request.getDiagnoses()) {
+		    if (DPDoctorUtils.anyStringEmpty(diagnosis.getId())) {
+			DiagnosisCollection diagnosisCollection = new DiagnosisCollection();
+			BeanUtil.map(diagnosis, diagnosisCollection);
+			BeanUtil.map(request, diagnosisCollection);
+			diagnosisCollection.setCreatedTime(createdTime);
+			diagnosisCollection = diagnosisRepository.save(diagnosisCollection);
+			diagnosisIds.add(diagnosisCollection.getId());
+		    } else {
+			diagnosisIds.add(diagnosis.getId());
+		    }
+		}
+	    }
 
-    	    clinicalNotesCollection.setComplaints(complaintIds);
-    	    clinicalNotesCollection.setInvestigations(investigationIds);
-    	    clinicalNotesCollection.setObservations(observationIds);
-    	    clinicalNotesCollection.setDiagnoses(diagnosisIds);
-    	    clinicalNotesCollection.setNotes(noteIds);
-    	    if (request.getDiagrams() == null) {
-    		diagramIds = new ArrayList<String>();
-    		clinicalNotesCollection.setDiagrams(diagramIds);
-    	    } else {
-    		diagramIds = request.getDiagrams();
-    	    }
+	    clinicalNotesCollection.setComplaints(complaintIds);
+	    clinicalNotesCollection.setInvestigations(investigationIds);
+	    clinicalNotesCollection.setObservations(observationIds);
+	    clinicalNotesCollection.setDiagnoses(diagnosisIds);
+	    clinicalNotesCollection.setNotes(noteIds);
+	    if (request.getDiagrams() == null) {
+		diagramIds = new ArrayList<String>();
+		clinicalNotesCollection.setDiagrams(diagramIds);
+	    } else {
+		diagramIds = request.getDiagrams();
+	    }
 
-    	    clinicalNotesCollection.setCreatedTime(createdTime);
-    	    clinicalNotesCollection.setCreatedDate(createdDate);
-    	    clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
-    	    if (clinicalNotesCollection != null) {
-    		if (request.getId() == null) {
-    		    // map the clinical notes with patient
-    		    PatientClinicalNotesCollection patientClinicalNotesCollection = new PatientClinicalNotesCollection();
-    		    patientClinicalNotesCollection.setClinicalNotesId(clinicalNotesCollection.getId());
-    		    patientClinicalNotesCollection.setPatientId(request.getPatientId());
-    		    patientClinicalNotesRepository.save(patientClinicalNotesCollection);
-    		}
+	    clinicalNotesCollection.setCreatedTime(createdTime);
+	    clinicalNotesCollection.setCreatedDate(createdDate);
+	    clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
+	    if (clinicalNotesCollection != null) {
+		if (request.getId() == null) {
+		    // map the clinical notes with patient
+		    PatientClinicalNotesCollection patientClinicalNotesCollection = new PatientClinicalNotesCollection();
+		    patientClinicalNotesCollection.setClinicalNotesId(clinicalNotesCollection.getId());
+		    patientClinicalNotesCollection.setPatientId(request.getPatientId());
+		    patientClinicalNotesRepository.save(patientClinicalNotesCollection);
+		}
 
-    	    }
-    	    clinicalNotes = new ClinicalNotes();
-    	    BeanUtil.map(clinicalNotesCollection, clinicalNotes);
+	    }
+	    clinicalNotes = new ClinicalNotes();
+	    BeanUtil.map(clinicalNotesCollection, clinicalNotes);
 
-    	    // Setting detail of complaints, investigations, observations,
-    	    // diagnoses, notes and diagrams into response.
-    	    List<Complaint> complaints = IteratorUtils.toList(complaintRepository.findAll(complaintIds).iterator());
-    	    List<Investigation> investigations = IteratorUtils.toList(investigationRepository.findAll(investigationIds).iterator());
-    	    List<Observation> observations = IteratorUtils.toList(observationRepository.findAll(observationIds).iterator());
-    	    List<Diagnoses> diagnoses = IteratorUtils.toList(diagnosisRepository.findAll(diagnosisIds).iterator());
-    	    List<Notes> notes = IteratorUtils.toList(notesRepository.findAll(noteIds).iterator());
-    	    List<Diagram> diagrams = IteratorUtils.toList(diagramsRepository.findAll(diagramIds).iterator());
-    	    /*if (request.getDiagrams() != null && !request.getDiagrams().isEmpty()) {
-    	    diagrams = IteratorUtils.toList(diagramsRepository.findAll(request.getDiagrams()).iterator());
-    	    } else {
-    	    diagrams = new ArrayList<Diagram>();
-    	    }*/
+	    // Setting detail of complaints, investigations, observations,
+	    // diagnoses, notes and diagrams into response.
+	    List<Complaint> complaints = IteratorUtils.toList(complaintRepository.findAll(complaintIds).iterator());
+	    List<Investigation> investigations = IteratorUtils.toList(investigationRepository.findAll(investigationIds).iterator());
+	    List<Observation> observations = IteratorUtils.toList(observationRepository.findAll(observationIds).iterator());
+	    List<Diagnoses> diagnoses = IteratorUtils.toList(diagnosisRepository.findAll(diagnosisIds).iterator());
+	    List<Notes> notes = IteratorUtils.toList(notesRepository.findAll(noteIds).iterator());
+	    List<Diagram> diagrams = IteratorUtils.toList(diagramsRepository.findAll(diagramIds).iterator());
+	    /*if (request.getDiagrams() != null && !request.getDiagrams().isEmpty()) {
+	    diagrams = IteratorUtils.toList(diagramsRepository.findAll(request.getDiagrams()).iterator());
+	    } else {
+	    diagrams = new ArrayList<Diagram>();
+	    }*/
 
-    	    clinicalNotes.setComplaints(complaints);
-    	    clinicalNotes.setInvestigations(investigations);
-    	    clinicalNotes.setObservations(observations);
-    	    clinicalNotes.setDiagnoses(diagnoses);
-    	    clinicalNotes.setNotes(notes);
-    	    clinicalNotes.setDiagrams(diagrams);
-    	} catch (Exception e) {
-    	    e.printStackTrace();
-    	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-    	}
+	    clinicalNotes.setComplaints(complaints);
+	    clinicalNotes.setInvestigations(investigations);
+	    clinicalNotes.setObservations(observations);
+	    clinicalNotes.setDiagnoses(diagnoses);
+	    clinicalNotes.setNotes(notes);
+	    clinicalNotes.setDiagrams(diagrams);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
 
-    	return clinicalNotes;
+	return clinicalNotes;
 
     }
 
@@ -518,7 +533,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 	    } else {
 		long createdTimeStamp = Long.parseLong(createdTime);
-
 		if (isDeleted) {
 		    patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Date(createdTimeStamp), new Sort(
 			    Sort.Direction.DESC, "createdTime"));
