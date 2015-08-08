@@ -1,11 +1,7 @@
 package com.dpdocter.beans;
 
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
-
 import com.dpdocter.collections.GenericCollection;
 
-@JsonSerialize(include = Inclusion.NON_DEFAULT)
 public class Group extends GenericCollection {
     private String id;
 
@@ -20,6 +16,8 @@ public class Group extends GenericCollection {
     private String hospitalId;
 
     private int count = 0;
+
+    private boolean isDeleted = false;
 
     public String getId() {
 	return id;
@@ -77,10 +75,18 @@ public class Group extends GenericCollection {
 	this.count = count;
     }
 
+    public boolean isDeleted() {
+	return isDeleted;
+    }
+
+    public void setDeleted(boolean isDeleted) {
+	this.isDeleted = isDeleted;
+    }
+
     @Override
     public String toString() {
 	return "Group [id=" + id + ", name=" + name + ", description=" + description + ", doctorId=" + doctorId + ", locationId=" + locationId
-		+ ", hospitalId=" + hospitalId + "]";
+		+ ", hospitalId=" + hospitalId + ", count=" + count + ", isDeleted=" + isDeleted + "]";
     }
 
 }

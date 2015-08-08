@@ -458,11 +458,12 @@ public class ContactsServiceImpl implements ContactsService {
 
 	    if (groupCollections != null) {
 		groups = new ArrayList<Group>();
-		for (GroupCollection groupCollection : groupCollections) {
+		BeanUtil.map(groupCollections, groups);
+		/*for (GroupCollection groupCollection : groupCollections) {
 		    Group group = new Group();
 		    BeanUtil.map(groupCollection, group);
 		    groups.add(group);
-		}
+		}*/
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -543,8 +544,9 @@ public class ContactsServiceImpl implements ContactsService {
 
 		    registeredPatientDetail.setDoctorId(patientCollection.getDoctorId());
 		    registeredPatientDetail.setLocationId(patientCollection.getLocationId());
-		    registeredPatientDetail.setHospitalId(registeredPatientDetail.getHospitalId());
+		    registeredPatientDetail.setHospitalId(patientCollection.getHospitalId());
 		    registeredPatientDetail.setCreatedTime(patientCollection.getCreatedTime());
+		    registeredPatientDetail.setPID(patientCollection.getPID());
 
 		    registeredPatientDetails.add(registeredPatientDetail);
 		}
