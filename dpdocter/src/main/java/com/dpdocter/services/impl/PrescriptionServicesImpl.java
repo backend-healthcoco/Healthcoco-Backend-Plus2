@@ -290,6 +290,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	BeanUtil.map(request, prescriptionCollection);
 	try {
 	    prescriptionCollection.setCreatedTime(new Date());
+	    prescriptionCollection.setCreatedDate(prescriptionCollection.getCreatedTime().getTime());
 	    prescriptionCollection.setPrescriptionCode(PrescriptionUtils.generatePrescriptionCode());
 	    prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 	    response = new PrescriptionAddEditResponse();
@@ -682,7 +683,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			drugTypeCollections = drugTypeRepository.getDrugType(doctorId, hospitalId, locationId, new Date(createdTimeStamp), isDeleted, new Sort(
 				Sort.Direction.DESC, "createdTime"));
 		}
-		System.out.println(new Date(Long.parseLong(createdTime)));
+		
 	    }
 
 	    if (drugTypeCollections != null) {

@@ -139,7 +139,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		    if (!reports.contains(reportId)) {
 			reports.add(reportId);
 		    } else {
-			throw new BusinessException(ServiceError.Unknown, "This report is already added into history.");
+		    	return false;
 		    }
 		    // if no report is added into history then add it .
 		} else {
@@ -187,7 +187,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		    if (!clinicalNotes.contains(clinicalNotesId)) {
 			clinicalNotes.add(clinicalNotesId);
 		    } else {
-			throw new BusinessException(ServiceError.Unknown, "This clinicalNote is already added into history.");
+		    	return false;
 		    }
 		    // if no clinicalNote is added into history then add it .
 		} else {
@@ -235,7 +235,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		    if (!prescriptions.contains(prescriptionId)) {
 			prescriptions.add(prescriptionId);
 		    } else {
-			throw new BusinessException(ServiceError.Unknown, "This prescription is already added into history.");
+		    	return false;
 		    }
 		    // if no prescription is added into history then add it .
 		} else {
@@ -281,7 +281,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		    if (!medicalHistoryList.contains(diseaseId)) {
 			medicalHistoryList.add(diseaseId);
 		    } else {
-			throw new BusinessException(ServiceError.Unknown, "This diseaseId is already added into history.");
+		    	return false;
 		    }
 		    // if no medicalHistory is added into history then add it .
 		} else {
@@ -321,7 +321,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		    if (!familyHistoryList.contains(diseaseId)) {
 			familyHistoryList.add(diseaseId);
 		    } else {
-			throw new BusinessException(ServiceError.Unknown, "This diseaseId is already added into history.");
+		    	return false;
 		    }
 		    // if no familyHistory is added into history then add it .
 		} else {

@@ -39,6 +39,9 @@ public class PrescriptionCollection extends GenericCollection {
     @Field
     private boolean inHistory = false;
 
+    @Field
+    private Long createdDate;
+
     public String getId() {
 	return id;
     }
@@ -119,11 +122,20 @@ public class PrescriptionCollection extends GenericCollection {
 	this.inHistory = inHistory;
     }
 
-    @Override
-    public String toString() {
-	return "PrescriptionCollection [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ ", isDeleted=" + isDeleted + ", items=" + items + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + ", inHistory="
-		+ inHistory + "]";
-    }
+	public Long getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Long createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	@Override
+	public String toString() {
+		return "PrescriptionCollection [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", isDeleted=" + isDeleted + ", items=" + items
+				+ ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + ", inHistory=" + inHistory
+				+ ", createdDate=" + createdDate + "]";
+	}
 
 }

@@ -15,6 +15,8 @@ public class Prescription extends GenericCollection {
 
     private boolean deleted;
 
+    private Long createdDate;
+    
     public String getId() {
 	return id;
     }
@@ -55,9 +57,17 @@ public class Prescription extends GenericCollection {
 	this.deleted = deleted;
     }
 
-    @Override
-    public String toString() {
-	return "Prescription [id=" + id + ", name=" + name + ", items=" + items + ", inHistory=" + inHistory + ", deleted=" + deleted + "]";
-    }
+    public Long getCreatedDate() {
+		return createdDate;
+	}
 
+	public void setCreatedDate(Long createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	@Override
+	public String toString() {
+		return "Prescription [id=" + id + ", name=" + name + ", items=" + items + ", inHistory=" + inHistory
+				+ ", deleted=" + deleted + ", createdDate=" + createdDate + "]";
+	}
 }
