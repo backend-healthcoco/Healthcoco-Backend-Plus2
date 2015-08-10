@@ -11,6 +11,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,7 @@ import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.RecordsService;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -478,5 +480,23 @@ public class RecordsServiceImpl implements RecordsService {
 
 	return flexibleCounts;
 
+    }
+
+    @Override
+    public Records getRecordById(String recordId) {
+	Records record = null;
+	try {
+	    RecordsCollection recordCollection = recordsRepository.findOne(recordId);
+	    if (recordCollection != null) {
+		record = new Records();
+		BeanUtil.map(recordCollection, record);
+	    } else {
+		throw new BusinessException(ServiceError.NotFound, "Record Not Found.");
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error while getting record : " + e.getCause().getMessage());
+	}
+	return record;
     }
 }

@@ -683,7 +683,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			drugTypeCollections = drugTypeRepository.getDrugType(doctorId, hospitalId, locationId, new Date(createdTimeStamp), isDeleted, new Sort(
 				Sort.Direction.DESC, "createdTime"));
 		}
-		
+
 	    }
 
 	    if (drugTypeCollections != null) {
@@ -1258,6 +1258,36 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug Duration Unit");
 	}
 	return response;
+    }
+
+    @Override
+    public Prescription getPrescriptionById(String prescriptionId) {
+	Prescription prescription = null;
+	try {
+	    PrescriptionCollection prescriptionCollection = prescriptionRepository.findOne(prescriptionId);
+	    if (prescriptionCollection != null) {
+		prescription = new Prescription();
+		BeanUtil.map(prescriptionCollection, prescription);
+		if (prescriptionCollection.getItems() != null && !prescriptionCollection.getItems().isEmpty()) {
+		    List<PrescriptionItemDetail> prescriptionItemDetails = new ArrayList<PrescriptionItemDetail>();
+		    for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
+			PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
+			BeanUtil.map(prescriptionItem, prescriptionItemDetail);
+			DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
+			Drug drug = new Drug();
+			BeanUtil.map(drugCollection, drug);
+			prescriptionItemDetail.setDrug(drug);
+			prescriptionItemDetails.add(prescriptionItemDetail);
+		    }
+		}
+	    } else {
+		throw new BusinessException(ServiceError.NotFound, "Prescription Not Found");
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error while getting prescription : " + e.getCause().getMessage());
+	}
+	return prescription;
     }
 
 }

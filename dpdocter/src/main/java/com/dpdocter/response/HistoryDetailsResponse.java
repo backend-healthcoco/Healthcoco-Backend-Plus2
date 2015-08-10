@@ -2,9 +2,7 @@ package com.dpdocter.response;
 
 import java.util.List;
 
-import com.dpdocter.beans.ClinicalNotes;
-import com.dpdocter.beans.Prescription;
-import com.dpdocter.beans.Records;
+import com.dpdocter.beans.GeneralData;
 
 public class HistoryDetailsResponse {
 
@@ -18,25 +16,19 @@ public class HistoryDetailsResponse {
 
     private String patientId;
 
-    private List<Records> reports;
+    private List<GeneralData> generalRecords;
+
+    /*private List<Records> reports;
 
     private List<Prescription> prescriptions;
 
-    private List<ClinicalNotes> clinicalNotes;
+    private List<ClinicalNotes> clinicalNotes;*/
 
     private List<DiseaseListResponse> familyhistory;
 
     private List<DiseaseListResponse> medicalhistory;
 
     private List<String> specialNotes;
-
-    public HistoryDetailsResponse(String id, String doctorId, String locationId, String hospitalId, String patientId) {
-	this.id = id;
-	this.doctorId = doctorId;
-	this.locationId = locationId;
-	this.hospitalId = hospitalId;
-	this.patientId = patientId;
-    }
 
     public String getId() {
 	return id;
@@ -78,28 +70,12 @@ public class HistoryDetailsResponse {
 	this.patientId = patientId;
     }
 
-    public List<Records> getReports() {
-	return reports;
+    public List<GeneralData> getGeneralRecords() {
+	return generalRecords;
     }
 
-    public void setReports(List<Records> reports) {
-	this.reports = reports;
-    }
-
-    public List<Prescription> getPrescriptions() {
-	return prescriptions;
-    }
-
-    public void setPrescriptions(List<Prescription> prescriptions) {
-	this.prescriptions = prescriptions;
-    }
-
-    public List<ClinicalNotes> getClinicalNotes() {
-	return clinicalNotes;
-    }
-
-    public void setClinicalNotes(List<ClinicalNotes> clinicalNotes) {
-	this.clinicalNotes = clinicalNotes;
+    public void setGeneralRecords(List<GeneralData> generalRecords) {
+	this.generalRecords = generalRecords;
     }
 
     public List<DiseaseListResponse> getFamilyhistory() {
@@ -129,8 +105,8 @@ public class HistoryDetailsResponse {
     @Override
     public String toString() {
 	return "HistoryDetailsResponse [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId="
-		+ patientId + ", reports=" + reports + ", prescriptions=" + prescriptions + ", clinicalNotes=" + clinicalNotes + ", familyhistory="
-		+ familyhistory + ", medicalhistory=" + medicalhistory + ", specialNotes=" + specialNotes + "]";
+		+ patientId + ", generalRecords=" + generalRecords + ", familyhistory=" + familyhistory + ", medicalhistory=" + medicalhistory
+		+ ", specialNotes=" + specialNotes + "]";
     }
 
 }

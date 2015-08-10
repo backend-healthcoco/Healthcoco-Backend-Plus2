@@ -23,6 +23,8 @@ public interface RecordsService {
 
     List<Records> getRecordsByIds(List<String> recordIds);
 
+    Records getRecordById(String recordId);
+
     void emailRecordToPatient(String recordId, String emailAddr);
 
     Tags addEditTag(Tags tags);

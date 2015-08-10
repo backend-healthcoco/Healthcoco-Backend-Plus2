@@ -6,6 +6,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.GeneralData;
+
 @Document(collection = "history_cl")
 public class HistoryCollection {
 
@@ -25,13 +27,16 @@ public class HistoryCollection {
     private String patientId;
 
     @Field
+    private List<GeneralData> generalRecords;
+
+    /*@Field
     private List<String> reports;
 
     @Field
     private List<String> prescriptions;
 
     @Field
-    private List<String> clinicalNotes;
+    private List<String> clinicalNotes;*/
 
     @Field
     private List<String> familyhistory;
@@ -90,28 +95,12 @@ public class HistoryCollection {
 	this.patientId = patientId;
     }
 
-    public List<String> getReports() {
-	return reports;
+    public List<GeneralData> getGeneralRecords() {
+	return generalRecords;
     }
 
-    public void setReports(List<String> reports) {
-	this.reports = reports;
-    }
-
-    public List<String> getPrescriptions() {
-	return prescriptions;
-    }
-
-    public void setPrescriptions(List<String> prescriptions) {
-	this.prescriptions = prescriptions;
-    }
-
-    public List<String> getClinicalNotes() {
-	return clinicalNotes;
-    }
-
-    public void setClinicalNotes(List<String> clinicalNotes) {
-	this.clinicalNotes = clinicalNotes;
+    public void setGeneralRecords(List<GeneralData> generalRecords) {
+	this.generalRecords = generalRecords;
     }
 
     public List<String> getFamilyhistory() {
@@ -141,8 +130,8 @@ public class HistoryCollection {
     @Override
     public String toString() {
 	return "HistoryCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId="
-		+ patientId + ", reports=" + reports + ", prescriptions=" + prescriptions + ", clinicalNotes=" + clinicalNotes + ", familyhistory="
-		+ familyhistory + ", medicalhistory=" + medicalhistory + ", specialNotes=" + specialNotes + "]";
+		+ patientId + ", generalRecords=" + generalRecords + ", familyhistory=" + familyhistory + ", medicalhistory=" + medicalhistory
+		+ ", specialNotes=" + specialNotes + "]";
     }
 
 }

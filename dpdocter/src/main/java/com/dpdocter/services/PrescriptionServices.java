@@ -59,6 +59,8 @@ public interface PrescriptionServices {
 
     List<Prescription> getPrescriptionsByIds(List<String> prescriptionIds);
 
+    Prescription getPrescriptionById(String prescriptionId);
+
     List<TemplateAddEditResponseDetails> getTemplates(String doctorId, String hospitalId, String locationId, String createdTime, boolean isDeleted);
 
     List<DrugAddEditResponse> getDrugs(String doctorId, String hospitalId, String locationId, String createdTime, boolean isDeleted);
