@@ -227,10 +227,10 @@ public class RecordsServiceImpl implements RecordsService {
 		if (request.getCreatedTime() != null) {
 		    long createdTimeStamp = Long.parseLong(request.getCreatedTime());
 		    recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
-			    request.getHospitalId(), new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
+			    request.getHospitalId(), new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdDate"));
 		} else {
 		    recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
-			    request.getHospitalId(), false, new Sort(Sort.Direction.DESC, "createdTime"));
+			    request.getHospitalId(), false, new Sort(Sort.Direction.DESC, "createdDate"));
 		}
 		records = new ArrayList<Records>();
 		BeanUtil.map(recordsCollections, records);
@@ -383,17 +383,17 @@ public class RecordsServiceImpl implements RecordsService {
 	try {
 	    if (DPDoctorUtils.anyStringEmpty(createdTime)) {
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
-		    recordsCollections = recordsRepository.findAll(doctorId, false, new Sort(Sort.Direction.DESC, "createdTime"));
+		    recordsCollections = recordsRepository.findAll(doctorId, false, new Sort(Sort.Direction.DESC, "createdDate"));
 		} else {
-		    recordsCollections = recordsRepository.findAll(doctorId, locationId, hospitalId, false, new Sort(Sort.Direction.DESC, "createdTime"));
+		    recordsCollections = recordsRepository.findAll(doctorId, locationId, hospitalId, false, new Sort(Sort.Direction.DESC, "createdDate"));
 		}
 	    } else {
 		long createdTimeStamp = Long.parseLong(createdTime);
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
-		    recordsCollections = recordsRepository.findAll(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
+		    recordsCollections = recordsRepository.findAll(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdDate"));
 		} else {
 		    recordsCollections = recordsRepository.findAll(doctorId, locationId, hospitalId, new Date(createdTimeStamp), false, new Sort(
-			    Sort.Direction.DESC, "createdTime"));
+			    Sort.Direction.DESC, "createdDate"));
 		}
 	    }
 

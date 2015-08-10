@@ -20,4 +20,10 @@ public interface ComplaintRepository extends MongoRepository<ComplaintCollection
 
     @Query("{'doctorId': ?0, 'createdTime': {'$gte': ?1}, 'isDeleted': ?2}")
     List<ComplaintCollection> findComplaints(String doctorId, Date date, boolean isDeleted, Sort sort);
+
+    @Query("{'createdTime': {'$gte': ?0}}")
+	List<ComplaintCollection> findComplaints(Date date, Sort sort);
+
+    @Query("{'createdTime': {'$gte': ?0}, 'isDeleted': ?1}")
+	List<ComplaintCollection> findComplaints(Date date, boolean isDeleted, Sort sort);
 }

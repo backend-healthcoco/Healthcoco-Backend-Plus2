@@ -201,6 +201,16 @@ public interface PathProxy {
 
 	public static final String GET_DIAGRAMS_ISDELETED = "getDiagrams/{doctorId}/{createdTime}/{isDeleted}";
 
+	public static final String GET_GLOBAL_COMPLAINTS = "getGlobalComplaints/{createdTime}";
+	
+	public static final String GET_GLOBAL_INVESTIGATIONS = "getGlobalInvestigations/{createdTime}";
+	
+	public static final String GET_GLOBAL_OBSERVATIONS = "getGlobalObservations/{createdTime}";
+	
+	public static final String GET_GLOBAL_DIAGNOSIS = "getGlobalDiagnosis/{createdTime}";
+	
+	public static final String GET_GLOBAL_NOTES = "getGlobalNotes/{createdTime}";
+	
 	public static final String GET_GLOBAL_DIAGRAMS = "getGlobalDiagrams/{createdTime}";
 
     }

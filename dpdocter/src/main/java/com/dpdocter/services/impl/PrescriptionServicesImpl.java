@@ -359,32 +359,32 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		if (!isOTPVerified) {
 		    if (isDeleted)
 			prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId, new Sort(
-				Sort.Direction.DESC, "createdTime"));
+				Sort.Direction.DESC, "createdDate"));
 		    else
 			prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId, isDeleted, new Sort(
-				Sort.Direction.DESC, "createdTime"));
+				Sort.Direction.DESC, "createdDate"));
 		} else {
 		    if (isDeleted)
-			prescriptionCollections = prescriptionRepository.getPrescription(patientId, new Sort(Sort.Direction.DESC, "createdTime"));
+			prescriptionCollections = prescriptionRepository.getPrescription(patientId, new Sort(Sort.Direction.DESC, "createdDate"));
 		    else
-			prescriptionCollections = prescriptionRepository.getPrescription(patientId, false, new Sort(Sort.Direction.DESC, "createdTime"));
+			prescriptionCollections = prescriptionRepository.getPrescription(patientId, false, new Sort(Sort.Direction.DESC, "createdDate"));
 		}
 	    } else {
 		long createdTimestamp = Long.parseLong(createdTime);
 		if (!isOTPVerified) {
 		    if (isDeleted)
 			prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId,
-				new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "createdTime"));
+				new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "createdDate"));
 		    else
 			prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId,
-				new Date(createdTimestamp), isDeleted, new Sort(Sort.Direction.DESC, "createdTime"));
+				new Date(createdTimestamp), isDeleted, new Sort(Sort.Direction.DESC, "createdDate"));
 		} else {
 		    if (isDeleted)
 			prescriptionCollections = prescriptionRepository.getPrescription(patientId, new Date(createdTimestamp), new Sort(Sort.Direction.DESC,
-				"createdTime"));
+				"createdDate"));
 		    else
 			prescriptionCollections = prescriptionRepository.getPrescription(patientId, new Date(createdTimestamp), isDeleted, new Sort(
-				Sort.Direction.DESC, "createdTime"));
+				Sort.Direction.DESC, "createdDate"));
 		}
 	    }
 

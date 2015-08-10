@@ -527,4 +527,48 @@ public class ClinicalNotesApi {
 	response.setDataList(diagrams);
 	return response;
     }
+    
+    @Path(value = PathProxy.ClinicalNotesUrls.GET_GLOBAL_COMPLAINTS)
+    @GET
+    public Response<Complaint> getComplaints(@PathParam("createdTime") String createdTime) {
+	List<Complaint> complaints = clinicalNotesService.getComplaints(null, createdTime, true);
+	Response<Complaint> response = new Response<Complaint>();
+	response.setDataList(complaints);
+	return response;
+    }
+    @Path(value = PathProxy.ClinicalNotesUrls.GET_GLOBAL_INVESTIGATIONS)
+    @GET
+    public Response<Investigation> getInvestigations(@PathParam("createdTime") String createdTime) {
+	List<Investigation> investigations = clinicalNotesService.getInvestigations(null, createdTime, true);
+	Response<Investigation> response = new Response<Investigation>();
+	response.setDataList(investigations);
+	return response;
+    }
+    @Path(value = PathProxy.ClinicalNotesUrls.GET_GLOBAL_OBSERVATIONS)
+    @GET
+    public Response<Observation> getObservations(@PathParam("createdTime") String createdTime) {
+	List<Observation> observations = clinicalNotesService.getObservations(null, createdTime, true);
+	Response<Observation> response = new Response<Observation>();
+	response.setDataList(observations);
+	return response;
+    }
+    @Path(value = PathProxy.ClinicalNotesUrls.GET_GLOBAL_DIAGNOSIS)
+    @GET
+    public Response<Diagnoses> getDiagnosis(@PathParam("createdTime") String createdTime,
+	    @PathParam("isDeleted") boolean isDeleted) {
+	List<Diagnoses> diagnosis = clinicalNotesService.getDiagnosis(null, createdTime, isDeleted);
+	Response<Diagnoses> response = new Response<Diagnoses>();
+	response.setDataList(diagnosis);
+	return response;
+    }
+
+    @Path(value = PathProxy.ClinicalNotesUrls.GET_GLOBAL_NOTES)
+    @GET
+    public Response<Notes> getNotes(@PathParam("createdTime") String createdTime) {
+	List<Notes> notes = clinicalNotesService.getNotes(null, createdTime, true);
+	Response<Notes> response = new Response<Notes>();
+	response.setDataList(notes);
+	return response;
+    }
+
 }

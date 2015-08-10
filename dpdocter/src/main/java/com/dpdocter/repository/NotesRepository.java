@@ -16,4 +16,10 @@ public interface NotesRepository extends MongoRepository<NotesCollection, String
 
     @Query("{'doctorId': ?0, 'createdTime': {'$gte': ?1}, 'isDeleted': ?2}")
     List<NotesCollection> findNotes(String doctorId, Date date, boolean isDeleted, Sort sort);
+
+    @Query("{'createdTime': {'$gte': ?0}}")
+	List<NotesCollection> findNotes(Date date, Sort sort);
+
+    @Query("{'createdTime': {'$gte': ?0}, 'isDeleted': ?1}")
+	List<NotesCollection> findNotes(Date date, boolean b, Sort sort);
 }
