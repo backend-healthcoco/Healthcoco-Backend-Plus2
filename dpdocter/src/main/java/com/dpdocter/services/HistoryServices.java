@@ -2,6 +2,7 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import com.dpdocter.beans.MedicalHistoryHandler;
 import com.dpdocter.request.DiseaseAddEditRequest;
 import com.dpdocter.response.DiseaseAddEditResponse;
 import com.dpdocter.response.DiseaseListResponse;
@@ -48,4 +49,8 @@ public interface HistoryServices {
 	    String historyFilter);
 
     Integer getHistoryCount(String doctorId, String patientId, String locationId, String hospitalId);
+
+    boolean handleMedicalHistory(MedicalHistoryHandler request);
+
+    boolean handleFamilyHistory(MedicalHistoryHandler request);
 }

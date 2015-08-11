@@ -527,7 +527,7 @@ public class ClinicalNotesApi {
 	response.setDataList(diagrams);
 	return response;
     }
-    
+
     @Path(value = PathProxy.ClinicalNotesUrls.GET_GLOBAL_COMPLAINTS)
     @GET
     public Response<Complaint> getComplaints(@PathParam("createdTime") String createdTime) {
@@ -536,6 +536,7 @@ public class ClinicalNotesApi {
 	response.setDataList(complaints);
 	return response;
     }
+
     @Path(value = PathProxy.ClinicalNotesUrls.GET_GLOBAL_INVESTIGATIONS)
     @GET
     public Response<Investigation> getInvestigations(@PathParam("createdTime") String createdTime) {
@@ -544,6 +545,7 @@ public class ClinicalNotesApi {
 	response.setDataList(investigations);
 	return response;
     }
+
     @Path(value = PathProxy.ClinicalNotesUrls.GET_GLOBAL_OBSERVATIONS)
     @GET
     public Response<Observation> getObservations(@PathParam("createdTime") String createdTime) {
@@ -552,10 +554,10 @@ public class ClinicalNotesApi {
 	response.setDataList(observations);
 	return response;
     }
+
     @Path(value = PathProxy.ClinicalNotesUrls.GET_GLOBAL_DIAGNOSIS)
     @GET
-    public Response<Diagnoses> getDiagnosis(@PathParam("createdTime") String createdTime,
-	    @PathParam("isDeleted") boolean isDeleted) {
+    public Response<Diagnoses> getDiagnosis(@PathParam("createdTime") String createdTime, @PathParam("isDeleted") boolean isDeleted) {
 	List<Diagnoses> diagnosis = clinicalNotesService.getDiagnosis(null, createdTime, isDeleted);
 	Response<Diagnoses> response = new Response<Diagnoses>();
 	response.setDataList(diagnosis);

@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.MedicalHistoryHandler;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -270,6 +271,40 @@ public class HistoryApi {
 	}
 	Response<HistoryDetailsResponse> response = new Response<HistoryDetailsResponse>();
 	response.setDataList(historyDetailsResponses);
+	return response;
+    }
+
+    @Path(value = PathProxy.HistoryUrls.HANDLE_MEDICAL_HISTORY)
+    @POST
+    public Response<Boolean> handleMedicalHistory(MedicalHistoryHandler request) {
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Request Cannot Be Null");
+	}
+	boolean handleMedicalHistoryResponse = historyServices.handleMedicalHistory(request);
+
+	// patient track
+	patientTrackService.addRecord(request.getPatientId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
+		VisitedFor.PERSONAL_HISTORY);
+
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(handleMedicalHistoryResponse);
+	return response;
+    }
+
+    @Path(value = PathProxy.HistoryUrls.HANDLE_FAMILY_HISTORY)
+    @POST
+    public Response<Boolean> handleFamilyHistory(MedicalHistoryHandler request) {
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Request Cannot Be Null");
+	}
+	boolean handleFamilyHistoryResponse = historyServices.handleFamilyHistory(request);
+
+	// patient track
+	patientTrackService.addRecord(request.getPatientId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
+		VisitedFor.FAMILY_HISTORY);
+
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(handleFamilyHistoryResponse);
 	return response;
     }
 }

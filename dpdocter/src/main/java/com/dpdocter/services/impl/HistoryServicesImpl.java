@@ -3,6 +3,7 @@ package com.dpdocter.services.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.GeneralData;
+import com.dpdocter.beans.MedicalHistoryHandler;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.Records;
 import com.dpdocter.collections.ClinicalNotesCollection;
@@ -768,6 +770,92 @@ public class HistoryServicesImpl implements HistoryServices {
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting History Count");
 	}
 	return historyCount;
+    }
+
+    @Override
+    public boolean handleMedicalHistory(MedicalHistoryHandler request) {
+	HistoryCollection historyCollection = null;
+	boolean response = false;
+	try {
+	    historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientId(request.getDoctorId(), request.getLocationId(),
+		    request.getHospitalId(), request.getPatientId());
+	    if (historyCollection != null) {
+		List<String> medicalHistoryList = historyCollection.getMedicalhistory();
+		if (medicalHistoryList != null && !medicalHistoryList.isEmpty()) {
+		    medicalHistoryList.addAll(request.getAddDiseases());
+		    medicalHistoryList = new ArrayList<String>(new LinkedHashSet<String>(medicalHistoryList));
+		    medicalHistoryList.removeAll(request.getRemoveDiseases());
+		    historyCollection.setMedicalhistory(medicalHistoryList);
+		} else {
+		    medicalHistoryList = new ArrayList<String>();
+		    medicalHistoryList.addAll(request.getAddDiseases());
+		    medicalHistoryList.removeAll(request.getRemoveDiseases());
+		    historyCollection.setMedicalhistory(medicalHistoryList);
+		}
+	    } else {
+		historyCollection = new HistoryCollection(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId());
+		List<String> medicalHistoryList = new ArrayList<String>();
+		medicalHistoryList.addAll(request.getAddDiseases());
+		medicalHistoryList.removeAll(request.getRemoveDiseases());
+		historyCollection.setMedicalhistory(medicalHistoryList);
+	    }
+	    if (checkIfHistoryRemovedCompletely(historyCollection)) {
+		historyRepository.delete(historyCollection.getId());
+	    } else {
+		historyRepository.save(historyCollection);
+	    }
+
+	    response = true;
+
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+
+	}
+	return response;
+    }
+
+    @Override
+    public boolean handleFamilyHistory(MedicalHistoryHandler request) {
+	HistoryCollection historyCollection = null;
+	boolean response = false;
+	try {
+	    historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientId(request.getDoctorId(), request.getLocationId(),
+		    request.getHospitalId(), request.getPatientId());
+	    if (historyCollection != null) {
+		List<String> familyHistoryList = historyCollection.getFamilyhistory();
+		if (familyHistoryList != null && !familyHistoryList.isEmpty()) {
+		    familyHistoryList.addAll(request.getAddDiseases());
+		    familyHistoryList = new ArrayList<String>(new LinkedHashSet<String>(familyHistoryList));
+		    familyHistoryList.removeAll(request.getRemoveDiseases());
+		    historyCollection.setFamilyhistory(familyHistoryList);
+		} else {
+		    familyHistoryList = new ArrayList<String>();
+		    familyHistoryList.addAll(request.getAddDiseases());
+		    familyHistoryList.removeAll(request.getRemoveDiseases());
+		    historyCollection.setFamilyhistory(familyHistoryList);
+		}
+	    } else {
+		historyCollection = new HistoryCollection(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId());
+		List<String> familyHistoryList = new ArrayList<String>();
+		familyHistoryList.addAll(request.getAddDiseases());
+		familyHistoryList.removeAll(request.getRemoveDiseases());
+		historyCollection.setFamilyhistory(familyHistoryList);
+	    }
+	    if (checkIfHistoryRemovedCompletely(historyCollection)) {
+		historyRepository.delete(historyCollection.getId());
+	    } else {
+		historyRepository.save(historyCollection);
+	    }
+
+	    response = true;
+
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+
+	}
+	return response;
     }
 
 }

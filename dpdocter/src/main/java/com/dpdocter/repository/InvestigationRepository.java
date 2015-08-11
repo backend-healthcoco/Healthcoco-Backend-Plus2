@@ -22,8 +22,8 @@ public interface InvestigationRepository extends MongoRepository<InvestigationCo
     List<InvestigationCollection> findInvestigations(String doctorId, Date date, boolean isDeleted, Sort sort);
 
     @Query("{'createdTime': {'$gte': ?0}}")
-	List<InvestigationCollection> findInvestigations(Date date, Sort sort);
+    List<InvestigationCollection> findInvestigations(Date date, Sort sort);
 
     @Query("{'createdTime': {'$gte': ?0}, 'isDeleted': ?1}")
-	List<InvestigationCollection> findInvestigations(Date date, boolean b, Sort sort);
+    List<InvestigationCollection> findInvestigations(Date date, boolean b, Sort sort);
 }

@@ -202,15 +202,15 @@ public interface PathProxy {
 	public static final String GET_DIAGRAMS_ISDELETED = "getDiagrams/{doctorId}/{createdTime}/{isDeleted}";
 
 	public static final String GET_GLOBAL_COMPLAINTS = "getGlobalComplaints/{createdTime}";
-	
+
 	public static final String GET_GLOBAL_INVESTIGATIONS = "getGlobalInvestigations/{createdTime}";
-	
+
 	public static final String GET_GLOBAL_OBSERVATIONS = "getGlobalObservations/{createdTime}";
-	
+
 	public static final String GET_GLOBAL_DIAGNOSIS = "getGlobalDiagnosis/{createdTime}";
-	
+
 	public static final String GET_GLOBAL_NOTES = "getGlobalNotes/{createdTime}";
-	
+
 	public static final String GET_GLOBAL_DIAGRAMS = "getGlobalDiagrams/{createdTime}";
 
     }
@@ -447,6 +447,10 @@ public interface PathProxy {
 	public static final String ASSIGN_MEDICAL_HISTORY = "assignMedicalHistory/{diseaseId}/{patientId}/{doctorId}/{hospitalId}/{locationId}";
 
 	public static final String ASSIGN_FAMILY_HISTORY = "assignFamilyHistory/{diseaseId}/{patientId}/{doctorId}/{hospitalId}/{locationId}";
+
+	public static final String HANDLE_MEDICAL_HISTORY = "medicalHistory";
+
+	public static final String HANDLE_FAMILY_HISTORY = "familyHistory";
 
 	public static final String REMOVE_REPORTS = "removeReports/{reportId}/{patientId}/{doctorId}/{hospitalId}/{locationId}";
 
