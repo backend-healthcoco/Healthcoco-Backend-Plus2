@@ -82,6 +82,8 @@ public interface PathProxy {
 	public static final String IMPORT_CONTACTS = "/doctorContacts/importContacts";
 
 	public static final String EXPORT_CONTACTS = "doctorContacts/exportContacts";
+	
+	public static final String ADD_GROUP_TO_PATIENT = "/patient/addgroup";
     }
 
     public static final String REGISTRATION_BASE_URL = BASE_URL + "/register";

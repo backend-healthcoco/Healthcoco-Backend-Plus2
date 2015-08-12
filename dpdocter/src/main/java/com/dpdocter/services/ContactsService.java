@@ -8,6 +8,7 @@ import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.request.ExportContactsRequest;
 import com.dpdocter.request.GetDoctorContactsRequest;
 import com.dpdocter.request.ImportContactsRequest;
+import com.dpdocter.request.PatientGroupAddEditRequest;
 import com.dpdocter.request.SearchRequest;
 
 public interface ContactsService {
@@ -39,5 +40,7 @@ public interface ContactsService {
     List<PatientCard> getDoctorContacts(String doctorId, String createdTime, boolean isDeleted);
 
     List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted);
+
+	PatientGroupAddEditRequest addGroupToPatient(PatientGroupAddEditRequest request);
 
 }

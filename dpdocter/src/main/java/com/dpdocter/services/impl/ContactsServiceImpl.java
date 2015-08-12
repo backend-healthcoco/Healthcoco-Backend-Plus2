@@ -47,6 +47,7 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.ExportContactsRequest;
 import com.dpdocter.request.GetDoctorContactsRequest;
 import com.dpdocter.request.ImportContactsRequest;
+import com.dpdocter.request.PatientGroupAddEditRequest;
 import com.dpdocter.request.SearchRequest;
 import com.dpdocter.services.ContactsService;
 import com.dpdocter.services.FileManager;
@@ -559,4 +560,29 @@ public class ContactsServiceImpl implements ContactsService {
 	return registeredPatientDetails;
     }
 
+	@Override
+	public PatientGroupAddEditRequest addGroupToPatient(PatientGroupAddEditRequest request) {
+		PatientGroupAddEditRequest response = new PatientGroupAddEditRequest();
+	try {
+		if (request.getGroupIds() != null) {
+			List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(request.getPatientId());
+			if (patientGroupCollections != null) {
+			    for (PatientGroupCollection patientGroupCollection : patientGroupCollections) {
+				patientGroupRepository.delete(patientGroupCollection);
+			    }
+			}
+			for (String group : request.getGroupIds()) {
+			    PatientGroupCollection patientGroupCollection = new PatientGroupCollection();
+			    patientGroupCollection.setGroupId(group);
+			    patientGroupCollection.setPatientId(request.getPatientId());
+			    patientGroupRepository.save(patientGroupCollection);
+			}
+			BeanUtil.map(request, response);
+		}
+	}catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return response;
+ }
 }
