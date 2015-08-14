@@ -577,6 +577,6 @@ public interface PathProxy {
     public interface SolrRegistrationUrls {
 	public static final String SEARCH_PATIENT = "searchPatient/{doctorId}/{locationId}/{hospitalId}/{searchTerm}";
 
-	public static final String SEARCH_PATIENT_ADV = "searchPatient/{doctorId}/{locationId}/{hospitalId}/{searchType}/{searchValue}";
+	public static final String SEARCH_PATIENT_ADV = "searchPatient";
     }
 }

@@ -11,11 +11,10 @@ import org.springframework.stereotype.Service;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.solr.beans.AdvancedSearch;
+import com.dpdocter.solr.beans.AdvancedSearchParameter;
 import com.dpdocter.solr.document.SolrPatientDocument;
-import com.dpdocter.solr.enums.AdvancedSearchType;
 import com.dpdocter.solr.repository.SolrPatientRepository;
 import com.dpdocter.solr.services.SolrRegistrationService;
-
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -84,6 +83,8 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	    Criteria advancedCriteria = createAdvancedSearchCriteria(request);
 
 	    SimpleQuery query = new SimpleQuery(advancedCriteria);
+
+	    solrTemplate.setSolrCore("patients");
 	    response = solrTemplate.queryForPage(query, SolrPatientDocument.class).getContent();
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -99,23 +100,21 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 
 	Criteria advancedCriteria = Criteria.where("doctorId").is(doctorId).and("locationId").is(locationId).and("hospitalId").is(hospitalId);
 
-	if (request.getSearchTypes() != null && request.getSearchValues() != null) {
-	    for (int i = 0; i < request.getSearchValues().size(); i++) {
-		String searchValue = request.getSearchValues().get(i);
-		if (!DPDoctorUtils.anyStringEmpty(searchValue)) {
-		    String searchType = request.getSearchTypes().get(i).getSearchType();
+	if (request.getSearchParameters() != null && !request.getSearchParameters().isEmpty()) {
+	    for (AdvancedSearchParameter searchParameter : request.getSearchParameters()) {
+		String searchValue = searchParameter.getSearchValue();
+		String searchType = searchParameter.getSearchType().getSearchType();
+		if (!DPDoctorUtils.anyStringEmpty(searchValue, searchType)) {
 		    if (advancedCriteria == null) {
 			advancedCriteria = new Criteria(searchType).contains(searchValue);
 		    } else {
 			advancedCriteria = advancedCriteria.and(searchType).contains(searchValue);
 		    }
-
 		}
 	    }
 	}
 
 	return advancedCriteria;
-
     }
 
     @Override

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -16,10 +17,8 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.solr.beans.AdvancedSearch;
 import com.dpdocter.solr.document.SolrPatientDocument;
-import com.dpdocter.solr.enums.AdvancedSearchType;
 import com.dpdocter.solr.services.SolrRegistrationService;
 import com.dpdocter.webservices.PathProxy;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -111,7 +110,7 @@ public class SolrRegistrationApi {
     }*/
 
     @Path(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT_ADV)
-    @GET
+    @POST
     public Response<SolrPatientDocument> searchPatient(AdvancedSearch request) {
 	List<SolrPatientDocument> patients = null;
 

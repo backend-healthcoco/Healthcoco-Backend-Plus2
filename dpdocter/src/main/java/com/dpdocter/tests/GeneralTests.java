@@ -1,14 +1,26 @@
 package com.dpdocter.tests;
 
-import com.dpdocter.request.LoginRequest;
+import java.util.Arrays;
+
+import com.dpdocter.solr.beans.AdvancedSearch;
+import com.dpdocter.solr.beans.AdvancedSearchParameter;
+import com.dpdocter.solr.enums.AdvancedSearchType;
 
 public class GeneralTests {
     public static void main(String args[]) {
-	LoginRequest request = new LoginRequest();
+	AdvancedSearch advancedSearch = new AdvancedSearch();
 
-	request.setPassword("DRPassword123");
-	request.setUsername("varunk2006@gmail.com");
+	advancedSearch.setDoctorId("5566220cb732a94e37e2d0ac");
+	advancedSearch.setLocationId("555260322736b2b121087651");
+	advancedSearch.setHospitalId("5525ef96e4b077dfc16836a0");
 
-	System.out.println(Converter.ObjectToJSON(request));
+	AdvancedSearchParameter advancedSearchParameter = new AdvancedSearchParameter();
+
+	advancedSearchParameter.setSearchType(AdvancedSearchType.FIRST_NAME);
+	advancedSearchParameter.setSearchValue("isank");
+
+	advancedSearch.setSearchParameters(Arrays.asList(advancedSearchParameter));
+
+	System.out.println(Converter.ObjectToJSON(advancedSearch));
     }
 }

@@ -2,8 +2,6 @@ package com.dpdocter.solr.beans;
 
 import java.util.List;
 
-import com.dpdocter.solr.enums.AdvancedSearchType;
-
 public class AdvancedSearch {
     private String doctorId;
 
@@ -11,9 +9,7 @@ public class AdvancedSearch {
 
     private String hospitalId;
 
-    private List<AdvancedSearchType> searchTypes;
-
-    private List<String> searchValues;
+    private List<AdvancedSearchParameter> searchParameters;
 
     public String getDoctorId() {
 	return doctorId;
@@ -39,26 +35,18 @@ public class AdvancedSearch {
 	this.hospitalId = hospitalId;
     }
 
-    public List<AdvancedSearchType> getSearchTypes() {
-	return searchTypes;
+    public List<AdvancedSearchParameter> getSearchParameters() {
+	return searchParameters;
     }
 
-    public void setSearchTypes(List<AdvancedSearchType> searchTypes) {
-	this.searchTypes = searchTypes;
-    }
-
-    public List<String> getSearchValues() {
-	return searchValues;
-    }
-
-    public void setSearchValues(List<String> searchValues) {
-	this.searchValues = searchValues;
+    public void setSearchParameters(List<AdvancedSearchParameter> searchParameters) {
+	this.searchParameters = searchParameters;
     }
 
     @Override
     public String toString() {
-	return "AdvancedSearch [doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", searchTypes=" + searchTypes
-		+ ", searchValues=" + searchValues + "]";
+	return "AdvancedSearch [doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", searchParameters=" + searchParameters
+		+ "]";
     }
 
 }
