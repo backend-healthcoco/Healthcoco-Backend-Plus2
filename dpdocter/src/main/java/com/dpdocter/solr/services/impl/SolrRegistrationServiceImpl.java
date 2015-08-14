@@ -3,18 +3,28 @@ package com.dpdocter.solr.services.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.solr.core.SolrTemplate;
+import org.springframework.data.solr.core.query.Criteria;
+import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.solr.beans.AdvancedSearch;
 import com.dpdocter.solr.document.SolrPatientDocument;
+import com.dpdocter.solr.enums.AdvancedSearchType;
 import com.dpdocter.solr.repository.SolrPatientRepository;
 import com.dpdocter.solr.services.SolrRegistrationService;
+
+import common.util.web.DPDoctorUtils;
 
 @Service
 public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     @Autowired
     private SolrPatientRepository solrPatientRepository;
+
+    @Autowired
+    private SolrTemplate solrTemplate;
 
     @Override
     public boolean addPatient(SolrPatientDocument request) {
@@ -65,6 +75,47 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
 	}
 	return response;
+    }
+
+    @Override
+    public List<SolrPatientDocument> searchPatient(AdvancedSearch request) {
+	List<SolrPatientDocument> response = null;
+	try {
+	    Criteria advancedCriteria = createAdvancedSearchCriteria(request);
+
+	    SimpleQuery query = new SimpleQuery(advancedCriteria);
+	    response = solrTemplate.queryForPage(query, SolrPatientDocument.class).getContent();
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
+	}
+	return response;
+    }
+
+    private Criteria createAdvancedSearchCriteria(AdvancedSearch request) {
+	String doctorId = request.getDoctorId();
+	String locationId = request.getLocationId();
+	String hospitalId = request.getHospitalId();
+
+	Criteria advancedCriteria = Criteria.where("doctorId").is(doctorId).and("locationId").is(locationId).and("hospitalId").is(hospitalId);
+
+	if (request.getSearchTypes() != null && request.getSearchValues() != null) {
+	    for (int i = 0; i < request.getSearchValues().size(); i++) {
+		String searchValue = request.getSearchValues().get(i);
+		if (!DPDoctorUtils.anyStringEmpty(searchValue)) {
+		    String searchType = request.getSearchTypes().get(i).getSearchType();
+		    if (advancedCriteria == null) {
+			advancedCriteria = new Criteria(searchType).contains(searchValue);
+		    } else {
+			advancedCriteria = advancedCriteria.and(searchType).contains(searchValue);
+		    }
+
+		}
+	    }
+	}
+
+	return advancedCriteria;
+
     }
 
     @Override

@@ -14,9 +14,12 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.solr.beans.AdvancedSearch;
 import com.dpdocter.solr.document.SolrPatientDocument;
+import com.dpdocter.solr.enums.AdvancedSearchType;
 import com.dpdocter.solr.services.SolrRegistrationService;
 import com.dpdocter.webservices.PathProxy;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -41,66 +44,82 @@ public class SolrRegistrationApi {
 	return response;
     }
 
-    @Path(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT_ADV)
+    /*@Path(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT_ADV)
     @GET
     public Response<SolrPatientDocument> searchPatient(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "searchType") String searchType,
-	    @PathParam(value = "searchValue") String searchValue) {
+        @PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "searchType") String searchType,
+        @PathParam(value = "searchValue") String searchValue) {
 
+    List<SolrPatientDocument> patients = null;
+    if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, searchType, searchValue)) {
+        throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Location Id, Hospital Id, Search Type, Search Value Cannot Be Empty");
+    }
+
+    switch (searchType) {
+
+    case "firstName":
+        patients = solrRegistrationService.searchPatientByFirstName(doctorId, locationId, hospitalId, searchValue);
+        break;
+    case "middleName":
+        patients = solrRegistrationService.searchPatientByMiddleName(doctorId, locationId, hospitalId, searchValue);
+        break;
+    case "lastName":
+        patients = solrRegistrationService.searchPatientByLastName(doctorId, locationId, hospitalId, searchValue);
+        break;
+    case "PID":
+        patients = solrRegistrationService.searchPatientByPID(doctorId, locationId, hospitalId, searchValue);
+        break;
+    case "mobileNumber":
+        patients = solrRegistrationService.searchPatientByMobileNumber(doctorId, locationId, hospitalId, searchValue);
+        break;
+    case "emailAddress":
+        patients = solrRegistrationService.searchPatientByEmailAddress(doctorId, locationId, hospitalId, searchValue);
+        break;
+    case "userName":
+        patients = solrRegistrationService.searchPatientByUserName(doctorId, locationId, hospitalId, searchValue);
+        break;
+    case "city":
+        patients = solrRegistrationService.searchPatientByCity(doctorId, locationId, hospitalId, searchValue);
+        break;
+    case "locality":
+        patients = solrRegistrationService.searchPatientByLocality(doctorId, locationId, hospitalId, searchValue);
+        break;
+    case "bloodGroup":
+        patients = solrRegistrationService.searchPatientByBloodGroup(doctorId, locationId, hospitalId, searchValue);
+        break;
+    case "referredBy":
+        patients = solrRegistrationService.searchPatientByReferredBy(doctorId, locationId, hospitalId, searchValue);
+        break;
+    case "profession":
+        patients = solrRegistrationService.searchPatientByProfession(doctorId, locationId, hospitalId, searchValue);
+        break;
+    case "postalCode":
+        patients = solrRegistrationService.searchPatientByPostalCode(doctorId, locationId, hospitalId, searchValue);
+        break;
+    case "gender":
+        patients = solrRegistrationService.searchPatientByGender(doctorId, locationId, hospitalId, searchValue);
+        break;
+    default:
+        patients = solrRegistrationService.searchPatient(doctorId, locationId, hospitalId, searchValue);
+        break;
+
+    }
+
+    Response<SolrPatientDocument> response = new Response<SolrPatientDocument>();
+    response.setDataList(patients);
+    return response;
+    }*/
+
+    @Path(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT_ADV)
+    @GET
+    public Response<SolrPatientDocument> searchPatient(AdvancedSearch request) {
 	List<SolrPatientDocument> patients = null;
-	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, searchType, searchValue)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Location Id, Hospital Id, Search Type, Search Value Cannot Be Empty");
+
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Search Request Cannot Be Empty");
 	}
 
-	switch (searchType) {
-
-	case "firstName":
-	    patients = solrRegistrationService.searchPatientByFirstName(doctorId, locationId, hospitalId, searchValue);
-	    break;
-	case "middleName":
-	    patients = solrRegistrationService.searchPatientByMiddleName(doctorId, locationId, hospitalId, searchValue);
-	    break;
-	case "lastName":
-	    patients = solrRegistrationService.searchPatientByLastName(doctorId, locationId, hospitalId, searchValue);
-	    break;
-	case "PID":
-	    patients = solrRegistrationService.searchPatientByPID(doctorId, locationId, hospitalId, searchValue);
-	    break;
-	case "mobileNumber":
-	    patients = solrRegistrationService.searchPatientByMobileNumber(doctorId, locationId, hospitalId, searchValue);
-	    break;
-	case "emailAddress":
-	    patients = solrRegistrationService.searchPatientByEmailAddress(doctorId, locationId, hospitalId, searchValue);
-	    break;
-	case "userName":
-	    patients = solrRegistrationService.searchPatientByUserName(doctorId, locationId, hospitalId, searchValue);
-	    break;
-	case "city":
-	    patients = solrRegistrationService.searchPatientByCity(doctorId, locationId, hospitalId, searchValue);
-	    break;
-	case "locality":
-	    patients = solrRegistrationService.searchPatientByLocality(doctorId, locationId, hospitalId, searchValue);
-	    break;
-	case "bloodGroup":
-	    patients = solrRegistrationService.searchPatientByBloodGroup(doctorId, locationId, hospitalId, searchValue);
-	    break;
-	case "referredBy":
-	    patients = solrRegistrationService.searchPatientByReferredBy(doctorId, locationId, hospitalId, searchValue);
-	    break;
-	case "profession":
-	    patients = solrRegistrationService.searchPatientByProfession(doctorId, locationId, hospitalId, searchValue);
-	    break;
-	case "postalCode":
-	    patients = solrRegistrationService.searchPatientByPostalCode(doctorId, locationId, hospitalId, searchValue);
-	    break;
-	case "gender":
-	    patients = solrRegistrationService.searchPatientByGender(doctorId, locationId, hospitalId, searchValue);
-	    break;
-	default:
-	    patients = solrRegistrationService.searchPatient(doctorId, locationId, hospitalId, searchValue);
-	    break;
-
-	}
+	patients = solrRegistrationService.searchPatient(request);
 
 	Response<SolrPatientDocument> response = new Response<SolrPatientDocument>();
 	response.setDataList(patients);
