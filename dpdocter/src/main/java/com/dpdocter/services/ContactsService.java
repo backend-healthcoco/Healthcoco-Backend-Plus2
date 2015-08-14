@@ -41,6 +41,6 @@ public interface ContactsService {
 
     List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted);
 
-	PatientGroupAddEditRequest addGroupToPatient(PatientGroupAddEditRequest request);
+    PatientGroupAddEditRequest addGroupToPatient(PatientGroupAddEditRequest request);
 
 }

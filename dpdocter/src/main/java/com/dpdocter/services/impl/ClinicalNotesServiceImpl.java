@@ -1047,13 +1047,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    diagnosisCollections = diagnosisRepository
 			    .findDiagnosis(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
 
-		else diagnosisCollections = diagnosisRepository.findDiagnosis(doctorId, new Date(createdTimeStamp), isDeleted, new Sort(Sort.Direction.DESC,
+		else
+		    diagnosisCollections = diagnosisRepository.findDiagnosis(doctorId, new Date(createdTimeStamp), isDeleted, new Sort(Sort.Direction.DESC,
 			    "createdTime"));
 	    } else {
 		if (isDeleted)
 		    diagnosisCollections = diagnosisRepository.findDiagnosis(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
 
-		else diagnosisCollections = diagnosisRepository.findDiagnosis(new Date(createdTimeStamp), isDeleted,
+		else
+		    diagnosisCollections = diagnosisRepository.findDiagnosis(new Date(createdTimeStamp), isDeleted,
 			    new Sort(Sort.Direction.DESC, "createdTime"));
 
 	    }

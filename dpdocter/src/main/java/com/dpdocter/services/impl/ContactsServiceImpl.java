@@ -560,29 +560,29 @@ public class ContactsServiceImpl implements ContactsService {
 	return registeredPatientDetails;
     }
 
-	@Override
-	public PatientGroupAddEditRequest addGroupToPatient(PatientGroupAddEditRequest request) {
-		PatientGroupAddEditRequest response = new PatientGroupAddEditRequest();
+    @Override
+    public PatientGroupAddEditRequest addGroupToPatient(PatientGroupAddEditRequest request) {
+	PatientGroupAddEditRequest response = new PatientGroupAddEditRequest();
 	try {
-		if (request.getGroupIds() != null) {
-			List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(request.getPatientId());
-			if (patientGroupCollections != null) {
-			    for (PatientGroupCollection patientGroupCollection : patientGroupCollections) {
-				patientGroupRepository.delete(patientGroupCollection);
-			    }
-			}
-			for (String group : request.getGroupIds()) {
-			    PatientGroupCollection patientGroupCollection = new PatientGroupCollection();
-			    patientGroupCollection.setGroupId(group);
-			    patientGroupCollection.setPatientId(request.getPatientId());
-			    patientGroupRepository.save(patientGroupCollection);
-			}
-			BeanUtil.map(request, response);
+	    if (request.getGroupIds() != null) {
+		List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(request.getPatientId());
+		if (patientGroupCollections != null) {
+		    for (PatientGroupCollection patientGroupCollection : patientGroupCollections) {
+			patientGroupRepository.delete(patientGroupCollection);
+		    }
 		}
-	}catch (Exception e) {
+		for (String group : request.getGroupIds()) {
+		    PatientGroupCollection patientGroupCollection = new PatientGroupCollection();
+		    patientGroupCollection.setGroupId(group);
+		    patientGroupCollection.setPatientId(request.getPatientId());
+		    patientGroupRepository.save(patientGroupCollection);
+		}
+		BeanUtil.map(request, response);
+	    }
+	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
- }
+    }
 }

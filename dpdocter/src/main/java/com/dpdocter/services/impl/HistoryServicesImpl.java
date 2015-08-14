@@ -3,6 +3,7 @@ package com.dpdocter.services.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -10,6 +11,8 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.ClinicalNotes;
@@ -70,6 +73,12 @@ public class HistoryServicesImpl implements HistoryServices {
 
     @Autowired
     private NotesRepository notesRepository;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    @Autowired
+    private MongoOperations mongoOperations;
 
     @Override
     public List<DiseaseAddEditResponse> addDiseases(List<DiseaseAddEditRequest> request) {
@@ -140,7 +149,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    report.setData(reportId);
 	    report.setDataType(HistoryFilter.REPORTS);
 	    // check if history for this patient is already added .
-	    historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientId(doctorId, locationId, hospitalId, patientId);
+	    historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
 
 		// check if reports are there in history.
@@ -187,7 +196,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    clinicalNote.setData(clinicalNotesId);
 	    clinicalNote.setDataType(HistoryFilter.CLINICAL_NOTES);
 	    // check if history for this patient is already added .
-	    historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientId(doctorId, locationId, hospitalId, patientId);
+	    historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
 		// check if clinical notes are there in history.
 		Collection<String> clinicalNotes = CollectionUtils.collect(historyCollection.getGeneralRecords(), new BeanToPropertyValueTransformer("data"));
@@ -234,7 +243,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    prescription.setData(prescriptionId);
 	    prescription.setDataType(HistoryFilter.PRESCRIPTIONS);
 	    // check if history for this patient is already added .
-	    historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientId(doctorId, locationId, hospitalId, patientId);
+	    historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
 		// check if prescription are there in history.
 		Collection<String> prescriptions = CollectionUtils.collect(historyCollection.getGeneralRecords(), new BeanToPropertyValueTransformer("data"));
@@ -277,7 +286,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	HistoryCollection historyCollection = null;
 	try {
 	    // check if history for this patient is already added .
-	    historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientId(doctorId, locationId, hospitalId, patientId);
+	    historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
 		// check if medicalHistory are there in history.
 		List<String> medicalHistoryList = historyCollection.getMedicalhistory();
@@ -317,7 +326,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	HistoryCollection historyCollection = null;
 	try {
 	    // check if history for this patient is already added .
-	    historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientId(doctorId, locationId, hospitalId, patientId);
+	    historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
 		// check if familyHistory are there in history.
 		List<String> familyHistoryList = historyCollection.getFamilyhistory();
@@ -356,7 +365,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	List<NotesCollection> notesCollections = null;
 	try {
 	    // check if history for this patient is already added .
-	    historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientId(doctorId, locationId, hospitalId, patientId);
+	    historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
 		// check if spetialNotes are there in history.
 		List<String> spetialNotesInHistory = historyCollection.getSpecialNotes();
@@ -397,7 +406,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	HistoryCollection historyCollection = null;
 	RecordsCollection recordsCollection = null;
 	try {
-	    historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientId(doctorId, locationId, hospitalId, patientId);
+	    historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
 		List<String> reports = (List<String>) CollectionUtils
 			.collect(historyCollection.getGeneralRecords(), new BeanToPropertyValueTransformer("data"));
@@ -436,7 +445,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	HistoryCollection historyCollection = null;
 	ClinicalNotesCollection clinicalNotesCollection = null;
 	try {
-	    historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientId(doctorId, locationId, hospitalId, patientId);
+	    historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
 		List<String> clinicalNotes = (List<String>) CollectionUtils.collect(historyCollection.getGeneralRecords(), new BeanToPropertyValueTransformer(
 			"data"));
@@ -476,7 +485,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	HistoryCollection historyCollection = null;
 	PrescriptionCollection prescriptionCollection = null;
 	try {
-	    historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientId(doctorId, locationId, hospitalId, patientId);
+	    historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
 		List<String> prescriptions = (List<String>) CollectionUtils.collect(historyCollection.getGeneralRecords(), new BeanToPropertyValueTransformer(
 			"data"));
@@ -515,7 +524,7 @@ public class HistoryServicesImpl implements HistoryServices {
     public boolean removeMedicalHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	try {
-	    historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientId(doctorId, locationId, hospitalId, patientId);
+	    historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
 		List<String> medicalHistory = historyCollection.getMedicalhistory();
 		if (medicalHistory != null) {
@@ -546,7 +555,7 @@ public class HistoryServicesImpl implements HistoryServices {
     public boolean removeFamilyHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	try {
-	    historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientId(doctorId, locationId, hospitalId, patientId);
+	    historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
 		List<String> familyHistory = historyCollection.getFamilyhistory();
 		if (familyHistory != null) {
@@ -613,17 +622,21 @@ public class HistoryServicesImpl implements HistoryServices {
 	HistoryDetailsResponse response = null;
 	try {
 	    HistoryCollection historyCollection = null;
+
 	    if (HistoryFilter.ALL.getFilter().equals(historyFilter)) {
-		historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientId(doctorId, locationId, hospitalId, patientId);
-	    } else if (HistoryFilter.REPORTS.getFilter().equals(historyFilter)) {
-		historyCollection = historyRepository
-			.findByDoctorIdLocationIdHospitalIdAndPatientIdFilterByReports(doctorId, locationId, hospitalId, patientId);
-	    } else if (HistoryFilter.PRESCRIPTIONS.getFilter().equals(historyFilter)) {
-		historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientIdFilterByPrescriptions(doctorId, locationId, hospitalId,
-			patientId);
-	    } else if (HistoryFilter.CLINICAL_NOTES.getFilter().equals(historyFilter)) {
-		historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientIdFilterByClinicalNotes(doctorId, locationId, hospitalId,
-			patientId);
+		historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
+	    } else {
+		historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
+		if (historyCollection.getGeneralRecords() != null && !historyCollection.getGeneralRecords().isEmpty()) {
+		    List<GeneralData> generalRecords = historyCollection.getGeneralRecords();
+		    for (Iterator<GeneralData> iterator = generalRecords.iterator(); iterator.hasNext();) {
+			GeneralData generalRecord = iterator.next();
+			if (!generalRecord.getDataType().toString().trim().equals(historyFilter.toString())) {
+			    iterator.remove();
+			}
+		    }
+		    historyCollection.setGeneralRecords(generalRecords);
+		}
 	    }
 
 	    if (historyCollection != null) {
@@ -667,7 +680,6 @@ public class HistoryServicesImpl implements HistoryServices {
 		    ClinicalNotes clinicalNote = clinicalNotesService.getNotesById(id.getData().toString());
 		    generalData.setData(clinicalNote);
 		    generalData.setDataType(HistoryFilter.CLINICAL_NOTES);
-		    details.add(generalData);
 		    break;
 		case PRESCRIPTIONS:
 		    Prescription prescription = prescriptionServices.getPrescriptionById(id.getData().toString());
@@ -698,13 +710,24 @@ public class HistoryServicesImpl implements HistoryServices {
 	try {
 	    List<HistoryCollection> historyCollections = null;
 	    if (HistoryFilter.ALL.getFilter().equals(historyFilter)) {
-		historyCollections = historyRepository.findByPatientId(patientId);
-	    } else if (HistoryFilter.REPORTS.getFilter().equals(historyFilter)) {
-		historyCollections = historyRepository.findByPatientIdFilterByReports(patientId);
-	    } else if (HistoryFilter.PRESCRIPTIONS.getFilter().equals(historyFilter)) {
-		historyCollections = historyRepository.findByPatientIdFilterByPrescriptions(patientId);
-	    } else if (HistoryFilter.CLINICAL_NOTES.getFilter().equals(historyFilter)) {
-		historyCollections = historyRepository.findByPatientIdFilterByClinicalNotes(patientId);
+		historyCollections = historyRepository.findAll(patientId);
+	    } else {
+		historyCollections = historyRepository.findAll(patientId);
+		if (historyCollections != null && !historyCollections.isEmpty()) {
+		    for (Iterator<HistoryCollection> collectionIterator = historyCollections.iterator(); collectionIterator.hasNext();) {
+			HistoryCollection historyCollection = collectionIterator.next();
+			if (historyCollection.getGeneralRecords() != null && !historyCollection.getGeneralRecords().isEmpty()) {
+			    List<GeneralData> generalRecords = historyCollection.getGeneralRecords();
+			    for (Iterator<GeneralData> iterator = generalRecords.iterator(); iterator.hasNext();) {
+				GeneralData generalRecord = iterator.next();
+				if (!generalRecord.getDataType().toString().trim().equals(historyFilter)) {
+				    iterator.remove();
+				}
+			    }
+			    historyCollection.setGeneralRecords(generalRecords);
+			}
+		    }
+		}
 	    }
 
 	    if (historyCollections != null) {
@@ -764,7 +787,12 @@ public class HistoryServicesImpl implements HistoryServices {
     public Integer getHistoryCount(String doctorId, String patientId, String locationId, String hospitalId) {
 	Integer historyCount = 0;
 	try {
-	    historyCount = historyRepository.getHistoryCount(doctorId, patientId, hospitalId, locationId);
+	    HistoryCollection historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
+	    if (historyCollection != null) {
+		if (historyCollection.getGeneralRecords() != null && !historyCollection.getGeneralRecords().isEmpty()) {
+		    historyCount = historyCollection.getGeneralRecords().size();
+		}
+	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting History Count");
@@ -777,8 +805,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	HistoryCollection historyCollection = null;
 	boolean response = false;
 	try {
-	    historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientId(request.getDoctorId(), request.getLocationId(),
-		    request.getHospitalId(), request.getPatientId());
+	    historyCollection = historyRepository.findOne(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId());
 	    if (historyCollection != null) {
 		List<String> medicalHistoryList = historyCollection.getMedicalhistory();
 		if (medicalHistoryList != null && !medicalHistoryList.isEmpty()) {
@@ -820,8 +847,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	HistoryCollection historyCollection = null;
 	boolean response = false;
 	try {
-	    historyCollection = historyRepository.findByDoctorIdLocationIdHospitalIdAndPatientId(request.getDoctorId(), request.getLocationId(),
-		    request.getHospitalId(), request.getPatientId());
+	    historyCollection = historyRepository.findOne(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId());
 	    if (historyCollection != null) {
 		List<String> familyHistoryList = historyCollection.getFamilyhistory();
 		if (familyHistoryList != null && !familyHistoryList.isEmpty()) {

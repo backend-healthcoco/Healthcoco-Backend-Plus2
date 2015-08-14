@@ -22,8 +22,8 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.ExportContactsRequest;
 import com.dpdocter.request.GetDoctorContactsRequest;
-import com.dpdocter.request.PatientGroupAddEditRequest;
 import com.dpdocter.request.ImportContactsRequest;
+import com.dpdocter.request.PatientGroupAddEditRequest;
 import com.dpdocter.services.ContactsService;
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -276,8 +276,8 @@ public class ContactsApi {
     @Path(value = PathProxy.ContactsUrls.ADD_GROUP_TO_PATIENT)
     @POST
     public Response<PatientGroupAddEditRequest> addGroupToPatient(PatientGroupAddEditRequest request) {
-    
-    PatientGroupAddEditRequest groups = contactsService.addGroupToPatient(request);
+
+	PatientGroupAddEditRequest groups = contactsService.addGroupToPatient(request);
 	Response<PatientGroupAddEditRequest> response = new Response<PatientGroupAddEditRequest>();
 	response.setData(groups);
 	return response;
