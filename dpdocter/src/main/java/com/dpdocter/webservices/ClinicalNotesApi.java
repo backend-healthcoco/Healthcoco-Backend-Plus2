@@ -573,4 +573,80 @@ public class ClinicalNotesApi {
 	return response;
     }
 
+    @Path(value = PathProxy.ClinicalNotesUrls.GET_CUSTOM_GLOBAL_COMPLAINTS)
+    @GET
+    public Response<Complaint> getCustomGlobalComplaints(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
+	List<Complaint> complaints = clinicalNotesService.getCustomGlobalComplaints(doctorId, createdTime, true);
+	Response<Complaint> response = new Response<Complaint>();
+	response.setDataList(complaints);
+	return response;
+    }
+
+    @Path(value = PathProxy.ClinicalNotesUrls.GET_CUSTOM_GLOBAL_COMPLAINTS_ISDELETED)
+    @GET
+    public Response<Complaint> getCustomGlobalComplaints(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
+	    @PathParam("isDeleted") boolean isDeleted) {
+	List<Complaint> complaints = clinicalNotesService.getCustomGlobalComplaints(doctorId, createdTime, isDeleted);
+	Response<Complaint> response = new Response<Complaint>();
+	response.setDataList(complaints);
+	return response;
+    }
+
+    @Path(value = PathProxy.ClinicalNotesUrls.GET_CUSTOM_GLOBAL_INVESTIGATIONS)
+    @GET
+    public Response<Investigation> getCustomGlobalInvestigations(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
+	List<Investigation> investigations = clinicalNotesService.getCustomGlobalInvestigations(doctorId, createdTime, true);
+	Response<Investigation> response = new Response<Investigation>();
+	response.setDataList(investigations);
+	return response;
+    }
+
+    @Path(value = PathProxy.ClinicalNotesUrls.GET_CUSTOM_GLOBAL_INVESTIGATIONS_ISDELETED)
+    @GET
+    public Response<Investigation> getCustomGlobalInvestigations(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
+	    @PathParam("isDeleted") boolean isDeleted) {
+	List<Investigation> investigations = clinicalNotesService.getCustomGlobalInvestigations(doctorId, createdTime, isDeleted);
+	Response<Investigation> response = new Response<Investigation>();
+	response.setDataList(investigations);
+	return response;
+    }
+
+    @Path(value = PathProxy.ClinicalNotesUrls.GET_CUSTOM_GLOBAL_OBSERVATIONS)
+    @GET
+    public Response<Observation> getCustomGlobalObservations(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
+	List<Observation> observations = clinicalNotesService.getCustomGlobalObservations(doctorId, createdTime, true);
+	Response<Observation> response = new Response<Observation>();
+	response.setDataList(observations);
+	return response;
+    }
+
+    @Path(value = PathProxy.ClinicalNotesUrls.GET_CUSTOM_GLOBAL_OBSERVATIONS_ISDELETED)
+    @GET
+    public Response<Observation> getCustomGlobalObservations(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
+	    @PathParam("isDeleted") boolean isDeleted) {
+	List<Observation> observations = clinicalNotesService.getCustomGlobalObservations(doctorId, createdTime, isDeleted);
+	Response<Observation> response = new Response<Observation>();
+	response.setDataList(observations);
+	return response;
+    }
+
+    @Path(value = PathProxy.ClinicalNotesUrls.GET_CUSTOM_GLOBAL_DIAGNOSIS)
+    @GET
+    public Response<Diagnoses> getCustomGlobalDiagnosis(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
+	List<Diagnoses> diagnosis = clinicalNotesService.getCustomGlobalDiagnosis(doctorId, createdTime, true);
+	Response<Diagnoses> response = new Response<Diagnoses>();
+	response.setDataList(diagnosis);
+	return response;
+    }
+
+    @Path(value = PathProxy.ClinicalNotesUrls.GET_CUSTOM_GLOBAL_DIAGNOSIS_ISDELETED)
+    @GET
+    public Response<Diagnoses> getCustomGlobalDiagnosis(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
+	    @PathParam("isDeleted") boolean isDeleted) {
+	List<Diagnoses> diagnosis = clinicalNotesService.getCustomGlobalDiagnosis(doctorId, createdTime, isDeleted);
+	Response<Diagnoses> response = new Response<Diagnoses>();
+	response.setDataList(diagnosis);
+	return response;
+    }
+
 }

@@ -17,6 +17,6 @@ public interface DiagramsRepository extends MongoRepository<DiagramsCollection, 
     @Query("{'doctorId': ?0, 'createdTime': {'$gte': ?1}, 'isDeleted': ?2}")
     List<DiagramsCollection> findDiagrams(String doctorId, Date date, boolean isDeleted, Sort sort);
 
-    @Query("{'createdTime': {'$gte': ?0}}")
+    @Query("{'doctorId': null , 'createdTime': {'$gte': ?0}}")
     List<DiagramsCollection> findGlobalDiagrams(Date date, Sort sort);
 }

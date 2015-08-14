@@ -77,4 +77,12 @@ public interface ClinicalNotesService {
 
     List<Diagram> getGlobalDiagrams(String createdTime);
 
+	List<Complaint> getCustomGlobalComplaints(String doctorId, String createdTime, boolean isDeleted);
+
+	List<Investigation> getCustomGlobalInvestigations(String doctorId, String createdTime, boolean isDeleted);
+
+	List<Observation> getCustomGlobalObservations(String doctorId, String createdTime, boolean isDeleted);
+
+	List<Diagnoses> getCustomGlobalDiagnosis(String doctorId, String createdTime, boolean isDeleted);
+
 }

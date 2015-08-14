@@ -215,6 +215,22 @@ public interface PathProxy {
 
 	public static final String GET_GLOBAL_DIAGRAMS = "getGlobalDiagrams/{createdTime}";
 
+	public static final String GET_CUSTOM_GLOBAL_COMPLAINTS = "getCustomGlobalComplaints/{doctorId}/{createdTime}";
+
+	public static final String GET_CUSTOM_GLOBAL_COMPLAINTS_ISDELETED = "getCustomGlobalComplaints/{doctorId}/{createdTime}/{isDeleted}";
+
+	public static final String GET_CUSTOM_GLOBAL_INVESTIGATIONS = "getCustomGlobalInvestigations/{doctorId}/{createdTime}";
+
+	public static final String GET_CUSTOM_GLOBAL_INVESTIGATIONS_ISDELETED = "getCustomGlobalInvestigations/{doctorId}/{createdTime}/{isDeleted}";
+
+	public static final String GET_CUSTOM_GLOBAL_OBSERVATIONS = "getCustomGlobalObservations/{doctorId}/{createdTime}";
+
+	public static final String GET_CUSTOM_GLOBAL_OBSERVATIONS_ISDELETED = "getCustomGlobalObservations/{doctorId}/{createdTime}/{isDeleted}";
+
+	public static final String GET_CUSTOM_GLOBAL_DIAGNOSIS = "getCustomGlobalDiagnosis/{doctorId}/{createdTime}";
+
+	public static final String GET_CUSTOM_GLOBAL_DIAGNOSIS_ISDELETED = "getCustomGlobalDiagnosis/{doctorId}/{createdTime}/{isDeleted}";
+
     }
 
     public static final String FORGOT_PASSWORD_BASE_URL = BASE_URL + "/forgotPassword";

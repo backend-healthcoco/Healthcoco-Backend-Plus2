@@ -286,11 +286,22 @@ public class ContactsServiceImpl implements ContactsService {
     public Boolean deleteGroup(String groupId) {
 	Boolean response = false;
 	GroupCollection groupCollection = null;
+	List<PatientGroupCollection> patientGroupCollection = null;
 	try {
 	    groupCollection = groupRepository.findOne(groupId);
 	    if (groupCollection != null) {
 		groupCollection.setDeleted(true);
 		groupCollection = groupRepository.save(groupCollection);
+		patientGroupCollection = patientGroupRepository.findByGroupId(groupCollection.getId());
+		if(patientGroupCollection != null){
+			for(PatientGroupCollection patientGroup : patientGroupCollection){
+				PatientCollection patientCollection=patientRepository.findOne(patientGroup.getPatientId());
+				patientCollection.setCreatedTime(new Date());
+				patientCollection = patientRepository.save(patientCollection);
+				patientGroupRepository.delete(patientGroup);
+			}
+			
+		}
 		response = true;
 	    } else {
 		throw new BusinessException(ServiceError.NotFound, "Drug Not Found");
@@ -560,24 +571,26 @@ public class ContactsServiceImpl implements ContactsService {
 	return registeredPatientDetails;
     }
 
-    @Override
-    public PatientGroupAddEditRequest addGroupToPatient(PatientGroupAddEditRequest request) {
-	PatientGroupAddEditRequest response = new PatientGroupAddEditRequest();
+	@Override
+	public PatientGroupAddEditRequest addGroupToPatient(PatientGroupAddEditRequest request) {
+		PatientGroupAddEditRequest response = new PatientGroupAddEditRequest();
+		PatientCollection patientCollection=patientRepository.findOne(request.getPatientId());
 	try {
-	    if (request.getGroupIds() != null) {
-		List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(request.getPatientId());
-		if (patientGroupCollections != null) {
-		    for (PatientGroupCollection patientGroupCollection : patientGroupCollections) {
-			patientGroupRepository.delete(patientGroupCollection);
-		    }
-		}
-		for (String group : request.getGroupIds()) {
-		    PatientGroupCollection patientGroupCollection = new PatientGroupCollection();
-		    patientGroupCollection.setGroupId(group);
-		    patientGroupCollection.setPatientId(request.getPatientId());
-		    patientGroupRepository.save(patientGroupCollection);
-		}
-		BeanUtil.map(request, response);
+		if (request.getGroupIds() != null) {
+			List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(request.getPatientId());
+			if (patientGroupCollections != null) {
+			    for (PatientGroupCollection patientGroupCollection : patientGroupCollections) {
+				patientGroupRepository.delete(patientGroupCollection);
+			    }
+			}
+			for (String group : request.getGroupIds()) {
+			    PatientGroupCollection patientGroupCollection = new PatientGroupCollection();
+			    patientGroupCollection.setGroupId(group);
+			    patientGroupCollection.setPatientId(request.getPatientId());
+			    patientGroupRepository.save(patientGroupCollection);
+			}
+			patientCollection.setCreatedTime(new Date());
+			BeanUtil.map(request, response);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();

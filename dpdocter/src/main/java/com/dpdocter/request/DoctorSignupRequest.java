@@ -1,5 +1,7 @@
 package com.dpdocter.request;
 
+import java.util.List;
+
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.FileDetails;
 
@@ -34,7 +36,7 @@ public class DoctorSignupRequest {
     private String imageUrl;
 
     // doctor details
-    private String specialization;
+    private List<String> specialization;
 
     // hospital details
     private String hospitalName;
@@ -148,11 +150,11 @@ public class DoctorSignupRequest {
 	this.phoneNumber = phoneNumber;
     }
 
-    public String getSpecialization() {
+    public List<String> getSpecialization() {
 	return specialization;
     }
 
-    public void setSpecialization(String specialization) {
+    public void setSpecialization(List<String> specialization) {
 	this.specialization = specialization;
     }
 
