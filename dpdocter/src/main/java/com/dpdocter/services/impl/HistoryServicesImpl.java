@@ -3,6 +3,7 @@ package com.dpdocter.services.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
@@ -617,6 +619,33 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
+	public List<DiseaseListResponse> getCustomGlobalDiseases(String doctorId, String createdTime, boolean isDeleted) {
+    	List<DiseaseListResponse> diseaseListResponses = null;
+    	List<DiseasesCollection> diseaseCollections = null;
+    	try {
+    		 long createdTimeStamp = Long.parseLong(createdTime);
+    		if (isDeleted)
+    			diseaseCollections = diseasesRepository.findGlobalCustomDiseases(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+    		else
+    			diseaseCollections = diseasesRepository.findGlobalCustomDiseases(doctorId, new Date(createdTimeStamp), isDeleted, new Sort(Sort.Direction.DESC, "createdTime"));
+    	    
+    	    if (diseaseCollections != null) {
+    		diseaseListResponses = new ArrayList<DiseaseListResponse>();
+    		for (DiseasesCollection diseasesCollection : diseaseCollections) {
+    		    DiseaseListResponse diseaseListResponse = new DiseaseListResponse(diseasesCollection.getId(), diseasesCollection.getDisease(),
+    			    diseasesCollection.getDescription());
+    		    diseaseListResponses.add(diseaseListResponse);
+
+    		}
+    	    }
+    	} catch (Exception e) {
+    	    e.printStackTrace();
+    	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+    	}
+    	return diseaseListResponses;
+	}
+
+    @Override
     public HistoryDetailsResponse getPatientHistoryDetailsWithoutVerifiedOTP(String patientId, String doctorId, String hospitalId, String locationId,
 	    String historyFilter) {
 	HistoryDetailsResponse response = null;
@@ -884,4 +913,41 @@ public class HistoryServicesImpl implements HistoryServices {
 	return response;
     }
 
+	@Override
+	public List<DiseaseListResponse> getPatientMedicalHistory(String patientId, String doctorId, String hospitalId,String locationId) {
+		List<DiseaseListResponse> response = null; 
+		HistoryCollection historyCollection = null;
+
+		try{
+			historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
+			List<String> medicalHistoryIds = historyCollection.getMedicalhistory();
+			if (medicalHistoryIds != null) {
+				response = getDiseasesByIds(medicalHistoryIds);
+			}
+		}
+	 catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return response;
+	}
+
+	@Override
+	public List<DiseaseListResponse> getPatientFamilyHistory(String patientId, String doctorId, String hospitalId,String locationId) {
+		List<DiseaseListResponse> response = null; 
+		HistoryCollection historyCollection = null;
+
+		try{
+			historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
+			List<String> familyHistoryIds = historyCollection.getFamilyhistory();
+			if (familyHistoryIds != null) {
+				response = getDiseasesByIds(familyHistoryIds);
+			}
+		}
+	 catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return response;
+	}
 }

@@ -453,6 +453,10 @@ public interface PathProxy {
 	public static final String DELETE_DISEASE = "deleteDisease/{diseaseId}/{doctorId}/{hospitalId}/{locationId}";
 
 	public static final String GET_DISEASES = "getDiseases/{doctorId}/{hospitalId}/{locationId}";
+	
+	public static final String GET_CUSTOM_GLOBAL_DISEASES = "getCustomGlobalDiseases/{doctorId}/{createdTime}";
+	
+	public static final String GET_CUSTOM_GLOBAL_DISEASES_ISDELETED = "getCustomGlobalDiseases/{doctorId}/{createdTime}/{isDeleted}";
 
 	public static final String ADD_REPORT_TO_HISTORY = "addReportToHistory/{reportId}/{patientId}/{doctorId}/{hospitalId}/{locationId}";
 
@@ -467,8 +471,12 @@ public interface PathProxy {
 	public static final String ASSIGN_FAMILY_HISTORY = "assignFamilyHistory/{diseaseId}/{patientId}/{doctorId}/{hospitalId}/{locationId}";
 
 	public static final String HANDLE_MEDICAL_HISTORY = "medicalHistory";
+	
+	public static final String GET_MEDICAL_HISTORY = "getMedicalHistory/{patientId}/{doctorId}/{hospitalId}/{locationId}";
 
 	public static final String HANDLE_FAMILY_HISTORY = "familyHistory";
+	
+	public static final String GET_FAMILY_HISTORY = "getFamilyHistory/{patientId}/{doctorId}/{hospitalId}/{locationId}";
 
 	public static final String REMOVE_REPORTS = "removeReports/{reportId}/{patientId}/{doctorId}/{hospitalId}/{locationId}";
 

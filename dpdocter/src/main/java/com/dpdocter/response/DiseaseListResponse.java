@@ -13,7 +13,11 @@ public class DiseaseListResponse {
 	this.description = description;
     }
 
-    public String getId() {
+    public DiseaseListResponse() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public String getId() {
 	return id;
     }
 
