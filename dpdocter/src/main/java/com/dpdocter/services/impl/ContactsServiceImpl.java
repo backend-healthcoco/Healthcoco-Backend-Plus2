@@ -147,22 +147,6 @@ public class ContactsServiceImpl implements ContactsService {
 	    }
 	    @SuppressWarnings("unchecked")
 	    Collection<String> patientIds = CollectionUtils.collect(doctorContactCollections, new BeanToPropertyValueTransformer("contactId"));
-
-	    /*
-	     * List<PatientGroupCollection> patientGroupCollections =
-	     * (List<PatientGroupCollection>) patientGroupRepository
-	     * .findByPatientId((List<String>) patientIds);
-	     */
-
-	    /*
-	     * @SuppressWarnings("unchecked") List<String> groupIds =
-	     * (List<String>) CollectionUtils.collect(patientGroupCollections,
-	     * new BeanToPropertyValueTransformer("groupId"));
-	     * 
-	     * doctorContactCollections = filterContactsByGroup(groupIds,
-	     * doctorContactCollections);
-	     */
-
 	    List<PatientCard> patientCards = getSpecifiedPatientCards(patientIds, doctorId, null, null);
 	    return patientCards;
 	} catch (Exception e) {
@@ -172,10 +156,9 @@ public class ContactsServiceImpl implements ContactsService {
 
     }
 
-    private List<PatientCard> getSpecifiedPatientCards(Collection<String> patientIds, String doctorId, String locationId, String hospitalId) throws Exception {
+    public List<PatientCard> getSpecifiedPatientCards(Collection<String> patientIds, String doctorId, String locationId, String hospitalId) throws Exception {
 	// getting patients from patient ids
 	Query queryForGettingPatientsFromPatientIds = new Query();
-	// queryForGettingPatientsFromPatientIds.addCriteria(Criteria.where("id").in(patientIds).andOperator(Criteria.where("doctorId").is(doctorId)).andOperator(Criteria.where("locationId").is(locationId)).andOperator(Criteria.where("hospitalId").is(hospitalId)));
 	if (!DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId) && patientIds != null && !patientIds.isEmpty()) {
 	    queryForGettingPatientsFromPatientIds.addCriteria(Criteria
 		    .where("id")

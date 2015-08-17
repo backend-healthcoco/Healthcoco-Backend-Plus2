@@ -1,8 +1,6 @@
 package com.dpdocter.services;
 
-import java.util.List;
-
-import com.dpdocter.beans.Patient;
+import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.PatientTrack;
 import com.dpdocter.enums.VisitedFor;
 
@@ -13,7 +11,7 @@ public interface PatientTrackService {
 
     boolean addRecord(String patientId, String doctorId, String locationId, String hospitalId, VisitedFor visitedFor);
 
-    List<Patient> recentlyVisited(String doctorId, String locationId, String hospitalId, int page, int size);
+    DoctorContactsResponse recentlyVisited(String doctorId, String locationId, String hospitalId, int page, int size);
 
-    List<Patient> mostVisited(String doctorId, String locationId, String hospitalId, int page, int size);
+    DoctorContactsResponse mostVisited(String doctorId, String locationId, String hospitalId, int page, int size);
 }

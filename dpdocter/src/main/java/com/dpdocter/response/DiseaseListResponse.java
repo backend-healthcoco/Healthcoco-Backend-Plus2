@@ -14,10 +14,10 @@ public class DiseaseListResponse {
     }
 
     public DiseaseListResponse() {
-		// TODO Auto-generated constructor stub
-	}
+	// TODO Auto-generated constructor stub
+    }
 
-	public String getId() {
+    public String getId() {
 	return id;
     }
 

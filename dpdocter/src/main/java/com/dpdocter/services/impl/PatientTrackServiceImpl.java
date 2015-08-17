@@ -1,6 +1,5 @@
 package com.dpdocter.services.impl;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -16,9 +15,9 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
-import com.dpdocter.beans.Patient;
+import com.dpdocter.beans.DoctorContactsResponse;
+import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.PatientTrack;
-import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientTrackCollection;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
@@ -36,6 +35,9 @@ public class PatientTrackServiceImpl implements PatientTrackService {
 
     @Autowired
     private PatientRepository patientRepository;
+
+    @Autowired
+    private ContactsServiceImpl contactsService;
 
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -95,53 +97,57 @@ public class PatientTrackServiceImpl implements PatientTrackService {
     }
 
     @Override
-    public List<Patient> recentlyVisited(String doctorId, String locationId, String hospitalId, int page, int size) {
-	List<Patient> patients = null;
+    public DoctorContactsResponse recentlyVisited(String doctorId, String locationId, String hospitalId, int page, int size) {
+	DoctorContactsResponse response = null;
 	try {
 	    List<PatientTrackCollection> patientTrackCollections = patientTrackRepository.findAll(doctorId, locationId, hospitalId, new PageRequest(page, size,
 		    Direction.DESC, "visitedTime"));
 	    if (patientTrackCollections != null && !patientTrackCollections.isEmpty()) {
 		@SuppressWarnings("unchecked")
 		List<String> patientIds = (List<String>) CollectionUtils.collect(patientTrackCollections, new BeanToPropertyValueTransformer("patientId"));
-		List<PatientCollection> patientCollections = patientRepository.findByUserId(patientIds);
-		if (patientCollections != null) {
-		    patients = new ArrayList<Patient>();
-		    BeanUtil.map(patientCollections, patients);
-		}
+		List<PatientCard> patientCards = contactsService.getSpecifiedPatientCards(patientIds, doctorId, locationId, hospitalId);
+		int totalSize = patientTrackRepository.count(doctorId, locationId, hospitalId);
+		response = new DoctorContactsResponse();
+		response.setPatientCards(patientCards);
+		response.setTotalSize(totalSize);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Unknown, "Error while getting recently visited patients record : " + e.getCause().getMessage());
 	}
-	return patients;
+	return response;
     }
 
     @Override
-    public List<Patient> mostVisited(String doctorId, String locationId, String hospitalId, int page, int size) {
-	List<Patient> patients = null;
+    public DoctorContactsResponse mostVisited(String doctorId, String locationId, String hospitalId, int page, int size) {
+	DoctorContactsResponse response = null;
 	try {
 	    Criteria matchCriteria = Criteria.where("doctorId").is(doctorId).and("locationId").is(locationId).and("hospitalId").is(hospitalId);
 	    Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(matchCriteria), Aggregation.group("patientId").count().as("total"),
 		    Aggregation.project("total").and("patientId").previousOperation(), Aggregation.sort(Sort.Direction.DESC, "total"),
-		    Aggregation.skip(page * size), Aggregation.limit(size + 1));
+		    Aggregation.skip(page * size), Aggregation.limit(size));
+
+	    Aggregation aggregationCount = Aggregation.newAggregation(Aggregation.match(matchCriteria), Aggregation.group("patientId").count().as("total"),
+		    Aggregation.project("total").and("patientId").previousOperation(), Aggregation.sort(Sort.Direction.DESC, "total"));
 
 	    AggregationResults<PatientTrackCollection> aggregationResults = mongoTemplate.aggregate(aggregation, PatientTrackCollection.class,
 		    PatientTrackCollection.class);
 
 	    List<PatientTrackCollection> patientTrackCollections = aggregationResults.getMappedResults();
+
 	    if (patientTrackCollections != null && !patientTrackCollections.isEmpty()) {
 		@SuppressWarnings("unchecked")
 		List<String> patientIds = (List<String>) CollectionUtils.collect(patientTrackCollections, new BeanToPropertyValueTransformer("patientId"));
-		List<PatientCollection> patientCollections = patientRepository.findByUserId(patientIds);
-		if (patientCollections != null) {
-		    patients = new ArrayList<Patient>();
-		    BeanUtil.map(patientCollections, patients);
-		}
+		List<PatientCard> patientCards = contactsService.getSpecifiedPatientCards(patientIds, doctorId, locationId, hospitalId);
+		int totalSize = mongoTemplate.aggregate(aggregationCount, PatientTrackCollection.class, PatientTrackCollection.class).getMappedResults().size();
+		response = new DoctorContactsResponse();
+		response.setPatientCards(patientCards);
+		response.setTotalSize(totalSize);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Unknown, "Error while getting most visited patients record : " + e.getCause().getMessage());
 	}
-	return patients;
+	return response;
     }
 }

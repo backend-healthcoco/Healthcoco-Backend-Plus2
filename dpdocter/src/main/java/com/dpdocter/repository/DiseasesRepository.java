@@ -15,9 +15,9 @@ public interface DiseasesRepository extends MongoRepository<DiseasesCollection, 
     List<DiseasesCollection> findDiseases(String doctorId, String locationId, String hospitalId);
 
     @Query("{'$or': [{'doctorId': ?0, 'createdTime': {'$gte': ?1}} , {'doctorId': null, 'createdTime': {'$gte': ?1}}]}")
-	List<DiseasesCollection> findGlobalCustomDiseases(String doctorId, Date date, Sort sort);
+    List<DiseasesCollection> findGlobalCustomDiseases(String doctorId, Date date, Sort sort);
 
     @Query("{'$or': [{'doctorId': ?0, 'createdTime': {'$gte': ?1}, 'isDeleted': ?2}},{'doctorId': null, 'createdTime': {'$gte': ?1},'isDeleted': ?2}]}")
-	List<DiseasesCollection> findGlobalCustomDiseases(String doctorId, Date date, boolean isDeleted, Sort sort);
+    List<DiseasesCollection> findGlobalCustomDiseases(String doctorId, Date date, boolean isDeleted, Sort sort);
 
 }

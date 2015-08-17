@@ -19,7 +19,7 @@ public interface HistoryServices {
     List<DiseaseListResponse> getDiseases(String doctorId, String hospitalId, String locationId);
 
     List<DiseaseListResponse> getCustomGlobalDiseases(String doctorId, String createdTime, boolean isDeleted);
-    
+
     List<DiseaseListResponse> getDiseasesByIds(List<String> diseasesIds);
 
     boolean addReportToHistory(String reportId, String patientId, String doctorId, String hospitalId, String locationId);
@@ -56,8 +56,8 @@ public interface HistoryServices {
 
     boolean handleFamilyHistory(MedicalHistoryHandler request);
 
-    List<DiseaseListResponse> getPatientMedicalHistory(String patientId, String doctorId, String hospitalId,String locationId);
+    List<DiseaseListResponse> getPatientMedicalHistory(String patientId, String doctorId, String hospitalId, String locationId);
 
-	List<DiseaseListResponse> getPatientFamilyHistory(String patientId, String doctorId, String hospitalId,String locationId);
-    
+    List<DiseaseListResponse> getPatientFamilyHistory(String patientId, String doctorId, String hospitalId, String locationId);
+
 }
