@@ -1279,6 +1279,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			prescriptionItemDetail.setDrug(drug);
 			prescriptionItemDetails.add(prescriptionItemDetail);
 		    }
+		    prescription.setItems(prescriptionItemDetails);
 		}
 	    } else {
 		throw new BusinessException(ServiceError.NotFound, "Prescription Not Found");

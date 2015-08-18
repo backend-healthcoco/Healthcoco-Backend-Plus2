@@ -1,21 +1,39 @@
 package com.dpdocter.response;
 
-public class DiseaseListResponse {
+import java.util.Date;
+
+import com.dpdocter.collections.GenericCollection;
+
+public class DiseaseListResponse extends GenericCollection{
     private String id;
 
     private String disease;
 
     private String description;
 
-    public DiseaseListResponse(String id, String disease, String description) {
-	this.id = id;
-	this.disease = disease;
-	this.description = description;
-    }
+    private String doctorId;
+
+    private String locationId;
+
+    private String hospitalId;
+
+    private boolean isDeleted = false;
+
 
     public DiseaseListResponse() {
 	// TODO Auto-generated constructor stub
     }
+
+    public DiseaseListResponse(String id, String disease, String description, String doctorId, String locationId,String hospitalId, boolean isDeleted, Date createdTime) {
+		this.id = id;
+		this.disease = disease;
+		this.description = description;
+		this.doctorId = doctorId;
+		this.locationId = locationId;
+		this.hospitalId = hospitalId;
+		this.isDeleted = isDeleted;
+		super.setCreatedTime(createdTime);
+	}
 
     public String getId() {
 	return id;
@@ -41,9 +59,44 @@ public class DiseaseListResponse {
 	this.description = description;
     }
 
-    @Override
-    public String toString() {
-	return "DiseaseListResponse [id=" + id + ", disease=" + disease + ", description=" + description + "]";
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public boolean isDeleted() {
+		return isDeleted;
+	}
+
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
+	@Override
+	public String toString() {
+		return "DiseaseListResponse [id=" + id + ", disease=" + disease + ", description=" + description + ", doctorId="
+				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", isDeleted=" + isDeleted
+				+ "]";
+	}
+
 
 }

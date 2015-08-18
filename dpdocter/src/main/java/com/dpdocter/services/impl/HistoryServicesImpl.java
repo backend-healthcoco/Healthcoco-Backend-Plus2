@@ -88,6 +88,10 @@ public class HistoryServicesImpl implements HistoryServices {
 	List<DiseasesCollection> diseases = new ArrayList<DiseasesCollection>();
 	BeanUtil.map(request, diseases);
 	try {
+		 for (Iterator<DiseasesCollection> iterator = diseases.iterator(); iterator.hasNext();) {
+			 DiseasesCollection diseasesCollection = iterator.next();
+			 diseasesCollection.setCreatedTime(new Date());
+		 }
 	    diseases = diseasesRepository.save(diseases);
 	    response = new ArrayList<DiseaseAddEditResponse>();
 	    BeanUtil.map(diseases, response);
@@ -606,7 +610,8 @@ public class HistoryServicesImpl implements HistoryServices {
 		diseaseListResponses = new ArrayList<DiseaseListResponse>();
 		for (DiseasesCollection diseasesCollection : diseaseCollections) {
 		    DiseaseListResponse diseaseListResponse = new DiseaseListResponse(diseasesCollection.getId(), diseasesCollection.getDisease(),
-			    diseasesCollection.getDescription());
+			    diseasesCollection.getDescription(),  diseasesCollection.getDoctorId(), diseasesCollection.getLocationId(), 
+			    diseasesCollection.getHospitalId(), diseasesCollection.isDeleted(), diseasesCollection.getCreatedTime());
 		    diseaseListResponses.add(diseaseListResponse);
 
 		}
@@ -635,7 +640,8 @@ public class HistoryServicesImpl implements HistoryServices {
 		diseaseListResponses = new ArrayList<DiseaseListResponse>();
 		for (DiseasesCollection diseasesCollection : diseaseCollections) {
 		    DiseaseListResponse diseaseListResponse = new DiseaseListResponse(diseasesCollection.getId(), diseasesCollection.getDisease(),
-			    diseasesCollection.getDescription());
+				    diseasesCollection.getDescription(),  diseasesCollection.getDoctorId(), diseasesCollection.getLocationId(), 
+				    diseasesCollection.getHospitalId(), diseasesCollection.isDeleted(), diseasesCollection.getCreatedTime());
 		    diseaseListResponses.add(diseaseListResponse);
 
 		}
@@ -645,8 +651,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return diseaseListResponses;
-    }
-
+   }
     @Override
     public HistoryDetailsResponse getPatientHistoryDetailsWithoutVerifiedOTP(String patientId, String doctorId, String hospitalId, String locationId,
 	    String historyFilter) {
@@ -915,36 +920,27 @@ public class HistoryServicesImpl implements HistoryServices {
 	return response;
     }
 
-    @Override
-    public List<DiseaseListResponse> getPatientMedicalHistory(String patientId, String doctorId, String hospitalId, String locationId) {
-	List<DiseaseListResponse> response = null;
-	HistoryCollection historyCollection = null;
+	@Override
+	public HistoryDetailsResponse getMedicalAndFamilyHistory(String patientId, String doctorId, String hospitalId,String locationId) {
+		HistoryDetailsResponse response = null; 
+		HistoryCollection historyCollection = null;
 
-	try {
-	    historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
-	    List<String> medicalHistoryIds = historyCollection.getMedicalhistory();
-	    if (medicalHistoryIds != null) {
-		response = getDiseasesByIds(medicalHistoryIds);
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-	}
-	return response;
-    }
+		try{
+			historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
+			List<String> medicalHistoryIds = historyCollection.getMedicalhistory();
+			if (medicalHistoryIds != null) {
+			    List<DiseaseListResponse> medicalHistory = getDiseasesByIds(medicalHistoryIds);
+			    response.setMedicalhistory(medicalHistory);
+			}
 
-    @Override
-    public List<DiseaseListResponse> getPatientFamilyHistory(String patientId, String doctorId, String hospitalId, String locationId) {
-	List<DiseaseListResponse> response = null;
-	HistoryCollection historyCollection = null;
+			List<String> familyHistoryIds = historyCollection.getFamilyhistory();
+			if (familyHistoryIds != null) {
+			    List<DiseaseListResponse> familyHistory = getDiseasesByIds(medicalHistoryIds);
+			    response.setFamilyhistory(familyHistory);
+			}
 
-	try {
-	    historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
-	    List<String> familyHistoryIds = historyCollection.getFamilyhistory();
-	    if (familyHistoryIds != null) {
-		response = getDiseasesByIds(familyHistoryIds);
-	    }
-	} catch (Exception e) {
+		}
+	 catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}

@@ -22,7 +22,7 @@ public class PrescriptionAddEditResponse extends GenericCollection {
 
     private String prescriptionCode;
 
-    private boolean deleted;
+    private boolean isDeleted;
 
     public String getId() {
 	return id;
@@ -89,17 +89,17 @@ public class PrescriptionAddEditResponse extends GenericCollection {
     }
 
     public boolean isDeleted() {
-	return deleted;
+	return isDeleted;
     }
 
-    public void setDeleted(boolean deleted) {
-	this.deleted = deleted;
+    public void setDeleted(boolean isDeleted) {
+	this.isDeleted = isDeleted;
     }
 
     @Override
     public String toString() {
 	return "PrescriptionAddEditResponse [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-		+ hospitalId + ", items=" + items + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + ", deleted=" + deleted + "]";
+		+ hospitalId + ", items=" + items + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + ", isDeleted=" + isDeleted + "]";
     }
 
 }

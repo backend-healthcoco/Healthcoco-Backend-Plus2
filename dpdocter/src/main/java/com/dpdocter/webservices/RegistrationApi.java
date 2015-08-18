@@ -206,6 +206,20 @@ public class RegistrationApi {
 	return response;
     }
 
+    @Path(value = PathProxy.RegistrationUrls.GET_PATIENT_PID)
+    @GET
+    public Response<String> getPatientPID(@PathParam("patientId") String patientId) {
+
+	if (patientId == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.patientId is null");
+	}
+	
+	Response<String> response = new Response<String>();
+	String pid = registrationService.getPatientPID(patientId);
+	response.setData(pid);
+	return response;
+    }
+
     @Path(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_ID_GENERATOR_LOGIC)
     @GET
     public Response<Boolean> updatePatientInitialAndCounter(@PathParam("doctorId") String doctorId, @PathParam("patientInitial") String patientInitial,

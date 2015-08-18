@@ -30,7 +30,7 @@ public class ClinicalNotes extends GenericCollection {
 
     private boolean inHistory = false;
 
-    private boolean deleted;
+    private Boolean isDeleted = false;
 
     public String getId() {
 	return id;
@@ -128,19 +128,20 @@ public class ClinicalNotes extends GenericCollection {
 	this.inHistory = inHistory;
     }
 
-    public boolean isDeleted() {
-	return deleted;
-    }
+	public Boolean getIsDeleted() {
+		return isDeleted;
+	}
 
-    public void setDeleted(boolean deleted) {
-	this.deleted = deleted;
-    }
+	public void setIsDeleted(Boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
 
-    @Override
-    public String toString() {
-	return "ClinicalNotes [id=" + id + ", complaints=" + complaints + ", observations=" + observations + ", investigations=" + investigations
-		+ ", diagnoses=" + diagnoses + ", createdDate=" + createdDate + ", diagrams=" + diagrams + ", notes=" + notes + ", doctorId=" + doctorId
-		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", inHistory=" + inHistory + ", deleted=" + deleted + "]";
-    }
-
+	@Override
+	public String toString() {
+		return "ClinicalNotes [id=" + id + ", complaints=" + complaints + ", observations=" + observations
+				+ ", investigations=" + investigations + ", diagnoses=" + diagnoses + ", createdDate=" + createdDate
+				+ ", diagrams=" + diagrams + ", notes=" + notes + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", inHistory=" + inHistory + ", isDeleted=" + isDeleted
+				+ "]";
+	}
 }
