@@ -11,7 +11,10 @@ public interface UserLocationRepository extends MongoRepository<UserLocationColl
     @Query("{'userId' : ?0}")
     List<UserLocationCollection> findByUserId(String userId);
 
-    @Query("{'userId' : ?0, 'locationId' : ?1}")
+   @Query("{'userId' : ?0, 'locationId' : ?1}")
     UserLocationCollection findByUserIdAndLocationId(String userId, String locationId);
+
+	@Query("{'locationId':?0}")
+    List<UserLocationCollection> findByLocationId(String id);
 
 }

@@ -384,7 +384,6 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	return response;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId) {
 	DoctorProfile doctorProfile = null;
@@ -436,6 +435,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    BeanUtil.map(userCollection, doctorProfile);
 	    BeanUtil.map(doctorCollection, doctorProfile);
 
+	    doctorProfile.setClinicProfile(clinicProfile);
 	    // set specialities using speciality ids
 	    if (doctorProfile.getSpecialities() != null) {
 		specialities = (List<String>) CollectionUtils.collect((Collection) specialityRepository.findAll(doctorProfile.getSpecialities()),

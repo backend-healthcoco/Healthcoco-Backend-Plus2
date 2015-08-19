@@ -384,8 +384,6 @@ public interface PathProxy {
 
 	public static final String ADD_EDIT_PROFESSIONAL_MEMBERSHIP = "/addEditProfessionalMembership";
 
-	public static final String GET_DOCTOR_PROFILE = "/{doctorId}/{locationId}/{hospitalId}/view";
-
 	public static final String ADD_EDIT_MEDICAL_COUNCILS = "/addEditMedicalCouncils";
 
 	public static final String GET_MEDICAL_COUNCILS = "/getMedicalCouncils";
@@ -409,6 +407,8 @@ public interface PathProxy {
 	public static final String GET_SPECIALITIES = "/getSpecialities";
 
 	public static final String GET_EDUCATION_INSTITUTES = "/getEducationInstitutes";
+
+	public static final String GET_DOCTOR_PROFILE = "getDoctorProfile/{doctorId}";
 
 	public static final String GET_EDUCATION_QUALIFICATIONS = "/getEducationQualifications";
 
@@ -555,26 +555,28 @@ public interface PathProxy {
 
 	public static final String SEARCH_PATIENT_ADV = "searchPatient";
     }
-
-    public static final String CITY_BASE_URL = BASE_URL + "/city";
+    
+    public static final String APPOINTMENT_BASE_URL = BASE_URL + "/appointment";
 
     public interface CityUrls {
-
-	public static final String ADD_CITY = "/addCity";
-
-	public static final String ACTIVATE_CITY = "/activateCity/{cityId}";
-
-	public static final String DEACTIVATE_CITY = "/deactivateCity/{cityId}";
-
-	public static final String GET_CITY = "/getCities";
-
-	public static final String GET_CITY_ID = "/getCity/{cityId}";
-
-	public static final String ADD_LOCALITY = "/addLocality";
-
-	public static final String ADD_LANDMARK = "/addLandmark";
-
-	public static final String GET_LANDMARK_LOCALITY = "/getLandmarkLocality/{cityId}";
+    	
+    	public static final String ADD_CITY = "/addCity";
+    	
+    	public static final String ACTIVATE_CITY = "/activateCity/{cityId}";
+    	
+    	public static final String DEACTIVATE_CITY = "/deactivateCity/{cityId}";
+    	
+    	public static final String GET_CITY = "/getCities";
+    	
+    	public static final String GET_CITY_ID = "/getCity/{cityId}";
+    	
+    	public static final String ADD_LOCALITY = "/addLocality";
+    	
+    	public static final String ADD_LANDMARK = "/addLandmark";	
+    	
+    	public static final String GET_LANDMARK_LOCALITY = "/getLandmarkLocality/{cityId}";
+    	
+    	public static final String GET_CLINIC = "/getClinic/{locationId}";
 
     }
 

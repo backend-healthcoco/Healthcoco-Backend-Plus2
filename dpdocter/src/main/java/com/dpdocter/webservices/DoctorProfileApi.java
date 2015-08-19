@@ -299,7 +299,6 @@ public class DoctorProfileApi {
 	    logger.warn("Doctor Id, LocationId Is Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, LocationId Is Empty");
 	}
-
 	Boolean addEditAppointmentNumbersResponse = doctorProfileService.addEditAppointmentNumbers(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditAppointmentNumbersResponse);
@@ -316,7 +315,6 @@ public class DoctorProfileApi {
 	    logger.warn("Doctor Id, LocationId Is Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, LocationId Is Empty");
 	}
-
 	Boolean addEditVisitingTimeResponse = doctorProfileService.addEditVisitingTime(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditVisitingTimeResponse);
@@ -333,7 +331,6 @@ public class DoctorProfileApi {
 	    logger.warn("Doctor Id, LocationId Is Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, LocationId Is Empty");
 	}
-
 	Boolean addEditConsultationFeeResponse = doctorProfileService.addEditConsultationFee(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditConsultationFeeResponse);
@@ -350,7 +347,6 @@ public class DoctorProfileApi {
 	    logger.warn("Doctor Id, LocationId Is Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, LocationId Is Empty");
 	}
-
 	Boolean addEditAppointmentSlotResponse = doctorProfileService.addEditAppointmentSlot(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditAppointmentSlotResponse);
