@@ -159,7 +159,9 @@ public class HistoryServicesImpl implements HistoryServices {
 	    if (historyCollection != null) {
 
 		// check if reports are there in history.
-		Collection<String> reports = CollectionUtils.collect(historyCollection.getGeneralRecords(), new BeanToPropertyValueTransformer("data"));
+	    	
+		Collection<String> reports = null;
+		if(historyCollection.getGeneralRecords()!=null) reports= CollectionUtils.collect(historyCollection.getGeneralRecords(), new BeanToPropertyValueTransformer("data"));
 		if (reports != null) {
 		    // check if this report id is already added into history.
 		    if (!reports.contains(reportId)) {
@@ -169,7 +171,13 @@ public class HistoryServicesImpl implements HistoryServices {
 		    }
 		    // if no report is added into history then add it .
 		} else {
-		    historyCollection.getGeneralRecords().add(0, report);
+			if(historyCollection.getGeneralRecords() == null){
+				List<GeneralData> generalRecords = historyCollection.getGeneralRecords() ;
+				generalRecords = new ArrayList<GeneralData>();
+				generalRecords.add(0, report);
+				historyCollection.setGeneralRecords(generalRecords);
+			}
+			else historyCollection.getGeneralRecords().add(0, report);
 		}
 	    } else {
 		// if history not added for this patient.Create new history.
@@ -205,7 +213,8 @@ public class HistoryServicesImpl implements HistoryServices {
 	    historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
 		// check if clinical notes are there in history.
-		Collection<String> clinicalNotes = CollectionUtils.collect(historyCollection.getGeneralRecords(), new BeanToPropertyValueTransformer("data"));
+		Collection<String> clinicalNotes = null;
+		if(historyCollection.getGeneralRecords()!=null)clinicalNotes = CollectionUtils.collect(historyCollection.getGeneralRecords(), new BeanToPropertyValueTransformer("data"));
 		if (clinicalNotes != null) {
 		    // check if this clinicalNotes id is already added into
 		    // history.
@@ -216,7 +225,13 @@ public class HistoryServicesImpl implements HistoryServices {
 		    }
 		    // if no clinicalNote is added into history then add it .
 		} else {
-		    historyCollection.getGeneralRecords().add(0, clinicalNote);
+			if(historyCollection.getGeneralRecords() == null){
+				List<GeneralData> generalRecords = historyCollection.getGeneralRecords() ;
+				generalRecords = new ArrayList<GeneralData>();
+				generalRecords.add(0, clinicalNote);
+				historyCollection.setGeneralRecords(generalRecords);
+			}
+			else historyCollection.getGeneralRecords().add(0, clinicalNote);
 		}
 	    } else {// if history not added for this patient.Create new history.
 		historyCollection = new HistoryCollection(doctorId, locationId, hospitalId, patientId);
@@ -252,7 +267,8 @@ public class HistoryServicesImpl implements HistoryServices {
 	    historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
 		// check if prescription are there in history.
-		Collection<String> prescriptions = CollectionUtils.collect(historyCollection.getGeneralRecords(), new BeanToPropertyValueTransformer("data"));
+		Collection<String> prescriptions = null;
+		if(historyCollection.getGeneralRecords()!=null) prescriptions = CollectionUtils.collect(historyCollection.getGeneralRecords(), new BeanToPropertyValueTransformer("data"));
 		if (prescriptions != null) {
 		    // check if this prescription id is already added into
 		    // history.
@@ -263,7 +279,13 @@ public class HistoryServicesImpl implements HistoryServices {
 		    }
 		    // if no prescription is added into history then add it .
 		} else {
-		    historyCollection.getGeneralRecords().add(0, prescription);
+			if(historyCollection.getGeneralRecords() == null){
+				List<GeneralData> generalRecords = historyCollection.getGeneralRecords() ;
+				generalRecords = new ArrayList<GeneralData>();
+				generalRecords.add(0, prescription);
+				historyCollection.setGeneralRecords(generalRecords);
+			}
+			else  historyCollection.getGeneralRecords().add(0, prescription);
 		}
 	    } else {// if history not added for this patient.Create new history.
 		historyCollection = new HistoryCollection(doctorId, locationId, hospitalId, patientId);
