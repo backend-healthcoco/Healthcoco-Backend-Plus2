@@ -8,6 +8,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -191,10 +192,10 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE)
     @GET
-    public Response<DoctorProfile> getDoctorProfile(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
-	    @PathParam("hospitalId") String hospitalId) {
-	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Location Id and Hospital Id Cannot Be Empty");
+    public Response<DoctorProfile> getDoctorProfile(@PathParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
+    		@QueryParam("hospitalId") String hospitalId) {
+	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
 	}
 	DoctorProfile doctorProfile = doctorProfileService.getDoctorProfile(doctorId, locationId, hospitalId);
 	Response<DoctorProfile> response = new Response<DoctorProfile>();
@@ -226,6 +227,9 @@ public class DoctorProfileApi {
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_APPOINTMENT_NUMBERS)
     @POST
     public Response<Boolean> addEditAppointmentNumbers(DoctorClinicProfile request) {
+    	if (DPDoctorUtils.anyStringEmpty(request.getUserLocationId())) {
+    	    throw new BusinessException(ServiceError.InvalidInput, "User Location Id Cannot Be Empty");
+    	}
 	Boolean addEditAppointmentNumbersResponse = doctorProfileService.addEditAppointmentNumbers(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditAppointmentNumbersResponse);
@@ -235,6 +239,9 @@ public class DoctorProfileApi {
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_VISITING_TIME)
     @POST
     public Response<Boolean> addEditVisitingTime(DoctorClinicProfile request) {
+    	if (DPDoctorUtils.anyStringEmpty(request.getUserLocationId())) {
+    	    throw new BusinessException(ServiceError.InvalidInput, "User Location Id Cannot Be Empty");
+    	}
 	Boolean addEditVisitingTimeResponse = doctorProfileService.addEditVisitingTime(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditVisitingTimeResponse);
@@ -244,6 +251,9 @@ public class DoctorProfileApi {
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_CONSULTATION_FEE)
     @POST
     public Response<Boolean> addEditConsultationFee(DoctorClinicProfile request) {
+    	if (DPDoctorUtils.anyStringEmpty(request.getUserLocationId())) {
+    	    throw new BusinessException(ServiceError.InvalidInput, "User Location Id Cannot Be Empty");
+    	}
 	Boolean addEditConsultationFeeResponse = doctorProfileService.addEditConsultationFee(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditConsultationFeeResponse);
@@ -253,6 +263,9 @@ public class DoctorProfileApi {
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_APPOINTMENT_SLOT)
     @POST
     public Response<Boolean> addEditAppointmentSlot(DoctorClinicProfile request) {
+    	if (DPDoctorUtils.anyStringEmpty(request.getUserLocationId())) {
+    	    throw new BusinessException(ServiceError.InvalidInput, "User Location Id Cannot Be Empty");
+    	}
 	Boolean addEditAppointmentSlotResponse = doctorProfileService.addEditAppointmentSlot(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditAppointmentSlotResponse);
