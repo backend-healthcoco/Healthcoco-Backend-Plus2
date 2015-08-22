@@ -1,6 +1,5 @@
 package com.dpdocter.beans;
 
-import org.springframework.data.mongodb.core.mapping.Field;
 
 /**
  * @author veeraj
