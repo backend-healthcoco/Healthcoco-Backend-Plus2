@@ -1,9 +1,13 @@
 package com.dpdocter.services.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +15,7 @@ import com.dpdocter.beans.City;
 import com.dpdocter.beans.Clinic;
 import com.dpdocter.beans.Doctor;
 import com.dpdocter.beans.DoctorClinicProfile;
+import com.dpdocter.beans.DoctorInfo;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.Landmark;
 import com.dpdocter.beans.Locality;
@@ -244,5 +249,23 @@ public class AppointmentServiceImpl implements AppointmentService {
 		}
 	
 		return response;
+	}
+
+	/**
+	 * This method will return List of DoctorInfo based on specialty ,city ,location Landmark.
+	 * @param specialty  : optional param
+	 * @param city : mandatory Param
+	 * @param localityOrLandmark : optional Param
+	 */
+	@Override
+	public List<DoctorInfo> getDoctors(String specialty, String city,
+			String localityOrLandmark) {
+		try {
+			
+			
+		} catch (Exception e) {
+			
+		}
+		return null;
 	}
 }
