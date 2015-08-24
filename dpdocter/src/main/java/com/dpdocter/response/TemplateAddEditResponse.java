@@ -68,17 +68,17 @@ public class TemplateAddEditResponse extends GenericCollection {
 	this.items = items;
     }
 
-	public Boolean getIsDeleted() {
-		return isDeleted;
-	}
+    public Boolean getIsDeleted() {
+	return isDeleted;
+    }
 
-	public void setIsDeleted(Boolean isDeleted) {
-		this.isDeleted = isDeleted;
-	}
+    public void setIsDeleted(Boolean isDeleted) {
+	this.isDeleted = isDeleted;
+    }
 
-	@Override
-	public String toString() {
-		return "TemplateAddEditResponse [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", items=" + items + ", isDeleted=" + isDeleted + "]";
-	}
+    @Override
+    public String toString() {
+	return "TemplateAddEditResponse [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+		+ ", items=" + items + ", isDeleted=" + isDeleted + "]";
+    }
 }

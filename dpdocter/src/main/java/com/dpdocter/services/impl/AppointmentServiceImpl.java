@@ -1,13 +1,9 @@
 package com.dpdocter.services.impl;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,225 +43,231 @@ import com.dpdocter.services.AppointmentService;
 @Service
 public class AppointmentServiceImpl implements AppointmentService {
 
-	@Autowired
+    @Autowired
     private CityRepository cityRepository;
-	
-	@Autowired
-	private LocalityRepository localityRepository;
-	
-	@Autowired
+
+    @Autowired
+    private LocalityRepository localityRepository;
+
+    @Autowired
     private LandmarkRepository landmarkRepository;
 
-	@Autowired 
-	private LocationRepository locationRepository;
-	
-	@Autowired
-	private HospitalRepository hospitalRepository;
-	
-	@Autowired 
-	private DoctorRepository doctorRepository;
-	
-	@Autowired UserLocationRepository userLocationRepository;
-	
-	@Autowired
+    @Autowired
+    private LocationRepository locationRepository;
+
+    @Autowired
+    private HospitalRepository hospitalRepository;
+
+    @Autowired
+    private DoctorRepository doctorRepository;
+
+    @Autowired
+    UserLocationRepository userLocationRepository;
+
+    @Autowired
     private DoctorClinicProfileRepository doctorClinicProfileRepository;
 
-	@Autowired
-	private UserRepository userRepository;
-	
-	@Override
-	public City addCity(City city) {
-		try{
-			CityCollection cityCollection = new CityCollection();
-			BeanUtil.map(city, cityCollection);
-			cityCollection = cityRepository.save(cityCollection);
-			BeanUtil.map(cityCollection, city);
-		}
-		 catch (Exception e) {
-			    e.printStackTrace();
-			    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-			}
-		return city;
+    @Autowired
+    private UserRepository userRepository;
+
+    @Override
+    public City addCity(City city) {
+	try {
+	    CityCollection cityCollection = new CityCollection();
+	    BeanUtil.map(city, cityCollection);
+	    cityCollection = cityRepository.save(cityCollection);
+	    BeanUtil.map(cityCollection, city);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return city;
+    }
+
+    @Override
+    public Boolean activateDeactivateCity(String cityId, boolean activate) {
+	try {
+	    CityCollection cityCollection = cityRepository.findOne(cityId);
+	    if (cityCollection == null) {
+		throw new BusinessException(ServiceError.Unknown, "Invalid Url.");
+	    }
+	    cityCollection.setIsActivated(activate);
+	    cityRepository.save(cityCollection);
+	    return true;
+	} catch (BusinessException be) {
+	    throw be;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error occured while Activating Deactivating City");
 	}
 
-	@Override
-	public Boolean activateDeactivateCity(String cityId, boolean activate) {
-		try {
-		    CityCollection cityCollection = cityRepository.findOne(cityId);
-		    if (cityCollection == null) {
-			throw new BusinessException(ServiceError.Unknown, "Invalid Url.");
-		    }
-		    cityCollection.setIsActivated(activate);
-		    cityRepository.save(cityCollection);
-		    return true;
-		} catch (BusinessException be) {
-		    throw be;
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown, "Error occured while Activating Deactivating City");
-		}
+    }
 
+    @Override
+    public List<City> getCities() {
+	List<City> response = new ArrayList<City>();
+	try {
+	    List<CityCollection> cities = cityRepository.findAll();
+	    if (cities != null) {
+		BeanUtil.map(cities, response);
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return response;
+    }
 
-	@Override
-	public List<City> getCities() {
-		List<City> response = new ArrayList<City>();
-		try {
-			List<CityCollection> cities = cityRepository.findAll();
-			if(cities !=null){
-				BeanUtil.map(cities,response);
-			}
-		}catch (Exception e) {
-		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return response;
+    @Override
+    public City getCity(String cityId) {
+	City response = new City();
+	try {
+	    CityCollection city = cityRepository.findOne(cityId);
+	    if (city != null) {
+		BeanUtil.map(city, response);
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return response;
+    }
 
-	@Override
-	public City getCity(String cityId) {
-		City response = new City();
-		try {
-			CityCollection city = cityRepository.findOne(cityId);
-			if(city !=null){
-				BeanUtil.map(city,response);
-			}
-		}catch (Exception e) {
-		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return response;
+    @Override
+    public Locality addLocality(Locality locality) {
+	try {
+	    LocalityCollection localityCollection = new LocalityCollection();
+	    BeanUtil.map(locality, localityCollection);
+	    localityCollection = localityRepository.save(localityCollection);
+	    BeanUtil.map(localityCollection, locality);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return locality;
+    }
 
-	@Override
-	public Locality addLocality(Locality locality) {
-		try{
-			LocalityCollection localityCollection = new LocalityCollection();
-			BeanUtil.map(locality, localityCollection);
-			localityCollection = localityRepository.save(localityCollection);
-			BeanUtil.map(localityCollection, locality);
-		}
-		 catch (Exception e) {
-			    e.printStackTrace();
-			    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-			}
-		return locality;
+    @Override
+    public Landmark addLandmark(Landmark landmark) {
+	try {
+	    LandmarkCollection landmarkCollection = new LandmarkCollection();
+	    BeanUtil.map(landmark, landmarkCollection);
+	    landmarkCollection = landmarkRepository.save(landmarkCollection);
+	    BeanUtil.map(landmarkCollection, landmark);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return landmark;
+    }
 
-	@Override
-	public Landmark addLandmark(Landmark landmark) {
-		try{
-			LandmarkCollection landmarkCollection = new LandmarkCollection();
-			BeanUtil.map(landmark, landmarkCollection);
-			landmarkCollection = landmarkRepository.save(landmarkCollection);
-			BeanUtil.map(landmarkCollection, landmark);
+    @Override
+    public List<Object> getLandmarkLocality(String cityId, String type) {
+	List<Object> response = new ArrayList<Object>();
+	List<LandmarkCollection> landmarkCollection = null;
+	List<LocalityCollection> localityCollection = null;
+	try {
+	    if (type == null) {
+		landmarkCollection = landmarkRepository.findByCityId(cityId);
+		if (landmarkCollection != null)
+		    BeanUtil.map(landmarkCollection, response);
+
+		localityCollection = localityRepository.findByCityId(cityId);
+		if (localityCollection != null)
+		    BeanUtil.map(localityCollection, response);
+	    } else {
+		if (type.equalsIgnoreCase(CitySearchType.LANDMARK.getType())) {
+		    landmarkCollection = landmarkRepository.findByCityId(cityId);
+		    if (landmarkCollection != null)
+			BeanUtil.map(landmarkCollection, response);
 		}
-		 catch (Exception e) {
-			    e.printStackTrace();
-			    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-			}
-		return landmark;
+		if (type.equalsIgnoreCase(CitySearchType.LOCALITY.getType())) {
+		    localityCollection = localityRepository.findByCityId(cityId);
+		    if (localityCollection != null)
+			BeanUtil.map(localityCollection, response);
+		}
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return response;
+    }
 
-	@Override
-	public List<Object> getLandmarkLocality(String cityId, String type) {
-		List<Object> response = new ArrayList<Object>();
-		List<LandmarkCollection> landmarkCollection = null;
-		List<LocalityCollection> localityCollection = null;
-		try{
-			if(type == null){
-				landmarkCollection = landmarkRepository.findByCityId(cityId);
-				if(landmarkCollection != null)BeanUtil.map(landmarkCollection, response);
-				
-				localityCollection = localityRepository.findByCityId(cityId);
-				if(localityCollection != null)BeanUtil.map(localityCollection, response);
-			}
-			else{
-				if(type.equalsIgnoreCase(CitySearchType.LANDMARK.getType())){
-					landmarkCollection = landmarkRepository.findByCityId(cityId);
-					if(landmarkCollection != null)BeanUtil.map(landmarkCollection, response);
-				}
-				if(type.equalsIgnoreCase(CitySearchType.LOCALITY.getType())){
-					localityCollection = localityRepository.findByCityId(cityId);
-					if(localityCollection != null)BeanUtil.map(localityCollection, response);
-				}
-			}
-		}
-		 catch (Exception e) {
-			    e.printStackTrace();
-			    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-			}
-		return response;
-	}
+    @Override
+    public Clinic getClinic(String locationId) {
+	Clinic response = new Clinic();
+	LocationCollection localtionCollection = null;
+	Location location = new Location();
+	HospitalCollection hospitalCollection = null;
+	Hospital hospital = new Hospital();
 
-	@Override
-	public Clinic getClinic(String locationId) {
-		Clinic response = new Clinic();
-		LocationCollection localtionCollection = null;
-		Location location = new Location();
-		HospitalCollection hospitalCollection = null;
-		Hospital hospital = new Hospital();
-		
-		List<Doctor> doctors = new ArrayList<Doctor>();
-		try{
-			localtionCollection = locationRepository.findOne(locationId);
-			if (localtionCollection == null) {return null;}
-			else{
-				BeanUtil.map(localtionCollection, location);
-				response.setLocation(location);
-				
-				hospitalCollection = hospitalRepository.findOne(localtionCollection.getHospitalId());
-				if(hospitalCollection != null){
-					BeanUtil.map(hospitalCollection, hospital);
-					response.setHospital(hospital);
-				}
-				
-				List<UserLocationCollection> userLocationCollections = userLocationRepository.findByLocationId(localtionCollection.getId());
-				for (Iterator<UserLocationCollection> iterator = userLocationCollections.iterator(); iterator.hasNext();) {
-		    		UserLocationCollection userLocationCollection = iterator.next();
-		    		DoctorCollection doctorCollection = doctorRepository.findByUserId(userLocationCollection.getUserId());
-		    		UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
-		    		DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getLocationId());
-		    				    		
-		    		if(doctorCollection != null){
-		    			Doctor doctor = new Doctor();
-		    			BeanUtil.map(doctorCollection, doctor);
-		    			if(userCollection!=null){BeanUtil.map(userCollection, doctor);}
-		    			
-		    			if(doctorClinicProfileCollection !=null){
-		    				DoctorClinicProfile doctorClinicProfile = new DoctorClinicProfile();
-		    				BeanUtil.map(doctorClinicProfileCollection, doctorClinicProfile);
-		    				doctor.setDoctorClinicProfile(doctorClinicProfile);
-		    			}
-		    			doctors.add(doctor);
-		    		}
-				}
-				response.setDoctors(doctors);
-			}
-		}
-		catch (Exception e) {
-		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-	
-		return response;
-	}
-
-	/**
-	 * This method will return List of DoctorInfo based on specialty ,city ,location Landmark.
-	 * @param specialty  : optional param
-	 * @param city : mandatory Param
-	 * @param localityOrLandmark : optional Param
-	 */
-	@Override
-	public List<DoctorInfo> getDoctors(String specialty, String city,
-			String localityOrLandmark) {
-		try {
-			
-			
-		} catch (Exception e) {
-			
-		}
+	List<Doctor> doctors = new ArrayList<Doctor>();
+	try {
+	    localtionCollection = locationRepository.findOne(locationId);
+	    if (localtionCollection == null) {
 		return null;
+	    } else {
+		BeanUtil.map(localtionCollection, location);
+		response.setLocation(location);
+
+		hospitalCollection = hospitalRepository.findOne(localtionCollection.getHospitalId());
+		if (hospitalCollection != null) {
+		    BeanUtil.map(hospitalCollection, hospital);
+		    response.setHospital(hospital);
+		}
+
+		List<UserLocationCollection> userLocationCollections = userLocationRepository.findByLocationId(localtionCollection.getId());
+		for (Iterator<UserLocationCollection> iterator = userLocationCollections.iterator(); iterator.hasNext();) {
+		    UserLocationCollection userLocationCollection = iterator.next();
+		    DoctorCollection doctorCollection = doctorRepository.findByUserId(userLocationCollection.getUserId());
+		    UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
+		    DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection
+			    .getLocationId());
+
+		    if (doctorCollection != null) {
+			Doctor doctor = new Doctor();
+			BeanUtil.map(doctorCollection, doctor);
+			if (userCollection != null) {
+			    BeanUtil.map(userCollection, doctor);
+			}
+
+			if (doctorClinicProfileCollection != null) {
+			    DoctorClinicProfile doctorClinicProfile = new DoctorClinicProfile();
+			    BeanUtil.map(doctorClinicProfileCollection, doctorClinicProfile);
+			    doctor.setDoctorClinicProfile(doctorClinicProfile);
+			}
+			doctors.add(doctor);
+		    }
+		}
+		response.setDoctors(doctors);
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+
+	return response;
+    }
+
+    /**
+     * This method will return List of DoctorInfo based on specialty ,city
+     * ,location Landmark.
+     * 
+     * @param specialty
+     *            : optional param
+     * @param city
+     *            : mandatory Param
+     * @param localityOrLandmark
+     *            : optional Param
+     */
+    @Override
+    public List<DoctorInfo> getDoctors(String specialty, String city, String localityOrLandmark) {
+	try {
+
+	} catch (Exception e) {
+
+	}
+	return null;
+    }
 }

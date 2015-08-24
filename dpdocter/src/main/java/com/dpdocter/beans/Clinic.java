@@ -4,49 +4,49 @@ import java.util.List;
 
 public class Clinic {
 
-	private String id;
-	
-	private Hospital hospital;
-	
-	private Location location;
-	
-	private List<Doctor> doctors;
+    private String id;
 
-	public String getId() {
-		return id;
-	}
+    private Hospital hospital;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    private Location location;
 
-	public Hospital getHospital() {
-		return hospital;
-	}
+    private List<Doctor> doctors;
 
-	public void setHospital(Hospital hospital) {
-		this.hospital = hospital;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public Location getLocation() {
-		return location;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public void setLocation(Location location) {
-		this.location = location;
-	}
+    public Hospital getHospital() {
+	return hospital;
+    }
 
-	public List<Doctor> getDoctors() {
-		return doctors;
-	}
+    public void setHospital(Hospital hospital) {
+	this.hospital = hospital;
+    }
 
-	public void setDoctors(List<Doctor> doctors) {
-		this.doctors = doctors;
-	}
+    public Location getLocation() {
+	return location;
+    }
 
-	@Override
-	public String toString() {
-		return "Clinic [id=" + id + ", hospital=" + hospital + ", location=" + location + ", doctors=" + doctors + "]";
-	}
-	
+    public void setLocation(Location location) {
+	this.location = location;
+    }
+
+    public List<Doctor> getDoctors() {
+	return doctors;
+    }
+
+    public void setDoctors(List<Doctor> doctors) {
+	this.doctors = doctors;
+    }
+
+    @Override
+    public String toString() {
+	return "Clinic [id=" + id + ", hospital=" + hospital + ", location=" + location + ", doctors=" + doctors + "]";
+    }
+
 }

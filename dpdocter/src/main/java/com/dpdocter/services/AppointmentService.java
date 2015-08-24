@@ -10,23 +10,22 @@ import com.dpdocter.beans.Locality;
 
 public interface AppointmentService {
 
-	City addCity(City city);
+    City addCity(City city);
 
-	Boolean activateDeactivateCity(String cityId, boolean activate);
+    Boolean activateDeactivateCity(String cityId, boolean activate);
 
-	List<City> getCities();
-	
-	City getCity(String cityId);
+    List<City> getCities();
 
-	Locality addLocality(Locality locality);
+    City getCity(String cityId);
 
-	Landmark addLandmark(Landmark landmark);
+    Locality addLocality(Locality locality);
 
-	List<Object> getLandmarkLocality(String cityId, String type);
+    Landmark addLandmark(Landmark landmark);
 
-	Clinic getClinic(String locationId);
+    List<Object> getLandmarkLocality(String cityId, String type);
 
-	List<DoctorInfo> getDoctors(String spetiality,String city,String localityOrLandmark);
-	
+    Clinic getClinic(String locationId);
+
+    List<DoctorInfo> getDoctors(String spetiality, String city, String localityOrLandmark);
 
 }

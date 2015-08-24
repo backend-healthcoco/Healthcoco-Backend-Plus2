@@ -112,7 +112,7 @@ public interface PathProxy {
 	public static final String UPDATE_PATIENT_ID_GENERATOR_LOGIC = "updatePatientIdGeneratorLogic/{doctorId}/{patientInitial}/{patientCounter}";
 
 	public static final String GET_PATIENT_INITIAL_COUNTER = "getPatientInitialAndCounter/{doctorId}";
-	
+
 	public static final String GET_PATIENT_PID = "getPatientPID/{patientId}";
 
 	public static final String GET_CLINIC_DETAILS = "settings/getClinicDetails/{clinicId}";
@@ -455,7 +455,7 @@ public interface PathProxy {
 	public static final String DELETE_DISEASE = "deleteDisease/{diseaseId}/{doctorId}/{locationId}/{hospitalId}";
 
 	public static final String GET_DISEASES = "getDiseases/{doctorId}/{locationId}/{hospitalId}";
-	
+
 	public static final String GET_CUSTOM_GLOBAL_DISEASES = "getCustomGlobalDiseases/{doctorId}/{createdTime}";
 
 	public static final String GET_CUSTOM_GLOBAL_DISEASES_ISDELETED = "getCustomGlobalDiseases/{doctorId}/{createdTime}/{isDeleted}";
@@ -477,7 +477,7 @@ public interface PathProxy {
 	public static final String GET_MEDICAL_AND_FAMILY_HISTORY = "getMedicalAndFamilyHistory/{patientId}/{doctorId}/{locationId}/{hospitalId}";
 
 	public static final String HANDLE_FAMILY_HISTORY = "familyHistory";
-	
+
 	public static final String REMOVE_REPORTS = "removeReports/{reportId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
 
 	public static final String REMOVE_CLINICAL_NOTES = "removeClinicalNotes/{clinicalNotesId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
@@ -543,19 +543,29 @@ public interface PathProxy {
 	public static final String MOST_VISITED = "mostVisited/{doctorId}/{locationId}/{hospitalId}/{page}/{size}";
     }
 
-    /*
-     * public interface SolrTemp { public static final String ADD = "/add";
-     * 
-     * public static final String DELETE = "/delete";
-     * 
-     * public static final String SEARCH = "/search/{text}";
-     * 
-     * public static final String ADD1 = "/add1";
-     * 
-     * public static final String SEARCH1 = "/search1/{text}";
-     * 
-     * }
-     */
+    public static final String APPOINTMENT_BASE_URL = BASE_URL + "/appointment";
+
+    public interface CityUrls {
+
+	public static final String ADD_CITY = "/addCity";
+
+	public static final String ACTIVATE_CITY = "/activateCity/{cityId}";
+
+	public static final String DEACTIVATE_CITY = "/deactivateCity/{cityId}";
+
+	public static final String GET_CITY = "/getCities";
+
+	public static final String GET_CITY_ID = "/getCity/{cityId}";
+
+	public static final String ADD_LOCALITY = "/addLocality";
+
+	public static final String ADD_LANDMARK = "/addLandmark";
+
+	public static final String GET_LANDMARK_LOCALITY = "/getLandmarkLocality/{cityId}";
+
+	public static final String GET_CLINIC = "/getClinic/{locationId}";
+
+    }
 
     public static final String SOLR_CLINICAL_NOTES_BASEURL = BASE_URL + "/solr/clinicalNotes";
 
@@ -587,30 +597,7 @@ public interface PathProxy {
 
 	public static final String SEARCH_PATIENT_ADV = "searchPatient";
     }
-    
-    public static final String APPOINTMENT_BASE_URL = BASE_URL + "/appointment";
 
-    public interface CityUrls {
-    	
-    	public static final String ADD_CITY = "/addCity";
-    	
-    	public static final String ACTIVATE_CITY = "/activateCity/{cityId}";
-    	
-    	public static final String DEACTIVATE_CITY = "/deactivateCity/{cityId}";
-    	
-    	public static final String GET_CITY = "/getCities";
-    	
-    	public static final String GET_CITY_ID = "/getCity/{cityId}";
-    	
-    	public static final String ADD_LOCALITY = "/addLocality";
-    	
-    	public static final String ADD_LANDMARK = "/addLandmark";	
-    	
-    	public static final String GET_LANDMARK_LOCALITY = "/getLandmarkLocality/{cityId}";
-    	
-    	public static final String GET_CLINIC = "/getClinic/{locationId}";
-    	
-    }
     public static final String SOLR_CITY_BASE_URL = BASE_URL + "/solr/city";
 
     public interface SolrCityUrls {
@@ -619,4 +606,11 @@ public interface PathProxy {
 	public static final String SEARCH_LANDMARK_LOCALITY = "searchLandmarkLocality/{cityId}/{searchTerm}";
     }
 
+    public static final String SOLR_APPOINTMENT_BASE_URL = BASE_URL + "/solr/appointment";
+
+    public interface SolrAppointmentUrls {
+	public static final String SEARCH = "search";
+
+	public static final String GET_DOCTORS = "getDoctors";
+    }
 }

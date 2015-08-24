@@ -2,49 +2,48 @@ package com.dpdocter.beans;
 
 public class Landmark {
 
-	private String id;
+    private String id;
 
     private String cityId;
 
     private String landmark;
-	
-	private String description;
 
-	public String getId() {
-		return id;
-	}
+    private String description;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public String getCityId() {
-		return cityId;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public void setCityId(String cityId) {
-		this.cityId = cityId;
-	}
+    public String getCityId() {
+	return cityId;
+    }
 
-	public String getLandmark() {
-		return landmark;
-	}
+    public void setCityId(String cityId) {
+	this.cityId = cityId;
+    }
 
-	public void setLandmark(String landmark) {
-		this.landmark = landmark;
-	}
+    public String getLandmark() {
+	return landmark;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public void setLandmark(String landmark) {
+	this.landmark = landmark;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public String getDescription() {
+	return description;
+    }
 
-	@Override
-	public String toString() {
-		return "Landmark [id=" + id + ", cityId=" + cityId + ", landmark=" + landmark + ", description=" + description
-				+ "]";
-	}	
+    public void setDescription(String description) {
+	this.description = description;
+    }
+
+    @Override
+    public String toString() {
+	return "Landmark [id=" + id + ", cityId=" + cityId + ", landmark=" + landmark + ", description=" + description + "]";
+    }
 }

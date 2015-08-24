@@ -8,7 +8,7 @@ import org.springframework.data.solr.repository.SolrCrudRepository;
 import com.dpdocter.solr.document.SolrCityDocument;
 
 public interface SolrCityRepository extends SolrCrudRepository<SolrCityDocument, String> {
-	@Query("city:*?0* AND isActivated:true")
-	List<SolrCityDocument> findByQueryAnnotation(String searchTerm);
+    @Query("city:*?0* AND isActivated:true")
+    List<SolrCityDocument> findByQueryAnnotation(String searchTerm);
 
 }

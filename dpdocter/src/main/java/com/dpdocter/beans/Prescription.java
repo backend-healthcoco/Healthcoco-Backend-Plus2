@@ -49,15 +49,15 @@ public class Prescription extends GenericCollection {
 	this.inHistory = inHistory;
     }
 
-	public Boolean getIsDeleted() {
-		return isDeleted;
-	}
+    public Boolean getIsDeleted() {
+	return isDeleted;
+    }
 
-	public void setIsDeleted(Boolean isDeleted) {
-		this.isDeleted = isDeleted;
-	}
+    public void setIsDeleted(Boolean isDeleted) {
+	this.isDeleted = isDeleted;
+    }
 
-	public Long getCreatedDate() {
+    public Long getCreatedDate() {
 	return createdDate;
     }
 

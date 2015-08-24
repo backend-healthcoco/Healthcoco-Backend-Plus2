@@ -583,18 +583,18 @@ public class RegistrationServiceImpl implements RegistrationService {
 	return generatedId;
     }
 
-	@Override
-	public String getPatientPID(String patientId) {
-		String PID = null;
-		try {
-		    PatientCollection patientCollection = patientRepository.findOne(patientId);
-		    PID = patientCollection.getPID();
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return PID;
+    @Override
+    public String getPatientPID(String patientId) {
+	String PID = null;
+	try {
+	    PatientCollection patientCollection = patientRepository.findOne(patientId);
+	    PID = patientCollection.getPID();
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return PID;
+    }
 
     @Override
     public Boolean updatePatientInitialAndCounter(String doctorId, String patientInitial, int patientCounter) {

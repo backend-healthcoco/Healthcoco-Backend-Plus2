@@ -19,7 +19,6 @@ import com.dpdocter.solr.document.SolrCityDocument;
 import com.dpdocter.solr.document.SolrLocalityLandmarkDocument;
 import com.dpdocter.solr.services.SolrCityService;
 import com.dpdocter.webservices.PathProxy;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -29,10 +28,10 @@ import common.util.web.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class SolrCityApi {
 
-	@Autowired
-	private SolrCityService solrCityService;
-	
-	@Path(value = PathProxy.SolrCityUrls.SEARCH_CITY)
+    @Autowired
+    private SolrCityService solrCityService;
+
+    @Path(value = PathProxy.SolrCityUrls.SEARCH_CITY)
     @GET
     public Response<SolrCityDocument> searchCity(@PathParam(value = "searchTerm") String searchTerm) {
 	if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
@@ -44,12 +43,11 @@ public class SolrCityApi {
 	return response;
     }
 
-	@Path(value = PathProxy.SolrCityUrls.SEARCH_LANDMARK_LOCALITY)
+    @Path(value = PathProxy.SolrCityUrls.SEARCH_LANDMARK_LOCALITY)
     @GET
-    public Response<SolrLocalityLandmarkDocument> searchLandmarkLocality(@PathParam(value = "cityId") String cityId, @PathParam(value = "searchTerm") String searchTerm,
-    		@QueryParam(value = "type") String type
-    		) {
-	if (DPDoctorUtils.anyStringEmpty(cityId) || DPDoctorUtils.anyStringEmpty(searchTerm) ) {
+    public Response<SolrLocalityLandmarkDocument> searchLandmarkLocality(@PathParam(value = "cityId") String cityId,
+	    @PathParam(value = "searchTerm") String searchTerm, @QueryParam(value = "type") String type) {
+	if (DPDoctorUtils.anyStringEmpty(cityId) || DPDoctorUtils.anyStringEmpty(searchTerm)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	List<SolrLocalityLandmarkDocument> complaints = solrCityService.searchLandmarkLocality(cityId, type, searchTerm);

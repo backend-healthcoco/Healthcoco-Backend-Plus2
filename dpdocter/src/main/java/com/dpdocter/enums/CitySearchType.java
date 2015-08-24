@@ -2,16 +2,16 @@ package com.dpdocter.enums;
 
 public enum CitySearchType {
 
-	LANDMARK("LANDMARK"), LOCALITY("LOCALITY");
-	
-	private String type;
+    LANDMARK("LANDMARK"), LOCALITY("LOCALITY");
 
-	private CitySearchType(String type) {
-		this.type = type;
-	}
+    private String type;
 
-	public String getType() {
-		return type;
-	}
+    private CitySearchType(String type) {
+	this.type = type;
+    }
+
+    public String getType() {
+	return type;
+    }
 
 }

@@ -32,7 +32,7 @@ public interface RegistrationService {
     String patientIdGenerator(String doctorId, String locationId, String hospitalId);
 
     String getPatientPID(String patientId);
-    
+
     ReferenceResponse getCustomReferences(String doctorId, String locationId, String hospitalId);
 
     Boolean updatePatientInitialAndCounter(String doctorId, String patientInitial, int patientCounter);

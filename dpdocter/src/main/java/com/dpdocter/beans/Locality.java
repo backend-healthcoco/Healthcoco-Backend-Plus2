@@ -7,45 +7,44 @@ public class Locality {
     private String cityId;
 
     private String locality;
-	
-	private String description;
 
-	public String getId() {
-		return id;
-	}
+    private String description;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public String getCityId() {
-		return cityId;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public void setCityId(String cityId) {
-		this.cityId = cityId;
-	}
+    public String getCityId() {
+	return cityId;
+    }
 
-	public String getLocality() {
-		return locality;
-	}
+    public void setCityId(String cityId) {
+	this.cityId = cityId;
+    }
 
-	public void setLocality(String locality) {
-		this.locality = locality;
-	}
+    public String getLocality() {
+	return locality;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public void setLocality(String locality) {
+	this.locality = locality;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public String getDescription() {
+	return description;
+    }
 
-	@Override
-	public String toString() {
-		return "Locality [id=" + id + ", cityId=" + cityId + ", locality=" + locality + ", description="
-				+ description + "]";
-	}
+    public void setDescription(String description) {
+	this.description = description;
+    }
+
+    @Override
+    public String toString() {
+	return "Locality [id=" + id + ", cityId=" + cityId + ", locality=" + locality + ", description=" + description + "]";
+    }
 
 }

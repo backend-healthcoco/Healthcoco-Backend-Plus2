@@ -169,9 +169,9 @@ public class SignUpServiceImpl implements SignUpService {
 	    UserLocationCollection userLocationCollection = new UserLocationCollection(userCollection.getId(), locationCollection.getId());
 	    userLocationRepository.save(userLocationCollection);
 	    // send activation email
-	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
-		    userCollection.getMiddleName(), userCollection.getLastName());
-	    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
+	    /*String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
+	        userCollection.getMiddleName(), userCollection.getLastName());
+	    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);*/
 	    response = new DoctorSignUp();
 	    User user = new User();
 	    userCollection.setPassword(null);

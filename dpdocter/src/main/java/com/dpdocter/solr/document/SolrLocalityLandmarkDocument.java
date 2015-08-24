@@ -7,53 +7,53 @@ import org.springframework.data.solr.core.mapping.SolrDocument;
 @SolrDocument(solrCoreName = "localitiesAndLandmarks")
 public class SolrLocalityLandmarkDocument {
 
-	@Id
+    @Id
     @Field
-	private String id;
+    private String id;
 
-	@Field
+    @Field
     private String cityId;
 
-	@Field
+    @Field
     private String locality;
-	
-	@Field
+
+    @Field
     private String landmark;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getCityId() {
-		return cityId;
-	}
+    public String getCityId() {
+	return cityId;
+    }
 
-	public void setCityId(String cityId) {
-		this.cityId = cityId;
-	}
+    public void setCityId(String cityId) {
+	this.cityId = cityId;
+    }
 
-	public String getLocality() {
-		return locality;
-	}
+    public String getLocality() {
+	return locality;
+    }
 
-	public void setLocality(String locality) {
-		this.locality = locality;
-	}
+    public void setLocality(String locality) {
+	this.locality = locality;
+    }
 
-	public String getLandmark() {
-		return landmark;
-	}
+    public String getLandmark() {
+	return landmark;
+    }
 
-	public void setLandmark(String landmark) {
-		this.landmark = landmark;
-	}
+    public void setLandmark(String landmark) {
+	this.landmark = landmark;
+    }
 
-	@Override
-	public String toString() {
-		return "SolrLocalityLandmarkDocument [id=" + id + ", cityId=" + cityId + ", locality=" + locality + ", landmark=" + landmark + "]";
-	}
+    @Override
+    public String toString() {
+	return "SolrLocalityLandmarkDocument [id=" + id + ", cityId=" + cityId + ", locality=" + locality + ", landmark=" + landmark + "]";
+    }
 }

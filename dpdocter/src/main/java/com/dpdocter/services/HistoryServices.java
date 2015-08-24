@@ -56,6 +56,6 @@ public interface HistoryServices {
 
     boolean handleFamilyHistory(MedicalHistoryHandler request);
 
-    HistoryDetailsResponse getMedicalAndFamilyHistory(String patientId, String doctorId, String hospitalId,String locationId);
-    
+    HistoryDetailsResponse getMedicalAndFamilyHistory(String patientId, String doctorId, String hospitalId, String locationId);
+
 }
