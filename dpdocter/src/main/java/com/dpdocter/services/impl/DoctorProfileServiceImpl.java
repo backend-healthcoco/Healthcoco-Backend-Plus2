@@ -67,6 +67,8 @@ import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.services.DoctorProfileService;
 import com.dpdocter.services.FileManager;
 import common.util.web.DPDoctorUtils;
+import com.dpdocter.solr.document.SolrDoctorDocument;
+import com.dpdocter.solr.repository.SolrDoctorRepository;
 
 @Service
 public class DoctorProfileServiceImpl implements DoctorProfileService {
@@ -105,6 +107,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
     @Autowired
     private UserLocationRepository userLocationRepository;
+
+    @Autowired
+    private SolrDoctorRepository solrDoctorRepository;
 
     @Override
     public Boolean addEditName(DoctorNameAddEditRequest request) {
@@ -230,6 +235,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     @Override
     public Boolean addEditSpeciality(DoctorSpecialityAddEditRequest request) {
 	DoctorCollection doctorCollection = null;
+	SolrDoctorDocument solrDoctorDocument = null;
 	List<SpecialityCollection> specialityCollections = null;
 	List<String> specialities = null;
 	Boolean response = false;
@@ -257,6 +263,12 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    doctorCollection.setSpecialities(specialities);
 	    doctorRepository.save(doctorCollection);
 	    response = true;
+
+	    solrDoctorDocument = solrDoctorRepository.findOne(request.getDoctorId());
+	    if (solrDoctorDocument != null) {
+		solrDoctorDocument.getSpecialization().addAll(specialities);
+		solrDoctorRepository.save(solrDoctorDocument);
+	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Profile");
@@ -602,6 +614,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     @Override
     public Boolean addEditConsultationFee(DoctorConsultationFeeAddEditRequest request) {
 	DoctorClinicProfileCollection doctorClinicProfileCollection = null;
+	SolrDoctorDocument solrDoctorDocument = null;
 	Boolean response = false;
 	try {
 	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
@@ -616,6 +629,14 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 		response = true;
 	    }
+
+	    // updating solr data.
+	    solrDoctorDocument = solrDoctorRepository.findOne(request.getId());
+	    if (solrDoctorDocument != null) {
+		solrDoctorDocument.setConsultationFee(request.getConsultationFee());
+		solrDoctorRepository.save(solrDoctorDocument);
+	    }
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Clinic Profile");

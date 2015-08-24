@@ -9,7 +9,7 @@ import com.dpdocter.collections.LocalityCollection;
 
 public interface LocalityRepository extends MongoRepository<LocalityCollection, String> {
 
-	@Query("{'cityId': ?0}")
-	List<LocalityCollection> findByCityId(String cityId);
+    @Query("{'cityId': ?0}")
+    List<LocalityCollection> findByCityId(String cityId);
 
 }

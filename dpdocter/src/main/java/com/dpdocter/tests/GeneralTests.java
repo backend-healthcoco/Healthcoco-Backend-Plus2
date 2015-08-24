@@ -2,7 +2,6 @@ package com.dpdocter.tests;
 
 import java.io.IOException;
 import java.util.Arrays;
-
 import com.dpdocter.request.DoctorMultipleDataAddEditRequest;
 
 public class GeneralTests {

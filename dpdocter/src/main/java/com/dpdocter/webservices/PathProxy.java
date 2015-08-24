@@ -555,8 +555,6 @@ public interface PathProxy {
 
 	public static final String SEARCH_PATIENT_ADV = "searchPatient";
     }
-    
-    public static final String APPOINTMENT_BASE_URL = BASE_URL + "/appointment";
 
     public interface CityUrls {
     	
@@ -620,4 +618,11 @@ public interface PathProxy {
 
     }
 
+    public static final String SOLR_APPOINTMENT_BASE_URL = BASE_URL + "/solr/appointment";
+
+    public interface SolrAppointmentUrls {
+	public static final String SEARCH = "search";
+
+	public static final String GET_DOCTORS = "getDoctors";
+    }
 }

@@ -429,7 +429,6 @@ public class PrescriptionApi {
 	}
 
 	Prescription prescriptionResponse = prescriptionServices.getPrescriptionById(prescriptionId);
-
 	Response<Prescription> response = new Response<Prescription>();
 	response.setData(prescriptionResponse);
 	return response;
@@ -444,7 +443,6 @@ public class PrescriptionApi {
 
 	prescriptions = prescriptionServices.getPrescriptions(page, size, doctorId, hospitalId, locationId, patientId, updatedTime,
 		otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), discarded);
-
 	Response<Prescription> response = new Response<Prescription>();
 	response.setDataList(prescriptions);
 	return response;

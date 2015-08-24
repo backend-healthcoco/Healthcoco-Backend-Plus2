@@ -76,9 +76,10 @@ public class TemplateAddEditResponse extends GenericCollection {
 	this.discarded = discarded;
     }
 
-    @Override
-    public String toString() {
-	return "TemplateAddEditResponse [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ ", items=" + items + ", discarded=" + discarded + "]";
-    }
+	@Override
+	public String toString() {
+		return "TemplateAddEditResponse [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", items=" + items + ", discarded=" + discarded + "]";
+	}
+
 }

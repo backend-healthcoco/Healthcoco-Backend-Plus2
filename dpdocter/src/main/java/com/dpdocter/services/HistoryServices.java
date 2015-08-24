@@ -63,5 +63,4 @@ public interface HistoryServices {
     boolean addVisitsToHistory(String visitId, String patientId, String doctorId, String hospitalId, String locationId);
 
     boolean removeVisits(String visitId, String patientId, String doctorId, String hospitalId, String locationId);
-
 }

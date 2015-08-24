@@ -7,53 +7,52 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document(collection = "landmark_cl")
 public class LandmarkCollection {
 
-	@Id
+    @Id
     private String id;
 
-	@Field
+    @Field
     private String cityId;
 
-	@Field
+    @Field
     private String landmark;
-	
-	@Field
+
+    @Field
     private String description;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getCityId() {
-		return cityId;
-	}
+    public String getCityId() {
+	return cityId;
+    }
 
-	public void setCityId(String cityId) {
-		this.cityId = cityId;
-	}
+    public void setCityId(String cityId) {
+	this.cityId = cityId;
+    }
 
-	public String getLandmark() {
-		return landmark;
-	}
+    public String getLandmark() {
+	return landmark;
+    }
 
-	public void setLandmark(String landmark) {
-		this.landmark = landmark;
-	}
+    public void setLandmark(String landmark) {
+	this.landmark = landmark;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+	return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+	this.description = description;
+    }
 
-	@Override
-	public String toString() {
-		return "LandmarkCollection [id=" + id + ", cityId=" + cityId + ", landmark=" + landmark + ", description="
-				+ description + "]";
-	}
+    @Override
+    public String toString() {
+	return "LandmarkCollection [id=" + id + ", cityId=" + cityId + ", landmark=" + landmark + ", description=" + description + "]";
+    }
 }

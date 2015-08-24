@@ -2,7 +2,7 @@ package com.dpdocter.request;
 
 public class CityAddRequest {
 
-	private String id;
+    private String id;
 
     private String city;
 
@@ -10,41 +10,40 @@ public class CityAddRequest {
 
     private Boolean isActivated = false;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getCity() {
-		return city;
-	}
+    public String getCity() {
+	return city;
+    }
 
-	public void setCity(String city) {
-		this.city = city;
-	}
+    public void setCity(String city) {
+	this.city = city;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+	return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+	this.description = description;
+    }
 
-	public Boolean getIsActivated() {
-		return isActivated;
-	}
+    public Boolean getIsActivated() {
+	return isActivated;
+    }
 
-	public void setIsActivated(Boolean isActivated) {
-		this.isActivated = isActivated;
-	}
+    public void setIsActivated(Boolean isActivated) {
+	this.isActivated = isActivated;
+    }
 
-	@Override
-	public String toString() {
-		return "CityAddRequest [id=" + id + ", city=" + city + ", description=" + description + ", isActivated="
-				+ isActivated + "]";
-	}
+    @Override
+    public String toString() {
+	return "CityAddRequest [id=" + id + ", city=" + city + ", description=" + description + ", isActivated=" + isActivated + "]";
+    }
 }

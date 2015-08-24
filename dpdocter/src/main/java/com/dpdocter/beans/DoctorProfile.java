@@ -233,13 +233,15 @@ public class DoctorProfile {
 	this.clinicProfile = clinicProfile;
     }
 
-    @Override
-    public String toString() {
-	return "DoctorProfile [id=" + id + ", userId=" + userId + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName="
-		+ middleName + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl=" + imageUrl
-		+ ", thumbnailUrl=" + thumbnailUrl + ", dob=" + dob + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses="
-		+ otherEmailAddresses + ", experience=" + experience + ", education=" + education + ", specialities=" + specialities + ", achievements="
-		+ achievements + ", professionalStatement=" + professionalStatement + ", registrationDetails=" + registrationDetails + ", experienceDetails="
-		+ experienceDetails + ", professionalMemberships=" + professionalMemberships + ", clinicProfile=" + clinicProfile + "]";
-    }
+	@Override
+	public String toString() {
+		return "DoctorProfile [id=" + id + ", userId=" + userId + ", title=" + title + ", firstName=" + firstName
+				+ ", lastName=" + lastName + ", middleName=" + middleName + ", emailAddress=" + emailAddress
+				+ ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl=" + imageUrl + ", thumbnailUrl="
+				+ thumbnailUrl + ", dob=" + dob + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses="
+				+ otherEmailAddresses + ", experience=" + experience + ", education=" + education + ", specialities="
+				+ specialities + ", achievements=" + achievements + ", professionalStatement=" + professionalStatement
+				+ ", registrationDetails=" + registrationDetails + ", experienceDetails=" + experienceDetails
+				+ ", professionalMemberships=" + professionalMemberships + ", clinicProfile=" + clinicProfile + "]";
+	}
 }

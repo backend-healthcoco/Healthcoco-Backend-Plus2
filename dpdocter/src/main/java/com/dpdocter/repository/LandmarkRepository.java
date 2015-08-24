@@ -9,7 +9,7 @@ import com.dpdocter.collections.LandmarkCollection;
 
 public interface LandmarkRepository extends MongoRepository<LandmarkCollection, String> {
 
-	@Query("{'cityId': ?0}")
-	List<LandmarkCollection> findByCityId(String cityId);
+    @Query("{'cityId': ?0}")
+    List<LandmarkCollection> findByCityId(String cityId);
 
 }

@@ -141,13 +141,15 @@ public class Records extends GenericCollection {
 
     public void setClinicName(String clinicName) {
 	this.clinicName = clinicName;
+
     }
 
-    @Override
-    public String toString() {
-	return "Records [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId
-		+ ", recordsUrl=" + recordsUrl + ", recordsLable=" + recordsLable + ", recordsType=" + recordsType + ", description=" + description
-		+ ", inHistory=" + inHistory + ", discarded=" + discarded + ", doctorName=" + doctorName + ", clinicName=" + clinicName + ", visitId="
-		+ visitId + "]";
-    }
+	@Override
+	public String toString() {
+		return "Records [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", patientId=" + patientId + ", recordsUrl=" + recordsUrl + ", recordsLable="
+				+ recordsLable + ", recordsType=" + recordsType + ", description=" + description + ", inHistory="
+				+ inHistory + ", discarded=" + discarded + ", doctorName=" + doctorName + ", clinicName=" + clinicName
+				+ ", visitId=" + visitId + "]";
+	}
 }

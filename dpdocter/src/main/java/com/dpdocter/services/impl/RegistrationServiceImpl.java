@@ -859,7 +859,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    throw new BusinessException(ServiceError.Unknown, "Error While Updating Patient Initial and Counter");
 	}
 	return patientInitialAndCounter;
-    }
+}
 
     @Override
     public Boolean updatePatientInitialAndCounter(String doctorId, String locationId, String patientInitial, int patientCounter) {

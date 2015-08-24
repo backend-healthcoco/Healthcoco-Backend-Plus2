@@ -7,18 +7,18 @@ import com.dpdocter.solr.document.SolrLocalityLandmarkDocument;
 
 public interface SolrCityService {
 
-	boolean addCities(SolrCityDocument solrCities);
+    boolean addCities(SolrCityDocument solrCities);
 
-	boolean editCities(SolrCityDocument solrCities);
+    boolean editCities(SolrCityDocument solrCities);
 
-	boolean activateDeactivateCity(String cityId, boolean activate);
+    boolean activateDeactivateCity(String cityId, boolean activate);
 
-	boolean addLocalityLandmark(SolrLocalityLandmarkDocument solrLocalityLandmark);
+    boolean addLocalityLandmark(SolrLocalityLandmarkDocument solrLocalityLandmark);
 
-	boolean editLocalityLandmark(SolrLocalityLandmarkDocument solrLocalityLandmark);
+    boolean editLocalityLandmark(SolrLocalityLandmarkDocument solrLocalityLandmark);
 
-	List<SolrCityDocument> searchCity(String searchTerm);
+    List<SolrCityDocument> searchCity(String searchTerm);
 
-	List<SolrLocalityLandmarkDocument> searchLandmarkLocality(String cityId, String type, String searchTerm);
+    List<SolrLocalityLandmarkDocument> searchLandmarkLocality(String cityId, String type, String searchTerm);
 
 }
