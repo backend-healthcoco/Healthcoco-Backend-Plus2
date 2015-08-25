@@ -30,6 +30,6 @@ public interface InvestigationRepository extends MongoRepository<InvestigationCo
     @Query("{'$or': [{'doctorId': ?0, 'createdTime': {'$gte': ?1}} , {'doctorId': null, 'createdTime': {'$gte': ?1}}]}")
     List<InvestigationCollection> findCustomGlobalInvestigations(String doctorId, Date date, Sort sort);
 
-    @Query("{'$or': [{'doctorId': ?0, 'createdTime': {'$gte': ?1}, 'isDeleted': ?2}},{'doctorId': null, 'createdTime': {'$gte': ?1},'isDeleted': ?2}]}")
+    @Query("{'$or': [{'doctorId': ?0, 'createdTime': {'$gte': ?1}, 'isDeleted': ?2},{'doctorId': null, 'createdTime': {'$gte': ?1},'isDeleted': ?2}]}")
     List<InvestigationCollection> findCustomGlobalInvestigations(String doctorId, Date date, boolean b, Sort sort);
 }

@@ -36,6 +36,7 @@ import com.dpdocter.collections.InvestigationCollection;
 import com.dpdocter.collections.NotesCollection;
 import com.dpdocter.collections.ObservationCollection;
 import com.dpdocter.collections.PatientClinicalNotesCollection;
+import com.dpdocter.collections.UserCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -47,10 +48,12 @@ import com.dpdocter.repository.InvestigationRepository;
 import com.dpdocter.repository.NotesRepository;
 import com.dpdocter.repository.ObservationRepository;
 import com.dpdocter.repository.PatientClinicalNotesRepository;
+import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.ClinicalNotesAddRequest;
 import com.dpdocter.request.ClinicalNotesEditRequest;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.FileManager;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -86,6 +89,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    @Autowired
+    private UserRepository userRepository;
+    
     @Value(value = "${IMAGE_RESOURCE}")
     private String imageResource;
 
@@ -550,6 +556,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		for (String clinicalNotesId : clinicalNotesIds) {
 		    ClinicalNotes clinicalNotes = getNotesById(clinicalNotesId);
 		    if (clinicalNotes != null) {
+		    		UserCollection userCollection = userRepository.findOne(clinicalNotes.getDoctorId());
+		    		if(userCollection != null){
+		    			clinicalNotes.setDoctorName(userCollection.getFirstName() + userCollection.getLastName());
+		    		}
+		    	
 			clinicalNotesList.add(clinicalNotes);
 		    }
 		}
@@ -586,6 +597,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			ClinicalNotes clinicalNotes = getNotesById(clinicalNotesId);
 			if (clinicalNotes != null) {
 			    if (clinicalNotes.getDoctorId().equals(doctorId)) {
+			    	UserCollection userCollection = userRepository.findOne(clinicalNotes.getDoctorId());
+		    		if(userCollection != null){
+		    			clinicalNotes.setDoctorName(userCollection.getFirstName() + userCollection.getLastName());
+		    		}
 				clinicalNotesList.add(clinicalNotes);
 			    }
 			}
@@ -596,6 +611,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (clinicalNotes != null) {
 			    if (clinicalNotes.getDoctorId().equals(doctorId) && clinicalNotes.getLocationId().equals(locationId)
 				    && clinicalNotes.getHospitalId().equals(hospitalId)) {
+			    	UserCollection userCollection = userRepository.findOne(clinicalNotes.getDoctorId());
+		    		if(userCollection != null){
+		    			clinicalNotes.setDoctorName(userCollection.getFirstName() + userCollection.getLastName());
+		    		}
 				clinicalNotesList.add(clinicalNotes);
 			    }
 			}

@@ -16,6 +16,8 @@ public class HistoryDetailsResponse {
 
     private String patientId;
 
+    private String doctorName;
+    
     private List<GeneralData> generalRecords;
 
     /*private List<Records> reports;
@@ -70,7 +72,15 @@ public class HistoryDetailsResponse {
 	this.patientId = patientId;
     }
 
-    public List<GeneralData> getGeneralRecords() {
+    public String getDoctorName() {
+		return doctorName;
+	}
+
+	public void setDoctorName(String doctorName) {
+		this.doctorName = doctorName;
+	}
+
+	public List<GeneralData> getGeneralRecords() {
 	return generalRecords;
     }
 
@@ -102,11 +112,12 @@ public class HistoryDetailsResponse {
 	this.specialNotes = specialNotes;
     }
 
-    @Override
-    public String toString() {
-	return "HistoryDetailsResponse [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId="
-		+ patientId + ", generalRecords=" + generalRecords + ", familyhistory=" + familyhistory + ", medicalhistory=" + medicalhistory
-		+ ", specialNotes=" + specialNotes + "]";
-    }
+	@Override
+	public String toString() {
+		return "HistoryDetailsResponse [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", doctorName=" + doctorName
+				+ ", generalRecords=" + generalRecords + ", familyhistory=" + familyhistory + ", medicalhistory="
+				+ medicalhistory + ", specialNotes=" + specialNotes + "]";
+	}
 
 }

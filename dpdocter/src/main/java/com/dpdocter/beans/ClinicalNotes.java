@@ -27,6 +27,8 @@ public class ClinicalNotes extends GenericCollection {
     private String locationId;
 
     private String hospitalId;
+    
+    private String doctorName;
 
     private boolean inHistory = false;
 
@@ -136,12 +138,20 @@ public class ClinicalNotes extends GenericCollection {
 		this.isDeleted = isDeleted;
 	}
 
+	public String getDoctorName() {
+		return doctorName;
+	}
+
+	public void setDoctorName(String doctorName) {
+		this.doctorName = doctorName;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicalNotes [id=" + id + ", complaints=" + complaints + ", observations=" + observations
 				+ ", investigations=" + investigations + ", diagnoses=" + diagnoses + ", createdDate=" + createdDate
 				+ ", diagrams=" + diagrams + ", notes=" + notes + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", inHistory=" + inHistory + ", isDeleted=" + isDeleted
-				+ "]";
+				+ locationId + ", hospitalId=" + hospitalId + ", doctorName=" + doctorName + ", inHistory=" + inHistory
+				+ ", isDeleted=" + isDeleted + "]";
 	}
 }

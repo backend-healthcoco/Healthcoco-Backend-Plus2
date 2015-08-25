@@ -516,7 +516,7 @@ public interface PathProxy {
 
 	public static final String ADD_EDIT_PROFESSIONAL_MEMBERSHIP = "addEditProfessionalMembership";
 
-	public static final String GET_DOCTOR_PROFILE = "getDoctorProfile/{doctorId}/{locationId}/{hospitalId}";
+	public static final String GET_DOCTOR_PROFILE = "getDoctorProfile/{doctorId}";
 
 	public static final String ADD_EDIT_MEDICAL_COUNCILS = "addEditMedicalCouncils";
 
@@ -588,7 +588,7 @@ public interface PathProxy {
 	public static final String SEARCH_PATIENT_ADV = "searchPatient";
     }
     
-    public static final String CITY_BASE_URL = BASE_URL + "/city";
+    public static final String APPOINTMENT_BASE_URL = BASE_URL + "/appointment";
 
     public interface CityUrls {
     	
@@ -607,6 +607,8 @@ public interface PathProxy {
     	public static final String ADD_LANDMARK = "/addLandmark";	
     	
     	public static final String GET_LANDMARK_LOCALITY = "/getLandmarkLocality/{cityId}";
+    	
+    	public static final String GET_CLINIC = "/getClinic/{locationId}";
     	
     }
     public static final String SOLR_CITY_BASE_URL = BASE_URL + "/solr/city";

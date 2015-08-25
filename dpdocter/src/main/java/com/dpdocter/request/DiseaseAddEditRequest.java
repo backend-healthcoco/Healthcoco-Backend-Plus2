@@ -1,6 +1,8 @@
 package com.dpdocter.request;
 
-public class DiseaseAddEditRequest {
+import com.dpdocter.collections.GenericCollection;
+
+public class DiseaseAddEditRequest extends GenericCollection{
     private String id;
 
     private String doctorId;

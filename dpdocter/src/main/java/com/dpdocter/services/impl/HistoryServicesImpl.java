@@ -28,6 +28,7 @@ import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.NotesCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.RecordsCollection;
+import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.HistoryFilter;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -38,6 +39,7 @@ import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.repository.NotesRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.RecordsRepository;
+import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DiseaseAddEditRequest;
 import com.dpdocter.response.DiseaseAddEditResponse;
 import com.dpdocter.response.DiseaseListResponse;
@@ -82,16 +84,19 @@ public class HistoryServicesImpl implements HistoryServices {
     @Autowired
     private MongoOperations mongoOperations;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Override
     public List<DiseaseAddEditResponse> addDiseases(List<DiseaseAddEditRequest> request) {
 	List<DiseaseAddEditResponse> response = null;
 	List<DiseasesCollection> diseases = new ArrayList<DiseasesCollection>();
-	BeanUtil.map(request, diseases);
 	try {
-		 for (Iterator<DiseasesCollection> iterator = diseases.iterator(); iterator.hasNext();) {
-			 DiseasesCollection diseasesCollection = iterator.next();
-			 diseasesCollection.setCreatedTime(new Date());
+		 for (Iterator<DiseaseAddEditRequest> iterator = request.iterator(); iterator.hasNext();) {
+			 DiseaseAddEditRequest diseaseAddEditRequest = iterator.next();
+			 diseaseAddEditRequest.setCreatedTime(new Date());
 		 }
+		BeanUtil.map(request, diseases);
 	    diseases = diseasesRepository.save(diseases);
 	    response = new ArrayList<DiseaseAddEditResponse>();
 	    BeanUtil.map(diseases, response);
@@ -696,6 +701,11 @@ public class HistoryServicesImpl implements HistoryServices {
 		}
 
 		response.setSpecialNotes(historyCollection.getSpecialNotes());
+		UserCollection userCollection = userRepository.findOne(historyCollection.getDoctorId());
+		if(userCollection != null){
+			response.setDoctorName(userCollection.getFirstName() + userCollection.getLastName());
+		}
+
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -789,7 +799,10 @@ public class HistoryServicesImpl implements HistoryServices {
 		    }
 
 		    historyDetailsResponse.setSpecialNotes(historyCollection.getSpecialNotes());
-
+		    UserCollection userCollection = userRepository.findOne(historyCollection.getDoctorId());
+			if(userCollection != null){
+				historyDetailsResponse.setDoctorName(userCollection.getFirstName() + userCollection.getLastName());
+			}
 		    response.add(historyDetailsResponse);
 		}
 	    }
