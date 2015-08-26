@@ -140,7 +140,7 @@ public class SignUpApi {
 	    BeanUtil.map(doctor.getUser(), solrDoctorDocument);
 	    List<String> specialiazation = new ArrayList<String>();
 	    for (Location location : doctor.getHospital().getLocations()) {
-		specialiazation.addAll(location.getSpecialization());
+		if(location.getSpecialization() != null)specialiazation.addAll(location.getSpecialization());
 	    }
 	    solrDoctorDocument.setSpecialization(specialiazation);
 	    solrDoctorDocument.setLocations(doctor.getHospital().getLocations());
