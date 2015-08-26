@@ -173,65 +173,67 @@ public interface PathProxy {
 
 	public static final String DELETE_DIAGRAM = "/deletediagram/{id}/{doctorId}/{locationId}/{hospitalId}";
 
-	public static final String GET_CUSTOM_COMPLAINTS = "getCustomComplaints/{doctorId}/{locationId}/{hospitalId}/{page}/{size}";
-
-	public static final String GET_CUSTOM_DIAGNOSIS = "getCustomDiagnosis/{doctorId}/{locationId}/{hospitalId}/{page}/{size}";
-
-	public static final String GET_CUSTOM_INVESTIGATIONS = "getCustomInvestigations/{doctorId}/{locationId}/{hospitalId}/{page}/{size}";
-
-	public static final String GET_CUSTOM_OBSERVATIONS = "getCustomObservations/{doctorId}/{locationId}/{hospitalId}/{page}/{size}";
-
-	public static final String GET_COMPLAINTS = "getComplaints/{doctorId}/{createdTime}";
-
-	public static final String GET_COMPLAINTS_ISDELETED = "getComplaints/{doctorId}/{createdTime}/{isDeleted}";
-
-	public static final String GET_INVESTIGATIONS = "getInvestigations/{doctorId}/{createdTime}";
-
-	public static final String GET_INVESTIGATIONS_ISDELETED = "getInvestigations/{doctorId}/{createdTime}/{isDeleted}";
-
-	public static final String GET_OBSERVATIONS = "getObservations/{doctorId}/{createdTime}";
-
-	public static final String GET_OBSERVATIONS_ISDELETED = "getObservations/{doctorId}/{createdTime}/{isDeleted}";
-
-	public static final String GET_DIAGNOSIS = "getDiagnosis/{doctorId}/{createdTime}";
-
-	public static final String GET_DIAGNOSIS_ISDELETED = "getDiagnosis/{doctorId}/{createdTime}/{isDeleted}";
-
-	public static final String GET_NOTES = "getNotes/{doctorId}/{createdTime}";
-
-	public static final String GET_NOTES_ISDELETED = "getNotes/{doctorId}/{createdTime}/{isDeleted}";
-
-	public static final String GET_DIAGRAMS = "getDiagrams/{doctorId}/{createdTime}";
-
-	public static final String GET_DIAGRAMS_ISDELETED = "getDiagrams/{doctorId}/{createdTime}/{isDeleted}";
-
-	public static final String GET_GLOBAL_COMPLAINTS = "getGlobalComplaints/{createdTime}";
-
-	public static final String GET_GLOBAL_INVESTIGATIONS = "getGlobalInvestigations/{createdTime}";
-
-	public static final String GET_GLOBAL_OBSERVATIONS = "getGlobalObservations/{createdTime}";
-
-	public static final String GET_GLOBAL_DIAGNOSIS = "getGlobalDiagnosis/{createdTime}";
-
-	public static final String GET_GLOBAL_NOTES = "getGlobalNotes/{createdTime}";
-
-	public static final String GET_GLOBAL_DIAGRAMS = "getGlobalDiagrams/{createdTime}";
-
-	public static final String GET_CUSTOM_GLOBAL_COMPLAINTS = "getCustomGlobalComplaints/{doctorId}/{createdTime}";
-
-	public static final String GET_CUSTOM_GLOBAL_COMPLAINTS_ISDELETED = "getCustomGlobalComplaints/{doctorId}/{createdTime}/{isDeleted}";
-
-	public static final String GET_CUSTOM_GLOBAL_INVESTIGATIONS = "getCustomGlobalInvestigations/{doctorId}/{createdTime}";
-
-	public static final String GET_CUSTOM_GLOBAL_INVESTIGATIONS_ISDELETED = "getCustomGlobalInvestigations/{doctorId}/{createdTime}/{isDeleted}";
-
-	public static final String GET_CUSTOM_GLOBAL_OBSERVATIONS = "getCustomGlobalObservations/{doctorId}/{createdTime}";
-
-	public static final String GET_CUSTOM_GLOBAL_OBSERVATIONS_ISDELETED = "getCustomGlobalObservations/{doctorId}/{createdTime}/{isDeleted}";
-
-	public static final String GET_CUSTOM_GLOBAL_DIAGNOSIS = "getCustomGlobalDiagnosis/{doctorId}/{createdTime}";
-
-	public static final String GET_CUSTOM_GLOBAL_DIAGNOSIS_ISDELETED = "getCustomGlobalDiagnosis/{doctorId}/{createdTime}/{isDeleted}";
+	public static final String GET_CINICAL_ITEMS = "getClinicalItems/{type}/{range}/{page}/{size}";
+	
+//	public static final String GET_CUSTOM_COMPLAINTS = "getCustomComplaints/{doctorId}/{locationId}/{hospitalId}/{page}/{size}";
+//
+//	public static final String GET_CUSTOM_DIAGNOSIS = "getCustomDiagnosis/{doctorId}/{locationId}/{hospitalId}/{page}/{size}";
+//
+//	public static final String GET_CUSTOM_INVESTIGATIONS = "getCustomInvestigations/{doctorId}/{locationId}/{hospitalId}/{page}/{size}";
+//
+//	public static final String GET_CUSTOM_OBSERVATIONS = "getCustomObservations/{doctorId}/{locationId}/{hospitalId}/{page}/{size}";
+//
+//	public static final String GET_COMPLAINTS = "getComplaints/{doctorId}/{createdTime}";
+//
+//	public static final String GET_COMPLAINTS_ISDELETED = "getComplaints/{doctorId}/{createdTime}/{isDeleted}";
+//
+//	public static final String GET_INVESTIGATIONS = "getInvestigations/{doctorId}/{createdTime}";
+//
+//	public static final String GET_INVESTIGATIONS_ISDELETED = "getInvestigations/{doctorId}/{createdTime}/{isDeleted}";
+//
+//	public static final String GET_OBSERVATIONS = "getObservations/{doctorId}/{createdTime}";
+//
+//	public static final String GET_OBSERVATIONS_ISDELETED = "getObservations/{doctorId}/{createdTime}/{isDeleted}";
+//
+//	public static final String GET_DIAGNOSIS = "getDiagnosis/{doctorId}/{createdTime}";
+//
+//	public static final String GET_DIAGNOSIS_ISDELETED = "getDiagnosis/{doctorId}/{createdTime}/{isDeleted}";
+//
+//	public static final String GET_NOTES = "getNotes/{doctorId}/{createdTime}";
+//
+//	public static final String GET_NOTES_ISDELETED = "getNotes/{doctorId}/{createdTime}/{isDeleted}";
+//
+//	public static final String GET_DIAGRAMS = "getDiagrams/{doctorId}/{createdTime}";
+//
+//	public static final String GET_DIAGRAMS_ISDELETED = "getDiagrams/{doctorId}/{createdTime}/{isDeleted}";
+//
+//	public static final String GET_GLOBAL_COMPLAINTS = "getGlobalComplaints/{createdTime}";
+//
+//	public static final String GET_GLOBAL_INVESTIGATIONS = "getGlobalInvestigations/{createdTime}";
+//
+//	public static final String GET_GLOBAL_OBSERVATIONS = "getGlobalObservations/{createdTime}";
+//
+//	public static final String GET_GLOBAL_DIAGNOSIS = "getGlobalDiagnosis/{createdTime}";
+//
+//	public static final String GET_GLOBAL_NOTES = "getGlobalNotes/{createdTime}";
+//
+//	public static final String GET_GLOBAL_DIAGRAMS = "getGlobalDiagrams/{createdTime}";
+//
+//	public static final String GET_CUSTOM_GLOBAL_COMPLAINTS = "getCustomGlobalComplaints/{doctorId}/{createdTime}";
+//
+//	public static final String GET_CUSTOM_GLOBAL_COMPLAINTS_ISDELETED = "getCustomGlobalComplaints/{doctorId}/{createdTime}/{isDeleted}";
+//
+//	public static final String GET_CUSTOM_GLOBAL_INVESTIGATIONS = "getCustomGlobalInvestigations/{doctorId}/{createdTime}";
+//
+//	public static final String GET_CUSTOM_GLOBAL_INVESTIGATIONS_ISDELETED = "getCustomGlobalInvestigations/{doctorId}/{createdTime}/{isDeleted}";
+//
+//	public static final String GET_CUSTOM_GLOBAL_OBSERVATIONS = "getCustomGlobalObservations/{doctorId}/{createdTime}";
+//
+//	public static final String GET_CUSTOM_GLOBAL_OBSERVATIONS_ISDELETED = "getCustomGlobalObservations/{doctorId}/{createdTime}/{isDeleted}";
+//
+//	public static final String GET_CUSTOM_GLOBAL_DIAGNOSIS = "getCustomGlobalDiagnosis/{doctorId}/{createdTime}";
+//
+//	public static final String GET_CUSTOM_GLOBAL_DIAGNOSIS_ISDELETED = "getCustomGlobalDiagnosis/{doctorId}/{createdTime}/{isDeleted}";
 
     }
 

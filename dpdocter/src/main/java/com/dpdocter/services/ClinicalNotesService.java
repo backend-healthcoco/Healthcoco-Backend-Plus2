@@ -52,37 +52,9 @@ public interface ClinicalNotesService {
 
     void deleteDiagram(String id, String doctorId, String locationId, String hospitalId);
 
-    List<Complaint> getCustomComplaints(String doctorId, String locationId, String hospitalId, int page, int size);
-
-    List<Diagnoses> getCustomDiagnosis(String doctorId, String locationId, String hospitalId, int page, int size);
-
-    List<Investigation> getCustomInvestigations(String doctorId, String locationId, String hospitalId, int page, int size);
-
-    List<Observation> getCustomObservations(String doctorId, String locationId, String hospitalId, int page, int size);
-
     @Query(value = "{'doctorId': ?0, 'patientId': ?1, 'locationId': ?2, 'hospitalId': ?3}", count = true)
     Integer getClinicalNotesCount(String doctorId, String patientId, String locationId, String hospitalId);
 
-    List<Complaint> getComplaints(String doctorId, String createdTime, boolean isDeleted);
-
-    List<Investigation> getInvestigations(String doctorId, String createdTime, boolean isDeleted);
-
-    List<Observation> getObservations(String doctorId, String createdTime, boolean isDeleted);
-
-    List<Diagnoses> getDiagnosis(String doctorId, String createdTime, boolean isDeleted);
-
-    List<Notes> getNotes(String doctorId, String createdTime, boolean isDeleted);
-
-    List<Diagram> getDiagrams(String doctorId, String createdTime, boolean isDeleted);
-
-    List<Diagram> getGlobalDiagrams(String createdTime);
-
-    List<Complaint> getCustomGlobalComplaints(String doctorId, String createdTime, boolean isDeleted);
-
-    List<Investigation> getCustomGlobalInvestigations(String doctorId, String createdTime, boolean isDeleted);
-
-    List<Observation> getCustomGlobalObservations(String doctorId, String createdTime, boolean isDeleted);
-
-    List<Diagnoses> getCustomGlobalDiagnosis(String doctorId, String createdTime, boolean isDeleted);
+	List<Object> getClinicalItems(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String createdTime, Boolean isDeleted);
 
 }

@@ -18,6 +18,9 @@ public class PatientClinicalNotesCollection extends GenericCollection {
     @Field
     private boolean isDeleted;
 
+    @Field
+    private Long createdDate;
+
     public String getId() {
 	return id;
     }
@@ -50,10 +53,18 @@ public class PatientClinicalNotesCollection extends GenericCollection {
 	this.isDeleted = isDeleted;
     }
 
-    @Override
-    public String toString() {
-	return "PatientClinicalNotesCollection [id=" + id + ", patientId=" + patientId + ", clinicalNotesId=" + clinicalNotesId + ", isDeleted=" + isDeleted
-		+ "]";
-    }
+	public Long getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Long createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientClinicalNotesCollection [id=" + id + ", patientId=" + patientId + ", clinicalNotesId="
+				+ clinicalNotesId + ", isDeleted=" + isDeleted + ", createdDate=" + createdDate + "]";
+	}
 
 }

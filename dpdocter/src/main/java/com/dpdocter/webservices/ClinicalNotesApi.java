@@ -8,6 +8,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -190,18 +191,6 @@ public class ClinicalNotesApi {
 	return response;
     }
 
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_CUSTOM_COMPLAINTS)
-    @GET
-    public Response<Complaint> getCustomComplaints(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "page") int page, @PathParam(value = "size") int size) {
-	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id, Location Id, or Hospital Id Cannot Be Empty");
-	}
-	List<Complaint> customComplaints = clinicalNotesService.getCustomComplaints(doctorId, locationId, hospitalId, page, size);
-	Response<Complaint> response = new Response<Complaint>();
-	response.setDataList(customComplaints);
-	return response;
-    }
 
     @Path(value = PathProxy.ClinicalNotesUrls.ADD_OBSERVATION)
     @POST
@@ -219,20 +208,7 @@ public class ClinicalNotesApi {
 	response.setData(observation);
 	return response;
     }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_CUSTOM_OBSERVATIONS)
-    @GET
-    public Response<Observation> getCustomObservations(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "page") int page, @PathParam(value = "size") int size) {
-	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id, Location Id, or Hospital Id Cannot Be Empty");
-	}
-	List<Observation> customObservations = clinicalNotesService.getCustomObservations(doctorId, locationId, hospitalId, page, size);
-	Response<Observation> response = new Response<Observation>();
-	response.setDataList(customObservations);
-	return response;
-    }
-
+   
     @Path(value = PathProxy.ClinicalNotesUrls.ADD_INVESTIGATION)
     @POST
     public Response<Investigation> addInvestigation(Investigation request) {
@@ -247,19 +223,6 @@ public class ClinicalNotesApi {
 	}
 	Response<Investigation> response = new Response<Investigation>();
 	response.setData(investigation);
-	return response;
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_CUSTOM_INVESTIGATIONS)
-    @GET
-    public Response<Investigation> getCustomInvestigations(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "page") int page, @PathParam(value = "size") int size) {
-	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id, Location Id, or Hospital Id Cannot Be Empty");
-	}
-	List<Investigation> customInvestigations = clinicalNotesService.getCustomInvestigations(doctorId, locationId, hospitalId, page, size);
-	Response<Investigation> response = new Response<Investigation>();
-	response.setDataList(customInvestigations);
 	return response;
     }
 
@@ -281,20 +244,7 @@ public class ClinicalNotesApi {
 	response.setData(diagnosis);
 	return response;
     }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_CUSTOM_DIAGNOSIS)
-    @GET
-    public Response<Diagnoses> getCustomDiagnosis(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "page") int page, @PathParam(value = "size") int size) {
-	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id, Location Id, or Hospital Id Cannot Be Empty");
-	}
-	List<Diagnoses> customDiagnosis = clinicalNotesService.getCustomDiagnosis(doctorId, locationId, hospitalId, page, size);
-	Response<Diagnoses> response = new Response<Diagnoses>();
-	response.setDataList(customDiagnosis);
-	return response;
-    }
-
+    
     @Path(value = PathProxy.ClinicalNotesUrls.ADD_NOTES)
     @POST
     public Response<Notes> addNotes(Notes request) {
@@ -405,248 +355,24 @@ public class ClinicalNotesApi {
 	return response;
     }
 
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_COMPLAINTS)
+    @Path(value = PathProxy.ClinicalNotesUrls.GET_CINICAL_ITEMS)
     @GET
-    public Response<Complaint> getComplaints(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
-	List<Complaint> complaints = clinicalNotesService.getComplaints(doctorId, createdTime, true);
-	Response<Complaint> response = new Response<Complaint>();
-	response.setDataList(complaints);
-	return response;
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_COMPLAINTS_ISDELETED)
-    @GET
-    public Response<Complaint> getComplaints(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
-	    @PathParam("isDeleted") boolean isDeleted) {
-	List<Complaint> complaints = clinicalNotesService.getComplaints(doctorId, createdTime, isDeleted);
-	Response<Complaint> response = new Response<Complaint>();
-	response.setDataList(complaints);
-	return response;
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_INVESTIGATIONS)
-    @GET
-    public Response<Investigation> getInvestigations(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
-	List<Investigation> investigations = clinicalNotesService.getInvestigations(doctorId, createdTime, true);
-	Response<Investigation> response = new Response<Investigation>();
-	response.setDataList(investigations);
-	return response;
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_INVESTIGATIONS_ISDELETED)
-    @GET
-    public Response<Investigation> getInvestigations(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
-	    @PathParam("isDeleted") boolean isDeleted) {
-	List<Investigation> investigations = clinicalNotesService.getInvestigations(doctorId, createdTime, isDeleted);
-	Response<Investigation> response = new Response<Investigation>();
-	response.setDataList(investigations);
-	return response;
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_OBSERVATIONS)
-    @GET
-    public Response<Observation> getObservations(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
-	List<Observation> observations = clinicalNotesService.getObservations(doctorId, createdTime, true);
-	Response<Observation> response = new Response<Observation>();
-	response.setDataList(observations);
-	return response;
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_OBSERVATIONS_ISDELETED)
-    @GET
-    public Response<Observation> getObservations(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
-	    @PathParam("isDeleted") boolean isDeleted) {
-	List<Observation> observations = clinicalNotesService.getObservations(doctorId, createdTime, isDeleted);
-	Response<Observation> response = new Response<Observation>();
-	response.setDataList(observations);
-	return response;
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_DIAGNOSIS)
-    @GET
-    public Response<Diagnoses> getDiagnosis(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
-	List<Diagnoses> diagnosis = clinicalNotesService.getDiagnosis(doctorId, createdTime, true);
-	Response<Diagnoses> response = new Response<Diagnoses>();
-	response.setDataList(diagnosis);
-	return response;
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_DIAGNOSIS_ISDELETED)
-    @GET
-    public Response<Diagnoses> getDiagnosis(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
-	    @PathParam("isDeleted") boolean isDeleted) {
-	List<Diagnoses> diagnosis = clinicalNotesService.getDiagnosis(doctorId, createdTime, isDeleted);
-	Response<Diagnoses> response = new Response<Diagnoses>();
-	response.setDataList(diagnosis);
-	return response;
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_NOTES)
-    @GET
-    public Response<Notes> getNotes(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
-	List<Notes> notes = clinicalNotesService.getNotes(doctorId, createdTime, true);
-	Response<Notes> response = new Response<Notes>();
-	response.setDataList(notes);
-	return response;
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_NOTES_ISDELETED)
-    @GET
-    public Response<Notes> getCompleteNotes(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
-	    @PathParam("isDeleted") boolean isDeleted) {
-	List<Notes> notes = clinicalNotesService.getNotes(doctorId, createdTime, isDeleted);
-	Response<Notes> response = new Response<Notes>();
-	response.setDataList(notes);
-	return response;
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_DIAGRAMS)
-    @GET
-    public Response<Diagram> getDiagrams(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
-	List<Diagram> diagrams = clinicalNotesService.getDiagrams(doctorId, createdTime, true);
-	Response<Diagram> response = new Response<Diagram>();
-	response.setDataList(diagrams);
-	return response;
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_DIAGRAMS_ISDELETED)
-    @GET
-    public Response<Diagram> getDiagrams(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
-	    @PathParam("isDeleted") boolean isDeleted) {
-	List<Diagram> diagrams = clinicalNotesService.getDiagrams(doctorId, createdTime, isDeleted);
-	Response<Diagram> response = new Response<Diagram>();
-	response.setDataList(diagrams);
-	return response;
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_GLOBAL_DIAGRAMS)
-    @GET
-    public Response<Diagram> getGlobalDiagrams(@PathParam("createdTime") String createdTime) {
-	List<Diagram> diagrams = clinicalNotesService.getGlobalDiagrams(createdTime);
-	Response<Diagram> response = new Response<Diagram>();
-	response.setDataList(diagrams);
-	return response;
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_GLOBAL_COMPLAINTS)
-    @GET
-    public Response<Complaint> getComplaints(@PathParam("createdTime") String createdTime) {
-	List<Complaint> complaints = clinicalNotesService.getComplaints(null, createdTime, true);
-	Response<Complaint> response = new Response<Complaint>();
-	response.setDataList(complaints);
-	return response;
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_GLOBAL_INVESTIGATIONS)
-    @GET
-    public Response<Investigation> getInvestigations(@PathParam("createdTime") String createdTime) {
-	List<Investigation> investigations = clinicalNotesService.getInvestigations(null, createdTime, true);
-	Response<Investigation> response = new Response<Investigation>();
-	response.setDataList(investigations);
-	return response;
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_GLOBAL_OBSERVATIONS)
-    @GET
-    public Response<Observation> getObservations(@PathParam("createdTime") String createdTime) {
-	List<Observation> observations = clinicalNotesService.getObservations(null, createdTime, true);
-	Response<Observation> response = new Response<Observation>();
-	response.setDataList(observations);
-	return response;
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_GLOBAL_DIAGNOSIS)
-    @GET
-    public Response<Diagnoses> getDiagnosis(@PathParam("createdTime") String createdTime, @PathParam("isDeleted") boolean isDeleted) {
-	List<Diagnoses> diagnosis = clinicalNotesService.getDiagnosis(null, createdTime, isDeleted);
-	Response<Diagnoses> response = new Response<Diagnoses>();
-	response.setDataList(diagnosis);
-	return response;
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_GLOBAL_NOTES)
-    @GET
-    public Response<Notes> getNotes(@PathParam("createdTime") String createdTime) {
-	List<Notes> notes = clinicalNotesService.getNotes(null, createdTime, true);
-	Response<Notes> response = new Response<Notes>();
-	response.setDataList(notes);
-	return response;
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_CUSTOM_GLOBAL_COMPLAINTS)
-    @GET
-    public Response<Complaint> getCustomGlobalComplaints(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
-	List<Complaint> complaints = clinicalNotesService.getCustomGlobalComplaints(doctorId, createdTime, true);
-	Response<Complaint> response = new Response<Complaint>();
-	response.setDataList(complaints);
-	return response;
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_CUSTOM_GLOBAL_COMPLAINTS_ISDELETED)
-    @GET
-    public Response<Complaint> getCustomGlobalComplaints(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
-	    @PathParam("isDeleted") boolean isDeleted) {
-	List<Complaint> complaints = clinicalNotesService.getCustomGlobalComplaints(doctorId, createdTime, isDeleted);
-	Response<Complaint> response = new Response<Complaint>();
-	response.setDataList(complaints);
-	return response;
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_CUSTOM_GLOBAL_INVESTIGATIONS)
-    @GET
-    public Response<Investigation> getCustomGlobalInvestigations(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
-	List<Investigation> investigations = clinicalNotesService.getCustomGlobalInvestigations(doctorId, createdTime, true);
-	Response<Investigation> response = new Response<Investigation>();
-	response.setDataList(investigations);
-	return response;
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_CUSTOM_GLOBAL_INVESTIGATIONS_ISDELETED)
-    @GET
-    public Response<Investigation> getCustomGlobalInvestigations(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
-	    @PathParam("isDeleted") boolean isDeleted) {
-	List<Investigation> investigations = clinicalNotesService.getCustomGlobalInvestigations(doctorId, createdTime, isDeleted);
-	Response<Investigation> response = new Response<Investigation>();
-	response.setDataList(investigations);
-	return response;
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_CUSTOM_GLOBAL_OBSERVATIONS)
-    @GET
-    public Response<Observation> getCustomGlobalObservations(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
-	List<Observation> observations = clinicalNotesService.getCustomGlobalObservations(doctorId, createdTime, true);
-	Response<Observation> response = new Response<Observation>();
-	response.setDataList(observations);
-	return response;
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_CUSTOM_GLOBAL_OBSERVATIONS_ISDELETED)
-    @GET
-    public Response<Observation> getCustomGlobalObservations(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
-	    @PathParam("isDeleted") boolean isDeleted) {
-	List<Observation> observations = clinicalNotesService.getCustomGlobalObservations(doctorId, createdTime, isDeleted);
-	Response<Observation> response = new Response<Observation>();
-	response.setDataList(observations);
-	return response;
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_CUSTOM_GLOBAL_DIAGNOSIS)
-    @GET
-    public Response<Diagnoses> getCustomGlobalDiagnosis(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
-	List<Diagnoses> diagnosis = clinicalNotesService.getCustomGlobalDiagnosis(doctorId, createdTime, true);
-	Response<Diagnoses> response = new Response<Diagnoses>();
-	response.setDataList(diagnosis);
-	return response;
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_CUSTOM_GLOBAL_DIAGNOSIS_ISDELETED)
-    @GET
-    public Response<Diagnoses> getCustomGlobalDiagnosis(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
-	    @PathParam("isDeleted") boolean isDeleted) {
-	List<Diagnoses> diagnosis = clinicalNotesService.getCustomGlobalDiagnosis(doctorId, createdTime, isDeleted);
-	Response<Diagnoses> response = new Response<Diagnoses>();
-	response.setDataList(diagnosis);
-	return response;
+    public Response<Object> getClinicalItems(@PathParam("type") String type, @PathParam("range") String range,
+	    @PathParam("page") int page, @PathParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId, 
+	    @QueryParam(value = "createdTime") String createdTime, @QueryParam(value = "isDeleted") Boolean isDeleted) {
+    	
+    	if (DPDoctorUtils.anyStringEmpty(type, range)) {
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Type or Range Cannot Be Empty");
+    	}
+    	List<Object> clinicalItems ;
+    	if(isDeleted != null)
+    		clinicalItems = clinicalNotesService.getClinicalItems(type, range, page, size, doctorId, locationId, hospitalId, createdTime, isDeleted);
+    	else
+    		 clinicalItems = clinicalNotesService.getClinicalItems(type, range, page, size, doctorId, locationId, hospitalId, createdTime, true);
+    	Response<Object> response = new  Response<Object>();
+    	response.setDataList(clinicalItems);
+    	return  response;
     }
 
 }

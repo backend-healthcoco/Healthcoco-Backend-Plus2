@@ -4,7 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -37,6 +39,8 @@ import com.dpdocter.collections.NotesCollection;
 import com.dpdocter.collections.ObservationCollection;
 import com.dpdocter.collections.PatientClinicalNotesCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.ClinicalItems;
+import com.dpdocter.enums.Range;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -213,6 +217,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    PatientClinicalNotesCollection patientClinicalNotesCollection = new PatientClinicalNotesCollection();
 		    patientClinicalNotesCollection.setClinicalNotesId(clinicalNotesCollection.getId());
 		    patientClinicalNotesCollection.setPatientId(request.getPatientId());
+		    patientClinicalNotesCollection.setCreatedTime(createdTime);
+		    patientClinicalNotesCollection.setCreatedDate(createdDate);
 		    patientClinicalNotesRepository.save(patientClinicalNotesCollection);
 		}
 
@@ -332,22 +338,24 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    }
 		    clinicalNote.setNotes(notes);
 		}
-
-		@SuppressWarnings("unchecked")
-		List<DiagramsCollection> diagramsCollections = IteratorUtils.toList(diagramsRepository.findAll(clinicalNotesCollection.getDiagrams())
-			.iterator());
-		if (diagramsCollections != null) {
-		    List<Diagram> diagrams = new ArrayList<Diagram>();
-		    for (DiagramsCollection diagramsCollection : diagramsCollections) {
-			Diagram diagram = new Diagram();
-			BeanUtil.map(diagramsCollection, diagrams);
-			diagram.setDoctorId(null);
-			diagram.setHospitalId(null);
-			diagram.setLocationId(null);
-			diagrams.add(diagram);
-		    }
-		    clinicalNote.setDiagrams(diagrams);
+		if(clinicalNotesCollection.getDiagrams() != null){
+			@SuppressWarnings("unchecked")
+			List<DiagramsCollection> diagramsCollections = IteratorUtils.toList(diagramsRepository.findAll(clinicalNotesCollection.getDiagrams())
+				.iterator());
+			if (diagramsCollections != null) {
+			    List<Diagram> diagrams = new ArrayList<Diagram>();
+			    for (DiagramsCollection diagramsCollection : diagramsCollections) {
+				Diagram diagram = new Diagram();
+				BeanUtil.map(diagramsCollection, diagrams);
+				diagram.setDoctorId(null);
+				diagram.setHospitalId(null);
+				diagram.setLocationId(null);
+				diagrams.add(diagram);
+			    }
+			    clinicalNote.setDiagrams(diagrams);
+			}
 		}
+		
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -874,83 +882,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
-    }
-
-    @Override
-    public List<Complaint> getCustomComplaints(String doctorId, String locationId, String hospitalId, int page, int size) {
-	List<ComplaintCollection> complaintCollections = null;
-	List<Complaint> complaints = null;
-	try {
-	    complaintCollections = complaintRepository.findCustomComplaints(doctorId, locationId, hospitalId, false, new PageRequest(page, size));
-	    if (complaintCollections != null) {
-		complaints = new ArrayList<Complaint>();
-		BeanUtil.map(complaintCollections, complaints);
-	    } else {
-		throw new BusinessException(ServiceError.NotFound, "No Complaints Found");
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
-	}
-	return complaints;
-    }
-
-    @Override
-    public List<Diagnoses> getCustomDiagnosis(String doctorId, String locationId, String hospitalId, int page, int size) {
-	List<DiagnosisCollection> diagnosisCollections = null;
-	List<Diagnoses> diagnosis = null;
-	try {
-	    diagnosisCollections = diagnosisRepository.findCustomDiagnosis(doctorId, locationId, hospitalId, false, new PageRequest(page, size));
-	    if (diagnosisCollections != null) {
-		diagnosis = new ArrayList<Diagnoses>();
-		BeanUtil.map(diagnosisCollections, diagnosis);
-	    } else {
-		throw new BusinessException(ServiceError.NotFound, "No Diagnosis Found");
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnosis");
-	}
-	return diagnosis;
-    }
-
-    @Override
-    public List<Investigation> getCustomInvestigations(String doctorId, String locationId, String hospitalId, int page, int size) {
-	List<InvestigationCollection> investigationCollections = null;
-	List<Investigation> investigations = null;
-	try {
-	    investigationCollections = investigationRepository.findCustomInvestigations(doctorId, locationId, hospitalId, false, new PageRequest(page, size));
-	    if (investigationCollections != null) {
-		investigations = new ArrayList<Investigation>();
-		BeanUtil.map(investigationCollections, investigations);
-	    } else {
-		throw new BusinessException(ServiceError.NotFound, "No Investigation Found");
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Investigations");
-	}
-	return investigations;
-    }
-
-    @Override
-    public List<Observation> getCustomObservations(String doctorId, String locationId, String hospitalId, int page, int size) {
-	List<ObservationCollection> observationCollections = null;
-	List<Observation> observations = null;
-	try {
-	    observationCollections = observationRepository.findCustomObservations(doctorId, locationId, hospitalId, false, new PageRequest(page, size));
-	    if (observationCollections != null) {
-		observations = new ArrayList<Observation>();
-		BeanUtil.map(observationCollections, observations);
-	    } else {
-		throw new BusinessException(ServiceError.NotFound, "No Observations Found");
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Observations");
-	}
-	return observations;
-    }
+ }
 
     @Override
     public Integer getClinicalNotesCount(String doctorId, String patientId, String locationId, String hospitalId) {
@@ -968,58 +900,268 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return clinicalNotesCount;
     }
 
-    @Override
-    public List<Complaint> getComplaints(String doctorId, String createdTime, boolean isDeleted) {
-	List<Complaint> response = new ArrayList<Complaint>();
+	@Override
+	public List<Object> getClinicalItems(String type, String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String createdTime, Boolean isDeleted) {
+		List<Object> response = new ArrayList<Object>();
+		
+		switch(ClinicalItems.valueOf(type.toUpperCase())){
+			
+		case COMPLAINTS : {
+			
+			switch(Range.valueOf(range.toUpperCase())){
+			
+			case GLOBAL :  response = getGlobalComplaints(page, size, createdTime, isDeleted);	break;
+			case CUSTOM : response=getCustomComplaints(page, size, doctorId, locationId, hospitalId, createdTime, isDeleted); break;
+			case BOTH : response=getCustomGlobalComplaints(page, size, doctorId, locationId, hospitalId, createdTime, isDeleted); break;
+			}
+			break;
+		}
+		case INVESTIGATIONS : {
+			switch(Range.valueOf(range.toUpperCase())){
+			
+			case GLOBAL :  response = getGlobalInvestigations(page, size, createdTime, isDeleted);	break;
+			case CUSTOM : response=getCustomInvestigations(page, size, doctorId, locationId, hospitalId, createdTime, isDeleted); break;
+			case BOTH : response=getCustomGlobalInvestigations(page, size, doctorId, locationId, hospitalId, createdTime, isDeleted); break;
+			}
+			break;
+		}
+		case OBSERVATIONS :{ 
+			switch(Range.valueOf(range.toUpperCase())){
+			
+			case GLOBAL :  response = getGlobalObservations(page, size, createdTime, isDeleted);	break;
+			case CUSTOM : response=getCustomObservations(page, size, doctorId, locationId, hospitalId, createdTime, isDeleted); break;
+			case BOTH : response=getCustomGlobalObservations(page, size, doctorId, locationId, hospitalId, createdTime, isDeleted); break;
+			}
+			break;
+		}
+		case DIAGNOSIS :{
+			switch(Range.valueOf(range.toUpperCase())){
+			
+			case GLOBAL :  response = getGlobalDiagnosis(page, size, createdTime, isDeleted);	break;
+			case CUSTOM : response=getCustomDiagnosis(page, size, doctorId, locationId, hospitalId, createdTime, isDeleted); break;
+			case BOTH : response=getCustomGlobalDiagnosis(page, size, doctorId, locationId, hospitalId, createdTime, isDeleted); break;
+			}
+			break;
+		}
+		case NOTES : {
+			switch(Range.valueOf(range.toUpperCase())){
+			
+			case GLOBAL :  response = getGlobalNotes(page, size, createdTime, isDeleted);	break;
+			case CUSTOM : response=getCustomNotes(page, size, doctorId, locationId, hospitalId, createdTime, isDeleted); break;
+			case BOTH : response=getCustomGlobalNotes(page, size, doctorId, locationId, hospitalId, createdTime, isDeleted); break;
+			}
+			break;
+		}
+		case DIAGRAMS : {
+			switch(Range.valueOf(range.toUpperCase())){
+			
+			case GLOBAL :  response = getGlobalDiagrams(page, size, createdTime, isDeleted);	break;
+			case CUSTOM : response=getCustomDiagrams(page, size, doctorId, locationId, hospitalId, createdTime, isDeleted); break;
+			case BOTH : response=getCustomGlobalDiagrams(page, size, doctorId, locationId, hospitalId, createdTime, isDeleted); break;
+			}
+			break;
+		}
+		
+		}
+		return response;
+	}
+	
+	private List<Object> getCustomGlobalComplaints(int page, int size, String doctorId, String locationId,String hospitalId, String createdTime, Boolean isDeleted) {
+		List<Object> response = new ArrayList<Object>();
+		List<ComplaintCollection> complaintCollections = null;
+		try {
+		    
+		    if (!DPDoctorUtils.allStringsEmpty(createdTime)) {
+		    	long createdTimeStamp = Long.parseLong(createdTime);
+			if (isDeleted)
+			    complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
+				    "createdTime"), new PageRequest(page, size));
+			else
+			    complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId, new Date(createdTimeStamp), isDeleted, new Sort(
+				    Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+
+		    } else {
+			if (isDeleted)
+			    complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+			else
+			    complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC,
+				    "createdTime"),new PageRequest(page, size));
+
+		    }
+		    BeanUtil.map(complaintCollections, response);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
+		}
+		return response;
+
+	}
+
+	private List<Object> getGlobalComplaints(int page, int size, String createdTime, Boolean isDeleted) {
+		List<ComplaintCollection> complaintCollections = null;
+		List<Object> response = null;
+		try {
+
+			if (!DPDoctorUtils.allStringsEmpty(createdTime)) {
+				long createdTimeStamp = Long.parseLong(createdTime);
+				if (isDeleted)
+					complaintCollections = complaintRepository.findGlobalComplaints(new Date(createdTimeStamp),
+							new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+				else
+					complaintCollections = complaintRepository.findGlobalComplaints(new Date(createdTimeStamp),
+							isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+			} else {
+				if (isDeleted)
+					complaintCollections = complaintRepository.findGlobalComplaints(
+							new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+				else
+					complaintCollections = complaintRepository.findGlobalComplaints(isDeleted,
+							new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+
+			}
+
+			if (complaintCollections != null) {
+				response = new ArrayList<Object>();
+				BeanUtil.map(complaintCollections, response);
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "No Complaints Found");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
+		}
+		return response;
+	}
+
+	
+    private List<Object> getCustomComplaints(int page, int size, String doctorId, String locationId, String hospitalId, String createdTime, Boolean isDeleted) {
 	List<ComplaintCollection> complaintCollections = null;
+	List<Object> response = null;
 	try {
-	    long createdTimeStamp = Long.parseLong(createdTime);
-	    if (doctorId != null) {
-		if (isDeleted)
-		    complaintCollections = complaintRepository.findComplaints(doctorId, new Date(createdTimeStamp),
-			    new Sort(Sort.Direction.DESC, "createdTime"));
-		else
-		    complaintCollections = complaintRepository.findComplaints(doctorId, new Date(createdTimeStamp), isDeleted, new Sort(Sort.Direction.DESC,
-			    "createdTime"));
+	   
+	    if (!DPDoctorUtils.allStringsEmpty(createdTime)) {
+			long createdTimeStamp = Long.parseLong(createdTime);
+			if (isDeleted)
+				complaintCollections = complaintRepository.findCustomComplaints(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
+						new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+			else
+				complaintCollections = complaintRepository.findCustomComplaints(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
+						isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+		} else {
+			if (isDeleted)
+				complaintCollections = complaintRepository.findCustomComplaints(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+			else
+				complaintCollections = complaintRepository.findCustomComplaints(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
 
-	    } else {
-		if (isDeleted)
-		    complaintCollections = complaintRepository.findComplaints(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
-		else
-		    complaintCollections = complaintRepository.findComplaints(new Date(createdTimeStamp), isDeleted, new Sort(Sort.Direction.DESC,
-			    "createdTime"));
+		}
 
-	    }
-	    BeanUtil.map(complaintCollections, response);
+		if (complaintCollections != null) {
+			response = new ArrayList<Object>();
+			BeanUtil.map(complaintCollections, response);
+		} else {
+			throw new BusinessException(ServiceError.NotFound, "No Complaints Found");
+		}
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
 	}
 	return response;
     }
+	
+    private List<Object> getCustomGlobalInvestigations(int page, int size, String doctorId, String locationId,String hospitalId, String createdTime, Boolean isDeleted) {
+		List<Object> response = new ArrayList<Object>();
+		List<InvestigationCollection> investigationsCollections = null;
+		try {
+		    
+		    if (!DPDoctorUtils.allStringsEmpty(createdTime)) {
+		    	long createdTimeStamp = Long.parseLong(createdTime);
+				if (isDeleted)
+					investigationsCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,"createdTime"), new PageRequest(page, size));
+				else
+					investigationsCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId, new Date(createdTimeStamp), isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+		    } else {
+				if (isDeleted)
+					investigationsCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+				else
+					investigationsCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"),new PageRequest(page, size));
+		    }
+		    BeanUtil.map(investigationsCollections, response);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Investigations");
+		}
+		return response;
+	}
+	
+	private List<Object> getGlobalInvestigations(int page, int size, String createdTime, Boolean isDeleted) {
+		List<InvestigationCollection> investigationsCollections = null;
+		List<Object> response = null;
+		try {
 
-    @Override
-    public List<Investigation> getInvestigations(String doctorId, String createdTime, boolean isDeleted) {
-	List<Investigation> response = new ArrayList<Investigation>();
-	List<InvestigationCollection> investigationCollections = null;
+			if (!DPDoctorUtils.allStringsEmpty(createdTime)) {
+				long createdTimeStamp = Long.parseLong(createdTime);
+				if (isDeleted)
+					investigationsCollections = investigationRepository.findGlobalInvestigations(new Date(createdTimeStamp),
+							new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+				else
+					investigationsCollections = investigationRepository.findGlobalInvestigations(new Date(createdTimeStamp),
+							isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+			} else {
+				if (isDeleted)
+					investigationsCollections = investigationRepository.findGlobalInvestigations(
+							new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+				else
+					investigationsCollections = investigationRepository.findGlobalInvestigations(isDeleted,
+							new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+
+			}
+
+			if (investigationsCollections != null) {
+				response = new ArrayList<Object>();
+				BeanUtil.map(investigationsCollections, response);
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "No Investigations Found");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Investigations");
+		}
+		return response;
+	}
+
+	
+	private List<Object> getCustomInvestigations(int page, int size, String doctorId, String locationId, String hospitalId, String createdTime, Boolean isDeleted) {
+	List<InvestigationCollection> investigationsCollections = null;
+	List<Object> response = null;
 	try {
-	    long createdTimeStamp = Long.parseLong(createdTime);
-	    if (doctorId != null) {
-		if (isDeleted)
-		    investigationCollections = investigationRepository.findInvestigations(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
-			    "createdTime"));
-		else
-		    investigationCollections = investigationRepository.findInvestigations(doctorId, new Date(createdTimeStamp), false, new Sort(
-			    Sort.Direction.DESC, "createdTime"));
-	    } else {
-		if (isDeleted)
-		    investigationCollections = investigationRepository.findInvestigations(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
-			    "createdTime"));
-		else
-		    investigationCollections = investigationRepository.findInvestigations(new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC,
-			    "createdTime"));
-	    }
-	    BeanUtil.map(investigationCollections, response);
+	   
+	    if (!DPDoctorUtils.allStringsEmpty(createdTime)) {
+			long createdTimeStamp = Long.parseLong(createdTime);
+			if (isDeleted)
+				investigationsCollections = investigationRepository.findCustomInvestigations(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
+						new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+			else
+				investigationsCollections = investigationRepository.findCustomInvestigations(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
+						isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+		} else {
+			if (isDeleted)
+				investigationsCollections = investigationRepository.findCustomInvestigations(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+			else
+				investigationsCollections = investigationRepository.findCustomInvestigations(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+
+		}
+
+		if (investigationsCollections != null) {
+			response = new ArrayList<Object>();
+			BeanUtil.map(investigationsCollections, response);
+		} else {
+			throw new BusinessException(ServiceError.NotFound, "No Investigations Found");
+		}
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Investigations");
@@ -1027,27 +1169,101 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return response;
     }
 
-    @Override
-    public List<Observation> getObservations(String doctorId, String createdTime, boolean isDeleted) {
-	List<Observation> response = new ArrayList<Observation>();
+	
+	private List<Object> getCustomGlobalObservations(int page, int size, String doctorId, String locationId,String hospitalId, String createdTime, Boolean isDeleted) {
+		List<Object> response = new ArrayList<Object>();
+		List<ObservationCollection> observationCollections = null;
+		try {
+		    if (!DPDoctorUtils.allStringsEmpty(createdTime)) {
+		    	long createdTimeStamp = Long.parseLong(createdTime);
+			if (isDeleted)
+			    observationCollections = observationRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
+				    "createdTime"), new PageRequest(page, size));
+			else
+			    observationCollections = observationRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId, new Date(createdTimeStamp), isDeleted, new Sort(
+				    Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+
+		    } else {
+			if (isDeleted)
+			    observationCollections = observationRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+			else
+			    observationCollections = observationRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC,
+				    "createdTime"),new PageRequest(page, size));
+
+		    }
+		    BeanUtil.map(observationCollections, response);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Observations");
+		}
+		return response;
+
+	}
+
+	
+	private List<Object> getGlobalObservations(int page, int size, String createdTime, Boolean isDeleted) {
+		List<ObservationCollection> observationCollections = null;
+		List<Object> response = null;
+		try {
+
+			if (!DPDoctorUtils.allStringsEmpty(createdTime)) {
+				long createdTimeStamp = Long.parseLong(createdTime);
+				if (isDeleted)
+					observationCollections = observationRepository.findGlobalObservations(new Date(createdTimeStamp),new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+				else
+					observationCollections = observationRepository.findGlobalObservations(new Date(createdTimeStamp),isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+			} else {
+				if (isDeleted)
+					observationCollections = observationRepository.findGlobalObservations(new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+				else
+					observationCollections = observationRepository.findGlobalObservations(isDeleted,new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+
+			}
+
+			if (observationCollections != null) {
+				response = new ArrayList<Object>();
+				BeanUtil.map(observationCollections, response);
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "No Observations Found");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Observations");
+		}
+		return response;
+	}
+
+	
+	private
+	List<Object> getCustomObservations(int page, int size, String doctorId, String locationId, String hospitalId, String createdTime, Boolean isDeleted) {
 	List<ObservationCollection> observationCollections = null;
+	List<Object> response = null;
 	try {
-	    long createdTimeStamp = Long.parseLong(createdTime);
-	    if (doctorId != null) {
-		if (isDeleted)
-		    observationCollections = observationRepository.findObservations(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
-			    "createdTime"));
-		else
-		    observationCollections = observationRepository.findObservations(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC,
-			    "createdTime"));
-	    } else {
-		if (isDeleted)
-		    observationCollections = observationRepository.findObservations(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
-		else
-		    observationCollections = observationRepository.findObservations(new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC,
-			    "createdTime"));
-	    }
-	    BeanUtil.map(observationCollections, response);
+	   
+	    if (!DPDoctorUtils.allStringsEmpty(createdTime)) {
+			long createdTimeStamp = Long.parseLong(createdTime);
+			if (isDeleted)
+				observationCollections = observationRepository.findCustomObservations(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
+						new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+			else
+				observationCollections = observationRepository.findCustomObservations(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
+						isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+		} else {
+			if (isDeleted)
+				observationCollections = observationRepository.findCustomObservations(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+			else
+				observationCollections = observationRepository.findCustomObservations(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+
+		}
+
+		if (observationCollections != null) {
+			response = new ArrayList<Object>();
+			BeanUtil.map(observationCollections, response);
+		} else {
+			throw new BusinessException(ServiceError.NotFound, "No Observations Found");
+		}
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Observations");
@@ -1055,55 +1271,200 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return response;
     }
 
-    @Override
-    public List<Diagnoses> getDiagnosis(String doctorId, String createdTime, boolean isDeleted) {
-	List<Diagnoses> response = new ArrayList<Diagnoses>();
+	private List<Object> getCustomGlobalDiagnosis(int page, int size, String doctorId, String locationId,String hospitalId, String createdTime, Boolean isDeleted) {
+		List<Object> response = new ArrayList<Object>();
+		List<DiagnosisCollection> diagnosisCollections = null;
+		try {
+		    if (!DPDoctorUtils.allStringsEmpty(createdTime)) {
+		    	long createdTimeStamp = Long.parseLong(createdTime);
+		    if (isDeleted)
+			    diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
+				    "createdTime"), new PageRequest(page, size));
+			else
+			    diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(doctorId, locationId, hospitalId, new Date(createdTimeStamp), isDeleted, new Sort(
+				    Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+
+		    } else {
+			if (isDeleted)
+			    diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+			else
+			    diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC,
+				    "createdTime"),new PageRequest(page, size));
+
+		    }
+		    BeanUtil.map(diagnosisCollections, response);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnosis");
+		}
+		return response;
+
+	}
+
+	private List<Object> getGlobalDiagnosis(int page, int size, String createdTime, Boolean isDeleted) {
+		List<DiagnosisCollection> diagnosisCollections = null;
+		List<Object> response = null;
+		try {
+
+			if (!DPDoctorUtils.allStringsEmpty(createdTime)) {
+				long createdTimeStamp = Long.parseLong(createdTime);
+				if (isDeleted)
+					diagnosisCollections = diagnosisRepository.findGlobalDiagnosis(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+				else
+					diagnosisCollections = diagnosisRepository.findGlobalDiagnosis(new Date(createdTimeStamp), isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+			} else {
+				if (isDeleted)
+					diagnosisCollections = diagnosisRepository.findGlobalDiagnosis(new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+				else
+					diagnosisCollections = diagnosisRepository.findGlobalDiagnosis(isDeleted,new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+
+			}
+
+			if (diagnosisCollections != null) {
+				response = new ArrayList<Object>();
+				BeanUtil.map(diagnosisCollections, response);
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "No Complaints Found");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
+		}
+		return response;
+	}
+
+    private List<Object> getCustomDiagnosis(int page, int size, String doctorId, String locationId, String hospitalId, String createdTime, Boolean isDeleted) {
 	List<DiagnosisCollection> diagnosisCollections = null;
+	List<Object> response = null;
 	try {
-	    long createdTimeStamp = Long.parseLong(createdTime);
-	    if (doctorId != null) {
-		if (isDeleted)
-		    diagnosisCollections = diagnosisRepository
-			    .findDiagnosis(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+	   
+	    if (!DPDoctorUtils.allStringsEmpty(createdTime)) {
+			long createdTimeStamp = Long.parseLong(createdTime);
+			if (isDeleted)
+				diagnosisCollections = diagnosisRepository.findCustomDiagnosis(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
+						new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+			else
+				diagnosisCollections = diagnosisRepository.findCustomDiagnosis(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
+						isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+		} else {
+			if (isDeleted)
+				diagnosisCollections = diagnosisRepository.findCustomDiagnosis(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+			else
+				diagnosisCollections = diagnosisRepository.findCustomDiagnosis(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
 
-		else
-		    diagnosisCollections = diagnosisRepository.findDiagnosis(doctorId, new Date(createdTimeStamp), isDeleted, new Sort(Sort.Direction.DESC,
-			    "createdTime"));
-	    } else {
-		if (isDeleted)
-		    diagnosisCollections = diagnosisRepository.findDiagnosis(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+		}
 
-		else
-		    diagnosisCollections = diagnosisRepository.findDiagnosis(new Date(createdTimeStamp), isDeleted,
-			    new Sort(Sort.Direction.DESC, "createdTime"));
+		if (diagnosisCollections != null) {
+			response = new ArrayList<Object>();
+			BeanUtil.map(diagnosisCollections, response);
+		} else {
+			throw new BusinessException(ServiceError.NotFound, "No Diagnosis Found");
+		}
 
-	    }
-	    BeanUtil.map(diagnosisCollections, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnosis");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
 	}
 	return response;
     }
 
-    @Override
-    public List<Notes> getNotes(String doctorId, String createdTime, boolean isDeleted) {
-	List<Notes> response = new ArrayList<Notes>();
+	private List<Object> getCustomGlobalNotes(int page, int size, String doctorId, String locationId,String hospitalId, String createdTime, Boolean isDeleted) {
+		List<Object> response = new ArrayList<Object>();
+		List<NotesCollection> notesCollections = null;
+		try {
+		    
+		    if (!DPDoctorUtils.allStringsEmpty(createdTime)) {
+		    	long createdTimeStamp = Long.parseLong(createdTime);
+			if (isDeleted)
+			    notesCollections = notesRepository.findCustomGlobalNotes(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
+				    "createdTime"), new PageRequest(page, size));
+			else
+			    notesCollections = notesRepository.findCustomGlobalNotes(doctorId, locationId, hospitalId, new Date(createdTimeStamp), isDeleted, new Sort(
+				    Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+
+		    } else {
+			if (isDeleted)
+			    notesCollections = notesRepository.findCustomGlobalNotes(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+			else
+			    notesCollections = notesRepository.findCustomGlobalNotes(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC,
+				    "createdTime"),new PageRequest(page, size));
+
+		    }
+		    BeanUtil.map(notesCollections, response);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Notes");
+		}
+		return response;
+
+	}
+
+	private List<Object> getGlobalNotes(int page, int size, String createdTime, Boolean isDeleted) {
+		List<NotesCollection> notesCollections = null;
+		List<Object> response = null;
+		try {
+
+			if (!DPDoctorUtils.allStringsEmpty(createdTime)) {
+				long createdTimeStamp = Long.parseLong(createdTime);
+				if (isDeleted)
+					notesCollections = notesRepository.findGlobalNotes(new Date(createdTimeStamp),
+							new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+				else
+					notesCollections = notesRepository.findGlobalNotes(new Date(createdTimeStamp),
+							isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+			} else {
+				if (isDeleted)
+					notesCollections = notesRepository.findGlobalNotes(
+							new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+				else
+					notesCollections = notesRepository.findGlobalNotes(isDeleted,
+							new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+
+			}
+
+			if (notesCollections != null) {
+				response = new ArrayList<Object>();
+				BeanUtil.map(notesCollections, response);
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "No Notes Found");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Notes");
+		}
+		return response;
+	}
+
+    private List<Object> getCustomNotes(int page, int size, String doctorId, String locationId, String hospitalId, String createdTime, Boolean isDeleted) {
 	List<NotesCollection> notesCollections = null;
+	List<Object> response = null;
 	try {
-	    long createdTimeStamp = Long.parseLong(createdTime);
-	    if (doctorId != null) {
-		if (isDeleted)
-		    notesCollections = notesRepository.findNotes(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
-		else
-		    notesCollections = notesRepository.findNotes(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
-	    } else {
-		if (isDeleted)
-		    notesCollections = notesRepository.findNotes(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
-		else
-		    notesCollections = notesRepository.findNotes(new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
-	    }
-	    BeanUtil.map(notesCollections, response);
+	   
+	    if (!DPDoctorUtils.allStringsEmpty(createdTime)) {
+			long createdTimeStamp = Long.parseLong(createdTime);
+			if (isDeleted)
+				notesCollections = notesRepository.findCustomNotes(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
+						new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+			else
+				notesCollections = notesRepository.findCustomNotes(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
+						isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+		} else {
+			if (isDeleted)
+				notesCollections = notesRepository.findCustomNotes(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+			else
+				notesCollections = notesRepository.findCustomNotes(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+
+		}
+
+		if (notesCollections != null) {
+			response = new ArrayList<Object>();
+			BeanUtil.map(notesCollections, response);
+		} else {
+			throw new BusinessException(ServiceError.NotFound, "No Notes Found");
+		}
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Notes");
@@ -1111,19 +1472,99 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return response;
     }
 
-    @Override
-    public List<Diagram> getDiagrams(String doctorId, String createdTime, boolean isDeleted) {
-	List<Diagram> response = new ArrayList<Diagram>();
-	List<DiagramsCollection> diagramsCollections = null;
-	try {
-	    long createdTimeStamp = Long.parseLong(createdTime);
+	private List<Object> getCustomGlobalDiagrams(int page, int size, String doctorId, String locationId,String hospitalId, String createdTime, Boolean isDeleted) {
+		List<Object> response = new ArrayList<Object>();
+		List<DiagramsCollection> diagramCollections = null;
+		try {
+		    
+		    if (!DPDoctorUtils.allStringsEmpty(createdTime)) {
+		    	long createdTimeStamp = Long.parseLong(createdTime);
+			if (isDeleted)
+			    diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
+				    "createdTime"), new PageRequest(page, size));
+			else
+			    diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, new Date(createdTimeStamp), isDeleted, new Sort(
+				    Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
 
-	    if (isDeleted)
-		diagramsCollections = diagramsRepository.findDiagrams(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
-	    else
-		diagramsCollections = diagramsRepository.findDiagrams(doctorId, new Date(createdTimeStamp), isDeleted, new Sort(Sort.Direction.DESC,
-			"createdTime"));
-	    BeanUtil.map(diagramsCollections, response);
+		    } else {
+			if (isDeleted)
+			    diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+			else
+			    diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC,
+				    "createdTime"),new PageRequest(page, size));
+
+		    }
+		    BeanUtil.map(diagramCollections, response);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagrams");
+		}
+		return response;
+
+	}
+
+	private List<Object> getGlobalDiagrams(int page, int size, String createdTime, Boolean isDeleted) {
+		List<DiagramsCollection> diagramCollections = null;
+		List<Object> response = null;
+		try {
+
+			if (!DPDoctorUtils.allStringsEmpty(createdTime)) {
+				long createdTimeStamp = Long.parseLong(createdTime);
+				if (isDeleted)
+					diagramCollections = diagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp),new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+				else
+					diagramCollections = diagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp),isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+			} else {
+				if (isDeleted)
+					diagramCollections = diagramsRepository.findGlobalDiagrams(new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+				else
+					diagramCollections = diagramsRepository.findGlobalDiagrams(isDeleted,new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+
+			}
+
+			if (diagramCollections != null) {
+				response = new ArrayList<Object>();
+				BeanUtil.map(diagramCollections, response);
+			} else {
+				throw new BusinessException(ServiceError.NotFound, "No Diagrams Found");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagrams");
+		}
+		return response;
+	}
+
+	private
+	List<Object> getCustomDiagrams(int page, int size, String doctorId, String locationId, String hospitalId, String createdTime, Boolean isDeleted) {
+	List<DiagramsCollection> diagramCollections = null;
+	List<Object> response = null;
+	try {
+	   
+	    if (!DPDoctorUtils.allStringsEmpty(createdTime)) {
+			long createdTimeStamp = Long.parseLong(createdTime);
+			if (isDeleted)
+				diagramCollections = diagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
+						new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+			else
+				diagramCollections = diagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
+						isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+		} else {
+			if (isDeleted)
+				diagramCollections = diagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+			else
+				diagramCollections = diagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+
+		}
+
+		if (diagramCollections != null) {
+			response = new ArrayList<Object>();
+			BeanUtil.map(diagramCollections, response);
+		} else {
+			throw new BusinessException(ServiceError.NotFound, "No Diagrams Found");
+		}
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagrams");
@@ -1131,136 +1572,4 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return response;
     }
 
-    @Override
-    public List<Diagram> getGlobalDiagrams(String createdTime) {
-	List<Diagram> response = new ArrayList<Diagram>();
-	List<DiagramsCollection> diagramsCollections = null;
-	try {
-	    long createdTimeStamp = Long.parseLong(createdTime);
-	    diagramsCollections = diagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
-	    BeanUtil.map(diagramsCollections, response);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Global Diagrams");
-	}
-	return response;
-    }
-
-    @Override
-    public List<Complaint> getCustomGlobalComplaints(String doctorId, String createdTime, boolean isDeleted) {
-	List<Complaint> response = new ArrayList<Complaint>();
-	List<ComplaintCollection> complaintCollections = null;
-	try {
-	    long createdTimeStamp = Long.parseLong(createdTime);
-	    if (doctorId != null) {
-		if (isDeleted)
-		    complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
-			    "createdTime"));
-		else
-		    complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, new Date(createdTimeStamp), isDeleted, new Sort(
-			    Sort.Direction.DESC, "createdTime"));
-
-	    } else {
-		if (isDeleted)
-		    complaintCollections = complaintRepository.findComplaints(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
-		else
-		    complaintCollections = complaintRepository.findComplaints(new Date(createdTimeStamp), isDeleted, new Sort(Sort.Direction.DESC,
-			    "createdTime"));
-
-	    }
-	    BeanUtil.map(complaintCollections, response);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
-	}
-	return response;
-    }
-
-    @Override
-    public List<Investigation> getCustomGlobalInvestigations(String doctorId, String createdTime, boolean isDeleted) {
-	List<Investigation> response = new ArrayList<Investigation>();
-	List<InvestigationCollection> investigationCollections = null;
-	try {
-	    long createdTimeStamp = Long.parseLong(createdTime);
-	    if (doctorId != null) {
-		if (isDeleted)
-		    investigationCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, new Date(createdTimeStamp), new Sort(
-			    Sort.Direction.DESC, "createdTime"));
-		else
-		    investigationCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, new Date(createdTimeStamp), false, new Sort(
-			    Sort.Direction.DESC, "createdTime"));
-	    } else {
-		if (isDeleted)
-		    investigationCollections = investigationRepository.findInvestigations(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
-			    "createdTime"));
-		else
-		    investigationCollections = investigationRepository.findInvestigations(new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC,
-			    "createdTime"));
-	    }
-	    BeanUtil.map(investigationCollections, response);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Investigations");
-	}
-	return response;
-    }
-
-    @Override
-    public List<Observation> getCustomGlobalObservations(String doctorId, String createdTime, boolean isDeleted) {
-	List<Observation> response = new ArrayList<Observation>();
-	List<ObservationCollection> observationCollections = null;
-	try {
-	    long createdTimeStamp = Long.parseLong(createdTime);
-	    if (doctorId != null) {
-		if (isDeleted)
-		    observationCollections = observationRepository.findCustomGlobalObservations(doctorId, new Date(createdTimeStamp), new Sort(
-			    Sort.Direction.DESC, "createdTime"));
-		else
-		    observationCollections = observationRepository.findCustomGlobalObservations(doctorId, new Date(createdTimeStamp), false, new Sort(
-			    Sort.Direction.DESC, "createdTime"));
-	    } else {
-		if (isDeleted)
-		    observationCollections = observationRepository.findObservations(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
-		else
-		    observationCollections = observationRepository.findObservations(new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC,
-			    "createdTime"));
-	    }
-	    BeanUtil.map(observationCollections, response);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Observations");
-	}
-	return response;
-    }
-
-    @Override
-    public List<Diagnoses> getCustomGlobalDiagnosis(String doctorId, String createdTime, boolean isDeleted) {
-	List<Diagnoses> response = new ArrayList<Diagnoses>();
-	List<DiagnosisCollection> diagnosisCollections = null;
-	try {
-	    long createdTimeStamp = Long.parseLong(createdTime);
-	    if (doctorId != null) {
-		if (isDeleted)
-		    diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
-			    "createdTime"));
-
-		else
-		    diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(doctorId, new Date(createdTimeStamp), isDeleted, new Sort(
-			    Sort.Direction.DESC, "createdTime"));
-	    } else {
-		if (isDeleted)
-		    diagnosisCollections = diagnosisRepository.findDiagnosis(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
-
-		else
-		    diagnosisCollections = diagnosisRepository.findDiagnosis(new Date(createdTimeStamp), isDeleted,
-			    new Sort(Sort.Direction.DESC, "createdTime"));
-
-	    }
-	    BeanUtil.map(diagnosisCollections, response);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnosis");
-	}
-	return response;
-    }
 }
