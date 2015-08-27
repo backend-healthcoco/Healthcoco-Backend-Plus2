@@ -8,6 +8,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
@@ -142,70 +143,70 @@ public class PrescriptionApi {
 	return response;
     }
 
-    @Path(value = PathProxy.PrescriptionUrls.GET_DRUGS_DOCTOR_SPECIFIC)
-    @GET
-    public Response<DrugAddEditResponse> getAllDrugs(@PathParam("doctorId") String doctorId) {
-	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
-	}
-	return getDrugs(doctorId, null, null, null, true);
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_DRUGS_DOCTOR_SPECIFIC_CT)
-    @GET
-    public Response<DrugAddEditResponse> getAllDrugs(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
-	if (DPDoctorUtils.anyStringEmpty(doctorId, createdTime)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Created Time Cannot Be Empty");
-	}
-	return getDrugs(doctorId, null, null, createdTime, true);
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_DRUGS_DOCTOR_SPECIFIC_CT_ISDELETED)
-    @GET
-    public Response<DrugAddEditResponse> getAllDrugs(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
-	    @PathParam("isDeleted") boolean isDeleted) {
-	if (DPDoctorUtils.anyStringEmpty(doctorId, createdTime)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Created Time Cannot Be Empty");
-	}
-	return getDrugs(doctorId, null, null, createdTime, isDeleted);
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_DRUGS_ALL_FIELDS)
-    @GET
-    public Response<DrugAddEditResponse> getAllDrugs(@PathParam("doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-    		@PathParam("hospitalId") String hospitalId) {
-	if (DPDoctorUtils.anyStringEmpty(doctorId, hospitalId, locationId)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Hospital Id, Location Id Cannot Be Empty");
-	}
-	return getDrugs(doctorId, hospitalId, locationId, null, true);
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_DRUGS_ALL_FIELDS_CT)
-    @GET
-    public Response<DrugAddEditResponse> getAllDrugs(@PathParam("doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-    		@PathParam("hospitalId") String hospitalId, @PathParam("createdTime") String createdTime) {
-	if (DPDoctorUtils.anyStringEmpty(doctorId, hospitalId, locationId, createdTime)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Hospital Id, Location Id, Created Time Cannot Be Empty");
-	}
-	return getDrugs(doctorId, hospitalId, locationId, createdTime, true);
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_DRUGS_ALL_FIELDS_CT_ISDELETED)
-    @GET
-    public Response<DrugAddEditResponse> getAllDrugs(@PathParam("doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-    		@PathParam("hospitalId") String hospitalId, @PathParam("createdTime") String createdTime, @PathParam("isDeleted") boolean isDeleted) {
-	if (DPDoctorUtils.anyStringEmpty(doctorId, hospitalId, locationId, createdTime)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Hospital Id, Location Id, Created Time Cannot Be Empty");
-	}
-	return getDrugs(doctorId, hospitalId, locationId, createdTime, isDeleted);
-    }
-
-    private Response<DrugAddEditResponse> getDrugs(String doctorId, String hospitalId, String locationId, String createdTime, boolean isDeleted) {
-	List<DrugAddEditResponse> drugs = prescriptionServices.getDrugs(doctorId, hospitalId, locationId, createdTime, isDeleted);
-	Response<DrugAddEditResponse> response = new Response<DrugAddEditResponse>();
-	response.setDataList(drugs);
-	return response;
-    }
+//    @Path(value = PathProxy.PrescriptionUrls.GET_DRUGS_DOCTOR_SPECIFIC)
+//    @GET
+//    public Response<DrugAddEditResponse> getAllDrugs(@PathParam("doctorId") String doctorId) {
+//	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+//	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
+//	}
+//	return getDrugs(doctorId, null, null, null, true);
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_DRUGS_DOCTOR_SPECIFIC_CT)
+//    @GET
+//    public Response<DrugAddEditResponse> getAllDrugs(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime) {
+//	if (DPDoctorUtils.anyStringEmpty(doctorId, createdTime)) {
+//	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Created Time Cannot Be Empty");
+//	}
+//	return getDrugs(doctorId, null, null, createdTime, true);
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_DRUGS_DOCTOR_SPECIFIC_CT_ISDELETED)
+//    @GET
+//    public Response<DrugAddEditResponse> getAllDrugs(@PathParam("doctorId") String doctorId, @PathParam("createdTime") String createdTime,
+//	    @PathParam("isDeleted") boolean isDeleted) {
+//	if (DPDoctorUtils.anyStringEmpty(doctorId, createdTime)) {
+//	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Created Time Cannot Be Empty");
+//	}
+//	return getDrugs(doctorId, null, null, createdTime, isDeleted);
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_DRUGS_ALL_FIELDS)
+//    @GET
+//    public Response<DrugAddEditResponse> getAllDrugs(@PathParam("doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+//    		@PathParam("hospitalId") String hospitalId) {
+//	if (DPDoctorUtils.anyStringEmpty(doctorId, hospitalId, locationId)) {
+//	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+//	}
+//	return getDrugs(doctorId, hospitalId, locationId, null, true);
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_DRUGS_ALL_FIELDS_CT)
+//    @GET
+//    public Response<DrugAddEditResponse> getAllDrugs(@PathParam("doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+//    		@PathParam("hospitalId") String hospitalId, @PathParam("createdTime") String createdTime) {
+//	if (DPDoctorUtils.anyStringEmpty(doctorId, hospitalId, locationId, createdTime)) {
+//	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Hospital Id, Location Id, Created Time Cannot Be Empty");
+//	}
+//	return getDrugs(doctorId, hospitalId, locationId, createdTime, true);
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_DRUGS_ALL_FIELDS_CT_ISDELETED)
+//    @GET
+//    public Response<DrugAddEditResponse> getAllDrugs(@PathParam("doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+//    		@PathParam("hospitalId") String hospitalId, @PathParam("createdTime") String createdTime, @PathParam("isDeleted") boolean isDeleted) {
+//	if (DPDoctorUtils.anyStringEmpty(doctorId, hospitalId, locationId, createdTime)) {
+//	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Hospital Id, Location Id, Created Time Cannot Be Empty");
+//	}
+//	return getDrugs(doctorId, hospitalId, locationId, createdTime, isDeleted);
+//    }
+//
+//    private Response<DrugAddEditResponse> getDrugs(String doctorId, String hospitalId, String locationId, String createdTime, boolean isDeleted) {
+//	List<DrugAddEditResponse> drugs = prescriptionServices.getDrugs(doctorId, hospitalId, locationId, createdTime, isDeleted);
+//	Response<DrugAddEditResponse> response = new Response<DrugAddEditResponse>();
+//	response.setDataList(drugs);
+//	return response;
+//    }
 
     @Path(value = PathProxy.PrescriptionUrls.ADD_TEMPLATE)
     @POST
@@ -269,65 +270,15 @@ public class PrescriptionApi {
 	return response;
     }
 
-    @Path(value = PathProxy.PrescriptionUrls.GET_TEMPLATE_DOCTOR_SPECIFIC)
+   
+    @Path(value = PathProxy.PrescriptionUrls.GET_TEMPLATE)
     @GET
-    public Response<TemplateAddEditResponseDetails> getAllTemplates(@PathParam(value = "doctorId") String doctorId) {
-	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
-	}
-	return getTemplates(doctorId, null, null, null, true);
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_TEMPLATE_DOCTOR_SPECIFIC_CT)
-    @GET
-    public Response<TemplateAddEditResponseDetails> getAllTemplates(@PathParam(value = "doctorId") String doctorId,
-	    @PathParam(value = "createdTime") String createdTime) {
-	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Created Time Cannot Be Empty");
-	}
-	return getTemplates(doctorId, null, null, createdTime, true);
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_TEMPLATE_DOCTOR_SPECIFIC_CT_ISDELETED)
-    @GET
-    public Response<TemplateAddEditResponseDetails> getAllTemplates(@PathParam(value = "doctorId") String doctorId,
-	    @PathParam(value = "createdTime") String createdTime, @PathParam(value = "isDeleted") boolean isDeleted) {
-	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Created Time Cannot Be Empty");
-	}
-	return getTemplates(doctorId, null, null, createdTime, isDeleted);
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_TEMPLATE_ALL_FIELDS)
-    @GET
-    public Response<TemplateAddEditResponseDetails> getAllTemplates(@PathParam(value = "doctorId") String doctorId,
-    		@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
-	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Hospital Id, Location Id Cannot Be Empty");
-	}
-	return getTemplates(doctorId, hospitalId, locationId, null, true);
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_TEMPLATE_ALL_FIELDS_CT)
-    @GET
-    public Response<TemplateAddEditResponseDetails> getAllTemplates(@PathParam(value = "doctorId") String doctorId,
-    		@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId, 
-	    @PathParam(value = "createdTime") String createdTime) {
-	if (DPDoctorUtils.anyStringEmpty(doctorId, hospitalId, locationId, createdTime)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Hospital Id, Location Id, Created Time Cannot Be Empty");
-	}
-	return getTemplates(doctorId, hospitalId, locationId, createdTime, true);
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_TEMPLATE_ALL_FIELDS_CT_ISDELETED)
-    @GET
-    public Response<TemplateAddEditResponseDetails> getAllTemplates(@PathParam(value = "doctorId") String doctorId,
-    		@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
-	    @PathParam(value = "createdTime") String createdTime, @PathParam(value = "isDeleted") boolean isDeleted) {
-	if (DPDoctorUtils.anyStringEmpty(doctorId, hospitalId, locationId, createdTime)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Hospital Id, Location Id, Created Time Cannot Be Empty");
-	}
-	return getTemplates(doctorId, hospitalId, locationId, createdTime, isDeleted);
+    public Response<TemplateAddEditResponseDetails> getAllTemplates(@QueryParam("doctorId") String doctorId,
+    		@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+    		@QueryParam("createdTime") String createdTime, @QueryParam("isDeleted") Boolean isDeleted) {
+	
+    	if(isDeleted != null) return getTemplates(doctorId, hospitalId, locationId, createdTime, isDeleted);
+    	else return getTemplates(doctorId, hospitalId, locationId, createdTime, true);
     }
 
     private Response<TemplateAddEditResponseDetails> getTemplates(String doctorId, String hospitalId, String locationId, String createdTime, boolean isDeleted) {
@@ -407,45 +358,27 @@ public class PrescriptionApi {
 	return response;
     }
 
+   
     @Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION)
     @GET
-    public Response<Prescription> getPrescription(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-    		@PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "patientId") String patientId,
-	    @PathParam(value = "isOTPVarified") boolean isOTPVarified) {
-	if (StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
-	}
-	List<Prescription> prescriptions = prescriptionServices.getPrescriptions(doctorId, hospitalId, locationId, patientId, null, isOTPVarified, true);
-	Response<Prescription> response = new Response<Prescription>();
-	response.setDataList(prescriptions);
-	return response;
+    public Response<Prescription> getPrescription(@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
+    		@QueryParam("hospitalId") String hospitalId, @QueryParam("patientId") String patientId,
+    		@QueryParam("isOTPVarified") Boolean isOTPVarified, @QueryParam("createdTime") String createdTime,
+    		@QueryParam("isDeleted") Boolean isDeleted) {
+    
+    List<Prescription> prescriptions = null;
+    
+    if(isDeleted != null){
+    	if(isOTPVarified != null)
+    	 prescriptions = prescriptionServices.getPrescriptions(doctorId, hospitalId, locationId, patientId, createdTime, isOTPVarified, isDeleted);
+    	else
+    	 prescriptions = prescriptionServices.getPrescriptions(doctorId, hospitalId, locationId, patientId, createdTime, true, isDeleted);
     }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_CREATED_TIME)
-    @GET
-    public Response<Prescription> getPrescription(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-    	@PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "patientId") String patientId,
-	    @PathParam(value = "isOTPVarified") boolean isOTPVarified, @PathParam(value = "createdTime") String createdTime) {
-	if (StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
-	}
-	List<Prescription> prescriptions = prescriptionServices.getPrescriptions(doctorId, hospitalId, locationId, patientId, createdTime, isOTPVarified, true);
-	Response<Prescription> response = new Response<Prescription>();
-	response.setDataList(prescriptions);
-	return response;
+    else {
+    	if(isOTPVarified != null)
+    	prescriptions = prescriptionServices.getPrescriptions(doctorId, hospitalId, locationId, patientId, createdTime, isOTPVarified, true);
+    	else prescriptions = prescriptionServices.getPrescriptions(doctorId, hospitalId, locationId, patientId, createdTime, true, true);
     }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_CREATED_TIME_ISDELETED)
-    @GET
-    public Response<Prescription> getPrescription(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-    	@PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "patientId") String patientId,
-	    @PathParam(value = "isOTPVarified") boolean isOTPVarified, @PathParam(value = "createdTime") String createdTime,
-	    @PathParam(value = "isDeleted") boolean isDeleted) {
-	if (StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
-	}
-	List<Prescription> prescriptions = prescriptionServices.getPrescriptions(doctorId, hospitalId, locationId, patientId, createdTime, isOTPVarified,
-		isDeleted);
 	Response<Prescription> response = new Response<Prescription>();
 	response.setDataList(prescriptions);
 	return response;
@@ -461,291 +394,291 @@ public class PrescriptionApi {
 	return response;
     }
 
-    @Path(value = PathProxy.PrescriptionUrls.GET_ALL_DRUG_TYPE)
-    @GET
-    public Response<DrugType> getAllDrugType() {
-	List<DrugType> drugTypes = prescriptionServices.getAllDrugType();
-	Response<DrugType> response = new Response<DrugType>();
-	response.setDataList(drugTypes);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_TYPE)
-    @GET
-    public Response<DrugType> getDrugType(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId) {
-	List<DrugType> drugTypes = prescriptionServices.getDrugType(doctorId, locationId, hospitalId, null, true);
-	Response<DrugType> response = new Response<DrugType>();
-	response.setDataList(drugTypes);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_DRUG_TYPE_CREATED_TIME)
-    @GET
-    public Response<DrugType> getDrugType(@PathParam("createdTime") String createdTime) {
-	List<DrugType> drugTypes = prescriptionServices.getDrugType(null, null, null, createdTime, true);
-	Response<DrugType> response = new Response<DrugType>();
-	System.out.println(drugTypes.size());
-	response.setDataList(drugTypes);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_DRUG_TYPE_CREATED_TIME_ISDELETED)
-    @GET
-    public Response<DrugType> getDrugType(@PathParam("createdTime") String createdTime, @PathParam("isDeleted") boolean isDeleted) {
-	List<DrugType> drugTypes = prescriptionServices.getDrugType(null, null, null, createdTime, isDeleted);
-	Response<DrugType> response = new Response<DrugType>();
-	response.setDataList(drugTypes);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_TYPE_CREATED_TIME)
-    @GET
-    public Response<DrugType> getDrugType(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId, @PathParam("createdTime") String createdTime) {
-	List<DrugType> drugTypes = prescriptionServices.getDrugType(doctorId, locationId, hospitalId, createdTime, true);
-	Response<DrugType> response = new Response<DrugType>();
-	response.setDataList(drugTypes);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_TYPE_CREATED_TIME_ISDELETED)
-    @GET
-    public Response<DrugType> getDrugType(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId, @PathParam("createdTime") String createdTime, @PathParam("isDeleted") boolean isDeleted) {
-	List<DrugType> drugTypes = prescriptionServices.getDrugType(doctorId, locationId, hospitalId, createdTime, isDeleted);
-	Response<DrugType> response = new Response<DrugType>();
-	response.setDataList(drugTypes);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_ALL_DRUG_STRENGTH_UNIT)
-    @GET
-    public Response<DrugStrengthUnit> getAllDrugStrengthUnit() {
-	List<DrugStrengthUnit> drugStrengths = prescriptionServices.getAllDrugStrengthUnit();
-	Response<DrugStrengthUnit> response = new Response<DrugStrengthUnit>();
-	response.setDataList(drugStrengths);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_STRENGTH_UNIT)
-    @GET
-    public Response<DrugStrengthUnit> getDrugStrengthUnit(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId) {
-	List<DrugStrengthUnit> drugStrengths = prescriptionServices.getDrugStrengthUnit(doctorId, locationId, hospitalId, null, true);
-	Response<DrugStrengthUnit> response = new Response<DrugStrengthUnit>();
-	response.setDataList(drugStrengths);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_DRUG_STRENGTH_UNIT_CREATED_TIME)
-    @GET
-    public Response<DrugStrengthUnit> getDrugStrengthUnit(@PathParam("createdTime") String createdTime) {
-	List<DrugStrengthUnit> drugStrengths = prescriptionServices.getDrugStrengthUnit(null, null, null, createdTime, true);
-	Response<DrugStrengthUnit> response = new Response<DrugStrengthUnit>();
-	response.setDataList(drugStrengths);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_DRUG_STRENGTH_UNIT_CREATED_TIME_ISDELETED)
-    @GET
-    public Response<DrugStrengthUnit> getDrugStrengthUnit(@PathParam("createdTime") String createdTime, @PathParam("isDeleted") boolean isDeleted) {
-	List<DrugStrengthUnit> drugStrengths = prescriptionServices.getDrugStrengthUnit(null, null, null, createdTime, isDeleted);
-	Response<DrugStrengthUnit> response = new Response<DrugStrengthUnit>();
-	response.setDataList(drugStrengths);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_STRENGTH_UNIT_CREATED_TIME)
-    @GET
-    public Response<DrugStrengthUnit> getDrugStrengthUnit(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId, @PathParam("createdTime") String createdTime) {
-	List<DrugStrengthUnit> drugStrengths = prescriptionServices.getDrugStrengthUnit(doctorId, locationId, hospitalId, createdTime, true);
-	Response<DrugStrengthUnit> response = new Response<DrugStrengthUnit>();
-	response.setDataList(drugStrengths);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_STRENGTH_UNIT_CREATED_TIME_ISDELETED)
-    @GET
-    public Response<DrugStrengthUnit> getDrugStrengthUnit(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId, @PathParam("createdTime") String createdTime, @PathParam("isDeleted") boolean isDeleted) {
-	List<DrugStrengthUnit> drugStrengths = prescriptionServices.getDrugStrengthUnit(doctorId, locationId, hospitalId, createdTime, isDeleted);
-	Response<DrugStrengthUnit> response = new Response<DrugStrengthUnit>();
-	response.setDataList(drugStrengths);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_ALL_DRUG_DOSAGE)
-    @GET
-    public Response<DrugDosage> getAllDrugDosage() {
-	List<DrugDosage> drugDosage = prescriptionServices.getAllDrugDosage();
-	Response<DrugDosage> response = new Response<DrugDosage>();
-	response.setDataList(drugDosage);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_DOSAGE)
-    @GET
-    public Response<DrugDosage> getDrugDosage(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId) {
-	List<DrugDosage> drugDosage = prescriptionServices.getDrugDosage(doctorId, locationId, hospitalId, null, true);
-	Response<DrugDosage> response = new Response<DrugDosage>();
-	response.setDataList(drugDosage);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_DRUG_DOSAGE_CREATED_TIME)
-    @GET
-    public Response<DrugDosage> getDrugDosage(@PathParam("createdTime") String createdTime) {
-	List<DrugDosage> drugDosage = prescriptionServices.getDrugDosage(null, null, null, createdTime, true);
-	Response<DrugDosage> response = new Response<DrugDosage>();
-	response.setDataList(drugDosage);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_DRUG_DOSAGE_CREATED_TIME_ISDELETED)
-    @GET
-    public Response<DrugDosage> getDrugDosage(@PathParam("createdTime") String createdTime, @PathParam("isDeleted") boolean isDeleted) {
-	List<DrugDosage> drugDosage = prescriptionServices.getDrugDosage(null, null, null, createdTime, isDeleted);
-	Response<DrugDosage> response = new Response<DrugDosage>();
-	response.setDataList(drugDosage);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_DOSAGE_CREATED_TIME)
-    @GET
-    public Response<DrugDosage> getDrugDosage(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId, @PathParam("createdTime") String createdTime) {
-	List<DrugDosage> drugDosage = prescriptionServices.getDrugDosage(doctorId, locationId, hospitalId, createdTime, true);
-	Response<DrugDosage> response = new Response<DrugDosage>();
-	response.setDataList(drugDosage);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_DOSAGE_CREATED_TIME_ISDELETED)
-    @GET
-    public Response<DrugDosage> geDrugDosage(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId, @PathParam("createdTime") String createdTime, @PathParam("isDeleted") boolean isDeleted) {
-	List<DrugDosage> drugDosage = prescriptionServices.getDrugDosage(doctorId, locationId, hospitalId, createdTime, isDeleted);
-	Response<DrugDosage> response = new Response<DrugDosage>();
-	response.setDataList(drugDosage);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_ALL_DRUG_DURATION_UNIT)
-    @GET
-    public Response<DrugDurationUnit> getAllDrugDurationUnit() {
-	List<DrugDurationUnit> drugDurations = prescriptionServices.getAllDrugDurationUnit();
-	Response<DrugDurationUnit> response = new Response<DrugDurationUnit>();
-	response.setDataList(drugDurations);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_DURATION_UNIT)
-    @GET
-    public Response<DrugDurationUnit> getDrugDurationUnit(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId) {
-	List<DrugDurationUnit> drugDurations = prescriptionServices.getDrugDurationUnit(doctorId, locationId, hospitalId, null, true);
-	Response<DrugDurationUnit> response = new Response<DrugDurationUnit>();
-	response.setDataList(drugDurations);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_DRUG_DURATION_UNIT_CREATED_TIME)
-    @GET
-    public Response<DrugDurationUnit> getDrugDurationUnit(@PathParam("createdTime") String createdTime) {
-	List<DrugDurationUnit> drugDurations = prescriptionServices.getDrugDurationUnit(null, null, null, createdTime, true);
-	Response<DrugDurationUnit> response = new Response<DrugDurationUnit>();
-	response.setDataList(drugDurations);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_DRUG_DURATION_UNIT_CREATED_TIME_ISDELETED)
-    @GET
-    public Response<DrugDurationUnit> getDrugDurationUnit(@PathParam("createdTime") String createdTime, @PathParam("isDeleted") boolean isDeleted) {
-	List<DrugDurationUnit> drugDurations = prescriptionServices.getDrugDurationUnit(null, null, null, createdTime, isDeleted);
-	Response<DrugDurationUnit> response = new Response<DrugDurationUnit>();
-	response.setDataList(drugDurations);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_DURATION_UNIT_CREATED_TIME)
-    @GET
-    public Response<DrugDurationUnit> getDrugDurationUnit(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId, @PathParam("createdTime") String createdTime) {
-	List<DrugDurationUnit> drugDurations = prescriptionServices.getDrugDurationUnit(doctorId, locationId, hospitalId, createdTime, true);
-	Response<DrugDurationUnit> response = new Response<DrugDurationUnit>();
-	response.setDataList(drugDurations);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_DURATION_UNIT_CREATED_TIME_ISDELETED)
-    @GET
-    public Response<DrugDurationUnit> getDrugDurationUnit(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId, @PathParam("createdTime") String createdTime, @PathParam("isDeleted") boolean isDeleted) {
-	List<DrugDurationUnit> drugDurations = prescriptionServices.getDrugDurationUnit(doctorId, locationId, hospitalId, createdTime, isDeleted);
-	Response<DrugDurationUnit> response = new Response<DrugDurationUnit>();
-	response.setDataList(drugDurations);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_ALL_DRUG_DIRECTION_UNIT)
-    @GET
-    public Response<DrugDirection> getAllDrugDirection() {
-	List<DrugDirection> drugDirections = prescriptionServices.getAllDrugDirection();
-	Response<DrugDirection> response = new Response<DrugDirection>();
-	response.setDataList(drugDirections);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_DIRECTION_UNIT)
-    @GET
-    public Response<DrugDirection> getDrugDirection(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId) {
-	List<DrugDirection> drugDirections = prescriptionServices.getDrugDirection(doctorId, locationId, hospitalId, null, true);
-	Response<DrugDirection> response = new Response<DrugDirection>();
-	response.setDataList(drugDirections);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_DRUG_DIRECTION_UNIT_CREATED_TIME)
-    @GET
-    public Response<DrugDirection> getDrugDirection(@PathParam("createdTime") String createdTime) {
-	List<DrugDirection> drugDirections = prescriptionServices.getDrugDirection(null, null, null, createdTime, true);
-	Response<DrugDirection> response = new Response<DrugDirection>();
-	response.setDataList(drugDirections);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_DRUG_DIRECTION_UNIT_CREATED_TIME_ISDELETED)
-    @GET
-    public Response<DrugDirection> getDrugDirection(@PathParam("createdTime") String createdTime, @PathParam("isDeleted") boolean isDeleted) {
-	List<DrugDirection> drugDirections = prescriptionServices.getDrugDirection(null, null, null, createdTime, isDeleted);
-	Response<DrugDirection> response = new Response<DrugDirection>();
-	response.setDataList(drugDirections);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_DIRECTION_UNIT_CREATED_TIME)
-    @GET
-    public Response<DrugDirection> getDrugDirection(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId, @PathParam("createdTime") String createdTime) {
-	List<DrugDirection> drugDirections = prescriptionServices.getDrugDirection(doctorId, locationId, hospitalId, createdTime, true);
-	Response<DrugDirection> response = new Response<DrugDirection>();
-	response.setDataList(drugDirections);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_DIRECTION_UNIT_CREATED_TIME_ISDELETED)
-    @GET
-    public Response<DrugDirection> getDrugDirection(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId, @PathParam("createdTime") String createdTime, @PathParam("isDeleted") boolean isDeleted) {
-	List<DrugDirection> drugDirections = prescriptionServices.getDrugDirection(doctorId, locationId, hospitalId, createdTime, isDeleted);
-	Response<DrugDirection> response = new Response<DrugDirection>();
-	response.setDataList(drugDirections);
-	return response;
-    }
+//    @Path(value = PathProxy.PrescriptionUrls.GET_ALL_DRUG_TYPE)
+//    @GET
+//    public Response<DrugType> getAllDrugType() {
+//	List<DrugType> drugTypes = prescriptionServices.getAllDrugType();
+//	Response<DrugType> response = new Response<DrugType>();
+//	response.setDataList(drugTypes);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_TYPE)
+//    @GET
+//    public Response<DrugType> getDrugType(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+//	    @PathParam(value = "hospitalId") String hospitalId) {
+//	List<DrugType> drugTypes = prescriptionServices.getDrugType(doctorId, locationId, hospitalId, null, true);
+//	Response<DrugType> response = new Response<DrugType>();
+//	response.setDataList(drugTypes);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_DRUG_TYPE_CREATED_TIME)
+//    @GET
+//    public Response<DrugType> getDrugType(@PathParam("createdTime") String createdTime) {
+//	List<DrugType> drugTypes = prescriptionServices.getDrugType(null, null, null, createdTime, true);
+//	Response<DrugType> response = new Response<DrugType>();
+//	System.out.println(drugTypes.size());
+//	response.setDataList(drugTypes);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_DRUG_TYPE_CREATED_TIME_ISDELETED)
+//    @GET
+//    public Response<DrugType> getDrugType(@PathParam("createdTime") String createdTime, @PathParam("isDeleted") boolean isDeleted) {
+//	List<DrugType> drugTypes = prescriptionServices.getDrugType(null, null, null, createdTime, isDeleted);
+//	Response<DrugType> response = new Response<DrugType>();
+//	response.setDataList(drugTypes);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_TYPE_CREATED_TIME)
+//    @GET
+//    public Response<DrugType> getDrugType(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+//	    @PathParam(value = "hospitalId") String hospitalId, @PathParam("createdTime") String createdTime) {
+//	List<DrugType> drugTypes = prescriptionServices.getDrugType(doctorId, locationId, hospitalId, createdTime, true);
+//	Response<DrugType> response = new Response<DrugType>();
+//	response.setDataList(drugTypes);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_TYPE_CREATED_TIME_ISDELETED)
+//    @GET
+//    public Response<DrugType> getDrugType(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+//	    @PathParam(value = "hospitalId") String hospitalId, @PathParam("createdTime") String createdTime, @PathParam("isDeleted") boolean isDeleted) {
+//	List<DrugType> drugTypes = prescriptionServices.getDrugType(doctorId, locationId, hospitalId, createdTime, isDeleted);
+//	Response<DrugType> response = new Response<DrugType>();
+//	response.setDataList(drugTypes);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_ALL_DRUG_STRENGTH_UNIT)
+//    @GET
+//    public Response<DrugStrengthUnit> getAllDrugStrengthUnit() {
+//	List<DrugStrengthUnit> drugStrengths = prescriptionServices.getAllDrugStrengthUnit();
+//	Response<DrugStrengthUnit> response = new Response<DrugStrengthUnit>();
+//	response.setDataList(drugStrengths);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_STRENGTH_UNIT)
+//    @GET
+//    public Response<DrugStrengthUnit> getDrugStrengthUnit(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+//	    @PathParam(value = "hospitalId") String hospitalId) {
+//	List<DrugStrengthUnit> drugStrengths = prescriptionServices.getDrugStrengthUnit(doctorId, locationId, hospitalId, null, true);
+//	Response<DrugStrengthUnit> response = new Response<DrugStrengthUnit>();
+//	response.setDataList(drugStrengths);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_DRUG_STRENGTH_UNIT_CREATED_TIME)
+//    @GET
+//    public Response<DrugStrengthUnit> getDrugStrengthUnit(@PathParam("createdTime") String createdTime) {
+//	List<DrugStrengthUnit> drugStrengths = prescriptionServices.getDrugStrengthUnit(null, null, null, createdTime, true);
+//	Response<DrugStrengthUnit> response = new Response<DrugStrengthUnit>();
+//	response.setDataList(drugStrengths);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_DRUG_STRENGTH_UNIT_CREATED_TIME_ISDELETED)
+//    @GET
+//    public Response<DrugStrengthUnit> getDrugStrengthUnit(@PathParam("createdTime") String createdTime, @PathParam("isDeleted") boolean isDeleted) {
+//	List<DrugStrengthUnit> drugStrengths = prescriptionServices.getDrugStrengthUnit(null, null, null, createdTime, isDeleted);
+//	Response<DrugStrengthUnit> response = new Response<DrugStrengthUnit>();
+//	response.setDataList(drugStrengths);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_STRENGTH_UNIT_CREATED_TIME)
+//    @GET
+//    public Response<DrugStrengthUnit> getDrugStrengthUnit(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+//	    @PathParam(value = "hospitalId") String hospitalId, @PathParam("createdTime") String createdTime) {
+//	List<DrugStrengthUnit> drugStrengths = prescriptionServices.getDrugStrengthUnit(doctorId, locationId, hospitalId, createdTime, true);
+//	Response<DrugStrengthUnit> response = new Response<DrugStrengthUnit>();
+//	response.setDataList(drugStrengths);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_STRENGTH_UNIT_CREATED_TIME_ISDELETED)
+//    @GET
+//    public Response<DrugStrengthUnit> getDrugStrengthUnit(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+//	    @PathParam(value = "hospitalId") String hospitalId, @PathParam("createdTime") String createdTime, @PathParam("isDeleted") boolean isDeleted) {
+//	List<DrugStrengthUnit> drugStrengths = prescriptionServices.getDrugStrengthUnit(doctorId, locationId, hospitalId, createdTime, isDeleted);
+//	Response<DrugStrengthUnit> response = new Response<DrugStrengthUnit>();
+//	response.setDataList(drugStrengths);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_ALL_DRUG_DOSAGE)
+//    @GET
+//    public Response<DrugDosage> getAllDrugDosage() {
+//	List<DrugDosage> drugDosage = prescriptionServices.getAllDrugDosage();
+//	Response<DrugDosage> response = new Response<DrugDosage>();
+//	response.setDataList(drugDosage);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_DOSAGE)
+//    @GET
+//    public Response<DrugDosage> getDrugDosage(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+//	    @PathParam(value = "hospitalId") String hospitalId) {
+//	List<DrugDosage> drugDosage = prescriptionServices.getDrugDosage(doctorId, locationId, hospitalId, null, true);
+//	Response<DrugDosage> response = new Response<DrugDosage>();
+//	response.setDataList(drugDosage);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_DRUG_DOSAGE_CREATED_TIME)
+//    @GET
+//    public Response<DrugDosage> getDrugDosage(@PathParam("createdTime") String createdTime) {
+//	List<DrugDosage> drugDosage = prescriptionServices.getDrugDosage(null, null, null, createdTime, true);
+//	Response<DrugDosage> response = new Response<DrugDosage>();
+//	response.setDataList(drugDosage);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_DRUG_DOSAGE_CREATED_TIME_ISDELETED)
+//    @GET
+//    public Response<DrugDosage> getDrugDosage(@PathParam("createdTime") String createdTime, @PathParam("isDeleted") boolean isDeleted) {
+//	List<DrugDosage> drugDosage = prescriptionServices.getDrugDosage(null, null, null, createdTime, isDeleted);
+//	Response<DrugDosage> response = new Response<DrugDosage>();
+//	response.setDataList(drugDosage);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_DOSAGE_CREATED_TIME)
+//    @GET
+//    public Response<DrugDosage> getDrugDosage(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+//	    @PathParam(value = "hospitalId") String hospitalId, @PathParam("createdTime") String createdTime) {
+//	List<DrugDosage> drugDosage = prescriptionServices.getDrugDosage(doctorId, locationId, hospitalId, createdTime, true);
+//	Response<DrugDosage> response = new Response<DrugDosage>();
+//	response.setDataList(drugDosage);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_DOSAGE_CREATED_TIME_ISDELETED)
+//    @GET
+//    public Response<DrugDosage> geDrugDosage(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+//	    @PathParam(value = "hospitalId") String hospitalId, @PathParam("createdTime") String createdTime, @PathParam("isDeleted") boolean isDeleted) {
+//	List<DrugDosage> drugDosage = prescriptionServices.getDrugDosage(doctorId, locationId, hospitalId, createdTime, isDeleted);
+//	Response<DrugDosage> response = new Response<DrugDosage>();
+//	response.setDataList(drugDosage);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_ALL_DRUG_DURATION_UNIT)
+//    @GET
+//    public Response<DrugDurationUnit> getAllDrugDurationUnit() {
+//	List<DrugDurationUnit> drugDurations = prescriptionServices.getAllDrugDurationUnit();
+//	Response<DrugDurationUnit> response = new Response<DrugDurationUnit>();
+//	response.setDataList(drugDurations);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_DURATION_UNIT)
+//    @GET
+//    public Response<DrugDurationUnit> getDrugDurationUnit(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+//	    @PathParam(value = "hospitalId") String hospitalId) {
+//	List<DrugDurationUnit> drugDurations = prescriptionServices.getDrugDurationUnit(doctorId, locationId, hospitalId, null, true);
+//	Response<DrugDurationUnit> response = new Response<DrugDurationUnit>();
+//	response.setDataList(drugDurations);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_DRUG_DURATION_UNIT_CREATED_TIME)
+//    @GET
+//    public Response<DrugDurationUnit> getDrugDurationUnit(@PathParam("createdTime") String createdTime) {
+//	List<DrugDurationUnit> drugDurations = prescriptionServices.getDrugDurationUnit(null, null, null, createdTime, true);
+//	Response<DrugDurationUnit> response = new Response<DrugDurationUnit>();
+//	response.setDataList(drugDurations);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_DRUG_DURATION_UNIT_CREATED_TIME_ISDELETED)
+//    @GET
+//    public Response<DrugDurationUnit> getDrugDurationUnit(@PathParam("createdTime") String createdTime, @PathParam("isDeleted") boolean isDeleted) {
+//	List<DrugDurationUnit> drugDurations = prescriptionServices.getDrugDurationUnit(null, null, null, createdTime, isDeleted);
+//	Response<DrugDurationUnit> response = new Response<DrugDurationUnit>();
+//	response.setDataList(drugDurations);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_DURATION_UNIT_CREATED_TIME)
+//    @GET
+//    public Response<DrugDurationUnit> getDrugDurationUnit(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+//	    @PathParam(value = "hospitalId") String hospitalId, @PathParam("createdTime") String createdTime) {
+//	List<DrugDurationUnit> drugDurations = prescriptionServices.getDrugDurationUnit(doctorId, locationId, hospitalId, createdTime, true);
+//	Response<DrugDurationUnit> response = new Response<DrugDurationUnit>();
+//	response.setDataList(drugDurations);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_DURATION_UNIT_CREATED_TIME_ISDELETED)
+//    @GET
+//    public Response<DrugDurationUnit> getDrugDurationUnit(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+//	    @PathParam(value = "hospitalId") String hospitalId, @PathParam("createdTime") String createdTime, @PathParam("isDeleted") boolean isDeleted) {
+//	List<DrugDurationUnit> drugDurations = prescriptionServices.getDrugDurationUnit(doctorId, locationId, hospitalId, createdTime, isDeleted);
+//	Response<DrugDurationUnit> response = new Response<DrugDurationUnit>();
+//	response.setDataList(drugDurations);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_ALL_DRUG_DIRECTION_UNIT)
+//    @GET
+//    public Response<DrugDirection> getAllDrugDirection() {
+//	List<DrugDirection> drugDirections = prescriptionServices.getAllDrugDirection();
+//	Response<DrugDirection> response = new Response<DrugDirection>();
+//	response.setDataList(drugDirections);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_DIRECTION_UNIT)
+//    @GET
+//    public Response<DrugDirection> getDrugDirection(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+//	    @PathParam(value = "hospitalId") String hospitalId) {
+//	List<DrugDirection> drugDirections = prescriptionServices.getDrugDirection(doctorId, locationId, hospitalId, null, true);
+//	Response<DrugDirection> response = new Response<DrugDirection>();
+//	response.setDataList(drugDirections);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_DRUG_DIRECTION_UNIT_CREATED_TIME)
+//    @GET
+//    public Response<DrugDirection> getDrugDirection(@PathParam("createdTime") String createdTime) {
+//	List<DrugDirection> drugDirections = prescriptionServices.getDrugDirection(null, null, null, createdTime, true);
+//	Response<DrugDirection> response = new Response<DrugDirection>();
+//	response.setDataList(drugDirections);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_DRUG_DIRECTION_UNIT_CREATED_TIME_ISDELETED)
+//    @GET
+//    public Response<DrugDirection> getDrugDirection(@PathParam("createdTime") String createdTime, @PathParam("isDeleted") boolean isDeleted) {
+//	List<DrugDirection> drugDirections = prescriptionServices.getDrugDirection(null, null, null, createdTime, isDeleted);
+//	Response<DrugDirection> response = new Response<DrugDirection>();
+//	response.setDataList(drugDirections);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_DIRECTION_UNIT_CREATED_TIME)
+//    @GET
+//    public Response<DrugDirection> getDrugDirection(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+//	    @PathParam(value = "hospitalId") String hospitalId, @PathParam("createdTime") String createdTime) {
+//	List<DrugDirection> drugDirections = prescriptionServices.getDrugDirection(doctorId, locationId, hospitalId, createdTime, true);
+//	Response<DrugDirection> response = new Response<DrugDirection>();
+//	response.setDataList(drugDirections);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUG_DIRECTION_UNIT_CREATED_TIME_ISDELETED)
+//    @GET
+//    public Response<DrugDirection> getDrugDirection(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+//	    @PathParam(value = "hospitalId") String hospitalId, @PathParam("createdTime") String createdTime, @PathParam("isDeleted") boolean isDeleted) {
+//	List<DrugDirection> drugDirections = prescriptionServices.getDrugDirection(doctorId, locationId, hospitalId, createdTime, isDeleted);
+//	Response<DrugDirection> response = new Response<DrugDirection>();
+//	response.setDataList(drugDirections);
+//	return response;
+//    }
 
     @Path(value = PathProxy.PrescriptionUrls.ADD_DRUG_TYPE)
     @POST
@@ -942,4 +875,23 @@ public class PrescriptionApi {
 	return response;
     }
 
+    @Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_ITEMS)
+    @GET
+    public Response<Object> getPrescriptionItems(@PathParam("type") String type, @PathParam("range") String range,
+	    @PathParam("page") int page, @PathParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId, 
+	    @QueryParam(value = "createdTime") String createdTime, @QueryParam(value = "isDeleted") Boolean isDeleted) {
+    	
+    	if (DPDoctorUtils.anyStringEmpty(type, range)) {
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Type or Range Cannot Be Empty");
+    	}
+    	List<Object> clinicalItems ;
+    	if(isDeleted != null)
+    		clinicalItems = prescriptionServices.getPrescriptionItems(type, range, page, size, doctorId, locationId, hospitalId, createdTime, isDeleted);
+    	else
+    		 clinicalItems = prescriptionServices.getPrescriptionItems(type, range, page, size, doctorId, locationId, hospitalId, createdTime, true);
+    	Response<Object> response = new  Response<Object>();
+    	response.setDataList(clinicalItems);
+    	return  response;
+    }
 }

@@ -63,35 +63,13 @@ public interface PrescriptionServices {
 
     List<TemplateAddEditResponseDetails> getTemplates(String doctorId, String hospitalId, String locationId, String createdTime, boolean isDeleted);
 
-    List<DrugAddEditResponse> getDrugs(String doctorId, String hospitalId, String locationId, String createdTime, boolean isDeleted);
-
     @Query(value = "{'doctorId': ?0, 'patientId': ?1, 'locationId': ?2, 'hospitalId': ?3}", count = true)
     Integer getPrescriptionCount(String doctorId, String patientId, String locationId, String hospitalId);
 
     TemplateAddEditResponseDetails addTemplateHandheld(TemplateAddEditRequest request);
 
     PrescriptionAddEditResponseDetails addPrescriptionHandheld(PrescriptionAddEditRequest request);
-
-    List<DrugType> getAllDrugType();
-
-    List<DrugType> getDrugType(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted);
-
-    List<DrugStrengthUnit> getAllDrugStrengthUnit();
-
-    List<DrugStrengthUnit> getDrugStrengthUnit(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted);
-
-    List<DrugDosage> getAllDrugDosage();
-
-    List<DrugDosage> getDrugDosage(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted);
-
-    List<DrugDurationUnit> getAllDrugDurationUnit();
-
-    List<DrugDurationUnit> getDrugDurationUnit(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted);
-
-    List<DrugDirection> getAllDrugDirection();
-
-    List<DrugDirection> getDrugDirection(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted);
-
+    
     DrugTypeAddEditResponse addDrugType(DrugTypeAddEditRequest request);
 
     DrugStrengthAddEditResponse addDrugStrength(DrugStrengthAddEditRequest request);
@@ -121,5 +99,7 @@ public interface PrescriptionServices {
     DrugDurationUnitAddEditResponse editDrugDurationUnit(DrugDurationUnitAddEditRequest request);
 
     Boolean deleteDrugDurationUnit(String drugDurationUnitId);
+
+	List<Object> getPrescriptionItems(String type, String range, int page, int size, String doctorId, String locationId,String hospitalId, String createdTime, Boolean isDeleted);
 
 }

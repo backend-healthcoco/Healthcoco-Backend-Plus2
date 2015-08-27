@@ -16,9 +16,7 @@ public interface HistoryServices {
 
     Boolean deleteDisease(String diseaseId, String doctorId, String hospitalId, String locationId);
 
-    List<DiseaseListResponse> getDiseases(String doctorId, String hospitalId, String locationId);
-
-    List<DiseaseListResponse> getCustomGlobalDiseases(String doctorId, String createdTime, boolean isDeleted);
+    List<DiseaseListResponse> getDiseases(String range, int page, int size, String doctorId, String hospitalId, String locationId, String createdTime, Boolean isDeleted);
 
     List<DiseaseListResponse> getDiseasesByIds(List<String> diseasesIds);
 
