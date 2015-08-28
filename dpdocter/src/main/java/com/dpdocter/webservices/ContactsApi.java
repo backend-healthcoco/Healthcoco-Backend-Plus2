@@ -91,11 +91,8 @@ public class ContactsApi {
 	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id Cannot Be Empty");
 	}
-	List<PatientCard> patientCards = new ArrayList<PatientCard>();
-	
-	if(isDeleted != null)patientCards = contactsService.getDoctorContacts(doctorId, createdTime, isDeleted); 
-	else patientCards = contactsService.getDoctorContacts(doctorId, createdTime, true);
-	
+	List<PatientCard> patientCards = contactsService.getDoctorContacts(doctorId, createdTime, isDeleted != null ?isDeleted:true); 
+		
 	int ttlCount = patientCards != null ? patientCards.size() : 0;
 	DoctorContactsResponse doctorContactsResponse = new DoctorContactsResponse();
 	doctorContactsResponse.setPatientCards(patientCards);

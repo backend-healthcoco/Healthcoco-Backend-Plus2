@@ -81,7 +81,7 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.GET_DISEASES)
     @GET
-    public Response<DiseaseListResponse> getDiseases(@PathParam("range") String range, @PathParam("page") int page, @PathParam("size") int size, @QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
+    public Response<DiseaseListResponse> getDiseases(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
     		@QueryParam("hospitalId") String hospitalId, @QueryParam("createdTime") String createdTime, @QueryParam("isDeleted") Boolean isDeleted) {
 	
     List<DiseaseListResponse> diseaseListResponse = new ArrayList<DiseaseListResponse>();

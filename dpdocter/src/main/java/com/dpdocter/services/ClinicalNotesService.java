@@ -23,9 +23,9 @@ public interface ClinicalNotesService {
 
     void deleteNote(String id);
 
-    List<ClinicalNotes> getPatientsClinicalNotesWithVerifiedOTP(String patientId, String createdTime, boolean isDeleted);
+    List<ClinicalNotes> getPatientsClinicalNotesWithVerifiedOTP(int page, int size, String patientId, String createdTime, boolean isDeleted);
 
-    List<ClinicalNotes> getPatientsClinicalNotesWithoutVerifiedOTP(String patientId, String doctorId, String locationId, String hospitalId, String createdTime,
+    List<ClinicalNotes> getPatientsClinicalNotesWithoutVerifiedOTP(int page, int size, String patientId, String doctorId, String locationId, String hospitalId, String createdTime,
 	    boolean isDeleted);
 
     Complaint addEditComplaint(Complaint complaint);

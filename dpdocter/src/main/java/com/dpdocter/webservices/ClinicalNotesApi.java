@@ -93,69 +93,29 @@ public class ClinicalNotesApi {
 	return response;
     }
 
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_ID)
-    @GET
-    public Response<ClinicalNotes> getNotesById(@PathParam(value = "clinicalNotesId") String clinicalNotesId) {
-	ClinicalNotes clinicalNotes = clinicalNotesService.getNotesById(clinicalNotesId);
-	Response<ClinicalNotes> response = new Response<ClinicalNotes>();
-	response.setData(clinicalNotes);
-	return response;
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_DOCTOR_ID)
-    @GET
-    public Response<ClinicalNotes> getNotes(@PathParam("doctorId") String doctorId, @PathParam("patientId") String patientId,
-	    @PathParam("isOTPVerified") boolean isOTPVerified) {
-	return getAllNotes(doctorId, null, null, patientId, null, isOTPVerified, true);
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_DOCTOR_ID_CT)
-    @GET
-    public Response<ClinicalNotes> getNotes(@PathParam("doctorId") String doctorId, @PathParam("patientId") String patientId,
-	    @PathParam("createdTime") String createdTime, @PathParam("isOTPVerified") boolean isOTPVerified) {
-	return getAllNotes(doctorId, null, null, patientId, createdTime, isOTPVerified, true);
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_DOCTOR_ID_CT_ISDELETED)
-    @GET
-    public Response<ClinicalNotes> getNotes(@PathParam("doctorId") String doctorId, @PathParam("patientId") String patientId,
-	    @PathParam("createdTime") String createdTime, @PathParam("isOTPVerified") boolean isOTPVerified, @PathParam(value = "isDeleted") boolean isDeleted) {
-	return getAllNotes(doctorId, null, null, patientId, createdTime, isOTPVerified, isDeleted);
-    }
-
     @Path(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES)
     @GET
-    public Response<ClinicalNotes> getNotes(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "patientId") String patientId,
-	    @PathParam(value = "isOTPVerified") boolean isOTPVerified) {
-	return getAllNotes(doctorId, locationId, hospitalId, patientId, null, isOTPVerified, true);
+    public Response<ClinicalNotes> getNotes(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+    		@QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "patientId") String patientId, @QueryParam("createdTime") String createdTime,
+    		@QueryParam(value = "isOTPVerified") Boolean isOTPVerified, @QueryParam(value = "isDeleted") Boolean isDeleted) {
+	return getAllNotes(page, size, doctorId, locationId, hospitalId, patientId, createdTime, isOTPVerified, isDeleted);
     }
 
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_CT)
-    @GET
-    public Response<ClinicalNotes> getNotes(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "patientId") String patientId, @PathParam("createdTime") String createdTime,
-	    @PathParam(value = "isOTPVerified") boolean isOTPVerified) {
-	return getAllNotes(doctorId, locationId, hospitalId, patientId, createdTime, isOTPVerified, true);
-    }
-
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_CT_ISDELETED)
-    @GET
-    public Response<ClinicalNotes> getNotes(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "patientId") String patientId, @PathParam("createdTime") String createdTime,
-	    @PathParam(value = "isOTPVerified") boolean isOTPVerified, @PathParam(value = "isDeleted") boolean isDeleted) {
-	return getAllNotes(doctorId, locationId, hospitalId, patientId, createdTime, isOTPVerified, isDeleted);
-    }
-
-    private Response<ClinicalNotes> getAllNotes(String doctorId, String locationId, String hospitalId, String patientId, String createdTime,
-	    boolean isOTPVerified, boolean isDeleted) {
+    private Response<ClinicalNotes> getAllNotes(int page, int size, String doctorId, String locationId, String hospitalId, String patientId, String createdTime,
+	    Boolean isOTPVerified, Boolean isDeleted) {
 	List<ClinicalNotes> clinicalNotes = null;
-	if (isOTPVerified) {
-	    clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithVerifiedOTP(patientId, createdTime, isDeleted);
-	} else {
-	    clinicalNotes = clinicalNotesService
-		    .getPatientsClinicalNotesWithoutVerifiedOTP(patientId, doctorId, locationId, hospitalId, createdTime, isDeleted);
+	
+	if(isOTPVerified != null){
+		if (isOTPVerified) {
+		    clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithVerifiedOTP(page, size, patientId, createdTime, isDeleted !=null ?isDeleted:true);
+		} else {
+		    clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(page, size, patientId, doctorId, locationId, hospitalId, createdTime, isDeleted !=null ?isDeleted:true);
+		}
 	}
+	else{
+		clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(page, size, patientId, doctorId, locationId, hospitalId, createdTime, isDeleted !=null ?isDeleted:true);
+	}
+	
 
 	Response<ClinicalNotes> response = new Response<ClinicalNotes>();
 	response.setDataList(clinicalNotes);
@@ -358,18 +318,14 @@ public class ClinicalNotesApi {
     @Path(value = PathProxy.ClinicalNotesUrls.GET_CINICAL_ITEMS)
     @GET
     public Response<Object> getClinicalItems(@PathParam("type") String type, @PathParam("range") String range,
-	    @PathParam("page") int page, @PathParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+    		@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId, 
 	    @QueryParam(value = "createdTime") String createdTime, @QueryParam(value = "isDeleted") Boolean isDeleted) {
     	
     	if (DPDoctorUtils.anyStringEmpty(type, range)) {
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Type or Range Cannot Be Empty");
     	}
-    	List<Object> clinicalItems ;
-    	if(isDeleted != null)
-    		clinicalItems = clinicalNotesService.getClinicalItems(type, range, page, size, doctorId, locationId, hospitalId, createdTime, isDeleted);
-    	else
-    		 clinicalItems = clinicalNotesService.getClinicalItems(type, range, page, size, doctorId, locationId, hospitalId, createdTime, true);
+    	List<Object> clinicalItems = clinicalNotesService.getClinicalItems(type, range, page, size, doctorId, locationId, hospitalId, createdTime, isDeleted != null ? isDeleted:true);
     	Response<Object> response = new  Response<Object>();
     	response.setDataList(clinicalItems);
     	return  response;

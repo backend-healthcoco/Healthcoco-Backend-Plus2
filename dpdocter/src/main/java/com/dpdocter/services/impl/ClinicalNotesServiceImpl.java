@@ -4,9 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -534,25 +532,22 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
-    public List<ClinicalNotes> getPatientsClinicalNotesWithVerifiedOTP(String patientId, String createdTime, boolean isDeleted) {
+    public List<ClinicalNotes> getPatientsClinicalNotesWithVerifiedOTP(int page, int size, String patientId, String createdTime, boolean isDeleted) {
 	List<ClinicalNotes> clinicalNotesList = null;
 	List<PatientClinicalNotesCollection> patientClinicalNotesCollections = null;
 	try {
 	    if (DPDoctorUtils.anyStringEmpty(createdTime)) {
 		if (isDeleted) {
-		    patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Sort(Sort.Direction.DESC, "createdDate"));
+		    patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Sort(Sort.Direction.DESC, "createdDate"), size>0 ? new PageRequest(page, size):null);
 		} else {
-		    patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, isDeleted, new Sort(Sort.Direction.DESC,
-			    "createdDate"));
+		    patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, isDeleted, new Sort(Sort.Direction.DESC,"createdDate"), size>0 ? new PageRequest(page, size):null);
 		}
 	    } else {
 		long createdTimeStamp = Long.parseLong(createdTime);
 		if (isDeleted) {
-		    patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Date(createdTimeStamp), new Sort(
-			    Sort.Direction.DESC, "createdDate"));
+		    patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdDate"), size>0 ? new PageRequest(page, size):null);
 		} else {
-		    patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, isDeleted, new Date(createdTimeStamp),
-			    new Sort(Sort.Direction.DESC, "createdDate"));
+		    patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, isDeleted, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdDate"), size>0 ? new PageRequest(page, size):null);
 		}
 	    }
 
@@ -583,22 +578,20 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
-    public List<ClinicalNotes> getPatientsClinicalNotesWithoutVerifiedOTP(String patientId, String doctorId, String locationId, String hospitalId,
+    public List<ClinicalNotes> getPatientsClinicalNotesWithoutVerifiedOTP(int page, int size, String patientId, String doctorId, String locationId, String hospitalId,
 	    String createdTime, boolean isDeleted) {
 	List<ClinicalNotes> clinicalNotesList = null;
 	List<PatientClinicalNotesCollection> patientClinicalNotesCollections = null;
 	try {
 	    if (createdTime != null) {
 		long createdTimeStamp = Long.parseLong(createdTime);
-		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Date(createdTimeStamp), new Sort(
-			Sort.Direction.DESC, "createdDate"));
+		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdDate"), size>0 ? new PageRequest(page, size):null);
 	    } else {
-		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Sort(Sort.Direction.DESC, "createdDate"));
+		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Sort(Sort.Direction.DESC, "createdDate"), size>0 ? new PageRequest(page, size):null);
 	    }
 	    if (patientClinicalNotesCollections != null) {
 		@SuppressWarnings("unchecked")
-		Collection<String> clinicalNotesIds = CollectionUtils.collect(patientClinicalNotesCollections, new BeanToPropertyValueTransformer(
-			"clinicalNotesId"));
+		Collection<String> clinicalNotesIds = CollectionUtils.collect(patientClinicalNotesCollections, new BeanToPropertyValueTransformer("clinicalNotesId"));
 		clinicalNotesList = new ArrayList<ClinicalNotes>();
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
 		    for (String clinicalNotesId : clinicalNotesIds) {
@@ -976,17 +969,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    	long createdTimeStamp = Long.parseLong(createdTime);
 			if (isDeleted)
 			    complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
-				    "createdTime"), new PageRequest(page, size));
+				    "createdTime"), size>0 ? new PageRequest(page, size):null);
 			else
 			    complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId, new Date(createdTimeStamp), isDeleted, new Sort(
-				    Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+				    Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 
 		    } else {
 			if (isDeleted)
-			    complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+			    complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 			else
 			    complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC,
-				    "createdTime"),new PageRequest(page, size));
+				    "createdTime"),size>0 ? new PageRequest(page, size):null);
 
 		    }
 		    BeanUtil.map(complaintCollections, response);
@@ -1007,17 +1000,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				long createdTimeStamp = Long.parseLong(createdTime);
 				if (isDeleted)
 					complaintCollections = complaintRepository.findGlobalComplaints(new Date(createdTimeStamp),
-							new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+							new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 				else
 					complaintCollections = complaintRepository.findGlobalComplaints(new Date(createdTimeStamp),
-							isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+							isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 			} else {
 				if (isDeleted)
 					complaintCollections = complaintRepository.findGlobalComplaints(
-							new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+							new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 				else
 					complaintCollections = complaintRepository.findGlobalComplaints(isDeleted,
-							new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+							new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 
 			}
 
@@ -1041,22 +1034,20 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	List<Object> response = null;
 	try {
 	   
-	    if (!DPDoctorUtils.allStringsEmpty(createdTime)) {
-			long createdTimeStamp = Long.parseLong(createdTime);
-			if (isDeleted)
-				complaintCollections = complaintRepository.findCustomComplaints(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-						new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
-			else
-				complaintCollections = complaintRepository.findCustomComplaints(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-						isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
-		} else {
-			if (isDeleted)
-				complaintCollections = complaintRepository.findCustomComplaints(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
-			else
-				complaintCollections = complaintRepository.findCustomComplaints(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
-
-		}
-
+	    
+	    	if (!DPDoctorUtils.allStringsEmpty(createdTime)) {
+				long createdTimeStamp = Long.parseLong(createdTime);
+				if (isDeleted)
+					complaintCollections = complaintRepository.findCustomComplaints(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
+				else
+					complaintCollections = complaintRepository.findCustomComplaints(doctorId, locationId, hospitalId, new Date(createdTimeStamp), isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
+			} else {
+				if (isDeleted)
+					complaintCollections = complaintRepository.findCustomComplaints(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
+				else
+					complaintCollections = complaintRepository.findCustomComplaints(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
+			   }
+	    
 		if (complaintCollections != null) {
 			response = new ArrayList<Object>();
 			BeanUtil.map(complaintCollections, response);
@@ -1079,14 +1070,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    if (!DPDoctorUtils.allStringsEmpty(createdTime)) {
 		    	long createdTimeStamp = Long.parseLong(createdTime);
 				if (isDeleted)
-					investigationsCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,"createdTime"), new PageRequest(page, size));
+					investigationsCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,"createdTime"), size>0 ? new PageRequest(page, size):null);
 				else
-					investigationsCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId, new Date(createdTimeStamp), isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+					investigationsCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId, new Date(createdTimeStamp), isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 		    } else {
 				if (isDeleted)
-					investigationsCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+					investigationsCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 				else
-					investigationsCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"),new PageRequest(page, size));
+					investigationsCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"),size>0 ? new PageRequest(page, size):null);
 		    }
 		    BeanUtil.map(investigationsCollections, response);
 		} catch (Exception e) {
@@ -1105,17 +1096,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				long createdTimeStamp = Long.parseLong(createdTime);
 				if (isDeleted)
 					investigationsCollections = investigationRepository.findGlobalInvestigations(new Date(createdTimeStamp),
-							new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+							new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 				else
 					investigationsCollections = investigationRepository.findGlobalInvestigations(new Date(createdTimeStamp),
-							isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+							isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 			} else {
 				if (isDeleted)
 					investigationsCollections = investigationRepository.findGlobalInvestigations(
-							new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+							new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 				else
 					investigationsCollections = investigationRepository.findGlobalInvestigations(isDeleted,
-							new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+							new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 
 			}
 
@@ -1143,15 +1134,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			long createdTimeStamp = Long.parseLong(createdTime);
 			if (isDeleted)
 				investigationsCollections = investigationRepository.findCustomInvestigations(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-						new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+						new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 			else
 				investigationsCollections = investigationRepository.findCustomInvestigations(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-						isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+						isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 		} else {
 			if (isDeleted)
-				investigationsCollections = investigationRepository.findCustomInvestigations(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+				investigationsCollections = investigationRepository.findCustomInvestigations(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 			else
-				investigationsCollections = investigationRepository.findCustomInvestigations(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+				investigationsCollections = investigationRepository.findCustomInvestigations(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 
 		}
 
@@ -1178,17 +1169,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    	long createdTimeStamp = Long.parseLong(createdTime);
 			if (isDeleted)
 			    observationCollections = observationRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
-				    "createdTime"), new PageRequest(page, size));
+				    "createdTime"), size>0 ? new PageRequest(page, size):null);
 			else
 			    observationCollections = observationRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId, new Date(createdTimeStamp), isDeleted, new Sort(
-				    Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+				    Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 
 		    } else {
 			if (isDeleted)
-			    observationCollections = observationRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+			    observationCollections = observationRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 			else
 			    observationCollections = observationRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC,
-				    "createdTime"),new PageRequest(page, size));
+				    "createdTime"),size>0 ? new PageRequest(page, size):null);
 
 		    }
 		    BeanUtil.map(observationCollections, response);
@@ -1209,14 +1200,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (!DPDoctorUtils.allStringsEmpty(createdTime)) {
 				long createdTimeStamp = Long.parseLong(createdTime);
 				if (isDeleted)
-					observationCollections = observationRepository.findGlobalObservations(new Date(createdTimeStamp),new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+					observationCollections = observationRepository.findGlobalObservations(new Date(createdTimeStamp),new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 				else
-					observationCollections = observationRepository.findGlobalObservations(new Date(createdTimeStamp),isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+					observationCollections = observationRepository.findGlobalObservations(new Date(createdTimeStamp),isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 			} else {
 				if (isDeleted)
-					observationCollections = observationRepository.findGlobalObservations(new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+					observationCollections = observationRepository.findGlobalObservations(new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 				else
-					observationCollections = observationRepository.findGlobalObservations(isDeleted,new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+					observationCollections = observationRepository.findGlobalObservations(isDeleted,new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 
 			}
 
@@ -1245,15 +1236,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			long createdTimeStamp = Long.parseLong(createdTime);
 			if (isDeleted)
 				observationCollections = observationRepository.findCustomObservations(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-						new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+						new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 			else
 				observationCollections = observationRepository.findCustomObservations(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-						isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+						isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 		} else {
 			if (isDeleted)
-				observationCollections = observationRepository.findCustomObservations(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+				observationCollections = observationRepository.findCustomObservations(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 			else
-				observationCollections = observationRepository.findCustomObservations(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+				observationCollections = observationRepository.findCustomObservations(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 
 		}
 
@@ -1279,17 +1270,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    	long createdTimeStamp = Long.parseLong(createdTime);
 		    if (isDeleted)
 			    diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
-				    "createdTime"), new PageRequest(page, size));
+				    "createdTime"), size>0 ? new PageRequest(page, size):null);
 			else
 			    diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(doctorId, locationId, hospitalId, new Date(createdTimeStamp), isDeleted, new Sort(
-				    Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+				    Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 
 		    } else {
 			if (isDeleted)
-			    diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+			    diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 			else
 			    diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC,
-				    "createdTime"),new PageRequest(page, size));
+				    "createdTime"),size>0 ? new PageRequest(page, size):null);
 
 		    }
 		    BeanUtil.map(diagnosisCollections, response);
@@ -1309,14 +1300,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (!DPDoctorUtils.allStringsEmpty(createdTime)) {
 				long createdTimeStamp = Long.parseLong(createdTime);
 				if (isDeleted)
-					diagnosisCollections = diagnosisRepository.findGlobalDiagnosis(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+					diagnosisCollections = diagnosisRepository.findGlobalDiagnosis(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 				else
-					diagnosisCollections = diagnosisRepository.findGlobalDiagnosis(new Date(createdTimeStamp), isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+					diagnosisCollections = diagnosisRepository.findGlobalDiagnosis(new Date(createdTimeStamp), isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 			} else {
 				if (isDeleted)
-					diagnosisCollections = diagnosisRepository.findGlobalDiagnosis(new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+					diagnosisCollections = diagnosisRepository.findGlobalDiagnosis(new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 				else
-					diagnosisCollections = diagnosisRepository.findGlobalDiagnosis(isDeleted,new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+					diagnosisCollections = diagnosisRepository.findGlobalDiagnosis(isDeleted,new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 
 			}
 
@@ -1343,15 +1334,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			long createdTimeStamp = Long.parseLong(createdTime);
 			if (isDeleted)
 				diagnosisCollections = diagnosisRepository.findCustomDiagnosis(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-						new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+						new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 			else
 				diagnosisCollections = diagnosisRepository.findCustomDiagnosis(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-						isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+						isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 		} else {
 			if (isDeleted)
-				diagnosisCollections = diagnosisRepository.findCustomDiagnosis(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+				diagnosisCollections = diagnosisRepository.findCustomDiagnosis(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 			else
-				diagnosisCollections = diagnosisRepository.findCustomDiagnosis(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+				diagnosisCollections = diagnosisRepository.findCustomDiagnosis(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 
 		}
 
@@ -1378,17 +1369,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    	long createdTimeStamp = Long.parseLong(createdTime);
 			if (isDeleted)
 			    notesCollections = notesRepository.findCustomGlobalNotes(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
-				    "createdTime"), new PageRequest(page, size));
+				    "createdTime"), size>0 ? new PageRequest(page, size):null);
 			else
 			    notesCollections = notesRepository.findCustomGlobalNotes(doctorId, locationId, hospitalId, new Date(createdTimeStamp), isDeleted, new Sort(
-				    Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+				    Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 
 		    } else {
 			if (isDeleted)
-			    notesCollections = notesRepository.findCustomGlobalNotes(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+			    notesCollections = notesRepository.findCustomGlobalNotes(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 			else
 			    notesCollections = notesRepository.findCustomGlobalNotes(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC,
-				    "createdTime"),new PageRequest(page, size));
+				    "createdTime"),size>0 ? new PageRequest(page, size):null);
 
 		    }
 		    BeanUtil.map(notesCollections, response);
@@ -1409,17 +1400,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				long createdTimeStamp = Long.parseLong(createdTime);
 				if (isDeleted)
 					notesCollections = notesRepository.findGlobalNotes(new Date(createdTimeStamp),
-							new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+							new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 				else
 					notesCollections = notesRepository.findGlobalNotes(new Date(createdTimeStamp),
-							isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+							isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 			} else {
 				if (isDeleted)
 					notesCollections = notesRepository.findGlobalNotes(
-							new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+							new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 				else
 					notesCollections = notesRepository.findGlobalNotes(isDeleted,
-							new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+							new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 
 			}
 
@@ -1446,15 +1437,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			long createdTimeStamp = Long.parseLong(createdTime);
 			if (isDeleted)
 				notesCollections = notesRepository.findCustomNotes(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-						new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+						new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 			else
 				notesCollections = notesRepository.findCustomNotes(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-						isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+						isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 		} else {
 			if (isDeleted)
-				notesCollections = notesRepository.findCustomNotes(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+				notesCollections = notesRepository.findCustomNotes(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 			else
-				notesCollections = notesRepository.findCustomNotes(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+				notesCollections = notesRepository.findCustomNotes(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 
 		}
 
@@ -1481,17 +1472,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    	long createdTimeStamp = Long.parseLong(createdTime);
 			if (isDeleted)
 			    diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
-				    "createdTime"), new PageRequest(page, size));
+				    "createdTime"), size>0 ? new PageRequest(page, size):null);
 			else
 			    diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, new Date(createdTimeStamp), isDeleted, new Sort(
-				    Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+				    Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 
 		    } else {
 			if (isDeleted)
-			    diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+			    diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 			else
 			    diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC,
-				    "createdTime"),new PageRequest(page, size));
+				    "createdTime"),size>0 ? new PageRequest(page, size):null);
 
 		    }
 		    BeanUtil.map(diagramCollections, response);
@@ -1511,14 +1502,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (!DPDoctorUtils.allStringsEmpty(createdTime)) {
 				long createdTimeStamp = Long.parseLong(createdTime);
 				if (isDeleted)
-					diagramCollections = diagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp),new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+					diagramCollections = diagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp),new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 				else
-					diagramCollections = diagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp),isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+					diagramCollections = diagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp),isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 			} else {
 				if (isDeleted)
-					diagramCollections = diagramsRepository.findGlobalDiagrams(new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+					diagramCollections = diagramsRepository.findGlobalDiagrams(new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 				else
-					diagramCollections = diagramsRepository.findGlobalDiagrams(isDeleted,new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+					diagramCollections = diagramsRepository.findGlobalDiagrams(isDeleted,new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 
 			}
 
@@ -1546,15 +1537,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			long createdTimeStamp = Long.parseLong(createdTime);
 			if (isDeleted)
 				diagramCollections = diagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-						new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+						new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 			else
 				diagramCollections = diagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-						isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+						isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 		} else {
 			if (isDeleted)
-				diagramCollections = diagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+				diagramCollections = diagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 			else
-				diagramCollections = diagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), new PageRequest(page, size));
+				diagramCollections = diagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
 
 		}
 

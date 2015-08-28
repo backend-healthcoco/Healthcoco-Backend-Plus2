@@ -4,11 +4,6 @@ import java.util.List;
 
 import org.springframework.data.mongodb.repository.Query;
 
-import com.dpdocter.beans.DrugDirection;
-import com.dpdocter.beans.DrugDosage;
-import com.dpdocter.beans.DrugDurationUnit;
-import com.dpdocter.beans.DrugStrengthUnit;
-import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.request.DrugAddEditRequest;
 import com.dpdocter.request.DrugDirectionAddEditRequest;
@@ -54,14 +49,14 @@ public interface PrescriptionServices {
 
     Boolean deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId, String patientId);
 
-    List<Prescription> getPrescriptions(String doctorId, String hospitalId, String locationId, String patientId, String createdTime, boolean isOTPVarified,
+    List<Prescription> getPrescriptions(int page, int size, String doctorId, String hospitalId, String locationId, String patientId, String createdTime, boolean isOTPVarified,
 	    boolean isDeleted);
 
     List<Prescription> getPrescriptionsByIds(List<String> prescriptionIds);
 
     Prescription getPrescriptionById(String prescriptionId);
 
-    List<TemplateAddEditResponseDetails> getTemplates(String doctorId, String hospitalId, String locationId, String createdTime, boolean isDeleted);
+    List<TemplateAddEditResponseDetails> getTemplates(int page, int size, String doctorId, String hospitalId, String locationId, String createdTime, boolean isDeleted);
 
     @Query(value = "{'doctorId': ?0, 'patientId': ?1, 'locationId': ?2, 'hospitalId': ?3}", count = true)
     Integer getPrescriptionCount(String doctorId, String patientId, String locationId, String hospitalId);
