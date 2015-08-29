@@ -285,6 +285,10 @@ public class RegistrationApi {
 	SolrPatientDocument solrPatientDocument = null;
 	try {
 	    solrPatientDocument = new SolrPatientDocument();
+	    solrPatientDocument.setDays(patient.getDob().getDays());
+	    solrPatientDocument.setMonths(patient.getDob().getMonths());
+	    solrPatientDocument.setYears(patient.getDob().getYears());
+	    
 	    if (patient.getAddress() != null) {
 		BeanUtil.map(patient.getAddress(), solrPatientDocument);
 	    }
@@ -293,6 +297,7 @@ public class RegistrationApi {
 	    }
 	    BeanUtil.map(patient, solrPatientDocument);
 	    solrPatientDocument.setId(patient.getPatient().getPatientId());
+	    
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}

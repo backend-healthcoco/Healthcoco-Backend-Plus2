@@ -25,7 +25,14 @@ public class DOB {
 	this.age = age;
     }
 
-    public int getDays() {
+    public DOB(int days, int months, int years) {
+    	super();
+    	this.days = days;
+    	this.months = months;
+    	this.years = years;
+	}
+
+	public int getDays() {
 	return days;
     }
 

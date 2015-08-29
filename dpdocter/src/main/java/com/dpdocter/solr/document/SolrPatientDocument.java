@@ -6,6 +6,8 @@ import org.apache.solr.client.solrj.beans.Field;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.solr.core.mapping.SolrDocument;
 
+import com.dpdocter.beans.DOB;
+
 @SolrDocument(solrCoreName = "patients")
 public class SolrPatientDocument {
 
@@ -41,8 +43,16 @@ public class SolrPatientDocument {
     private String emailAddress;
 
     @Field
-    private String dob;
+    private int days = 1;
 
+    @Field
+    private int months = 1;
+
+    @Field
+    private int years = 1;
+    
+    private DOB dob ;
+    
     @Field
     private String city;
 
@@ -153,11 +163,35 @@ public class SolrPatientDocument {
 	this.emailAddress = emailAddress;
     }
 
-    public String getDob() {
-	return dob;
+    public int getDays() {
+		return days;
+	}
+
+	public void setDays(int days) {
+		this.days = days;
+	}
+
+	public int getMonths() {
+		return months;
+	}
+
+	public void setMonths(int months) {
+		this.months = months;
+	}
+
+	public int getYears() {
+		return years;
+	}
+
+	public void setYears(int years) {
+		this.years = years;
+	}
+
+	public DOB getDob() {
+	 return new DOB(days, months, years);
     }
 
-    public void setDob(String dob) {
+	public void setDob(DOB dob) {
 	this.dob = dob;
     }
 
@@ -242,12 +276,14 @@ public class SolrPatientDocument {
     }
 
     @Override
-    public String toString() {
-	return "SolrPatientDocument [id=" + id + ", userId=" + userId + ", PID=" + PID + ", userName=" + userName + ", firstName=" + firstName
-		+ ", middleName=" + middleName + ", lastName=" + lastName + ", gender=" + gender + ", bloodGroup=" + bloodGroup + ", emailAddress="
-		+ emailAddress + ", dob=" + dob + ", city=" + city + ", locality=" + locality + ", postalCode=" + postalCode + ", mobileNumber=" + mobileNumber
-		+ ", profession=" + profession + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", referredBy="
-		+ referredBy + ", createdTime=" + createdTime + "]";
-    }
+	public String toString() {
+		return "SolrPatientDocument [id=" + id + ", userId=" + userId + ", PID=" + PID + ", userName=" + userName
+				+ ", firstName=" + firstName + ", middleName=" + middleName + ", lastName=" + lastName + ", gender="
+				+ gender + ", bloodGroup=" + bloodGroup + ", emailAddress=" + emailAddress + ", dob=" + dob + ", days="
+				+ days + ", months=" + months + ", years=" + years + ", city=" + city + ", locality=" + locality
+				+ ", postalCode=" + postalCode + ", mobileNumber=" + mobileNumber + ", profession=" + profession
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", referredBy=" + referredBy + ", createdTime=" + createdTime + "]";
+	}
 
 }
