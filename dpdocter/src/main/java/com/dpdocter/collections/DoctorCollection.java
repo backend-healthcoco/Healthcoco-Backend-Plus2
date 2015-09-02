@@ -13,7 +13,7 @@ import com.dpdocter.beans.DoctorRegistrationDetail;
 import com.dpdocter.beans.Education;
 
 @Document(collection = "docter_cl")
-public class DoctorCollection extends GenericCollection{
+public class DoctorCollection extends GenericCollection {
     @Id
     private String id;
 

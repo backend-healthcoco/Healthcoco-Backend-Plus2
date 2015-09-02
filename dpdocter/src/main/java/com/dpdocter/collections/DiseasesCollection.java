@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "diseases_cl")
-public class DiseasesCollection extends GenericCollection{
+public class DiseasesCollection extends GenericCollection {
 
     @Id
     private String id;
@@ -76,13 +76,13 @@ public class DiseasesCollection extends GenericCollection{
 	this.description = description;
     }
 
-	public Boolean getDiscarded() {
-		return discarded;
-	}
+    public Boolean getDiscarded() {
+	return discarded;
+    }
 
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
 
     @Override
     public String toString() {

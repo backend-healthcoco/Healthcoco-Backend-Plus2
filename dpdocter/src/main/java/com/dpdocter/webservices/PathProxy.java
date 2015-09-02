@@ -41,11 +41,11 @@ public interface PathProxy {
     public static final String CONTACTS_BASE_URL = BASE_URL + "/contacts";
 
     public interface ContactsUrls {
-    	
+
 	public static final String DOCTOR_CONTACTS_DOCTOR_SPECIFIC = "/{type}";
 
 	public static final String DOCTOR_CONTACTS_HANDHELD = "/handheld";
-	
+
 	public static final String BLOCK_CONTACT = "/{doctorId}/{patientId}/block";
 
 	public static final String ADD_GROUP = "/group/add";
@@ -53,7 +53,7 @@ public interface PathProxy {
 	public static final String EDIT_GROUP = "/group/{groupId}/update";
 
 	public static final String GET_ALL_GROUPS = "/groups";
-	
+
 	public static final String DELETE_GROUP = "/group/{groupId}/delete";
 
 	public static final String TOTAL_COUNT = "/totalcount";
@@ -91,7 +91,7 @@ public interface PathProxy {
 	public static final String UPDATE_PATIENT_ID_GENERATOR_LOGIC = "/updatePatientIdGeneratorLogic/{doctorId}/{patientInitial}/{patientCounter}";
 
 	public static final String GET_PATIENT_INITIAL_COUNTER = "/getPatientInitialAndCounter/{doctorId}";
-	
+
 	public static final String GET_PATIENT_PID = "/getPatientPID/{patientId}";
 
 	public static final String GET_CLINIC_DETAILS = "/settings/getClinicDetails/{clinicId}";
@@ -113,7 +113,7 @@ public interface PathProxy {
 	public static final String DELETE_CLINICAL_NOTES = "/{clinicalNotesId}/delete";
 
 	public static final String GET_CLINICAL_NOTES_ID = "/{clinicalNotesId}/view";
-	
+
 	public static final String GET_CLINIC_NOTES_COUNT = "/getClinicalNotesCount/{doctorId}/{patientId}/{locationId}/{hospitalId}";
 
 	public static final String ADD_COMPLAINT = "/complaint/add";
@@ -203,7 +203,7 @@ public interface PathProxy {
 	public static final String GET_DRUG_ID = "/drug/{drugId}";
 
 	public static final String DELETE_GLOBAL_DRUG = "/drug/{drugId}/delete";
-	
+
 	public static final String GET_PRESCRIPTION_ITEMS = "/{type}/{range}";
 
 	public static final String ADD_TEMPLATE = "/template/add";
@@ -217,7 +217,7 @@ public interface PathProxy {
 	public static final String GET_TEMPLATE_TEMPLATE_ID = "/template/{templateId}/{doctorId}/{locationId}/{hospitalId}/view";
 
 	public static final String GET_TEMPLATE = "/templates";
-	
+
 	public static final String ADD_PRESCRIPTION = "/add";
 
 	public static final String ADD_PRESCRIPTION_HANDHELD = "/prescriptionHandheld/add";
@@ -225,7 +225,7 @@ public interface PathProxy {
 	public static final String EDIT_PRESCRIPTION = "/{prescriptionId}/update";
 
 	public static final String DELETE_PRESCRIPTION = "/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{patientId}/delete";
-	
+
 	public static final String GET_PRESCRIPTION_COUNT = "/count/{doctorId}/{patientId}/{locationId}/{hospitalId}";
 
 	public static final String ADD_DRUG_TYPE = "/drugType/add";
@@ -270,7 +270,7 @@ public interface PathProxy {
 	public static final String DELETE_DISEASE = "/disease/{diseaseId}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 	public static final String GET_DISEASES = "/diseases/{range}";
-	
+
 	public static final String ADD_REPORT_TO_HISTORY = "/report/{reportId}/{patientId}/{doctorId}/{locationId}/{hospitalId}/add";
 
 	public static final String ADD_CLINICAL_NOTES_TO_HISTORY = "/clinicalNotes/{clinicalNotesId}/{patientId}/{doctorId}/{locationId}/{hospitalId}/add";
@@ -288,7 +288,7 @@ public interface PathProxy {
 	public static final String GET_MEDICAL_AND_FAMILY_HISTORY = "/getMedicalAndFamilyHistory/{patientId}/{doctorId}/{locationId}/{hospitalId}";
 
 	public static final String HANDLE_FAMILY_HISTORY = "/familyHistory";
-	
+
 	public static final String REMOVE_REPORTS = "/removeReports/{reportId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
 
 	public static final String REMOVE_CLINICAL_NOTES = "/removeClinicalNotes/{clinicalNotesId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
@@ -398,28 +398,29 @@ public interface PathProxy {
 
 	public static final String SEARCH_PATIENT_ADV = "searchPatient";
     }
-    
+
     public static final String CITY_BASE_URL = BASE_URL + "/city";
 
     public interface CityUrls {
-    	
-    	public static final String ADD_CITY = "/addCity";
-    	
-    	public static final String ACTIVATE_CITY = "/activateCity/{cityId}";
-    	
-    	public static final String DEACTIVATE_CITY = "/deactivateCity/{cityId}";
-    	
-    	public static final String GET_CITY = "/getCities";
-    	
-    	public static final String GET_CITY_ID = "/getCity/{cityId}";
-    	
-    	public static final String ADD_LOCALITY = "/addLocality";
-    	
-    	public static final String ADD_LANDMARK = "/addLandmark";	
-    	
-    	public static final String GET_LANDMARK_LOCALITY = "/getLandmarkLocality/{cityId}";
-    	
+
+	public static final String ADD_CITY = "/addCity";
+
+	public static final String ACTIVATE_CITY = "/activateCity/{cityId}";
+
+	public static final String DEACTIVATE_CITY = "/deactivateCity/{cityId}";
+
+	public static final String GET_CITY = "/getCities";
+
+	public static final String GET_CITY_ID = "/getCity/{cityId}";
+
+	public static final String ADD_LOCALITY = "/addLocality";
+
+	public static final String ADD_LANDMARK = "/addLandmark";
+
+	public static final String GET_LANDMARK_LOCALITY = "/getLandmarkLocality/{cityId}";
+
     }
+
     public static final String SOLR_CITY_BASE_URL = BASE_URL + "/solr/city";
 
     public interface SolrCityUrls {

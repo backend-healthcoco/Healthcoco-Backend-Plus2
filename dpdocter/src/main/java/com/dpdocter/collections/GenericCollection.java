@@ -6,7 +6,7 @@ public class GenericCollection {
     private Date createdTime;
 
     private Date updatedTime = new Date();
-    
+
     private String createdBy;
 
     public Date getCreatedTime() {
@@ -18,14 +18,14 @@ public class GenericCollection {
     }
 
     public Date getUpdatedTime() {
-		return updatedTime;
-	}
+	return updatedTime;
+    }
 
-	public void setUpdatedTime(Date updatedTime) {
-		this.updatedTime = updatedTime;
-	}
+    public void setUpdatedTime(Date updatedTime) {
+	this.updatedTime = updatedTime;
+    }
 
-	public String getCreatedBy() {
+    public String getCreatedBy() {
 	return createdBy;
     }
 

@@ -119,15 +119,15 @@ public class DrugCollection extends GenericCollection {
 	this.locationId = locationId;
     }
 
-	public Boolean getDiscarded() {
-		return discarded;
-	}
+    public Boolean getDiscarded() {
+	return discarded;
+    }
 
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
 
-	public String getDrugCode() {
+    public String getDrugCode() {
 	return drugCode;
     }
 

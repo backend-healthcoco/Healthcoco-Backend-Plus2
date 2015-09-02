@@ -123,13 +123,13 @@ public class RecordsCollection extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
-	public Boolean getDiscarded() {
-		return discarded;
-	}
+    public Boolean getDiscarded() {
+	return discarded;
+    }
 
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
 
     public boolean isInHistory() {
 	return inHistory;
@@ -139,11 +139,10 @@ public class RecordsCollection extends GenericCollection {
 	this.inHistory = inHistory;
     }
 
-	@Override
-	public String toString() {
-		return "RecordsCollection [id=" + id + ", recordsUrl=" + recordsUrl + ", recordsPath=" + recordsPath
-				+ ", recordsLable=" + recordsLable + ", recordsType=" + recordsType + ", description=" + description
-				+ ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + ", discarded=" + discarded + ", inHistory=" + inHistory + "]";
-	}
+    @Override
+    public String toString() {
+	return "RecordsCollection [id=" + id + ", recordsUrl=" + recordsUrl + ", recordsPath=" + recordsPath + ", recordsLable=" + recordsLable
+		+ ", recordsType=" + recordsType + ", description=" + description + ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId="
+		+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", inHistory=" + inHistory + "]";
+    }
 }

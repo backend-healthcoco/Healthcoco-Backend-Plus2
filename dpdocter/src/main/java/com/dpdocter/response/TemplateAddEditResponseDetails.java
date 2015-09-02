@@ -68,15 +68,15 @@ public class TemplateAddEditResponseDetails extends GenericCollection {
 	this.items = items;
     }
 
-	public Boolean getDiscarded() {
-		return discarded;
-	}
+    public Boolean getDiscarded() {
+	return discarded;
+    }
 
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
 
-	@Override
+    @Override
     public String toString() {
 	return "TemplateAddEditResponseDetails [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
 		+ hospitalId + ", items=" + items + ", deleted=" + discarded + "]";

@@ -65,18 +65,17 @@ public class Records extends GenericCollection {
 	this.inHistory = inHistory;
     }
 
-	public Boolean getDiscarded() {
-		return discarded;
-	}
+    public Boolean getDiscarded() {
+	return discarded;
+    }
 
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
 
-	@Override
-	public String toString() {
-		return "Records [id=" + id + ", recordsUrl=" + recordsUrl + ", recordsLable=" + recordsLable + ", recordsType="
-				+ recordsType + ", description=" + description + ", inHistory=" + inHistory + ", discarded=" + discarded
-				+ "]";
-	}
+    @Override
+    public String toString() {
+	return "Records [id=" + id + ", recordsUrl=" + recordsUrl + ", recordsLable=" + recordsLable + ", recordsType=" + recordsType + ", description="
+		+ description + ", inHistory=" + inHistory + ", discarded=" + discarded + "]";
+    }
 }

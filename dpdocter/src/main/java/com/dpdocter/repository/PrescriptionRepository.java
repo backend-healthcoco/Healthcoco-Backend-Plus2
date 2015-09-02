@@ -13,17 +13,20 @@ import com.dpdocter.collections.PrescriptionCollection;
 
 public interface PrescriptionRepository extends MongoRepository<PrescriptionCollection, String>, PagingAndSortingRepository<PrescriptionCollection, String> {
 
-	@Query("{'doctorId' : ?0, 'hospitalId' : ?1, 'locationId' : ?2, 'patientId' : ?3,'discarded' : ?4}")
-    List<PrescriptionCollection> getPrescription(String doctorId, String hospitalId, String locationId, String patientId, Boolean discarded, Sort sort, PageRequest pageRequest);
+    @Query("{'doctorId' : ?0, 'hospitalId' : ?1, 'locationId' : ?2, 'patientId' : ?3,'discarded' : ?4}")
+    List<PrescriptionCollection> getPrescription(String doctorId, String hospitalId, String locationId, String patientId, Boolean discarded, Sort sort,
+	    PageRequest pageRequest);
 
     @Query("{'doctorId' : ?0, 'hospitalId' : ?1, 'locationId' : ?2, 'patientId' : ?3}")
     List<PrescriptionCollection> getPrescription(String doctorId, String hospitalId, String locationId, String patientId, Sort sort, PageRequest pageRequest);
 
     @Query("{'doctorId' : ?0, 'hospitalId' : ?1, 'locationId' : ?2, 'patientId' : ?3, 'updatedTime' : {'$gte' : ?4}, 'discarded' : ?5}")
-    List<PrescriptionCollection> getPrescription(String doctorId, String hospitalId, String locationId, String patientId, Date date, Boolean discarded, Sort sort, PageRequest pageRequest);
+    List<PrescriptionCollection> getPrescription(String doctorId, String hospitalId, String locationId, String patientId, Date date, Boolean discarded,
+	    Sort sort, PageRequest pageRequest);
 
     @Query("{'doctorId' : ?0, 'hospitalId' : ?1, 'locationId' : ?2, 'patientId' : ?3, 'updatedTime' : {'$gte' : ?4}}")
-    List<PrescriptionCollection> getPrescription(String doctorId, String hospitalId, String locationId, String patientId, Date date, Sort sort, PageRequest pageRequest);
+    List<PrescriptionCollection> getPrescription(String doctorId, String hospitalId, String locationId, String patientId, Date date, Sort sort,
+	    PageRequest pageRequest);
 
     @Query("{'patientId' : ?0,'discarded' : ?1}")
     List<PrescriptionCollection> getPrescription(String patientId, Boolean discarded, Sort sort, PageRequest pageRequest);

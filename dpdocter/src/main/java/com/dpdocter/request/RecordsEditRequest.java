@@ -65,9 +65,9 @@ public class RecordsEditRequest {
     }
 
     @Override
-	public String toString() {
-		return "RecordsEditRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", description=" + description
-				+ ", fileDetails=" + fileDetails + ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
-	}
+    public String toString() {
+	return "RecordsEditRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", description=" + description + ", fileDetails=" + fileDetails
+		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
+    }
 
 }

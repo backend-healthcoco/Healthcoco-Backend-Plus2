@@ -1,12 +1,10 @@
 package com.dpdocter.collections;
 
-import java.util.Date;
-
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "diagrams_cl")
-public class DiagramsCollection extends GenericCollection{
+public class DiagramsCollection extends GenericCollection {
 
     @Field
     private String id;
@@ -96,10 +94,9 @@ public class DiagramsCollection extends GenericCollection{
 	this.discarded = discarded;
     }
 
-	@Override
-	public String toString() {
-		return "DiagramsCollection [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + ", doctorId="
-				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", fileExtension="
-				+ fileExtension + ", discarded=" + discarded + "]";
-	}
+    @Override
+    public String toString() {
+	return "DiagramsCollection [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + ", doctorId=" + doctorId + ", locationId=" + locationId
+		+ ", hospitalId=" + hospitalId + ", fileExtension=" + fileExtension + ", discarded=" + discarded + "]";
+    }
 }

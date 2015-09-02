@@ -74,16 +74,16 @@ public class Group extends GenericCollection {
     public void setCount(int count) {
 	this.count = count;
     }
-    
-	public Boolean getDiscarded() {
-		return discarded;
-	}
 
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+    public Boolean getDiscarded() {
+	return discarded;
+    }
 
-	@Override
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
+
+    @Override
     public String toString() {
 	return "Group [id=" + id + ", name=" + name + ", description=" + description + ", doctorId=" + doctorId + ", locationId=" + locationId
 		+ ", hospitalId=" + hospitalId + ", count=" + count + ", discarded=" + discarded + "]";

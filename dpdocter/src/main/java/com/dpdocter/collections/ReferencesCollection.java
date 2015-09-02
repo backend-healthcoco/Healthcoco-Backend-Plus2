@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "referrences_cl")
-public class ReferencesCollection extends GenericCollection{
+public class ReferencesCollection extends GenericCollection {
     @Id
     private String id;
 
@@ -75,13 +75,13 @@ public class ReferencesCollection extends GenericCollection{
 	this.hospitalId = hospitalId;
     }
 
-	public Boolean getDiscarded() {
-		return discarded;
-	}
+    public Boolean getDiscarded() {
+	return discarded;
+    }
 
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
 
     @Override
     public String toString() {

@@ -1,26 +1,20 @@
 package com.dpdocter.tests;
 
-import java.util.Arrays;
+import java.util.Date;
 
-import com.dpdocter.solr.beans.AdvancedSearch;
-import com.dpdocter.solr.beans.AdvancedSearchParameter;
-import com.dpdocter.solr.enums.AdvancedSearchType;
+import com.dpdocter.collections.GroupCollection;
 
 public class GeneralTests {
     public static void main(String args[]) {
-	AdvancedSearch advancedSearch = new AdvancedSearch();
+	GroupCollection group = new GroupCollection();
 
-	advancedSearch.setDoctorId("5566220cb732a94e37e2d0ac");
-	advancedSearch.setLocationId("555260322736b2b121087651");
-	advancedSearch.setHospitalId("5525ef96e4b077dfc16836a0");
+	group.setDescription("Group Description");
+	group.setDoctorId("D12345");
+	group.setHospitalId("H12345");
+	group.setLocationId("L12345");
+	group.setName("Group");
+	group.setCreatedTime(new Date());
 
-	AdvancedSearchParameter advancedSearchParameter = new AdvancedSearchParameter();
-
-	advancedSearchParameter.setSearchType(AdvancedSearchType.FIRST_NAME);
-	advancedSearchParameter.setSearchValue("isank");
-
-	advancedSearch.setSearchParameters(Arrays.asList(advancedSearchParameter));
-
-	System.out.println(Converter.ObjectToJSON(advancedSearch));
+	System.out.println(Converter.ObjectToJSON(group));
     }
 }

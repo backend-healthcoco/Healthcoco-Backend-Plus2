@@ -39,6 +39,6 @@ public interface ContactsService {
 
     PatientGroupAddEditRequest addGroupToPatient(PatientGroupAddEditRequest request);
 
-	List<Group> getAllGroups(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded);
+    List<Group> getAllGroups(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded);
 
 }

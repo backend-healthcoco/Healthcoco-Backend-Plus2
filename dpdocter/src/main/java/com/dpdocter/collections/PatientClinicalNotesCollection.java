@@ -42,18 +42,18 @@ public class PatientClinicalNotesCollection extends GenericCollection {
 	this.clinicalNotesId = clinicalNotesId;
     }
 
-	public Boolean getDiscarded() {
-		return discarded;
-	}
+    public Boolean getDiscarded() {
+	return discarded;
+    }
 
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
 
-	@Override
-	public String toString() {
-		return "PatientClinicalNotesCollection [id=" + id + ", patientId=" + patientId + ", clinicalNotesId="
-				+ clinicalNotesId + ", discarded=" + discarded + "]";
-	}
-    
+    @Override
+    public String toString() {
+	return "PatientClinicalNotesCollection [id=" + id + ", patientId=" + patientId + ", clinicalNotesId=" + clinicalNotesId + ", discarded=" + discarded
+		+ "]";
+    }
+
 }

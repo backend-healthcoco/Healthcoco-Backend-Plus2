@@ -5,9 +5,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "token_cl")
-public class TokenCollection extends GenericCollection{
+public class TokenCollection extends GenericCollection {
 
-	@Id
+    @Id
     private String id;
 
     @Field
@@ -16,32 +16,32 @@ public class TokenCollection extends GenericCollection{
     @Field
     private String userId;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public Boolean getIsUsed() {
-		return isUsed;
-	}
+    public Boolean getIsUsed() {
+	return isUsed;
+    }
 
-	public void setIsUsed(Boolean isUsed) {
-		this.isUsed = isUsed;
-	}
+    public void setIsUsed(Boolean isUsed) {
+	this.isUsed = isUsed;
+    }
 
-	public String getUserId() {
-		return userId;
-	}
+    public String getUserId() {
+	return userId;
+    }
 
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
+    public void setUserId(String userId) {
+	this.userId = userId;
+    }
 
-	@Override
-	public String toString() {
-		return "TokenCollection [id=" + id + ", isUsed=" + isUsed + ", userId=" + userId + "]";
-	}
+    @Override
+    public String toString() {
+	return "TokenCollection [id=" + id + ", isUsed=" + isUsed + ", userId=" + userId + "]";
+    }
 }

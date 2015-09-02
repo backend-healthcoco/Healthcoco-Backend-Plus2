@@ -119,11 +119,10 @@ public class ClinicalNotesEditRequest {
 	this.hospitalId = hospitalId;
     }
 
-	@Override
-	public String toString() {
-		return "ClinicalNotesEditRequest [id=" + id + ", patientId=" + patientId + ", complaints=" + complaints
-				+ ", observations=" + observations + ", investigations=" + investigations + ", diagnoses=" + diagnoses
-				+ ", notes=" + notes + ", diagrams=" + diagrams + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + "]";
-	}
+    @Override
+    public String toString() {
+	return "ClinicalNotesEditRequest [id=" + id + ", patientId=" + patientId + ", complaints=" + complaints + ", observations=" + observations
+		+ ", investigations=" + investigations + ", diagnoses=" + diagnoses + ", notes=" + notes + ", diagrams=" + diagrams + ", doctorId=" + doctorId
+		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
+    }
 }

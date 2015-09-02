@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.beans.WorkingSchedule;
 
 @Document(collection = "location_cl")
-public class LocationCollection extends GenericCollection{
+public class LocationCollection extends GenericCollection {
 
     @Id
     private String id;

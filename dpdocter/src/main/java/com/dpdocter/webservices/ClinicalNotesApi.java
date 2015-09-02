@@ -74,9 +74,9 @@ public class ClinicalNotesApi {
     @Path(value = PathProxy.ClinicalNotesUrls.EDIT_CLINICAL_NOTES)
     @PUT
     public Response<ClinicalNotes> editNotes(@PathParam(value = "clinicalNotesId") String clinicalNotesId, ClinicalNotesEditRequest request) {
-    	if (DPDoctorUtils.anyStringEmpty(clinicalNotesId)) {
-    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Id Cannot Be Empty");
-    	}	
+	if (DPDoctorUtils.anyStringEmpty(clinicalNotesId)) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Id Cannot Be Empty");
+	}
 	ClinicalNotes clinicalNotes = clinicalNotesService.editNotes(request);
 
 	// patient track
@@ -106,29 +106,31 @@ public class ClinicalNotesApi {
 	response.setData(clinicalNotes);
 	return response;
     }
-    
+
     @GET
-    public Response<ClinicalNotes> getNotes(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
-    		@QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "patientId") String patientId, @QueryParam("updatedTime") String updatedTime,
-    		@QueryParam(value = "isOTPVerified") Boolean isOTPVerified, @QueryParam(value = "discarded") Boolean discarded) {
+    public Response<ClinicalNotes> getNotes(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+	    @QueryParam(value = "patientId") String patientId, @QueryParam("updatedTime") String updatedTime,
+	    @QueryParam(value = "isOTPVerified") Boolean isOTPVerified, @QueryParam(value = "discarded") Boolean discarded) {
 	return getAllNotes(page, size, doctorId, locationId, hospitalId, patientId, updatedTime, isOTPVerified, discarded);
     }
 
-    private Response<ClinicalNotes> getAllNotes(int page, int size, String doctorId, String locationId, String hospitalId, String patientId, String updatedTime,
-	    Boolean isOTPVerified, Boolean discarded) {
+    private Response<ClinicalNotes> getAllNotes(int page, int size, String doctorId, String locationId, String hospitalId, String patientId,
+	    String updatedTime, Boolean isOTPVerified, Boolean discarded) {
 	List<ClinicalNotes> clinicalNotes = null;
-	
-	if(isOTPVerified != null){
-		if (isOTPVerified) {
-		    clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithVerifiedOTP(page, size, patientId, updatedTime, discarded !=null ?discarded:true);
-		} else {
-		    clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(page, size, patientId, doctorId, locationId, hospitalId, updatedTime, discarded !=null ?discarded:true);
-		}
+
+	if (isOTPVerified != null) {
+	    if (isOTPVerified) {
+		clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithVerifiedOTP(page, size, patientId, updatedTime, discarded != null ? discarded
+			: true);
+	    } else {
+		clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(page, size, patientId, doctorId, locationId, hospitalId,
+			updatedTime, discarded != null ? discarded : true);
+	    }
+	} else {
+	    clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(page, size, patientId, doctorId, locationId, hospitalId,
+		    updatedTime, discarded != null ? discarded : true);
 	}
-	else{
-		clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(page, size, patientId, doctorId, locationId, hospitalId, updatedTime, discarded !=null ?discarded:true);
-	}
-	
 
 	Response<ClinicalNotes> response = new Response<ClinicalNotes>();
 	response.setDataList(clinicalNotes);
@@ -164,7 +166,6 @@ public class ClinicalNotesApi {
 	return response;
     }
 
-
     @Path(value = PathProxy.ClinicalNotesUrls.ADD_OBSERVATION)
     @POST
     public Response<Observation> addObservation(Observation request) {
@@ -181,7 +182,7 @@ public class ClinicalNotesApi {
 	response.setData(observation);
 	return response;
     }
-   
+
     @Path(value = PathProxy.ClinicalNotesUrls.ADD_INVESTIGATION)
     @POST
     public Response<Investigation> addInvestigation(Investigation request) {
@@ -217,7 +218,7 @@ public class ClinicalNotesApi {
 	response.setData(diagnosis);
 	return response;
     }
-    
+
     @Path(value = PathProxy.ClinicalNotesUrls.ADD_NOTES)
     @POST
     public Response<Notes> addNotes(Notes request) {
@@ -330,18 +331,19 @@ public class ClinicalNotesApi {
 
     @Path(value = PathProxy.ClinicalNotesUrls.GET_CINICAL_ITEMS)
     @GET
-    public Response<Object> getClinicalItems(@PathParam("type") String type, @PathParam("range") String range,
-    		@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
-	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId, 
-	    @QueryParam(value = "updatedTime") String updatedTime, @QueryParam(value = "discarded") Boolean discarded) {
-    	
-    	if (DPDoctorUtils.anyStringEmpty(type, range)) {
-    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Type or Range Cannot Be Empty");
-    	}
-    	List<Object> clinicalItems = clinicalNotesService.getClinicalItems(type, range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded != null ? discarded:true);
-    	Response<Object> response = new  Response<Object>();
-    	response.setDataList(clinicalItems);
-    	return  response;
+    public Response<Object> getClinicalItems(@PathParam("type") String type, @PathParam("range") String range, @QueryParam("page") int page,
+	    @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+	    @QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "updatedTime") String updatedTime,
+	    @QueryParam(value = "discarded") Boolean discarded) {
+
+	if (DPDoctorUtils.anyStringEmpty(type, range)) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Type or Range Cannot Be Empty");
+	}
+	List<Object> clinicalItems = clinicalNotesService.getClinicalItems(type, range, page, size, doctorId, locationId, hospitalId, updatedTime,
+		discarded != null ? discarded : true);
+	Response<Object> response = new Response<Object>();
+	response.setDataList(clinicalItems);
+	return response;
     }
 
 }

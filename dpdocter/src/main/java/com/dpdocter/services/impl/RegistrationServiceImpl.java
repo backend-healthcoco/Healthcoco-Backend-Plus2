@@ -183,7 +183,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    BeanUtil.map(request, patientCollection);
 	    patientCollection.setUserId(userCollection.getId());
 	    patientCollection.setRegistrationDate(request.getDateOfVisit());
-	   
+
 	    patientCollection.setCreatedTime(createdTime);
 	    if (!DPDoctorUtils.anyStringEmpty(request.getPatientNumber())) {
 		patientCollection.setPID(request.getPatientNumber());
@@ -476,8 +476,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    ReferencesCollection referrencesCollection = new ReferencesCollection();
 	    BeanUtil.map(reference, referrencesCollection);
 	    if (referrencesCollection.getId() == null) {
-			referrencesCollection.setCreatedTime(new Date());
-		}
+		referrencesCollection.setCreatedTime(new Date());
+	    }
 	    referrencesCollection = referrenceRepository.save(referrencesCollection);
 	    BeanUtil.map(referrencesCollection, reference);
 	} catch (Exception e) {
@@ -595,18 +595,18 @@ public class RegistrationServiceImpl implements RegistrationService {
 	return generatedId;
     }
 
-	@Override
-	public String getPatientPID(String patientId) {
-		String PID = null;
-		try {
-		    PatientCollection patientCollection = patientRepository.findOne(patientId);
-		    PID = patientCollection.getPID();
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return PID;
+    @Override
+    public String getPatientPID(String patientId) {
+	String PID = null;
+	try {
+	    PatientCollection patientCollection = patientRepository.findOne(patientId);
+	    PID = patientCollection.getPID();
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return PID;
+    }
 
     @Override
     public Boolean updatePatientInitialAndCounter(String doctorId, String patientInitial, int patientCounter) {

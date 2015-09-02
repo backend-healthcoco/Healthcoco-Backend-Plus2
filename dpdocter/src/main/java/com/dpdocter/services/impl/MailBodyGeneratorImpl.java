@@ -14,8 +14,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
     public String generateActivationEmailBody(String userName, String fName, String mName, String lName, String tokenId) throws Exception {
 	StringBuffer body = new StringBuffer();
 	body.append("Dear " + fName + " " + lName + ", \n");
-	body.append("Please click on below link to activate the account.\n "+
-	"http://localhost:8080/dpdocter/api/v1/signup/activate/"+tokenId);
+	body.append("Please click on below link to activate the account.\n " + "http://localhost:8080/dpdocter/api/v1/signup/activate/" + tokenId);
 	return body.toString();
     }
 

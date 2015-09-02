@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.beans.GeneralData;
 
 @Document(collection = "history_cl")
-public class HistoryCollection extends GenericCollection{
+public class HistoryCollection extends GenericCollection {
 
     @Id
     private String id;

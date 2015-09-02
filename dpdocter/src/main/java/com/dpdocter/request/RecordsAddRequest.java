@@ -84,10 +84,9 @@ public class RecordsAddRequest {
 	this.createdBy = createdBy;
     }
 
-	@Override
-	public String toString() {
-		return "RecordsAddRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", description=" + description
-				+ ", fileDetails=" + fileDetails + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", recordsType=" + recordsType + ", createdBy=" + createdBy + "]";
-	}
+    @Override
+    public String toString() {
+	return "RecordsAddRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", description=" + description + ", fileDetails=" + fileDetails
+		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", recordsType=" + recordsType + ", createdBy=" + createdBy + "]";
+    }
 }

@@ -129,11 +129,10 @@ public class ClinicalNotesAddRequest {
 	this.createdBy = createdBy;
     }
 
-	@Override
-	public String toString() {
-		return "ClinicalNotesAddRequest [id=" + id + ", patientId=" + patientId + ", complaints=" + complaints
-				+ ", observations=" + observations + ", investigations=" + investigations + ", diagnoses=" + diagnoses
-				+ ", notes=" + notes + ", diagrams=" + diagrams + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", createdBy=" + createdBy + "]";
-	}
+    @Override
+    public String toString() {
+	return "ClinicalNotesAddRequest [id=" + id + ", patientId=" + patientId + ", complaints=" + complaints + ", observations=" + observations
+		+ ", investigations=" + investigations + ", diagnoses=" + diagnoses + ", notes=" + notes + ", diagrams=" + diagrams + ", doctorId=" + doctorId
+		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", createdBy=" + createdBy + "]";
+    }
 }

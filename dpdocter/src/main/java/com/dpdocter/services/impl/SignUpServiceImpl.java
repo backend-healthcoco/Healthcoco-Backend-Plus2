@@ -92,7 +92,7 @@ public class SignUpServiceImpl implements SignUpService {
 
     @Autowired
     private TokenRepository tokenRepository;
-    
+
     @Value(value = "${mail.signup.subject.activation}")
     private String signupSubject;
 
@@ -104,25 +104,26 @@ public class SignUpServiceImpl implements SignUpService {
     @Override
     public String activateUser(String tokenId) {
 	try {
-		
-		TokenCollection tokenCollection = tokenRepository.findOne(tokenId);
-		if(tokenCollection.getIsUsed()){
-//			throw new BusinessException(ServiceError.Unknown, "Link is already Used");
-			return "Link is already Used";
+
+	    TokenCollection tokenCollection = tokenRepository.findOne(tokenId);
+	    if (tokenCollection.getIsUsed()) {
+		// throw new BusinessException(ServiceError.Unknown,
+		// "Link is already Used");
+		return "Link is already Used";
+	    } else {
+		UserCollection userCollection = userRepository.findOne(tokenCollection.getUserId());
+		if (userCollection == null) {
+		    // throw new BusinessException(ServiceError.Unknown,
+		    // "Invalid Url.");
+		    return "Invalid Url.";
 		}
-		else{
-			UserCollection userCollection = userRepository.findOne(tokenCollection.getUserId());
-		    if (userCollection == null) {
-//			throw new BusinessException(ServiceError.Unknown, "Invalid Url.");
-		    	return "Invalid Url.";
-		    }
-		    userCollection.setIsActive(true);
-		    userRepository.save(userCollection);
-		    tokenCollection.setIsUsed(true);
-		    tokenRepository.save(tokenCollection);
-		    return "Account is Activaed";
-		}
-	    
+		userCollection.setIsActive(true);
+		userRepository.save(userCollection);
+		tokenCollection.setIsUsed(true);
+		tokenRepository.save(tokenCollection);
+		return "Account is Activaed";
+	    }
+
 	} catch (BusinessException be) {
 	    throw be;
 	} catch (Exception e) {
@@ -187,8 +188,8 @@ public class SignUpServiceImpl implements SignUpService {
 	    // save location for hospital
 	    LocationCollection locationCollection = new LocationCollection();
 	    BeanUtil.map(request, locationCollection);
-	    if(locationCollection.getId() == null){
-	    	locationCollection.setCreatedTime(new Date());
+	    if (locationCollection.getId() == null) {
+		locationCollection.setCreatedTime(new Date());
 	    }
 	    locationCollection.setHospitalId(hospitalCollection.getId());
 	    locationCollection = locationRepository.save(locationCollection);
@@ -196,13 +197,13 @@ public class SignUpServiceImpl implements SignUpService {
 	    UserLocationCollection userLocationCollection = new UserLocationCollection(userCollection.getId(), locationCollection.getId());
 	    userLocationCollection.setCreatedTime(new Date());
 	    userLocationRepository.save(userLocationCollection);
-	    
+
 	    // save token
 	    TokenCollection tokenCollection = new TokenCollection();
 	    tokenCollection.setUserId(userCollection.getId());
 	    tokenCollection.setCreatedTime(new Date());
 	    tokenCollection = tokenRepository.save(tokenCollection);
-	    
+
 	    // send activation email
 	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
 		    userCollection.getMiddleName(), userCollection.getLastName(), tokenCollection.getId());
@@ -276,12 +277,12 @@ public class SignUpServiceImpl implements SignUpService {
 	    }
 	    patientCollection = patientRepository.save(patientCollection);
 
-	    //save token
+	    // save token
 	    TokenCollection tokenCollection = new TokenCollection();
 	    tokenCollection.setUserId(userCollection.getId());
 	    tokenCollection.setCreatedTime(new Date());
 	    tokenCollection = tokenRepository.save(tokenCollection);
-	    
+
 	    // send activation email
 	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
 		    userCollection.getMiddleName(), userCollection.getLastName(), tokenCollection.getId());

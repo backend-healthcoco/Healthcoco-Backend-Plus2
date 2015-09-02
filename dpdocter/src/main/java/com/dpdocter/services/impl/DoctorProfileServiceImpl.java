@@ -156,10 +156,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	try {
 	    medicalCouncilCollections = new ArrayList<MedicalCouncilCollection>();
 	    BeanUtil.map(medicalCouncils, medicalCouncilCollections);
-	    for(MedicalCouncilCollection medicalCouncil : medicalCouncilCollections){
-	    	if(medicalCouncil.getId() == null){
-	    		medicalCouncil.setCreatedTime(new Date());
-	    	}
+	    for (MedicalCouncilCollection medicalCouncil : medicalCouncilCollections) {
+		if (medicalCouncil.getId() == null) {
+		    medicalCouncil.setCreatedTime(new Date());
+		}
 	    }
 	    medicalCouncilRepository.save(medicalCouncilCollections);
 	    response = true;
@@ -378,8 +378,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	try {
 	    professionalMembershipCollections = new ArrayList<ProfessionalMembershipCollection>();
 	    BeanUtil.map(professionalMemberships, professionalMembershipCollections);
-	    for(ProfessionalMembershipCollection professionalMembership : professionalMembershipCollections){
-	    	if(professionalMembership.getId() == null)professionalMembership.setCreatedTime(new Date());
+	    for (ProfessionalMembershipCollection professionalMembership : professionalMembershipCollections) {
+		if (professionalMembership.getId() == null)
+		    professionalMembership.setCreatedTime(new Date());
 	    }
 	    professionalMembershipRepository.save(professionalMembershipCollections);
 	    response = true;

@@ -214,7 +214,7 @@ public class RegistrationApi {
 	if (patientId == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.patientId is null");
 	}
-	
+
 	Response<String> response = new Response<String>();
 	String pid = registrationService.getPatientPID(patientId);
 	response.setData(pid);

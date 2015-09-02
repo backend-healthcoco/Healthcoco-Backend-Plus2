@@ -1,16 +1,16 @@
 package com.dpdocter.enums;
 
 public enum Range {
-	GLOBAL("GLOBAL"),CUSTOM("CUSTOM"),BOTH("BOTH");
-	
-	private String range;
+    GLOBAL("GLOBAL"), CUSTOM("CUSTOM"), BOTH("BOTH");
 
-	private Range(String range) {
-		this.range = range;
-	}
+    private String range;
 
-	public String getRange() {
-		return range;
-	}
-	
+    private Range(String range) {
+	this.range = range;
+    }
+
+    public String getRange() {
+	return range;
+    }
+
 }

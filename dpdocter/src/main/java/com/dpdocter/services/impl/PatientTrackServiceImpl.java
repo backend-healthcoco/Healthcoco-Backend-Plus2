@@ -103,7 +103,8 @@ public class PatientTrackServiceImpl implements PatientTrackService {
     public DoctorContactsResponse recentlyVisited(String doctorId, String locationId, String hospitalId, int page, int size) {
 	DoctorContactsResponse response = null;
 	try {
-	    List<PatientTrackCollection> patientTrackCollections = patientTrackRepository.findAll(doctorId, locationId, hospitalId, size>0 ? new PageRequest(page, size, Direction.DESC, "visitedTime"):null);
+	    List<PatientTrackCollection> patientTrackCollections = patientTrackRepository.findAll(doctorId, locationId, hospitalId, size > 0 ? new PageRequest(
+		    page, size, Direction.DESC, "visitedTime") : null);
 	    if (patientTrackCollections != null && !patientTrackCollections.isEmpty()) {
 		@SuppressWarnings("unchecked")
 		List<String> patientIds = (List<String>) CollectionUtils.collect(patientTrackCollections, new BeanToPropertyValueTransformer("patientId"));
@@ -126,15 +127,14 @@ public class PatientTrackServiceImpl implements PatientTrackService {
 	try {
 	    Criteria matchCriteria = Criteria.where("doctorId").is(doctorId).and("locationId").is(locationId).and("hospitalId").is(hospitalId);
 	    Aggregation aggregation;
-	    
-	    if(size>0){
-	    	aggregation = Aggregation.newAggregation(Aggregation.match(matchCriteria), Aggregation.group("patientId").count().as("total"),
-	    		    Aggregation.project("total").and("patientId").previousOperation(), Aggregation.sort(Sort.Direction.DESC, "total"),
-	    		    Aggregation.skip(page * size), Aggregation.limit(size));
-	    }
-	    else{
-	    	aggregation = Aggregation.newAggregation(Aggregation.match(matchCriteria), Aggregation.group("patientId").count().as("total"),
-	    		    Aggregation.project("total").and("patientId").previousOperation(), Aggregation.sort(Sort.Direction.DESC, "total"));
+
+	    if (size > 0) {
+		aggregation = Aggregation.newAggregation(Aggregation.match(matchCriteria), Aggregation.group("patientId").count().as("total"), Aggregation
+			.project("total").and("patientId").previousOperation(), Aggregation.sort(Sort.Direction.DESC, "total"), Aggregation.skip(page * size),
+			Aggregation.limit(size));
+	    } else {
+		aggregation = Aggregation.newAggregation(Aggregation.match(matchCriteria), Aggregation.group("patientId").count().as("total"), Aggregation
+			.project("total").and("patientId").previousOperation(), Aggregation.sort(Sort.Direction.DESC, "total"));
 	    }
 
 	    Aggregation aggregationCount = Aggregation.newAggregation(Aggregation.match(matchCriteria), Aggregation.group("patientId").count().as("total"),

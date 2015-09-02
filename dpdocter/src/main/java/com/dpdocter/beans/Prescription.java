@@ -47,17 +47,16 @@ public class Prescription extends GenericCollection {
 	this.inHistory = inHistory;
     }
 
-	public Boolean getDiscarded() {
-		return discarded;
-	}
+    public Boolean getDiscarded() {
+	return discarded;
+    }
 
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
 
-	@Override
-	public String toString() {
-		return "Prescription [id=" + id + ", name=" + name + ", items=" + items + ", inHistory=" + inHistory
-				+ ", discarded=" + discarded + "]";
-	}
+    @Override
+    public String toString() {
+	return "Prescription [id=" + id + ", name=" + name + ", items=" + items + ", inHistory=" + inHistory + ", discarded=" + discarded + "]";
+    }
 }

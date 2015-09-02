@@ -117,7 +117,7 @@ public class RecordsServiceImpl implements RecordsService {
 	try {
 	    RecordsCollection recordsCollection = new RecordsCollection();
 	    BeanUtil.map(request, recordsCollection);
-	   
+
 	    if (request.getFileDetails() != null) {
 		String path = request.getPatientId() + File.separator + "records";
 		// save image

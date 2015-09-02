@@ -67,13 +67,13 @@ public class NotesCollection extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
-	public Boolean getDiscarded() {
-		return discarded;
-	}
+    public Boolean getDiscarded() {
+	return discarded;
+    }
 
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
 
     public boolean isInHistory() {
 	return inHistory;
