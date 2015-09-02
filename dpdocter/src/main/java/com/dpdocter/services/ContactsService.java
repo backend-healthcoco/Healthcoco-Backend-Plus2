@@ -29,18 +29,16 @@ public interface ContactsService {
 
     int getContactsTotalSize(GetDoctorContactsRequest request);
 
-    List<Group> getAllGroups(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted);
-
     Boolean importContacts(ImportContactsRequest request);
 
     Boolean exportContacts(ExportContactsRequest request);
 
-    List<Group> getAllGroups(String doctorId, String createdTime, boolean isDeleted);
+    List<PatientCard> getDoctorContacts(String doctorId, String updatedTime, boolean discarded, int page, int size);
 
-    List<PatientCard> getDoctorContacts(String doctorId, String createdTime, boolean isDeleted);
-
-    List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted);
+    List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded);
 
     PatientGroupAddEditRequest addGroupToPatient(PatientGroupAddEditRequest request);
+
+	List<Group> getAllGroups(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded);
 
 }

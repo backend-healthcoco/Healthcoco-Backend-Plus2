@@ -146,6 +146,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    if (roleCollection == null) {
 		throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
 	    }
+	    Date createdTime = new Date();
 	    // save user
 	    UserCollection userCollection = new UserCollection();
 	    BeanUtil.map(request, userCollection);
@@ -160,10 +161,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 		String imageUrl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 		userCollection.setImageUrl(imageUrl);
 	    }
+	    userCollection.setCreatedTime(createdTime);
 	    userCollection = userRepository.save(userCollection);
 
 	    // assign roles
 	    UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), roleCollection.getId());
+	    userRoleCollection.setCreatedTime(new Date());
 	    userRoleRepository.save(userRoleCollection);
 
 	    // save address
@@ -172,6 +175,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		addressCollection = new AddressCollection();
 		BeanUtil.map(request.getAddress(), addressCollection);
 		addressCollection.setUserId(userCollection.getId());
+		addressCollection.setCreatedTime(new Date());
 		addressCollection = addressRepository.save(addressCollection);
 	    }
 	    // save Patient Info
@@ -179,7 +183,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    BeanUtil.map(request, patientCollection);
 	    patientCollection.setUserId(userCollection.getId());
 	    patientCollection.setRegistrationDate(request.getDateOfVisit());
-	    patientCollection.setCreatedTime(new Date());
+	   
+	    patientCollection.setCreatedTime(createdTime);
 	    if (!DPDoctorUtils.anyStringEmpty(request.getPatientNumber())) {
 		patientCollection.setPID(request.getPatientNumber());
 	    } else {
@@ -197,6 +202,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    patientAdmissionCollection.setUserId(userCollection.getId());
 	    patientAdmissionCollection.setPatientId(patientCollection.getId());
 	    patientAdmissionCollection.setDoctorId(request.getDoctorId());
+	    patientAdmissionCollection.setCreatedTime(new Date());
 	    patientAdmissionRepository.save(patientAdmissionCollection);
 
 	    // assign groups
@@ -205,13 +211,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    PatientGroupCollection patientGroupCollection = new PatientGroupCollection();
 		    patientGroupCollection.setGroupId(group);
 		    patientGroupCollection.setPatientId(patientCollection.getId());
+		    patientGroupCollection.setCreatedTime(new Date());
 		    patientGroupRepository.save(patientGroupCollection);
 		}
 	    }
 	    // add into doctor contact
 	    if (request.getDoctorId() != null) {
 		DoctorContactCollection doctorContactCollection = new DoctorContactCollection();
-		doctorContactCollection.setCreatedTime(new Date());
+		doctorContactCollection.setCreatedTime(createdTime);
 		doctorContactCollection.setDoctorId(request.getDoctorId());
 		doctorContactCollection.setContactId(patientCollection.getId());
 		doctorContactsRepository.save(doctorContactCollection);
@@ -269,6 +276,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		addressCollection = new AddressCollection();
 		BeanUtil.map(request.getAddress(), addressCollection);
 		addressCollection.setUserId(request.getUserId());
+		addressCollection.setCreatedTime(new Date());
 		addressCollection = addressRepository.save(addressCollection);
 	    }
 	    // save Patient Info
@@ -293,7 +301,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    } else {
 		patientCollection.setPID(patientIdGenerator(request.getDoctorId(), request.getLocationId(), request.getHospitalId()));
 	    }
-	    patientCollection.setCreatedTime(new Date());
 	    patientCollection.setRegistrationDate(request.getDateOfVisit());
 	    patientCollection = patientRepository.save(patientCollection);
 
@@ -305,6 +312,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		BeanUtil.map(request, patientAdmissionCollection);
 		patientAdmissionCollection.setUserId(request.getUserId());
 		patientAdmissionCollection.setPatientId(patientCollection.getId());
+		patientAdmissionCollection.setCreatedTime(new Date());
 		patientAdmissionRepository.save(patientAdmissionCollection);
 	    }
 	    // assign groups
@@ -319,6 +327,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    PatientGroupCollection patientGroupCollection = new PatientGroupCollection();
 		    patientGroupCollection.setGroupId(group);
 		    patientGroupCollection.setPatientId(patientCollection.getId());
+		    patientGroupCollection.setCreatedTime(new Date());
 		    patientGroupRepository.save(patientGroupCollection);
 		}
 
@@ -466,6 +475,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	try {
 	    ReferencesCollection referrencesCollection = new ReferencesCollection();
 	    BeanUtil.map(reference, referrencesCollection);
+	    if (referrencesCollection.getId() == null) {
+			referrencesCollection.setCreatedTime(new Date());
+		}
 	    referrencesCollection = referrenceRepository.save(referrencesCollection);
 	    BeanUtil.map(referrencesCollection, reference);
 	} catch (Exception e) {
@@ -480,7 +492,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	try {
 	    ReferencesCollection referrencesCollection = referrenceRepository.findOne(referenceId);
 	    if (referrencesCollection != null) {
-		referrencesCollection.setDeleted(true);
+		referrencesCollection.setDiscarded(true);
 		referrenceRepository.save(referrencesCollection);
 	    } else {
 		throw new BusinessException(ServiceError.Unknown, "Invalid Referrence Id!");

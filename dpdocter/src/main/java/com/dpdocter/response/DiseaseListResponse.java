@@ -17,22 +17,23 @@ public class DiseaseListResponse extends GenericCollection{
 
     private String hospitalId;
 
-    private boolean isDeleted = false;
+    private Boolean discarded = false;
 
 
     public DiseaseListResponse() {
 	// TODO Auto-generated constructor stub
     }
 
-    public DiseaseListResponse(String id, String disease, String description, String doctorId, String locationId,String hospitalId, boolean isDeleted, Date createdTime) {
+    public DiseaseListResponse(String id, String disease, String description, String doctorId, String locationId,String hospitalId, Boolean discarded, Date createdTime, Date updatedTime) {
 		this.id = id;
 		this.disease = disease;
 		this.description = description;
 		this.doctorId = doctorId;
 		this.locationId = locationId;
 		this.hospitalId = hospitalId;
-		this.isDeleted = isDeleted;
+		this.discarded = discarded;
 		super.setCreatedTime(createdTime);
+		super.setUpdatedTime(updatedTime);
 	}
 
     public String getId() {
@@ -83,18 +84,18 @@ public class DiseaseListResponse extends GenericCollection{
 		this.hospitalId = hospitalId;
 	}
 
-	public boolean isDeleted() {
-		return isDeleted;
+	public Boolean getDiscarded() {
+		return discarded;
 	}
 
-	public void setDeleted(boolean isDeleted) {
-		this.isDeleted = isDeleted;
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
 	}
 
 	@Override
 	public String toString() {
 		return "DiseaseListResponse [id=" + id + ", disease=" + disease + ", description=" + description + ", doctorId="
-				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", isDeleted=" + isDeleted
+				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
 				+ "]";
 	}
 

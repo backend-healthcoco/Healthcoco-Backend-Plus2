@@ -5,6 +5,8 @@ import java.util.Date;
 public class GenericCollection {
     private Date createdTime;
 
+    private Date updatedTime = new Date();
+    
     private String createdBy;
 
     public Date getCreatedTime() {
@@ -15,7 +17,15 @@ public class GenericCollection {
 	this.createdTime = createdTime;
     }
 
-    public String getCreatedBy() {
+    public Date getUpdatedTime() {
+		return updatedTime;
+	}
+
+	public void setUpdatedTime(Date updatedTime) {
+		this.updatedTime = updatedTime;
+	}
+
+	public String getCreatedBy() {
 	return createdBy;
     }
 

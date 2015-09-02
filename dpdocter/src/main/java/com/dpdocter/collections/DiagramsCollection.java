@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "diagrams_cl")
-public class DiagramsCollection {
+public class DiagramsCollection extends GenericCollection{
 
     @Field
     private String id;
@@ -30,10 +30,7 @@ public class DiagramsCollection {
     private String fileExtension;
 
     @Field
-    private Date createdTime;
-
-    @Field
-    private boolean isDeleted = false;
+    private boolean discarded = false;
 
     public String getId() {
 	return id;
@@ -91,26 +88,18 @@ public class DiagramsCollection {
 	this.fileExtension = fileExtension;
     }
 
-    public Date getCreatedTime() {
-	return createdTime;
+    public boolean discarded() {
+	return discarded;
     }
 
-    public void setCreatedTime(Date createdTime) {
-	this.createdTime = createdTime;
+    public void setDeleted(boolean discarded) {
+	this.discarded = discarded;
     }
 
-    public boolean isDeleted() {
-	return isDeleted;
-    }
-
-    public void setDeleted(boolean isDeleted) {
-	this.isDeleted = isDeleted;
-    }
-
-    @Override
-    public String toString() {
-	return "DiagramsCollection [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + ", doctorId=" + doctorId + ", locationId=" + locationId
-		+ ", hospitalId=" + hospitalId + ", fileExtension=" + fileExtension + ", isDeleted=" + isDeleted + "]";
-    }
-
+	@Override
+	public String toString() {
+		return "DiagramsCollection [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + ", doctorId="
+				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", fileExtension="
+				+ fileExtension + ", discarded=" + discarded + "]";
+	}
 }

@@ -1,5 +1,6 @@
 package com.dpdocter.solr.services.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +11,12 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.solr.beans.AdvancedSearch;
 import com.dpdocter.solr.beans.AdvancedSearchParameter;
 import com.dpdocter.solr.document.SolrPatientDocument;
 import com.dpdocter.solr.repository.SolrPatientRepository;
+import com.dpdocter.solr.response.SolrPatientResponse;
 import com.dpdocter.solr.services.SolrRegistrationService;
 import common.util.web.DPDoctorUtils;
 
@@ -65,10 +68,12 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     }
 
     @Override
-    public List<SolrPatientDocument> searchPatient(String doctorId, String locationId, String hospitalId, String searchTerm) {
-	List<SolrPatientDocument> response = null;
+    public List<SolrPatientResponse> searchPatient(String doctorId, String locationId, String hospitalId, String searchTerm) {
+	List<SolrPatientDocument> patients = null;
+	List<SolrPatientResponse> response= new ArrayList<SolrPatientResponse>();
 	try {
-	    response = solrPatientRepository.find(doctorId, locationId, hospitalId, searchTerm);
+		patients = solrPatientRepository.find(doctorId, locationId, hospitalId, searchTerm);
+//		BeanUtil.map(patients, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
@@ -77,15 +82,17 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     }
 
     @Override
-    public List<SolrPatientDocument> searchPatient(AdvancedSearch request) {
-	List<SolrPatientDocument> response = null;
+    public List<SolrPatientResponse> searchPatient(AdvancedSearch request) {
+    	List<SolrPatientDocument> patients = null;
+    	List<SolrPatientResponse> response= new ArrayList<SolrPatientResponse>();
 	try {
 	    Criteria advancedCriteria = createAdvancedSearchCriteria(request);
 
 	    SimpleQuery query = new SimpleQuery(advancedCriteria);
 
 	    solrTemplate.setSolrCore("patients");
-	    response = solrTemplate.queryForPage(query, SolrPatientDocument.class).getContent();
+	    patients = solrTemplate.queryForPage(query, SolrPatientDocument.class).getContent();
+	    BeanUtil.map(patients, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");

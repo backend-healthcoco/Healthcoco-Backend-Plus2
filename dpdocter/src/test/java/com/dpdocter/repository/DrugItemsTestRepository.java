@@ -28,7 +28,7 @@ public class DrugItemsTestRepository {
 	else return new JSONObject(JSON.serialize(found));
     }
 
-    public JSONObject findBy(String doctorId, String hospitalId, String locationId, Date createdTime, boolean isDeleted) throws JSONException {
+    public JSONObject findBy(String doctorId, String hospitalId, String locationId, Date createdTime, boolean discarded) throws JSONException {
 	BasicDBObject query = new BasicDBObject();
 	
 	if(doctorId !=null && hospitalId !=null && locationId !=null){
@@ -36,8 +36,8 @@ public class DrugItemsTestRepository {
 		query.put("hospitalId", hospitalId);
 		query.put("locationId", locationId);
 	}
-	if(!isDeleted)
-		query.put("deleted", isDeleted);
+	if(!discarded)
+		query.put("deleted", discarded);
 	
 	if(createdTime !=null)
 		query.put("createdTime", createdTime.getTime());

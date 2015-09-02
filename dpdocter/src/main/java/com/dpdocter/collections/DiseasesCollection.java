@@ -26,7 +26,7 @@ public class DiseasesCollection extends GenericCollection{
     private String description;
 
     @Field
-    private boolean isDeleted = false;
+    private Boolean discarded = false;
 
     public String getId() {
 	return id;
@@ -76,18 +76,18 @@ public class DiseasesCollection extends GenericCollection{
 	this.description = description;
     }
 
-    public boolean isDeleted() {
-	return isDeleted;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
-    public void setDeleted(boolean isDeleted) {
-	this.isDeleted = isDeleted;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
     @Override
     public String toString() {
 	return "DiseasesCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", disease=" + disease
-		+ ", description=" + description + ", isDeleted=" + isDeleted + "]";
+		+ ", description=" + description + ", discarded=" + discarded + "]";
     }
 
 }

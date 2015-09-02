@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
@@ -53,7 +56,7 @@ public class HistoryApi {
     }
 
     @Path(value = PathProxy.HistoryUrls.EDIT_DISEASE)
-    @POST
+    @PUT
     public Response<DiseaseAddEditResponse> editDisease(DiseaseAddEditRequest request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
@@ -65,7 +68,7 @@ public class HistoryApi {
     }
 
     @Path(value = PathProxy.HistoryUrls.DELETE_DISEASE)
-    @GET
+    @DELETE
     public Response<Boolean> deleteDisease(@PathParam(value = "diseaseId") String diseaseId, @PathParam(value = "doctorId") String doctorId,
     	@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
 	if (StringUtils.isEmpty(diseaseId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
@@ -79,38 +82,12 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.GET_DISEASES)
     @GET
-    public Response<DiseaseListResponse> getDiseases(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-    		@PathParam(value = "hospitalId") String hospitalId) {
-	if (StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Hospital Id, Location Id Cannot Be Empty");
-	}
-	List<DiseaseListResponse> diseaseListResponse = historyServices.getDiseases(doctorId, hospitalId, locationId);
-	Response<DiseaseListResponse> response = new Response<DiseaseListResponse>();
-	response.setDataList(diseaseListResponse);
-	return response;
-    }
-
-    @Path(value = PathProxy.HistoryUrls.GET_CUSTOM_GLOBAL_DISEASES)
-    @GET
-    public Response<DiseaseListResponse> getCustomGlobalDiseases(@PathParam(value = "doctorId") String doctorId,
-	    @PathParam(value = "createdTime") String createdTime) {
-	if (StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(createdTime)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Created Time Cannot Be Empty");
-	}
-	List<DiseaseListResponse> diseaseListResponse = historyServices.getCustomGlobalDiseases(doctorId, createdTime, true);
-	Response<DiseaseListResponse> response = new Response<DiseaseListResponse>();
-	response.setDataList(diseaseListResponse);
-	return response;
-    }
-
-    @Path(value = PathProxy.HistoryUrls.GET_CUSTOM_GLOBAL_DISEASES_ISDELETED)
-    @GET
-    public Response<DiseaseListResponse> getCustomGlobalDiseases(@PathParam(value = "doctorId") String doctorId,
-	    @PathParam(value = "createdTime") String createdTime, @PathParam(value = "isDeleted") boolean isDeleted) {
-	if (StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(createdTime)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Created Time Cannot Be Empty");
-	}
-	List<DiseaseListResponse> diseaseListResponse = historyServices.getCustomGlobalDiseases(doctorId, createdTime, isDeleted);
+    public Response<DiseaseListResponse> getDiseases(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
+    		@QueryParam("hospitalId") String hospitalId, @QueryParam("updatedTime") String updatedTime, @QueryParam("discarded") Boolean discarded) {
+	
+    List<DiseaseListResponse> diseaseListResponse = new ArrayList<DiseaseListResponse>();
+    if(discarded != null) diseaseListResponse = historyServices.getDiseases(range, page, size, doctorId, hospitalId, locationId, updatedTime, discarded);
+    else diseaseListResponse = historyServices.getDiseases(range, page, size, doctorId, hospitalId, locationId, updatedTime, true);
 	Response<DiseaseListResponse> response = new Response<DiseaseListResponse>();
 	response.setDataList(diseaseListResponse);
 	return response;

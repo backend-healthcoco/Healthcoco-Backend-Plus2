@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dpdocter.solr.beans.AdvancedSearch;
 import com.dpdocter.solr.document.SolrPatientDocument;
+import com.dpdocter.solr.response.SolrPatientResponse;
 
 public interface SolrRegistrationService {
     boolean addPatient(SolrPatientDocument request);
@@ -12,9 +13,9 @@ public interface SolrRegistrationService {
 
     boolean deletePatient(String id);
 
-    List<SolrPatientDocument> searchPatient(String doctorId, String locationId, String hospitalId, String searchTerm);
+    List<SolrPatientResponse> searchPatient(String doctorId, String locationId, String hospitalId, String searchTerm);
 
-    List<SolrPatientDocument> searchPatient(AdvancedSearch request);
+    List<SolrPatientResponse> searchPatient(AdvancedSearch request);
 
     List<SolrPatientDocument> searchPatientByFirstName(String doctorId, String locationId, String hospitalId, String searchValue);
 

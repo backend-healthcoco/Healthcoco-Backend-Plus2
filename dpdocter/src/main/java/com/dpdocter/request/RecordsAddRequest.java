@@ -8,8 +8,6 @@ public class RecordsAddRequest {
 
     private String doctorId;
 
-    private Long createdDate;
-
     private String description;
 
     private FileDetails fileDetails;
@@ -44,14 +42,6 @@ public class RecordsAddRequest {
 
     public void setDescription(String description) {
 	this.description = description;
-    }
-
-    public Long getCreatedDate() {
-	return createdDate;
-    }
-
-    public void setCreatedDate(Long createdDate) {
-	this.createdDate = createdDate;
     }
 
     public FileDetails getFileDetails() {
@@ -94,10 +84,10 @@ public class RecordsAddRequest {
 	this.createdBy = createdBy;
     }
 
-    @Override
-    public String toString() {
-	return "RecordsAddRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", createdDate=" + createdDate + ", description=" + description
-		+ ", fileDetails=" + fileDetails + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", recordsType=" + recordsType
-		+ ", createdBy=" + createdBy + "]";
-    }
+	@Override
+	public String toString() {
+		return "RecordsAddRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", description=" + description
+				+ ", fileDetails=" + fileDetails + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", recordsType=" + recordsType + ", createdBy=" + createdBy + "]";
+	}
 }

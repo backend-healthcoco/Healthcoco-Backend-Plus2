@@ -16,7 +16,7 @@ public interface PathProxy {
 
 	public static final String PATIENT_SIGNUP = "/patient";
 
-	public static final String ACTIVATE_USER = "/activate/{userId}";
+	public static final String ACTIVATE_USER = "/activate/{tokenId}";
 
 	public static final String CHECK_IF_USERNAME_EXIST = "/check-username-exists/{username}";
 
@@ -41,47 +41,26 @@ public interface PathProxy {
     public static final String CONTACTS_BASE_URL = BASE_URL + "/contacts";
 
     public interface ContactsUrls {
-	public static final String DOCTOR_CONTACTS = "/doctorcontacts/get";
+    	
+	public static final String DOCTOR_CONTACTS_DOCTOR_SPECIFIC = "/{type}";
 
-	public static final String DOCTOR_CONTACTS_DOCTOR_SPECIFIC = "/doctorcontacts/get/{doctorId}";
+	public static final String DOCTOR_CONTACTS_HANDHELD = "/handheld";
+	
+	public static final String BLOCK_CONTACT = "/{doctorId}/{patientId}/block";
 
-	public static final String DOCTOR_CONTACTS_DOCTOR_SPECIFIC_CREATED_TIME = "/doctorcontacts/get/{doctorId}/{createdTime}";
+	public static final String ADD_GROUP = "/group/add";
 
-	public static final String DOCTOR_CONTACTS_DOCTOR_SPECIFIC_CREATED_TIME_ISDELETED = "/doctorcontacts/get/{doctorId}/{createdTime}/{isDeleted}";
+	public static final String EDIT_GROUP = "/group/{groupId}/update";
 
-	public static final String DOCTOR_CONTACTS_HANDHELD_DOCTOR_SPECIFIC = "/doctorcontacts/handheld/{doctorId}/{createdTime}";
+	public static final String GET_ALL_GROUPS = "/groups";
+	
+	public static final String DELETE_GROUP = "/group/{groupId}/delete";
 
-	public static final String DOCTOR_CONTACTS_HANDHELD_DOCTOR_SPECIFIC_ISDELETED = "/doctorcontacts/handheld/{doctorId}/{createdTime}/{isDeleted}";
+	public static final String TOTAL_COUNT = "/totalcount";
 
-	public static final String DOCTOR_CONTACTS_HANDHELD = "/doctorcontacts/handheld/{doctorId}/{locationId}/{hospitalId}/{createdTime}";
+	public static final String IMPORT_CONTACTS = "/importContacts";
 
-	public static final String DOCTOR_CONTACTS_HANDHELD_ISDELETED = "/doctorcontacts/handheld/{doctorId}/{locationId}/{hospitalId}/{createdTime}/{isDeleted}";
-
-	public static final String BLOCK_CONTACT = "/doctorcontacts/block/{doctorId}/{patientId}";
-
-	public static final String ADD_GROUP = "/doctorcontacts/addgroup";
-
-	public static final String EDIT_GROUP = "/doctorcontacts/editgroup";
-
-	public static final String GET_ALL_GROUPS = "/doctorcontacts/getallgroups/{doctorId}/{locationId}/{hospitalId}";
-
-	public static final String GET_ALL_GROUPS_CREATED_TIME = "/doctorcontacts/getallgroups/{doctorId}/{locationId}/{hospitalId}/{createdTime}";
-
-	public static final String GET_ALL_GROUPS_CREATED_TIME_ISDELETED = "/doctorcontacts/getallgroups/{doctorId}/{locationId}/{hospitalId}/{createdTime}/{isDeleted}";
-
-	public static final String GET_ALL_DOCTOR_SPECIFIC_GROUPS = "doctorcontacts/getallgroups/{doctorId}";
-
-	public static final String GET_ALL_DOCTOR_SPECIFIC_GROUPS_CREATED_TIME = "doctorcontacts/getallgroups/{doctorId}/{createdTime}";
-
-	public static final String GET_ALL_DOCTOR_SPECIFIC_GROUPS_CREATED_TIME_ISDELETED = "doctorcontacts/getcompletegroups/{doctorId}/{createdTime}/{isDeleted}";
-
-	public static final String DELETE_GROUP = "/doctorcontacts/deletegroup/{groupId}";
-
-	public static final String TOTAL_COUNT = "/doctorcontacts/totalcount";
-
-	public static final String IMPORT_CONTACTS = "/doctorContacts/importContacts";
-
-	public static final String EXPORT_CONTACTS = "doctorContacts/exportContacts";
+	public static final String EXPORT_CONTACTS = "/exportContacts";
 
 	public static final String ADD_GROUP_TO_PATIENT = "/patient/addgroup";
     }
@@ -99,9 +78,9 @@ public interface PathProxy {
 
 	public static final String GET_PATIENT_PROFILE = "/getpatientprofile/{userId}/{doctorId}/{locationId}/{hospitalId}";
 
-	public static final String ADD_REFERRENCE = "/addreferrence";
+	public static final String ADD_REFERRENCE = "/referrence/add";
 
-	public static final String DELETE_REFERRENCE = "/deletereferrence/{referrenceId}";
+	public static final String DELETE_REFERRENCE = "/referrence/{referrenceId}/delete";
 
 	public static final String GET_REFERRENCES = "/getReferences/{doctorId}/{locationId}/{hospitalId}";
 
@@ -109,129 +88,59 @@ public interface PathProxy {
 
 	public static final String PATIENT_ID_GENERATOR = "/generatePatientId/{doctorId}/{locationId}/{hospitalId}";
 
-	public static final String UPDATE_PATIENT_ID_GENERATOR_LOGIC = "updatePatientIdGeneratorLogic/{doctorId}/{patientInitial}/{patientCounter}";
+	public static final String UPDATE_PATIENT_ID_GENERATOR_LOGIC = "/updatePatientIdGeneratorLogic/{doctorId}/{patientInitial}/{patientCounter}";
 
-	public static final String GET_PATIENT_INITIAL_COUNTER = "getPatientInitialAndCounter/{doctorId}";
+	public static final String GET_PATIENT_INITIAL_COUNTER = "/getPatientInitialAndCounter/{doctorId}";
 	
-	public static final String GET_PATIENT_PID = "getPatientPID/{patientId}";
+	public static final String GET_PATIENT_PID = "/getPatientPID/{patientId}";
 
-	public static final String GET_CLINIC_DETAILS = "settings/getClinicDetails/{clinicId}";
+	public static final String GET_CLINIC_DETAILS = "/settings/getClinicDetails/{clinicId}";
 
-	public static final String UPDATE_CLINIC_PROFILE = "settings/updateClinicProfile";
+	public static final String UPDATE_CLINIC_PROFILE = "/settings/updateClinicProfile";
 
-	public static final String UPDATE_CLINIC_ADDRESS = "settings/updateClinicAddress";
+	public static final String UPDATE_CLINIC_ADDRESS = "/settings/updateClinicAddress";
 
-	public static final String UPDATE_CLINIC_TIMING = "settings/updateClinicTiming";
+	public static final String UPDATE_CLINIC_TIMING = "/settings/updateClinicTiming";
     }
 
     public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";
 
     public interface ClinicalNotesUrls {
-	public static final String SAVE_CLINICAL_NOTE = "/save";
+	public static final String SAVE_CLINICAL_NOTE = "/add";
 
-	public static final String EDIT_CLINICAL_NOTES = "/edit";
+	public static final String EDIT_CLINICAL_NOTES = "/{clinicalNotesId}/update";
 
-	public static final String DELETE_CLINICAL_NOTES = "/delete/{clinicalNotesId}";
+	public static final String DELETE_CLINICAL_NOTES = "/{clinicalNotesId}/delete";
 
-	public static final String GET_CLINICAL_NOTES_ID = "/getbyid/{clinicalNotesId}";
+	public static final String GET_CLINICAL_NOTES_ID = "/{clinicalNotesId}/view";
+	
+	public static final String GET_CLINIC_NOTES_COUNT = "/getClinicalNotesCount/{doctorId}/{patientId}/{locationId}/{hospitalId}";
 
-	public static final String GET_CLINICAL_NOTES_DOCTOR_ID = "get/{doctorId}/{patientId}/{isOTPVerified}";
+	public static final String ADD_COMPLAINT = "/complaint/add";
 
-	public static final String GET_CLINICAL_NOTES_DOCTOR_ID_CT = "get/{doctorId}/{patientId}/{createdTime}/{isOTPVerified}";
+	public static final String ADD_OBSERVATION = "/observation/add";
 
-	public static final String GET_CLINICAL_NOTES_DOCTOR_ID_CT_ISDELETED = "getcomplete/{doctorId}/{patientId}/{createdTime}/{isOTPVerified}/{isDeleted}";
+	public static final String ADD_INVESTIGATION = "/investigation/add";
 
-	public static final String GET_CLINICAL_NOTES = "/get/{doctorId}/{locationId}/{hospitalId}/{patientId}/{isOTPVerified}";
+	public static final String ADD_DIAGNOSIS = "/diagnosis/add";
 
-	public static final String GET_CLINICAL_NOTES_CT = "/get/{doctorId}/{locationId}/{hospitalId}/{patientId}/{createdTime}/{isOTPVerified}";
+	public static final String ADD_NOTES = "/notes/add";
 
-	public static final String GET_CLINICAL_NOTES_CT_ISDELETED = "/get/{doctorId}/{locationId}/{hospitalId}/{patientId}/{createdTime}/{isOTPVerified}/{isDeleted}";
+	public static final String ADD_DIAGRAM = "/diagram/add";
 
-	public static final String GET_CLINIC_NOTES_COUNT = "getClinicalNotesCount/{doctorId}/{patientId}/{locationId}/{hospitalId}";
+	public static final String DELETE_COMPLAINT = "/complaint/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
-	public static final String ADD_COMPLAINT = "/addcomplaint";
+	public static final String DELETE_OBSERVATION = "/observation/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
-	public static final String ADD_OBSERVATION = "/addobservation";
+	public static final String DELETE_INVESTIGATION = "/investigation/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
-	public static final String ADD_INVESTIGATION = "/addinvestigation";
+	public static final String DELETE_DIAGNOSIS = "/diagnosis/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
-	public static final String ADD_DIAGNOSIS = "/adddiagnosis";
+	public static final String DELETE_NOTE = "/notes/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
-	public static final String ADD_NOTES = "/addnotes";
+	public static final String DELETE_DIAGRAM = "/diagram/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
-	public static final String ADD_DIAGRAM = "/adddiagram";
-
-	public static final String DELETE_COMPLAINT = "/deletecomplaint/{id}/{doctorId}/{locationId}/{hospitalId}";
-
-	public static final String DELETE_OBSERVATION = "/deleteobservation/{id}/{doctorId}/{locationId}/{hospitalId}";
-
-	public static final String DELETE_INVESTIGATION = "/deleteinvestigation/{id}/{doctorId}/{locationId}/{hospitalId}";
-
-	public static final String DELETE_DIAGNOSIS = "/deletediagnosis/{id}/{doctorId}/{locationId}/{hospitalId}";
-
-	public static final String DELETE_NOTE = "/deletenotes/{id}/{doctorId}/{locationId}/{hospitalId}";
-
-	public static final String DELETE_DIAGRAM = "/deletediagram/{id}/{doctorId}/{locationId}/{hospitalId}";
-
-	public static final String GET_CUSTOM_COMPLAINTS = "getCustomComplaints/{doctorId}/{locationId}/{hospitalId}/{page}/{size}";
-
-	public static final String GET_CUSTOM_DIAGNOSIS = "getCustomDiagnosis/{doctorId}/{locationId}/{hospitalId}/{page}/{size}";
-
-	public static final String GET_CUSTOM_INVESTIGATIONS = "getCustomInvestigations/{doctorId}/{locationId}/{hospitalId}/{page}/{size}";
-
-	public static final String GET_CUSTOM_OBSERVATIONS = "getCustomObservations/{doctorId}/{locationId}/{hospitalId}/{page}/{size}";
-
-	public static final String GET_COMPLAINTS = "getComplaints/{doctorId}/{createdTime}";
-
-	public static final String GET_COMPLAINTS_ISDELETED = "getComplaints/{doctorId}/{createdTime}/{isDeleted}";
-
-	public static final String GET_INVESTIGATIONS = "getInvestigations/{doctorId}/{createdTime}";
-
-	public static final String GET_INVESTIGATIONS_ISDELETED = "getInvestigations/{doctorId}/{createdTime}/{isDeleted}";
-
-	public static final String GET_OBSERVATIONS = "getObservations/{doctorId}/{createdTime}";
-
-	public static final String GET_OBSERVATIONS_ISDELETED = "getObservations/{doctorId}/{createdTime}/{isDeleted}";
-
-	public static final String GET_DIAGNOSIS = "getDiagnosis/{doctorId}/{createdTime}";
-
-	public static final String GET_DIAGNOSIS_ISDELETED = "getDiagnosis/{doctorId}/{createdTime}/{isDeleted}";
-
-	public static final String GET_NOTES = "getNotes/{doctorId}/{createdTime}";
-
-	public static final String GET_NOTES_ISDELETED = "getNotes/{doctorId}/{createdTime}/{isDeleted}";
-
-	public static final String GET_DIAGRAMS = "getDiagrams/{doctorId}/{createdTime}";
-
-	public static final String GET_DIAGRAMS_ISDELETED = "getDiagrams/{doctorId}/{createdTime}/{isDeleted}";
-
-	public static final String GET_GLOBAL_COMPLAINTS = "getGlobalComplaints/{createdTime}";
-
-	public static final String GET_GLOBAL_INVESTIGATIONS = "getGlobalInvestigations/{createdTime}";
-
-	public static final String GET_GLOBAL_OBSERVATIONS = "getGlobalObservations/{createdTime}";
-
-	public static final String GET_GLOBAL_DIAGNOSIS = "getGlobalDiagnosis/{createdTime}";
-
-	public static final String GET_GLOBAL_NOTES = "getGlobalNotes/{createdTime}";
-
-	public static final String GET_GLOBAL_DIAGRAMS = "getGlobalDiagrams/{createdTime}";
-
-	public static final String GET_CUSTOM_GLOBAL_COMPLAINTS = "getCustomGlobalComplaints/{doctorId}/{createdTime}";
-
-	public static final String GET_CUSTOM_GLOBAL_COMPLAINTS_ISDELETED = "getCustomGlobalComplaints/{doctorId}/{createdTime}/{isDeleted}";
-
-	public static final String GET_CUSTOM_GLOBAL_INVESTIGATIONS = "getCustomGlobalInvestigations/{doctorId}/{createdTime}";
-
-	public static final String GET_CUSTOM_GLOBAL_INVESTIGATIONS_ISDELETED = "getCustomGlobalInvestigations/{doctorId}/{createdTime}/{isDeleted}";
-
-	public static final String GET_CUSTOM_GLOBAL_OBSERVATIONS = "getCustomGlobalObservations/{doctorId}/{createdTime}";
-
-	public static final String GET_CUSTOM_GLOBAL_OBSERVATIONS_ISDELETED = "getCustomGlobalObservations/{doctorId}/{createdTime}/{isDeleted}";
-
-	public static final String GET_CUSTOM_GLOBAL_DIAGNOSIS = "getCustomGlobalDiagnosis/{doctorId}/{createdTime}";
-
-	public static final String GET_CUSTOM_GLOBAL_DIAGNOSIS_ISDELETED = "getCustomGlobalDiagnosis/{doctorId}/{createdTime}/{isDeleted}";
+	public static final String GET_CINICAL_ITEMS = "/{type}/{range}";
 
     }
 
@@ -250,7 +159,7 @@ public interface PathProxy {
     public static final String RECORDS_BASE_URL = BASE_URL + "/records";
 
     public interface RecordsUrls {
-	public static final String ADD_RECORDS = "/addrecords";
+	public static final String ADD_RECORDS = "/add";
 
 	public static final String TAG_RECORD = "/tagrecord";
 
@@ -258,15 +167,7 @@ public interface PathProxy {
 
 	public static final String SEARCH_RECORD = "/search";
 
-	public static final String SEARCH_RECORD_DOCTOR_ID = "/search/{doctorId}";
-
-	public static final String SEARCH_RECORD_DOCTOR_ID_CT = "/search/{doctorId}/{createdTime}";
-
-	public static final String SEARCH_RECORD_ALL_FIELDS = "/search/{doctorId}/{locationId}/{hospitalId}";
-
-	public static final String SEARCH_RECORD_ALL_FIELDS_CT = "/search/{doctorId}/{locationId}/{hospitalId}/{createdTime}";
-
-	public static final String GET_RECORD_COUNT = "getRecordCount/{doctorId}/{patientId}/{locationId}/{hospitalId}";
+	public static final String GET_RECORD_COUNT = "/getRecordCount/{doctorId}/{patientId}/{locationId}/{hospitalId}";
 
 	public static final String CREATE_TAG = "/createtag";
 
@@ -276,263 +177,173 @@ public interface PathProxy {
 
 	public static final String EMAIL_RECORD = "/emailrecord/{recordId}/{emailAddress}";
 
-	public static final String DELETE_RECORD = "/deleterecord/{recordId}";
+	public static final String DELETE_RECORD = "/{recordId}/delete";
 
-	public static final String DOWNLOAD_RECORD = "/downloadrecord/{recordId}";
+	public static final String DOWNLOAD_RECORD = "/download/{recordId}";
 
-	public static final String DELETE_TAG = "/deletetag/{tagid}";
+	public static final String DELETE_TAG = "/tagrecord/{tagid}/delete";
 
-	public static final String EDIT_DESCRIPTION = "editDescription";
+	public static final String EDIT_DESCRIPTION = "/editDescription";
 
-	public static final String GET_FLEXIBLE_COUNTS = "getFlexibleCounts";
+	public static final String GET_FLEXIBLE_COUNTS = "/getFlexibleCounts";
 
-	public static final String EDIT_RECORD = "/editRecord";
+	public static final String EDIT_RECORD = "/{recordId}/update";
 
     }
 
     public static final String PRESCRIPTION_BASE_URL = BASE_URL + "/prescription";
 
     public interface PrescriptionUrls {
-	public static final String ADD_DRUG = "addDrug";
+	public static final String ADD_DRUG = "/drug/add";
 
-	public static final String EDIT_DRUG = "editDrug";
+	public static final String EDIT_DRUG = "/drug/{drugId}/update";
 
-	public static final String DELETE_DRUG = "deleteDrug/{drugId}/{doctorId}/{locationId}/{hospitalId}";
+	public static final String DELETE_DRUG = "/drug/{drugId}/{doctorId}/{locationId}/{hospitalId}/delete";
 
-	public static final String GET_DRUG_ID = "getDrugs/{drugId}";
+	public static final String GET_DRUG_ID = "/drug/{drugId}";
 
-	public static final String GET_DRUGS_DOCTOR_SPECIFIC = "getDrugDetails/{doctorId}";
+	public static final String DELETE_GLOBAL_DRUG = "/drug/{drugId}/delete";
+	
+	public static final String GET_PRESCRIPTION_ITEMS = "/{type}/{range}";
 
-	public static final String GET_DRUGS_DOCTOR_SPECIFIC_CT = "getDrugDetails/{doctorId}/{createdTime}";
+	public static final String ADD_TEMPLATE = "/template/add";
 
-	public static final String GET_DRUGS_DOCTOR_SPECIFIC_CT_ISDELETED = "getCompleteDrugDetails/{doctorId}/{createdTime}/{isDeleted}";
+	public static final String ADD_TEMPLATE_HANDHELD = "/templateHandheld/add";
 
-	public static final String GET_DRUGS_ALL_FIELDS = "getDrugDetails/{doctorId}/{locationId}/{hospitalId}";
+	public static final String EDIT_TEMPLATE = "/template/{templateId}/update";
 
-	public static final String GET_DRUGS_ALL_FIELDS_CT = "getDrugDetails/{doctorId}/{locationId}/{hospitalId}/{createdTime}";
+	public static final String DELETE_TEMPLATE = "/template/{templateId}/{doctorId}/{locationId}/{hospitalId}/delete";
 
-	public static final String GET_DRUGS_ALL_FIELDS_CT_ISDELETED = "getDrugDetails/{doctorId}/{locationId}/{hospitalId}/{createdTime}/{isDeleted}";
+	public static final String GET_TEMPLATE_TEMPLATE_ID = "/template/{templateId}/{doctorId}/{locationId}/{hospitalId}/view";
 
-	public static final String DELETE_GLOBAL_DRUG = "deleteDrug/{drugId}";
+	public static final String GET_TEMPLATE = "/templates";
+	
+	public static final String ADD_PRESCRIPTION = "/add";
 
-	public static final String ADD_TEMPLATE = "addTemplate";
+	public static final String ADD_PRESCRIPTION_HANDHELD = "/prescriptionHandheld/add";
 
-	public static final String ADD_TEMPLATE_HANDHELD = "addTemplateHandheld";
+	public static final String EDIT_PRESCRIPTION = "/{prescriptionId}/update";
 
-	public static final String EDIT_TEMPLATE = "editTemplate";
+	public static final String DELETE_PRESCRIPTION = "/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{patientId}/delete";
+	
+	public static final String GET_PRESCRIPTION_COUNT = "/count/{doctorId}/{patientId}/{locationId}/{hospitalId}";
 
-	public static final String DELETE_TEMPLATE = "deleteTemplate/{templateId}/{doctorId}/{locationId}/{hospitalId}";
+	public static final String ADD_DRUG_TYPE = "/drugType/add";
 
-	public static final String GET_TEMPLATE_TEMPLATE_ID = "getTemplate/{templateId}/{doctorId}/{locationId}/{hospitalId}";
+	public static final String EDIT_DRUG_TYPE = "/drugType/{drugTypeId}/update";
 
-	public static final String GET_TEMPLATE_DOCTOR_SPECIFIC = "getTemplates/{doctorId}";
+	public static final String DELETE_DRUG_TYPE = "/drugType/{drugTypeId}/delete";
 
-	public static final String GET_TEMPLATE_ALL_FIELDS = "getTemplates/{doctorId}/{locationId}/{hospitalId}";
+	public static final String ADD_DRUG_STRENGTH = "/drugStrength/add";
 
-	public static final String GET_TEMPLATE_DOCTOR_SPECIFIC_CT = "getTemplates/{doctorId}/{createdTime}";
+	public static final String EDIT_DRUG_STRENGTH = "/drugStrength/{drugStrengthId}/update";
 
-	public static final String GET_TEMPLATE_DOCTOR_SPECIFIC_CT_ISDELETED = "getCompleteTemplates/{doctorId}/{createdTime}/{isDeleted}";
+	public static final String DELETE_DRUG_STRENGTH = "/drugStrength/{drugStrengthId}/delete";
 
-	public static final String GET_TEMPLATE_ALL_FIELDS_CT = "getTemplates/{doctorId}/{locationId}/{hospitalId}/{createdTime}";
+	public static final String ADD_DRUG_DOSAGE = "/drugDosage/add";
 
-	public static final String GET_TEMPLATE_ALL_FIELDS_CT_ISDELETED = "getTemplates/{doctorId}/{locationId}/{hospitalId}/{createdTime}/{isDeleted}";
+	public static final String EDIT_DRUG_DOSAGE = "/drugDosage/{drugDosageId}/update";
 
-	public static final String ADD_PRESCRIPTION = "addPrescription";
+	public static final String DELETE_DRUG_DOSAGE = "/drugDosage/{drugDosageId}/delete";
 
-	public static final String ADD_PRESCRIPTION_HANDHELD = "addPrescriptionHandheld";
+	public static final String ADD_DRUG_DIRECTION = "/drugDirection/add";
 
-	public static final String EDIT_PRESCRIPTION = "editPrescription";
+	public static final String EDIT_DRUG_DIRECTION = "/drugDirection/{drugDirectionId}/update";
 
-	public static final String DELETE_PRESCRIPTION = "deletePrescription/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{patientId}";
+	public static final String DELETE_DRUG_DIRECTION = "/drugDirection/{drugDirectionId}/delete";
 
-	public static final String GET_PRESCRIPTION = "getPrescription/{doctorId}/{locationId}/{hospitalId}/{patientId}/{isOTPVarified}";
+	public static final String ADD_DRUG_DURATION_UNIT = "/drugDurationUnit/add";
 
-	public static final String GET_PRESCRIPTION_CREATED_TIME = "getPrescription/{doctorId}/{locationId}/{hospitalId}/{patientId}/{isOTPVarified}/{createdTime}";
+	public static final String EDIT_DRUG_DURATION_UNIT = "/drugDurationUnit/{drugDurationUnitId}/update";
 
-	public static final String GET_PRESCRIPTION_CREATED_TIME_ISDELETED = "getPrescription/{doctorId}/{locationId}/{hospitalId}/{patientId}/{isOTPVarified}/{createdTime}/{isDeleted}";
-
-	public static final String GET_PRESCRIPTION_COUNT = "getPrescriptionCount/{doctorId}/{patientId}/{locationId}/{hospitalId}";
-
-	public static final String GET_ALL_DRUG_TYPE = "getAllDrugType";
-
-	public static final String GET_CUSTOM_DRUG_TYPE = "getDrugType/{doctorId}/{locationId}/{hospitalId}";
-
-	public static final String GET_DRUG_TYPE_CREATED_TIME = "getDrugType/{createdTime}";
-
-	public static final String GET_DRUG_TYPE_CREATED_TIME_ISDELETED = "getDrugType/{createdTime}/{isDeleted}";
-
-	public static final String GET_CUSTOM_DRUG_TYPE_CREATED_TIME = "getDrugType/{doctorId}/{locationId}/{hospitalId}/{createdTime}";
-
-	public static final String GET_CUSTOM_DRUG_TYPE_CREATED_TIME_ISDELETED = "getDrugType/{doctorId}/{locationId}/{hospitalId}/{createdTime}/{isDeleted}";
-
-	public static final String GET_ALL_DRUG_STRENGTH_UNIT = "getAllDrugStrengthUnit";
-
-	public static final String GET_CUSTOM_DRUG_STRENGTH_UNIT = "getDrugStrengthUnit/{doctorId}/{locationId}/{hospitalId}";
-
-	public static final String GET_DRUG_STRENGTH_UNIT_CREATED_TIME = "getDrugStrengthUnit/{createdTime}";
-
-	public static final String GET_DRUG_STRENGTH_UNIT_CREATED_TIME_ISDELETED = "getDrugStrengthUnit/{createdTime}/{isDeleted}";
-
-	public static final String GET_CUSTOM_DRUG_STRENGTH_UNIT_CREATED_TIME = "getDrugStrengthUnit/{doctorId}/{locationId}/{hospitalId}/{createdTime}";
-
-	public static final String GET_CUSTOM_DRUG_STRENGTH_UNIT_CREATED_TIME_ISDELETED = "getDrugStrengthUnit/{doctorId}/{locationId}/{hospitalId}/{createdTime}/{isDeleted}";
-
-	public static final String GET_ALL_DRUG_DOSAGE = "getAllDrugDosage";
-
-	public static final String GET_CUSTOM_DRUG_DOSAGE = "getDrugDosage/{doctorId}/{locationId}/{hospitalId}";
-
-	public static final String GET_DRUG_DOSAGE_CREATED_TIME = "getDrugDosage/{createdTime}";
-
-	public static final String GET_DRUG_DOSAGE_CREATED_TIME_ISDELETED = "getDrugDosage/{createdTime}/{isDeleted}";
-
-	public static final String GET_CUSTOM_DRUG_DOSAGE_CREATED_TIME = "getDrugDosage/{doctorId}/{locationId}/{hospitalId}/{createdTime}";
-
-	public static final String GET_CUSTOM_DRUG_DOSAGE_CREATED_TIME_ISDELETED = "getDrugDosage/{doctorId}/{locationId}/{hospitalId}/{createdTime}/{isDeleted}";
-
-	public static final String GET_ALL_DRUG_DURATION_UNIT = "getAllDrugDurationUnit";
-
-	public static final String GET_CUSTOM_DRUG_DURATION_UNIT = "getDrugDurationUnit/{doctorId}/{locationId}/{hospitalId}";
-
-	public static final String GET_DRUG_DURATION_UNIT_CREATED_TIME = "getDrugDurationUnit/{createdTime}";
-
-	public static final String GET_DRUG_DURATION_UNIT_CREATED_TIME_ISDELETED = "getDrugDurationUnit/{createdTime}/{isDeleted}";
-
-	public static final String GET_CUSTOM_DRUG_DURATION_UNIT_CREATED_TIME = "getDrugDurationUnit/{doctorId}/{locationId}/{hospitalId}/{createdTime}";
-
-	public static final String GET_CUSTOM_DRUG_DURATION_UNIT_CREATED_TIME_ISDELETED = "getDrugDurationUnit/{doctorId}/{locationId}/{hospitalId}/{createdTime}/{isDeleted}";
-
-	public static final String GET_ALL_DRUG_DIRECTION_UNIT = "getAllDrugDirection";
-
-	public static final String GET_CUSTOM_DRUG_DIRECTION_UNIT = "getDrugDirection/{doctorId}/{locationId}/{hospitalId}";
-
-	public static final String GET_DRUG_DIRECTION_UNIT_CREATED_TIME = "getDrugDirection/{createdTime}";
-
-	public static final String GET_DRUG_DIRECTION_UNIT_CREATED_TIME_ISDELETED = "getDrugDirection/{createdTime}/{isDeleted}";
-
-	public static final String GET_CUSTOM_DRUG_DIRECTION_UNIT_CREATED_TIME = "getDrugDirection/{doctorId}/{locationId}/{hospitalId}/{createdTime}";
-
-	public static final String GET_CUSTOM_DRUG_DIRECTION_UNIT_CREATED_TIME_ISDELETED = "getDrugDirection/{doctorId}/{locationId}/{hospitalId}/{createdTime}/{isDeleted}";
-
-	public static final String ADD_DRUG_TYPE = "addDrugType";
-
-	public static final String EDIT_DRUG_TYPE = "editDrugType";
-
-	public static final String DELETE_DRUG_TYPE = "deleteDrugType/{drugTypeId}";
-
-	public static final String ADD_DRUG_STRENGTH = "addDrugStrength";
-
-	public static final String EDIT_DRUG_STRENGTH = "editDrugStrength";
-
-	public static final String DELETE_DRUG_STRENGTH = "deleteDrugStrength/{drugStrengthId}";
-
-	public static final String ADD_DRUG_DOSAGE = "addDrugDosage";
-
-	public static final String EDIT_DRUG_DOSAGE = "editDrugDosage";
-
-	public static final String DELETE_DRUG_DOSAGE = "deleteDrugDosage/{drugDosageId}";
-
-	public static final String ADD_DRUG_DIRECTION = "addDrugDirection";
-
-	public static final String EDIT_DRUG_DIRECTION = "editDrugDirection";
-
-	public static final String DELETE_DRUG_DIRECTION = "deleteDrugDirection/{drugDirectionId}";
-
-	public static final String ADD_DRUG_DURATION_UNIT = "addDrugDurationUnit";
-
-	public static final String EDIT_DRUG_DURATION_UNIT = "editDrugDurationUnit";
-
-	public static final String DELETE_DRUG_DURATION_UNIT = "deleteDrugDurationUnit";
+	public static final String DELETE_DRUG_DURATION_UNIT = "/drugDurationUnit/{drugDurationUnitId}/delete";
 
     }
 
     public static final String HISTORY_BASE_URL = BASE_URL + "/history";
 
     public interface HistoryUrls {
-	public static final String ADD_DISEASE = "addDisease";
+	public static final String ADD_DISEASE = "/disease/add";
 
-	public static final String EDIT_DISEASE = "editDisease";
+	public static final String EDIT_DISEASE = "/disease{diseaseId}//update";
 
-	public static final String DELETE_DISEASE = "deleteDisease/{diseaseId}/{doctorId}/{locationId}/{hospitalId}";
+	public static final String DELETE_DISEASE = "/disease/{diseaseId}/{doctorId}/{locationId}/{hospitalId}/delete";
 
-	public static final String GET_DISEASES = "getDiseases/{doctorId}/{locationId}/{hospitalId}";
+	public static final String GET_DISEASES = "/diseases/{range}";
 	
-	public static final String GET_CUSTOM_GLOBAL_DISEASES = "getCustomGlobalDiseases/{doctorId}/{createdTime}";
+	public static final String ADD_REPORT_TO_HISTORY = "/report/{reportId}/{patientId}/{doctorId}/{locationId}/{hospitalId}/add";
 
-	public static final String GET_CUSTOM_GLOBAL_DISEASES_ISDELETED = "getCustomGlobalDiseases/{doctorId}/{createdTime}/{isDeleted}";
+	public static final String ADD_CLINICAL_NOTES_TO_HISTORY = "/clinicalNotes/{clinicalNotesId}/{patientId}/{doctorId}/{locationId}/{hospitalId}/add";
 
-	public static final String ADD_REPORT_TO_HISTORY = "addReportToHistory/{reportId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
+	public static final String ADD_PRESCRIPTION_TO_HISTORY = "/prescription/{prescriptionId}/{patientId}/{doctorId}/{locationId}/{hospitalId}/add";
 
-	public static final String ADD_CLINICAL_NOTES_TO_HISTORY = "addClinicalNotesToHistory/{clinicalNotesId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
+	public static final String ADD_SPECIAL_NOTES = "/addSpecialNotes";
 
-	public static final String ADD_PRESCRIPTION_TO_HISTORY = "addPrescriptionToHistory/{prescriptionId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
+	public static final String ASSIGN_MEDICAL_HISTORY = "/assignMedicalHistory/{diseaseId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
 
-	public static final String ADD_SPECIAL_NOTES = "addSpecialNotes";
+	public static final String ASSIGN_FAMILY_HISTORY = "/assignFamilyHistory/{diseaseId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
 
-	public static final String ASSIGN_MEDICAL_HISTORY = "assignMedicalHistory/{diseaseId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
+	public static final String HANDLE_MEDICAL_HISTORY = "/medicalHistory";
 
-	public static final String ASSIGN_FAMILY_HISTORY = "assignFamilyHistory/{diseaseId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
+	public static final String GET_MEDICAL_AND_FAMILY_HISTORY = "/getMedicalAndFamilyHistory/{patientId}/{doctorId}/{locationId}/{hospitalId}";
 
-	public static final String HANDLE_MEDICAL_HISTORY = "medicalHistory";
-
-	public static final String GET_MEDICAL_AND_FAMILY_HISTORY = "getMedicalAndFamilyHistory/{patientId}/{doctorId}/{locationId}/{hospitalId}";
-
-	public static final String HANDLE_FAMILY_HISTORY = "familyHistory";
+	public static final String HANDLE_FAMILY_HISTORY = "/familyHistory";
 	
-	public static final String REMOVE_REPORTS = "removeReports/{reportId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
+	public static final String REMOVE_REPORTS = "/removeReports/{reportId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
 
-	public static final String REMOVE_CLINICAL_NOTES = "removeClinicalNotes/{clinicalNotesId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
+	public static final String REMOVE_CLINICAL_NOTES = "/removeClinicalNotes/{clinicalNotesId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
 
-	public static final String REMOVE_PRESCRIPTION = "removePrescription/{prescriptionId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
+	public static final String REMOVE_PRESCRIPTION = "/removePrescription/{prescriptionId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
 
-	public static final String REMOVE_MEDICAL_HISTORY = "removeMedicalHistory/{diseaseId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
+	public static final String REMOVE_MEDICAL_HISTORY = "/removeMedicalHistory/{diseaseId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
 
-	public static final String REMOVE_FAMILY_HISTORY = "removeFamilyHistory/{diseaseId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
+	public static final String REMOVE_FAMILY_HISTORY = "/removeFamilyHistory/{diseaseId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
 
-	public static final String GET_PATIENT_HISTORY_OTP_VERIFIED = "getPatientHistory/{patientId}/{doctorId}/{locationId}/{hospitalId}/{historyFilter}/{otpVerified}";
+	public static final String GET_PATIENT_HISTORY_OTP_VERIFIED = "/getPatientHistory/{patientId}/{doctorId}/{locationId}/{hospitalId}/{historyFilter}/{otpVerified}";
     }
 
     public static final String DOCTOR_PROFILE_URL = BASE_URL + "/doctorProfile";
 
     public interface DoctorProfileUrls {
-	public static final String ADD_EDIT_NAME = "addEditName";
+	public static final String ADD_EDIT_NAME = "/addEditName";
 
-	public static final String ADD_EDIT_EXPERIENCE = "addEditExperience/{doctorId}/{experience}";
+	public static final String ADD_EDIT_EXPERIENCE = "/addEditExperience/{doctorId}/{experience}";
 
-	public static final String ADD_EDIT_CONTACT = "addEditContact";
+	public static final String ADD_EDIT_CONTACT = "/addEditContact";
 
-	public static final String ADD_EDIT_EDUCATION = "addEditEducation";
+	public static final String ADD_EDIT_EDUCATION = "/addEditEducation";
 
-	public static final String ADD_EDIT_SPECIALITY = "addEditSpeciality";
+	public static final String ADD_EDIT_SPECIALITY = "/addEditSpeciality";
 
-	public static final String ADD_EDIT_ACHIEVEMENT = "addEditAchievement";
+	public static final String ADD_EDIT_ACHIEVEMENT = "/addEditAchievement";
 
-	public static final String ADD_EDIT_PROFESSIONAL_STATEMENT = "addEditProfessionalStatement/{doctorId}/{professionalStatement}";
+	public static final String ADD_EDIT_PROFESSIONAL_STATEMENT = "/addEditProfessionalStatement/{doctorId}/{professionalStatement}";
 
-	public static final String ADD_EDIT_REGISTRATION_DETAIL = "addEditRegistrationDetail";
+	public static final String ADD_EDIT_REGISTRATION_DETAIL = "/addEditRegistrationDetail";
 
-	public static final String ADD_EDIT_EXPERIENCE_DETAIL = "addEditExperienceDetail";
+	public static final String ADD_EDIT_EXPERIENCE_DETAIL = "/addEditExperienceDetail";
 
-	public static final String ADD_EDIT_PROFILE_PICTURE = "addEditProfilePicture";
+	public static final String ADD_EDIT_PROFILE_PICTURE = "/addEditProfilePicture";
 
-	public static final String ADD_EDIT_PROFESSIONAL_MEMBERSHIP = "addEditProfessionalMembership";
+	public static final String ADD_EDIT_PROFESSIONAL_MEMBERSHIP = "/addEditProfessionalMembership";
 
-	public static final String GET_DOCTOR_PROFILE = "getDoctorProfile/{doctorId}/{locationId}/{hospitalId}";
+	public static final String GET_DOCTOR_PROFILE = "/{doctorId}/view";
 
-	public static final String ADD_EDIT_MEDICAL_COUNCILS = "addEditMedicalCouncils";
+	public static final String ADD_EDIT_MEDICAL_COUNCILS = "/addEditMedicalCouncils";
 
-	public static final String GET_MEDICAL_COUNCILS = "getMedicalCouncils";
+	public static final String GET_MEDICAL_COUNCILS = "/getMedicalCouncils";
 
-	public static final String INSERT_PROFESSIONAL_MEMBERSHIPS = "insertProfessionalMemberships";
+	public static final String INSERT_PROFESSIONAL_MEMBERSHIPS = "/insertProfessionalMemberships";
 
-	public static final String GET_PROFESSIONAL_MEMBERSHIPS = "getProfessionalMemberships";
+	public static final String GET_PROFESSIONAL_MEMBERSHIPS = "/getProfessionalMemberships";
 
-	public static final String ADD_EDIT_APPOINTMENT_NUMBERS = "clinicProfile/addEditAppointmentNumbers";
+	public static final String ADD_EDIT_APPOINTMENT_NUMBERS = "/clinicProfile/addEditAppointmentNumbers";
 
-	public static final String ADD_EDIT_VISITING_TIME = "clinicProfile/addEditVisitingTime";
+	public static final String ADD_EDIT_VISITING_TIME = "/clinicProfile/addEditVisitingTime";
 
-	public static final String ADD_EDIT_CONSULTATION_FEE = "clinicProfile/addEditConsultationFee";
+	public static final String ADD_EDIT_CONSULTATION_FEE = "/clinicProfile/addEditConsultationFee";
 
-	public static final String ADD_EDIT_APPOINTMENT_SLOT = "clinicProfile/addEditAppointmentSlot";
+	public static final String ADD_EDIT_APPOINTMENT_SLOT = "/clinicProfile/addEditAppointmentSlot";
     }
 
     public static final String PATIENT_TRACK_BASE_URL = BASE_URL + "/patientTrack";

@@ -20,10 +20,7 @@ public class DoctorContactCollection extends GenericCollection {
     private Boolean isBlocked = false;
 
     @Field
-    private Boolean isDeleted = false;
-
-    @Field
-    private Long createdDate = System.currentTimeMillis();
+    private Boolean discarded = false;
 
     public String getId() {
 	return id;
@@ -57,26 +54,18 @@ public class DoctorContactCollection extends GenericCollection {
 	this.isBlocked = isBlocked;
     }
 
-    public Boolean getIsDeleted() {
-	return isDeleted;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
-    public void setIsDeleted(Boolean isDeleted) {
-	this.isDeleted = isDeleted;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
-    public Long getCreatedDate() {
-	return createdDate;
-    }
-
-    public void setCreatedDate(Long createdDate) {
-	this.createdDate = createdDate;
-    }
-
-    @Override
-    public String toString() {
-	return "DoctorContactCollection [id=" + id + ", doctorId=" + doctorId + ", contactId=" + contactId + ", isBlocked=" + isBlocked + ", isDeleted="
-		+ isDeleted + ", createdDate=" + createdDate + "]";
-    }
+	@Override
+	public String toString() {
+		return "DoctorContactCollection [id=" + id + ", doctorId=" + doctorId + ", contactId=" + contactId
+				+ ", isBlocked=" + isBlocked + ", discarded=" + discarded + "]";
+	}
 
 }

@@ -25,7 +25,7 @@ public class PrescriptionCollection extends GenericCollection {
     private String hospitalId;
 
     @Field
-    private Boolean isDeleted = false;
+    private Boolean discarded = false;
 
     @Field
     private List<PrescriptionItem> items;
@@ -38,9 +38,6 @@ public class PrescriptionCollection extends GenericCollection {
 
     @Field
     private boolean inHistory = false;
-
-    @Field
-    private Long createdDate;
 
     public String getId() {
 	return id;
@@ -82,12 +79,12 @@ public class PrescriptionCollection extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
-	public Boolean getIsDeleted() {
-		return isDeleted;
+	public Boolean getDiscarded() {
+		return discarded;
 	}
 
-	public void setIsDeleted(Boolean isDeleted) {
-		this.isDeleted = isDeleted;
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
 	}
 
 	public List<PrescriptionItem> getItems() {
@@ -122,19 +119,11 @@ public class PrescriptionCollection extends GenericCollection {
 	this.inHistory = inHistory;
     }
 
-    public Long getCreatedDate() {
-	return createdDate;
-    }
-
-    public void setCreatedDate(Long createdDate) {
-	this.createdDate = createdDate;
-    }
-
-    @Override
-    public String toString() {
-	return "PrescriptionCollection [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ ", isDeleted=" + isDeleted + ", items=" + items + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + ", inHistory="
-		+ inHistory + ", createdDate=" + createdDate + "]";
-    }
-
+	@Override
+	public String toString() {
+		return "PrescriptionCollection [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", items=" + items
+				+ ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + ", inHistory=" + inHistory
+				+ "]";
+	}
 }

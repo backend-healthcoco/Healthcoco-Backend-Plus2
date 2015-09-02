@@ -13,11 +13,9 @@ public class Records extends GenericCollection {
 
     private String description;
 
-    private Long createdDate;
-
     private boolean inHistory = false;
 
-    private Boolean isDeleted = false;
+    private Boolean discarded = false;
 
     public String getId() {
 	return id;
@@ -59,14 +57,6 @@ public class Records extends GenericCollection {
 	this.description = description;
     }
 
-    public Long getCreatedDate() {
-	return createdDate;
-    }
-
-    public void setCreatedDate(Long createdDate) {
-	this.createdDate = createdDate;
-    }
-
     public boolean isInHistory() {
 	return inHistory;
     }
@@ -75,18 +65,18 @@ public class Records extends GenericCollection {
 	this.inHistory = inHistory;
     }
 
-	public Boolean getIsDeleted() {
-		return isDeleted;
+	public Boolean getDiscarded() {
+		return discarded;
 	}
 
-	public void setIsDeleted(Boolean isDeleted) {
-		this.isDeleted = isDeleted;
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
 	}
 
 	@Override
 	public String toString() {
 		return "Records [id=" + id + ", recordsUrl=" + recordsUrl + ", recordsLable=" + recordsLable + ", recordsType="
-				+ recordsType + ", description=" + description + ", createdDate=" + createdDate + ", inHistory="
-				+ inHistory + ", isDeleted=" + isDeleted + "]";
+				+ recordsType + ", description=" + description + ", inHistory=" + inHistory + ", discarded=" + discarded
+				+ "]";
 	}
 }

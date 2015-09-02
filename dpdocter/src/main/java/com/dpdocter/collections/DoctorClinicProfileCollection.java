@@ -11,7 +11,7 @@ import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.WorkingSchedule;
 
 @Document(collection = "doctor_clinic_profile_cl")
-public class DoctorClinicProfileCollection {
+public class DoctorClinicProfileCollection extends GenericCollection{
     @Id
     private String id;
 

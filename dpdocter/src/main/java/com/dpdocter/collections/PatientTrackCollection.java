@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.enums.VisitedFor;
 
 @Document(collection = "patient_track_cl")
-public class PatientTrackCollection {
+public class PatientTrackCollection extends GenericCollection{
     @Id
     private String id;
 

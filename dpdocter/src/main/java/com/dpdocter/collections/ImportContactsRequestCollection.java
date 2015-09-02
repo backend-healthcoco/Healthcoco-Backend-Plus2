@@ -4,7 +4,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "import_contacts_request_cl")
-public class ImportContactsRequestCollection {
+public class ImportContactsRequestCollection extends GenericCollection{
     @Field
     private String doctorId;
 

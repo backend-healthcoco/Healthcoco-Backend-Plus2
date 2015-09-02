@@ -42,7 +42,7 @@ public class DrugCollection extends GenericCollection {
     private String locationId;
 
     @Field
-    private boolean isDeleted = false;
+    private Boolean discarded = false;
 
     @Field
     private String drugCode;
@@ -119,15 +119,15 @@ public class DrugCollection extends GenericCollection {
 	this.locationId = locationId;
     }
 
-    public boolean getIsDeleted() {
-	return isDeleted;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
-    public void setIsDeleted(boolean isDeleted) {
-	this.isDeleted = isDeleted;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
-    public String getDrugCode() {
+	public String getDrugCode() {
 	return drugCode;
     }
 
@@ -135,15 +135,15 @@ public class DrugCollection extends GenericCollection {
 	this.drugCode = drugCode;
     }
 
-    public void setDeleted(boolean isDeleted) {
-	this.isDeleted = isDeleted;
+    public void setDeleted(boolean discarded) {
+	this.discarded = discarded;
     }
 
     @Override
     public String toString() {
 	return "DrugCollection [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", description=" + description + ", strength=" + strength
-		+ ", genericNames=" + genericNames + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", isDeleted="
-		+ isDeleted + ", drugCode=" + drugCode + "]";
+		+ ", genericNames=" + genericNames + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", discarded="
+		+ discarded + ", drugCode=" + drugCode + "]";
     }
 
 }

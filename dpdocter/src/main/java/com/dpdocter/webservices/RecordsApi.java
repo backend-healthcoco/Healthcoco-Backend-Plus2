@@ -4,8 +4,10 @@ import java.io.File;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -87,53 +89,6 @@ public class RecordsApi {
 	return response;
     }
 
-    /*
-     * @Path(value = PathProxy.RecordsUrls.SEARCH_RECORD_DOCTOR_ID)
-     * 
-     * @GET public Response<Records> getRecords(@PathParam("doctorId") String
-     * doctorId) { if (DPDoctorUtils.anyStringEmpty(doctorId)) { throw new
-     * BusinessException(ServiceError.InvalidInput,
-     * "Doctor Id Cannot Be Empty"); } return searchRecords(doctorId, null,
-     * null, null); }
-     * 
-     * @Path(value = PathProxy.RecordsUrls.SEARCH_RECORD_DOCTOR_ID_CT)
-     * 
-     * @GET public Response<Records> getRecords(@PathParam("doctorId") String
-     * doctorId, @PathParam("createdTime") String createdTime) { if
-     * (DPDoctorUtils.anyStringEmpty(doctorId)) { throw new
-     * BusinessException(ServiceError.InvalidInput,
-     * "Doctor Id, Created Time Cannot Be Empty"); } return
-     * searchRecords(doctorId, null, null, createdTime); }
-     * 
-     * @Path(value = PathProxy.RecordsUrls.SEARCH_RECORD_ALL_FIELDS)
-     * 
-     * @GET public Response<Records> getRecords(@PathParam("doctorId") String
-     * doctorId, @PathParam("locationId") String locationId,
-     * 
-     * @PathParam("hospitalId") String hospitalId) { if
-     * (DPDoctorUtils.anyStringEmpty(doctorId)) { throw new
-     * BusinessException(ServiceError.InvalidInput,
-     * "Doctor Id, Location Id, Hospital Id Cannot Be Empty"); } return
-     * searchRecords(doctorId, locationId, hospitalId, null); }
-     * 
-     * @Path(value = PathProxy.RecordsUrls.SEARCH_RECORD_ALL_FIELDS_CT)
-     * 
-     * @GET public Response<Records> getRecords(@PathParam("doctorId") String
-     * doctorId, @PathParam("locationId") String locationId,
-     * 
-     * @PathParam("hospitalId") String hospitalId, @PathParam("createdTime")
-     * String createdTime) { if (DPDoctorUtils.anyStringEmpty(doctorId)) { throw
-     * new BusinessException(ServiceError.InvalidInput,
-     * "Doctor Id, Location Id, Hospital Id, and Created Time Cannot Be Empty");
-     * } return searchRecords(doctorId, locationId, hospitalId, createdTime); }
-     * 
-     * private Response<Records> searchRecords(String doctorId, String
-     * locationId, String hospitalId, String createdTime) { List<Records>
-     * records = recordsService.searchRecords(doctorId, locationId, hospitalId,
-     * createdTime); Response<Records> response = new Response<Records>();
-     * response.setDataList(records); return response; }
-     */
-
     @Path(value = PathProxy.RecordsUrls.GET_RECORD_COUNT)
     @GET
     public Response<Integer> getRecordCount(@PathParam("doctorId") String doctorId, @PathParam("patientId") String patientId,
@@ -197,7 +152,7 @@ public class RecordsApi {
     }
 
     @Path(value = PathProxy.RecordsUrls.DELETE_RECORD)
-    @GET
+    @DELETE
     public Response<Boolean> deleteRecords(@PathParam("recordId") String recordId) {
 	recordsService.deleteRecord(recordId);
 	Response<Boolean> response = new Response<Boolean>();
@@ -206,7 +161,7 @@ public class RecordsApi {
     }
 
     @Path(value = PathProxy.RecordsUrls.DELETE_TAG)
-    @GET
+    @DELETE
     public Response<Boolean> deleteTag(@PathParam("tagid") String tagid) {
 	recordsService.deleteTag(tagid);
 	Response<Boolean> response = new Response<Boolean>();
@@ -249,7 +204,7 @@ public class RecordsApi {
     }
 
     @Path(value = PathProxy.RecordsUrls.EDIT_RECORD)
-    @POST
+    @PUT
     public Response<Records> editRecords(RecordsEditRequest request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");

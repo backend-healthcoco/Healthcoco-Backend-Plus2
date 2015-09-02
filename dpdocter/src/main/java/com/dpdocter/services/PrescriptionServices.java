@@ -4,11 +4,6 @@ import java.util.List;
 
 import org.springframework.data.mongodb.repository.Query;
 
-import com.dpdocter.beans.DrugDirection;
-import com.dpdocter.beans.DrugDosage;
-import com.dpdocter.beans.DrugDurationUnit;
-import com.dpdocter.beans.DrugStrengthUnit;
-import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.request.DrugAddEditRequest;
 import com.dpdocter.request.DrugDirectionAddEditRequest;
@@ -54,16 +49,14 @@ public interface PrescriptionServices {
 
     Boolean deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId, String patientId);
 
-    List<Prescription> getPrescriptions(String doctorId, String hospitalId, String locationId, String patientId, String createdTime, boolean isOTPVarified,
-	    boolean isDeleted);
+    List<Prescription> getPrescriptions(int page, int size, String doctorId, String hospitalId, String locationId, String patientId, String updatedTime, boolean isOTPVarified,
+	    boolean discarded);
 
     List<Prescription> getPrescriptionsByIds(List<String> prescriptionIds);
 
     Prescription getPrescriptionById(String prescriptionId);
 
-    List<TemplateAddEditResponseDetails> getTemplates(String doctorId, String hospitalId, String locationId, String createdTime, boolean isDeleted);
-
-    List<DrugAddEditResponse> getDrugs(String doctorId, String hospitalId, String locationId, String createdTime, boolean isDeleted);
+    List<TemplateAddEditResponseDetails> getTemplates(int page, int size, String doctorId, String hospitalId, String locationId, String updatedTime, boolean discarded);
 
     @Query(value = "{'doctorId': ?0, 'patientId': ?1, 'locationId': ?2, 'hospitalId': ?3}", count = true)
     Integer getPrescriptionCount(String doctorId, String patientId, String locationId, String hospitalId);
@@ -71,27 +64,7 @@ public interface PrescriptionServices {
     TemplateAddEditResponseDetails addTemplateHandheld(TemplateAddEditRequest request);
 
     PrescriptionAddEditResponseDetails addPrescriptionHandheld(PrescriptionAddEditRequest request);
-
-    List<DrugType> getAllDrugType();
-
-    List<DrugType> getDrugType(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted);
-
-    List<DrugStrengthUnit> getAllDrugStrengthUnit();
-
-    List<DrugStrengthUnit> getDrugStrengthUnit(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted);
-
-    List<DrugDosage> getAllDrugDosage();
-
-    List<DrugDosage> getDrugDosage(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted);
-
-    List<DrugDurationUnit> getAllDrugDurationUnit();
-
-    List<DrugDurationUnit> getDrugDurationUnit(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted);
-
-    List<DrugDirection> getAllDrugDirection();
-
-    List<DrugDirection> getDrugDirection(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted);
-
+    
     DrugTypeAddEditResponse addDrugType(DrugTypeAddEditRequest request);
 
     DrugStrengthAddEditResponse addDrugStrength(DrugStrengthAddEditRequest request);
@@ -121,5 +94,7 @@ public interface PrescriptionServices {
     DrugDurationUnitAddEditResponse editDrugDurationUnit(DrugDurationUnitAddEditRequest request);
 
     Boolean deleteDrugDurationUnit(String drugDurationUnitId);
+
+	List<Object> getPrescriptionItems(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded);
 
 }

@@ -2,6 +2,7 @@ package com.dpdocter.services.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
@@ -155,6 +156,11 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	try {
 	    medicalCouncilCollections = new ArrayList<MedicalCouncilCollection>();
 	    BeanUtil.map(medicalCouncils, medicalCouncilCollections);
+	    for(MedicalCouncilCollection medicalCouncil : medicalCouncilCollections){
+	    	if(medicalCouncil.getId() == null){
+	    		medicalCouncil.setCreatedTime(new Date());
+	    	}
+	    }
 	    medicalCouncilRepository.save(medicalCouncilCollections);
 	    response = true;
 	} catch (Exception e) {
@@ -200,6 +206,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		if (!specialityFound) {
 		    SpecialityCollection specialityCollection = new SpecialityCollection();
 		    specialityCollection.setSpeciality(speciality);
+		    specialityCollection.setCreatedTime(new Date());
 		    specialityCollection = specialityRepository.save(specialityCollection);
 		    specialities.add(specialityCollection.getId());
 		}
@@ -371,6 +378,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	try {
 	    professionalMembershipCollections = new ArrayList<ProfessionalMembershipCollection>();
 	    BeanUtil.map(professionalMemberships, professionalMembershipCollections);
+	    for(ProfessionalMembershipCollection professionalMembership : professionalMembershipCollections){
+	    	if(professionalMembership.getId() == null)professionalMembership.setCreatedTime(new Date());
+	    }
 	    professionalMembershipRepository.save(professionalMembershipCollections);
 	    response = true;
 	} catch (Exception e) {
@@ -416,6 +426,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		if (!professionalMembershipFound) {
 		    ProfessionalMembershipCollection professionalMembershipCollection = new ProfessionalMembershipCollection();
 		    professionalMembershipCollection.setMembership(professionalMembership);
+		    professionalMembershipCollection.setCreatedTime(new Date());
 		    professionalMembershipCollection = professionalMembershipRepository.save(professionalMembershipCollection);
 		    professionalMemberships.add(professionalMembershipCollection.getId());
 		}
@@ -440,6 +451,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    if (doctorClinicProfileCollection == null)
 		doctorClinicProfileCollection = new DoctorClinicProfileCollection();
 	    doctorClinicProfileCollection.setAppointmentBookingNumber(request.getAppointmentBookingNumber());
+	    doctorClinicProfileCollection.setUserLocationId(request.getUserLocationId());
+	    doctorClinicProfileCollection.setCreatedTime(new Date());
 	    doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 	    response = true;
 	} catch (Exception e) {
@@ -457,6 +470,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(request.getUserLocationId());
 	    if (doctorClinicProfileCollection == null)
 		doctorClinicProfileCollection = new DoctorClinicProfileCollection();
+	    doctorClinicProfileCollection.setUserLocationId(request.getUserLocationId());
+	    doctorClinicProfileCollection.setCreatedTime(new Date());
 	    doctorClinicProfileCollection.setWorkingSchedules(request.getWorkingSchedules());
 	    doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 	    response = true;
@@ -475,6 +490,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(request.getUserLocationId());
 	    if (doctorClinicProfileCollection == null)
 		doctorClinicProfileCollection = new DoctorClinicProfileCollection();
+	    doctorClinicProfileCollection.setUserLocationId(request.getUserLocationId());
+	    doctorClinicProfileCollection.setCreatedTime(new Date());
 	    doctorClinicProfileCollection.setConsultationFee(request.getConsultationFee());
 	    doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 	    response = true;
@@ -493,6 +510,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(request.getUserLocationId());
 	    if (doctorClinicProfileCollection == null)
 		doctorClinicProfileCollection = new DoctorClinicProfileCollection();
+	    doctorClinicProfileCollection.setUserLocationId(request.getUserLocationId());
+	    doctorClinicProfileCollection.setCreatedTime(new Date());
 	    doctorClinicProfileCollection.setAppointmentSlot(request.getAppointmentSlot());
 	    doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 	    response = true;

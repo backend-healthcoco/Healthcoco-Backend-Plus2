@@ -8,8 +8,6 @@ public class RecordsEditRequest {
 
     private String doctorId;
 
-    private Long createdDate;
-
     private String description;
 
     private FileDetails fileDetails;
@@ -42,14 +40,6 @@ public class RecordsEditRequest {
 	this.description = description;
     }
 
-    public Long getCreatedDate() {
-	return createdDate;
-    }
-
-    public void setCreatedDate(Long createdDate) {
-	this.createdDate = createdDate;
-    }
-
     public FileDetails getFileDetails() {
 	return fileDetails;
     }
@@ -75,9 +65,9 @@ public class RecordsEditRequest {
     }
 
     @Override
-    public String toString() {
-	return "RecordsEditRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", createdDate=" + createdDate + ", description=" + description
-		+ ", fileDetails=" + fileDetails + ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
-    }
+	public String toString() {
+		return "RecordsEditRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", description=" + description
+				+ ", fileDetails=" + fileDetails + ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
+	}
 
 }

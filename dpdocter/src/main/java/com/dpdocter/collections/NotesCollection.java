@@ -22,7 +22,7 @@ public class NotesCollection extends GenericCollection {
     private String hospitalId;
 
     @Field
-    private boolean isDeleted;
+    private Boolean discarded;
 
     @Field
     private boolean inHistory = false;
@@ -67,13 +67,13 @@ public class NotesCollection extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
-    public boolean isDeleted() {
-	return isDeleted;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
-    public void setDeleted(boolean isDeleted) {
-	this.isDeleted = isDeleted;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
     public boolean isInHistory() {
 	return inHistory;
@@ -86,7 +86,7 @@ public class NotesCollection extends GenericCollection {
     @Override
     public String toString() {
 	return "NotesCollection [id=" + id + ", note=" + note + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ ", isDeleted=" + isDeleted + ", inHistory=" + inHistory + "]";
+		+ ", discarded=" + discarded + ", inHistory=" + inHistory + "]";
     }
 
 }

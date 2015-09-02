@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,8 @@ import com.dpdocter.collections.DrugStrengthUnitCollection;
 import com.dpdocter.collections.DrugTypeCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.TemplateCollection;
+import com.dpdocter.enums.PrescriptionItems;
+import com.dpdocter.enums.Range;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -60,6 +63,7 @@ import com.dpdocter.response.PrescriptionAddEditResponseDetails;
 import com.dpdocter.response.TemplateAddEditResponse;
 import com.dpdocter.response.TemplateAddEditResponseDetails;
 import com.dpdocter.services.PrescriptionServices;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.PrescriptionUtils;
 
@@ -97,7 +101,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	UUID drugCode = UUID.randomUUID();
 	drugCollection.setDrugCode(drugCode.toString());
 	try {
-	    drugCollection.setCreatedTime(new Date());
+		Date createdTime = new Date();
+	    drugCollection.setCreatedTime(createdTime);
 	    drugCollection = drugRepository.save(drugCollection);
 	    response = new DrugAddEditResponse();
 	    BeanUtil.map(drugCollection, response);
@@ -114,7 +119,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	DrugCollection drugCollection = new DrugCollection();
 	BeanUtil.map(request, drugCollection);
 	try {
-	    drugCollection.setCreatedTime(new Date());
 	    drugCollection = drugRepository.save(drugCollection);
 	    response = new DrugAddEditResponse();
 	    BeanUtil.map(drugCollection, response);
@@ -135,7 +139,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		if (drugCollection.getDoctorId() != null && drugCollection.getHospitalId() != null && drugCollection.getLocationId() != null) {
 		    if (drugCollection.getDoctorId().equals(doctorId) && drugCollection.getHospitalId().equals(hospitalId)
 			    && drugCollection.getLocationId().equals(locationId)) {
-			drugCollection.setIsDeleted(true);
+			drugCollection.setDiscarded(true);
 			drugCollection = drugRepository.save(drugCollection);
 			response = true;
 		    } else {
@@ -161,9 +165,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	try {
 	    drugCollection = drugRepository.findOne(drugId);
 	    if (drugCollection != null) {
-		drugCollection.setIsDeleted(true);
-		drugCollection = drugRepository.save(drugCollection);
-		response = true;
+	    	drugCollection.setDiscarded(true);
+	    	drugCollection = drugRepository.save(drugCollection);
+	    	response = true;
 	    } else {
 		throw new BusinessException(ServiceError.NotFound, "Drug Not Found");
 	    }
@@ -198,7 +202,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	TemplateCollection templateCollection = new TemplateCollection();
 	BeanUtil.map(request, templateCollection);
 	try {
-	    templateCollection.setCreatedTime(new Date());
+		Date createdTime = new Date();
+	    templateCollection.setCreatedTime(createdTime);
 	    templateCollection = templateRepository.save(templateCollection);
 	    response = new TemplateAddEditResponse();
 	    BeanUtil.map(templateCollection, response);
@@ -215,7 +220,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	TemplateCollection templateCollection = new TemplateCollection();
 	BeanUtil.map(request, templateCollection);
 	try {
-	    templateCollection.setCreatedTime(new Date());
 	    templateCollection = templateRepository.save(templateCollection);
 	    response = new TemplateAddEditResponse();
 	    BeanUtil.map(templateCollection, response);
@@ -236,7 +240,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		if (templateCollection.getDoctorId() != null && templateCollection.getHospitalId() != null && templateCollection.getLocationId() != null) {
 		    if (templateCollection.getDoctorId().equals(doctorId) && templateCollection.getHospitalId().equals(hospitalId)
 			    && templateCollection.getLocationId().equals(locationId)) {
-			templateCollection.setIsDeleted(true);
+		    
+			templateCollection.setDiscarded(true);
 			templateCollection = templateRepository.save(templateCollection);
 			response = true;
 		    } else {
@@ -289,8 +294,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	PrescriptionCollection prescriptionCollection = new PrescriptionCollection();
 	BeanUtil.map(request, prescriptionCollection);
 	try {
-	    prescriptionCollection.setCreatedTime(new Date());
-	    prescriptionCollection.setCreatedDate(prescriptionCollection.getCreatedTime().getTime());
+		Date createdTime = new Date();
+	    prescriptionCollection.setCreatedTime(createdTime);
 	    prescriptionCollection.setPrescriptionCode(PrescriptionUtils.generatePrescriptionCode());
 	    prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 	    response = new PrescriptionAddEditResponse();
@@ -308,8 +313,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	PrescriptionCollection prescriptionCollection = new PrescriptionCollection();
 	BeanUtil.map(request, prescriptionCollection);
 	try {
-	    prescriptionCollection.setCreatedTime(new Date());
-	    prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
+		prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 	    response = new PrescriptionAddEditResponse();
 	    BeanUtil.map(prescriptionCollection, response);
 	} catch (Exception e) {
@@ -330,7 +334,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			&& prescriptionCollection.getLocationId() != null && prescriptionCollection.getPatientId() != null) {
 		    if (prescriptionCollection.getDoctorId().equals(doctorId) && prescriptionCollection.getHospitalId().equals(hospitalId)
 			    && prescriptionCollection.getLocationId().equals(locationId) && prescriptionCollection.getPatientId().equals(patientId)) {
-			prescriptionCollection.setIsDeleted(true);
+			prescriptionCollection.setDiscarded(true);
 			prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 			response = true;
 		    } else {
@@ -350,41 +354,35 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
-    public List<Prescription> getPrescriptions(String doctorId, String hospitalId, String locationId, String patientId, String createdTime,
-	    boolean isOTPVerified, boolean isDeleted) {
+    public List<Prescription> getPrescriptions(int page, int size, String doctorId, String hospitalId, String locationId, String patientId, String updatedTime,
+	    boolean isOTPVerified, boolean discarded) {
 	List<PrescriptionCollection> prescriptionCollections = null;
 	List<Prescription> prescriptions = null;
 	try {
-	    if (StringUtils.isEmpty(createdTime)) {
+	    if (StringUtils.isEmpty(updatedTime)) {
 		if (!isOTPVerified) {
-		    if (isDeleted)
-			prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId, new Sort(
-				Sort.Direction.DESC, "createdDate"));
+		    if (discarded)
+			prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
 		    else
-			prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId, isDeleted, new Sort(
-				Sort.Direction.DESC, "createdDate"));
+			prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId, discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
 		} else {
-		    if (isDeleted)
-			prescriptionCollections = prescriptionRepository.getPrescription(patientId, new Sort(Sort.Direction.DESC, "createdDate"));
+		    if (discarded)
+			prescriptionCollections = prescriptionRepository.getPrescription(patientId, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
 		    else
-			prescriptionCollections = prescriptionRepository.getPrescription(patientId, false, new Sort(Sort.Direction.DESC, "createdDate"));
+			prescriptionCollections = prescriptionRepository.getPrescription(patientId, false, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
 		}
 	    } else {
-		long createdTimestamp = Long.parseLong(createdTime);
+		long createdTimestamp = Long.parseLong(updatedTime);
 		if (!isOTPVerified) {
-		    if (isDeleted)
-			prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId,
-				new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "createdDate"));
+		    if (discarded)
+			prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId, new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
 		    else
-			prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId,
-				new Date(createdTimestamp), isDeleted, new Sort(Sort.Direction.DESC, "createdDate"));
+			prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId, new Date(createdTimestamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
 		} else {
-		    if (isDeleted)
-			prescriptionCollections = prescriptionRepository.getPrescription(patientId, new Date(createdTimestamp), new Sort(Sort.Direction.DESC,
-				"createdDate"));
+		    if (discarded)
+			prescriptionCollections = prescriptionRepository.getPrescription(patientId, new Date(createdTimestamp), new Sort(Sort.Direction.DESC,"createdTime"), size>0 ? new PageRequest(page, size):null);
 		    else
-			prescriptionCollections = prescriptionRepository.getPrescription(patientId, new Date(createdTimestamp), isDeleted, new Sort(
-				Sort.Direction.DESC, "createdDate"));
+			prescriptionCollections = prescriptionRepository.getPrescription(patientId, new Date(createdTimestamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
 		}
 	    }
 
@@ -465,39 +463,34 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
-    public List<TemplateAddEditResponseDetails> getTemplates(String doctorId, String hospitalId, String locationId, String createdTime, boolean isDeleted) {
+    public List<TemplateAddEditResponseDetails> getTemplates(int page, int size, String doctorId, String hospitalId, String locationId, String updatedTime, boolean discarded) {
 	List<TemplateAddEditResponseDetails> response = null;
 	List<TemplateCollection> templateCollections = null;
 	try {
-	    if (DPDoctorUtils.anyStringEmpty(createdTime)) {
+	    if (DPDoctorUtils.anyStringEmpty(updatedTime)) {
 		if (hospitalId == null && locationId == null) {
-		    if (isDeleted)
-			templateCollections = templateRepository.getTemplates(doctorId, new Sort(Sort.Direction.DESC, "createdTime"));
+		    if (discarded)
+			templateCollections = templateRepository.getTemplates(doctorId, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
 		    else
-			templateCollections = templateRepository.getTemplates(doctorId, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"));
+			templateCollections = templateRepository.getTemplates(doctorId, discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
 		} else {
-		    if (isDeleted)
-			templateCollections = templateRepository.getTemplates(doctorId, hospitalId, locationId, new Sort(Sort.Direction.DESC, "createdTime"));
+		    if (discarded)
+			templateCollections = templateRepository.getTemplates(doctorId, hospitalId, locationId, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
 		    else
-			templateCollections = templateRepository.getTemplates(doctorId, hospitalId, locationId, isDeleted, new Sort(Sort.Direction.DESC,
-				"createdTime"));
+			templateCollections = templateRepository.getTemplates(doctorId, hospitalId, locationId, discarded, new Sort(Sort.Direction.DESC,"updatedTime"), size>0 ? new PageRequest(page, size):null);
 		}
 	    } else {
-		long createdTimeStamp = Long.parseLong(createdTime);
+		long createdTimeStamp = Long.parseLong(updatedTime);
 		if (hospitalId == null && locationId == null) {
-		    if (isDeleted)
-			templateCollections = templateRepository.getTemplates(doctorId, new Date(createdTimeStamp),
-				new Sort(Sort.Direction.DESC, "createdTime"));
+		    if (discarded)
+			templateCollections = templateRepository.getTemplates(doctorId, new Date(createdTimeStamp),new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
 		    else
-			templateCollections = templateRepository.getTemplates(doctorId, new Date(createdTimeStamp), isDeleted, new Sort(Sort.Direction.DESC,
-				"createdTime"));
+			templateCollections = templateRepository.getTemplates(doctorId, new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC,"updatedTime"), size>0 ? new PageRequest(page, size):null);
 		} else {
-		    if (isDeleted)
-			templateCollections = templateRepository.getTemplates(doctorId, hospitalId, locationId, new Date(createdTimeStamp), new Sort(
-				Sort.Direction.DESC, "createdTime"));
+		    if (discarded)
+			templateCollections = templateRepository.getTemplates(doctorId, hospitalId, locationId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
 		    else
-			templateCollections = templateRepository.getTemplates(doctorId, hospitalId, locationId, new Date(createdTimeStamp), isDeleted,
-				new Sort(Sort.Direction.DESC, "createdTime"));
+			templateCollections = templateRepository.getTemplates(doctorId, hospitalId, locationId, new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
 		}
 	    }
 	    if (!templateCollections.isEmpty()) {
@@ -525,54 +518,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 	return response;
     }
-
-    @Override
-    public List<DrugAddEditResponse> getDrugs(String doctorId, String hospitalId, String locationId, String createdTime, boolean isDeleted) {
-	List<DrugAddEditResponse> response = null;
-	List<DrugCollection> drugCollections = null;
-	try {
-	    if (DPDoctorUtils.anyStringEmpty(createdTime)) {
-		if (hospitalId == null && locationId == null) {
-		    if (isDeleted)
-			drugCollections = drugRepository.getDrugs(doctorId, new Sort(Sort.Direction.DESC, "createdTime"));
-		    else
-			drugCollections = drugRepository.getDrugs(doctorId, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"));
-		} else {
-		    if (isDeleted)
-			drugCollections = drugRepository.getDrugs(doctorId, hospitalId, locationId, new Sort(Sort.Direction.DESC, "createdTime"));
-		    else
-			drugCollections = drugRepository.getDrugs(doctorId, hospitalId, locationId, isDeleted, new Sort(Sort.Direction.DESC, "createdTime"));
-		}
-	    } else {
-		long createdTimeStamp = Long.parseLong(createdTime);
-		if (hospitalId == null && locationId == null) {
-		    if (isDeleted)
-			drugCollections = drugRepository.getDrugs(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
-		    else
-			drugCollections = drugRepository
-				.getDrugs(doctorId, new Date(createdTimeStamp), isDeleted, new Sort(Sort.Direction.DESC, "createdTime"));
-		} else {
-		    if (isDeleted)
-			drugCollections = drugRepository.getDrugs(doctorId, hospitalId, locationId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
-				"createdTime"));
-		    else
-			drugCollections = drugRepository.getDrugs(doctorId, hospitalId, locationId, new Date(createdTimeStamp), isDeleted, new Sort(
-				Sort.Direction.DESC, "createdTime"));
-		}
-	    }
-	    if (!drugCollections.isEmpty()) {
-		response = new ArrayList<DrugAddEditResponse>();
-		BeanUtil.map(drugCollections, response);
-	    } else {
-		throw new BusinessException(ServiceError.Unknown, "No Drugs Found");
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
-	}
-	return response;
-    }
-
+    
     @Override
     public Integer getPrescriptionCount(String doctorId, String patientId, String locationId, String hospitalId) {
 	Integer prescriptionCount = 0;
@@ -632,340 +578,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
-    public List<DrugType> getAllDrugType() {
-	List<DrugType> response = null;
-	List<DrugTypeCollection> drugTypeCollections = null;
-	try {
-	    drugTypeCollections = drugTypeRepository.findAll();
-	    if (drugTypeCollections != null) {
-		response = new ArrayList<DrugType>();
-		BeanUtil.map(drugTypeCollections, response);
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Types");
-	}
-	return response;
-    }
-
-    @Override
-    public List<DrugType> getDrugType(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted) {
-
-	List<DrugType> response = null;
-	List<DrugTypeCollection> drugTypeCollections = null;
-	try {
-	    if (DPDoctorUtils.anyStringEmpty(createdTime)) {
-		if (hospitalId == null && locationId == null && doctorId == null) {
-		    if (isDeleted)
-			drugTypeCollections = drugTypeRepository.findAll(new Sort(Sort.Direction.DESC, "createdTime"));
-		    else
-			drugTypeCollections = drugTypeRepository.getDrugType(isDeleted, new Sort(Sort.Direction.DESC, "createdTime"));
-		} else {
-		    if (isDeleted)
-			drugTypeCollections = drugTypeRepository.getDrugType(doctorId, hospitalId, locationId, new Sort(Sort.Direction.DESC, "createdTime"));
-		    else
-			drugTypeCollections = drugTypeRepository.getDrugType(doctorId, hospitalId, locationId, isDeleted, new Sort(Sort.Direction.DESC,
-				"createdTime"));
-		}
-	    } else {
-		long createdTimeStamp = Long.parseLong(createdTime);
-		if (hospitalId == null && locationId == null && doctorId == null) {
-		    if (isDeleted)
-			drugTypeCollections = drugTypeRepository.getDrugType(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
-		    else
-			drugTypeCollections = drugTypeRepository.getDrugType(new Date(createdTimeStamp), isDeleted,
-				new Sort(Sort.Direction.DESC, "createdTime"));
-		} else {
-		    if (isDeleted)
-			drugTypeCollections = drugTypeRepository.getDrugType(doctorId, hospitalId, locationId, new Date(createdTimeStamp), new Sort(
-				Sort.Direction.DESC, "createdTime"));
-		    else
-			drugTypeCollections = drugTypeRepository.getDrugType(doctorId, hospitalId, locationId, new Date(createdTimeStamp), isDeleted, new Sort(
-				Sort.Direction.DESC, "createdTime"));
-		}
-
-	    }
-
-	    if (drugTypeCollections != null) {
-		response = new ArrayList<DrugType>();
-		BeanUtil.map(drugTypeCollections, response);
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Types");
-	}
-	return response;
-    }
-
-    @Override
-    public List<DrugStrengthUnit> getAllDrugStrengthUnit() {
-	List<DrugStrengthUnit> response = null;
-	List<DrugStrengthUnitCollection> drugStrengthUnitCollections = null;
-	try {
-	    drugStrengthUnitCollections = drugStrengthRepository.findAll();
-	    if (drugStrengthUnitCollections != null) {
-		response = new ArrayList<DrugStrengthUnit>();
-		BeanUtil.map(drugStrengthUnitCollections, response);
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Strength Units");
-	}
-	return response;
-    }
-
-    @Override
-    public List<DrugStrengthUnit> getDrugStrengthUnit(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted) {
-	List<DrugStrengthUnit> response = null;
-	List<DrugStrengthUnitCollection> drugStrengthUnitCollections = null;
-	try {
-	    if (DPDoctorUtils.anyStringEmpty(createdTime)) {
-		if (hospitalId == null && locationId == null && doctorId == null) {
-		    if (isDeleted)
-			drugStrengthUnitCollections = drugStrengthRepository.findAll(new Sort(Sort.Direction.DESC, "createdTime"));
-		    else
-			drugStrengthUnitCollections = drugStrengthRepository.getDrugStrengthUnit(isDeleted, new Sort(Sort.Direction.DESC, "createdTime"));
-		} else {
-		    if (isDeleted)
-			drugStrengthUnitCollections = drugStrengthRepository.getDrugStrengthUnit(doctorId, hospitalId, locationId, new Sort(
-				Sort.Direction.DESC, "createdTime"));
-		    else
-			drugStrengthUnitCollections = drugStrengthRepository.getDrugStrengthUnit(doctorId, hospitalId, locationId, isDeleted, new Sort(
-				Sort.Direction.DESC, "createdTime"));
-		}
-	    } else {
-		long createdTimeStamp = Long.parseLong(createdTime);
-		if (hospitalId == null && locationId == null && doctorId == null) {
-		    if (isDeleted)
-			drugStrengthUnitCollections = drugStrengthRepository.getDrugStrengthUnit(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
-				"createdTime"));
-		    else
-			drugStrengthUnitCollections = drugStrengthRepository.getDrugStrengthUnit(new Date(createdTimeStamp), isDeleted, new Sort(
-				Sort.Direction.DESC, "createdTime"));
-		} else {
-		    if (isDeleted)
-			drugStrengthUnitCollections = drugStrengthRepository.getDrugStrengthUnit(doctorId, hospitalId, locationId, new Date(createdTimeStamp),
-				new Sort(Sort.Direction.DESC, "createdTime"));
-		    else
-			drugStrengthUnitCollections = drugStrengthRepository.getDrugStrengthUnit(doctorId, hospitalId, locationId, new Date(createdTimeStamp),
-				isDeleted, new Sort(Sort.Direction.DESC, "createdTime"));
-		}
-
-	    }
-
-	    if (drugStrengthUnitCollections != null) {
-		response = new ArrayList<DrugStrengthUnit>();
-		BeanUtil.map(drugStrengthUnitCollections, response);
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Strength Unit");
-	}
-	return response;
-
-    }
-
-    @Override
-    public List<DrugDosage> getAllDrugDosage() {
-	List<DrugDosage> response = null;
-	List<DrugDosageCollection> drugDosageCollections = null;
-	try {
-	    drugDosageCollections = drugDosageRepository.findAll();
-	    if (drugDosageCollections != null) {
-		response = new ArrayList<DrugDosage>();
-		BeanUtil.map(drugDosageCollections, response);
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Dosage");
-	}
-	return response;
-    }
-
-    @Override
-    public List<DrugDosage> getDrugDosage(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted) {
-	List<DrugDosage> response = null;
-	List<DrugDosageCollection> drugDosageCollections = null;
-	try {
-
-	    if (DPDoctorUtils.anyStringEmpty(createdTime)) {
-		if (hospitalId == null && locationId == null && doctorId == null) {
-		    if (isDeleted)
-			drugDosageCollections = drugDosageRepository.findAll(new Sort(Sort.Direction.DESC, "createdTime"));
-		    else
-			drugDosageCollections = drugDosageRepository.getDrugDosage(isDeleted, new Sort(Sort.Direction.DESC, "createdTime"));
-		} else {
-		    if (isDeleted)
-			drugDosageCollections = drugDosageRepository.getDrugDosage(doctorId, hospitalId, locationId, new Sort(Sort.Direction.DESC,
-				"createdTime"));
-		    else
-			drugDosageCollections = drugDosageRepository.getDrugDosage(doctorId, hospitalId, locationId, isDeleted, new Sort(Sort.Direction.DESC,
-				"createdTime"));
-		}
-	    } else {
-		long createdTimeStamp = Long.parseLong(createdTime);
-		if (hospitalId == null && locationId == null && doctorId == null) {
-		    if (isDeleted)
-			drugDosageCollections = drugDosageRepository.getDrugDosage(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
-		    else
-			drugDosageCollections = drugDosageRepository.getDrugDosage(new Date(createdTimeStamp), isDeleted, new Sort(Sort.Direction.DESC,
-				"createdTime"));
-		} else {
-		    if (isDeleted)
-			drugDosageCollections = drugDosageRepository.getDrugDosage(doctorId, hospitalId, locationId, new Date(createdTimeStamp), new Sort(
-				Sort.Direction.DESC, "createdTime"));
-		    else
-			drugDosageCollections = drugDosageRepository.getDrugDosage(doctorId, hospitalId, locationId, new Date(createdTimeStamp), isDeleted,
-				new Sort(Sort.Direction.DESC, "createdTime"));
-		}
-
-	    }
-
-	    if (drugDosageCollections != null) {
-		response = new ArrayList<DrugDosage>();
-		BeanUtil.map(drugDosageCollections, response);
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Custom Drug Dosage");
-	}
-	return response;
-    }
-
-    @Override
-    public List<DrugDurationUnit> getAllDrugDurationUnit() {
-	List<DrugDurationUnit> response = null;
-	List<DrugDurationUnitCollection> drugDurationUnitCollections = null;
-	try {
-	    drugDurationUnitCollections = drugDurationUnitRepository.findAll();
-	    if (drugDurationUnitCollections != null) {
-		response = new ArrayList<DrugDurationUnit>();
-		BeanUtil.map(drugDurationUnitCollections, response);
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Duration Units");
-	}
-	return response;
-    }
-
-    @Override
-    public List<DrugDurationUnit> getDrugDurationUnit(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted) {
-	List<DrugDurationUnit> response = null;
-	List<DrugDurationUnitCollection> drugDurationUnitCollections = null;
-	try {
-	    if (DPDoctorUtils.anyStringEmpty(createdTime)) {
-		if (hospitalId == null && locationId == null && doctorId == null) {
-		    if (isDeleted)
-			drugDurationUnitCollections = drugDurationUnitRepository.findAll(new Sort(Sort.Direction.DESC, "createdTime"));
-		    else
-			drugDurationUnitCollections = drugDurationUnitRepository.getDrugDurationUnit(isDeleted, new Sort(Sort.Direction.DESC, "createdTime"));
-		} else {
-		    if (isDeleted)
-			drugDurationUnitCollections = drugDurationUnitRepository.getDrugDurationUnit(doctorId, hospitalId, locationId, new Sort(
-				Sort.Direction.DESC, "createdTime"));
-		    else
-			drugDurationUnitCollections = drugDurationUnitRepository.getDrugDurationUnit(doctorId, hospitalId, locationId, isDeleted, new Sort(
-				Sort.Direction.DESC, "createdTime"));
-		}
-	    } else {
-		long createdTimeStamp = Long.parseLong(createdTime);
-		if (hospitalId == null && locationId == null && doctorId == null) {
-		    if (isDeleted)
-			drugDurationUnitCollections = drugDurationUnitRepository.getDrugDurationUnit(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
-				"createdTime"));
-		    else
-			drugDurationUnitCollections = drugDurationUnitRepository.getDrugDurationUnit(new Date(createdTimeStamp), isDeleted, new Sort(
-				Sort.Direction.DESC, "createdTime"));
-		} else {
-		    if (isDeleted)
-			drugDurationUnitCollections = drugDurationUnitRepository.getDrugDurationUnit(doctorId, hospitalId, locationId, new Date(
-				createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
-		    else
-			drugDurationUnitCollections = drugDurationUnitRepository.getDrugDurationUnit(doctorId, hospitalId, locationId, new Date(
-				createdTimeStamp), isDeleted, new Sort(Sort.Direction.DESC, "createdTime"));
-		}
-
-	    }
-
-	    if (drugDurationUnitCollections != null) {
-		response = new ArrayList<DrugDurationUnit>();
-		BeanUtil.map(drugDurationUnitCollections, response);
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Duration Units");
-	}
-	return response;
-    }
-
-    @Override
-    public List<DrugDirection> getAllDrugDirection() {
-	List<DrugDirection> response = null;
-	List<DrugDirectionCollection> drugDirectionCollections = null;
-	try {
-	    drugDirectionCollections = drugDirectionRepository.findAll();
-	    if (drugDirectionCollections != null) {
-		response = new ArrayList<DrugDirection>();
-		BeanUtil.map(drugDirectionCollections, response);
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Directions");
-	}
-	return response;
-    }
-
-    @Override
-    public List<DrugDirection> getDrugDirection(String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted) {
-	List<DrugDirection> response = null;
-	List<DrugDirectionCollection> drugDirectionCollections = null;
-	try {
-	    if (DPDoctorUtils.anyStringEmpty(createdTime)) {
-		if (hospitalId == null && locationId == null && doctorId == null) {
-		    if (isDeleted)
-			drugDirectionCollections = drugDirectionRepository.findAll(new Sort(Sort.Direction.DESC, "createdTime"));
-		    else
-			drugDirectionCollections = drugDirectionRepository.getDrugDirection(isDeleted, new Sort(Sort.Direction.DESC, "createdTime"));
-		} else {
-		    if (isDeleted)
-			drugDirectionCollections = drugDirectionRepository.getDrugDirection(doctorId, hospitalId, locationId, new Sort(Sort.Direction.DESC,
-				"createdTime"));
-		    else
-			drugDirectionCollections = drugDirectionRepository.getDrugDirection(doctorId, hospitalId, locationId, isDeleted, new Sort(
-				Sort.Direction.DESC, "createdTime"));
-		}
-	    } else {
-		long createdTimeStamp = Long.parseLong(createdTime);
-		if (hospitalId == null && locationId == null && doctorId == null) {
-		    if (isDeleted)
-			drugDirectionCollections = drugDirectionRepository.getDrugDirection(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
-				"createdTime"));
-		    else
-			drugDirectionCollections = drugDirectionRepository.getDrugDirection(new Date(createdTimeStamp), isDeleted, new Sort(
-				Sort.Direction.DESC, "createdTime"));
-		} else {
-		    if (isDeleted)
-			drugDirectionCollections = drugDirectionRepository.getDrugDirection(doctorId, hospitalId, locationId, new Date(createdTimeStamp),
-				new Sort(Sort.Direction.DESC, "createdTime"));
-		    else
-			drugDirectionCollections = drugDirectionRepository.getDrugDirection(doctorId, hospitalId, locationId, new Date(createdTimeStamp),
-				isDeleted, new Sort(Sort.Direction.DESC, "createdTime"));
-		}
-
-	    }
-	    if (drugDirectionCollections != null) {
-		response = new ArrayList<DrugDirection>();
-		BeanUtil.map(drugDirectionCollections, response);
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Custom Getting Drug Directions");
-	}
-	return response;
-    }
-
-    @Override
     public DrugTypeAddEditResponse addDrugType(DrugTypeAddEditRequest request) {
 	DrugTypeAddEditResponse response = null;
 
@@ -992,7 +604,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	DrugTypeCollection drugTypeCollection = new DrugTypeCollection();
 	BeanUtil.map(request, drugTypeCollection);
 	try {
-	    drugTypeCollection.setCreatedTime(new Date());
 	    drugTypeCollection = drugTypeRepository.save(drugTypeCollection);
 	    response = new DrugTypeAddEditResponse();
 	    BeanUtil.map(drugTypeCollection, response);
@@ -1012,9 +623,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	try {
 	    drugTypeCollection = drugTypeRepository.findOne(drugTypeId);
 	    if (drugTypeCollection != null) {
-		drugTypeCollection.setIsDeleted(true);
-		drugTypeCollection = drugTypeRepository.save(drugTypeCollection);
-		response = true;
+	    	drugTypeCollection.setDiscarded(true);
+	    	drugTypeCollection = drugTypeRepository.save(drugTypeCollection);
+	    	response = true;
 	    } else {
 		throw new BusinessException(ServiceError.NotFound, "Drug Type Not Found");
 	    }
@@ -1052,7 +663,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	DrugStrengthUnitCollection drugStrengthUnitCollection = new DrugStrengthUnitCollection();
 	BeanUtil.map(request, drugStrengthUnitCollection);
 	try {
-	    drugStrengthUnitCollection.setCreatedTime(new Date());
 	    drugStrengthUnitCollection = drugStrengthRepository.save(drugStrengthUnitCollection);
 	    response = new DrugStrengthAddEditResponse();
 	    BeanUtil.map(drugStrengthUnitCollection, response);
@@ -1071,7 +681,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	try {
 	    drugStrengthCollection = drugStrengthRepository.findOne(drugStrengthId);
 	    if (drugStrengthCollection != null) {
-		drugStrengthCollection.setIsDeleted(true);
+		drugStrengthCollection.setDiscarded(true);
 		drugStrengthCollection = drugStrengthRepository.save(drugStrengthCollection);
 		response = true;
 	    } else {
@@ -1111,7 +721,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	DrugDosageCollection drugDosageCollection = new DrugDosageCollection();
 	BeanUtil.map(request, drugDosageCollection);
 	try {
-	    drugDosageCollection.setCreatedTime(new Date());
 	    drugDosageCollection = drugDosageRepository.save(drugDosageCollection);
 	    response = new DrugDosageAddEditResponse();
 	    BeanUtil.map(drugDosageCollection, response);
@@ -1129,7 +738,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	try {
 	    drugDosageCollection = drugDosageRepository.findOne(drugDosageId);
 	    if (drugDosageCollection != null) {
-		drugDosageCollection.setIsDeleted(true);
+		drugDosageCollection.setDiscarded(true);
 		drugDosageCollection = drugDosageRepository.save(drugDosageCollection);
 		response = true;
 	    } else {
@@ -1169,7 +778,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	DrugDirectionCollection drugDirectionCollection = new DrugDirectionCollection();
 	BeanUtil.map(request, drugDirectionCollection);
 	try {
-	    drugDirectionCollection.setCreatedTime(new Date());
 	    drugDirectionCollection = drugDirectionRepository.save(drugDirectionCollection);
 	    response = new DrugDirectionAddEditResponse();
 	    BeanUtil.map(drugDirectionCollection, response);
@@ -1188,7 +796,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	try {
 	    drugDirectionCollection = drugDirectionRepository.findOne(drugDirectionId);
 	    if (drugDirectionCollection != null) {
-		drugDirectionCollection.setIsDeleted(true);
+		drugDirectionCollection.setDiscarded(true);
 		drugDirectionCollection = drugDirectionRepository.save(drugDirectionCollection);
 		response = true;
 	    } else {
@@ -1209,7 +817,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	DrugDurationUnitCollection drugDurationUnitCollection = new DrugDurationUnitCollection();
 	BeanUtil.map(request, drugDurationUnitCollection);
 	try {
-	    drugDurationUnitCollection.setCreatedTime(new Date());
+		drugDurationUnitCollection.setCreatedTime(new Date());
 	    drugDurationUnitCollection = drugDurationUnitRepository.save(drugDurationUnitCollection);
 	    response = new DrugDurationUnitAddEditResponse();
 	    BeanUtil.map(drugDurationUnitCollection, response);
@@ -1228,7 +836,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	DrugDurationUnitCollection drugDurationUnitCollection = new DrugDurationUnitCollection();
 	BeanUtil.map(request, drugDurationUnitCollection);
 	try {
-	    drugDurationUnitCollection.setCreatedTime(new Date());
 	    drugDurationUnitCollection = drugDurationUnitRepository.save(drugDurationUnitCollection);
 	    response = new DrugDurationUnitAddEditResponse();
 	    BeanUtil.map(drugDurationUnitCollection, response);
@@ -1247,9 +854,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	try {
 	    drugDurationUnitCollection = drugDurationUnitRepository.findOne(drugDurationUnitId);
 	    if (drugDurationUnitCollection != null) {
-		drugDurationUnitCollection.setIsDeleted(true);
-		drugDurationUnitCollection = drugDurationUnitRepository.save(drugDurationUnitCollection);
-		response = true;
+	    	drugDurationUnitCollection.setDiscarded(true);
+	    	drugDurationUnitCollection = drugDurationUnitRepository.save(drugDurationUnitCollection);
+	    	response = true;
 	    } else {
 		throw new BusinessException(ServiceError.NotFound, "Drug Duration Unit Not Found");
 	    }
@@ -1291,4 +898,615 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	return prescription;
     }
 
+	@Override
+	public List<Object> getPrescriptionItems(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded) {
+ 
+		List<Object> response = new ArrayList<Object>();
+		
+		switch(PrescriptionItems.valueOf(type.toUpperCase())){
+			
+		case DRUG : {
+			
+			switch(Range.valueOf(range.toUpperCase())){
+			
+			case GLOBAL :  response = getGlobalDrugs(page, size, updatedTime, discarded);	break;
+			case CUSTOM : response=getCustomDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded); break;
+			case BOTH : response=getCustomGlobalDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded); break;
+			}
+			break;
+		}
+		case DRUGTYPE : {
+			switch(Range.valueOf(range.toUpperCase())){
+			
+			case GLOBAL :  response = getGlobalDrugType(page, size, updatedTime, discarded);	break;
+			case CUSTOM : response=getCustomDrugType(page, size, doctorId, locationId, hospitalId, updatedTime, discarded); break;
+			case BOTH : response=getCustomGlobalDrugType(page, size, doctorId, locationId, hospitalId, updatedTime, discarded); break;
+			}
+			break;
+		}
+		case DRUGDIRECTION :{ 
+			switch(Range.valueOf(range.toUpperCase())){
+			
+			case GLOBAL :  response = getGlobalDrugDirection(page, size, updatedTime, discarded);	break;
+			case CUSTOM : response=getCustomDrugDirection(page, size, doctorId, locationId, hospitalId, updatedTime, discarded); break;
+			case BOTH : response=getCustomGlobalDrugDirection(page, size, doctorId, locationId, hospitalId, updatedTime, discarded); break;
+			}
+			break;
+		}
+		case DRUGDOSAGE :{
+			switch(Range.valueOf(range.toUpperCase())){
+			
+			case GLOBAL :  response = getGlobalDrugDosage(page, size, updatedTime, discarded);	break;
+			case CUSTOM : response=getCustomDrugDosage(page, size, doctorId, locationId, hospitalId, updatedTime, discarded); break;
+			case BOTH : response=getCustomGlobalDrugDosage(page, size, doctorId, locationId, hospitalId, updatedTime, discarded); break;
+			}
+			break;
+		}
+		case DRUGDURATIONUNIT : {
+			switch(Range.valueOf(range.toUpperCase())){
+			
+			case GLOBAL :  response = getGlobalDrugDurationUnit(page, size, updatedTime, discarded);	break;
+			case CUSTOM : response=getCustomDrugDurationUnit(page, size, doctorId, locationId, hospitalId, updatedTime, discarded); break;
+			case BOTH : response=getCustomGlobalDrugDurationUnit(page, size, doctorId, locationId, hospitalId, updatedTime, discarded); break;
+			}
+			break;
+		}
+		case DRUGSTRENGTHUNIT : {
+			switch(Range.valueOf(range.toUpperCase())){
+			
+			case GLOBAL :  response = getGlobalDrugStrengthUnit(page, size, updatedTime, discarded);	break;
+			case CUSTOM : response=getCustomDrugStrengthUnit(page, size, doctorId, locationId, hospitalId, updatedTime, discarded); break;
+			case BOTH : response=getCustomGlobalDrugStrengthUnit(page, size, doctorId, locationId, hospitalId, updatedTime, discarded); break;
+			}
+			break;
+		}
+		default : break;
+		}
+		return response;
+	}
+
+	private List<Object> getGlobalDrugs(int page, int size, String updatedTime, boolean discarded) {
+		List<Object> response = null;
+		List<DrugCollection> drugCollections = null;
+		try {
+		    if (DPDoctorUtils.anyStringEmpty(updatedTime)) {
+			    if (discarded) drugCollections = drugRepository.getGlobalDrugs(new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			    else drugCollections = drugRepository.getGlobalDrugs(discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    } else {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			    if (discarded)	drugCollections = drugRepository.getGlobalDrugs(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,"createdTime"), size>0 ? new PageRequest(page, size):null);
+			    else drugCollections = drugRepository.getGlobalDrugs(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    }
+		    if (!drugCollections.isEmpty()) {
+		    	response = new ArrayList<Object>();
+		    	BeanUtil.map(drugCollections, response);
+		    } else {
+		    	throw new BusinessException(ServiceError.Unknown, "No Drugs Found");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
+		}
+		return response;
+}
+	private List<Object> getCustomDrugs(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
+		List<Object> response = null;
+		List<DrugCollection> drugCollections = null;
+		try {
+		    if (DPDoctorUtils.anyStringEmpty(updatedTime)) {
+			    if (discarded)
+				drugCollections = drugRepository.getCustomDrugs(doctorId, hospitalId, locationId, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			    else
+				drugCollections = drugRepository.getCustomDrugs(doctorId, hospitalId, locationId, discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    } else {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			    if (discarded)
+				drugCollections = drugRepository.getCustomDrugs(doctorId, hospitalId, locationId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
+					"createdTime"), size>0 ? new PageRequest(page, size):null);
+			    else
+				drugCollections = drugRepository.getCustomDrugs(doctorId, hospitalId, locationId, new Date(createdTimeStamp), discarded, new Sort(
+					Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    }
+		    if (!drugCollections.isEmpty()) {
+		    	response = new ArrayList<Object>();
+		    	BeanUtil.map(drugCollections, response);
+		    } else {
+		    	throw new BusinessException(ServiceError.Unknown, "No Drugs Found");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
+		}
+		return response;
+}
+	private List<Object> getCustomGlobalDrugs(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
+		List<Object> response = null;
+		List<DrugCollection> drugCollections = null;
+		try {
+		    if (DPDoctorUtils.anyStringEmpty(updatedTime)) {
+			    if (discarded)
+				drugCollections = drugRepository.getCustomGlobalDrugs(doctorId, hospitalId, locationId, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			    else
+				drugCollections = drugRepository.getCustomGlobalDrugs(doctorId, hospitalId, locationId, discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    } else {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			    if (discarded)
+				drugCollections = drugRepository.getCustomGlobalDrugs(doctorId, hospitalId, locationId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
+					"createdTime"), size>0 ? new PageRequest(page, size):null);
+			    else
+				drugCollections = drugRepository.getCustomGlobalDrugs(doctorId, hospitalId, locationId, new Date(createdTimeStamp), discarded, new Sort(
+					Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    }
+		    if (!drugCollections.isEmpty()) {
+		    	response = new ArrayList<Object>();
+		    	BeanUtil.map(drugCollections, response);
+		    } else {
+		    	throw new BusinessException(ServiceError.Unknown, "No Drugs Found");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
+		}
+		return response;
+}
+
+	private List<Object> getGlobalDrugType(int page, int size, String updatedTime, boolean discarded) {
+		List<Object> response = null;
+		List<DrugTypeCollection> drugTypeCollections = null;
+		try {
+		    if (DPDoctorUtils.anyStringEmpty(updatedTime)) {
+			    if (discarded) drugTypeCollections = drugTypeRepository.getGlobalDrugType(new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			    else drugTypeCollections = drugTypeRepository.getGlobalDrugType(discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    } else {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			    if (discarded)	drugTypeCollections = drugTypeRepository.getGlobalDrugType(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,"createdTime"), size>0 ? new PageRequest(page, size):null);
+			    else drugTypeCollections = drugTypeRepository.getGlobalDrugType(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+		    }
+		    if (!drugTypeCollections.isEmpty()) {
+		    	response = new ArrayList<Object>();
+		    	BeanUtil.map(drugTypeCollections, response);
+		    } else {
+		    	throw new BusinessException(ServiceError.Unknown, "No Drug Type Found");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Type");
+		}
+		return response;
+}
+	private List<Object> getCustomDrugType(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
+		List<Object> response = null;
+		List<DrugTypeCollection> drugTypeCollections = null;
+		try {
+		    if (DPDoctorUtils.anyStringEmpty(updatedTime)) {
+			    if (discarded)
+				drugTypeCollections = drugTypeRepository.getCustomDrugType(doctorId, hospitalId, locationId, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			    else
+				drugTypeCollections = drugTypeRepository.getCustomDrugType(doctorId, hospitalId, locationId, discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    } else {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			    if (discarded)
+				drugTypeCollections = drugTypeRepository.getCustomDrugType(doctorId, hospitalId, locationId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
+					"createdTime"), size>0 ? new PageRequest(page, size):null);
+			    else
+				drugTypeCollections = drugTypeRepository.getCustomDrugType(doctorId, hospitalId, locationId, new Date(createdTimeStamp), discarded, new Sort(
+					Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    }
+		    if (!drugTypeCollections.isEmpty()) {
+		    	response = new ArrayList<Object>();
+		    	BeanUtil.map(drugTypeCollections, response);
+		    } else {
+		    	throw new BusinessException(ServiceError.Unknown, "No Drug Type Found");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Type");
+		}
+		return response;
+}
+	private List<Object> getCustomGlobalDrugType(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
+		List<Object> response = null;
+		List<DrugTypeCollection> drugTypeCollections = null;
+		try {
+		    if (DPDoctorUtils.anyStringEmpty(updatedTime)) {
+			    if (discarded)
+				drugTypeCollections = drugTypeRepository.getCustomGlobalDrugType(doctorId, hospitalId, locationId, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			    else
+				drugTypeCollections = drugTypeRepository.getCustomGlobalDrugType(doctorId, hospitalId, locationId, discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    } else {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			    if (discarded)
+				drugTypeCollections = drugTypeRepository.getCustomGlobalDrugType(doctorId, hospitalId, locationId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
+					"createdTime"), size>0 ? new PageRequest(page, size):null);
+			    else
+				drugTypeCollections = drugTypeRepository.getCustomGlobalDrugType(doctorId, hospitalId, locationId, new Date(createdTimeStamp), discarded, new Sort(
+					Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    }
+		    if (!drugTypeCollections.isEmpty()) {
+		    	response = new ArrayList<Object>();
+		    	BeanUtil.map(drugTypeCollections, response);
+		    } else {
+		    	throw new BusinessException(ServiceError.Unknown, "No Drug Type Found");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Type");
+		}
+		return response;
+}
+
+	private List<Object> getGlobalDrugDirection(int page, int size, String updatedTime, boolean discarded) {
+		List<Object> response = null;
+		List<DrugDirectionCollection> drugDirectionCollections = null;
+		try {
+		    if (DPDoctorUtils.anyStringEmpty(updatedTime)) {
+			    if (discarded) drugDirectionCollections = drugDirectionRepository.getGlobalDrugDirection(new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			    else drugDirectionCollections = drugDirectionRepository.getGlobalDrugDirection(discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    } else {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			    if (discarded)	drugDirectionCollections = drugDirectionRepository.getGlobalDrugDirection(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,"createdTime"), size>0 ? new PageRequest(page, size):null);
+			    else drugDirectionCollections = drugDirectionRepository.getGlobalDrugDirection(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    }
+		    if (!drugDirectionCollections.isEmpty()) {
+		    	response = new ArrayList<Object>();
+		    	BeanUtil.map(drugDirectionCollections, response);
+		    } else {
+		    	throw new BusinessException(ServiceError.Unknown, "No Drug Direction Found");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Direction");
+		}
+		return response;
+}
+	private List<Object> getCustomDrugDirection(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
+		List<Object> response = null;
+		List<DrugDirectionCollection> drugDirectionCollections = null;
+		try {
+		    if (DPDoctorUtils.anyStringEmpty(updatedTime)) {
+			    if (discarded)
+				drugDirectionCollections = drugDirectionRepository.getCustomDrugDirection(doctorId, hospitalId, locationId, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			    else
+				drugDirectionCollections = drugDirectionRepository.getCustomDrugDirection(doctorId, hospitalId, locationId, discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    } else {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			    if (discarded)
+				drugDirectionCollections = drugDirectionRepository.getCustomDrugDirection(doctorId, hospitalId, locationId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
+					"createdTime"), size>0 ? new PageRequest(page, size):null);
+			    else
+				drugDirectionCollections = drugDirectionRepository.getCustomDrugDirection(doctorId, hospitalId, locationId, new Date(createdTimeStamp), discarded, new Sort(
+					Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    }
+		    if (!drugDirectionCollections.isEmpty()) {
+		    	response = new ArrayList<Object>();
+		    	BeanUtil.map(drugDirectionCollections, response);
+		    } else {
+		    	throw new BusinessException(ServiceError.Unknown, "No Drug Direction Found");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Direction");
+		}
+		return response;
+}
+	private List<Object> getCustomGlobalDrugDirection(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
+		List<Object> response = null;
+		List<DrugDirectionCollection> drugDirectionCollections = null;
+		try {
+		    if (DPDoctorUtils.anyStringEmpty(updatedTime)) {
+			    if (discarded)
+				drugDirectionCollections = drugDirectionRepository.getCustomGlobalDrugDirection(doctorId, hospitalId, locationId, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			    else
+				drugDirectionCollections = drugDirectionRepository.getCustomGlobalDrugDirection(doctorId, hospitalId, locationId, discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    } else {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			    if (discarded)
+				drugDirectionCollections = drugDirectionRepository.getCustomGlobalDrugDirection(doctorId, hospitalId, locationId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
+					"createdTime"), size>0 ? new PageRequest(page, size):null);
+			    else
+				drugDirectionCollections = drugDirectionRepository.getCustomGlobalDrugDirection(doctorId, hospitalId, locationId, new Date(createdTimeStamp), discarded, new Sort(
+					Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    }
+		    if (!drugDirectionCollections.isEmpty()) {
+		    	response = new ArrayList<Object>();
+		    	BeanUtil.map(drugDirectionCollections, response);
+		    } else {
+		    	throw new BusinessException(ServiceError.Unknown, "No Drug Direction Found");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Direction");
+		}
+		return response;
+}
+
+	private List<Object> getGlobalDrugDosage(int page, int size, String updatedTime, boolean discarded) {
+		List<Object> response = null;
+		List<DrugDosageCollection> drugDosageCollections = null;
+		try {
+		    if (DPDoctorUtils.anyStringEmpty(updatedTime)) {
+			    if (discarded) drugDosageCollections = drugDosageRepository.getGlobalDrugDosage(new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			    else drugDosageCollections = drugDosageRepository.getGlobalDrugDosage(discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    } else {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			    if (discarded)	drugDosageCollections = drugDosageRepository.getGlobalDrugDosage(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,"createdTime"), size>0 ? new PageRequest(page, size):null);
+			    else drugDosageCollections = drugDosageRepository.getGlobalDrugDosage(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    }
+		    if (!drugDosageCollections.isEmpty()) {
+		    	response = new ArrayList<Object>();
+		    	BeanUtil.map(drugDosageCollections, response);
+		    } else {
+		    	throw new BusinessException(ServiceError.Unknown, "No Drug Dosage Found");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Dosage");
+		}
+		return response;
+}
+	private List<Object> getCustomDrugDosage(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
+		List<Object> response = null;
+		List<DrugDosageCollection> drugDosageCollections = null;
+		try {
+		    if (DPDoctorUtils.anyStringEmpty(updatedTime)) {
+			    if (discarded)
+				drugDosageCollections = drugDosageRepository.getCustomDrugDosage(doctorId, hospitalId, locationId, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			    else
+				drugDosageCollections = drugDosageRepository.getCustomDrugDosage(doctorId, hospitalId, locationId, discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    } else {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			    if (discarded)
+				drugDosageCollections = drugDosageRepository.getCustomDrugDosage(doctorId, hospitalId, locationId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
+					"createdTime"), size>0 ? new PageRequest(page, size):null);
+			    else
+				drugDosageCollections = drugDosageRepository.getCustomDrugDosage(doctorId, hospitalId, locationId, new Date(createdTimeStamp), discarded, new Sort(
+					Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    }
+		    if (!drugDosageCollections.isEmpty()) {
+		    	response = new ArrayList<Object>();
+		    	BeanUtil.map(drugDosageCollections, response);
+		    } else {
+		    	throw new BusinessException(ServiceError.Unknown, "No Drug Dosage Found");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Dosage");
+		}
+		return response;
+}
+	private List<Object> getCustomGlobalDrugDosage(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
+		List<Object> response = null;
+		List<DrugDosageCollection> drugDosageCollections = null;
+		try {
+		    if (DPDoctorUtils.anyStringEmpty(updatedTime)) {
+			    if (discarded)
+				drugDosageCollections = drugDosageRepository.getCustomGlobalDrugDosage(doctorId, hospitalId, locationId, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			    else
+				drugDosageCollections = drugDosageRepository.getCustomGlobalDrugDosage(doctorId, hospitalId, locationId, discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    } else {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			    if (discarded)
+				drugDosageCollections = drugDosageRepository.getCustomGlobalDrugDosage(doctorId, hospitalId, locationId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
+					"createdTime"), size>0 ? new PageRequest(page, size):null);
+			    else
+				drugDosageCollections = drugDosageRepository.getCustomGlobalDrugDosage(doctorId, hospitalId, locationId, new Date(createdTimeStamp), discarded, new Sort(
+					Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    }
+		    if (!drugDosageCollections.isEmpty()) {
+		    	response = new ArrayList<Object>();
+		    	BeanUtil.map(drugDosageCollections, response);
+		    } else {
+		    	throw new BusinessException(ServiceError.Unknown, "No Drug Dosage Found");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Dosage");
+		}
+		return response;
+}
+
+	private List<Object> getGlobalDrugDurationUnit(int page, int size, String updatedTime, boolean discarded) {
+		List<Object> response = null;
+		List<DrugDurationUnitCollection> drugDurationUnitCollections = null;
+		try {
+		    if (DPDoctorUtils.anyStringEmpty(updatedTime)) {
+			    if (discarded) drugDurationUnitCollections = drugDurationUnitRepository.getGlobalDrugDurationUnit(new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			    else drugDurationUnitCollections = drugDurationUnitRepository.getGlobalDrugDurationUnit(discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    } else {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			    if (discarded)	drugDurationUnitCollections = drugDurationUnitRepository.getGlobalDrugDurationUnit(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,"createdTime"), size>0 ? new PageRequest(page, size):null);
+			    else drugDurationUnitCollections = drugDurationUnitRepository.getGlobalDrugDurationUnit(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    }
+		    if (!drugDurationUnitCollections.isEmpty()) {
+		    	response = new ArrayList<Object>();
+		    	BeanUtil.map(drugDurationUnitCollections, response);
+		    } else {
+		    	throw new BusinessException(ServiceError.Unknown, "No Drug DurationUnit Found");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug DurationUnit");
+		}
+		return response;
+}
+	private List<Object> getCustomDrugDurationUnit(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
+		List<Object> response = null;
+		List<DrugDurationUnitCollection> drugDurationUnitCollections = null;
+		try {
+		    if (DPDoctorUtils.anyStringEmpty(updatedTime)) {
+			    if (discarded)
+				drugDurationUnitCollections = drugDurationUnitRepository.getCustomDrugDurationUnit(doctorId, hospitalId, locationId, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			    else
+				drugDurationUnitCollections = drugDurationUnitRepository.getCustomDrugDurationUnit(doctorId, hospitalId, locationId, discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    } else {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			    if (discarded)
+				drugDurationUnitCollections = drugDurationUnitRepository.getCustomDrugDurationUnit(doctorId, hospitalId, locationId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
+					"createdTime"), size>0 ? new PageRequest(page, size):null);
+			    else
+				drugDurationUnitCollections = drugDurationUnitRepository.getCustomDrugDurationUnit(doctorId, hospitalId, locationId, new Date(createdTimeStamp), discarded, new Sort(
+					Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    }
+		    if (!drugDurationUnitCollections.isEmpty()) {
+		    	response = new ArrayList<Object>();
+		    	BeanUtil.map(drugDurationUnitCollections, response);
+		    } else {
+		    	throw new BusinessException(ServiceError.Unknown, "No Drug DurationUnit Found");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug DurationUnit");
+		}
+		return response;
+}
+	private List<Object> getCustomGlobalDrugDurationUnit(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
+		List<Object> response = null;
+		List<DrugDurationUnitCollection> drugDurationUnitCollections = null;
+		try {
+		    if (DPDoctorUtils.anyStringEmpty(updatedTime)) {
+			    if (discarded)
+				drugDurationUnitCollections = drugDurationUnitRepository.getCustomGlobalDrugDurationUnit(doctorId, hospitalId, locationId, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			    else
+				drugDurationUnitCollections = drugDurationUnitRepository.getCustomGlobalDrugDurationUnit(doctorId, hospitalId, locationId, discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    } else {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			    if (discarded)
+				drugDurationUnitCollections = drugDurationUnitRepository.getCustomGlobalDrugDurationUnit(doctorId, hospitalId, locationId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
+					"createdTime"), size>0 ? new PageRequest(page, size):null);
+			    else
+				drugDurationUnitCollections = drugDurationUnitRepository.getCustomGlobalDrugDurationUnit(doctorId, hospitalId, locationId, new Date(createdTimeStamp), discarded, new Sort(
+					Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    }
+		    if (!drugDurationUnitCollections.isEmpty()) {
+		    	response = new ArrayList<Object>();
+		    	BeanUtil.map(drugDurationUnitCollections, response);
+		    } else {
+		    	throw new BusinessException(ServiceError.Unknown, "No Drug DurationUnit Found");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug DurationUnit");
+		}
+		return response;
+}
+
+	private List<Object> getGlobalDrugStrengthUnit(int page, int size, String updatedTime, boolean discarded) {
+		List<Object> response = null;
+		List<DrugStrengthUnitCollection> drugStrengthUnitCollections = null;
+		try {
+		    if (DPDoctorUtils.anyStringEmpty(updatedTime)) {
+			    if (discarded) drugStrengthUnitCollections = drugStrengthRepository.getGlobalDrugStrengthUnit(new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			    else drugStrengthUnitCollections = drugStrengthRepository.getGlobalDrugStrengthUnit(discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    } else {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			    if (discarded)	drugStrengthUnitCollections = drugStrengthRepository.getGlobalDrugStrengthUnit(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,"createdTime"), size>0 ? new PageRequest(page, size):null);
+			    else drugStrengthUnitCollections = drugStrengthRepository.getGlobalDrugStrengthUnit(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    }
+		    if (!drugStrengthUnitCollections.isEmpty()) {
+		    	response = new ArrayList<Object>();
+		    	BeanUtil.map(drugStrengthUnitCollections, response);
+		    } else {
+		    	throw new BusinessException(ServiceError.Unknown, "No Drug StrengthUnit Found");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug StrengthUnit");
+		}
+		return response;
+}
+	private List<Object> getCustomDrugStrengthUnit(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
+		List<Object> response = null;
+		List<DrugStrengthUnitCollection> drugStrengthUnitCollections = null;
+		try {
+		    if (DPDoctorUtils.anyStringEmpty(updatedTime)) {
+			    if (discarded)
+				drugStrengthUnitCollections = drugStrengthRepository.getCustomDrugStrengthUnit(doctorId, hospitalId, locationId, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			    else
+				drugStrengthUnitCollections = drugStrengthRepository.getCustomDrugStrengthUnit(doctorId, hospitalId, locationId, discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    } else {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			    if (discarded)
+				drugStrengthUnitCollections = drugStrengthRepository.getCustomDrugStrengthUnit(doctorId, hospitalId, locationId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
+					"createdTime"), size>0 ? new PageRequest(page, size):null);
+			    else
+				drugStrengthUnitCollections = drugStrengthRepository.getCustomDrugStrengthUnit(doctorId, hospitalId, locationId, new Date(createdTimeStamp), discarded, new Sort(
+					Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    }
+		    if (!drugStrengthUnitCollections.isEmpty()) {
+		    	response = new ArrayList<Object>();
+		    	BeanUtil.map(drugStrengthUnitCollections, response);
+		    } else {
+		    	throw new BusinessException(ServiceError.Unknown, "No Drug StrengthUnit Found");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug StrengthUnit");
+		}
+		return response;
+}
+	private List<Object> getCustomGlobalDrugStrengthUnit(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
+		List<Object> response = null;
+		List<DrugStrengthUnitCollection> drugStrengthUnitCollections = null;
+		try {
+		    if (DPDoctorUtils.anyStringEmpty(updatedTime)) {
+			    if (discarded)
+				drugStrengthUnitCollections = drugStrengthRepository.getCustomGlobalDrugStrengthUnit(doctorId, hospitalId, locationId, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			    else
+				drugStrengthUnitCollections = drugStrengthRepository.getCustomGlobalDrugStrengthUnit(doctorId, hospitalId, locationId, discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    } else {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			    if (discarded)
+				drugStrengthUnitCollections = drugStrengthRepository.getCustomGlobalDrugStrengthUnit(doctorId, hospitalId, locationId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
+					"createdTime"), size>0 ? new PageRequest(page, size):null);
+			    else
+				drugStrengthUnitCollections = drugStrengthRepository.getCustomGlobalDrugStrengthUnit(doctorId, hospitalId, locationId, new Date(createdTimeStamp), discarded, new Sort(
+					Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
+			
+		    }
+		    if (!drugStrengthUnitCollections.isEmpty()) {
+		    	response = new ArrayList<Object>();
+		    	BeanUtil.map(drugStrengthUnitCollections, response);
+		    } else {
+		    	throw new BusinessException(ServiceError.Unknown, "No Drug StrengthUnit Found");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug StrengthUnit");
+		}
+		return response;
+}
 }
