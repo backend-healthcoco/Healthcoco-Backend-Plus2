@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -28,7 +30,6 @@ import com.dpdocter.request.ImportContactsRequest;
 import com.dpdocter.request.PatientGroupAddEditRequest;
 import com.dpdocter.services.ContactsService;
 import com.dpdocter.services.PatientTrackService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -44,11 +45,10 @@ public class ContactsApi {
 
     @Autowired
     private ContactsService contactsService;
-    
+
     @Autowired
     private PatientTrackService patientTrackService;
 
-    @Path(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS)
     @POST
     public Response<DoctorContactsResponse> doctorContacts(GetDoctorContactsRequest request) {
 	List<PatientCard> patientCards = contactsService.getDoctorContacts(request);
@@ -63,36 +63,44 @@ public class ContactsApi {
 
     @Path(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_DOCTOR_SPECIFIC)
     @GET
-    public Response<DoctorContactsResponse> getDoctorContacts(@PathParam("type") String type, @PathParam("page") int page, @PathParam("size") int size, @QueryParam("doctorId") String doctorId,
-    	    @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId, 
-    	    @QueryParam("createdTime") String createdTime, @QueryParam("isDeleted") Boolean isDeleted) {
-    	
-    	DoctorContactsResponse doctorContactsResponse = null;
-    	
-    	if (DPDoctorUtils.anyStringEmpty(type)) {
-    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Type Cannot Be Empty");
-    	}
-    	
-    	switch(ContactsSearchType.valueOf(type.toUpperCase())){
-    	case DOCTORCONTACTS : doctorContactsResponse = doctorContacts(doctorId, createdTime, isDeleted);break;
-    	case RECENTLYVISITED :doctorContactsResponse = patientTrackService.recentlyVisited(doctorId, locationId, hospitalId, page, size);break;
-    	case MOSTVISITED :    doctorContactsResponse = patientTrackService.mostVisited(doctorId, locationId, hospitalId, page, size); break;
-    	default : break;
-    	}
-    	
-    	Response<DoctorContactsResponse> response = new Response<DoctorContactsResponse>();
-    	response.setData(doctorContactsResponse);
-    	
+    public Response<DoctorContactsResponse> getDoctorContacts(@PathParam("type") String type, @QueryParam("page") int page, @QueryParam("size") int size,
+	    @QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+	    @QueryParam("updatedTime") String updatedTime, @QueryParam("discarded") Boolean discarded) {
+
+	DoctorContactsResponse doctorContactsResponse = null;
+
+	if (DPDoctorUtils.anyStringEmpty(type)) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Type Cannot Be Empty");
+	}
+
+	switch (ContactsSearchType.valueOf(type.toUpperCase())) {
+	case DOCTORCONTACTS:
+	    doctorContactsResponse = doctorContacts(page, size, doctorId, updatedTime, discarded);
+	    break;
+	case RECENTLYVISITED:
+	    doctorContactsResponse = patientTrackService.recentlyVisited(doctorId, locationId, hospitalId, page, size);
+	    break;
+	case MOSTVISITED:
+	    doctorContactsResponse = patientTrackService.mostVisited(doctorId, locationId, hospitalId, page, size);
+	    break;
+	default:
+	    break;
+	}
+
+	Response<DoctorContactsResponse> response = new Response<DoctorContactsResponse>();
+	response.setData(doctorContactsResponse);
+
 	return response;
-	
+
     }
-    private DoctorContactsResponse doctorContacts(@QueryParam("doctorId") String doctorId, @QueryParam("createdTime") String createdTime,
-    		@QueryParam("isDeleted") Boolean isDeleted) {
+
+    private DoctorContactsResponse doctorContacts(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
+	    @QueryParam("updatedTime") String updatedTime, @QueryParam("discarded") Boolean discarded) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id Cannot Be Empty");
 	}
-	List<PatientCard> patientCards = contactsService.getDoctorContacts(doctorId, createdTime, isDeleted != null ?isDeleted:true); 
-		
+	List<PatientCard> patientCards = contactsService.getDoctorContacts(doctorId, updatedTime, discarded != null ? discarded : true, page, size);
+
 	int ttlCount = patientCards != null ? patientCards.size() : 0;
 	DoctorContactsResponse doctorContactsResponse = new DoctorContactsResponse();
 	doctorContactsResponse.setPatientCards(patientCards);
@@ -103,17 +111,19 @@ public class ContactsApi {
     @Path(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_HANDHELD)
     @GET
     public Response<RegisteredPatientDetails> getDoctorContactsHandheld(@QueryParam(value = "doctorId") String doctorId,
-    	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId, 
-    	    @QueryParam(value = "createdTime") String createdTime, @QueryParam(value = "isDeleted") Boolean isDeleted) {
-	
-    	if(isDeleted != null)return doctorContactsHandheld(doctorId, locationId, hospitalId, createdTime, isDeleted);
-    	else return doctorContactsHandheld(doctorId, locationId, hospitalId, createdTime, true);
+	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+	    @QueryParam(value = "updatedTime") String updatedTime, @QueryParam(value = "discarded") Boolean discarded) {
+
+	if (discarded != null)
+	    return doctorContactsHandheld(doctorId, locationId, hospitalId, updatedTime, discarded);
+	else
+	    return doctorContactsHandheld(doctorId, locationId, hospitalId, updatedTime, true);
     }
 
-    private Response<RegisteredPatientDetails> doctorContactsHandheld(String doctorId, String locationId, String hospitalId, String createdTime,
-	    boolean isDeleted) {
-	List<RegisteredPatientDetails> registeredPatientDetails = contactsService.getDoctorContactsHandheld(doctorId, locationId, hospitalId, createdTime,
-		isDeleted);
+    private Response<RegisteredPatientDetails> doctorContactsHandheld(String doctorId, String locationId, String hospitalId, String updatedTime,
+	    boolean discarded) {
+	List<RegisteredPatientDetails> registeredPatientDetails = contactsService.getDoctorContactsHandheld(doctorId, locationId, hospitalId, updatedTime,
+		discarded);
 	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 	response.setDataList(registeredPatientDetails);
 	return response;
@@ -162,8 +172,12 @@ public class ContactsApi {
     }
 
     @Path(value = PathProxy.ContactsUrls.EDIT_GROUP)
-    @POST
-    public Response<Group> editGroup(Group group) {
+    @PUT
+    public Response<Group> editGroup(@PathParam("groupId") String groupId, Group group) {
+	if (DPDoctorUtils.anyStringEmpty(groupId)) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. GroupId Cannot Be Empty");
+	}
+	group.setId(groupId);
 	Group responseGroup = contactsService.addEditGroup(group);
 	Response<Group> response = new Response<Group>();
 	response.setData(responseGroup);
@@ -171,7 +185,7 @@ public class ContactsApi {
     }
 
     @Path(value = PathProxy.ContactsUrls.DELETE_GROUP)
-    @GET
+    @DELETE
     public Response<Boolean> deleteGroup(@PathParam("groupId") String groupId) {
 	Boolean groupDeleteResponse = contactsService.deleteGroup(groupId);
 	Response<Boolean> response = new Response<Boolean>();
@@ -190,15 +204,18 @@ public class ContactsApi {
 
     @Path(value = PathProxy.ContactsUrls.GET_ALL_GROUPS)
     @GET
-    public Response<Group> getAllGroups(@PathParam("page") int page, @PathParam("size") int size, @QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-    		@QueryParam("createdTime") String createdTime, @QueryParam("isDeleted") Boolean isDeleted) {
-    	
-    	if(isDeleted != null)return getGroups(page, size, doctorId, locationId, hospitalId, createdTime, isDeleted);
-    	else	return getGroups(page, size, doctorId, locationId, hospitalId, createdTime, true);
+    public Response<Group> getAllGroups(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
+	    @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId, @QueryParam("updatedTime") String updatedTime,
+	    @QueryParam("discarded") Boolean discarded) {
+
+	if (discarded != null)
+	    return getGroups(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+	else
+	    return getGroups(page, size, doctorId, locationId, hospitalId, updatedTime, true);
     }
 
-    private Response<Group> getGroups(int page, int size, String doctorId, String locationId, String hospitalId, String createdTime, boolean isDeleted) {
-	List<Group> groups = contactsService.getAllGroups(page, size, doctorId, locationId, hospitalId, createdTime, isDeleted);
+    private Response<Group> getGroups(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
+	List<Group> groups = contactsService.getAllGroups(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 	if (groups != null) {
 	    for (Group group : groups) {
 		GetDoctorContactsRequest getDoctorContactsRequest = new GetDoctorContactsRequest();

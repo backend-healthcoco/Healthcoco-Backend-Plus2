@@ -2,7 +2,7 @@ package com.dpdocter.response;
 
 import com.dpdocter.collections.GenericCollection;
 
-public class DiseaseAddEditResponse extends GenericCollection{
+public class DiseaseAddEditResponse extends GenericCollection {
     private String id;
 
     private String doctorId;
@@ -15,8 +15,8 @@ public class DiseaseAddEditResponse extends GenericCollection{
 
     private String description;
 
-    private boolean isDeleted = false;
-    
+    private Boolean discarded = false;
+
     public String getId() {
 	return id;
     }
@@ -65,19 +65,18 @@ public class DiseaseAddEditResponse extends GenericCollection{
 	this.description = description;
     }
 
-	public boolean isDeleted() {
-		return isDeleted;
-	}
+    public Boolean getDiscarded() {
+	return discarded;
+    }
 
-	public void setDeleted(boolean isDeleted) {
-		this.isDeleted = isDeleted;
-	}
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
 
-	@Override
-	public String toString() {
-		return "DiseaseAddEditResponse [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", disease=" + disease + ", description=" + description
-				+ ", isDeleted=" + isDeleted + "]";
-	}
+    @Override
+    public String toString() {
+	return "DiseaseAddEditResponse [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", disease="
+		+ disease + ", description=" + description + ", discarded=" + discarded + "]";
+    }
 
 }

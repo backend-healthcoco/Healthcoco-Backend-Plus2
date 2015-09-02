@@ -135,9 +135,9 @@ public class DoctorProfileApi {
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFESSIONAL_STATEMENT)
     @POST
     public Response<Boolean> addEditProfessionalStatement(DoctorProfessionalStatementAddEditRequest request) {
-    	if (request == null) {
-    	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Professional Statement Request Is Empty");
-    	}
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Professional Statement Request Is Empty");
+	}
 	Boolean addEditProfessionalStatementResponse = doctorProfileService.addEditProfessionalStatement(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditProfessionalStatementResponse);

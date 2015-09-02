@@ -15,28 +15,29 @@ public interface TemplateRepository extends MongoRepository<TemplateCollection, 
     @Query("{'id': ?0, 'doctorId': ?1, 'hospitalId': ?2, 'locationId': ?3}")
     TemplateCollection getTemplate(String templateId, String doctorId, String hospitalId, String locationId);
 
-    @Query("{'doctorId': ?0, 'createdTime': {'$gte': ?1}}")
-    List<TemplateCollection> getTemplates(String doctorId, Date date, Sort sort,  PageRequest pageRequest);
+    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}}")
+    List<TemplateCollection> getTemplates(String doctorId, Date date, Sort sort, PageRequest pageRequest);
 
-    @Query("{'doctorId': ?0, 'createdTime': {'$gte': ?1}, 'isDeleted': ?2}")
-    List<TemplateCollection> getTemplates(String doctorId, Date date, boolean isDeleted, Sort sort,  PageRequest pageRequest);
+    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2}")
+    List<TemplateCollection> getTemplates(String doctorId, Date date, boolean discarded, Sort sort, PageRequest pageRequest);
 
     @Query("{'doctorId': ?0}")
-    List<TemplateCollection> getTemplates(String doctorId, Sort sort,  PageRequest pageRequest);
+    List<TemplateCollection> getTemplates(String doctorId, Sort sort, PageRequest pageRequest);
 
-    @Query("{'doctorId': ?0, 'isDeleted': ?1}")
-    List<TemplateCollection> getTemplates(String doctorId, boolean isDeleted, Sort sort,  PageRequest pageRequest);
+    @Query("{'doctorId': ?0, 'discarded': ?1}")
+    List<TemplateCollection> getTemplates(String doctorId, boolean discarded, Sort sort, PageRequest pageRequest);
 
-    @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'createdTime': {'$gte': ?3}}")
-    List<TemplateCollection> getTemplates(String doctorId, String hospitalId, String locationId, Date date, Sort sort,  PageRequest pageRequest);
+    @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3}}")
+    List<TemplateCollection> getTemplates(String doctorId, String hospitalId, String locationId, Date date, Sort sort, PageRequest pageRequest);
 
-    @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'createdTime': {'$gte': ?3}, 'isDeleted': ?4}")
-    List<TemplateCollection> getTemplates(String doctorId, String hospitalId, String locationId, Date date, boolean isDeleted, Sort sort,  PageRequest pageRequest);
+    @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': ?4}")
+    List<TemplateCollection> getTemplates(String doctorId, String hospitalId, String locationId, Date date, boolean discarded, Sort sort,
+	    PageRequest pageRequest);
 
     @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2}")
-    List<TemplateCollection> getTemplates(String doctorId, String hospitalId, String locationId, Sort sort,  PageRequest pageRequest);
+    List<TemplateCollection> getTemplates(String doctorId, String hospitalId, String locationId, Sort sort, PageRequest pageRequest);
 
-    @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, , 'isDeleted': ?3}")
-    List<TemplateCollection> getTemplates(String doctorId, String hospitalId, String locationId, boolean isDeleted, Sort sort,  PageRequest pageRequest);
+    @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, , 'discarded': ?3}")
+    List<TemplateCollection> getTemplates(String doctorId, String hospitalId, String locationId, boolean discarded, Sort sort, PageRequest pageRequest);
 
 }

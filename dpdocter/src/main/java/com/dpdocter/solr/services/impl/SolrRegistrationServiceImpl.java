@@ -70,14 +70,10 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     @Override
     public List<SolrPatientResponse> searchPatient(String doctorId, String locationId, String hospitalId, String searchTerm) {
 	List<SolrPatientDocument> patients = null;
-	List<SolrPatientResponse> response= new ArrayList<SolrPatientResponse>();
+	List<SolrPatientResponse> response = new ArrayList<SolrPatientResponse>();
 	try {
-		patients = solrPatientRepository.find(doctorId, locationId, hospitalId, searchTerm);
-		for(SolrPatientDocument patient : patients){
-			SolrPatientResponse solrPatientResponse = new SolrPatientResponse();
-			BeanUtil.map(patient, solrPatientResponse);
-			response.add(solrPatientResponse);
-		}
+	    patients = solrPatientRepository.find(doctorId, locationId, hospitalId, searchTerm);
+	    // BeanUtil.map(patients, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
@@ -87,8 +83,8 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 
     @Override
     public List<SolrPatientResponse> searchPatient(AdvancedSearch request) {
-    	List<SolrPatientDocument> patients = null;
-    	List<SolrPatientResponse> response= new ArrayList<SolrPatientResponse>();
+	List<SolrPatientDocument> patients = null;
+	List<SolrPatientResponse> response = new ArrayList<SolrPatientResponse>();
 	try {
 	    Criteria advancedCriteria = createAdvancedSearchCriteria(request);
 
@@ -96,11 +92,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 
 	    solrTemplate.setSolrCore("patients");
 	    patients = solrTemplate.queryForPage(query, SolrPatientDocument.class).getContent();
-	    for(SolrPatientDocument patient : patients){
-			SolrPatientResponse solrPatientResponse = new SolrPatientResponse();
-			BeanUtil.map(patient, solrPatientResponse);
-			response.add(solrPatientResponse);
-		}
+	    BeanUtil.map(patients, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");

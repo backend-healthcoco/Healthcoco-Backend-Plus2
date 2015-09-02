@@ -46,10 +46,7 @@ public class ClinicalNotesCollection extends GenericCollection {
     private String hospitalId;
 
     @Field
-    private Long createdDate;
-
-    @Field
-    private Boolean isDeleted = false;
+    private Boolean discarded = false;
 
     @Field
     private boolean inHistory = false;
@@ -150,20 +147,12 @@ public class ClinicalNotesCollection extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
-    public Long getCreatedDate() {
-	return createdDate;
+    public Boolean getDiscarded() {
+	return discarded;
     }
 
-    public void setCreatedDate(Long createdDate) {
-	this.createdDate = createdDate;
-    }
-
-    public Boolean getIsDeleted() {
-	return isDeleted;
-    }
-
-    public void setIsDeleted(Boolean isDeleted) {
-	this.isDeleted = isDeleted;
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
     }
 
     public boolean isInHistory() {
@@ -178,8 +167,8 @@ public class ClinicalNotesCollection extends GenericCollection {
     public String toString() {
 	return "ClinicalNotesCollection [id=" + id + ", notes=" + notes + ", observations=" + observations + ", investigations=" + investigations
 		+ ", diagnoses=" + diagnoses + ", complaints=" + complaints + ", diagrams=" + diagrams + ", diagramsPaths=" + diagramsPaths + ", comments="
-		+ comments + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", createdDate=" + createdDate
-		+ ", isDeleted=" + isDeleted + ", inHistory=" + inHistory + "]";
+		+ comments + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+		+ ", inHistory=" + inHistory + "]";
     }
 
 }

@@ -94,7 +94,6 @@ public class RecordsServiceImpl implements RecordsService {
 	    BeanUtil.map(request, recordsCollection);
 
 	    recordsCollection.setCreatedTime(new Date());
-	    recordsCollection.setCreatedDate(new Date().getTime());
 	    recordsCollection.setRecordsUrl(recordUrl);
 	    recordsCollection.setRecordsPath(recordPath);
 	    recordsCollection.setRecordsLable(getFileNameFromImageURL(recordUrl));
@@ -118,7 +117,7 @@ public class RecordsServiceImpl implements RecordsService {
 	try {
 	    RecordsCollection recordsCollection = new RecordsCollection();
 	    BeanUtil.map(request, recordsCollection);
-	    // recordsCollection.setCreatedTime(new Date());
+
 	    if (request.getFileDetails() != null) {
 		String path = request.getPatientId() + File.separator + "records";
 		// save image
@@ -182,6 +181,7 @@ public class RecordsServiceImpl implements RecordsService {
 		RecordsTagsCollection recordsTagsCollection = new RecordsTagsCollection();
 		recordsTagsCollection.setrecordsId(request.getRecordId());
 		recordsTagsCollection.setTagsId(tagId);
+		recordsTagsCollection.setCreatedTime(new Date());
 		recordsTagsCollections.add(recordsTagsCollection);
 	    }
 	    recordsTagsRepository.save(recordsTagsCollections);
@@ -227,10 +227,10 @@ public class RecordsServiceImpl implements RecordsService {
 		if (request.getCreatedTime() != null) {
 		    long createdTimeStamp = Long.parseLong(request.getCreatedTime());
 		    recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
-			    request.getHospitalId(), new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdDate"));
+			    request.getHospitalId(), new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
 		} else {
 		    recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
-			    request.getHospitalId(), false, new Sort(Sort.Direction.DESC, "createdDate"));
+			    request.getHospitalId(), false, new Sort(Sort.Direction.DESC, "createdTime"));
 		}
 		records = new ArrayList<Records>();
 		BeanUtil.map(recordsCollections, records);
@@ -336,7 +336,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    if (recordsCollection == null) {
 		throw new BusinessException(ServiceError.Unknown, "Record Not found.Check RecordId");
 	    }
-	    recordsCollection.setDeleted(true);
+	    recordsCollection.setDiscarded(true);
 	    recordsRepository.save(recordsCollection);
 	} catch (BusinessException e) {
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -383,17 +383,17 @@ public class RecordsServiceImpl implements RecordsService {
 	try {
 	    if (DPDoctorUtils.anyStringEmpty(createdTime)) {
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
-		    recordsCollections = recordsRepository.findAll(doctorId, false, new Sort(Sort.Direction.DESC, "createdDate"));
+		    recordsCollections = recordsRepository.findAll(doctorId, false, new Sort(Sort.Direction.DESC, "createdTime"));
 		} else {
-		    recordsCollections = recordsRepository.findAll(doctorId, locationId, hospitalId, false, new Sort(Sort.Direction.DESC, "createdDate"));
+		    recordsCollections = recordsRepository.findAll(doctorId, locationId, hospitalId, false, new Sort(Sort.Direction.DESC, "createdTime"));
 		}
 	    } else {
 		long createdTimeStamp = Long.parseLong(createdTime);
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
-		    recordsCollections = recordsRepository.findAll(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdDate"));
+		    recordsCollections = recordsRepository.findAll(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
 		} else {
 		    recordsCollections = recordsRepository.findAll(doctorId, locationId, hospitalId, new Date(createdTimeStamp), false, new Sort(
-			    Sort.Direction.DESC, "createdDate"));
+			    Sort.Direction.DESC, "createdTime"));
 		}
 	    }
 

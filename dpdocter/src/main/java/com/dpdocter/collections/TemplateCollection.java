@@ -25,7 +25,7 @@ public class TemplateCollection extends GenericCollection {
     private String hospitalId;
 
     @Field
-    private Boolean isDeleted = false;
+    private Boolean discarded = false;
 
     @Field
     private List<TemplateItem> items;
@@ -70,12 +70,12 @@ public class TemplateCollection extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
-    public Boolean getIsDeleted() {
-	return isDeleted;
+    public Boolean getDiscarded() {
+	return discarded;
     }
 
-    public void setIsDeleted(Boolean isDeleted) {
-	this.isDeleted = isDeleted;
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
     }
 
     public List<TemplateItem> getItems() {
@@ -89,7 +89,7 @@ public class TemplateCollection extends GenericCollection {
     @Override
     public String toString() {
 	return "TemplateCollection [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ ", isDeleted=" + isDeleted + ", items=" + items + "]";
+		+ ", discarded=" + discarded + ", items=" + items + "]";
     }
 
 }

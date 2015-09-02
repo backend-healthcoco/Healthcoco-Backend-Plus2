@@ -32,16 +32,13 @@ public class RecordsCollection extends GenericCollection {
     private String doctorId;
 
     @Field
-    private Long createdDate;
-
-    @Field
     private String locationId;
 
     @Field
     private String hospitalId;
 
     @Field
-    private boolean isDeleted = false;
+    private Boolean discarded = false;
 
     @Field
     private boolean inHistory = false;
@@ -110,14 +107,6 @@ public class RecordsCollection extends GenericCollection {
 	this.doctorId = doctorId;
     }
 
-    public Long getCreatedDate() {
-	return createdDate;
-    }
-
-    public void setCreatedDate(Long createdDate) {
-	this.createdDate = createdDate;
-    }
-
     public String getLocationId() {
 	return locationId;
     }
@@ -134,12 +123,12 @@ public class RecordsCollection extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
-    public boolean isDeleted() {
-	return isDeleted;
+    public Boolean getDiscarded() {
+	return discarded;
     }
 
-    public void setDeleted(boolean isDeleted) {
-	this.isDeleted = isDeleted;
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
     }
 
     public boolean isInHistory() {
@@ -153,8 +142,7 @@ public class RecordsCollection extends GenericCollection {
     @Override
     public String toString() {
 	return "RecordsCollection [id=" + id + ", recordsUrl=" + recordsUrl + ", recordsPath=" + recordsPath + ", recordsLable=" + recordsLable
-		+ ", recordsType=" + recordsType + ", description=" + description + ", patientId=" + patientId + ", doctorId=" + doctorId + ", createdDate="
-		+ createdDate + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", isDeleted=" + isDeleted + ", inHistory=" + inHistory + "]";
+		+ ", recordsType=" + recordsType + ", description=" + description + ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId="
+		+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", inHistory=" + inHistory + "]";
     }
-
 }

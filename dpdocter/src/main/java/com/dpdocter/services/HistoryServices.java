@@ -16,7 +16,8 @@ public interface HistoryServices {
 
     Boolean deleteDisease(String diseaseId, String doctorId, String hospitalId, String locationId);
 
-    List<DiseaseListResponse> getDiseases(String range, int page, int size, String doctorId, String hospitalId, String locationId, String createdTime, Boolean isDeleted);
+    List<DiseaseListResponse> getDiseases(String range, int page, int size, String doctorId, String hospitalId, String locationId, String updatedTime,
+	    Boolean discarded);
 
     List<DiseaseListResponse> getDiseasesByIds(List<String> diseasesIds);
 
@@ -54,6 +55,6 @@ public interface HistoryServices {
 
     boolean handleFamilyHistory(MedicalHistoryHandler request);
 
-    HistoryDetailsResponse getMedicalAndFamilyHistory(String patientId, String doctorId, String hospitalId,String locationId);
-    
+    HistoryDetailsResponse getMedicalAndFamilyHistory(String patientId, String doctorId, String hospitalId, String locationId);
+
 }

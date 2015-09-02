@@ -13,40 +13,43 @@ import com.dpdocter.collections.ComplaintCollection;
 
 public interface ComplaintRepository extends MongoRepository<ComplaintCollection, String>, PagingAndSortingRepository<ComplaintCollection, String> {
 
-    @Query("{'doctorId': null, 'createdTime': {'$gte': ?0}}")
-	List<ComplaintCollection> findGlobalComplaints(Date date, Sort sort, PageRequest pageRequest);
+    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}}")
+    List<ComplaintCollection> findGlobalComplaints(Date date, Sort sort, PageRequest pageRequest);
 
-    @Query("{'doctorId': null, 'createdTime': {'$gte': ?0}, 'isDeleted': ?2}")
-	List<ComplaintCollection> findGlobalComplaints(Date date, Boolean isDeleted, Sort sort, PageRequest pageRequest);
+    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?2}")
+    List<ComplaintCollection> findGlobalComplaints(Date date, Boolean discarded, Sort sort, PageRequest pageRequest);
 
     @Query("{'doctorId': null}")
-	List<ComplaintCollection> findGlobalComplaints(Sort sort,  PageRequest pageRequest);
+    List<ComplaintCollection> findGlobalComplaints(Sort sort, PageRequest pageRequest);
 
-    @Query("{'doctorId': null, 'isDeleted': ?1}")
-	List<ComplaintCollection> findGlobalComplaints(Boolean isDeleted, Sort sort,  PageRequest pageRequest);
+    @Query("{'doctorId': null, 'discarded': ?1}")
+    List<ComplaintCollection> findGlobalComplaints(Boolean discarded, Sort sort, PageRequest pageRequest);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'createdTime': {'$gte': ?3}}")
-	List<ComplaintCollection> findCustomComplaints(String doctorId, String locationId, String hospitalId, Date date,Sort sort, PageRequest pageRequest);
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}}")
+    List<ComplaintCollection> findCustomComplaints(String doctorId, String locationId, String hospitalId, Date date, Sort sort, PageRequest pageRequest);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'createdTime': {'$gte': ?3}, 'isDeleted': ?4}")
-	List<ComplaintCollection> findCustomComplaints(String doctorId, String locationId, String hospitalId, Date date, Boolean isDeleted, Sort sort, PageRequest pageRequest);
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': ?4}")
+    List<ComplaintCollection> findCustomComplaints(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded, Sort sort,
+	    PageRequest pageRequest);
 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2}")
-	List<ComplaintCollection> findCustomComplaints(String doctorId, String locationId, String hospitalId, Sort sort, PageRequest pageRequest);
+    List<ComplaintCollection> findCustomComplaints(String doctorId, String locationId, String hospitalId, Sort sort, PageRequest pageRequest);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'isDeleted': ?3}")
-	List<ComplaintCollection> findCustomComplaints(String doctorId, String locationId, String hospitalId, Boolean isDeleted, Sort sort, PageRequest pageRequest);
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3}")
+    List<ComplaintCollection> findCustomComplaints(String doctorId, String locationId, String hospitalId, Boolean discarded, Sort sort, PageRequest pageRequest);
 
-    @Query("{'$or': [{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'createdTime': {'$gte': ?3}} , {'doctorId': null, 'locationId': null, 'hospitalId': null, 'createdTime': {'$gte': ?3}}]}")
+    @Query("{'$or': [{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}} , {'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?3}}]}")
     List<ComplaintCollection> findCustomGlobalComplaints(String doctorId, String locationId, String hospitalId, Date date, Sort sort, PageRequest pageRequest);
 
-    @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'createdTime': {'$gte': ?3}, 'isDeleted': ?4},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'createdTime': {'$gte': ?3},'isDeleted': ?4}]}")
-    List<ComplaintCollection> findCustomGlobalComplaints(String doctorId, String locationId, String hospitalId, Date date, boolean isDeleted, Sort sort, PageRequest pageRequest);
+    @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': ?4},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?3},'discarded': ?4}]}")
+    List<ComplaintCollection> findCustomGlobalComplaints(String doctorId, String locationId, String hospitalId, Date date, boolean discarded, Sort sort,
+	    PageRequest pageRequest);
 
-    @Query("{'$or': [{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2} , {'doctorId': null, 'locationId': null, 'hospitalId': null}]}")
-	List<ComplaintCollection> findCustomGlobalComplaints(String doctorId, String locationId, String hospitalId, Sort sort, PageRequest pageRequest);
+    @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2},{'doctorId': null, 'locationId': null, 'hospitalId': null}]}")
+    List<ComplaintCollection> findCustomGlobalComplaints(String doctorId, String locationId, String hospitalId, Sort sort, PageRequest pageRequest);
 
-    @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'isDeleted': ?3},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'isDeleted': ?3}]}")
-	List<ComplaintCollection> findCustomGlobalComplaints(String doctorId, String locationId, String hospitalId,Boolean isDeleted, Sort sort, PageRequest pageRequest);
+    @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'discarded': ?3}]}")
+    List<ComplaintCollection> findCustomGlobalComplaints(String doctorId, String locationId, String hospitalId, Boolean discarded, Sort sort,
+	    PageRequest pageRequest);
 
 }

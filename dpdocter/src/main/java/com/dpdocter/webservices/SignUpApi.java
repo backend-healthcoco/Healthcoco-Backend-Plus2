@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.User;
-import com.dpdocter.beans.UserActivation;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.DoctorSignupRequest;
@@ -66,20 +65,24 @@ public class SignUpApi {
 	return response;
     }
 
+    @Produces(MediaType.TEXT_HTML)
+    // @Consumes(MediaType.TEXT_HTML)
     @Path(value = PathProxy.SignUpUrls.ACTIVATE_USER)
     @GET
-    public Response<UserActivation> activateUser(@PathParam(value = "userId") String userId) {
-	if (userId == null) {
+    public String activateUser(@PathParam(value = "tokenId") String tokenId) {
+	if (tokenId == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
-	Boolean isActivated = false;
-	isActivated = signUpService.activateUser(userId);
-	UserActivation userActivation = new UserActivation();
-	userActivation.setActivated(isActivated);
-	Response<UserActivation> response = new Response<UserActivation>();
-	response.setData(userActivation);
+	// Boolean isActivated = false;
+	// isActivated = signUpService.activateUser(tokenId);
 
-	return response;
+	String response = signUpService.activateUser(tokenId);
+	// UserActivation userActivation = new UserActivation();
+	// userActivation.setActivated(isActivated);
+	// Response<UserActivation> response = new Response<UserActivation>();
+	// response.setData(userActivation);
+
+	return "<html><body>" + response + "</body></html>";
     }
 
     @Path(value = PathProxy.SignUpUrls.CHECK_IF_USERNAME_EXIST)

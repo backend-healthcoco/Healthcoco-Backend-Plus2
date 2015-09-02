@@ -3,8 +3,10 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -42,7 +44,6 @@ import com.dpdocter.services.PatientTrackService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.solr.document.SolrDrugDocument;
 import com.dpdocter.solr.services.SolrPrescriptionService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -79,7 +80,7 @@ public class PrescriptionApi {
     }
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG)
-    @POST
+    @PUT
     public Response<DrugAddEditResponse> editDrug(DrugAddEditRequest request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
@@ -97,9 +98,9 @@ public class PrescriptionApi {
     }
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG)
-    @GET
+    @DELETE
     public Response<Boolean> deleteDrug(@PathParam(value = "drugId") String drugId, @PathParam(value = "doctorId") String doctorId,
-    		@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
 	if (StringUtils.isEmpty(drugId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	}
@@ -113,7 +114,7 @@ public class PrescriptionApi {
     }
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_GLOBAL_DRUG)
-    @GET
+    @DELETE
     public Response<Boolean> deleteDrug(@PathParam(value = "drugId") String drugId) {
 	if (StringUtils.isEmpty(drugId)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Id, Doctor Id Cannot Be Empty");
@@ -164,7 +165,7 @@ public class PrescriptionApi {
     }
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_TEMPLATE)
-    @POST
+    @PUT
     public Response<TemplateAddEditResponse> editTemplate(TemplateAddEditRequest request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
@@ -176,9 +177,9 @@ public class PrescriptionApi {
     }
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_TEMPLATE)
-    @GET
+    @DELETE
     public Response<Boolean> deleteTemplate(@PathParam(value = "templateId") String templateId, @PathParam(value = "doctorId") String doctorId,
-    		@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
 	if (StringUtils.isEmpty(templateId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Template Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	}
@@ -191,7 +192,8 @@ public class PrescriptionApi {
     @Path(value = PathProxy.PrescriptionUrls.GET_TEMPLATE_TEMPLATE_ID)
     @GET
     public Response<TemplateAddEditResponseDetails> getTemplate(@PathParam(value = "templateId") String templateId,
-	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
+	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+	    @PathParam(value = "hospitalId") String hospitalId) {
 	if (DPDoctorUtils.anyStringEmpty(templateId, doctorId, hospitalId, locationId)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Template Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	}
@@ -201,18 +203,19 @@ public class PrescriptionApi {
 	return response;
     }
 
-   
     @Path(value = PathProxy.PrescriptionUrls.GET_TEMPLATE)
     @GET
-    public Response<TemplateAddEditResponseDetails> getAllTemplates(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
-    		@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-    		@QueryParam("createdTime") String createdTime, @QueryParam("isDeleted") Boolean isDeleted) {
-	
-    	return getTemplates(page, size, doctorId, hospitalId, locationId, createdTime, isDeleted !=null ?isDeleted : true);
+    public Response<TemplateAddEditResponseDetails> getAllTemplates(@QueryParam("page") int page, @QueryParam("size") int size,
+	    @QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+	    @QueryParam("updatedTime") String updatedTime, @QueryParam("discarded") Boolean discarded) {
+
+	return getTemplates(page, size, doctorId, hospitalId, locationId, updatedTime, discarded != null ? discarded : true);
     }
 
-    private Response<TemplateAddEditResponseDetails> getTemplates(int page, int size, String doctorId, String hospitalId, String locationId, String createdTime, boolean isDeleted) {
-	List<TemplateAddEditResponseDetails> templates = prescriptionServices.getTemplates(page, size, doctorId, hospitalId, locationId, createdTime, isDeleted);
+    private Response<TemplateAddEditResponseDetails> getTemplates(int page, int size, String doctorId, String hospitalId, String locationId,
+	    String updatedTime, boolean discarded) {
+	List<TemplateAddEditResponseDetails> templates = prescriptionServices
+		.getTemplates(page, size, doctorId, hospitalId, locationId, updatedTime, discarded);
 	Response<TemplateAddEditResponseDetails> response = new Response<TemplateAddEditResponseDetails>();
 	response.setDataList(templates);
 	return response;
@@ -257,7 +260,7 @@ public class PrescriptionApi {
     }
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_PRESCRIPTION)
-    @POST
+    @PUT
     public Response<PrescriptionAddEditResponse> editPrescription(PrescriptionAddEditRequest request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
@@ -275,9 +278,9 @@ public class PrescriptionApi {
     }
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_PRESCRIPTION)
-    @GET
+    @DELETE
     public Response<Boolean> deletePrescription(@PathParam(value = "prescriptionId") String prescriptionId, @PathParam(value = "doctorId") String doctorId,
-    		@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @PathParam(value = "patientId") String patientId) {
 	if (StringUtils.isEmpty(prescriptionId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
@@ -288,22 +291,20 @@ public class PrescriptionApi {
 	return response;
     }
 
-   
-    @Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION)
     @GET
-    public Response<Prescription> getPrescription(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
-    		@QueryParam("hospitalId") String hospitalId, @QueryParam("patientId") String patientId,
-    		@QueryParam("isOTPVarified") Boolean isOTPVarified, @QueryParam("createdTime") String createdTime,
-    		@QueryParam("isDeleted") Boolean isDeleted) {
-    
-    List<Prescription> prescriptions = null;
-    
-    
-    	if(isOTPVarified != null)
-    	 prescriptions = prescriptionServices.getPrescriptions(page, size, doctorId, hospitalId, locationId, patientId, createdTime, isOTPVarified, isDeleted !=null ?isDeleted:true);
-    	else
-    	 prescriptions = prescriptionServices.getPrescriptions(page, size, doctorId, hospitalId, locationId, patientId, createdTime, true, isDeleted !=null ?isDeleted:true);
-    
+    public Response<Prescription> getPrescription(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
+	    @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId, @QueryParam("patientId") String patientId,
+	    @QueryParam("isOTPVarified") Boolean isOTPVarified, @QueryParam("updatedTime") String updatedTime, @QueryParam("discarded") Boolean discarded) {
+
+	List<Prescription> prescriptions = null;
+
+	if (isOTPVarified != null)
+	    prescriptions = prescriptionServices.getPrescriptions(page, size, doctorId, hospitalId, locationId, patientId, updatedTime, isOTPVarified,
+		    discarded != null ? discarded : true);
+	else
+	    prescriptions = prescriptionServices.getPrescriptions(page, size, doctorId, hospitalId, locationId, patientId, updatedTime, true,
+		    discarded != null ? discarded : true);
+
 	Response<Prescription> response = new Response<Prescription>();
 	response.setDataList(prescriptions);
 	return response;
@@ -333,7 +334,7 @@ public class PrescriptionApi {
     }
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_TYPE)
-    @POST
+    @PUT
     public Response<DrugTypeAddEditResponse> editDrugType(DrugTypeAddEditRequest request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
@@ -346,7 +347,7 @@ public class PrescriptionApi {
     }
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_TYPE)
-    @GET
+    @DELETE
     public Response<Boolean> deleteDrugType(@PathParam(value = "drugTypeId") String drugTypeId) {
 	if (StringUtils.isEmpty(drugTypeId)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Type Id Cannot Be Empty");
@@ -372,7 +373,7 @@ public class PrescriptionApi {
     }
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_STRENGTH)
-    @POST
+    @PUT
     public Response<DrugStrengthAddEditResponse> editDrugStrength(DrugStrengthAddEditRequest request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
@@ -385,7 +386,7 @@ public class PrescriptionApi {
     }
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_STRENGTH)
-    @GET
+    @DELETE
     public Response<Boolean> deleteDrugStrength(@PathParam(value = "drugStrengthId") String drugStrengthId) {
 	if (StringUtils.isEmpty(drugStrengthId)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Strength Id Cannot Be Empty");
@@ -411,7 +412,7 @@ public class PrescriptionApi {
     }
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DOSAGE)
-    @POST
+    @PUT
     public Response<DrugDosageAddEditResponse> editDrugDosage(DrugDosageAddEditRequest request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
@@ -424,7 +425,7 @@ public class PrescriptionApi {
     }
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DOSAGE)
-    @GET
+    @DELETE
     public Response<Boolean> deleteDrugDosage(@PathParam(value = "drugDosageId") String drugDosageId) {
 	if (StringUtils.isEmpty(drugDosageId)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Dosage Id Cannot Be Empty");
@@ -450,7 +451,7 @@ public class PrescriptionApi {
     }
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DIRECTION)
-    @POST
+    @PUT
     public Response<DrugDirectionAddEditResponse> editDrugDirection(DrugDirectionAddEditRequest request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
@@ -463,7 +464,7 @@ public class PrescriptionApi {
     }
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DIRECTION)
-    @GET
+    @DELETE
     public Response<Boolean> deleteDrugDirection(@PathParam(value = "drugDirectionId") String drugDirectionId) {
 	if (StringUtils.isEmpty(drugDirectionId)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Direction Id Cannot Be Empty");
@@ -489,7 +490,7 @@ public class PrescriptionApi {
     }
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DURATION_UNIT)
-    @POST
+    @PUT
     public Response<DrugDurationUnitAddEditResponse> editDrugDurationUnit(DrugDurationUnitAddEditRequest request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
@@ -502,7 +503,7 @@ public class PrescriptionApi {
     }
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DURATION_UNIT)
-    @GET
+    @DELETE
     public Response<Boolean> deleteDrugDurationUnit(@PathParam(value = "drugDurationUnitId") String drugDurationUnitId) {
 	if (StringUtils.isEmpty(drugDurationUnitId)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Duration Unit Id Cannot Be Empty");
@@ -516,18 +517,19 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_ITEMS)
     @GET
-    public Response<Object> getPrescriptionItems(@PathParam("type") String type, @PathParam("range") String range,
-    	@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
-	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId, 
-	    @QueryParam(value = "createdTime") String createdTime, @QueryParam(value = "isDeleted") Boolean isDeleted) {
-    	
-    	if (DPDoctorUtils.anyStringEmpty(type, range)) {
-    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Type or Range Cannot Be Empty");
-    	}
-    	List<Object> clinicalItems = prescriptionServices.getPrescriptionItems(type, range, page, size, doctorId, locationId, hospitalId, createdTime, isDeleted !=null ?isDeleted:true);
-    	
-    	Response<Object> response = new  Response<Object>();
-    	response.setDataList(clinicalItems);
-    	return  response;
+    public Response<Object> getPrescriptionItems(@PathParam("type") String type, @PathParam("range") String range, @QueryParam("page") int page,
+	    @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+	    @QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "updatedTime") String updatedTime,
+	    @QueryParam(value = "discarded") Boolean discarded) {
+
+	if (DPDoctorUtils.anyStringEmpty(type, range)) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Type or Range Cannot Be Empty");
+	}
+	List<Object> clinicalItems = prescriptionServices.getPrescriptionItems(type, range, page, size, doctorId, locationId, hospitalId, updatedTime,
+		discarded != null ? discarded : true);
+
+	Response<Object> response = new Response<Object>();
+	response.setDataList(clinicalItems);
+	return response;
     }
 }

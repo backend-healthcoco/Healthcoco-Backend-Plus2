@@ -49,14 +49,15 @@ public interface PrescriptionServices {
 
     Boolean deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId, String patientId);
 
-    List<Prescription> getPrescriptions(int page, int size, String doctorId, String hospitalId, String locationId, String patientId, String createdTime, boolean isOTPVarified,
-	    boolean isDeleted);
+    List<Prescription> getPrescriptions(int page, int size, String doctorId, String hospitalId, String locationId, String patientId, String updatedTime,
+	    boolean isOTPVarified, boolean discarded);
 
     List<Prescription> getPrescriptionsByIds(List<String> prescriptionIds);
 
     Prescription getPrescriptionById(String prescriptionId);
 
-    List<TemplateAddEditResponseDetails> getTemplates(int page, int size, String doctorId, String hospitalId, String locationId, String createdTime, boolean isDeleted);
+    List<TemplateAddEditResponseDetails> getTemplates(int page, int size, String doctorId, String hospitalId, String locationId, String updatedTime,
+	    boolean discarded);
 
     @Query(value = "{'doctorId': ?0, 'patientId': ?1, 'locationId': ?2, 'hospitalId': ?3}", count = true)
     Integer getPrescriptionCount(String doctorId, String patientId, String locationId, String hospitalId);
@@ -64,7 +65,7 @@ public interface PrescriptionServices {
     TemplateAddEditResponseDetails addTemplateHandheld(TemplateAddEditRequest request);
 
     PrescriptionAddEditResponseDetails addPrescriptionHandheld(PrescriptionAddEditRequest request);
-    
+
     DrugTypeAddEditResponse addDrugType(DrugTypeAddEditRequest request);
 
     DrugStrengthAddEditResponse addDrugStrength(DrugStrengthAddEditRequest request);
@@ -95,6 +96,7 @@ public interface PrescriptionServices {
 
     Boolean deleteDrugDurationUnit(String drugDurationUnitId);
 
-	List<Object> getPrescriptionItems(String type, String range, int page, int size, String doctorId, String locationId,String hospitalId, String createdTime, Boolean isDeleted);
+    List<Object> getPrescriptionItems(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+	    Boolean discarded);
 
 }

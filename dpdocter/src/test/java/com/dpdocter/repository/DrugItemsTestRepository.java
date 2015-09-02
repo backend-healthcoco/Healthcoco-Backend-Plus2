@@ -10,8 +10,6 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
-import common.util.web.JacksonUtil;
-
 public class DrugItemsTestRepository {
 
     private DBCollection collection;
@@ -23,35 +21,41 @@ public class DrugItemsTestRepository {
     public JSONObject add(String drug) throws JSONException {
 	DBObject object = (DBObject) JSON.parse(drug);
 	collection.insert(object);
-	DBObject found = collection.find(object) !=null ? collection.find(object).one() : null;
-	if(found == null) return null;
-	else return new JSONObject(JSON.serialize(found));
+	DBObject found = collection.find(object) != null ? collection.find(object).one() : null;
+	if (found == null)
+	    return null;
+	else
+	    return new JSONObject(JSON.serialize(found));
     }
 
-    public JSONObject findBy(String doctorId, String hospitalId, String locationId, Date createdTime, boolean isDeleted) throws JSONException {
+    public JSONObject findBy(String doctorId, String hospitalId, String locationId, Date createdTime, boolean discarded) throws JSONException {
 	BasicDBObject query = new BasicDBObject();
-	
-	if(doctorId !=null && hospitalId !=null && locationId !=null){
-		query.put("doctorId", doctorId);
-		query.put("hospitalId", hospitalId);
-		query.put("locationId", locationId);
+
+	if (doctorId != null && hospitalId != null && locationId != null) {
+	    query.put("doctorId", doctorId);
+	    query.put("hospitalId", hospitalId);
+	    query.put("locationId", locationId);
 	}
-	if(!isDeleted)
-		query.put("deleted", isDeleted);
-	
-	if(createdTime !=null)
-		query.put("createdTime", createdTime.getTime());
-	
+	if (!discarded)
+	    query.put("deleted", discarded);
+
+	if (createdTime != null)
+	    query.put("createdTime", createdTime.getTime());
+
 	DBObject found = collection.findOne(query);
-	if(found == null) return null;
-	else return new JSONObject(JSON.serialize(found));
+	if (found == null)
+	    return null;
+	else
+	    return new JSONObject(JSON.serialize(found));
     }
 
-	public JSONObject findBy(String field, String value) throws JSONException {
-			BasicDBObject query = new BasicDBObject();
-	        query.put(field, value);
-	      DBObject found = collection.findOne(query);
-	    if(found == null) return null;
-	  	else  return new JSONObject(JSON.serialize(found));
-	}
+    public JSONObject findBy(String field, String value) throws JSONException {
+	BasicDBObject query = new BasicDBObject();
+	query.put(field, value);
+	DBObject found = collection.findOne(query);
+	if (found == null)
+	    return null;
+	else
+	    return new JSONObject(JSON.serialize(found));
+    }
 }

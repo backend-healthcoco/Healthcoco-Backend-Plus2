@@ -17,24 +17,27 @@ public interface GroupRepository extends MongoRepository<GroupCollection, String
     @Query("{'doctorId': ?0}")
     public List<GroupCollection> findByDoctorId(String doctorId, Sort sort);
 
-    @Query("{'doctorId': ?0, 'isDeleted': ?1}")
-    public List<GroupCollection> findByDoctorId(String doctorId, boolean isDeleted, Sort sort);
+    @Query("{'doctorId': ?0, 'discarded': ?1}")
+    public List<GroupCollection> findByDoctorId(String doctorId, boolean discarded, Sort sort);
 
-    @Query("{'doctorId': ?0, 'createdTime': {'$gte': ?1}}")
+    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}}")
     public List<GroupCollection> findByDoctorId(String doctorId, Date date, Sort sort);
 
-    @Query("{'doctorId': ?0, 'createdTime': {'$gte': ?1}, 'isDeleted': ?2}")
-    public List<GroupCollection> findByDoctorId(String doctorId, Date date, boolean isDeleted, Sort sort);
+    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2}")
+    public List<GroupCollection> findByDoctorId(String doctorId, Date date, boolean discarded, Sort sort);
 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2}")
     public List<GroupCollection> findByDoctorIdPatientIdHospitalId(String doctorId, String locationId, String hospitalId, Sort sort, PageRequest pageRequest);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'isDeleted': ?3}")
-    public List<GroupCollection> findByDoctorIdPatientIdHospitalId(String doctorId, String locationId, String hospitalId, boolean isDeleted, Sort sort, PageRequest pageRequest);
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3}")
+    public List<GroupCollection> findByDoctorIdPatientIdHospitalId(String doctorId, String locationId, String hospitalId, boolean discarded, Sort sort,
+	    PageRequest pageRequest);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'createdTime': {'$gte': ?3}}")
-    public List<GroupCollection> findByDoctorIdPatientIdHospitalId(String doctorId, String locationId, String hospitalId, Date date, Sort sort, PageRequest pageRequest);
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}}")
+    public List<GroupCollection> findByDoctorIdPatientIdHospitalId(String doctorId, String locationId, String hospitalId, Date date, Sort sort,
+	    PageRequest pageRequest);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'isDeleted': ?3, 'createdTime': {'$gte': ?4}}")
-    public List<GroupCollection> findByDoctorIdPatientIdHospitalId(String doctorId, String locationId, String hospitalId, boolean isDeleted, Date date, Sort sort, PageRequest pageRequest);
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3, 'updatedTime': {'$gte': ?4}}")
+    public List<GroupCollection> findByDoctorIdPatientIdHospitalId(String doctorId, String locationId, String hospitalId, boolean discarded, Date date,
+	    Sort sort, PageRequest pageRequest);
 }

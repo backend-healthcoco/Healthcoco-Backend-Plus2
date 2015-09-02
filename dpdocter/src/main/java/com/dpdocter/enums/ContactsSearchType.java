@@ -2,16 +2,15 @@ package com.dpdocter.enums;
 
 public enum ContactsSearchType {
 
-	DOCTORCONTACTS("DOCTORCONTACTS"),RECENTLYVISITED("RECENTLYVISITED"),MOSTVISITED("MOSTVISITED");
-	
-	private String type;
+    DOCTORCONTACTS("DOCTORCONTACTS"), RECENTLYVISITED("RECENTLYVISITED"), MOSTVISITED("MOSTVISITED");
 
-	private ContactsSearchType(String type) {
-		this.type = type;
-	}
+    private String type;
 
-	public String getType() {
-		return type;
-	}
+    private ContactsSearchType(String type) {
+	this.type = type;
+    }
 
+    public String getType() {
+	return type;
+    }
 }

@@ -26,13 +26,13 @@ public class DOB {
     }
 
     public DOB(int days, int months, int years) {
-    	super();
-    	this.days = days;
-    	this.months = months;
-    	this.years = years;
-	}
+	super();
+	this.days = days;
+	this.months = months;
+	this.years = years;
+    }
 
-	public int getDays() {
+    public int getDays() {
 	return days;
     }
 

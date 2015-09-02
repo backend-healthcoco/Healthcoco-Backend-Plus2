@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "referrences_cl")
-public class ReferencesCollection {
+public class ReferencesCollection extends GenericCollection {
     @Id
     private String id;
 
@@ -25,7 +25,7 @@ public class ReferencesCollection {
     private String hospitalId;
 
     @Field
-    private boolean isDeleted = false;
+    private Boolean discarded = false;
 
     public String getId() {
 	return id;
@@ -75,18 +75,18 @@ public class ReferencesCollection {
 	this.hospitalId = hospitalId;
     }
 
-    public boolean isDeleted() {
-	return isDeleted;
+    public Boolean getDiscarded() {
+	return discarded;
     }
 
-    public void setDeleted(boolean isDeleted) {
-	this.isDeleted = isDeleted;
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
     }
 
     @Override
     public String toString() {
 	return "ReferencesCollection [id=" + id + ", reference=" + reference + ", description=" + description + ", doctorId=" + doctorId + ", locationId="
-		+ locationId + ", hospitalId=" + hospitalId + ", isDeleted=" + isDeleted + "]";
+		+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + "]";
     }
 
 }

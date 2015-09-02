@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.beans.DOB;
 
 @Document(collection = "user_cl")
-public class UserCollection {
+public class UserCollection extends GenericCollection {
 
     @Id
     private String id;

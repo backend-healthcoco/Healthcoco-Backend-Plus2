@@ -3,6 +3,7 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -136,7 +137,7 @@ public class RegistrationApi {
     }
 
     @Path(value = PathProxy.RegistrationUrls.DELETE_REFERRENCE)
-    @GET
+    @DELETE
     public Response<Boolean> deleteReferrence(@PathParam("referrenceId") String referrenceId) {
 	if (referrenceId == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.referrenceId is null");
@@ -213,7 +214,7 @@ public class RegistrationApi {
 	if (patientId == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.patientId is null");
 	}
-	
+
 	Response<String> response = new Response<String>();
 	String pid = registrationService.getPatientPID(patientId);
 	response.setData(pid);
@@ -288,7 +289,7 @@ public class RegistrationApi {
 	    solrPatientDocument.setDays(patient.getDob().getDays());
 	    solrPatientDocument.setMonths(patient.getDob().getMonths());
 	    solrPatientDocument.setYears(patient.getDob().getYears());
-	    
+
 	    if (patient.getAddress() != null) {
 		BeanUtil.map(patient.getAddress(), solrPatientDocument);
 	    }
@@ -297,7 +298,7 @@ public class RegistrationApi {
 	    }
 	    BeanUtil.map(patient, solrPatientDocument);
 	    solrPatientDocument.setId(patient.getPatient().getPatientId());
-	    
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}

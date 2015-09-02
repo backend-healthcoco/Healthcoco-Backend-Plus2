@@ -26,7 +26,7 @@ public class GroupCollection extends GenericCollection {
     private String hospitalId;
 
     @Field
-    private boolean isDeleted = false;
+    private Boolean discarded = false;
 
     public String getId() {
 	return id;
@@ -76,18 +76,18 @@ public class GroupCollection extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
-    public boolean isDeleted() {
-	return isDeleted;
+    public Boolean getDiscarded() {
+	return discarded;
     }
 
-    public void setDeleted(boolean isDeleted) {
-	this.isDeleted = isDeleted;
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
     }
 
     @Override
     public String toString() {
 	return "GroupCollection [id=" + id + ", name=" + name + ", description=" + description + ", doctorId=" + doctorId + ", locationId=" + locationId
-		+ ", hospitalId=" + hospitalId + ", isDeleted=" + isDeleted + "]";
+		+ ", hospitalId=" + hospitalId + ", discarded=" + discarded + "]";
     }
 
 }

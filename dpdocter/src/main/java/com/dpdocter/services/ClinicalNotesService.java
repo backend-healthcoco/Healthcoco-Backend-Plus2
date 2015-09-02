@@ -23,10 +23,10 @@ public interface ClinicalNotesService {
 
     void deleteNote(String id);
 
-    List<ClinicalNotes> getPatientsClinicalNotesWithVerifiedOTP(int page, int size, String patientId, String createdTime, boolean isDeleted);
+    List<ClinicalNotes> getPatientsClinicalNotesWithVerifiedOTP(int page, int size, String patientId, String updatedTime, boolean discarded);
 
-    List<ClinicalNotes> getPatientsClinicalNotesWithoutVerifiedOTP(int page, int size, String patientId, String doctorId, String locationId, String hospitalId, String createdTime,
-	    boolean isDeleted);
+    List<ClinicalNotes> getPatientsClinicalNotesWithoutVerifiedOTP(int page, int size, String patientId, String doctorId, String locationId, String hospitalId,
+	    String updatedTime, boolean discarded);
 
     Complaint addEditComplaint(Complaint complaint);
 
@@ -55,6 +55,7 @@ public interface ClinicalNotesService {
     @Query(value = "{'doctorId': ?0, 'patientId': ?1, 'locationId': ?2, 'hospitalId': ?3}", count = true)
     Integer getClinicalNotesCount(String doctorId, String patientId, String locationId, String hospitalId);
 
-	List<Object> getClinicalItems(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String createdTime, Boolean isDeleted);
+    List<Object> getClinicalItems(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+	    Boolean discarded);
 
 }

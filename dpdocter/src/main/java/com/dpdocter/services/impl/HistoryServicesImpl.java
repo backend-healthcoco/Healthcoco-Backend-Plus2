@@ -29,7 +29,6 @@ import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.NotesCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.RecordsCollection;
-import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.HistoryFilter;
 import com.dpdocter.enums.Range;
 import com.dpdocter.exceptions.BusinessException;
@@ -41,7 +40,6 @@ import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.repository.NotesRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.RecordsRepository;
-import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DiseaseAddEditRequest;
 import com.dpdocter.response.DiseaseAddEditResponse;
 import com.dpdocter.response.DiseaseListResponse;
@@ -50,7 +48,6 @@ import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.RecordsService;
-
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -88,19 +85,16 @@ public class HistoryServicesImpl implements HistoryServices {
     @Autowired
     private MongoOperations mongoOperations;
 
-    @Autowired
-    private UserRepository userRepository;
-
     @Override
     public List<DiseaseAddEditResponse> addDiseases(List<DiseaseAddEditRequest> request) {
 	List<DiseaseAddEditResponse> response = null;
 	List<DiseasesCollection> diseases = new ArrayList<DiseasesCollection>();
+	BeanUtil.map(request, diseases);
 	try {
-		 for (Iterator<DiseaseAddEditRequest> iterator = request.iterator(); iterator.hasNext();) {
-			 DiseaseAddEditRequest diseaseAddEditRequest = iterator.next();
-			 diseaseAddEditRequest.setCreatedTime(new Date());
-		 }
-		BeanUtil.map(request, diseases);
+	    for (Iterator<DiseasesCollection> iterator = diseases.iterator(); iterator.hasNext();) {
+		DiseasesCollection diseasesCollection = iterator.next();
+		diseasesCollection.setCreatedTime(new Date());
+	    }
 	    diseases = diseasesRepository.save(diseases);
 	    response = new ArrayList<DiseaseAddEditResponse>();
 	    BeanUtil.map(diseases, response);
@@ -136,7 +130,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    if (disease != null) {
 		if (disease.getDoctorId() != null && disease.getHospitalId() != null && disease.getLocationId() != null) {
 		    if (disease.getDoctorId().equals(doctorId) && disease.getHospitalId().equals(hospitalId) && disease.getLocationId().equals(locationId)) {
-			disease.setDeleted(true);
+			disease.setDiscarded(true);
 			disease = diseasesRepository.save(disease);
 			response = true;
 		    } else {
@@ -168,7 +162,10 @@ public class HistoryServicesImpl implements HistoryServices {
 	    if (historyCollection != null) {
 
 		// check if reports are there in history.
-		Collection<String> reports = CollectionUtils.collect(historyCollection.getGeneralRecords(), new BeanToPropertyValueTransformer("data"));
+
+		Collection<String> reports = null;
+		if (historyCollection.getGeneralRecords() != null)
+		    reports = CollectionUtils.collect(historyCollection.getGeneralRecords(), new BeanToPropertyValueTransformer("data"));
 		if (reports != null) {
 		    // check if this report id is already added into history.
 		    if (!reports.contains(reportId)) {
@@ -178,12 +175,19 @@ public class HistoryServicesImpl implements HistoryServices {
 		    }
 		    // if no report is added into history then add it .
 		} else {
-		    historyCollection.getGeneralRecords().add(0, report);
+		    if (historyCollection.getGeneralRecords() == null) {
+			List<GeneralData> generalRecords = historyCollection.getGeneralRecords();
+			generalRecords = new ArrayList<GeneralData>();
+			generalRecords.add(0, report);
+			historyCollection.setGeneralRecords(generalRecords);
+		    } else
+			historyCollection.getGeneralRecords().add(0, report);
 		}
 	    } else {
 		// if history not added for this patient.Create new history.
 		historyCollection = new HistoryCollection(doctorId, locationId, hospitalId, patientId);
 		historyCollection.setGeneralRecords(Arrays.asList(report));
+		historyCollection.setCreatedTime(new Date());
 	    }
 	    // finally add history into db.
 	    historyRepository.save(historyCollection);
@@ -214,7 +218,9 @@ public class HistoryServicesImpl implements HistoryServices {
 	    historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
 		// check if clinical notes are there in history.
-		Collection<String> clinicalNotes = CollectionUtils.collect(historyCollection.getGeneralRecords(), new BeanToPropertyValueTransformer("data"));
+		Collection<String> clinicalNotes = null;
+		if (historyCollection.getGeneralRecords() != null)
+		    clinicalNotes = CollectionUtils.collect(historyCollection.getGeneralRecords(), new BeanToPropertyValueTransformer("data"));
 		if (clinicalNotes != null) {
 		    // check if this clinicalNotes id is already added into
 		    // history.
@@ -225,11 +231,18 @@ public class HistoryServicesImpl implements HistoryServices {
 		    }
 		    // if no clinicalNote is added into history then add it .
 		} else {
-		    historyCollection.getGeneralRecords().add(0, clinicalNote);
+		    if (historyCollection.getGeneralRecords() == null) {
+			List<GeneralData> generalRecords = historyCollection.getGeneralRecords();
+			generalRecords = new ArrayList<GeneralData>();
+			generalRecords.add(0, clinicalNote);
+			historyCollection.setGeneralRecords(generalRecords);
+		    } else
+			historyCollection.getGeneralRecords().add(0, clinicalNote);
 		}
 	    } else {// if history not added for this patient.Create new history.
 		historyCollection = new HistoryCollection(doctorId, locationId, hospitalId, patientId);
 		historyCollection.setGeneralRecords(Arrays.asList(clinicalNote));
+		historyCollection.setCreatedTime(new Date());
 	    }
 	    // finally add history into db.
 	    historyRepository.save(historyCollection);
@@ -261,7 +274,9 @@ public class HistoryServicesImpl implements HistoryServices {
 	    historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
 		// check if prescription are there in history.
-		Collection<String> prescriptions = CollectionUtils.collect(historyCollection.getGeneralRecords(), new BeanToPropertyValueTransformer("data"));
+		Collection<String> prescriptions = null;
+		if (historyCollection.getGeneralRecords() != null)
+		    prescriptions = CollectionUtils.collect(historyCollection.getGeneralRecords(), new BeanToPropertyValueTransformer("data"));
 		if (prescriptions != null) {
 		    // check if this prescription id is already added into
 		    // history.
@@ -272,11 +287,18 @@ public class HistoryServicesImpl implements HistoryServices {
 		    }
 		    // if no prescription is added into history then add it .
 		} else {
-		    historyCollection.getGeneralRecords().add(0, prescription);
+		    if (historyCollection.getGeneralRecords() == null) {
+			List<GeneralData> generalRecords = historyCollection.getGeneralRecords();
+			generalRecords = new ArrayList<GeneralData>();
+			generalRecords.add(0, prescription);
+			historyCollection.setGeneralRecords(generalRecords);
+		    } else
+			historyCollection.getGeneralRecords().add(0, prescription);
 		}
 	    } else {// if history not added for this patient.Create new history.
 		historyCollection = new HistoryCollection(doctorId, locationId, hospitalId, patientId);
 		historyCollection.setGeneralRecords(Arrays.asList(prescription));
+		historyCollection.setCreatedTime(new Date());
 	    }
 	    // finally add history into db.
 	    historyRepository.save(historyCollection);
@@ -321,6 +343,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    } else {
 		// if history not added for this patient.Create new history.
 		historyCollection = new HistoryCollection(doctorId, locationId, hospitalId, patientId);
+		historyCollection.setCreatedTime(new Date());
 		List<String> medicalHistoryList = new ArrayList<String>();
 		medicalHistoryList.add(diseaseId);
 		historyCollection.setMedicalhistory(medicalHistoryList);
@@ -360,6 +383,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		}
 	    } else {// if history not added for this patient.Create new history.
 		historyCollection = new HistoryCollection(doctorId, locationId, hospitalId, patientId);
+		historyCollection.setCreatedTime(new Date());
 		List<String> familyHistoryList = new ArrayList<String>();
 		familyHistoryList.add(diseaseId);
 		historyCollection.setFamilyhistory(familyHistoryList);
@@ -394,6 +418,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		}
 	    } else {// if history not added for this patient.Create new history.
 		historyCollection = new HistoryCollection(doctorId, locationId, hospitalId, patientId);
+		historyCollection.setCreatedTime(new Date());
 		historyCollection.setSpecialNotes(specialNotes);
 	    }
 	    // finally add history into db.
@@ -611,125 +636,149 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
-    public List<DiseaseListResponse> getDiseases(String range, int page, int size, String doctorId, String hospitalId, String locationId, String createdTime, Boolean isDeleted) {
+    public List<DiseaseListResponse> getDiseases(String range, int page, int size, String doctorId, String hospitalId, String locationId, String updatedTime,
+	    Boolean discarded) {
 	List<DiseaseListResponse> diseaseListResponses = null;
-	
-	switch(Range.valueOf(range.toUpperCase())){
-	
-	case GLOBAL :  diseaseListResponses = getGlobalDiseases(page, size, createdTime, isDeleted);	break;
-	case CUSTOM : diseaseListResponses=getCustomDiseases(page, size, doctorId, locationId, hospitalId, createdTime, isDeleted); break;
-	case BOTH : diseaseListResponses=getCustomGlobalDiseases(page, size, doctorId, locationId, hospitalId, createdTime, isDeleted); break;
+
+	switch (Range.valueOf(range.toUpperCase())) {
+
+	case GLOBAL:
+	    diseaseListResponses = getGlobalDiseases(page, size, updatedTime, discarded);
+	    break;
+	case CUSTOM:
+	    diseaseListResponses = getCustomDiseases(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+	    break;
+	case BOTH:
+	    diseaseListResponses = getCustomGlobalDiseases(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+	    break;
 	}
-	
 	return diseaseListResponses;
     }
 
-    private List<DiseaseListResponse> getCustomDiseases(int page, int size, String doctorId, String locationId,	String hospitalId, String createdTime, Boolean isDeleted) {
-    	List<DiseaseListResponse> diseaseListResponses = null;
-    	List<DiseasesCollection> diseasesCollections = null;
-    	try {
-    		
-    		if (!DPDoctorUtils.allStringsEmpty(createdTime)) {
-		    	long createdTimeStamp = Long.parseLong(createdTime);
-			if (isDeleted)
-				diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,"createdTime"), size>0 ? new PageRequest(page, size):null);
-			else
-				diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp), isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
+    private List<DiseaseListResponse> getCustomDiseases(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+	    Boolean discarded) {
+	List<DiseaseListResponse> diseaseListResponses = null;
+	List<DiseasesCollection> diseasesCollections = null;
+	try {
 
-		    } else {
-			if (isDeleted)
-				diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
-			else
-				diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC,"createdTime"), size>0 ? new PageRequest(page, size):null);
-		    }
-    	     
-    	    if (diseasesCollections != null) {
-    		diseaseListResponses = new ArrayList<DiseaseListResponse>();
-    		for (DiseasesCollection diseasesCollection : diseasesCollections) {
-    		    DiseaseListResponse diseaseListResponse = new DiseaseListResponse(diseasesCollection.getId(), diseasesCollection.getDisease(),
-    			    diseasesCollection.getDescription(),  diseasesCollection.getDoctorId(), diseasesCollection.getLocationId(), 
-    			    diseasesCollection.getHospitalId(), diseasesCollection.isDeleted(), diseasesCollection.getCreatedTime());
-    		    diseaseListResponses.add(diseaseListResponse);
+	    if (!DPDoctorUtils.allStringsEmpty(updatedTime)) {
+		long createdTimeStamp = Long.parseLong(updatedTime);
+		if (discarded)
+		    diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(
+			    Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+		else
+		    diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discarded,
+			    new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 
-    		}
-    	    }
-    	} catch (Exception e) {
-    	    e.printStackTrace();
-    	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-    	}
-    	return diseaseListResponses;
+	    } else {
+		if (discarded)
+		    diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "updatedTime"),
+			    size > 0 ? new PageRequest(page, size) : null);
+		else
+		    diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, locationId, hospitalId, discarded, new Sort(Sort.Direction.DESC,
+			    "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+	    }
+
+	    if (diseasesCollections != null) {
+		diseaseListResponses = new ArrayList<DiseaseListResponse>();
+		for (DiseasesCollection diseasesCollection : diseasesCollections) {
+		    DiseaseListResponse diseaseListResponse = new DiseaseListResponse(diseasesCollection.getId(), diseasesCollection.getDisease(),
+			    diseasesCollection.getDescription(), diseasesCollection.getDoctorId(), diseasesCollection.getLocationId(),
+			    diseasesCollection.getHospitalId(), diseasesCollection.getDiscarded(), diseasesCollection.getCreatedTime(),
+			    diseasesCollection.getUpdatedTime());
+		    diseaseListResponses.add(diseaseListResponse);
+
+		}
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return diseaseListResponses;
+    }
 
-	private List<DiseaseListResponse> getGlobalDiseases(int page, int size, String createdTime, Boolean isDeleted) {
-    	List<DiseaseListResponse> diseaseListResponses = null;
-    	List<DiseasesCollection> diseasesCollections = null;
-    	try {
-    		
-    		if (!DPDoctorUtils.allStringsEmpty(createdTime)) {
-		    	long createdTimeStamp = Long.parseLong(createdTime);
-			if (isDeleted)
-				diseasesCollections = diseasesRepository.findGlobalDiseases(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,"createdTime"), size>0 ? new PageRequest(page, size):null);
-			else
-				diseasesCollections = diseasesRepository.findGlobalDiseases(new Date(createdTimeStamp), isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
+    private List<DiseaseListResponse> getGlobalDiseases(int page, int size, String updatedTime, Boolean discarded) {
+	List<DiseaseListResponse> diseaseListResponses = null;
+	List<DiseasesCollection> diseasesCollections = null;
+	try {
 
-		    } else {
-			if (isDeleted)
-				diseasesCollections = diseasesRepository.findGlobalDiseases(new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
-			else
-				diseasesCollections = diseasesRepository.findGlobalDiseases(isDeleted, new Sort(Sort.Direction.DESC,"createdTime"), size>0 ? new PageRequest(page, size):null);
-		    }
-    	    if (diseasesCollections != null) {
-    		diseaseListResponses = new ArrayList<DiseaseListResponse>();
-    		for (DiseasesCollection diseasesCollection : diseasesCollections) {
-    		    DiseaseListResponse diseaseListResponse = new DiseaseListResponse(diseasesCollection.getId(), diseasesCollection.getDisease(),
-    			    diseasesCollection.getDescription(),  diseasesCollection.getDoctorId(), diseasesCollection.getLocationId(), 
-    			    diseasesCollection.getHospitalId(), diseasesCollection.isDeleted(), diseasesCollection.getCreatedTime());
-    		    diseaseListResponses.add(diseaseListResponse);
+	    if (!DPDoctorUtils.allStringsEmpty(updatedTime)) {
+		long createdTimeStamp = Long.parseLong(updatedTime);
+		if (discarded)
+		    diseasesCollections = diseasesRepository.findGlobalDiseases(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"),
+			    size > 0 ? new PageRequest(page, size) : null);
+		else
+		    diseasesCollections = diseasesRepository.findGlobalDiseases(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC,
+			    "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 
-    		}
-    	    }
-    	} catch (Exception e) {
-    	    e.printStackTrace();
-    	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-    	}
-    	return diseaseListResponses;
+	    } else {
+		if (discarded)
+		    diseasesCollections = diseasesRepository.findGlobalDiseases(new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page,
+			    size) : null);
+		else
+		    diseasesCollections = diseasesRepository.findGlobalDiseases(discarded, new Sort(Sort.Direction.DESC, "updatedTime"),
+			    size > 0 ? new PageRequest(page, size) : null);
+	    }
+	    if (diseasesCollections != null) {
+		diseaseListResponses = new ArrayList<DiseaseListResponse>();
+		for (DiseasesCollection diseasesCollection : diseasesCollections) {
+		    DiseaseListResponse diseaseListResponse = new DiseaseListResponse(diseasesCollection.getId(), diseasesCollection.getDisease(),
+			    diseasesCollection.getDescription(), diseasesCollection.getDoctorId(), diseasesCollection.getLocationId(),
+			    diseasesCollection.getHospitalId(), diseasesCollection.getDiscarded(), diseasesCollection.getCreatedTime(),
+			    diseasesCollection.getUpdatedTime());
+		    diseaseListResponses.add(diseaseListResponse);
+
+		}
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return diseaseListResponses;
+    }
 
-	private List<DiseaseListResponse> getCustomGlobalDiseases(int page, int size, String doctorId, String locationId,String hospitalId, String createdTime, Boolean isDeleted) {
-		List<DiseaseListResponse> diseaseListResponses = null;
-    	List<DiseasesCollection> diseasesCollections = null;
-    	try {
-    		
-    		if (!DPDoctorUtils.allStringsEmpty(createdTime)) {
-		    	long createdTimeStamp = Long.parseLong(createdTime);
-			if (isDeleted)
-				diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,"createdTime"), size>0 ? new PageRequest(page, size):null);
-			else
-				diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp), isDeleted, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
+    private List<DiseaseListResponse> getCustomGlobalDiseases(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+	    Boolean discarded) {
+	List<DiseaseListResponse> diseaseListResponses = null;
+	List<DiseasesCollection> diseasesCollections = null;
+	try {
 
-		    } else {
-			if (isDeleted)
-				diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "createdTime"), size>0 ? new PageRequest(page, size):null);
-			else
-				diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, isDeleted, new Sort(Sort.Direction.DESC,"createdTime"), size>0 ? new PageRequest(page, size):null);
-		    }
-    		
-    		if (diseasesCollections != null) {
-    		diseaseListResponses = new ArrayList<DiseaseListResponse>();
-    		for (DiseasesCollection diseasesCollection : diseasesCollections) {
-    		    DiseaseListResponse diseaseListResponse = new DiseaseListResponse(diseasesCollection.getId(), diseasesCollection.getDisease(),
-    			    diseasesCollection.getDescription(),  diseasesCollection.getDoctorId(), diseasesCollection.getLocationId(), 
-    			    diseasesCollection.getHospitalId(), diseasesCollection.isDeleted(), diseasesCollection.getCreatedTime());
-    		    diseaseListResponses.add(diseaseListResponse);
+	    if (!DPDoctorUtils.allStringsEmpty(updatedTime)) {
+		long createdTimeStamp = Long.parseLong(updatedTime);
+		if (discarded)
+		    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(
+			    Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+		else
+		    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discarded,
+			    new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 
-    		}
-    	    }
-    	} catch (Exception e) {
-    	    e.printStackTrace();
-    	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-    	}
-    	return diseaseListResponses;
-   }
+	    } else {
+		if (discarded)
+		    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC,
+			    "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+		else
+		    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, discarded, new Sort(
+			    Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+	    }
+
+	    if (diseasesCollections != null) {
+		diseaseListResponses = new ArrayList<DiseaseListResponse>();
+		for (DiseasesCollection diseasesCollection : diseasesCollections) {
+		    DiseaseListResponse diseaseListResponse = new DiseaseListResponse(diseasesCollection.getId(), diseasesCollection.getDisease(),
+			    diseasesCollection.getDescription(), diseasesCollection.getDoctorId(), diseasesCollection.getLocationId(),
+			    diseasesCollection.getHospitalId(), diseasesCollection.getDiscarded(), diseasesCollection.getCreatedTime(),
+			    diseasesCollection.getUpdatedTime());
+		    diseaseListResponses.add(diseaseListResponse);
+
+		}
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return diseaseListResponses;
+    }
+
     @Override
     public HistoryDetailsResponse getPatientHistoryDetailsWithoutVerifiedOTP(String patientId, String doctorId, String hospitalId, String locationId,
 	    String historyFilter) {
@@ -774,11 +823,6 @@ public class HistoryServicesImpl implements HistoryServices {
 		}
 
 		response.setSpecialNotes(historyCollection.getSpecialNotes());
-		UserCollection userCollection = userRepository.findOne(historyCollection.getDoctorId());
-		if(userCollection != null){
-			response.setDoctorName(userCollection.getFirstName() + userCollection.getLastName());
-		}
-
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -872,10 +916,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		    }
 
 		    historyDetailsResponse.setSpecialNotes(historyCollection.getSpecialNotes());
-		    UserCollection userCollection = userRepository.findOne(historyCollection.getDoctorId());
-			if(userCollection != null){
-				historyDetailsResponse.setDoctorName(userCollection.getFirstName() + userCollection.getLastName());
-			}
+
 		    response.add(historyDetailsResponse);
 		}
 	    }
@@ -943,6 +984,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		}
 	    } else {
 		historyCollection = new HistoryCollection(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId());
+		historyCollection.setCreatedTime(new Date());
 		List<String> medicalHistoryList = new ArrayList<String>();
 		medicalHistoryList.addAll(request.getAddDiseases());
 		medicalHistoryList.removeAll(request.getRemoveDiseases());
@@ -985,6 +1027,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		}
 	    } else {
 		historyCollection = new HistoryCollection(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId());
+		historyCollection.setCreatedTime(new Date());
 		List<String> familyHistoryList = new ArrayList<String>();
 		familyHistoryList.addAll(request.getAddDiseases());
 		familyHistoryList.removeAll(request.getRemoveDiseases());
@@ -1006,27 +1049,26 @@ public class HistoryServicesImpl implements HistoryServices {
 	return response;
     }
 
-	@Override
-	public HistoryDetailsResponse getMedicalAndFamilyHistory(String patientId, String doctorId, String hospitalId,String locationId) {
-		HistoryDetailsResponse response = null; 
-		HistoryCollection historyCollection = null;
+    @Override
+    public HistoryDetailsResponse getMedicalAndFamilyHistory(String patientId, String doctorId, String hospitalId, String locationId) {
+	HistoryDetailsResponse response = null;
+	HistoryCollection historyCollection = null;
 
-		try{
-			historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
-			List<String> medicalHistoryIds = historyCollection.getMedicalhistory();
-			if (medicalHistoryIds != null) {
-			    List<DiseaseListResponse> medicalHistory = getDiseasesByIds(medicalHistoryIds);
-			    response.setMedicalhistory(medicalHistory);
-			}
+	try {
+	    historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
+	    List<String> medicalHistoryIds = historyCollection.getMedicalhistory();
+	    if (medicalHistoryIds != null) {
+		List<DiseaseListResponse> medicalHistory = getDiseasesByIds(medicalHistoryIds);
+		response.setMedicalhistory(medicalHistory);
+	    }
 
-			List<String> familyHistoryIds = historyCollection.getFamilyhistory();
-			if (familyHistoryIds != null) {
-			    List<DiseaseListResponse> familyHistory = getDiseasesByIds(medicalHistoryIds);
-			    response.setFamilyhistory(familyHistory);
-			}
+	    List<String> familyHistoryIds = historyCollection.getFamilyhistory();
+	    if (familyHistoryIds != null) {
+		List<DiseaseListResponse> familyHistory = getDiseasesByIds(medicalHistoryIds);
+		response.setFamilyhistory(familyHistory);
+	    }
 
-		}
-	 catch (Exception e) {
+	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}

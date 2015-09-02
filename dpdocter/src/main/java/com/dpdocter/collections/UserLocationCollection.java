@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "user_location_cl")
-public class UserLocationCollection {
+public class UserLocationCollection extends GenericCollection {
     @Id
     private String id;
 

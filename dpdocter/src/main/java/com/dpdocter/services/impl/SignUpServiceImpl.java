@@ -1,6 +1,7 @@
 package com.dpdocter.services.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.RoleCollection;
+import com.dpdocter.collections.TokenCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
 import com.dpdocter.collections.UserRoleCollection;
@@ -31,6 +33,7 @@ import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.RoleRepository;
+import com.dpdocter.repository.TokenRepository;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserRoleRepository;
@@ -87,6 +90,9 @@ public class SignUpServiceImpl implements SignUpService {
     @Autowired
     private FileManager fileManager;
 
+    @Autowired
+    private TokenRepository tokenRepository;
+
     @Value(value = "${mail.signup.subject.activation}")
     private String signupSubject;
 
@@ -96,15 +102,28 @@ public class SignUpServiceImpl implements SignUpService {
      * @return Boolean This method activates the user account.
      */
     @Override
-    public Boolean activateUser(String userId) {
+    public String activateUser(String tokenId) {
 	try {
-	    UserCollection userCollection = userRepository.findOne(userId);
-	    if (userCollection == null) {
-		throw new BusinessException(ServiceError.Unknown, "Invalid Url.");
+
+	    TokenCollection tokenCollection = tokenRepository.findOne(tokenId);
+	    if (tokenCollection.getIsUsed()) {
+		// throw new BusinessException(ServiceError.Unknown,
+		// "Link is already Used");
+		return "Link is already Used";
+	    } else {
+		UserCollection userCollection = userRepository.findOne(tokenCollection.getUserId());
+		if (userCollection == null) {
+		    // throw new BusinessException(ServiceError.Unknown,
+		    // "Invalid Url.");
+		    return "Invalid Url.";
+		}
+		userCollection.setIsActive(true);
+		userRepository.save(userCollection);
+		tokenCollection.setIsUsed(true);
+		tokenRepository.save(tokenCollection);
+		return "Account is Activaed";
 	    }
-	    userCollection.setIsActive(true);
-	    userRepository.save(userCollection);
-	    return true;
+
 	} catch (BusinessException be) {
 	    throw be;
 	} catch (Exception e) {
@@ -142,35 +161,52 @@ public class SignUpServiceImpl implements SignUpService {
 		String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 		userCollection.setImageUrl(imageurl);
 	    }
+	    userCollection.setCreatedTime(new Date());
 	    userCollection = userRepository.save(userCollection);
 	    // save doctor specific details
 	    DoctorCollection doctorCollection = new DoctorCollection();
 	    BeanUtil.map(request, doctorCollection);
 	    doctorCollection.setUserId(userCollection.getId());
+	    doctorCollection.setCreatedTime(new Date());
 	    doctorCollection = doctorRepository.save(doctorCollection);
 	    // assign role to doctor
 	    UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), hospitalAdmin.getId());
+	    userRoleCollection.setCreatedTime(new Date());
 	    userRoleRepository.save(userRoleCollection);
 	    userRoleCollection = new UserRoleCollection(userCollection.getId(), locationAdmin.getId());
+	    userRoleCollection.setCreatedTime(new Date());
 	    userRoleRepository.save(userRoleCollection);
 	    userRoleCollection = new UserRoleCollection(userCollection.getId(), doctorRole.getId());
+	    userRoleCollection.setCreatedTime(new Date());
 	    userRoleRepository.save(userRoleCollection);
 	    // Save hospital
 	    HospitalCollection hospitalCollection = new HospitalCollection();
 	    BeanUtil.map(request, hospitalCollection);
+	    hospitalCollection.setCreatedTime(new Date());
 	    hospitalCollection = hospitalRepository.save(hospitalCollection);
 
 	    // save location for hospital
 	    LocationCollection locationCollection = new LocationCollection();
 	    BeanUtil.map(request, locationCollection);
+	    if (locationCollection.getId() == null) {
+		locationCollection.setCreatedTime(new Date());
+	    }
 	    locationCollection.setHospitalId(hospitalCollection.getId());
 	    locationCollection = locationRepository.save(locationCollection);
 	    // save user location.
 	    UserLocationCollection userLocationCollection = new UserLocationCollection(userCollection.getId(), locationCollection.getId());
+	    userLocationCollection.setCreatedTime(new Date());
 	    userLocationRepository.save(userLocationCollection);
+
+	    // save token
+	    TokenCollection tokenCollection = new TokenCollection();
+	    tokenCollection.setUserId(userCollection.getId());
+	    tokenCollection.setCreatedTime(new Date());
+	    tokenCollection = tokenRepository.save(tokenCollection);
+
 	    // send activation email
 	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
-		    userCollection.getMiddleName(), userCollection.getLastName());
+		    userCollection.getMiddleName(), userCollection.getLastName(), tokenCollection.getId());
 	    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
 	    response = new DoctorSignUp();
 	    User user = new User();
@@ -214,6 +250,7 @@ public class SignUpServiceImpl implements SignUpService {
 		String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 		userCollection.setImageUrl(imageurl);
 	    }
+	    userCollection.setCreatedTime(new Date());
 	    userCollection = userRepository.save(userCollection);
 
 	    // assign roles
@@ -225,6 +262,7 @@ public class SignUpServiceImpl implements SignUpService {
 		addressCollection = new AddressCollection();
 		BeanUtil.map(request.getAddress(), addressCollection);
 		addressCollection.setUserId(userCollection.getId());
+		addressCollection.setCreatedTime(new Date());
 		addressCollection = addressRepository.save(addressCollection);
 	    }
 
@@ -232,14 +270,22 @@ public class SignUpServiceImpl implements SignUpService {
 	    PatientCollection patientCollection = new PatientCollection();
 	    BeanUtil.map(request, patientCollection);
 	    patientCollection.setUserId(userCollection.getId());
+	    Date createdTime = new Date();
+	    patientCollection.setCreatedTime(createdTime);
 	    if (addressCollection != null) {
 		patientCollection.setAddressId(addressCollection.getId());
 	    }
 	    patientCollection = patientRepository.save(patientCollection);
 
+	    // save token
+	    TokenCollection tokenCollection = new TokenCollection();
+	    tokenCollection.setUserId(userCollection.getId());
+	    tokenCollection.setCreatedTime(new Date());
+	    tokenCollection = tokenRepository.save(tokenCollection);
+
 	    // send activation email
 	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
-		    userCollection.getMiddleName(), userCollection.getLastName());
+		    userCollection.getMiddleName(), userCollection.getLastName(), tokenCollection.getId());
 	    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
 	    user = new User();
 	    BeanUtil.map(userCollection, user);

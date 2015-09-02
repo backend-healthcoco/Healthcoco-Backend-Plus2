@@ -3,8 +3,10 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -70,8 +72,11 @@ public class ClinicalNotesApi {
     }
 
     @Path(value = PathProxy.ClinicalNotesUrls.EDIT_CLINICAL_NOTES)
-    @POST
-    public Response<ClinicalNotes> editNotes(ClinicalNotesEditRequest request) {
+    @PUT
+    public Response<ClinicalNotes> editNotes(@PathParam(value = "clinicalNotesId") String clinicalNotesId, ClinicalNotesEditRequest request) {
+	if (DPDoctorUtils.anyStringEmpty(clinicalNotesId)) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Id Cannot Be Empty");
+	}
 	ClinicalNotes clinicalNotes = clinicalNotesService.editNotes(request);
 
 	// patient track
@@ -85,7 +90,7 @@ public class ClinicalNotesApi {
     }
 
     @Path(value = PathProxy.ClinicalNotesUrls.DELETE_CLINICAL_NOTES)
-    @GET
+    @DELETE
     public Response<Boolean> deleteNotes(@PathParam(value = "clinicalNotesId") String clinicalNotesId) {
 	clinicalNotesService.deleteNote(clinicalNotesId);
 	Response<Boolean> response = new Response<Boolean>();
@@ -93,29 +98,39 @@ public class ClinicalNotesApi {
 	return response;
     }
 
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES)
+    @Path(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_ID)
     @GET
-    public Response<ClinicalNotes> getNotes(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
-    		@QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "patientId") String patientId, @QueryParam("createdTime") String createdTime,
-    		@QueryParam(value = "isOTPVerified") Boolean isOTPVerified, @QueryParam(value = "isDeleted") Boolean isDeleted) {
-	return getAllNotes(page, size, doctorId, locationId, hospitalId, patientId, createdTime, isOTPVerified, isDeleted);
+    public Response<ClinicalNotes> getNotesById(@PathParam(value = "clinicalNotesId") String clinicalNotesId) {
+	ClinicalNotes clinicalNotes = clinicalNotesService.getNotesById(clinicalNotesId);
+	Response<ClinicalNotes> response = new Response<ClinicalNotes>();
+	response.setData(clinicalNotes);
+	return response;
     }
 
-    private Response<ClinicalNotes> getAllNotes(int page, int size, String doctorId, String locationId, String hospitalId, String patientId, String createdTime,
-	    Boolean isOTPVerified, Boolean isDeleted) {
+    @GET
+    public Response<ClinicalNotes> getNotes(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+	    @QueryParam(value = "patientId") String patientId, @QueryParam("updatedTime") String updatedTime,
+	    @QueryParam(value = "isOTPVerified") Boolean isOTPVerified, @QueryParam(value = "discarded") Boolean discarded) {
+	return getAllNotes(page, size, doctorId, locationId, hospitalId, patientId, updatedTime, isOTPVerified, discarded);
+    }
+
+    private Response<ClinicalNotes> getAllNotes(int page, int size, String doctorId, String locationId, String hospitalId, String patientId,
+	    String updatedTime, Boolean isOTPVerified, Boolean discarded) {
 	List<ClinicalNotes> clinicalNotes = null;
-	
-	if(isOTPVerified != null){
-		if (isOTPVerified) {
-		    clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithVerifiedOTP(page, size, patientId, createdTime, isDeleted !=null ?isDeleted:true);
-		} else {
-		    clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(page, size, patientId, doctorId, locationId, hospitalId, createdTime, isDeleted !=null ?isDeleted:true);
-		}
+
+	if (isOTPVerified != null) {
+	    if (isOTPVerified) {
+		clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithVerifiedOTP(page, size, patientId, updatedTime, discarded != null ? discarded
+			: true);
+	    } else {
+		clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(page, size, patientId, doctorId, locationId, hospitalId,
+			updatedTime, discarded != null ? discarded : true);
+	    }
+	} else {
+	    clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(page, size, patientId, doctorId, locationId, hospitalId,
+		    updatedTime, discarded != null ? discarded : true);
 	}
-	else{
-		clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(page, size, patientId, doctorId, locationId, hospitalId, createdTime, isDeleted !=null ?isDeleted:true);
-	}
-	
 
 	Response<ClinicalNotes> response = new Response<ClinicalNotes>();
 	response.setDataList(clinicalNotes);
@@ -151,7 +166,6 @@ public class ClinicalNotesApi {
 	return response;
     }
 
-
     @Path(value = PathProxy.ClinicalNotesUrls.ADD_OBSERVATION)
     @POST
     public Response<Observation> addObservation(Observation request) {
@@ -168,7 +182,7 @@ public class ClinicalNotesApi {
 	response.setData(observation);
 	return response;
     }
-   
+
     @Path(value = PathProxy.ClinicalNotesUrls.ADD_INVESTIGATION)
     @POST
     public Response<Investigation> addInvestigation(Investigation request) {
@@ -204,7 +218,7 @@ public class ClinicalNotesApi {
 	response.setData(diagnosis);
 	return response;
     }
-    
+
     @Path(value = PathProxy.ClinicalNotesUrls.ADD_NOTES)
     @POST
     public Response<Notes> addNotes(Notes request) {
@@ -243,7 +257,7 @@ public class ClinicalNotesApi {
     }
 
     @Path(value = PathProxy.ClinicalNotesUrls.DELETE_COMPLAINT)
-    @GET
+    @DELETE
     public Response<Boolean> deleteComplaint(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
 	clinicalNotesService.deleteComplaint(id, doctorId, locationId, hospitalId);
@@ -255,7 +269,7 @@ public class ClinicalNotesApi {
     }
 
     @Path(value = PathProxy.ClinicalNotesUrls.DELETE_OBSERVATION)
-    @GET
+    @DELETE
     public Response<Boolean> deleteObservation(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
 	clinicalNotesService.deleteObservation(id, doctorId, locationId, hospitalId);
@@ -266,7 +280,7 @@ public class ClinicalNotesApi {
     }
 
     @Path(value = PathProxy.ClinicalNotesUrls.DELETE_INVESTIGATION)
-    @GET
+    @DELETE
     public Response<Boolean> deleteInvestigation(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
 	clinicalNotesService.deleteInvestigation(id, doctorId, locationId, hospitalId);
@@ -278,7 +292,7 @@ public class ClinicalNotesApi {
     }
 
     @Path(value = PathProxy.ClinicalNotesUrls.DELETE_DIAGNOSIS)
-    @GET
+    @DELETE
     public Response<Boolean> deleteDiagnosis(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
 	clinicalNotesService.deleteDiagnosis(id, doctorId, locationId, hospitalId);
@@ -291,7 +305,7 @@ public class ClinicalNotesApi {
     }
 
     @Path(value = PathProxy.ClinicalNotesUrls.DELETE_NOTE)
-    @GET
+    @DELETE
     public Response<Boolean> deleteNote(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
 	clinicalNotesService.deleteNotes(id, doctorId, locationId, hospitalId);
@@ -304,7 +318,7 @@ public class ClinicalNotesApi {
     }
 
     @Path(value = PathProxy.ClinicalNotesUrls.DELETE_DIAGRAM)
-    @GET
+    @DELETE
     public Response<Boolean> deleteDiagram(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
 	clinicalNotesService.deleteDiagram(id, doctorId, locationId, hospitalId);
@@ -317,18 +331,19 @@ public class ClinicalNotesApi {
 
     @Path(value = PathProxy.ClinicalNotesUrls.GET_CINICAL_ITEMS)
     @GET
-    public Response<Object> getClinicalItems(@PathParam("type") String type, @PathParam("range") String range,
-    		@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
-	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId, 
-	    @QueryParam(value = "createdTime") String createdTime, @QueryParam(value = "isDeleted") Boolean isDeleted) {
-    	
-    	if (DPDoctorUtils.anyStringEmpty(type, range)) {
-    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Type or Range Cannot Be Empty");
-    	}
-    	List<Object> clinicalItems = clinicalNotesService.getClinicalItems(type, range, page, size, doctorId, locationId, hospitalId, createdTime, isDeleted != null ? isDeleted:true);
-    	Response<Object> response = new  Response<Object>();
-    	response.setDataList(clinicalItems);
-    	return  response;
+    public Response<Object> getClinicalItems(@PathParam("type") String type, @PathParam("range") String range, @QueryParam("page") int page,
+	    @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+	    @QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "updatedTime") String updatedTime,
+	    @QueryParam(value = "discarded") Boolean discarded) {
+
+	if (DPDoctorUtils.anyStringEmpty(type, range)) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Type or Range Cannot Be Empty");
+	}
+	List<Object> clinicalItems = clinicalNotesService.getClinicalItems(type, range, page, size, doctorId, locationId, hospitalId, updatedTime,
+		discarded != null ? discarded : true);
+	Response<Object> response = new Response<Object>();
+	response.setDataList(clinicalItems);
+	return response;
     }
 
 }

@@ -31,8 +31,6 @@ public class ClinicalNotesEditRequest {
 
     private String hospitalId;
 
-    private Long createdDate;
-
     public String getId() {
 	return id;
     }
@@ -121,19 +119,10 @@ public class ClinicalNotesEditRequest {
 	this.hospitalId = hospitalId;
     }
 
-    public Long getCreatedDate() {
-	return createdDate;
-    }
-
-    public void setCreatedDate(Long createdDate) {
-	this.createdDate = createdDate;
-    }
-
     @Override
     public String toString() {
 	return "ClinicalNotesEditRequest [id=" + id + ", patientId=" + patientId + ", complaints=" + complaints + ", observations=" + observations
 		+ ", investigations=" + investigations + ", diagnoses=" + diagnoses + ", notes=" + notes + ", diagrams=" + diagrams + ", doctorId=" + doctorId
-		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", createdDate=" + createdDate + "]";
+		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
     }
-
 }

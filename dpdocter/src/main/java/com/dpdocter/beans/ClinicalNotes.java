@@ -27,12 +27,12 @@ public class ClinicalNotes extends GenericCollection {
     private String locationId;
 
     private String hospitalId;
-    
+
     private String doctorName;
 
     private boolean inHistory = false;
 
-    private Boolean isDeleted = false;
+    private Boolean discarded = false;
 
     public String getId() {
 	return id;
@@ -130,28 +130,27 @@ public class ClinicalNotes extends GenericCollection {
 	this.inHistory = inHistory;
     }
 
-	public Boolean getIsDeleted() {
-		return isDeleted;
-	}
+    public Boolean getDiscarded() {
+	return discarded;
+    }
 
-	public void setIsDeleted(Boolean isDeleted) {
-		this.isDeleted = isDeleted;
-	}
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
 
-	public String getDoctorName() {
-		return doctorName;
-	}
+    public String getDoctorName() {
+	return doctorName;
+    }
 
-	public void setDoctorName(String doctorName) {
-		this.doctorName = doctorName;
-	}
+    public void setDoctorName(String doctorName) {
+	this.doctorName = doctorName;
+    }
 
-	@Override
-	public String toString() {
-		return "ClinicalNotes [id=" + id + ", complaints=" + complaints + ", observations=" + observations
-				+ ", investigations=" + investigations + ", diagnoses=" + diagnoses + ", createdDate=" + createdDate
-				+ ", diagrams=" + diagrams + ", notes=" + notes + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", doctorName=" + doctorName + ", inHistory=" + inHistory
-				+ ", isDeleted=" + isDeleted + "]";
-	}
+    @Override
+    public String toString() {
+	return "ClinicalNotes [id=" + id + ", complaints=" + complaints + ", observations=" + observations + ", investigations=" + investigations
+		+ ", diagnoses=" + diagnoses + ", diagrams=" + diagrams + ", notes=" + notes + ", doctorId=" + doctorId + ", locationId=" + locationId
+		+ ", hospitalId=" + hospitalId + ", doctorName=" + doctorName + ", inHistory=" + inHistory + ", discarded=" + discarded + "]";
+    }
+
 }

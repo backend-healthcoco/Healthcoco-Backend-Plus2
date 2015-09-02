@@ -2,7 +2,7 @@ package com.dpdocter.request;
 
 import com.dpdocter.collections.GenericCollection;
 
-public class DiseaseAddEditRequest extends GenericCollection{
+public class DiseaseAddEditRequest extends GenericCollection {
     private String id;
 
     private String doctorId;
