@@ -80,7 +80,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 	List<AppointmentSearchResponse> response = null;
 	try {
 	    List<SolrSpecialityDocument> solrSpecialityDocuments = solrSpecialityRepository.findAll(keyword);
-	    List<SolrDoctorDocument> solrDoctorDocuments = solrDoctorRepository.findAll(city,keyword);
+	    List<SolrDoctorDocument> solrDoctorDocuments = solrDoctorRepository.findAll(city, keyword);
 	    List<SolrLocationDocument> solrLocationDocuments = solrLocationRepository.findAll(location, city);
 
 	    response = new ArrayList<AppointmentSearchResponse>();

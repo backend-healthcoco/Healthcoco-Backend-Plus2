@@ -7,11 +7,11 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.solr.core.mapping.SolrDocument;
 
 import com.dpdocter.beans.ConsultationFee;
-import com.dpdocter.beans.Location;
 import com.dpdocter.beans.WorkingSchedule;
+import com.dpdocter.solr.beans.DoctorLocation;
 
 @SolrDocument(solrCoreName = "doctors")
-public class SolrDoctorDocument {
+public class SolrDoctorDocument extends DoctorLocation {
     @Id
     @Field
     private String id;
@@ -45,9 +45,6 @@ public class SolrDoctorDocument {
 
     @Field
     private List<String> specialization;
-
-    @Field
-    private List<Location> locations;
 
     public String getId() {
 	return id;
@@ -137,19 +134,11 @@ public class SolrDoctorDocument {
 	this.specialization = specialization;
     }
 
-    public List<Location> getLocations() {
-	return locations;
-    }
-
-    public void setLocations(List<Location> locations) {
-	this.locations = locations;
-    }
-
     @Override
     public String toString() {
 	return "SolrDoctorDocument [id=" + id + ", firstName=" + firstName + ", middleName=" + middleName + ", lastName=" + lastName + ", gender=" + gender
 		+ ", emailAddress=" + emailAddress + ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl + ", consultationFee=" + consultationFee
-		+ ", workingSchedules=" + workingSchedules + ", specialization=" + specialization + ", locations=" + locations + "]";
+		+ ", workingSchedules=" + workingSchedules + ", specialization=" + specialization + "]";
     }
 
 }

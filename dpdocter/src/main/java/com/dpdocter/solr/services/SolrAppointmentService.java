@@ -17,4 +17,5 @@ public interface SolrAppointmentService {
     List<AppointmentSearchResponse> search(String city, String location, String keyword);
 
     List<SolrDoctorDocument> getDoctors(String city, String location, String keyword);
+
 }

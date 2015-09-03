@@ -7,14 +7,12 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>spring-mongodb Maven Webapp</name>
 	<url>http://maven.apache.org</url>
-
 	<profiles>
 		<profile>
 			<id>local</id>
-<activation>
+			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
-			
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -29,7 +27,6 @@
 				</resources>
 			</build>
 		</profile>
-
 		<profile>
 			<id>stagging</id>
 			<build>
@@ -46,10 +43,8 @@
 				</resources>
 			</build>
 		</profile>
-
 		<profile>
 			<id>production</id>
-
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -65,7 +60,6 @@
 			</build>
 		</profile>
 	</profiles>
-
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -73,39 +67,33 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
-
 		<!-- Jersey -->
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-server</artifactId>
 			<version>1.8</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.sun.jersey.contribs</groupId>
 			<artifactId>jersey-multipart</artifactId>
 			<version>1.8</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-json</artifactId>
 			<version>1.8</version>
 		</dependency>
-
 		<!-- Spring 3 dependencies -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
 			<version>3.2.12.RELEASE</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 			<version>3.2.12.RELEASE</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
@@ -118,7 +106,6 @@
 			<artifactId>spring-context-support</artifactId>
 			<version>3.2.12.RELEASE</version>
 		</dependency>
-
 		<!-- Jersey + Spring -->
 		<dependency>
 			<groupId>com.sun.jersey.contribs</groupId>
@@ -169,27 +156,23 @@
 			<artifactId>jstl</artifactId>
 			<version>1.2</version>
 		</dependency>
-
 		<!-- mongodb java driver -->
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongo-java-driver</artifactId>
 			<version>2.12.1</version>
 		</dependency>
-
 		<!-- Spring data mongodb -->
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-mongodb</artifactId>
 			<version>1.5.0.RELEASE</version>
 		</dependency>
-
 		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
 			<version>2.2.2</version>
 		</dependency>
-
 		<!-- APACHE HTTP CLIENT -->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
@@ -220,7 +203,6 @@
 			<artifactId>commons-codec</artifactId>
 			<version>1.9</version>
 		</dependency>
-
 		<!-- DOZER -->
 		<dependency>
 			<groupId>net.sf.dozer</groupId>
@@ -239,29 +221,13 @@
 			<artifactId>joda-time</artifactId>
 			<version>2.3</version>
 		</dependency>
-
 		<!-- Spring Data Solr -->
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-solr</artifactId>
 			<version>1.2.6.RELEASE</version>
 		</dependency>
-
-		<!-- dummy object creator -->
-		<dependency>
-			<groupId>de.dev-eth0.dummycreator</groupId>
-			<artifactId>dummy-creator</artifactId>
-			<version>1.2</version>
-		</dependency>
-
-		<!-- Jersey test framework -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.glassfish.jersey.test-framework</groupId> -->
-<!-- 			<artifactId>jersey-test-framework-core</artifactId> -->
-<!-- 			<version>2.19</version> -->
-<!-- 		</dependency> -->
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -277,7 +243,6 @@
 				</executions>
 				<configuration>
 					<licence>UHJvamVjdHxkcGRvY3Rlci5kcGRvY3RlcnwyMDE2LTA1LTE5fHRydWUjTUMwQ0ZRQ0REYVhWU0dyNlJMSFhWSnE5TGtlN1NoM3dZZ0lVVjNIQjRDR0hBTVBJR2pWaW1TWlE4ZVE0WnBZPQ==</licence>
-
 					<output>
 						<title>DP Doctor API</title>
 						<html>
@@ -286,7 +251,6 @@
 					</output>
 				</configuration>
 			</plugin>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -297,9 +261,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
-
 	</build>
-
 	<pluginRepositories>
 		<pluginRepository>
 			<id>miredot</id>
@@ -307,7 +269,6 @@
 			<url>http://nexus.qmino.com/content/repositories/miredot</url>
 		</pluginRepository>
 	</pluginRepositories>
-
 	<repositories>
 		<repository>
 			<id>spring-milestone</id>
@@ -315,5 +276,4 @@
 			<url>http://repo.springsource.org/libs-milestone</url>
 		</repository>
 	</repositories>
-
 </project>

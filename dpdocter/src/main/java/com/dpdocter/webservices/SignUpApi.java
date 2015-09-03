@@ -137,13 +137,19 @@ public class SignUpApi {
 	SolrDoctorDocument solrDoctorDocument = null;
 	try {
 	    solrDoctorDocument = new SolrDoctorDocument();
+	    BeanUtil.map(doctor.getHospital().getLocations().get(0), solrDoctorDocument);
 	    BeanUtil.map(doctor.getUser(), solrDoctorDocument);
+	    /*BeanUtil.map(doctor.getUser(), solrDoctorDocument);
 	    List<String> specialiazation = new ArrayList<String>();
+	    SolrLocationDocument solrLocationDocument = new SolrLocationDocument();
 	    for (Location location : doctor.getHospital().getLocations()) {
-		if(location.getSpecialization() != null)specialiazation.addAll(location.getSpecialization());
+	    if (location.getSpecialization() != null) {
+	        specialiazation.addAll(location.getSpecialization());
+	    }
+	    BeanUtil.map(location, solrLocationDocument);
 	    }
 	    solrDoctorDocument.setSpecialization(specialiazation);
-	    solrDoctorDocument.setLocations(doctor.getHospital().getLocations());
+	    solrDoctorDocument.setLocation(solrLocationDocument);*/
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}

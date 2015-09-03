@@ -612,5 +612,7 @@ public interface PathProxy {
 	public static final String SEARCH = "search";
 
 	public static final String GET_DOCTORS = "getDoctors";
+
+	public static final String ADD_SPECIALITY = "addSpecialization";
     }
 }
