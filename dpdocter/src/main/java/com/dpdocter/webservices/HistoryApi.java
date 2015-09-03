@@ -57,10 +57,11 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.EDIT_DISEASE)
     @PUT
-    public Response<DiseaseAddEditResponse> editDisease(DiseaseAddEditRequest request) {
+    public Response<DiseaseAddEditResponse> editDisease(@PathParam(value = "diseaseId") String diseaseId, DiseaseAddEditRequest request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
+	request.setId(diseaseId);
 	DiseaseAddEditResponse diseases = historyServices.editDiseases(request);
 	Response<DiseaseAddEditResponse> response = new Response<DiseaseAddEditResponse>();
 	response.setData(diseases);

@@ -130,7 +130,9 @@ public class RecordsServiceImpl implements RecordsService {
 		recordsCollection.setRecordsLable(getFileNameFromImageURL(recordUrl));
 
 	    }
-	    // save records
+	    RecordsCollection oldRecord = recordsRepository.findOne(request.getId());
+	    recordsCollection.setCreatedTime(oldRecord.getCreatedTime());
+	    recordsCollection.setCreatedBy(oldRecord.getCreatedBy());
 	    recordsCollection = recordsRepository.save(recordsCollection);
 	    BeanUtil.map(recordsCollection, records);
 	    return records;

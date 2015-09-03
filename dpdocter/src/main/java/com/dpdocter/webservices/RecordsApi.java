@@ -205,11 +205,11 @@ public class RecordsApi {
 
     @Path(value = PathProxy.RecordsUrls.EDIT_RECORD)
     @PUT
-    public Response<Records> editRecords(RecordsEditRequest request) {
-	if (request == null) {
+    public Response<Records> editRecords(@PathParam(value = "recordId") String recordId, RecordsEditRequest request) {
+	if (DPDoctorUtils.anyStringEmpty(recordId) || request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
-
+	request.setId(recordId);
 	Records records = recordsService.editRecord(request);
 
 	// patient track

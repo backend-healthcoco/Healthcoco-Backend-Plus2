@@ -113,6 +113,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	DrugCollection drugCollection = new DrugCollection();
 	BeanUtil.map(request, drugCollection);
 	try {
+		DrugCollection oldDrug = drugRepository.findOne(request.getId());
+		drugCollection.setCreatedBy(oldDrug.getCreatedBy());
+		drugCollection.setCreatedTime(oldDrug.getCreatedTime());
 	    drugCollection = drugRepository.save(drugCollection);
 	    response = new DrugAddEditResponse();
 	    BeanUtil.map(drugCollection, response);
@@ -214,6 +217,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	TemplateCollection templateCollection = new TemplateCollection();
 	BeanUtil.map(request, templateCollection);
 	try {
+		TemplateCollection oldTemplate = templateRepository.findOne(request.getId());
+		templateCollection.setCreatedBy(oldTemplate.getCreatedBy());
+		templateCollection.setCreatedTime(oldTemplate.getCreatedTime());
+	    
 	    templateCollection = templateRepository.save(templateCollection);
 	    response = new TemplateAddEditResponse();
 	    BeanUtil.map(templateCollection, response);
@@ -307,6 +314,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	PrescriptionCollection prescriptionCollection = new PrescriptionCollection();
 	BeanUtil.map(request, prescriptionCollection);
 	try {
+		PrescriptionCollection oldPrescription = prescriptionRepository.findOne(request.getId());
+		prescriptionCollection.setCreatedBy(oldPrescription.getCreatedBy());
+		prescriptionCollection.setCreatedTime(oldPrescription.getCreatedTime());
 	    prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 	    response = new PrescriptionAddEditResponse();
 	    BeanUtil.map(prescriptionCollection, response);
@@ -616,6 +626,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	DrugTypeCollection drugTypeCollection = new DrugTypeCollection();
 	BeanUtil.map(request, drugTypeCollection);
 	try {
+		DrugTypeCollection oldDrug = drugTypeRepository.findOne(request.getId());
+		drugTypeCollection.setCreatedBy(oldDrug.getCreatedBy());
+		drugTypeCollection.setCreatedTime(oldDrug.getCreatedTime());
 	    drugTypeCollection = drugTypeRepository.save(drugTypeCollection);
 	    response = new DrugTypeAddEditResponse();
 	    BeanUtil.map(drugTypeCollection, response);
@@ -675,6 +688,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	DrugStrengthUnitCollection drugStrengthUnitCollection = new DrugStrengthUnitCollection();
 	BeanUtil.map(request, drugStrengthUnitCollection);
 	try {
+		DrugStrengthUnitCollection oldDrugStrength = drugStrengthRepository.findOne(request.getId());
+		drugStrengthUnitCollection.setCreatedBy(oldDrugStrength.getCreatedBy());
+		drugStrengthUnitCollection.setCreatedTime(oldDrugStrength.getCreatedTime());
+		
 	    drugStrengthUnitCollection = drugStrengthRepository.save(drugStrengthUnitCollection);
 	    response = new DrugStrengthAddEditResponse();
 	    BeanUtil.map(drugStrengthUnitCollection, response);
@@ -733,6 +750,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	DrugDosageCollection drugDosageCollection = new DrugDosageCollection();
 	BeanUtil.map(request, drugDosageCollection);
 	try {
+		DrugDosageCollection oldDrugDosage = drugDosageRepository.findOne(request.getId());
+		drugDosageCollection.setCreatedBy(oldDrugDosage.getCreatedBy());
+		drugDosageCollection.setCreatedTime(oldDrugDosage.getCreatedTime());
+		
 	    drugDosageCollection = drugDosageRepository.save(drugDosageCollection);
 	    response = new DrugDosageAddEditResponse();
 	    BeanUtil.map(drugDosageCollection, response);
@@ -790,6 +811,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	DrugDirectionCollection drugDirectionCollection = new DrugDirectionCollection();
 	BeanUtil.map(request, drugDirectionCollection);
 	try {
+		DrugDirectionCollection oldDrugDirection = drugDirectionRepository.findOne(request.getId());
+		drugDirectionCollection.setCreatedBy(oldDrugDirection.getCreatedBy());
+		drugDirectionCollection.setCreatedTime(oldDrugDirection.getCreatedTime());
+		
 	    drugDirectionCollection = drugDirectionRepository.save(drugDirectionCollection);
 	    response = new DrugDirectionAddEditResponse();
 	    BeanUtil.map(drugDirectionCollection, response);
@@ -848,6 +873,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	DrugDurationUnitCollection drugDurationUnitCollection = new DrugDurationUnitCollection();
 	BeanUtil.map(request, drugDurationUnitCollection);
 	try {
+		DrugDurationUnitCollection oldDrugDuration = drugDurationUnitRepository.findOne(request.getId());
+		drugDurationUnitCollection.setCreatedBy(oldDrugDuration.getCreatedBy());
+		drugDurationUnitCollection.setCreatedTime(oldDrugDuration.getCreatedTime());
+		
 	    drugDurationUnitCollection = drugDurationUnitRepository.save(drugDurationUnitCollection);
 	    response = new DrugDurationUnitAddEditResponse();
 	    BeanUtil.map(drugDurationUnitCollection, response);

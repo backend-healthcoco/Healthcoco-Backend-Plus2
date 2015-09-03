@@ -81,10 +81,11 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG)
     @PUT
-    public Response<DrugAddEditResponse> editDrug(DrugAddEditRequest request) {
-	if (request == null) {
+    public Response<DrugAddEditResponse> editDrug(@PathParam(value = "drugId") String drugId, DrugAddEditRequest request) {
+	if (StringUtils.isEmpty(drugId) || request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
+	request.setId(drugId);
 	DrugAddEditResponse drugAddEditResponse = prescriptionServices.editDrug(request);
 
 	// Below service call will add the drug in solr index.
@@ -166,10 +167,11 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_TEMPLATE)
     @PUT
-    public Response<TemplateAddEditResponse> editTemplate(TemplateAddEditRequest request) {
-	if (request == null) {
+    public Response<TemplateAddEditResponse> editTemplate(@PathParam(value = "templateId") String templateId, TemplateAddEditRequest request) {
+	if (StringUtils.isEmpty(templateId) || request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
+	request.setId(templateId);
 	TemplateAddEditResponse templateAddEditResponse = prescriptionServices.editTemplate(request);
 	Response<TemplateAddEditResponse> response = new Response<TemplateAddEditResponse>();
 	response.setData(templateAddEditResponse);
@@ -261,13 +263,13 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_PRESCRIPTION)
     @PUT
-    public Response<PrescriptionAddEditResponse> editPrescription(PrescriptionAddEditRequest request) {
-	if (request == null) {
+    public Response<PrescriptionAddEditResponse> editPrescription(@PathParam(value = "prescriptionId") String prescriptionId, PrescriptionAddEditRequest request) {
+	if (StringUtils.isEmpty(prescriptionId) || request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
+    request.setId(prescriptionId);
 	PrescriptionAddEditResponse prescriptionAddEditResponse = prescriptionServices.editPrescription(request);
 
-	// patient track
 	if (prescriptionAddEditResponse != null) {
 	    patientTrackService.addRecord(prescriptionAddEditResponse, VisitedFor.PRESCRIPTION);
 	}
@@ -335,10 +337,11 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_TYPE)
     @PUT
-    public Response<DrugTypeAddEditResponse> editDrugType(DrugTypeAddEditRequest request) {
-	if (request == null) {
+    public Response<DrugTypeAddEditResponse> editDrugType(@PathParam(value = "drugTypeId") String drugTypeId, DrugTypeAddEditRequest request) {
+	if (StringUtils.isEmpty(drugTypeId) || request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
+	request.setId(drugTypeId);
 	DrugTypeAddEditResponse drugTypeAddEditResponse = prescriptionServices.editDrugType(request);
 
 	Response<DrugTypeAddEditResponse> response = new Response<DrugTypeAddEditResponse>();
@@ -374,10 +377,11 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_STRENGTH)
     @PUT
-    public Response<DrugStrengthAddEditResponse> editDrugStrength(DrugStrengthAddEditRequest request) {
-	if (request == null) {
+    public Response<DrugStrengthAddEditResponse> editDrugStrength(@PathParam(value = "drugStrengthId") String drugStrengthId, DrugStrengthAddEditRequest request) {
+	if (StringUtils.isEmpty(drugStrengthId) || request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
+	request.setId(drugStrengthId);
 	DrugStrengthAddEditResponse drugStrengthAddEditResponse = prescriptionServices.editDrugStrength(request);
 
 	Response<DrugStrengthAddEditResponse> response = new Response<DrugStrengthAddEditResponse>();
@@ -413,10 +417,11 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DOSAGE)
     @PUT
-    public Response<DrugDosageAddEditResponse> editDrugDosage(DrugDosageAddEditRequest request) {
-	if (request == null) {
+    public Response<DrugDosageAddEditResponse> editDrugDosage(@PathParam(value = "drugDosageId") String drugDosageId, DrugDosageAddEditRequest request) {
+	if (StringUtils.isEmpty(drugDosageId) || request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
+	request.setId(drugDosageId);
 	DrugDosageAddEditResponse drugDosageAddEditResponse = prescriptionServices.editDrugDosage(request);
 
 	Response<DrugDosageAddEditResponse> response = new Response<DrugDosageAddEditResponse>();
@@ -452,10 +457,11 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DIRECTION)
     @PUT
-    public Response<DrugDirectionAddEditResponse> editDrugDirection(DrugDirectionAddEditRequest request) {
-	if (request == null) {
+    public Response<DrugDirectionAddEditResponse> editDrugDirection(@PathParam(value = "drugDirectionId") String drugDirectionId, DrugDirectionAddEditRequest request) {
+	if (StringUtils.isEmpty(drugDirectionId) || request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
+	request.setId(drugDirectionId);
 	DrugDirectionAddEditResponse drugDirectionAddEditResponse = prescriptionServices.editDrugDirection(request);
 
 	Response<DrugDirectionAddEditResponse> response = new Response<DrugDirectionAddEditResponse>();
@@ -491,10 +497,11 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DURATION_UNIT)
     @PUT
-    public Response<DrugDurationUnitAddEditResponse> editDrugDurationUnit(DrugDurationUnitAddEditRequest request) {
-	if (request == null) {
+    public Response<DrugDurationUnitAddEditResponse> editDrugDurationUnit(@PathParam(value = "drugDurationUnitId") String drugDurationUnitId, DrugDurationUnitAddEditRequest request) {
+	if (StringUtils.isEmpty(drugDurationUnitId) || request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
+	request.setId(drugDurationUnitId);
 	DrugDurationUnitAddEditResponse drugDurationUnitAddEditResponse = prescriptionServices.editDrugDurationUnit(request);
 
 	Response<DrugDurationUnitAddEditResponse> response = new Response<DrugDurationUnitAddEditResponse>();

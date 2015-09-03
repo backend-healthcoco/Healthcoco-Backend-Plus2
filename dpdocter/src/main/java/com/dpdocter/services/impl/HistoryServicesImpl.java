@@ -48,6 +48,7 @@ import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.RecordsService;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -111,6 +112,9 @@ public class HistoryServicesImpl implements HistoryServices {
 	DiseasesCollection disease = new DiseasesCollection();
 	BeanUtil.map(request, disease);
 	try {
+		DiseasesCollection oldDisease = diseasesRepository.findOne(request.getId());
+		disease.setCreatedBy(oldDisease.getCreatedBy());
+		disease.setCreatedTime(oldDisease.getCreatedTime());
 	    disease = diseasesRepository.save(disease);
 	    response = new DiseaseAddEditResponse();
 	    BeanUtil.map(disease, response);

@@ -259,13 +259,12 @@ public class ContactsServiceImpl implements ContactsService {
 	    BeanUtil.map(group, groupCollection);
 	    if (DPDoctorUtils.allStringsEmpty(groupCollection.getId())) {
 		groupCollection.setCreatedTime(new Date());
-		groupCollection = groupRepository.save(groupCollection);
 	    } else {
-		Query query = new Query(Criteria.where("id").is(groupCollection.getId()));
-		Update update = new Update();
-		update.set("updatedTime", groupCollection.getUpdatedTime());
-		groupCollection = mongoTemplate.findAndModify(query, update, new FindAndModifyOptions().returnNew(true), GroupCollection.class);
+	      GroupCollection oldGroupCollection = groupRepository.findOne(groupCollection.getId());
+	      groupCollection.setCreatedTime(oldGroupCollection.getCreatedTime());
+	      groupCollection.setCreatedBy(groupCollection.getCreatedBy());
 	    }
+	    groupCollection = groupRepository.save(groupCollection);
 	    BeanUtil.map(groupCollection, group);
 	    return group;
 	} catch (Exception e) {

@@ -74,9 +74,10 @@ public class ClinicalNotesApi {
     @Path(value = PathProxy.ClinicalNotesUrls.EDIT_CLINICAL_NOTES)
     @PUT
     public Response<ClinicalNotes> editNotes(@PathParam(value = "clinicalNotesId") String clinicalNotesId, ClinicalNotesEditRequest request) {
-	if (DPDoctorUtils.anyStringEmpty(clinicalNotesId)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Id Cannot Be Empty");
+	if (DPDoctorUtils.anyStringEmpty(clinicalNotesId) || request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
+	request.setId(clinicalNotesId);
 	ClinicalNotes clinicalNotes = clinicalNotesService.editNotes(request);
 
 	// patient track
