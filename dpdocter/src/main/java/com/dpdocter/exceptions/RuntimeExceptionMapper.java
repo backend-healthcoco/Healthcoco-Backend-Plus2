@@ -51,7 +51,8 @@ public class RuntimeExceptionMapper implements ExceptionMapper<RuntimeException>
     }
 
 
-    public Response toResponse(RuntimeException exception) {
+    @SuppressWarnings("unused")
+	public Response toResponse(RuntimeException exception) {
         dump(exception);
         try {
             BusinessExceptionResponse data = new BusinessExceptionResponse();
@@ -59,8 +60,8 @@ public class RuntimeExceptionMapper implements ExceptionMapper<RuntimeException>
             data.setErrMsg(exception.getMessage());
 
             String accept = requestInvoker.get().getHeader("Accept");
-            String format = requestInvoker.get().getParameter("format");
-
+            //String format = requestInvoker.get().getParameter("format");
+            String format = "json";
             boolean json = true;
             boolean xml = false;
             boolean html = false;

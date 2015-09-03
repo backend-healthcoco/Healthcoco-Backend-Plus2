@@ -51,7 +51,8 @@ public class ServiceExceptionMapper implements ExceptionMapper<BusinessException
         }
     }
 
-    public Response toResponse(BusinessException exception) {
+    @SuppressWarnings("unused")
+	public Response toResponse(BusinessException exception) {
         try {
             dump(exception);
             BusinessExceptionResponse data = new BusinessExceptionResponse(exception);
