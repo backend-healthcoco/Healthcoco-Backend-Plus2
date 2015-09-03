@@ -27,5 +27,4 @@
 	<!-- <import resource="scheduler.xml" />  -->
 	<mongo:repositories
 		base-package="com.dpdocter.repository, com.dpdocter.sms.repository" />
-
 </beans>

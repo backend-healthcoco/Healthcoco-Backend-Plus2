@@ -29,6 +29,9 @@
 					<value>drugs</value>
 					<value>patients</value>
 					<value>labTests</value>
+					<value>doctors</value>
+					<value>locations</value>
+					<value>specialities</value>
 				</list>
 			</constructor-arg>
 		</bean>

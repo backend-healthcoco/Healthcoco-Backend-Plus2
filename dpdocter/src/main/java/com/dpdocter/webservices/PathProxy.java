@@ -556,6 +556,7 @@ public interface PathProxy {
 	public static final String SEARCH_PATIENT_ADV = "searchPatient";
     }
 
+    public static final String APPOINTMENT_BASE_URL = BASE_URL + "/appointment";
     public interface CityUrls {
     	
     	public static final String ADD_CITY = "/addCity";
@@ -624,5 +625,7 @@ public interface PathProxy {
 	public static final String SEARCH = "search";
 
 	public static final String GET_DOCTORS = "getDoctors";
+
+	public static final String ADD_SPECIALITY = "addSpecialization";
     }
 }

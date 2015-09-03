@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -16,6 +17,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.solr.beans.AppointmentSearchResponse;
 import com.dpdocter.solr.document.SolrDoctorDocument;
+import com.dpdocter.solr.document.SolrSpecialityDocument;
 import com.dpdocter.solr.services.SolrAppointmentService;
 import com.dpdocter.webservices.PathProxy;
 import common.util.web.DPDoctorUtils;
@@ -56,6 +58,20 @@ public class SolrAppointmentApi {
 
 	Response<SolrDoctorDocument> response = new Response<SolrDoctorDocument>();
 	response.setDataList(doctors);
+	return response;
+    }
+
+    @Path(value = PathProxy.SolrAppointmentUrls.ADD_SPECIALITY)
+    @POST
+    public Response<Boolean> addSpeciality(List<SolrSpecialityDocument> request) {
+	if (request == null || request.isEmpty()) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Specialities Cannot Be Empty");
+	}
+
+	boolean addSpecializationResponse = solrAppointmentService.addSpeciality(request);
+
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(addSpecializationResponse);
 	return response;
     }
 }
