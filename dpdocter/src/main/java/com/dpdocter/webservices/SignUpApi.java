@@ -73,15 +73,7 @@ public class SignUpApi {
 	if (tokenId == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
-	// Boolean isActivated = false;
-	// isActivated = signUpService.activateUser(tokenId);
-
 	String response = signUpService.activateUser(tokenId);
-	// UserActivation userActivation = new UserActivation();
-	// userActivation.setActivated(isActivated);
-	// Response<UserActivation> response = new Response<UserActivation>();
-	// response.setData(userActivation);
-
 	return "<html><body>" + response + "</body></html>";
     }
 

@@ -25,6 +25,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.PatientRegistrationRequest;
+import com.dpdocter.response.PatientInitialAndCounter;
 import com.dpdocter.response.ReferenceResponse;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.solr.document.SolrPatientDocument;
@@ -207,28 +208,27 @@ public class RegistrationApi {
 	return response;
     }
 
-    @Path(value = PathProxy.RegistrationUrls.GET_PATIENT_PID)
+    @Path(value = PathProxy.RegistrationUrls.GET_PATIENT_INITIAL_COUNTER)
     @GET
-    public Response<String> getPatientPID(@PathParam("patientId") String patientId) {
+    public Response<PatientInitialAndCounter> getPatientInitialAndCounter(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId) {
 
-	if (patientId == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.patientId is null");
+	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId)) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id or Location Id cannot be null");
 	}
-
-	Response<String> response = new Response<String>();
-	String pid = registrationService.getPatientPID(patientId);
-	response.setData(pid);
+	Response<PatientInitialAndCounter> response = new Response<PatientInitialAndCounter>();
+	PatientInitialAndCounter  patientInitialAndCounter = registrationService.getPatientInitialAndCounter(doctorId, locationId);
+	response.setData(patientInitialAndCounter);
 	return response;
     }
 
     @Path(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_ID_GENERATOR_LOGIC)
     @GET
-    public Response<Boolean> updatePatientInitialAndCounter(@PathParam("doctorId") String doctorId, @PathParam("patientInitial") String patientInitial,
+    public Response<Boolean> updatePatientInitialAndCounter(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId, @PathParam("patientInitial") String patientInitial,
 	    @PathParam("patientCounter") int patientCounter) {
-	if (DPDoctorUtils.anyStringEmpty(doctorId, patientInitial, new Integer(patientCounter).toString())) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Dcotor Id, Patient Initial, Patient Counter Cannot Be Empty");
+	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, patientInitial, new Integer(patientCounter).toString())) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Dcotor Id, ,Location Id, Patient Initial, Patient Counter Cannot Be Empty");
 	}
-	Boolean updateResponse = registrationService.updatePatientInitialAndCounter(doctorId, patientInitial, patientCounter);
+	Boolean updateResponse = registrationService.updatePatientInitialAndCounter(doctorId, locationId, patientInitial, patientCounter);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(updateResponse);
 	return response;

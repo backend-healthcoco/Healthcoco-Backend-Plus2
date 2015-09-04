@@ -27,12 +27,6 @@ public class DoctorCollection extends GenericCollection {
     private String userId;
 
     @Field
-    private String patientInitial = "P";
-
-    @Field
-    private int patientCounter = 0;
-
-    @Field
     private DoctorExperience experience;
 
     @Field
@@ -86,22 +80,6 @@ public class DoctorCollection extends GenericCollection {
 
     public void setUserId(String userId) {
 	this.userId = userId;
-    }
-
-    public String getPatientInitial() {
-	return patientInitial;
-    }
-
-    public void setPatientInitial(String patientInitial) {
-	this.patientInitial = patientInitial;
-    }
-
-    public int getPatientCounter() {
-	return patientCounter;
-    }
-
-    public void setPatientCounter(int patientCounter) {
-	this.patientCounter = patientCounter;
     }
 
     public DoctorExperience getExperience() {
@@ -168,13 +146,12 @@ public class DoctorCollection extends GenericCollection {
 	this.professionalMemberships = professionalMemberships;
     }
 
-    @Override
-    public String toString() {
-	return "DoctorCollection [id=" + id + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses=" + otherEmailAddresses + ", userId="
-		+ userId + ", patientInitial=" + patientInitial + ", patientCounter=" + patientCounter + ", experience=" + experience + ", education="
-		+ education + ", specialities=" + specialities + ", achievements=" + achievements + ", professionalStatement=" + professionalStatement
-		+ ", registrationDetails=" + registrationDetails + ", experienceDetails=" + experienceDetails + ", professionalMemberships="
-		+ professionalMemberships + "]";
-    }
-
+	@Override
+	public String toString() {
+		return "DoctorCollection [id=" + id + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses="
+				+ otherEmailAddresses + ", userId=" + userId + ", experience=" + experience + ", education=" + education
+				+ ", specialities=" + specialities + ", achievements=" + achievements + ", professionalStatement="
+				+ professionalStatement + ", registrationDetails=" + registrationDetails + ", experienceDetails="
+				+ experienceDetails + ", professionalMemberships=" + professionalMemberships + "]";
+	}
 }

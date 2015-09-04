@@ -27,6 +27,7 @@ import com.dpdocter.beans.ReferenceDetail;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.AddressCollection;
+import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DoctorContactCollection;
 import com.dpdocter.collections.GroupCollection;
@@ -37,12 +38,14 @@ import com.dpdocter.collections.PatientGroupCollection;
 import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.collections.UserLocationCollection;
 import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.AddressRepository;
+import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorContactsRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.GroupRepository;
@@ -52,9 +55,11 @@ import com.dpdocter.repository.PatientGroupRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.RoleRepository;
+import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.request.PatientRegistrationRequest;
+import com.dpdocter.response.PatientInitialAndCounter;
 import com.dpdocter.response.ReferenceResponse;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.GenerateUniqueUserNameService;
@@ -113,6 +118,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Autowired
     private LocationRepository locationRepository;
+    
+    @Autowired
+    private UserLocationRepository userLocationRepository;
+    
+    @Autowired
+    private DoctorClinicProfileRepository doctorClinicProfileRepository;
 
     @Value(value = "${mail.signup.subject.activation}")
     private String signupSubject;
@@ -579,48 +590,71 @@ public class RegistrationServiceImpl implements RegistrationService {
 		patientCount = patientCollections.size();
 	    }
 
-	    DoctorCollection doctor = doctorRepository.findByUserId(doctorId);
+	   UserLocationCollection userLocation = userLocationRepository.findByUserIdAndLocationId(doctorId, locationId);
+	   if(userLocation != null){
+		   DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocation.getId()); 
+		   if(clinicProfileCollection == null){
+			   clinicProfileCollection = new DoctorClinicProfileCollection();
+		   }
+		   String patientInitial = clinicProfileCollection.getPatientInitial();
+		    int patientCounter = clinicProfileCollection.getPatientCounter();
 
-	    String patientInitial = doctor.getPatientInitial();
-	    int patientCounter = doctor.getPatientCounter();
+		    generatedId = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay) + DPDoctorUtils.getPrefixedNumber(currentMonth)
+			    + DPDoctorUtils.getPrefixedNumber(currentYear % 100) + DPDoctorUtils.getPrefixedNumber(patientCounter + patientCount + 1);
 
-	    generatedId = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay) + DPDoctorUtils.getPrefixedNumber(currentMonth)
-		    + DPDoctorUtils.getPrefixedNumber(currentYear % 100) + DPDoctorUtils.getPrefixedNumber(patientCounter + patientCount + 1);
-
-	    updatePatientInitialAndCounter(doctorId, patientInitial, patientCounter + 1);
-	} catch (Exception e) {
+		   updatePatientInitialAndCounter(doctorId, locationId, patientInitial, patientCounter + 1);
+	   }
+	   else{
+		   throw new BusinessException(ServiceError.NoRecord, "Doctor Id and Location Id does not match.");
+	   }
+	   	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return generatedId;
     }
 
-    @Override
-    public String getPatientPID(String patientId) {
-	String PID = null;
-	try {
-	    PatientCollection patientCollection = patientRepository.findOne(patientId);
-	    PID = patientCollection.getPID();
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+
+	@Override
+	public PatientInitialAndCounter getPatientInitialAndCounter(String doctorId, String locationId) {
+		PatientInitialAndCounter  patientInitialAndCounter =  null;
+		try {
+			UserLocationCollection userLocation = userLocationRepository.findByUserIdAndLocationId(doctorId, locationId);
+			   if(userLocation != null){
+				   DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocation.getId());
+				   if(clinicProfileCollection != null){
+					   patientInitialAndCounter = new PatientInitialAndCounter();
+					   BeanUtil.map(clinicProfileCollection, patientInitialAndCounter);
+					   patientInitialAndCounter.setDoctorId(doctorId);
+					   patientInitialAndCounter.setLocationId(locationId);
+				   }
+					   
+			}else {
+		    	throw new BusinessException(ServiceError.NoRecord, "Doctor Id and Location Id does not match.");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, "Error While Updating Patient Initial and Counter");
+		}
+		return patientInitialAndCounter;
 	}
-	return PID;
-    }
+
 
     @Override
-    public Boolean updatePatientInitialAndCounter(String doctorId, String patientInitial, int patientCounter) {
+    public Boolean updatePatientInitialAndCounter(String doctorId, String locationId, String patientInitial, int patientCounter) {
 	Boolean response = false;
-	DoctorCollection doctor = null;
 	try {
-	    doctor = doctorRepository.findByUserId(doctorId);
-	    if (doctor != null) {
-		doctor.setPatientInitial(patientInitial);
-		doctor.setPatientCounter(patientCounter);
-		doctor = doctorRepository.save(doctor);
-		response = true;
-	    } else {
-		throw new BusinessException(ServiceError.NotFound, "Doctor Not Found");
+		UserLocationCollection userLocation = userLocationRepository.findByUserIdAndLocationId(doctorId, locationId);
+		   if(userLocation != null){
+			   DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocation.getId());
+			   if(clinicProfileCollection == null)clinicProfileCollection = new DoctorClinicProfileCollection();
+			   clinicProfileCollection.setUserLocationId(userLocation.getId());
+			   clinicProfileCollection.setPatientInitial(patientInitial);
+			   clinicProfileCollection.setPatientCounter(patientCounter);
+			   clinicProfileCollection = doctorClinicProfileRepository.save(clinicProfileCollection);
+			   response = true;
+		}else {
+	    	throw new BusinessException(ServiceError.NoRecord, "Doctor Id and Location Id does not match.");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();

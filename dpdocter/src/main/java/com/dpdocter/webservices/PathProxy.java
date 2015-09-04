@@ -88,11 +88,9 @@ public interface PathProxy {
 
 	public static final String PATIENT_ID_GENERATOR = "/generatePatientId/{doctorId}/{locationId}/{hospitalId}";
 
-	public static final String UPDATE_PATIENT_ID_GENERATOR_LOGIC = "/updatePatientIdGeneratorLogic/{doctorId}/{patientInitial}/{patientCounter}";
+	public static final String UPDATE_PATIENT_ID_GENERATOR_LOGIC = "/updatePatientIdGeneratorLogic/{doctorId}/{locationId}/{patientInitial}/{patientCounter}";
 
-	public static final String GET_PATIENT_INITIAL_COUNTER = "/getPatientInitialAndCounter/{doctorId}";
-
-	public static final String GET_PATIENT_PID = "/getPatientPID/{patientId}";
+	public static final String GET_PATIENT_INITIAL_COUNTER = "/getPatientInitialAndCounter/{doctorId}/{locationId}";
 
 	public static final String GET_CLINIC_DETAILS = "/settings/getClinicDetails/{clinicId}";
 
@@ -317,7 +315,7 @@ public interface PathProxy {
 
 	public static final String ADD_EDIT_ACHIEVEMENT = "/addEditAchievement";
 
-	public static final String ADD_EDIT_PROFESSIONAL_STATEMENT = "/addEditProfessionalStatement/{doctorId}/{professionalStatement}";
+	public static final String ADD_EDIT_PROFESSIONAL_STATEMENT = "/addEditProfessionalStatement";
 
 	public static final String ADD_EDIT_REGISTRATION_DETAIL = "/addEditRegistrationDetail";
 

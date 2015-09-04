@@ -10,6 +10,7 @@ import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
 import com.dpdocter.request.PatientRegistrationRequest;
+import com.dpdocter.response.PatientInitialAndCounter;
 import com.dpdocter.response.ReferenceResponse;
 
 public interface RegistrationService {
@@ -31,11 +32,11 @@ public interface RegistrationService {
 
     String patientIdGenerator(String doctorId, String locationId, String hospitalId);
 
-    String getPatientPID(String patientId);
+    PatientInitialAndCounter getPatientInitialAndCounter(String doctorId, String locationId);
 
     ReferenceResponse getCustomReferences(String doctorId, String locationId, String hospitalId);
 
-    Boolean updatePatientInitialAndCounter(String doctorId, String patientInitial, int patientCounter);
+    Boolean updatePatientInitialAndCounter(String doctorId, String locationId, String patientInitial, int patientCounter);
 
     Location getClinicDetails(String clinicId);
 
