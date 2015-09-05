@@ -163,12 +163,12 @@ public class ContactsServiceImpl implements ContactsService {
 	Query queryForGettingPatientsFromPatientIds = new Query();
 	if (!DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId) && patientIds != null && !patientIds.isEmpty()) {
 	    queryForGettingPatientsFromPatientIds.addCriteria(Criteria
-		    .where("userId")
+		    .where("id")
 		    .in(patientIds)
 		    .andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
 			    Criteria.where("hospitalId").is(hospitalId)));
 	} else if (patientIds != null && !patientIds.isEmpty() && !DPDoctorUtils.anyStringEmpty(doctorId)) {
-	    queryForGettingPatientsFromPatientIds.addCriteria(Criteria.where("userId").in(patientIds).andOperator(Criteria.where("doctorId").is(doctorId)));
+	    queryForGettingPatientsFromPatientIds.addCriteria(Criteria.where("id").in(patientIds).andOperator(Criteria.where("doctorId").is(doctorId)));
 	} else {
 	    return new ArrayList<PatientCard>(0);
 	}
