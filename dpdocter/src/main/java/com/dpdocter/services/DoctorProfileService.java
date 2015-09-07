@@ -7,6 +7,9 @@ import com.dpdocter.beans.DoctorProfile;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
+import com.dpdocter.request.DoctorAppointmentNumbersAddEditRequest;
+import com.dpdocter.request.DoctorAppointmentSlotAddEditRequest;
+import com.dpdocter.request.DoctorConsultationFeeAddEditRequest;
 import com.dpdocter.request.DoctorContactAddEditRequest;
 import com.dpdocter.request.DoctorEducationAddEditRequest;
 import com.dpdocter.request.DoctorExperienceAddEditRequest;
@@ -16,6 +19,7 @@ import com.dpdocter.request.DoctorProfessionalStatementAddEditRequest;
 import com.dpdocter.request.DoctorProfilePictureAddEditRequest;
 import com.dpdocter.request.DoctorRegistrationAddEditRequest;
 import com.dpdocter.request.DoctorSpecialityAddEditRequest;
+import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
 
 public interface DoctorProfileService {
 
@@ -51,12 +55,12 @@ public interface DoctorProfileService {
 
     Boolean addEditProfessionalMembership(DoctorProfessionalAddEditRequest request);
 
-    Boolean addEditAppointmentNumbers(DoctorClinicProfile request);
+    Boolean addEditAppointmentNumbers(DoctorAppointmentNumbersAddEditRequest request);
 
-    Boolean addEditVisitingTime(DoctorClinicProfile request);
+    Boolean addEditVisitingTime(DoctorVisitingTimeAddEditRequest request);
 
-    Boolean addEditConsultationFee(DoctorClinicProfile request);
+    Boolean addEditConsultationFee(DoctorConsultationFeeAddEditRequest request);
 
-    Boolean addEditAppointmentSlot(DoctorClinicProfile request);
+    Boolean addEditAppointmentSlot(DoctorAppointmentSlotAddEditRequest request);
 
 }

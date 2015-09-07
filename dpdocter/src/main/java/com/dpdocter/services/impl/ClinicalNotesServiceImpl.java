@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -61,6 +62,8 @@ import common.util.web.DPDoctorUtils;
 @Service
 public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
+	private static Logger logger=Logger.getLogger(ClinicalNotesServiceImpl.class.getName());
+	
     @Autowired
     private ClinicalNotesRepository clinicalNotesRepository;
 
@@ -244,6 +247,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    clinicalNotes.setDiagrams(diagrams);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
@@ -355,6 +359,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return clinicalNote;
@@ -508,6 +513,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    clinicalNotes.setDiagrams(diagrams);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
@@ -531,6 +537,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    clinicalNotesRepository.save(clinicalNotes);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
@@ -577,10 +584,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    }
 		}
 	    } else {
+	    	logger.warn("No Clinical Notes found for patient Id : " + patientId);
 		throw new BusinessException(ServiceError.Unknown, "No Clinical Notes found for patient Id : " + patientId);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return clinicalNotesList;
@@ -634,10 +643,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    }
 		}
 	    } else {
+	    	logger.warn("No Clinical Notes found for patient Id : " + patientId);
 		throw new BusinessException(ServiceError.Unknown, "No Clinical Notes found for patient Id : " + patientId);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return clinicalNotesList;
@@ -655,6 +666,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    BeanUtil.map(complaintCollection, complaint);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return complaint;
@@ -672,6 +684,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    BeanUtil.map(observationCollection, observation);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return observation;
@@ -689,6 +702,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    BeanUtil.map(investigationCollection, investigation);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return investigation;
@@ -706,6 +720,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    BeanUtil.map(diagnosisCollection, diagnosis);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return diagnosis;
@@ -723,6 +738,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    BeanUtil.map(notesCollection, notes);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return notes;
@@ -745,6 +761,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return diagram;
@@ -761,17 +778,21 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			complaintCollection.setDiscarded(true);
 			complaintRepository.save(complaintCollection);
 		    } else {
+		    	logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 			throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
 		    }
 		} else {
+			logger.warn("Cant delete Global Complaint.");
 		    throw new BusinessException(ServiceError.Unknown, "Cant delete Global Complaint.");
 		}
 
 	    } else {
+	    	logger.warn("Complaint not found!");
 		throw new BusinessException(ServiceError.Unknown, "Complaint not found!");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
@@ -789,16 +810,20 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			observationCollection.setDiscarded(true);
 			observationRepository.save(observationCollection);
 		    } else {
+		    	logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 			throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
 		    }
 		} else {
+			logger.warn("Cant delete Global Observation.");
 		    throw new BusinessException(ServiceError.Unknown, "Cant delete Global Observation.");
 		}
 	    } else {
+	    	logger.warn("Observation not found!");
 		throw new BusinessException(ServiceError.Unknown, "Observation not found!");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
@@ -815,16 +840,20 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			investigationCollection.setDiscarded(true);
 			investigationRepository.save(investigationCollection);
 		    } else {
+		    	logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 			throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
 		    }
 		} else {
+			logger.warn("Cant delete Global Investigation.");
 		    throw new BusinessException(ServiceError.Unknown, "Cant delete Global Investigation.");
 		}
 	    } else {
+	    	logger.warn("Investigation not found!");
 		throw new BusinessException(ServiceError.Unknown, "Investigation not found!");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
@@ -840,16 +869,20 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			diagnosisCollection.setDiscarded(true);
 			diagnosisRepository.save(diagnosisCollection);
 		    } else {
+		    	logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 			throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
 		    }
 		} else {
+			logger.warn("Cant delete Global Diagnosis.");
 		    throw new BusinessException(ServiceError.Unknown, "Cant delete Global Diagnosis.");
 		}
 	    } else {
+	    	logger.warn("Diagnosis not found!");
 		throw new BusinessException(ServiceError.Unknown, "Diagnosis not found!");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
@@ -865,17 +898,21 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			notesCollection.setDiscarded(true);
 			notesRepository.save(notesCollection);
 		    } else {
+		    	logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 			throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
 		    }
 		} else {
+			logger.warn("Cant delete Global Notes.");
 		    throw new BusinessException(ServiceError.Unknown, "Cant delete Global Notes.");
 		}
 
 	    } else {
+	    	logger.warn("Notes not found!");
 		throw new BusinessException(ServiceError.Unknown, "Notes not found!");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
@@ -891,17 +928,21 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			diagramsCollection.setDeleted(true);
 			diagramsRepository.save(diagramsCollection);
 		    } else {
+		    	logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 			throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
 		    }
 		} else {
+			logger.warn("Cant delete Global Diagram.");
 		    throw new BusinessException(ServiceError.Unknown, "Cant delete Global Diagram.");
 		}
 
 	    } else {
+	    	logger.warn("Diagram not found!");
 		throw new BusinessException(ServiceError.Unknown, "Diagram not found!");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
@@ -917,6 +958,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    clinicalNotesCount = patientClinicalNotesRepository.findCount(patientId, clinicalNotesIds);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Clinical Notes Count");
 	}
 	return clinicalNotesCount;
@@ -1052,6 +1094,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    BeanUtil.map(complaintCollections, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
 	}
 	return response;
@@ -1090,6 +1133,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
 	}
 	return response;
@@ -1120,11 +1164,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		response = new ArrayList<Object>();
 		BeanUtil.map(complaintCollections, response);
 	    } else {
+	    	logger.warn("No Complaints Found");
 		throw new BusinessException(ServiceError.NotFound, "No Complaints Found");
 	    }
 
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
 	}
 	return response;
@@ -1155,6 +1201,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    BeanUtil.map(investigationsCollections, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Investigations");
 	}
 	return response;
@@ -1187,11 +1234,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		response = new ArrayList<Object>();
 		BeanUtil.map(investigationsCollections, response);
 	    } else {
+	    	logger.warn("No Investigations Found");
 		throw new BusinessException(ServiceError.NotFound, "No Investigations Found");
 	    }
 
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Investigations");
 	}
 	return response;
@@ -1225,11 +1274,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		response = new ArrayList<Object>();
 		BeanUtil.map(investigationsCollections, response);
 	    } else {
+	    	logger.warn("No Investigations Found");
 		throw new BusinessException(ServiceError.NotFound, "No Investigations Found");
 	    }
 
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Investigations");
 	}
 	return response;
@@ -1261,6 +1312,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    BeanUtil.map(observationCollections, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Observations");
 	}
 	return response;
@@ -1294,11 +1346,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		response = new ArrayList<Object>();
 		BeanUtil.map(observationCollections, response);
 	    } else {
+	    	logger.warn("No Observations Found");
 		throw new BusinessException(ServiceError.NotFound, "No Observations Found");
 	    }
 
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Observations");
 	}
 	return response;
@@ -1331,10 +1385,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		response = new ArrayList<Object>();
 		BeanUtil.map(observationCollections, response);
 	    } else {
+	    	logger.warn("No Observations Found");
 		throw new BusinessException(ServiceError.NotFound, "No Observations Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Observations");
 	}
 	return response;
@@ -1366,6 +1422,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    BeanUtil.map(diagnosisCollections, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnosis");
 	}
 	return response;
@@ -1399,11 +1456,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		response = new ArrayList<Object>();
 		BeanUtil.map(diagnosisCollections, response);
 	    } else {
+	    	logger.warn("No Diagnosis Found");
 		throw new BusinessException(ServiceError.NotFound, "No Diagnosis Found");
 	    }
 
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnosis");
 	}
 	return response;
@@ -1436,11 +1495,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		response = new ArrayList<Object>();
 		BeanUtil.map(diagnosisCollections, response);
 	    } else {
+	    	logger.warn("No Diagnosis Found");
 		throw new BusinessException(ServiceError.NotFound, "No Diagnosis Found");
 	    }
 
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnosis");
 	}
 	return response;
@@ -1472,6 +1533,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    BeanUtil.map(notesCollections, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Notes");
 	}
 	return response;
@@ -1505,11 +1567,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		response = new ArrayList<Object>();
 		BeanUtil.map(notesCollections, response);
 	    } else {
+	    	logger.warn("No Notes Found");
 		throw new BusinessException(ServiceError.NotFound, "No Notes Found");
 	    }
 
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Notes");
 	}
 	return response;
@@ -1542,11 +1606,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		response = new ArrayList<Object>();
 		BeanUtil.map(notesCollections, response);
 	    } else {
+	    	logger.warn("No Notes Found");
 		throw new BusinessException(ServiceError.NotFound, "No Notes Found");
 	    }
 
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Notes");
 	}
 	return response;
@@ -1579,6 +1645,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    BeanUtil.map(diagramCollections, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagrams");
 	}
 	return response;
@@ -1612,11 +1679,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		response = new ArrayList<Object>();
 		BeanUtil.map(diagramCollections, response);
 	    } else {
+	    	logger.warn("No Diagrams Found");
 		throw new BusinessException(ServiceError.NotFound, "No Diagrams Found");
 	    }
 
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagrams");
 	}
 	return response;
@@ -1649,11 +1718,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		response = new ArrayList<Object>();
 		BeanUtil.map(diagramCollections, response);
 	    } else {
+	    	logger.warn("No Diagrams Found");
 		throw new BusinessException(ServiceError.NotFound, "No Diagrams Found");
 	    }
 
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagrams");
 	}
 	return response;

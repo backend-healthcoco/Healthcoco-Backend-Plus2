@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -57,6 +58,8 @@ import common.util.web.DPDoctorUtils;
 
 @Service
 public class ContactsServiceImpl implements ContactsService {
+	
+	private static Logger logger=Logger.getLogger(ContactsServiceImpl.class.getName());
 
     @Autowired
     private DoctorContactsRepository doctorContactsRepository;
@@ -117,6 +120,7 @@ public class ContactsServiceImpl implements ContactsService {
 	    return patientCards;
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
@@ -153,6 +157,7 @@ public class ContactsServiceImpl implements ContactsService {
 	    return patientCards;
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
@@ -243,11 +248,13 @@ public class ContactsServiceImpl implements ContactsService {
 		doctorContactCollection.setIsBlocked(true);
 		doctorContactsRepository.save(doctorContactCollection);
 	    } else {
+	    	logger.warn("PatientId and DoctorId send is not proper.");
 		throw new BusinessException(ServiceError.Unknown, "PatientId and DoctorId send is not proper.");
 	    }
 
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
@@ -269,6 +276,7 @@ public class ContactsServiceImpl implements ContactsService {
 	    return group;
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
@@ -295,10 +303,12 @@ public class ContactsServiceImpl implements ContactsService {
 		}
 		response = true;
 	    } else {
+	    logger.error("Drug Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Drug Not Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Group");
 	}
 	return response;
@@ -327,6 +337,7 @@ public class ContactsServiceImpl implements ContactsService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return null;
@@ -360,6 +371,7 @@ public class ContactsServiceImpl implements ContactsService {
 	    return patientCards.size();
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
@@ -400,6 +412,7 @@ public class ContactsServiceImpl implements ContactsService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return groups;
@@ -419,6 +432,7 @@ public class ContactsServiceImpl implements ContactsService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error Importing Contact");
 	    throw new BusinessException(ServiceError.Unknown, "Error Importing Contact");
 	}
 	return response;
@@ -435,6 +449,7 @@ public class ContactsServiceImpl implements ContactsService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error Exporting Contact");
 	    throw new BusinessException(ServiceError.Unknown, "Error Exporting Contact");
 	}
 	return response;
@@ -522,6 +537,7 @@ public class ContactsServiceImpl implements ContactsService {
 
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return registeredPatientDetails;
@@ -550,6 +566,7 @@ public class ContactsServiceImpl implements ContactsService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;

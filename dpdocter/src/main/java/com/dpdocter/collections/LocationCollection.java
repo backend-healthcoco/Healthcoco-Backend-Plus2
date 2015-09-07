@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.WorkingSchedule;
 
 @Document(collection = "location_cl")
@@ -36,7 +37,10 @@ public class LocationCollection extends GenericCollection {
     private String websiteUrl;
 
     @Field
-    private String imageUrl;
+    private List<ClinicImage> images;
+
+    @Field
+    private String logoUrl;
 
     @Field
     private String hospitalId;
@@ -141,15 +145,23 @@ public class LocationCollection extends GenericCollection {
 	this.websiteUrl = websiteUrl;
     }
 
-    public String getImageUrl() {
-	return imageUrl;
-    }
+   	public List<ClinicImage> getImages() {
+		return images;
+	}
 
-    public void setImageUrl(String imageUrl) {
-	this.imageUrl = imageUrl;
-    }
+	public void setImages(List<ClinicImage> images) {
+		this.images = images;
+	}
 
-    public String getHospitalId() {
+	public String getLogoUrl() {
+		return logoUrl;
+	}
+
+	public void setLogoUrl(String logoUrl) {
+		this.logoUrl = logoUrl;
+	}
+
+	public String getHospitalId() {
 	return hospitalId;
     }
 
@@ -254,13 +266,15 @@ public class LocationCollection extends GenericCollection {
     }
 
     @Override
-    public String toString() {
-	return "LocationCollection [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city
-		+ ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", imageUrl=" + imageUrl
-		+ ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude=" + longitude + ", tagLine=" + tagLine + ", landmarkDetails="
-		+ landmarkDetails + ", locationEmailAddress=" + locationEmailAddress + ", specialization=" + specialization + ", streetAddress="
-		+ streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber + ", alternateNumber=" + alternateNumber + ", workingSchedules="
-		+ workingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + "]";
-    }
+	public String toString() {
+		return "LocationCollection [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state="
+				+ state + ", city=" + city + ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode="
+				+ postalCode + ", websiteUrl=" + websiteUrl + ", images=" + images + ", logoUrl=" + logoUrl
+				+ ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude=" + longitude + ", tagLine="
+				+ tagLine + ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress=" + locationEmailAddress
+				+ ", specialization=" + specialization + ", streetAddress=" + streetAddress + ", locality=" + locality
+				+ ", mobileNumber=" + mobileNumber + ", alternateNumber=" + alternateNumber + ", workingSchedules="
+				+ workingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + "]";
+	}
 
 }

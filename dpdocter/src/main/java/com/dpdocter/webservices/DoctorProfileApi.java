@@ -20,6 +20,9 @@ import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
+import com.dpdocter.request.DoctorAppointmentNumbersAddEditRequest;
+import com.dpdocter.request.DoctorAppointmentSlotAddEditRequest;
+import com.dpdocter.request.DoctorConsultationFeeAddEditRequest;
 import com.dpdocter.request.DoctorContactAddEditRequest;
 import com.dpdocter.request.DoctorEducationAddEditRequest;
 import com.dpdocter.request.DoctorExperienceAddEditRequest;
@@ -29,6 +32,7 @@ import com.dpdocter.request.DoctorProfessionalStatementAddEditRequest;
 import com.dpdocter.request.DoctorProfilePictureAddEditRequest;
 import com.dpdocter.request.DoctorRegistrationAddEditRequest;
 import com.dpdocter.request.DoctorSpecialityAddEditRequest;
+import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
 import com.dpdocter.services.DoctorProfileService;
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -228,7 +232,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_APPOINTMENT_NUMBERS)
     @POST
-    public Response<Boolean> addEditAppointmentNumbers(DoctorClinicProfile request) {
+    public Response<Boolean> addEditAppointmentNumbers(DoctorAppointmentNumbersAddEditRequest request) {
 	Boolean addEditAppointmentNumbersResponse = doctorProfileService.addEditAppointmentNumbers(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditAppointmentNumbersResponse);
@@ -237,7 +241,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_VISITING_TIME)
     @POST
-    public Response<Boolean> addEditVisitingTime(DoctorClinicProfile request) {
+    public Response<Boolean> addEditVisitingTime(DoctorVisitingTimeAddEditRequest request) {
 	Boolean addEditVisitingTimeResponse = doctorProfileService.addEditVisitingTime(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditVisitingTimeResponse);
@@ -246,7 +250,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_CONSULTATION_FEE)
     @POST
-    public Response<Boolean> addEditConsultationFee(DoctorClinicProfile request) {
+    public Response<Boolean> addEditConsultationFee(DoctorConsultationFeeAddEditRequest request) {
 	Boolean addEditConsultationFeeResponse = doctorProfileService.addEditConsultationFee(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditConsultationFeeResponse);
@@ -255,7 +259,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_APPOINTMENT_SLOT)
     @POST
-    public Response<Boolean> addEditAppointmentSlot(DoctorClinicProfile request) {
+    public Response<Boolean> addEditAppointmentSlot(DoctorAppointmentSlotAddEditRequest request) {
 	Boolean addEditAppointmentSlotResponse = doctorProfileService.addEditAppointmentSlot(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditAppointmentSlotResponse);

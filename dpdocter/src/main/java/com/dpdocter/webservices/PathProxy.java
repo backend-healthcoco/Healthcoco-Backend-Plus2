@@ -99,7 +99,22 @@ public interface PathProxy {
 	public static final String UPDATE_CLINIC_ADDRESS = "/settings/updateClinicAddress";
 
 	public static final String UPDATE_CLINIC_TIMING = "/settings/updateClinicTiming";
-    }
+	
+	public static final String CHANGE_CLINIC_LOGO = "/settings/changeClinicLogo";
+	
+	public static final String ADD_CLINIC_IMAGE = "/settings/clinicImage/add";
+	
+	public static final String DELETE_CLINIC_IMAGE = "/settings/clinicImage/{locationId}/{counter}/delete";
+	
+	public static final String ADD_BLOOD_GROUP = "/settings/bloodGroup/add";
+	
+	public static final String GET_BLOOD_GROUP = "/settings/bloodGroup";
+	
+	public static final String ADD_PROFESSION = "/settings/profession/add";
+	
+	public static final String GET_PROFESSION = "/settings/profession";
+    
+ }
 
     public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";
 
@@ -325,7 +340,7 @@ public interface PathProxy {
 
 	public static final String ADD_EDIT_PROFESSIONAL_MEMBERSHIP = "/addEditProfessionalMembership";
 
-	public static final String GET_DOCTOR_PROFILE = "/{doctorId}/view";
+	public static final String GET_DOCTOR_PROFILE = "/{doctorId}/{locationId}/{hospitalId}/view";
 
 	public static final String ADD_EDIT_MEDICAL_COUNCILS = "/addEditMedicalCouncils";
 

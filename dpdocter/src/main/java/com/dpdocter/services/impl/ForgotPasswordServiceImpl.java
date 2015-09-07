@@ -2,6 +2,7 @@ package com.dpdocter.services.impl;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,8 @@ import com.dpdocter.services.MailService;
 @Service
 public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
+	private static Logger logger=Logger.getLogger("dpdocter");
+	
     @Autowired
     private UserRepository userRepository;
 

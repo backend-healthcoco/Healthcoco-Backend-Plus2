@@ -11,6 +11,7 @@ import java.util.List;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -53,6 +54,9 @@ import common.util.web.DPDoctorUtils;
 
 @Service
 public class HistoryServicesImpl implements HistoryServices {
+	
+	private static Logger logger=Logger.getLogger("dpdocter");
+	
     @Autowired
     private DiseasesRepository diseasesRepository;
 

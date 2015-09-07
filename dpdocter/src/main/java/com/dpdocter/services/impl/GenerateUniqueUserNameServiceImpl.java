@@ -1,6 +1,7 @@
 package com.dpdocter.services.impl;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,8 @@ import com.dpdocter.services.GenerateUniqueUserNameService;
 @Service
 public class GenerateUniqueUserNameServiceImpl implements GenerateUniqueUserNameService {
 
+	private static Logger logger=Logger.getLogger("dpdocter");
+	
     @Autowired
     private UserRepository userRepository;
 

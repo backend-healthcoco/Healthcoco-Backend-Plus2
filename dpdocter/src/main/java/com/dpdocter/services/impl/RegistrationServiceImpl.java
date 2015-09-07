@@ -1,40 +1,49 @@
 package com.dpdocter.services.impl;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.Address;
+import com.dpdocter.beans.BloodGroup;
 import com.dpdocter.beans.ClinicAddress;
+import com.dpdocter.beans.ClinicImage;
+import com.dpdocter.beans.ClinicLogo;
 import com.dpdocter.beans.ClinicProfile;
 import com.dpdocter.beans.ClinicTiming;
+import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Group;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Patient;
+import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.ReferenceDetail;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.AddressCollection;
+import com.dpdocter.collections.BloodGroupCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
-import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DoctorContactCollection;
 import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientAdmissionCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
+import com.dpdocter.collections.ProfessionCollection;
 import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.UserCollection;
@@ -45,6 +54,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.AddressRepository;
+import com.dpdocter.repository.BloodGroupRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorContactsRepository;
 import com.dpdocter.repository.DoctorRepository;
@@ -53,11 +63,14 @@ import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientGroupRepository;
 import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.ProfessionRepository;
 import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserRoleRepository;
+import com.dpdocter.request.ClinicImageAddRequest;
+import com.dpdocter.request.ClinicLogoAddRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.PatientInitialAndCounter;
 import com.dpdocter.response.ReferenceResponse;
@@ -66,11 +79,14 @@ import com.dpdocter.services.GenerateUniqueUserNameService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.RegistrationService;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
 public class RegistrationServiceImpl implements RegistrationService {
 
+	private static Logger logger=Logger.getLogger(RegistrationServiceImpl.class.getName());
+	
     @Autowired
     private UserRepository userRepository;
 
@@ -125,6 +141,12 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Autowired
     private DoctorClinicProfileRepository doctorClinicProfileRepository;
 
+    @Autowired
+    private BloodGroupRepository bloodGroupRepository;
+    
+    @Autowired
+    private ProfessionRepository professionRepository;
+    
     @Value(value = "${mail.signup.subject.activation}")
     private String signupSubject;
 
@@ -140,6 +162,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return null;
@@ -155,6 +178,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    // get role of specified type
 	    RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.PATIENT.getRole());
 	    if (roleCollection == null) {
+	    	 logger.warn("Role Collection in database is either empty or not defind properly");
 		throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
 	    }
 	    Date createdTime = new Date();
@@ -269,6 +293,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    registeredPatientDetails.setGroups(groups);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return registeredPatientDetails;
@@ -389,6 +414,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    registeredPatientDetails.setGroups(groups);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return registeredPatientDetails;
@@ -427,6 +453,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return users;
@@ -476,6 +503,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return registeredPatientDetails;
@@ -493,6 +521,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    BeanUtil.map(referrencesCollection, reference);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return reference;
@@ -506,13 +535,16 @@ public class RegistrationServiceImpl implements RegistrationService {
 		referrencesCollection.setDiscarded(true);
 		referrenceRepository.save(referrencesCollection);
 	    } else {
+	    	logger.warn("Invalid Referrence Id!");
 		throw new BusinessException(ServiceError.Unknown, "Invalid Referrence Id!");
 	    }
 	} catch (BusinessException be) {
 	    be.printStackTrace();
+	    logger.error(be);
 	    throw new BusinessException(ServiceError.Unknown, be.getMessage());
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
@@ -539,6 +571,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
@@ -565,6 +598,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
@@ -605,15 +639,16 @@ public class RegistrationServiceImpl implements RegistrationService {
 		   updatePatientInitialAndCounter(doctorId, locationId, patientInitial, patientCounter + 1);
 	   }
 	   else{
+		   logger.warn("Doctor Id and Location Id does not match.");
 		   throw new BusinessException(ServiceError.NoRecord, "Doctor Id and Location Id does not match.");
 	   }
 	   	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return generatedId;
     }
-
 
 	@Override
 	public PatientInitialAndCounter getPatientInitialAndCounter(String doctorId, String locationId) {
@@ -630,11 +665,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 				   }
 					   
 			}else {
+				logger.warn("Doctor Id and Location Id does not match.");
 		    	throw new BusinessException(ServiceError.NoRecord, "Doctor Id and Location Id does not match.");
 		    }
 		} catch (Exception e) {
 		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown, "Error While Updating Patient Initial and Counter");
+		    logger.error(e+" Error While Getting Patient Initial and Counter");
+		    throw new BusinessException(ServiceError.Unknown, "Error While Getting Patient Initial and Counter");
 		}
 		return patientInitialAndCounter;
 	}
@@ -654,10 +691,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 			   clinicProfileCollection = doctorClinicProfileRepository.save(clinicProfileCollection);
 			   response = true;
 		}else {
+			logger.warn("Doctor Id and Location Id does not match.");
 	    	throw new BusinessException(ServiceError.NoRecord, "Doctor Id and Location Id does not match.");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error While Updating Patient Initial and Counter");
 	    throw new BusinessException(ServiceError.Unknown, "Error While Updating Patient Initial and Counter");
 	}
 	return response;
@@ -673,10 +712,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 		location = new Location();
 		BeanUtil.map(locationCollection, location);
 	    } else {
+	    	logger.warn("No Location Found For The Location Id");
 		throw new BusinessException(ServiceError.NotFound, "No Location Found For The Location Id");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+ " Error While Retrieving Location Details");
 	    throw new BusinessException(ServiceError.Unknown, "Error While Retrieving Location Details");
 	}
 	return location;
@@ -696,6 +737,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    BeanUtil.map(locationCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e + " Error While Updating Clinic Details");
 	    throw new BusinessException(ServiceError.Unknown, "Error While Updating Clinic Details");
 	}
 	return response;
@@ -714,6 +756,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    BeanUtil.map(locationCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e + " Error While Updating Clinic Details");
 	    throw new BusinessException(ServiceError.Unknown, "Error While Updating Clinic Details");
 	}
 	return response;
@@ -733,9 +776,173 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    BeanUtil.map(locationCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e + " Error While Updating Clinic Details");
 	    throw new BusinessException(ServiceError.Unknown, "Error While Updating Clinic Details");
 	}
 	return response;
     }
 
+	@Override
+	public BloodGroup addBloodGroup(BloodGroup request) {
+		BloodGroup bloodGroup = new BloodGroup();
+		try {
+		    BloodGroupCollection bloodGroupCollection = new BloodGroupCollection();
+		    BeanUtil.map(request, bloodGroupCollection);
+		    bloodGroupCollection = bloodGroupRepository.save(bloodGroupCollection);
+		    BeanUtil.map(bloodGroupCollection, bloodGroup);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return bloodGroup;
+	}
+
+	@Override
+	public List<BloodGroup> getBloodGroup() {
+		
+		List<BloodGroup> bloodGroups = null;
+		try {
+		    List<BloodGroupCollection> bloodGroupCollections = bloodGroupRepository.findAll();
+		    if (bloodGroupCollections != null) {
+		    	bloodGroups = new ArrayList<BloodGroup>();
+		    	BeanUtil.map(bloodGroupCollections, bloodGroups);
+			}
+
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return bloodGroups;
+	}
+
+	@Override
+	public Profession addProfession(Profession request) {
+		Profession profession = new Profession();
+		try {
+			ProfessionCollection professionCollection = new ProfessionCollection();
+		    BeanUtil.map(request, professionCollection);
+		    professionCollection = professionRepository.save(professionCollection);
+		    BeanUtil.map(professionCollection, profession);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return profession;
+	}
+
+	@Override
+	public List<Profession> getProfession() {
+		List<Profession> professions = null;
+		try {
+		    List<ProfessionCollection> professionCollections = professionRepository.findAll();
+		    if (professionCollections != null) {
+		    	professions = new ArrayList<Profession>();
+		    	BeanUtil.map(professionCollections, professions);
+			}
+
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return professions;
+	}
+
+	@Override
+	public ClinicLogo changeClinicLogo(ClinicLogoAddRequest request) {
+		ClinicLogo response = null;
+		try {
+		    LocationCollection locationCollection = locationRepository.findOne(request.getId());
+		    if (locationCollection == null) {
+			throw new BusinessException(ServiceError.NotFound, "Clinic not found");
+		    } else {
+			if (request.getImage() != null) {
+			    String path = "clinic" + File.separator + "logos";
+			    // save image
+			    String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
+			    locationCollection.setLogoUrl(imageurl);
+			    locationCollection = locationRepository.save(locationCollection);
+
+			    response = new ClinicLogo();
+			    BeanUtil.map(locationCollection, response);
+			}
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public List<ClinicImage> addClinicImage(ClinicImageAddRequest request) {
+		List<ClinicImage> response = null;
+		
+		try {
+		    LocationCollection locationCollection = locationRepository.findOne(request.getId());
+		    if (locationCollection == null) {
+			throw new BusinessException(ServiceError.NotFound, "Clinic not found");
+		    } else {
+		    	int counter = locationCollection.getImages() != null ? locationCollection.getImages().size() : 0;
+		    	response = new ArrayList<ClinicImage>();
+		    	if(locationCollection.getImages() != null)response.addAll(locationCollection.getImages());
+			if (request.getImages() != null) {
+			   for(FileDetails image : request.getImages()){
+				   counter++;
+				   String path = "clinic" + File.separator + "images";
+				    String imageurl = fileManager.saveImageAndReturnImageUrl(image, path);
+				    ClinicImage clinicImage = new ClinicImage();
+				    clinicImage.setImageUrl(imageurl);
+				    clinicImage.setCounter(counter);
+				    response.add(clinicImage);
+			   }
+			   locationCollection.setImages(response);
+			   locationCollection = locationRepository.save(locationCollection);
+			    BeanUtil.map(locationCollection, response);
+			}
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean deleteClinicImage(String locationId, int counter) {
+		
+		try {
+		    LocationCollection locationCollection = locationRepository.findOne(locationId);
+		    if (locationCollection == null) {
+			throw new BusinessException(ServiceError.NotFound, "Clinic not found");
+		    } else {
+		    	boolean foundImage = false;
+		    	int imgCounter = 0;
+		    	List<ClinicImage> images = locationCollection.getImages();
+		    	List<ClinicImage> copyimages = new ArrayList<ClinicImage>(images);
+		    	for(Iterator<ClinicImage> iterator = copyimages.iterator();iterator.hasNext();){
+		    		ClinicImage image = iterator.next();
+		    		if(foundImage){
+		    			image.setCounter(imgCounter);
+		    			imgCounter++;
+		    		}
+		    		else if(image.getCounter() == counter){
+		    			foundImage = true;
+		    			imgCounter = counter;
+		    			images.remove(image);
+		    		}
+		    	}
+		    	locationCollection.setImages(images);
+		    	locationCollection = locationRepository.save(locationCollection);
+		    	return true;
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		
+	}
 }

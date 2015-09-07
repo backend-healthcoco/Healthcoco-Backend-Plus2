@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -63,6 +64,9 @@ import common.util.web.PrescriptionUtils;
 
 @Service
 public class PrescriptionServicesImpl implements PrescriptionServices {
+	
+	private static Logger logger=Logger.getLogger(PrescriptionServicesImpl.class.getName());
+	
     @Autowired
     private DrugRepository drugRepository;
 
@@ -102,6 +106,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    BeanUtil.map(drugCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error Occurred While Saving Drug");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug");
 	}
 	return response;
@@ -121,6 +126,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    BeanUtil.map(drugCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error Occurred While Editing Drug");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Drug");
 	}
 	return response;
@@ -140,16 +146,20 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			drugCollection = drugRepository.save(drugCollection);
 			response = true;
 		    } else {
+		    	logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 			throw new BusinessException(ServiceError.NotAuthorized, "Invalid Doctor Id, Hospital Id, Or Location Id");
 		    }
 		} else {
+			logger.warn("Cannot Delete Global Drug");
 		    throw new BusinessException(ServiceError.NotAuthorized, "Cannot Delete Global Drug");
 		}
 	    } else {
+	    	logger.warn("Drug Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Drug Not Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error Occurred While Deleting Drug");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug");
 	}
 	return response;
@@ -166,10 +176,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		drugCollection = drugRepository.save(drugCollection);
 		response = true;
 	    } else {
+	    	logger.warn("Drug Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Drug Not Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error Occurred While Deleting Drug");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug");
 	}
 	return response;
@@ -184,10 +196,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		drugAddEditResponse = new DrugAddEditResponse();
 		BeanUtil.map(drugCollection, drugAddEditResponse);
 	    } else {
+	    	logger.warn("Drug not found. Please check Drug Id");
 		throw new BusinessException(ServiceError.Unknown, "Drug not found. Please check Drug Id");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error Occurred While Getting Drug");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug");
 	}
 	return drugAddEditResponse;
@@ -206,6 +220,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    BeanUtil.map(templateCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error Occurred While Saving Template");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Template");
 	}
 	return response;
@@ -226,6 +241,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    BeanUtil.map(templateCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error Occurred While Editing Template");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Template");
 	}
 	return response;
@@ -246,16 +262,20 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			templateCollection = templateRepository.save(templateCollection);
 			response = true;
 		    } else {
+		    	logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 			throw new BusinessException(ServiceError.NotAuthorized, "Invalid Doctor Id, Hospital Id, Or Location Id");
 		    }
 		} else {
+			logger.warn("Cannot Delete Global Template");
 		    throw new BusinessException(ServiceError.NotAuthorized, "Cannot Delete Global Template");
 		}
 	    } else {
+	    	logger.warn("Template Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Template Not Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error Occurred While Deleting Template");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Template");
 	}
 	return response;
@@ -280,10 +300,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    i++;
 		}
 	    } else {
+	    	logger.warn("Template Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Template Not Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error Occurred While Getting Template");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Template");
 	}
 	return response;
@@ -303,6 +325,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    BeanUtil.map(prescriptionCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error Occurred While Saving Prescription");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Prescription");
 	}
 	return response;
@@ -322,6 +345,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    BeanUtil.map(prescriptionCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error Occurred While Editing Prescription");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Prescription");
 	}
 	return response;
@@ -342,16 +366,20 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 			response = true;
 		    } else {
+		    	logger.warn("Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");
 			throw new BusinessException(ServiceError.NotAuthorized, "Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");
 		    }
 		} else {
+			logger.warn("Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");
 		    throw new BusinessException(ServiceError.NotAuthorized, "Cannot Delete Prescription");
 		}
 	    } else {
+	    	logger.warn("Prescription Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Prescription Not Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error("Error Occurred While Deleting Prescription");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Prescription");
 	}
 	return response;
@@ -424,10 +452,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 		}
 	    } else {
+	    	logger.warn("Prescription Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Prescription Not Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(" Error Occurred While Getting Prescription");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Prescription");
 	}
 	return prescriptions;
@@ -466,10 +496,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 		}
 	    } else {
+	    	logger.warn("Prescription Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Prescription Not Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error Occurred While Getting Prescription");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Prescription");
 	}
 	return prescriptions;
@@ -532,10 +564,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    response.add(template);
 		}
 	    } else {
+	    	logger.warn("Template Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Template Not Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error Occurred While Getting Template");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Template");
 	}
 	return response;
@@ -548,6 +582,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    prescriptionCount = prescriptionRepository.getPrescriptionCount(doctorId, patientId, hospitalId, locationId, false);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error Occurred While Getting Prescription Count");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Prescription Count");
 	}
 	return prescriptionCount;
@@ -612,6 +647,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    BeanUtil.map(drugTypeCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error Occurred While Saving Drug Type");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug Type");
 	}
 	return response;
@@ -634,6 +670,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    BeanUtil.map(drugTypeCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error Occurred While Editing Drug Type");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Drug Type");
 	}
 	return response;
@@ -652,10 +689,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		drugTypeCollection = drugTypeRepository.save(drugTypeCollection);
 		response = true;
 	    } else {
+	    	logger.warn("Drug Type Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Drug Type Not Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error Occurred While Deleting Drug Type");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug Type");
 	}
 	return response;
@@ -675,6 +714,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    BeanUtil.map(drugStrengthUnitCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error Occurred While Deleting Drug Type");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug Strength");
 	}
 	return response;
