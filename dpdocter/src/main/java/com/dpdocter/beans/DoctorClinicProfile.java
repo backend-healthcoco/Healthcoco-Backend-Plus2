@@ -2,12 +2,10 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
 public class DoctorClinicProfile {
     private String id;
 
-    private String userLocationId;
+    private String locationId;
 
     private String clinicAddress;
 
@@ -31,12 +29,12 @@ public class DoctorClinicProfile {
 	this.id = id;
     }
 
-    public String getUserLocationId() {
-	return userLocationId;
+    public String getLocationId() {
+	return locationId;
     }
 
-    public void setUserLocationId(String userLocationId) {
-	this.userLocationId = userLocationId;
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
     }
 
     public String getClinicAddress() {
@@ -48,22 +46,22 @@ public class DoctorClinicProfile {
     }
 
     public String getPatientInitial() {
-		return patientInitial;
-	}
+	return patientInitial;
+    }
 
-	public void setPatientInitial(String patientInitial) {
-		this.patientInitial = patientInitial;
-	}
+    public void setPatientInitial(String patientInitial) {
+	this.patientInitial = patientInitial;
+    }
 
-	public int getPatientCounter() {
-		return patientCounter;
-	}
+    public int getPatientCounter() {
+	return patientCounter;
+    }
 
-	public void setPatientCounter(int patientCounter) {
-		this.patientCounter = patientCounter;
-	}
+    public void setPatientCounter(int patientCounter) {
+	this.patientCounter = patientCounter;
+    }
 
-	public List<String> getAppointmentBookingNumber() {
+    public List<String> getAppointmentBookingNumber() {
 	return appointmentBookingNumber;
     }
 
@@ -95,11 +93,11 @@ public class DoctorClinicProfile {
 	this.workingSchedules = workingSchedules;
     }
 
-	@Override
-	public String toString() {
-		return "DoctorClinicProfile [id=" + id + ", userLocationId=" + userLocationId + ", clinicAddress="
-				+ clinicAddress + ", patientInitial=" + patientInitial + ", patientCounter=" + patientCounter
-				+ ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee=" + consultationFee
-				+ ", appointmentSlot=" + appointmentSlot + ", workingSchedules=" + workingSchedules + "]";
-	}
+    @Override
+    public String toString() {
+	return "DoctorClinicProfile [id=" + id + ", locationId=" + locationId + ", clinicAddress=" + clinicAddress + ", patientInitial=" + patientInitial
+		+ ", patientCounter=" + patientCounter + ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee=" + consultationFee
+		+ ", appointmentSlot=" + appointmentSlot + ", workingSchedules=" + workingSchedules + "]";
+    }
+
 }

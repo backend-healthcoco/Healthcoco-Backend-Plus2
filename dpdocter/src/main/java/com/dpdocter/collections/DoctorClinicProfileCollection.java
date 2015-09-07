@@ -16,7 +16,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
     private String id;
 
     @Field
-    private String userLocationId;
+    private String locationId;
 
     @Field
     private String patientInitial = "P";
@@ -44,28 +44,28 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	this.id = id;
     }
 
-    public String getUserLocationId() {
-	return userLocationId;
+    public String getLocationId() {
+	return locationId;
     }
 
-    public void setUserLocationId(String userLocationId) {
-	this.userLocationId = userLocationId;
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
     }
 
     public String getPatientInitial() {
-   	return patientInitial;
+	return patientInitial;
     }
 
     public void setPatientInitial(String patientInitial) {
-    this.patientInitial = patientInitial;
+	this.patientInitial = patientInitial;
     }
 
     public int getPatientCounter() {
-    return patientCounter;
+	return patientCounter;
     }
 
     public void setPatientCounter(int patientCounter) {
-    this.patientCounter = patientCounter;
+	this.patientCounter = patientCounter;
     }
 
     public List<String> getAppointmentBookingNumber() {
@@ -101,10 +101,10 @@ public class DoctorClinicProfileCollection extends GenericCollection {
     }
 
     @Override
-	public String toString() {
-		return "DoctorClinicProfileCollection [id=" + id + ", userLocationId=" + userLocationId + ", patientInitial="
-				+ patientInitial + ", patientCounter=" + patientCounter + ", appointmentBookingNumber="
-				+ appointmentBookingNumber + ", consultationFee=" + consultationFee + ", appointmentSlot="
-				+ appointmentSlot + ", workingSchedules=" + workingSchedules + "]";
-	}
+    public String toString() {
+	return "DoctorClinicProfileCollection [id=" + id + ", locationId=" + locationId + ", patientInitial=" + patientInitial + ", patientCounter="
+		+ patientCounter + ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee=" + consultationFee + ", appointmentSlot="
+		+ appointmentSlot + ", workingSchedules=" + workingSchedules + "]";
+    }
+
 }

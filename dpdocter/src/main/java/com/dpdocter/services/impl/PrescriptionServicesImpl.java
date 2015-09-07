@@ -64,9 +64,9 @@ import common.util.web.PrescriptionUtils;
 
 @Service
 public class PrescriptionServicesImpl implements PrescriptionServices {
-	
-	private static Logger logger=Logger.getLogger(PrescriptionServicesImpl.class.getName());
-	
+
+    private static Logger logger = Logger.getLogger(PrescriptionServicesImpl.class.getName());
+
     @Autowired
     private DrugRepository drugRepository;
 
@@ -106,7 +106,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    BeanUtil.map(drugCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Saving Drug");
+	    logger.error(e + " Error Occurred While Saving Drug");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug");
 	}
 	return response;
@@ -118,15 +118,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	DrugCollection drugCollection = new DrugCollection();
 	BeanUtil.map(request, drugCollection);
 	try {
-		DrugCollection oldDrug = drugRepository.findOne(request.getId());
-		drugCollection.setCreatedBy(oldDrug.getCreatedBy());
-		drugCollection.setCreatedTime(oldDrug.getCreatedTime());
+	    DrugCollection oldDrug = drugRepository.findOne(request.getId());
+	    drugCollection.setCreatedBy(oldDrug.getCreatedBy());
+	    drugCollection.setCreatedTime(oldDrug.getCreatedTime());
 	    drugCollection = drugRepository.save(drugCollection);
 	    response = new DrugAddEditResponse();
 	    BeanUtil.map(drugCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Editing Drug");
+	    logger.error(e + " Error Occurred While Editing Drug");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Drug");
 	}
 	return response;
@@ -146,20 +146,20 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			drugCollection = drugRepository.save(drugCollection);
 			response = true;
 		    } else {
-		    	logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+			logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 			throw new BusinessException(ServiceError.NotAuthorized, "Invalid Doctor Id, Hospital Id, Or Location Id");
 		    }
 		} else {
-			logger.warn("Cannot Delete Global Drug");
+		    logger.warn("Cannot Delete Global Drug");
 		    throw new BusinessException(ServiceError.NotAuthorized, "Cannot Delete Global Drug");
 		}
 	    } else {
-	    	logger.warn("Drug Not Found");
+		logger.warn("Drug Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Drug Not Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Deleting Drug");
+	    logger.error(e + " Error Occurred While Deleting Drug");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug");
 	}
 	return response;
@@ -176,12 +176,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		drugCollection = drugRepository.save(drugCollection);
 		response = true;
 	    } else {
-	    	logger.warn("Drug Not Found");
+		logger.warn("Drug Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Drug Not Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Deleting Drug");
+	    logger.error(e + " Error Occurred While Deleting Drug");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug");
 	}
 	return response;
@@ -196,12 +196,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		drugAddEditResponse = new DrugAddEditResponse();
 		BeanUtil.map(drugCollection, drugAddEditResponse);
 	    } else {
-	    	logger.warn("Drug not found. Please check Drug Id");
+		logger.warn("Drug not found. Please check Drug Id");
 		throw new BusinessException(ServiceError.Unknown, "Drug not found. Please check Drug Id");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Getting Drug");
+	    logger.error(e + " Error Occurred While Getting Drug");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug");
 	}
 	return drugAddEditResponse;
@@ -220,7 +220,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    BeanUtil.map(templateCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Saving Template");
+	    logger.error(e + " Error Occurred While Saving Template");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Template");
 	}
 	return response;
@@ -232,16 +232,16 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	TemplateCollection templateCollection = new TemplateCollection();
 	BeanUtil.map(request, templateCollection);
 	try {
-		TemplateCollection oldTemplate = templateRepository.findOne(request.getId());
-		templateCollection.setCreatedBy(oldTemplate.getCreatedBy());
-		templateCollection.setCreatedTime(oldTemplate.getCreatedTime());
-	    
+	    TemplateCollection oldTemplate = templateRepository.findOne(request.getId());
+	    templateCollection.setCreatedBy(oldTemplate.getCreatedBy());
+	    templateCollection.setCreatedTime(oldTemplate.getCreatedTime());
+
 	    templateCollection = templateRepository.save(templateCollection);
 	    response = new TemplateAddEditResponse();
 	    BeanUtil.map(templateCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Editing Template");
+	    logger.error(e + " Error Occurred While Editing Template");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Template");
 	}
 	return response;
@@ -262,20 +262,20 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			templateCollection = templateRepository.save(templateCollection);
 			response = true;
 		    } else {
-		    	logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+			logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 			throw new BusinessException(ServiceError.NotAuthorized, "Invalid Doctor Id, Hospital Id, Or Location Id");
 		    }
 		} else {
-			logger.warn("Cannot Delete Global Template");
+		    logger.warn("Cannot Delete Global Template");
 		    throw new BusinessException(ServiceError.NotAuthorized, "Cannot Delete Global Template");
 		}
 	    } else {
-	    	logger.warn("Template Not Found");
+		logger.warn("Template Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Template Not Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Deleting Template");
+	    logger.error(e + " Error Occurred While Deleting Template");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Template");
 	}
 	return response;
@@ -300,12 +300,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    i++;
 		}
 	    } else {
-	    	logger.warn("Template Not Found");
+		logger.warn("Template Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Template Not Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Getting Template");
+	    logger.error(e + " Error Occurred While Getting Template");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Template");
 	}
 	return response;
@@ -325,7 +325,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    BeanUtil.map(prescriptionCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Saving Prescription");
+	    logger.error(e + " Error Occurred While Saving Prescription");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Prescription");
 	}
 	return response;
@@ -337,15 +337,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	PrescriptionCollection prescriptionCollection = new PrescriptionCollection();
 	BeanUtil.map(request, prescriptionCollection);
 	try {
-		PrescriptionCollection oldPrescription = prescriptionRepository.findOne(request.getId());
-		prescriptionCollection.setCreatedBy(oldPrescription.getCreatedBy());
-		prescriptionCollection.setCreatedTime(oldPrescription.getCreatedTime());
+	    PrescriptionCollection oldPrescription = prescriptionRepository.findOne(request.getId());
+	    prescriptionCollection.setCreatedBy(oldPrescription.getCreatedBy());
+	    prescriptionCollection.setCreatedTime(oldPrescription.getCreatedTime());
 	    prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 	    response = new PrescriptionAddEditResponse();
 	    BeanUtil.map(prescriptionCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Editing Prescription");
+	    logger.error(e + " Error Occurred While Editing Prescription");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Prescription");
 	}
 	return response;
@@ -366,15 +366,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 			response = true;
 		    } else {
-		    	logger.warn("Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");
+			logger.warn("Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");
 			throw new BusinessException(ServiceError.NotAuthorized, "Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");
 		    }
 		} else {
-			logger.warn("Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");
+		    logger.warn("Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");
 		    throw new BusinessException(ServiceError.NotAuthorized, "Cannot Delete Prescription");
 		}
 	    } else {
-	    	logger.warn("Prescription Not Found");
+		logger.warn("Prescription Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Prescription Not Found");
 	    }
 	} catch (Exception e) {
@@ -452,7 +452,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 		}
 	    } else {
-	    	logger.warn("Prescription Not Found");
+		logger.warn("Prescription Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Prescription Not Found");
 	    }
 	} catch (Exception e) {
@@ -496,12 +496,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 		}
 	    } else {
-	    	logger.warn("Prescription Not Found");
+		logger.warn("Prescription Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Prescription Not Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Getting Prescription");
+	    logger.error(e + " Error Occurred While Getting Prescription");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Prescription");
 	}
 	return prescriptions;
@@ -564,12 +564,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    response.add(template);
 		}
 	    } else {
-	    	logger.warn("Template Not Found");
+		logger.warn("Template Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Template Not Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Getting Template");
+	    logger.error(e + " Error Occurred While Getting Template");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Template");
 	}
 	return response;
@@ -582,7 +582,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    prescriptionCount = prescriptionRepository.getPrescriptionCount(doctorId, patientId, hospitalId, locationId, false);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Getting Prescription Count");
+	    logger.error(e + " Error Occurred While Getting Prescription Count");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Prescription Count");
 	}
 	return prescriptionCount;
@@ -647,7 +647,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    BeanUtil.map(drugTypeCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Saving Drug Type");
+	    logger.error(e + " Error Occurred While Saving Drug Type");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug Type");
 	}
 	return response;
@@ -662,15 +662,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	DrugTypeCollection drugTypeCollection = new DrugTypeCollection();
 	BeanUtil.map(request, drugTypeCollection);
 	try {
-		DrugTypeCollection oldDrug = drugTypeRepository.findOne(request.getId());
-		drugTypeCollection.setCreatedBy(oldDrug.getCreatedBy());
-		drugTypeCollection.setCreatedTime(oldDrug.getCreatedTime());
+	    DrugTypeCollection oldDrug = drugTypeRepository.findOne(request.getId());
+	    drugTypeCollection.setCreatedBy(oldDrug.getCreatedBy());
+	    drugTypeCollection.setCreatedTime(oldDrug.getCreatedTime());
 	    drugTypeCollection = drugTypeRepository.save(drugTypeCollection);
 	    response = new DrugTypeAddEditResponse();
 	    BeanUtil.map(drugTypeCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Editing Drug Type");
+	    logger.error(e + " Error Occurred While Editing Drug Type");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Drug Type");
 	}
 	return response;
@@ -689,12 +689,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		drugTypeCollection = drugTypeRepository.save(drugTypeCollection);
 		response = true;
 	    } else {
-	    	logger.warn("Drug Type Not Found");
+		logger.warn("Drug Type Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Drug Type Not Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Deleting Drug Type");
+	    logger.error(e + " Error Occurred While Deleting Drug Type");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug Type");
 	}
 	return response;
@@ -714,7 +714,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    BeanUtil.map(drugStrengthUnitCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Deleting Drug Type");
+	    logger.error(e + " Error Occurred While Deleting Drug Type");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug Strength");
 	}
 	return response;
@@ -728,10 +728,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	DrugStrengthUnitCollection drugStrengthUnitCollection = new DrugStrengthUnitCollection();
 	BeanUtil.map(request, drugStrengthUnitCollection);
 	try {
-		DrugStrengthUnitCollection oldDrugStrength = drugStrengthRepository.findOne(request.getId());
-		drugStrengthUnitCollection.setCreatedBy(oldDrugStrength.getCreatedBy());
-		drugStrengthUnitCollection.setCreatedTime(oldDrugStrength.getCreatedTime());
-		
+	    DrugStrengthUnitCollection oldDrugStrength = drugStrengthRepository.findOne(request.getId());
+	    drugStrengthUnitCollection.setCreatedBy(oldDrugStrength.getCreatedBy());
+	    drugStrengthUnitCollection.setCreatedTime(oldDrugStrength.getCreatedTime());
+
 	    drugStrengthUnitCollection = drugStrengthRepository.save(drugStrengthUnitCollection);
 	    response = new DrugStrengthAddEditResponse();
 	    BeanUtil.map(drugStrengthUnitCollection, response);
@@ -790,10 +790,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	DrugDosageCollection drugDosageCollection = new DrugDosageCollection();
 	BeanUtil.map(request, drugDosageCollection);
 	try {
-		DrugDosageCollection oldDrugDosage = drugDosageRepository.findOne(request.getId());
-		drugDosageCollection.setCreatedBy(oldDrugDosage.getCreatedBy());
-		drugDosageCollection.setCreatedTime(oldDrugDosage.getCreatedTime());
-		
+	    DrugDosageCollection oldDrugDosage = drugDosageRepository.findOne(request.getId());
+	    drugDosageCollection.setCreatedBy(oldDrugDosage.getCreatedBy());
+	    drugDosageCollection.setCreatedTime(oldDrugDosage.getCreatedTime());
+
 	    drugDosageCollection = drugDosageRepository.save(drugDosageCollection);
 	    response = new DrugDosageAddEditResponse();
 	    BeanUtil.map(drugDosageCollection, response);
@@ -851,10 +851,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	DrugDirectionCollection drugDirectionCollection = new DrugDirectionCollection();
 	BeanUtil.map(request, drugDirectionCollection);
 	try {
-		DrugDirectionCollection oldDrugDirection = drugDirectionRepository.findOne(request.getId());
-		drugDirectionCollection.setCreatedBy(oldDrugDirection.getCreatedBy());
-		drugDirectionCollection.setCreatedTime(oldDrugDirection.getCreatedTime());
-		
+	    DrugDirectionCollection oldDrugDirection = drugDirectionRepository.findOne(request.getId());
+	    drugDirectionCollection.setCreatedBy(oldDrugDirection.getCreatedBy());
+	    drugDirectionCollection.setCreatedTime(oldDrugDirection.getCreatedTime());
+
 	    drugDirectionCollection = drugDirectionRepository.save(drugDirectionCollection);
 	    response = new DrugDirectionAddEditResponse();
 	    BeanUtil.map(drugDirectionCollection, response);
@@ -913,10 +913,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	DrugDurationUnitCollection drugDurationUnitCollection = new DrugDurationUnitCollection();
 	BeanUtil.map(request, drugDurationUnitCollection);
 	try {
-		DrugDurationUnitCollection oldDrugDuration = drugDurationUnitRepository.findOne(request.getId());
-		drugDurationUnitCollection.setCreatedBy(oldDrugDuration.getCreatedBy());
-		drugDurationUnitCollection.setCreatedTime(oldDrugDuration.getCreatedTime());
-		
+	    DrugDurationUnitCollection oldDrugDuration = drugDurationUnitRepository.findOne(request.getId());
+	    drugDurationUnitCollection.setCreatedBy(oldDrugDuration.getCreatedBy());
+	    drugDurationUnitCollection.setCreatedTime(oldDrugDuration.getCreatedTime());
+
 	    drugDurationUnitCollection = drugDurationUnitRepository.save(drugDurationUnitCollection);
 	    response = new DrugDurationUnitAddEditResponse();
 	    BeanUtil.map(drugDurationUnitCollection, response);
@@ -969,8 +969,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    }
 		    prescription.setItems(prescriptionItemDetails);
 		}
-	    } else {
-		throw new BusinessException(ServiceError.NotFound, "Prescription Not Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1109,8 +1107,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    if (!drugCollections.isEmpty()) {
 		response = new ArrayList<Object>();
 		BeanUtil.map(drugCollections, response);
-	    } else {
-		throw new BusinessException(ServiceError.Unknown, "No Drugs Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1144,8 +1140,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    if (!drugCollections.isEmpty()) {
 		response = new ArrayList<Object>();
 		BeanUtil.map(drugCollections, response);
-	    } else {
-		throw new BusinessException(ServiceError.Unknown, "No Drugs Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1179,8 +1173,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    if (!drugCollections.isEmpty()) {
 		response = new ArrayList<Object>();
 		BeanUtil.map(drugCollections, response);
-	    } else {
-		throw new BusinessException(ServiceError.Unknown, "No Drugs Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1213,8 +1205,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    if (!drugTypeCollections.isEmpty()) {
 		response = new ArrayList<Object>();
 		BeanUtil.map(drugTypeCollections, response);
-	    } else {
-		throw new BusinessException(ServiceError.Unknown, "No Drug Type Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1248,8 +1238,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    if (!drugTypeCollections.isEmpty()) {
 		response = new ArrayList<Object>();
 		BeanUtil.map(drugTypeCollections, response);
-	    } else {
-		throw new BusinessException(ServiceError.Unknown, "No Drug Type Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1284,8 +1272,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    if (!drugTypeCollections.isEmpty()) {
 		response = new ArrayList<Object>();
 		BeanUtil.map(drugTypeCollections, response);
-	    } else {
-		throw new BusinessException(ServiceError.Unknown, "No Drug Type Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1319,8 +1305,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    if (!drugDirectionCollections.isEmpty()) {
 		response = new ArrayList<Object>();
 		BeanUtil.map(drugDirectionCollections, response);
-	    } else {
-		throw new BusinessException(ServiceError.Unknown, "No Drug Direction Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1354,8 +1338,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    if (!drugDirectionCollections.isEmpty()) {
 		response = new ArrayList<Object>();
 		BeanUtil.map(drugDirectionCollections, response);
-	    } else {
-		throw new BusinessException(ServiceError.Unknown, "No Drug Direction Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1390,8 +1372,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    if (!drugDirectionCollections.isEmpty()) {
 		response = new ArrayList<Object>();
 		BeanUtil.map(drugDirectionCollections, response);
-	    } else {
-		throw new BusinessException(ServiceError.Unknown, "No Drug Direction Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1425,8 +1405,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    if (!drugDosageCollections.isEmpty()) {
 		response = new ArrayList<Object>();
 		BeanUtil.map(drugDosageCollections, response);
-	    } else {
-		throw new BusinessException(ServiceError.Unknown, "No Drug Dosage Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1460,8 +1438,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    if (!drugDosageCollections.isEmpty()) {
 		response = new ArrayList<Object>();
 		BeanUtil.map(drugDosageCollections, response);
-	    } else {
-		throw new BusinessException(ServiceError.Unknown, "No Drug Dosage Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1496,8 +1472,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    if (!drugDosageCollections.isEmpty()) {
 		response = new ArrayList<Object>();
 		BeanUtil.map(drugDosageCollections, response);
-	    } else {
-		throw new BusinessException(ServiceError.Unknown, "No Drug Dosage Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1531,8 +1505,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    if (!drugDurationUnitCollections.isEmpty()) {
 		response = new ArrayList<Object>();
 		BeanUtil.map(drugDurationUnitCollections, response);
-	    } else {
-		throw new BusinessException(ServiceError.Unknown, "No Drug DurationUnit Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1567,8 +1539,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    if (!drugDurationUnitCollections.isEmpty()) {
 		response = new ArrayList<Object>();
 		BeanUtil.map(drugDurationUnitCollections, response);
-	    } else {
-		throw new BusinessException(ServiceError.Unknown, "No Drug DurationUnit Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1603,8 +1573,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    if (!drugDurationUnitCollections.isEmpty()) {
 		response = new ArrayList<Object>();
 		BeanUtil.map(drugDurationUnitCollections, response);
-	    } else {
-		throw new BusinessException(ServiceError.Unknown, "No Drug DurationUnit Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1638,8 +1606,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    if (!drugStrengthUnitCollections.isEmpty()) {
 		response = new ArrayList<Object>();
 		BeanUtil.map(drugStrengthUnitCollections, response);
-	    } else {
-		throw new BusinessException(ServiceError.Unknown, "No Drug StrengthUnit Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1674,8 +1640,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    if (!drugStrengthUnitCollections.isEmpty()) {
 		response = new ArrayList<Object>();
 		BeanUtil.map(drugStrengthUnitCollections, response);
-	    } else {
-		throw new BusinessException(ServiceError.Unknown, "No Drug StrengthUnit Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1710,8 +1674,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    if (!drugStrengthUnitCollections.isEmpty()) {
 		response = new ArrayList<Object>();
 		BeanUtil.map(drugStrengthUnitCollections, response);
-	    } else {
-		throw new BusinessException(ServiceError.Unknown, "No Drug StrengthUnit Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();

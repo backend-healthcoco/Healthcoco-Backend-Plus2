@@ -494,8 +494,6 @@ public class RecordsServiceImpl implements RecordsService {
 	    if (recordCollection != null) {
 		record = new Records();
 		BeanUtil.map(recordCollection, record);
-	    } else {
-		throw new BusinessException(ServiceError.NotFound, "Record Not Found.");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();

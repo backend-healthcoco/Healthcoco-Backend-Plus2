@@ -6,9 +6,9 @@ import org.springframework.data.mongodb.repository.Query;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 
 public interface DoctorClinicProfileRepository extends MongoRepository<DoctorClinicProfileCollection, String> {
-    @Query("{'id': ?0, 'userLocationId': ?1}")
+    @Query("{'id': ?0, 'locationId': ?1}")
     DoctorClinicProfileCollection findByIdAndLocationId(String id, String locationId);
 
-    @Query("{'userLocationId': ?0}")
+    @Query("{'locationId': ?0}")
     DoctorClinicProfileCollection findByLocationId(String locationId);
 }

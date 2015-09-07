@@ -1,20 +1,11 @@
 package com.dpdocter.tests;
 
-import java.util.Date;
-
-import com.dpdocter.collections.GroupCollection;
+import com.dpdocter.request.ClinicalNotesAddRequest;
 
 public class GeneralTests {
     public static void main(String args[]) {
-	GroupCollection group = new GroupCollection();
+	ClinicalNotesAddRequest request = new ClinicalNotesAddRequest();
 
-	group.setDescription("Group Description");
-	group.setDoctorId("D12345");
-	group.setHospitalId("H12345");
-	group.setLocationId("L12345");
-	group.setName("Group");
-	group.setCreatedTime(new Date());
-
-	System.out.println(Converter.ObjectToJSON(group));
+	System.out.println(Converter.ObjectToJSON(request));
     }
 }

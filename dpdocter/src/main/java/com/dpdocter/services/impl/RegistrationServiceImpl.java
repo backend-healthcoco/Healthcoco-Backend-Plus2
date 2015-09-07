@@ -79,14 +79,13 @@ import com.dpdocter.services.GenerateUniqueUserNameService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.RegistrationService;
-
 import common.util.web.DPDoctorUtils;
 
 @Service
 public class RegistrationServiceImpl implements RegistrationService {
 
-	private static Logger logger=Logger.getLogger(RegistrationServiceImpl.class.getName());
-	
+    private static Logger logger = Logger.getLogger(RegistrationServiceImpl.class.getName());
+
     @Autowired
     private UserRepository userRepository;
 
@@ -134,19 +133,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Autowired
     private LocationRepository locationRepository;
-    
+
     @Autowired
     private UserLocationRepository userLocationRepository;
-    
+
     @Autowired
     private DoctorClinicProfileRepository doctorClinicProfileRepository;
 
     @Autowired
     private BloodGroupRepository bloodGroupRepository;
-    
+
     @Autowired
     private ProfessionRepository professionRepository;
-    
+
     @Value(value = "${mail.signup.subject.activation}")
     private String signupSubject;
 
@@ -178,7 +177,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    // get role of specified type
 	    RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.PATIENT.getRole());
 	    if (roleCollection == null) {
-	    	 logger.warn("Role Collection in database is either empty or not defind properly");
+		logger.warn("Role Collection in database is either empty or not defind properly");
 		throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
 	    }
 	    Date createdTime = new Date();
@@ -535,7 +534,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		referrencesCollection.setDiscarded(true);
 		referrenceRepository.save(referrencesCollection);
 	    } else {
-	    	logger.warn("Invalid Referrence Id!");
+		logger.warn("Invalid Referrence Id!");
 		throw new BusinessException(ServiceError.Unknown, "Invalid Referrence Id!");
 	    }
 	} catch (BusinessException be) {
@@ -624,25 +623,24 @@ public class RegistrationServiceImpl implements RegistrationService {
 		patientCount = patientCollections.size();
 	    }
 
-	   UserLocationCollection userLocation = userLocationRepository.findByUserIdAndLocationId(doctorId, locationId);
-	   if(userLocation != null){
-		   DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocation.getId()); 
-		   if(clinicProfileCollection == null){
-			   clinicProfileCollection = new DoctorClinicProfileCollection();
-		   }
-		   String patientInitial = clinicProfileCollection.getPatientInitial();
-		    int patientCounter = clinicProfileCollection.getPatientCounter();
+	    UserLocationCollection userLocation = userLocationRepository.findByUserIdAndLocationId(doctorId, locationId);
+	    if (userLocation != null) {
+		DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocation.getLocationId());
+		if (clinicProfileCollection == null) {
+		    clinicProfileCollection = new DoctorClinicProfileCollection();
+		}
+		String patientInitial = clinicProfileCollection.getPatientInitial();
+		int patientCounter = clinicProfileCollection.getPatientCounter();
 
-		    generatedId = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay) + DPDoctorUtils.getPrefixedNumber(currentMonth)
-			    + DPDoctorUtils.getPrefixedNumber(currentYear % 100) + DPDoctorUtils.getPrefixedNumber(patientCounter + patientCount + 1);
+		generatedId = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay) + DPDoctorUtils.getPrefixedNumber(currentMonth)
+			+ DPDoctorUtils.getPrefixedNumber(currentYear % 100) + DPDoctorUtils.getPrefixedNumber(patientCounter + patientCount + 1);
 
-		   updatePatientInitialAndCounter(doctorId, locationId, patientInitial, patientCounter + 1);
-	   }
-	   else{
-		   logger.warn("Doctor Id and Location Id does not match.");
-		   throw new BusinessException(ServiceError.NoRecord, "Doctor Id and Location Id does not match.");
-	   }
-	   	} catch (Exception e) {
+		updatePatientInitialAndCounter(doctorId, locationId, patientInitial, patientCounter + 1);
+	    } else {
+		logger.warn("Doctor Id and Location Id does not match.");
+		throw new BusinessException(ServiceError.NoRecord, "Doctor Id and Location Id does not match.");
+	    }
+	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -650,53 +648,51 @@ public class RegistrationServiceImpl implements RegistrationService {
 	return generatedId;
     }
 
-	@Override
-	public PatientInitialAndCounter getPatientInitialAndCounter(String doctorId, String locationId) {
-		PatientInitialAndCounter  patientInitialAndCounter =  null;
-		try {
-			UserLocationCollection userLocation = userLocationRepository.findByUserIdAndLocationId(doctorId, locationId);
-			   if(userLocation != null){
-				   DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocation.getId());
-				   if(clinicProfileCollection != null){
-					   patientInitialAndCounter = new PatientInitialAndCounter();
-					   BeanUtil.map(clinicProfileCollection, patientInitialAndCounter);
-					   patientInitialAndCounter.setDoctorId(doctorId);
-					   patientInitialAndCounter.setLocationId(locationId);
-				   }
-					   
-			}else {
-				logger.warn("Doctor Id and Location Id does not match.");
-		    	throw new BusinessException(ServiceError.NoRecord, "Doctor Id and Location Id does not match.");
-		    }
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e+" Error While Getting Patient Initial and Counter");
-		    throw new BusinessException(ServiceError.Unknown, "Error While Getting Patient Initial and Counter");
+    @Override
+    public PatientInitialAndCounter getPatientInitialAndCounter(String doctorId, String locationId) {
+	PatientInitialAndCounter patientInitialAndCounter = null;
+	try {
+	    UserLocationCollection userLocation = userLocationRepository.findByUserIdAndLocationId(doctorId, locationId);
+	    if (userLocation != null) {
+		DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocation.getLocationId());
+		if (clinicProfileCollection != null) {
+		    patientInitialAndCounter = new PatientInitialAndCounter();
+		    BeanUtil.map(clinicProfileCollection, patientInitialAndCounter);
+		    patientInitialAndCounter.setDoctorId(doctorId);
+		    patientInitialAndCounter.setLocationId(locationId);
 		}
-		return patientInitialAndCounter;
+	    } else {
+		logger.warn("Doctor Id and Location Id does not match.");
+		throw new BusinessException(ServiceError.NoRecord, "Doctor Id and Location Id does not match.");
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error While Updating Patient Initial and Counter");
 	}
-
+	return patientInitialAndCounter;
+    }
 
     @Override
     public Boolean updatePatientInitialAndCounter(String doctorId, String locationId, String patientInitial, int patientCounter) {
 	Boolean response = false;
 	try {
-		UserLocationCollection userLocation = userLocationRepository.findByUserIdAndLocationId(doctorId, locationId);
-		   if(userLocation != null){
-			   DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocation.getId());
-			   if(clinicProfileCollection == null)clinicProfileCollection = new DoctorClinicProfileCollection();
-			   clinicProfileCollection.setUserLocationId(userLocation.getId());
-			   clinicProfileCollection.setPatientInitial(patientInitial);
-			   clinicProfileCollection.setPatientCounter(patientCounter);
-			   clinicProfileCollection = doctorClinicProfileRepository.save(clinicProfileCollection);
-			   response = true;
-		}else {
-			logger.warn("Doctor Id and Location Id does not match.");
-	    	throw new BusinessException(ServiceError.NoRecord, "Doctor Id and Location Id does not match.");
+	    UserLocationCollection userLocation = userLocationRepository.findByUserIdAndLocationId(doctorId, locationId);
+	    if (userLocation != null) {
+		DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocation.getLocationId());
+		if (clinicProfileCollection == null)
+		    clinicProfileCollection = new DoctorClinicProfileCollection();
+		clinicProfileCollection.setLocationId(userLocation.getLocationId());
+		clinicProfileCollection.setPatientInitial(patientInitial);
+		clinicProfileCollection.setPatientCounter(patientCounter);
+		clinicProfileCollection = doctorClinicProfileRepository.save(clinicProfileCollection);
+		response = true;
+	    } else {
+		logger.warn("Doctor Id and Location Id does not match.");
+		throw new BusinessException(ServiceError.NoRecord, "Doctor Id and Location Id does not match.");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error While Updating Patient Initial and Counter");
+	    logger.error(e + " Error While Updating Patient Initial and Counter");
 	    throw new BusinessException(ServiceError.Unknown, "Error While Updating Patient Initial and Counter");
 	}
 	return response;
@@ -712,12 +708,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 		location = new Location();
 		BeanUtil.map(locationCollection, location);
 	    } else {
-	    	logger.warn("No Location Found For The Location Id");
+		logger.warn("No Location Found For The Location Id");
 		throw new BusinessException(ServiceError.NotFound, "No Location Found For The Location Id");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+ " Error While Retrieving Location Details");
+	    logger.error(e + " Error While Retrieving Location Details");
 	    throw new BusinessException(ServiceError.Unknown, "Error While Retrieving Location Details");
 	}
 	return location;
@@ -782,167 +778,167 @@ public class RegistrationServiceImpl implements RegistrationService {
 	return response;
     }
 
-	@Override
-	public BloodGroup addBloodGroup(BloodGroup request) {
-		BloodGroup bloodGroup = new BloodGroup();
-		try {
-		    BloodGroupCollection bloodGroupCollection = new BloodGroupCollection();
-		    BeanUtil.map(request, bloodGroupCollection);
-		    bloodGroupCollection = bloodGroupRepository.save(bloodGroupCollection);
-		    BeanUtil.map(bloodGroupCollection, bloodGroup);
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return bloodGroup;
+    @Override
+    public BloodGroup addBloodGroup(BloodGroup request) {
+	BloodGroup bloodGroup = new BloodGroup();
+	try {
+	    BloodGroupCollection bloodGroupCollection = new BloodGroupCollection();
+	    BeanUtil.map(request, bloodGroupCollection);
+	    bloodGroupCollection = bloodGroupRepository.save(bloodGroupCollection);
+	    BeanUtil.map(bloodGroupCollection, bloodGroup);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return bloodGroup;
+    }
 
-	@Override
-	public List<BloodGroup> getBloodGroup() {
-		
-		List<BloodGroup> bloodGroups = null;
-		try {
-		    List<BloodGroupCollection> bloodGroupCollections = bloodGroupRepository.findAll();
-		    if (bloodGroupCollections != null) {
-		    	bloodGroups = new ArrayList<BloodGroup>();
-		    	BeanUtil.map(bloodGroupCollections, bloodGroups);
-			}
+    @Override
+    public List<BloodGroup> getBloodGroup() {
 
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return bloodGroups;
+	List<BloodGroup> bloodGroups = null;
+	try {
+	    List<BloodGroupCollection> bloodGroupCollections = bloodGroupRepository.findAll();
+	    if (bloodGroupCollections != null) {
+		bloodGroups = new ArrayList<BloodGroup>();
+		BeanUtil.map(bloodGroupCollections, bloodGroups);
+	    }
+
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return bloodGroups;
+    }
 
-	@Override
-	public Profession addProfession(Profession request) {
-		Profession profession = new Profession();
-		try {
-			ProfessionCollection professionCollection = new ProfessionCollection();
-		    BeanUtil.map(request, professionCollection);
-		    professionCollection = professionRepository.save(professionCollection);
-		    BeanUtil.map(professionCollection, profession);
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return profession;
+    @Override
+    public Profession addProfession(Profession request) {
+	Profession profession = new Profession();
+	try {
+	    ProfessionCollection professionCollection = new ProfessionCollection();
+	    BeanUtil.map(request, professionCollection);
+	    professionCollection = professionRepository.save(professionCollection);
+	    BeanUtil.map(professionCollection, profession);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return profession;
+    }
 
-	@Override
-	public List<Profession> getProfession() {
-		List<Profession> professions = null;
-		try {
-		    List<ProfessionCollection> professionCollections = professionRepository.findAll();
-		    if (professionCollections != null) {
-		    	professions = new ArrayList<Profession>();
-		    	BeanUtil.map(professionCollections, professions);
-			}
+    @Override
+    public List<Profession> getProfession() {
+	List<Profession> professions = null;
+	try {
+	    List<ProfessionCollection> professionCollections = professionRepository.findAll();
+	    if (professionCollections != null) {
+		professions = new ArrayList<Profession>();
+		BeanUtil.map(professionCollections, professions);
+	    }
 
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return professions;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return professions;
+    }
 
-	@Override
-	public ClinicLogo changeClinicLogo(ClinicLogoAddRequest request) {
-		ClinicLogo response = null;
-		try {
-		    LocationCollection locationCollection = locationRepository.findOne(request.getId());
-		    if (locationCollection == null) {
-			throw new BusinessException(ServiceError.NotFound, "Clinic not found");
-		    } else {
-			if (request.getImage() != null) {
-			    String path = "clinic" + File.separator + "logos";
-			    // save image
-			    String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
-			    locationCollection.setLogoUrl(imageurl);
-			    locationCollection = locationRepository.save(locationCollection);
+    @Override
+    public ClinicLogo changeClinicLogo(ClinicLogoAddRequest request) {
+	ClinicLogo response = null;
+	try {
+	    LocationCollection locationCollection = locationRepository.findOne(request.getId());
+	    if (locationCollection == null) {
+		throw new BusinessException(ServiceError.NotFound, "Clinic not found");
+	    } else {
+		if (request.getImage() != null) {
+		    String path = "clinic" + File.separator + "logos";
+		    // save image
+		    String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
+		    locationCollection.setLogoUrl(imageurl);
+		    locationCollection = locationRepository.save(locationCollection);
 
-			    response = new ClinicLogo();
-			    BeanUtil.map(locationCollection, response);
-			}
+		    response = new ClinicLogo();
+		    BeanUtil.map(locationCollection, response);
+		}
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return response;
+    }
+
+    @Override
+    public List<ClinicImage> addClinicImage(ClinicImageAddRequest request) {
+	List<ClinicImage> response = null;
+
+	try {
+	    LocationCollection locationCollection = locationRepository.findOne(request.getId());
+	    if (locationCollection == null) {
+		throw new BusinessException(ServiceError.NotFound, "Clinic not found");
+	    } else {
+		int counter = locationCollection.getImages() != null ? locationCollection.getImages().size() : 0;
+		response = new ArrayList<ClinicImage>();
+		if (locationCollection.getImages() != null)
+		    response.addAll(locationCollection.getImages());
+		if (request.getImages() != null) {
+		    for (FileDetails image : request.getImages()) {
+			counter++;
+			String path = "clinic" + File.separator + "images";
+			String imageurl = fileManager.saveImageAndReturnImageUrl(image, path);
+			ClinicImage clinicImage = new ClinicImage();
+			clinicImage.setImageUrl(imageurl);
+			clinicImage.setCounter(counter);
+			response.add(clinicImage);
 		    }
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		    locationCollection.setImages(response);
+		    locationCollection = locationRepository.save(locationCollection);
+		    BeanUtil.map(locationCollection, response);
 		}
-		return response;
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return response;
+    }
+
+    @Override
+    public Boolean deleteClinicImage(String locationId, int counter) {
+
+	try {
+	    LocationCollection locationCollection = locationRepository.findOne(locationId);
+	    if (locationCollection == null) {
+		throw new BusinessException(ServiceError.NotFound, "Clinic not found");
+	    } else {
+		boolean foundImage = false;
+		int imgCounter = 0;
+		List<ClinicImage> images = locationCollection.getImages();
+		List<ClinicImage> copyimages = new ArrayList<ClinicImage>(images);
+		for (Iterator<ClinicImage> iterator = copyimages.iterator(); iterator.hasNext();) {
+		    ClinicImage image = iterator.next();
+		    if (foundImage) {
+			image.setCounter(imgCounter);
+			imgCounter++;
+		    } else if (image.getCounter() == counter) {
+			foundImage = true;
+			imgCounter = counter;
+			images.remove(image);
+		    }
+		}
+		locationCollection.setImages(images);
+		locationCollection = locationRepository.save(locationCollection);
+		return true;
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
-	@Override
-	public List<ClinicImage> addClinicImage(ClinicImageAddRequest request) {
-		List<ClinicImage> response = null;
-		
-		try {
-		    LocationCollection locationCollection = locationRepository.findOne(request.getId());
-		    if (locationCollection == null) {
-			throw new BusinessException(ServiceError.NotFound, "Clinic not found");
-		    } else {
-		    	int counter = locationCollection.getImages() != null ? locationCollection.getImages().size() : 0;
-		    	response = new ArrayList<ClinicImage>();
-		    	if(locationCollection.getImages() != null)response.addAll(locationCollection.getImages());
-			if (request.getImages() != null) {
-			   for(FileDetails image : request.getImages()){
-				   counter++;
-				   String path = "clinic" + File.separator + "images";
-				    String imageurl = fileManager.saveImageAndReturnImageUrl(image, path);
-				    ClinicImage clinicImage = new ClinicImage();
-				    clinicImage.setImageUrl(imageurl);
-				    clinicImage.setCounter(counter);
-				    response.add(clinicImage);
-			   }
-			   locationCollection.setImages(response);
-			   locationCollection = locationRepository.save(locationCollection);
-			    BeanUtil.map(locationCollection, response);
-			}
-		    }
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return response;
-	}
-
-	@Override
-	public Boolean deleteClinicImage(String locationId, int counter) {
-		
-		try {
-		    LocationCollection locationCollection = locationRepository.findOne(locationId);
-		    if (locationCollection == null) {
-			throw new BusinessException(ServiceError.NotFound, "Clinic not found");
-		    } else {
-		    	boolean foundImage = false;
-		    	int imgCounter = 0;
-		    	List<ClinicImage> images = locationCollection.getImages();
-		    	List<ClinicImage> copyimages = new ArrayList<ClinicImage>(images);
-		    	for(Iterator<ClinicImage> iterator = copyimages.iterator();iterator.hasNext();){
-		    		ClinicImage image = iterator.next();
-		    		if(foundImage){
-		    			image.setCounter(imgCounter);
-		    			imgCounter++;
-		    		}
-		    		else if(image.getCounter() == counter){
-		    			foundImage = true;
-		    			imgCounter = counter;
-		    			images.remove(image);
-		    		}
-		    	}
-		    	locationCollection.setImages(images);
-		    	locationCollection = locationRepository.save(locationCollection);
-		    	return true;
-		    }
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		
-	}
+    }
 }

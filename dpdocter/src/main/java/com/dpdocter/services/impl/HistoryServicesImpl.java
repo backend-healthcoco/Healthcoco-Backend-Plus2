@@ -49,7 +49,6 @@ import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.RecordsService;
-
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -116,9 +115,9 @@ public class HistoryServicesImpl implements HistoryServices {
 	DiseasesCollection disease = new DiseasesCollection();
 	BeanUtil.map(request, disease);
 	try {
-		DiseasesCollection oldDisease = diseasesRepository.findOne(request.getId());
-		disease.setCreatedBy(oldDisease.getCreatedBy());
-		disease.setCreatedTime(oldDisease.getCreatedTime());
+	    DiseasesCollection oldDisease = diseasesRepository.findOne(request.getId());
+	    disease.setCreatedBy(oldDisease.getCreatedBy());
+	    disease.setCreatedTime(oldDisease.getCreatedTime());
 	    disease = diseasesRepository.save(disease);
 	    response = new DiseaseAddEditResponse();
 	    BeanUtil.map(disease, response);
@@ -849,23 +848,31 @@ public class HistoryServicesImpl implements HistoryServices {
 		switch (id.getDataType()) {
 		case CLINICAL_NOTES:
 		    ClinicalNotes clinicalNote = clinicalNotesService.getNotesById(id.getData().toString());
-		    generalData.setData(clinicalNote);
-		    generalData.setDataType(HistoryFilter.CLINICAL_NOTES);
+		    if (clinicalNote != null) {
+			generalData.setData(clinicalNote);
+			generalData.setDataType(HistoryFilter.CLINICAL_NOTES);
+		    }
 		    break;
 		case PRESCRIPTIONS:
 		    Prescription prescription = prescriptionServices.getPrescriptionById(id.getData().toString());
-		    generalData.setData(prescription);
-		    generalData.setDataType(HistoryFilter.PRESCRIPTIONS);
+		    if (prescription != null) {
+			generalData.setData(prescription);
+			generalData.setDataType(HistoryFilter.PRESCRIPTIONS);
+		    }
 		    break;
 		case REPORTS:
 		    Records record = recordsService.getRecordById(id.getData().toString());
-		    generalData.setData(record);
-		    generalData.setDataType(HistoryFilter.REPORTS);
+		    if (record != null) {
+			generalData.setData(record);
+			generalData.setDataType(HistoryFilter.REPORTS);
+		    }
 		    break;
 		default:
 		    break;
 		}
-		details.add(generalData);
+		if (generalData.getData() != null) {
+		    details.add(generalData);
+		}
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();

@@ -27,7 +27,7 @@ public interface DrugRepository extends MongoRepository<DrugCollection, String>,
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}}")
     List<DrugCollection> getCustomDrugs(String doctorId, String hospitalId, String locationId, Date date, Sort sort, PageRequest pageRequest);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3},'discarded': ?4}")
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': ?4}")
     List<DrugCollection> getCustomDrugs(String doctorId, String hospitalId, String locationId, Date date, boolean discarded, Sort sort, PageRequest pageRequest);
 
     @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3}}")

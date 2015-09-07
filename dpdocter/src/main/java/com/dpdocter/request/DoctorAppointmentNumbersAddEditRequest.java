@@ -4,49 +4,49 @@ import java.util.List;
 
 public class DoctorAppointmentNumbersAddEditRequest {
 
-	private String id;
-	
-	private String doctorId;
-	
-	private String locationId;
-	
-	private List<String> appointmentBookingNumber;
+    private String id;
 
-	public String getId() {
-		return id;
-	}
+    private String doctorId;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    private String locationId;
 
-	public String getDoctorId() {
-		return doctorId;
-	}
+    private List<String> appointmentBookingNumber;
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public String getDoctorId() {
+	return doctorId;
+    }
 
-	public List<String> getAppointmentBookingNumber() {
-		return appointmentBookingNumber;
-	}
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
+    }
 
-	public void setAppointmentBookingNumber(List<String> appointmentBookingNumber) {
-		this.appointmentBookingNumber = appointmentBookingNumber;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	@Override
-	public String toString() {
-		return "DoctorAppointmentNumbersAddEditRequest [id=" + id + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", appointmentBookingNumber=" + appointmentBookingNumber + "]";
-	}
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
+
+    public List<String> getAppointmentBookingNumber() {
+	return appointmentBookingNumber;
+    }
+
+    public void setAppointmentBookingNumber(List<String> appointmentBookingNumber) {
+	this.appointmentBookingNumber = appointmentBookingNumber;
+    }
+
+    @Override
+    public String toString() {
+	return "DoctorAppointmentNumbersAddEditRequest [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", appointmentBookingNumber="
+		+ appointmentBookingNumber + "]";
+    }
 }

@@ -16,7 +16,7 @@ public class PatientClinicalNotesCollection extends GenericCollection {
     private String clinicalNotesId;
 
     @Field
-    private Boolean discarded;
+    private Boolean discarded = false;
 
     @Field
     private Long createdDate;

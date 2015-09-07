@@ -267,7 +267,7 @@ public class PrescriptionApi {
 	if (StringUtils.isEmpty(prescriptionId) || request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
-    request.setId(prescriptionId);
+	request.setId(prescriptionId);
 	PrescriptionAddEditResponse prescriptionAddEditResponse = prescriptionServices.editPrescription(request);
 
 	if (prescriptionAddEditResponse != null) {
@@ -457,7 +457,8 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DIRECTION)
     @PUT
-    public Response<DrugDirectionAddEditResponse> editDrugDirection(@PathParam(value = "drugDirectionId") String drugDirectionId, DrugDirectionAddEditRequest request) {
+    public Response<DrugDirectionAddEditResponse> editDrugDirection(@PathParam(value = "drugDirectionId") String drugDirectionId,
+	    DrugDirectionAddEditRequest request) {
 	if (StringUtils.isEmpty(drugDirectionId) || request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
@@ -497,7 +498,8 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DURATION_UNIT)
     @PUT
-    public Response<DrugDurationUnitAddEditResponse> editDrugDurationUnit(@PathParam(value = "drugDurationUnitId") String drugDurationUnitId, DrugDurationUnitAddEditRequest request) {
+    public Response<DrugDurationUnitAddEditResponse> editDrugDurationUnit(@PathParam(value = "drugDurationUnitId") String drugDurationUnitId,
+	    DrugDurationUnitAddEditRequest request) {
 	if (StringUtils.isEmpty(drugDurationUnitId) || request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
