@@ -6,6 +6,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.ForgotUsernamePasswordRequest;
 import com.dpdocter.request.ResetPasswordRequest;
 import com.dpdocter.services.ForgotPasswordService;
+
 import common.util.web.Response;
 
 @Component
@@ -22,6 +24,8 @@ import common.util.web.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class ForgotPasswordApi {
 
+	private static Logger logger=Logger.getLogger(ForgotPasswordApi.class.getName());
+	
     @Autowired
     private ForgotPasswordService forgotPasswordService;
 
@@ -29,6 +33,7 @@ public class ForgotPasswordApi {
     @POST
     public Response<String> forgotPassword(ForgotUsernamePasswordRequest request) {
 	if (request == null) {
+		logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	forgotPasswordService.forgotPasswordForDoctor(request);
@@ -41,6 +46,7 @@ public class ForgotPasswordApi {
     @POST
     public Response<Boolean> forgotPasswordForPatient(ForgotUsernamePasswordRequest request) {
 	if (request == null) {
+		logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	boolean flag = forgotPasswordService.forgotPasswordForPatient(request);
@@ -49,22 +55,23 @@ public class ForgotPasswordApi {
 	return response;
     }
 
+    @Produces(MediaType.TEXT_HTML)
     @Path(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD)
     @POST
-    public Response<String> resetPassword(ResetPasswordRequest request) {
+    public String resetPassword(ResetPasswordRequest request) {
 	if (request == null) {
+		logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
-	forgotPasswordService.resetPassword(request);
-	Response<String> response = new Response<String>();
-	response.setData("PASSWORD CHANGED SUCCESSFULLY.");
-	return response;
+	String response = forgotPasswordService.resetPassword(request);
+	return "<html><body>" + response + "</body></html>";
     }
 
     @Path(value = PathProxy.ForgotPasswordUrls.FORGOT_USERNAME)
     @POST
     public Response<Boolean> forgotUsername(ForgotUsernamePasswordRequest request) {
 	if (request == null) {
+		logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	boolean flag = forgotPasswordService.forgotUsername(request);

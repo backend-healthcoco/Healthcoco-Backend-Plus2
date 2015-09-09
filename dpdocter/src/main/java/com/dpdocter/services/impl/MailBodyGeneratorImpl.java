@@ -2,6 +2,7 @@ package com.dpdocter.services.impl;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.collections.UserCollection;
@@ -10,11 +11,15 @@ import com.dpdocter.services.MailBodyGenerator;
 @Service
 public class MailBodyGeneratorImpl implements MailBodyGenerator {
 
+	@Value(value = "${API_URL}")
+    private String url;
+
     @Override
     public String generateActivationEmailBody(String userName, String fName, String mName, String lName, String tokenId) throws Exception {
 	StringBuffer body = new StringBuffer();
+	
 	body.append("Dear " + fName + " " + lName + ", \n");
-	body.append("Please click on below link to activate the account.\n " + "http://localhost:8080/dpdocter/api/v1/signup/activate/" + tokenId);
+	body.append("Please click on below link to activate the account.\n " + url+"signup/activate/" + tokenId);
 	return body.toString();
     }
 

@@ -54,7 +54,7 @@ import common.util.web.DPDoctorUtils;
 @Service
 public class HistoryServicesImpl implements HistoryServices {
 	
-	private static Logger logger=Logger.getLogger("dpdocter");
+	private static Logger logger=Logger.getLogger(HistoryServicesImpl.class.getName());
 	
     @Autowired
     private DiseasesRepository diseasesRepository;
@@ -104,6 +104,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    BeanUtil.map(diseases, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error Occurred While Saving Disease(s)");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Disease(s)");
 	}
 	return response;
@@ -123,6 +124,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    BeanUtil.map(disease, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error Occurred While Editing Disease");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Disease");
 	}
 	return response;
@@ -141,16 +143,20 @@ public class HistoryServicesImpl implements HistoryServices {
 			disease = diseasesRepository.save(disease);
 			response = true;
 		    } else {
+		    	logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 			throw new BusinessException(ServiceError.NotAuthorized, "Invalid Doctor Id, Hospital Id, Or Location Id");
 		    }
 		} else {
+			logger.warn("Cannot Delete Global Disease");
 		    throw new BusinessException(ServiceError.NotAuthorized, "Cannot Delete Global Disease");
 		}
 	    } else {
+	    	logger.warn("Disease Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Disease Not Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error Occurred While Deleting Disease");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Disease");
 	}
 	return response;
@@ -208,6 +214,7 @@ public class HistoryServicesImpl implements HistoryServices {
 
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return true;
@@ -263,6 +270,7 @@ public class HistoryServicesImpl implements HistoryServices {
 
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 
 	}
@@ -319,6 +327,7 @@ public class HistoryServicesImpl implements HistoryServices {
 
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 
 	}
@@ -360,6 +369,7 @@ public class HistoryServicesImpl implements HistoryServices {
 
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 
 	}
@@ -399,6 +409,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    historyRepository.save(historyCollection);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 
 	}
@@ -442,6 +453,7 @@ public class HistoryServicesImpl implements HistoryServices {
 
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 
 	}
@@ -472,16 +484,20 @@ public class HistoryServicesImpl implements HistoryServices {
 			    recordsRepository.save(recordsCollection);
 			}
 		    } else {
-			throw new BusinessException(ServiceError.Unknown, "This reports is not found for this patient to remove. ");
+		    	logger.warn("This reports is not found for this patient to remove.");
+			throw new BusinessException(ServiceError.Unknown, "This reports is not found for this patient to remove.");
 		    }
 		} else {
-		    throw new BusinessException(ServiceError.Unknown, "No reports found for this patient to remove. ");
+			logger.warn("No reports found for this patient to remove.");
+		    throw new BusinessException(ServiceError.Unknown, "No reports found for this patient to remove.");
 		}
 	    } else {
-		throw new BusinessException(ServiceError.Unknown, "No History found for this patient. ");
+	    	logger.warn("No History found for this patient.");
+		throw new BusinessException(ServiceError.Unknown, "No History found for this patient.");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return true;
@@ -512,16 +528,20 @@ public class HistoryServicesImpl implements HistoryServices {
 			    clinicalNotesRepository.save(clinicalNotesCollection);
 			}
 		    } else {
-			throw new BusinessException(ServiceError.Unknown, "This clinicalNote is not found for this patient to remove. ");
+		    	logger.warn("This clinicalNote is not found for this patient to remove.");
+			throw new BusinessException(ServiceError.Unknown, "This clinicalNote is not found for this patient to remove.");
 		    }
 		} else {
-		    throw new BusinessException(ServiceError.Unknown, "No clinicalNote found for this patient to remove. ");
+			logger.warn("No clinicalNote found for this patient to remove.");
+		    throw new BusinessException(ServiceError.Unknown, "No clinicalNote found for this patient to remove.");
 		}
 	    } else {
-		throw new BusinessException(ServiceError.Unknown, "No History found for this patient. ");
+	    	logger.warn("No History found for this patient.");
+		throw new BusinessException(ServiceError.Unknown, "No History found for this patient.");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return true;
@@ -552,16 +572,20 @@ public class HistoryServicesImpl implements HistoryServices {
 			    prescriptionRepository.save(prescriptionCollection);
 			}
 		    } else {
-			throw new BusinessException(ServiceError.Unknown, "This prescription is not found for this patient to remove. ");
+		    	logger.warn("This prescription is not found for this patient to remove.");
+			throw new BusinessException(ServiceError.Unknown, "This prescription is not found for this patient to remove.");
 		    }
 		} else {
-		    throw new BusinessException(ServiceError.Unknown, "No prescription found for this patient to remove. ");
+			logger.warn("No prescription found for this patient to remove.");
+		    throw new BusinessException(ServiceError.Unknown, "No prescription found for this patient to remove.");
 		}
 	    } else {
-		throw new BusinessException(ServiceError.Unknown, "No History found for this patient. ");
+	    	logger.warn("No History found for this patient. ");
+		throw new BusinessException(ServiceError.Unknown, "No History found for this patient.");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return true;
@@ -583,16 +607,20 @@ public class HistoryServicesImpl implements HistoryServices {
 			    historyRepository.save(historyCollection);
 			}
 		    } else {
-			throw new BusinessException(ServiceError.Unknown, "This disease is not found for this patient to remove. ");
+		    	logger.warn("This disease is not found for this patient to remove.");
+			throw new BusinessException(ServiceError.Unknown, "This disease is not found for this patient to remove.");
 		    }
 		} else {
-		    throw new BusinessException(ServiceError.Unknown, "No disease found for this patient to remove. ");
+			logger.warn("No disease found for this patient to remove.");
+		    throw new BusinessException(ServiceError.Unknown, "No disease found for this patient to remove.");
 		}
 	    } else {
-		throw new BusinessException(ServiceError.Unknown, "No History found for this patient. ");
+	    	logger.warn("No History found for this patient.");
+		throw new BusinessException(ServiceError.Unknown, "No History found for this patient.");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return true;
@@ -614,16 +642,20 @@ public class HistoryServicesImpl implements HistoryServices {
 			    historyRepository.save(historyCollection);
 			}
 		    } else {
-			throw new BusinessException(ServiceError.Unknown, "This disease is not found for this patient to remove. ");
+		    	logger.warn("This disease is not found for this patient to remove.");
+			throw new BusinessException(ServiceError.Unknown, "This disease is not found for this patient to remove.");
 		    }
 		} else {
-		    throw new BusinessException(ServiceError.Unknown, "No disease found for this patient to remove. ");
+			logger.warn("No disease found for this patient to remove.");
+		    throw new BusinessException(ServiceError.Unknown, "No disease found for this patient to remove.");
 		}
 	    } else {
-		throw new BusinessException(ServiceError.Unknown, "No History found for this patient. ");
+	    	logger.warn("No History found for this patient.");
+		throw new BusinessException(ServiceError.Unknown, "No History found for this patient.");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return true;
@@ -699,6 +731,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return diseaseListResponses;
@@ -739,6 +772,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return diseaseListResponses;
@@ -781,6 +815,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return diseaseListResponses;
@@ -833,6 +868,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
@@ -876,6 +912,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return details;
@@ -937,6 +974,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
@@ -956,6 +994,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return diseaseListResponses;
@@ -973,6 +1012,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error Occurred While Getting History Count");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting History Count");
 	}
 	return historyCount;
@@ -1015,6 +1055,7 @@ public class HistoryServicesImpl implements HistoryServices {
 
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 
 	}
@@ -1058,6 +1099,7 @@ public class HistoryServicesImpl implements HistoryServices {
 
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 
 	}
@@ -1085,6 +1127,7 @@ public class HistoryServicesImpl implements HistoryServices {
 
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;

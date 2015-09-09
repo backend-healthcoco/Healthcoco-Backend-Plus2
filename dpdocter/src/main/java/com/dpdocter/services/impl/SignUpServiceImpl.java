@@ -52,7 +52,7 @@ import com.dpdocter.services.SignUpService;
 @Service
 public class SignUpServiceImpl implements SignUpService {
 	
-	private static Logger logger=Logger.getLogger("dpdocter");
+	private static Logger logger=Logger.getLogger(SignUpServiceImpl.class.getName());
 
     @Autowired
     private RoleRepository roleRepository;
@@ -107,17 +107,14 @@ public class SignUpServiceImpl implements SignUpService {
     @Override
     public String activateUser(String tokenId) {
 	try {
-
 	    TokenCollection tokenCollection = tokenRepository.findOne(tokenId);
-	    if (tokenCollection.getIsUsed()) {
-		// throw new BusinessException(ServiceError.Unknown,
-		// "Link is already Used");
+	    if (tokenCollection == null || tokenCollection.getIsUsed()) {
+		// throw new BusinessException(ServiceError.Unknown,"Link is already Used");
 		return "Link is already Used";
 	    } else {
 		UserCollection userCollection = userRepository.findOne(tokenCollection.getUserId());
 		if (userCollection == null) {
-		    // throw new BusinessException(ServiceError.Unknown,
-		    // "Invalid Url.");
+		    // throw new BusinessException(ServiceError.Unknown,"Invalid Url.");
 		    return "Invalid Url.";
 		}
 		userCollection.setIsActive(true);
@@ -128,9 +125,11 @@ public class SignUpServiceImpl implements SignUpService {
 	    }
 
 	} catch (BusinessException be) {
+		logger.error(be);
 	    throw be;
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error occured while Activating user");
 	    throw new BusinessException(ServiceError.Unknown, "Error occured while Activating user");
 	}
 
@@ -144,14 +143,17 @@ public class SignUpServiceImpl implements SignUpService {
 	    // get role of specified type
 	    RoleCollection hospitalAdmin = roleRepository.findByRole(RoleEnum.HOSPITAL_ADMIN.getRole());
 	    if (hospitalAdmin == null) {
+	    	logger.warn("Role Collection in database is either empty or not defind properly");
 		throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
 	    }
 	    RoleCollection locationAdmin = roleRepository.findByRole(RoleEnum.LOCATION_ADMIN.getRole());
 	    if (locationAdmin == null) {
+	    	logger.warn("Role Collection in database is either empty or not defind properly");
 		throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
 	    }
 	    RoleCollection doctorRole = roleRepository.findByRole(RoleEnum.DOCTOR.getRole());
 	    if (doctorRole == null) {
+	    	logger.warn("Role Collection in database is either empty or not defind properly");
 		throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
 	    }
 	    // save user
@@ -227,9 +229,11 @@ public class SignUpServiceImpl implements SignUpService {
 	    response.setHospital(hospital);
 	    // user.setPassword(null);
 	} catch (BusinessException be) {
+		logger.error(be);
 	    throw be;
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error occured while creating doctor");
 	    throw new BusinessException(ServiceError.Unknown, "Error occured while creating doctor");
 	}
 	return response;
@@ -242,6 +246,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    // get role of specified type
 	    RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.PATIENT.getRole());
 	    if (roleCollection == null) {
+	    	logger.warn("Role Collection in database is either empty or not defind properly");
 		throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defined properly");
 	    }
 	    // save user
@@ -294,9 +299,11 @@ public class SignUpServiceImpl implements SignUpService {
 	    BeanUtil.map(userCollection, user);
 	    // user.setPassword(null);
 	} catch (BusinessException be) {
+		logger.warn(be);
 	    throw be;
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error occured while creating user");
 	    throw new BusinessException(ServiceError.Unknown, "Error occured while creating user");
 	}
 	return user;
@@ -312,6 +319,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    return true;
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
@@ -330,6 +338,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    return false;
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
@@ -349,6 +358,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    return false;
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
@@ -359,6 +369,7 @@ public class SignUpServiceImpl implements SignUpService {
 	try {
 	    UserCollection userCollection = userRepository.findByUserName(request.getUsername());
 	    if (userCollection == null) {
+	    	logger.warn("User not found");
 		throw new BusinessException(ServiceError.NotFound, "User not found");
 	    } else {
 		if (request.getImage() != null) {
@@ -374,6 +385,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return user;

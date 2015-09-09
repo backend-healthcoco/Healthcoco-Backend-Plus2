@@ -853,6 +853,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	try {
 	    LocationCollection locationCollection = locationRepository.findOne(request.getId());
 	    if (locationCollection == null) {
+	    	logger.warn("Clinic not found");
 		throw new BusinessException(ServiceError.NotFound, "Clinic not found");
 	    } else {
 		if (request.getImage() != null) {
@@ -868,6 +869,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
@@ -880,6 +882,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	try {
 	    LocationCollection locationCollection = locationRepository.findOne(request.getId());
 	    if (locationCollection == null) {
+	    	logger.warn("Clinic not found");
 		throw new BusinessException(ServiceError.NotFound, "Clinic not found");
 	    } else {
 		int counter = locationCollection.getImages() != null ? locationCollection.getImages().size() : 0;
@@ -903,6 +906,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
@@ -914,6 +918,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	try {
 	    LocationCollection locationCollection = locationRepository.findOne(locationId);
 	    if (locationCollection == null) {
+	    	logger.warn("User not found");
 		throw new BusinessException(ServiceError.NotFound, "Clinic not found");
 	    } else {
 		boolean foundImage = false;
@@ -937,6 +942,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 

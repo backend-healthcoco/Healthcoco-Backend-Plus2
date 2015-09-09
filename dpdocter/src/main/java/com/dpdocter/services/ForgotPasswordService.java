@@ -9,7 +9,7 @@ public interface ForgotPasswordService {
 
     Boolean forgotPasswordForPatient(ForgotUsernamePasswordRequest request);
 
-    void resetPassword(ResetPasswordRequest request);
+    String resetPassword(ResetPasswordRequest request);
 
     Boolean forgotUsername(ForgotUsernamePasswordRequest request);
 

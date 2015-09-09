@@ -9,6 +9,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +23,7 @@ import com.dpdocter.solr.document.SolrNotesDocument;
 import com.dpdocter.solr.document.SolrObservationsDocument;
 import com.dpdocter.solr.services.SolrClinicalNotesService;
 import com.dpdocter.webservices.PathProxy;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -30,6 +32,9 @@ import common.util.web.Response;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class SolrClinicalNotesApi {
+	
+	private static Logger logger=Logger.getLogger(SolrClinicalNotesApi.class.getName());
+	
     @Autowired
     private SolrClinicalNotesService solrClinicalNotesService;
 
@@ -67,6 +72,7 @@ public class SolrClinicalNotesApi {
     @GET
     public Response<SolrComplaintsDocument> searchComplaints(@PathParam(value = "searchTerm") String searchTerm) {
 	if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
+		logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	List<SolrComplaintsDocument> complaints = solrClinicalNotesService.searchComplaints(searchTerm);
@@ -108,6 +114,7 @@ public class SolrClinicalNotesApi {
     @GET
     public Response<SolrDiagnosesDocument> searchDiagnoses(@PathParam(value = "searchTerm") String searchTerm) {
 	if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
+		logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	List<SolrDiagnosesDocument> diagnoses = solrClinicalNotesService.searchDiagnoses(searchTerm);
@@ -148,6 +155,7 @@ public class SolrClinicalNotesApi {
     @GET
     public Response<SolrNotesDocument> searchNotes(@PathParam(value = "searchTerm") String searchTerm) {
 	if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
+		logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	List<SolrNotesDocument> notes = solrClinicalNotesService.searchNotes(searchTerm);
@@ -188,6 +196,7 @@ public class SolrClinicalNotesApi {
     @GET
     public Response<SolrDiagramsDocument> searchDiagrams(@PathParam(value = "searchTerm") String searchTerm) {
 	if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
+		logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	List<SolrDiagramsDocument> diagrams = solrClinicalNotesService.searchDiagrams(searchTerm);
@@ -231,6 +240,7 @@ public class SolrClinicalNotesApi {
     @GET
     public Response<SolrInvestigationsDocument> searchInvestigations(@PathParam(value = "searchTerm") String searchTerm) {
 	if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
+		logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	List<SolrInvestigationsDocument> investigations = solrClinicalNotesService.searchInvestigations(searchTerm);
@@ -274,6 +284,7 @@ public class SolrClinicalNotesApi {
     @GET
     public Response<SolrObservationsDocument> searchObservations(@PathParam(value = "searchTerm") String searchTerm) {
 	if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
+		logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	List<SolrObservationsDocument> observations = solrClinicalNotesService.searchObservations(searchTerm);

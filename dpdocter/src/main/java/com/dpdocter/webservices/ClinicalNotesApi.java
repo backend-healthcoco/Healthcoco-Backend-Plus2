@@ -13,6 +13,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,6 +39,7 @@ import com.dpdocter.solr.document.SolrInvestigationsDocument;
 import com.dpdocter.solr.document.SolrNotesDocument;
 import com.dpdocter.solr.document.SolrObservationsDocument;
 import com.dpdocter.solr.services.SolrClinicalNotesService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -47,6 +49,8 @@ import common.util.web.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class ClinicalNotesApi {
 
+	private static Logger logger=Logger.getLogger(ClinicalNotesApi.class.getName());
+	
     @Autowired
     private ClinicalNotesService clinicalNotesService;
 
@@ -75,6 +79,7 @@ public class ClinicalNotesApi {
     @PUT
     public Response<ClinicalNotes> editNotes(@PathParam(value = "clinicalNotesId") String clinicalNotesId, ClinicalNotesEditRequest request) {
 	if (DPDoctorUtils.anyStringEmpty(clinicalNotesId) || request == null) {
+		logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	request.setId(clinicalNotesId);
@@ -338,6 +343,7 @@ public class ClinicalNotesApi {
 	    @QueryParam(value = "discarded") Boolean discarded) {
 
 	if (DPDoctorUtils.anyStringEmpty(type, range)) {
+		logger.warn("Invalid Input. Type or Range Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Type or Range Cannot Be Empty");
 	}
 	List<Object> clinicalItems = clinicalNotesService.getClinicalItems(type, range, page, size, doctorId, locationId, hospitalId, updatedTime,

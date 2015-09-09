@@ -49,7 +49,7 @@ import common.util.web.DPDoctorUtils;
 @Service
 public class RecordsServiceImpl implements RecordsService {
 	
-	private static Logger logger=Logger.getLogger("dpdocter");
+	private static Logger logger=Logger.getLogger(RecordsServiceImpl.class.getName());
 	
     @Autowired
     private FileManager fileManager;
@@ -108,8 +108,8 @@ public class RecordsServiceImpl implements RecordsService {
 	    return records;
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-
 	}
 
     }
@@ -142,6 +142,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    return records;
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 
 	}
@@ -160,13 +161,16 @@ public class RecordsServiceImpl implements RecordsService {
 		mailService.sendEmail(emailAddr, "Records", "PFA.", mailAttachment);
 
 	    } else {
+	    	logger.warn("Record not found.Please check recordId.");
 		throw new BusinessException(ServiceError.Unknown, "Record not found.Please check recordId.");
 	    }
 
 	} catch (BusinessException e) {
+		logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
@@ -193,6 +197,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    recordsTagsRepository.save(recordsTagsCollections);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
@@ -203,14 +208,17 @@ public class RecordsServiceImpl implements RecordsService {
 	try {
 	    RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
 	    if (recordsCollection == null) {
+	    	logger.warn("Record not found.Check RecordId !");
 		throw new BusinessException(ServiceError.Unknown, "Record not found.Check RecordId !");
 	    }
 	    recordsCollection.setRecordsLable(label);
 	    recordsRepository.save(recordsCollection);
 	} catch (BusinessException e) {
+		logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
@@ -244,6 +252,7 @@ public class RecordsServiceImpl implements RecordsService {
 
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
@@ -260,6 +269,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    return tags;
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
@@ -286,12 +296,15 @@ public class RecordsServiceImpl implements RecordsService {
 		tagsCollections = tagsRepository.findByDoctorId(doctorId);
 		BeanUtil.map(tagsCollections, tags);
 	    } else {
+	    	logger.warn("Invalid Input");
 		throw new BusinessException(ServiceError.Unknown, "Invalid Input !");
 	    }
 	} catch (BusinessException e) {
+		logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return tags;
@@ -305,11 +318,13 @@ public class RecordsServiceImpl implements RecordsService {
 	    if (patientCollection != null) {
 		emailAddress = patientCollection.getEmailAddress();
 	    } else {
+	    	logger.warn("Invalid PatientId");
 		throw new BusinessException(ServiceError.Unknown, "Invalid PatientId");
 	    }
 
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return emailAddress;
@@ -323,14 +338,17 @@ public class RecordsServiceImpl implements RecordsService {
 		if (recordsCollection.getRecordsPath() != null) {
 		    return new File(recordsCollection.getRecordsPath());
 		} else {
+			logger.warn("Record Path for this Record is Empty.");
 		    throw new BusinessException(ServiceError.Unknown, "Record Path for this Record is Empty.");
 		}
 	    } else {
+	    	logger.warn("Record not found.Please check recordId.");
 		throw new BusinessException(ServiceError.Unknown, "Record not found.Please check recordId.");
 	    }
 
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
@@ -340,14 +358,17 @@ public class RecordsServiceImpl implements RecordsService {
 	try {
 	    RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
 	    if (recordsCollection == null) {
+	    	logger.warn("Record Not found.Check RecordId");
 		throw new BusinessException(ServiceError.Unknown, "Record Not found.Check RecordId");
 	    }
 	    recordsCollection.setDiscarded(true);
 	    recordsRepository.save(recordsCollection);
 	} catch (BusinessException e) {
+		logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
@@ -359,6 +380,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    tagsRepository.delete(tagId);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
@@ -377,6 +399,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return records;
@@ -407,10 +430,12 @@ public class RecordsServiceImpl implements RecordsService {
 		records = new ArrayList<Records>();
 		BeanUtil.map(recordsCollections, records);
 	    } else {
+	    	logger.warn("No Records Found");
 		throw new BusinessException(ServiceError.Unknown, "No Records Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return records;
@@ -423,6 +448,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    recordCount = recordsRepository.getRecordCount(doctorId, patientId, hospitalId, locationId, false);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error while getting Records Count");
 	    throw new BusinessException(ServiceError.Unknown, "Error while getting Records Count");
 	}
 	return recordCount;
@@ -439,11 +465,13 @@ public class RecordsServiceImpl implements RecordsService {
 		recordsRepository.save(record);
 		response = true;
 	    } else {
+	    	logger.warn("No record found for the given record id");
 		throw new BusinessException(ServiceError.NotFound, "No record found for the given record id");
 	    }
 
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error while editing description");
 	    throw new BusinessException(ServiceError.Unknown, "Error while editing description");
 	}
 	return response;
@@ -479,6 +507,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    flexibleCounts.setCounts(counts);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error while getting counts");
 	    throw new BusinessException(ServiceError.Unknown, "Error while getting counts");
 	}
 
@@ -497,6 +526,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+ " Error while getting record : " + e.getCause().getMessage());
 	    throw new BusinessException(ServiceError.Unknown, "Error while getting record : " + e.getCause().getMessage());
 	}
 	return record;

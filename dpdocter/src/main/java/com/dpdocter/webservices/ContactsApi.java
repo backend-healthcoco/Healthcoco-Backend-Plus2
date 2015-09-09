@@ -14,6 +14,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,6 +31,7 @@ import com.dpdocter.request.ImportContactsRequest;
 import com.dpdocter.request.PatientGroupAddEditRequest;
 import com.dpdocter.services.ContactsService;
 import com.dpdocter.services.PatientTrackService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -43,6 +45,8 @@ import common.util.web.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class ContactsApi {
 
+	private static Logger logger=Logger.getLogger(ContactsApi.class.getName());
+	
     @Autowired
     private ContactsService contactsService;
 
@@ -70,6 +74,7 @@ public class ContactsApi {
 	DoctorContactsResponse doctorContactsResponse = null;
 
 	if (DPDoctorUtils.anyStringEmpty(type)) {
+		logger.warn("Invalid Input. Type Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Type Cannot Be Empty");
 	}
 
@@ -97,6 +102,7 @@ public class ContactsApi {
     private DoctorContactsResponse doctorContacts(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
 	    @QueryParam("updatedTime") String updatedTime, @QueryParam("discarded") Boolean discarded) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+		logger.warn("Invalid Input. Doctor Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id Cannot Be Empty");
 	}
 	List<PatientCard> patientCards = contactsService.getDoctorContacts(doctorId, updatedTime, discarded != null ? discarded : true, page, size);
@@ -133,6 +139,7 @@ public class ContactsApi {
     @POST
     public Response<Boolean> importContacts(ImportContactsRequest request) {
 	if (request == null) {
+		logger.warn("Invalid Input. Import Request Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Import Request Cannot Be Empty");
 	}
 	Boolean importContactsResponse = contactsService.importContacts(request);
@@ -145,6 +152,7 @@ public class ContactsApi {
     @POST
     public Response<Boolean> exportContacts(ExportContactsRequest request) {
 	if (request == null) {
+		logger.warn("Invalid Input. Export Request Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Export Request Cannot Be Empty");
 	}
 	Boolean exportContactsResponse = contactsService.exportContacts(request);
@@ -175,6 +183,7 @@ public class ContactsApi {
     @PUT
     public Response<Group> editGroup(@PathParam("groupId") String groupId, Group group) {
 	if (DPDoctorUtils.anyStringEmpty(groupId)) {
+		logger.warn("Invalid Input. GroupId Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. GroupId Cannot Be Empty");
 	}
 	group.setId(groupId);

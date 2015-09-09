@@ -8,6 +8,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,7 @@ import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.PatientProfilePicChangeRequest;
 import com.dpdocter.request.PatientSignUpRequest;
 import com.dpdocter.services.SignUpService;
+
 import common.util.web.Response;
 
 @Component
@@ -26,6 +28,9 @@ import common.util.web.Response;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class SignUpApi {
+	
+	private static Logger logger=Logger.getLogger(SignUpApi.class.getName());
+	
     @Autowired
     private SignUpService signUpService;
 
@@ -33,6 +38,7 @@ public class SignUpApi {
     @POST
     public Response<DoctorSignUp> doctorSignup(DoctorSignupRequest request) {
 	if (request == null) {
+		logger.warn("Request send  is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
 	}
 	DoctorSignUp doctorSignUp = signUpService.doctorSignUp(request);
@@ -45,6 +51,7 @@ public class SignUpApi {
     @POST
     public Response<User> patientSignup(PatientSignUpRequest request) {
 	if (request == null) {
+		logger.warn("Request send  is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request send is NULL");
 	}
 	User user = signUpService.patientSignUp(request);
@@ -57,6 +64,7 @@ public class SignUpApi {
     @POST
     public Response<User> patientProfilePicChange(PatientProfilePicChangeRequest request) {
 	if (request == null) {
+		logger.warn("Request send  is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request sent is NULL");
 	}
 	User user = signUpService.patientProfilePicChange(request);
@@ -66,11 +74,11 @@ public class SignUpApi {
     }
 
     @Produces(MediaType.TEXT_HTML)
-    // @Consumes(MediaType.TEXT_HTML)
     @Path(value = PathProxy.SignUpUrls.ACTIVATE_USER)
     @GET
     public String activateUser(@PathParam(value = "tokenId") String tokenId) {
 	if (tokenId == null) {
+		logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	String response = signUpService.activateUser(tokenId);
@@ -81,6 +89,7 @@ public class SignUpApi {
     @GET
     public Response<Boolean> checkUsernameExist(@PathParam(value = "username") String username) {
 	if (username == null) {
+		logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	Response<Boolean> response = new Response<Boolean>();
@@ -92,6 +101,7 @@ public class SignUpApi {
     @GET
     public Response<Boolean> checkMobileNumExist(@PathParam(value = "mobileNumber") String mobileNumber) {
 	if (mobileNumber == null) {
+		logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	Response<Boolean> response = new Response<Boolean>();
@@ -103,6 +113,7 @@ public class SignUpApi {
     @GET
     public Response<Boolean> checkEmailExist(@PathParam(value = "emailaddress") String emailaddress) {
 	if (emailaddress == null) {
+		logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	Response<Boolean> response = new Response<Boolean>();

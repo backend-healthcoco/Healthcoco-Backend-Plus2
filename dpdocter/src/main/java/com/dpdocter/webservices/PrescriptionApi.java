@@ -14,6 +14,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -44,6 +45,7 @@ import com.dpdocter.services.PatientTrackService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.solr.document.SolrDrugDocument;
 import com.dpdocter.solr.services.SolrPrescriptionService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -53,7 +55,9 @@ import common.util.web.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class PrescriptionApi {
 
-    @Autowired
+	private static Logger logger=Logger.getLogger(PrescriptionApi.class.getName());
+   
+	@Autowired
     private PrescriptionServices prescriptionServices;
 
     @Autowired
@@ -66,6 +70,7 @@ public class PrescriptionApi {
     @POST
     public Response<DrugAddEditResponse> addDrug(DrugAddEditRequest request) {
 	if (request == null) {
+		logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
 	DrugAddEditResponse drugAddEditResponse = prescriptionServices.addDrug(request);
@@ -83,6 +88,7 @@ public class PrescriptionApi {
     @PUT
     public Response<DrugAddEditResponse> editDrug(@PathParam(value = "drugId") String drugId, DrugAddEditRequest request) {
 	if (StringUtils.isEmpty(drugId) || request == null) {
+		logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
 	request.setId(drugId);
@@ -103,7 +109,8 @@ public class PrescriptionApi {
     public Response<Boolean> deleteDrug(@PathParam(value = "drugId") String drugId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
 	if (StringUtils.isEmpty(drugId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Drug Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		logger.warn("Drug Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		throw new BusinessException(ServiceError.InvalidInput, "Drug Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	}
 	Boolean drugDeleteResponse = prescriptionServices.deleteDrug(drugId, doctorId, hospitalId, locationId);
 
@@ -118,6 +125,7 @@ public class PrescriptionApi {
     @DELETE
     public Response<Boolean> deleteDrug(@PathParam(value = "drugId") String drugId) {
 	if (StringUtils.isEmpty(drugId)) {
+		logger.warn("Drug Id, Doctor Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Id, Doctor Id Cannot Be Empty");
 	}
 	Boolean drugDeleteResponse = prescriptionServices.deleteDrug(drugId);
@@ -133,7 +141,8 @@ public class PrescriptionApi {
     @GET
     public Response<DrugAddEditResponse> getDrugDetails(@PathParam("drugId") String drugId) {
 	if (drugId == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "drugId Is NULL");
+		logger.error("DrugId Is NULL");
+	    throw new BusinessException(ServiceError.InvalidInput, "DrugId Is NULL");
 	}
 	DrugAddEditResponse drugAddEditResponse = prescriptionServices.getDrugById(drugId);
 	Response<DrugAddEditResponse> response = new Response<DrugAddEditResponse>();
@@ -145,6 +154,7 @@ public class PrescriptionApi {
     @POST
     public Response<TemplateAddEditResponse> addTemplate(TemplateAddEditRequest request) {
 	if (request == null) {
+		logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
 	TemplateAddEditResponse templateAddEditResponse = prescriptionServices.addTemplate(request);
@@ -157,6 +167,7 @@ public class PrescriptionApi {
     @POST
     public Response<TemplateAddEditResponseDetails> addTemplateHandheld(TemplateAddEditRequest request) {
 	if (request == null) {
+		logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
 	TemplateAddEditResponseDetails templateAddEditResponse = prescriptionServices.addTemplateHandheld(request);
@@ -169,6 +180,7 @@ public class PrescriptionApi {
     @PUT
     public Response<TemplateAddEditResponse> editTemplate(@PathParam(value = "templateId") String templateId, TemplateAddEditRequest request) {
 	if (StringUtils.isEmpty(templateId) || request == null) {
+		logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
 	request.setId(templateId);
@@ -183,7 +195,8 @@ public class PrescriptionApi {
     public Response<Boolean> deleteTemplate(@PathParam(value = "templateId") String templateId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
 	if (StringUtils.isEmpty(templateId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Template Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		logger.warn("Template Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		throw new BusinessException(ServiceError.InvalidInput, "Template Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	}
 	Boolean templateDeleteResponse = prescriptionServices.deleteTemplate(templateId, doctorId, hospitalId, locationId);
 	Response<Boolean> response = new Response<Boolean>();
@@ -197,6 +210,7 @@ public class PrescriptionApi {
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId) {
 	if (DPDoctorUtils.anyStringEmpty(templateId, doctorId, hospitalId, locationId)) {
+		logger.warn("Template Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Template Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	}
 	TemplateAddEditResponseDetails templateGetResponse = prescriptionServices.getTemplate(templateId, doctorId, hospitalId, locationId);
@@ -227,6 +241,7 @@ public class PrescriptionApi {
     @POST
     public Response<PrescriptionAddEditResponse> addPrescription(PrescriptionAddEditRequest request) {
 	if (request == null) {
+		logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
 	PrescriptionAddEditResponse prescriptionAddEditResponse = prescriptionServices.addPrescription(request);
@@ -246,6 +261,7 @@ public class PrescriptionApi {
     @POST
     public Response<PrescriptionAddEditResponseDetails> addPrescriptionHandheld(PrescriptionAddEditRequest request) {
 	if (request == null) {
+		logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
 	PrescriptionAddEditResponseDetails prescriptionAddEditResponse = prescriptionServices.addPrescriptionHandheld(request);
@@ -265,6 +281,7 @@ public class PrescriptionApi {
     @PUT
     public Response<PrescriptionAddEditResponse> editPrescription(@PathParam(value = "prescriptionId") String prescriptionId, PrescriptionAddEditRequest request) {
 	if (StringUtils.isEmpty(prescriptionId) || request == null) {
+		logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
 	request.setId(prescriptionId);
@@ -285,7 +302,8 @@ public class PrescriptionApi {
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @PathParam(value = "patientId") String patientId) {
 	if (StringUtils.isEmpty(prescriptionId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		logger.warn("Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		throw new BusinessException(ServiceError.InvalidInput, "Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	}
 	Boolean prescriptionDeleteResponse = prescriptionServices.deletePrescription(prescriptionId, doctorId, hospitalId, locationId, patientId);
 	Response<Boolean> response = new Response<Boolean>();
@@ -326,6 +344,7 @@ public class PrescriptionApi {
     @POST
     public Response<DrugTypeAddEditResponse> addDrugType(DrugTypeAddEditRequest request) {
 	if (request == null) {
+		logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
 	DrugTypeAddEditResponse drugTypeAddEditResponse = prescriptionServices.addDrugType(request);
@@ -339,6 +358,7 @@ public class PrescriptionApi {
     @PUT
     public Response<DrugTypeAddEditResponse> editDrugType(@PathParam(value = "drugTypeId") String drugTypeId, DrugTypeAddEditRequest request) {
 	if (StringUtils.isEmpty(drugTypeId) || request == null) {
+		logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
 	request.setId(drugTypeId);
@@ -353,6 +373,7 @@ public class PrescriptionApi {
     @DELETE
     public Response<Boolean> deleteDrugType(@PathParam(value = "drugTypeId") String drugTypeId) {
 	if (StringUtils.isEmpty(drugTypeId)) {
+		logger.warn("Drug Type Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Type Id Cannot Be Empty");
 	}
 	Boolean drugTypeDeleteResponse = prescriptionServices.deleteDrugType(drugTypeId);
@@ -366,6 +387,7 @@ public class PrescriptionApi {
     @POST
     public Response<DrugStrengthAddEditResponse> addDrugStrength(DrugStrengthAddEditRequest request) {
 	if (request == null) {
+		logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
 	DrugStrengthAddEditResponse drugStrengthAddEditResponse = prescriptionServices.addDrugStrength(request);
@@ -379,6 +401,7 @@ public class PrescriptionApi {
     @PUT
     public Response<DrugStrengthAddEditResponse> editDrugStrength(@PathParam(value = "drugStrengthId") String drugStrengthId, DrugStrengthAddEditRequest request) {
 	if (StringUtils.isEmpty(drugStrengthId) || request == null) {
+		logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
 	request.setId(drugStrengthId);
@@ -393,6 +416,7 @@ public class PrescriptionApi {
     @DELETE
     public Response<Boolean> deleteDrugStrength(@PathParam(value = "drugStrengthId") String drugStrengthId) {
 	if (StringUtils.isEmpty(drugStrengthId)) {
+		logger.warn("Drug Strength Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Strength Id Cannot Be Empty");
 	}
 	Boolean drugStrengthDeleteResponse = prescriptionServices.deleteDrugStrength(drugStrengthId);
@@ -406,6 +430,7 @@ public class PrescriptionApi {
     @POST
     public Response<DrugDosageAddEditResponse> addDrugDosage(DrugDosageAddEditRequest request) {
 	if (request == null) {
+		logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
 	DrugDosageAddEditResponse drugDosageAddEditResponse = prescriptionServices.addDrugDosage(request);
@@ -419,6 +444,7 @@ public class PrescriptionApi {
     @PUT
     public Response<DrugDosageAddEditResponse> editDrugDosage(@PathParam(value = "drugDosageId") String drugDosageId, DrugDosageAddEditRequest request) {
 	if (StringUtils.isEmpty(drugDosageId) || request == null) {
+		logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
 	request.setId(drugDosageId);
@@ -433,6 +459,7 @@ public class PrescriptionApi {
     @DELETE
     public Response<Boolean> deleteDrugDosage(@PathParam(value = "drugDosageId") String drugDosageId) {
 	if (StringUtils.isEmpty(drugDosageId)) {
+		logger.warn("Drug Dosage Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Dosage Id Cannot Be Empty");
 	}
 	Boolean drugDosageDeleteResponse = prescriptionServices.deleteDrugDosage(drugDosageId);
@@ -446,6 +473,7 @@ public class PrescriptionApi {
     @POST
     public Response<DrugDirectionAddEditResponse> addDrugDirection(DrugDirectionAddEditRequest request) {
 	if (request == null) {
+		logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
 	DrugDirectionAddEditResponse drugDirectionAddEditResponse = prescriptionServices.addDrugDirection(request);
@@ -460,6 +488,7 @@ public class PrescriptionApi {
     public Response<DrugDirectionAddEditResponse> editDrugDirection(@PathParam(value = "drugDirectionId") String drugDirectionId,
 	    DrugDirectionAddEditRequest request) {
 	if (StringUtils.isEmpty(drugDirectionId) || request == null) {
+		logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
 	request.setId(drugDirectionId);
@@ -474,6 +503,7 @@ public class PrescriptionApi {
     @DELETE
     public Response<Boolean> deleteDrugDirection(@PathParam(value = "drugDirectionId") String drugDirectionId) {
 	if (StringUtils.isEmpty(drugDirectionId)) {
+		logger.warn("Drug Direction Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Direction Id Cannot Be Empty");
 	}
 	Boolean drugDirectionDeleteResponse = prescriptionServices.deleteDrugDirection(drugDirectionId);
@@ -487,6 +517,7 @@ public class PrescriptionApi {
     @POST
     public Response<DrugDurationUnitAddEditResponse> addDrugDurationUnit(DrugDurationUnitAddEditRequest request) {
 	if (request == null) {
+		logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
 	DrugDurationUnitAddEditResponse drugDurationUnitAddEditResponse = prescriptionServices.addDrugDurationUnit(request);
@@ -501,6 +532,7 @@ public class PrescriptionApi {
     public Response<DrugDurationUnitAddEditResponse> editDrugDurationUnit(@PathParam(value = "drugDurationUnitId") String drugDurationUnitId,
 	    DrugDurationUnitAddEditRequest request) {
 	if (StringUtils.isEmpty(drugDurationUnitId) || request == null) {
+		logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
 	request.setId(drugDurationUnitId);
@@ -515,6 +547,7 @@ public class PrescriptionApi {
     @DELETE
     public Response<Boolean> deleteDrugDurationUnit(@PathParam(value = "drugDurationUnitId") String drugDurationUnitId) {
 	if (StringUtils.isEmpty(drugDurationUnitId)) {
+		logger.warn("Drug Duration Unit Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Duration Unit Id Cannot Be Empty");
 	}
 	Boolean drugDurationUnitDeleteResponse = prescriptionServices.deleteDrugDurationUnit(drugDurationUnitId);
@@ -532,6 +565,7 @@ public class PrescriptionApi {
 	    @QueryParam(value = "discarded") Boolean discarded) {
 
 	if (DPDoctorUtils.anyStringEmpty(type, range)) {
+		logger.warn("Invalid Input. Type or Range Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Type or Range Cannot Be Empty");
 	}
 	List<Object> clinicalItems = prescriptionServices.getPrescriptionItems(type, range, page, size, doctorId, locationId, hospitalId, updatedTime,

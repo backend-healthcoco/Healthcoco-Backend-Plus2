@@ -31,7 +31,7 @@ import com.dpdocter.services.PatientTrackService;
 @Service
 public class PatientTrackServiceImpl implements PatientTrackService {
 	
-	private static Logger logger=Logger.getLogger("dpdocter");
+	private static Logger logger=Logger.getLogger(PatientTrackServiceImpl.class.getName());
 
     @Autowired
     private PatientTrackRepository patientTrackRepository;
@@ -57,6 +57,7 @@ public class PatientTrackServiceImpl implements PatientTrackService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error while saving patient track record : " + e.getCause().getMessage());
 	    throw new BusinessException(ServiceError.Unknown, "Error while saving patient track record : " + e.getCause().getMessage());
 	}
 	return response;
@@ -76,6 +77,7 @@ public class PatientTrackServiceImpl implements PatientTrackService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error while saving patient track record : " + e.getCause().getMessage());
 	    throw new BusinessException(ServiceError.Unknown, "Error while saving patient track record : " + e.getCause().getMessage());
 	}
 	return response;
@@ -97,6 +99,7 @@ public class PatientTrackServiceImpl implements PatientTrackService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error while saving patient track record : " + e.getCause().getMessage());
 	    throw new BusinessException(ServiceError.Unknown, "Error while saving patient track record : " + e.getCause().getMessage());
 	}
 	return response;
@@ -119,6 +122,7 @@ public class PatientTrackServiceImpl implements PatientTrackService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error while recently visited patients record : " + e.getCause().getMessage());
 	    throw new BusinessException(ServiceError.Unknown, "Error while getting recently visited patients record : " + e.getCause().getMessage());
 	}
 	return response;
@@ -159,6 +163,7 @@ public class PatientTrackServiceImpl implements PatientTrackService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error while getting most visited patients record : " + e.getCause().getMessage());
 	    throw new BusinessException(ServiceError.Unknown, "Error while getting most visited patients record : " + e.getCause().getMessage());
 	}
 	return response;

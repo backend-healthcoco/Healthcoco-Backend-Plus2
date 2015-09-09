@@ -2,6 +2,7 @@ package com.dpdocter.solr.services.impl;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,9 @@ import com.dpdocter.solr.services.SolrPrescriptionService;
 
 @Service
 public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
+	
+	private static Logger logger=Logger.getLogger(SolrPrescriptionServiceImpl.class.getName());
+	
     @Autowired
     private SolrDrugRepository solrDrugRepository;
 
@@ -24,6 +28,7 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error Occurred While Saving Drug in Solr");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug in Solr");
 	}
 	return response;
@@ -37,6 +42,7 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error Occurred While Editing Drug in Solr");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Drug");
 	}
 	return response;
@@ -50,6 +56,7 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error Occurred While Deleting Drug in Solr");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug");
 	}
 	return response;
@@ -62,6 +69,7 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	    response = solrDrugRepository.find(searchTerm);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error Occurred While Searching Drug in Solr");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Drug");
 	}
 	return response;

@@ -4,10 +4,12 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.services.impl.RecordsServiceImpl;
 import com.dpdocter.solr.document.DoctorCoreDemoDocument;
 import com.dpdocter.solr.document.SearchDoctorSolrDocument;
 import com.dpdocter.solr.repository.DoctorCoreDemoRepository;
@@ -17,6 +19,8 @@ import com.dpdocter.solr.services.DoctorSearchSolrService;
 @Service
 public class DoctorSearchSolrServiceImpl implements DoctorSearchSolrService {
 
+	private static Logger logger=Logger.getLogger(DoctorSearchSolrServiceImpl.class.getName());
+	
     @Resource
     private DoctorSearchSolrRepository doctorSearchSolrRepository;
 
@@ -29,6 +33,7 @@ public class DoctorSearchSolrServiceImpl implements DoctorSearchSolrService {
 	    doctorSearchSolrRepository.save(searchDoctorSolrDocument);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error occured while saving");
 	    throw new BusinessException(ServiceError.Unknown, "Error occured while saving");
 	}
 
@@ -40,6 +45,8 @@ public class DoctorSearchSolrServiceImpl implements DoctorSearchSolrService {
 	    doctorSearchSolrRepository.delete(id);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown);
 	}
 
     }
@@ -51,6 +58,7 @@ public class DoctorSearchSolrServiceImpl implements DoctorSearchSolrService {
 	    searchDoctorSolrDocuments = doctorSearchSolrRepository.findByQueryAnnotation(text);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error occured while searching");
 	    throw new BusinessException(ServiceError.Unknown, "Error occured while searching");
 	}
 	return searchDoctorSolrDocuments;
@@ -62,6 +70,7 @@ public class DoctorSearchSolrServiceImpl implements DoctorSearchSolrService {
 	    doctorCoreDemoRepository.save(doctorCoreDemoDocument);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error occured while saving");
 	    throw new BusinessException(ServiceError.Unknown, "Error occured while saving");
 	}
 
@@ -74,6 +83,7 @@ public class DoctorSearchSolrServiceImpl implements DoctorSearchSolrService {
 	    doctorCoreDemoDocuments = doctorCoreDemoRepository.findByQueryAnnotation(text);
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e+" Error occured while searching");
 	    throw new BusinessException(ServiceError.Unknown, "Error occured while searching");
 	}
 	return doctorCoreDemoDocuments;
