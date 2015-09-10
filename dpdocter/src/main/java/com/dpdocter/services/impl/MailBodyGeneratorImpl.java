@@ -1,10 +1,14 @@
 package com.dpdocter.services.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
+import org.springframework.ui.velocity.VelocityEngineUtils;
+import org.apache.velocity.app.VelocityEngine;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.services.MailBodyGenerator;
 
@@ -14,13 +18,23 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	@Value(value = "${API_URL}")
     private String url;
 
+	@Autowired
+	private VelocityEngine velocityEngine;
+	
     @Override
     public String generateActivationEmailBody(String userName, String fName, String mName, String lName, String tokenId) throws Exception {
-	StringBuffer body = new StringBuffer();
-	
-	body.append("Dear " + fName + " " + lName + ", \n");
-	body.append("Please click on below link to activate the account.\n " + url+"signup/activate/" + tokenId);
-	return body.toString();
+//	StringBuffer body = new StringBuffer();
+//	
+//	body.append("Dear " + fName + " " + lName + ", \n");
+//	body.append("Please click on below link to activate the account.\n " + url+"signup/activate/" + tokenId);
+//	return body.toString();
+    	
+    	Map model = new HashMap();	             
+        model.put("fName", fName);
+        model.put("lName", lName);
+        model.put("url", url+"signup/activate/" + tokenId);
+        String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "velocity/template.vm", "UTF-8", model);
+        return text;
     }
 
     @Override

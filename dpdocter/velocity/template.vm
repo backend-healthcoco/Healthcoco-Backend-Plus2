@@ -1,0 +1,10 @@
+	<body>
+		<h3>Dear ${fName} ${lName}</h3>
+		<p>
+			Please click on below link to activate the account.<br>
+			${url}
+		</p>
+		
+	</body>
+ 
+</html>

@@ -1007,7 +1007,8 @@ public class HistoryServicesImpl implements HistoryServices {
 	    HistoryCollection historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
 		if (historyCollection.getGeneralRecords() != null && !historyCollection.getGeneralRecords().isEmpty()) {
-		    historyCount = historyCollection.getGeneralRecords().size();
+			List<GeneralData> generslData = fetchGeneralData(historyCollection.getGeneralRecords());
+		    historyCount = generslData.isEmpty() ? 0:generslData.size();
 		}
 	    }
 	} catch (Exception e) {
