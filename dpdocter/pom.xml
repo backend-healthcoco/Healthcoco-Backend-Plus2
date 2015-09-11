@@ -10,9 +10,6 @@
 	<profiles>
 		<profile>
 			<id>local</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -24,12 +21,23 @@
 						<directory>src/main/resources/spring-properties/local</directory>
 						<filtering>true</filtering>
 					</resource>
+					<resource>
+						<directory>src/main/resources/jasperTemplate</directory>
+						<filtering>true</filtering>
+					</resource>
+					<resource>
+						<directory>src/main/resources/velocity</directory>
+						<filtering>true</filtering>
+					</resource>
 				</resources>
 			</build>
 		</profile>
 		<profile>
 			<id>stagging</id>
-			<build>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		 <build>
 				<finalName>dpdocter</finalName>
 				<resources>
 					<resource>
@@ -38,6 +46,14 @@
 					</resource>
 					<resource>
 						<directory>src/main/resources/spring-properties/staging</directory>
+						<filtering>true</filtering>
+					</resource>
+					<resource>
+						<directory>src/main/resources/jasperTemplate</directory>
+						<filtering>true</filtering>
+					</resource>
+					<resource>
+						<directory>src/main/resources/velocity</directory>
 						<filtering>true</filtering>
 					</resource>
 				</resources>
@@ -54,6 +70,14 @@
 					</resource>
 					<resource>
 						<directory>src/main/resources/spring-properties/production</directory>
+						<filtering>true</filtering>
+					</resource>
+					<resource>
+						<directory>src/main/resources/jasperTemplate</directory>
+						<filtering>true</filtering>
+					</resource>
+					<resource>
+						<directory>src/main/resources/velocity</directory>
 						<filtering>true</filtering>
 					</resource>
 				</resources>

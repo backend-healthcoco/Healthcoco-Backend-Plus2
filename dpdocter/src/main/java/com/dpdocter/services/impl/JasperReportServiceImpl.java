@@ -26,7 +26,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 	public void createPDF() {
 		
 		try {
-    		String reportName = "jasperTemplate/Template";
+    		String reportName = "Template";
 			Map<String, Object> parameters = new HashMap<String, Object>();
 			parameters.put("title","Prescription");
 

@@ -52,4 +52,16 @@ public interface DrugTypeRepository extends MongoRepository<DrugTypeCollection, 
     List<DrugTypeCollection> getCustomGlobalDrugType(String doctorId, String hospitalId, String locationId, Date date, boolean discarded, Sort sort,
 	    PageRequest pageRequest);
 
+    @Query("{'doctorId': ?0}")
+	List<DrugTypeCollection> getCustomDrugType(String doctorId, Sort sort, PageRequest pageRequest);
+
+    @Query("{'doctorId': ?0, 'discarded': ?1}")
+	List<DrugTypeCollection> getCustomDrugType(String doctorId, boolean discarded, Sort sort, PageRequest pageRequest);
+
+    @Query("{'doctorId': ?0,'updatedTime': {'$gte': ?1}}")
+	List<DrugTypeCollection> getCustomDrugType(String doctorId, Date date, Sort sort, PageRequest pageRequest);
+
+    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1},'discarded': ?2}")
+	List<DrugTypeCollection> getCustomDrugType(String doctorId, Date date, boolean discarded, Sort sort, PageRequest pageRequest);
+
 }

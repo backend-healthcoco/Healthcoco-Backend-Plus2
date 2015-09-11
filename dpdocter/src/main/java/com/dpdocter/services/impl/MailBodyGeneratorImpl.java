@@ -15,25 +15,20 @@ import com.dpdocter.services.MailBodyGenerator;
 @Service
 public class MailBodyGeneratorImpl implements MailBodyGenerator {
 
-	@Value(value = "${API_URL}")
-    private String url;
+	@Value(value = "${LINK}")
+    private String link;
 
 	@Autowired
 	private VelocityEngine velocityEngine;
 	
     @Override
     public String generateActivationEmailBody(String userName, String fName, String mName, String lName, String tokenId) throws Exception {
-//	StringBuffer body = new StringBuffer();
-//	
-//	body.append("Dear " + fName + " " + lName + ", \n");
-//	body.append("Please click on below link to activate the account.\n " + url+"signup/activate/" + tokenId);
-//	return body.toString();
-    	
-    	Map model = new HashMap();	             
+
+    	Map<String, Object> model = new HashMap<String, Object>();	             
         model.put("fName", fName);
         model.put("lName", lName);
-        model.put("url", url+"signup/activate/" + tokenId);
-        String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "velocity/template.vm", "UTF-8", model);
+        model.put("link", link +"signup/activate/" + tokenId);
+        String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "template.vm", "UTF-8", model);
         return text;
     }
 

@@ -57,4 +57,18 @@ public interface ObservationRepository extends MongoRepository<ObservationCollec
     List<ObservationCollection> findCustomGlobalObservations(String doctorId, String locationId, String hospitalId, Boolean discarded, Sort sort,
 	    PageRequest pageRequest);
 
+    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}}")
+	List<ObservationCollection> findCustomObservations(String doctorId, Date date, Sort sort, PageRequest pageRequest);
+
+    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2}")
+	List<ObservationCollection> findCustomObservations(String doctorId, Date date, Boolean discarded, Sort sort,
+			PageRequest pageRequest);
+
+	@Query("{'doctorId': ?0}")
+	List<ObservationCollection> findCustomObservations(String doctorId, Sort sort, PageRequest pageRequest);
+
+	@Query("{'doctorId': ?0, 'discarded': ?1}")
+	List<ObservationCollection> findCustomObservations(String doctorId, Boolean discarded, Sort sort,
+			PageRequest pageRequest);
+
 }
