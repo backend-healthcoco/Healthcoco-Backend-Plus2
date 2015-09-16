@@ -93,12 +93,12 @@ public class HistoryServicesImpl implements HistoryServices {
     public List<DiseaseAddEditResponse> addDiseases(List<DiseaseAddEditRequest> request) {
 	List<DiseaseAddEditResponse> response = null;
 	List<DiseasesCollection> diseases = new ArrayList<DiseasesCollection>();
-	BeanUtil.map(request, diseases);
 	try {
-	    for (Iterator<DiseasesCollection> iterator = diseases.iterator(); iterator.hasNext();) {
-		DiseasesCollection diseasesCollection = iterator.next();
-		diseasesCollection.setCreatedTime(new Date());
+	    for (Iterator<DiseaseAddEditRequest> iterator = request.iterator(); iterator.hasNext();) {
+	    	DiseaseAddEditRequest diseaseaddEditRequest = iterator.next();
+	    	diseaseaddEditRequest.setCreatedTime(new Date());
 	    }
+	    BeanUtil.map(request, diseases);
 	    diseases = diseasesRepository.save(diseases);
 	    response = new ArrayList<DiseaseAddEditResponse>();
 	    BeanUtil.map(diseases, response);
@@ -119,6 +119,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    DiseasesCollection oldDisease = diseasesRepository.findOne(request.getId());
 	    disease.setCreatedBy(oldDisease.getCreatedBy());
 	    disease.setCreatedTime(oldDisease.getCreatedTime());
+	    disease.setDiscarded(oldDisease.getDiscarded());
 	    disease = diseasesRepository.save(disease);
 	    response = new DiseaseAddEditResponse();
 	    BeanUtil.map(disease, response);
@@ -184,7 +185,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		    if (!reports.contains(reportId)) {
 			historyCollection.getGeneralRecords().add(0, report);
 		    } else {
-			return false;
+			return true;
 		    }
 		    // if no report is added into history then add it .
 		} else {
@@ -241,7 +242,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		    if (!clinicalNotes.contains(clinicalNotesId)) {
 			historyCollection.getGeneralRecords().add(0, clinicalNote);
 		    } else {
-			return false;
+			return true;
 		    }
 		    // if no clinicalNote is added into history then add it .
 		} else {
@@ -298,7 +299,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		    if (!prescriptions.contains(prescriptionId)) {
 			historyCollection.getGeneralRecords().add(0, prescription);
 		    } else {
-			return false;
+			return true;
 		    }
 		    // if no prescription is added into history then add it .
 		} else {
@@ -805,20 +806,39 @@ public class HistoryServicesImpl implements HistoryServices {
 
 	    if (!DPDoctorUtils.allStringsEmpty(updatedTime)) {
 		long createdTimeStamp = Long.parseLong(updatedTime);
-		if (discarded)
-		    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(
-			    Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-		else
-		    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discarded,
-			    new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-
+			if(locationId == null && hospitalId == null){
+				if (discarded)
+				    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, new Date(createdTimeStamp), new Sort(
+					    Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+				else
+				    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, new Date(createdTimeStamp), discarded,
+					    new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+			}
+			else{
+				if (discarded)
+				    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(
+					    Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+				else
+				    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discarded,
+					    new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+			}
 	    } else {
-		if (discarded)
-		    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC,
-			    "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-		else
-		    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, discarded, new Sort(
-			    Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+		if(locationId == null && hospitalId == null){
+			if (discarded)
+			    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, new Sort(Sort.Direction.DESC,
+				    "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+			else
+			    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, discarded, new Sort(
+				    Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+		}
+		else{
+			if (discarded)
+			    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC,
+				    "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+			else
+			    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, discarded, new Sort(
+				    Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+		}
 	    }
 
 	    if (diseasesCollections != null) {

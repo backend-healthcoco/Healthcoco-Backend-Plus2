@@ -58,4 +58,6 @@ public interface ClinicalNotesService {
     List<Object> getClinicalItems(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded);
 
+	void emailClinicalNotes(String clinicalNotesId, String doctorId, String locationId, String hospitalId, String emailAddress);
+
 }

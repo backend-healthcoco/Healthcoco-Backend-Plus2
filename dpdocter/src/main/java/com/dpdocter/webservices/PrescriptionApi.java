@@ -575,4 +575,20 @@ public class PrescriptionApi {
 	response.setDataList(clinicalItems);
 	return response;
     }
+    
+    @Path(value = PathProxy.PrescriptionUrls.EMAIL_PRESCRIPTION)
+    @GET
+    public Response<Boolean> emailPrescription(@PathParam(value = "prescriptionId") String prescriptionId, @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+    		@PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "emailAddress") String emailAddress) {
+
+	if (DPDoctorUtils.anyStringEmpty(prescriptionId, doctorId, locationId, hospitalId, emailAddress)) {
+		logger.warn("Invalid Input. Prescription Id, Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Prescription Id, Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
+	}
+	prescriptionServices.emailPrescription(prescriptionId, doctorId, locationId, hospitalId, emailAddress);
+
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(true);
+	return response;
+    }
 }

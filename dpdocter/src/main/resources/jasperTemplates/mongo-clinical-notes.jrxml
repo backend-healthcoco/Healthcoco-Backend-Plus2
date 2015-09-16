@@ -1,0 +1,1017 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="mongo-clinical-notes" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a204c47c-2960-4d79-b9cf-c00c74101e17">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="108"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 4">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 4_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 4_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 4_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 5">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 5_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 5_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 5_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="mongo-observation" uuid="a371e11d-3de0-4eb4-aea1-b61edf5f3cdd">
+		<parameter name="observationId" class="java.util.List"/>
+		<queryString language="MongoDbQuery">
+			<![CDATA[{
+    collectionName : 'observation_cl',
+    findQuery : {
+	'_id' : {'$in' : $P{observationId}}
+    }
+}]]>
+		</queryString>
+		<field name="_class" class="java.lang.String"/>
+		<field name="_id" class="org.bson.types.ObjectId"/>
+		<field name="observation" class="java.lang.String"/>
+		<field name="createdBy" class="java.lang.String"/>
+		<field name="createdTime" class="java.util.Date"/>
+		<field name="isDeleted" class="java.lang.Boolean"/>
+		<field name="updatedTime" class="java.util.Date"/>
+	</subDataset>
+	<subDataset name="mongo-notes" uuid="c85d79c6-9467-413a-96b7-2f8e6ce4c7b0">
+		<parameter name="noteIds" class="java.util.List"/>
+		<queryString language="MongoDbQuery">
+			<![CDATA[{
+    collectionName : 'notes_cl',
+    findQuery : {
+	_id : {'$in' : $P{noteIds}}
+    }
+}]]>
+		</queryString>
+		<field name="_class" class="java.lang.String"/>
+		<field name="_id" class="org.bson.types.ObjectId"/>
+		<field name="createdTime" class="java.util.Date"/>
+		<field name="doctorId" class="java.lang.String"/>
+		<field name="hospitalId" class="java.lang.String"/>
+		<field name="inHistory" class="java.lang.Boolean"/>
+		<field name="locationId" class="java.lang.String"/>
+		<field name="note" class="java.lang.String"/>
+		<field name="updatedTime" class="java.util.Date"/>
+	</subDataset>
+	<subDataset name="mongo-investigations" uuid="3c09d7e5-02ef-41d4-a7d2-f3c46da264c1">
+		<parameter name="investigationIds" class="java.util.List"/>
+		<queryString language="MongoDbQuery">
+			<![CDATA[{
+    collectionName : 'investigation_cl',
+    findQuery : {
+	_id : {'$in' : $P{investigationIds}}
+    }
+}]]>
+		</queryString>
+		<field name="_class" class="java.lang.String"/>
+		<field name="_id" class="org.bson.types.ObjectId"/>
+		<field name="createdBy" class="java.lang.String"/>
+		<field name="createdTime" class="java.util.Date"/>
+		<field name="investigation" class="java.lang.String"/>
+		<field name="isDeleted" class="java.lang.Boolean"/>
+		<field name="updatedTime" class="java.util.Date"/>
+	</subDataset>
+	<subDataset name="mongo-diagnoses" uuid="36cf967a-1069-4339-a1c7-b3adf91eda67">
+		<parameter name="diagnosesIds" class="java.util.List"/>
+		<queryString language="MongoDbQuery">
+			<![CDATA[{
+    collectionName : 'diagnosis_cl',
+    findQuery : {
+	_id : {'$in' : $P{diagnosesIds}}
+    }
+}]]>
+		</queryString>
+		<field name="_class" class="java.lang.String"/>
+		<field name="_id" class="org.bson.types.ObjectId"/>
+		<field name="createdBy" class="java.lang.String"/>
+		<field name="createdTime" class="java.util.Date"/>
+		<field name="diagnosis" class="java.lang.String"/>
+		<field name="isDeleted" class="java.lang.Boolean"/>
+		<field name="updatedTime" class="java.util.Date"/>
+	</subDataset>
+	<subDataset name="mongo-complaints" uuid="83095e03-17bf-4461-9b3c-e1385bee05d6">
+		<parameter name="complaintIds" class="java.util.List"/>
+		<queryString language="MongoDbQuery">
+			<![CDATA[{
+    collectionName : 'complaint_cl',
+    findQuery : {
+	_id : {'$in' : $P{complaintIds}}
+    }
+}]]>
+		</queryString>
+		<field name="_class" class="java.lang.String"/>
+		<field name="_id" class="org.bson.types.ObjectId"/>
+		<field name="complaint" class="java.lang.String"/>
+		<field name="createdBy" class="java.lang.String"/>
+		<field name="createdTime" class="java.util.Date"/>
+		<field name="isDeleted" class="java.lang.Boolean"/>
+		<field name="updatedTime" class="java.util.Date"/>
+	</subDataset>
+	<subDataset name="mongo-diagrams" uuid="9f1a8e6a-7271-4d63-92b6-8f51ac5f8bb2">
+		<parameter name="diagramIds" class="java.util.List"/>
+		<queryString language="MongoDbQuery">
+			<![CDATA[{
+    collectionName : 'diagrams_cl',
+    findQuery : {
+	_id : {'$in' : $P{diagramIds}}
+    }
+}]]>
+		</queryString>
+		<field name="_class" class="java.lang.String"/>
+		<field name="_id" class="org.bson.types.ObjectId"/>
+		<field name="createdTime" class="java.util.Date"/>
+		<field name="diagramUrl" class="java.lang.String"/>
+		<field name="fileExtension" class="java.lang.String"/>
+		<field name="isDeleted" class="java.lang.Boolean"/>
+		<field name="tags" class="java.lang.String"/>
+		<field name="updatedTime" class="java.util.Date"/>
+	</subDataset>
+	<parameter name="clinicalNotesId" class="java.lang.String"/>
+	<parameter name="doctorId" class="java.lang.String"/>
+	<parameter name="locationId" class="java.lang.String"/>
+	<parameter name="hospitalId" class="java.lang.String"/>
+	<parameter name="observationIds" class="java.util.List"/>
+	<parameter name="noteIds" class="java.util.List"/>
+	<parameter name="investigationIds" class="java.util.List"/>
+	<parameter name="diagnosesIds" class="java.util.List"/>
+	<parameter name="complaintIds" class="java.util.List"/>
+	<parameter name="diagramIds" class="java.util.List"/>
+	<queryString language="MongoDbQuery">
+		<![CDATA[{
+    collectionName : 'clinical_notes_cl',
+    findQuery : {
+	'_id' : {'$oid' : '$P!{clinicalNotesId}'},
+	'doctorId' : '$P!{doctorId}',
+	'locationId' : '$P!{locationId}',
+	'hospitalId' : '$P!{hospitalId}'
+    }
+}]]>
+	</queryString>
+	<field name="_class" class="java.lang.String"/>
+	<field name="_id" class="org.bson.types.ObjectId"/>
+	<field name="complaints" class="java.util.List"/>
+	<field name="createdTime" class="java.util.Date"/>
+	<field name="diagnoses" class="java.util.List"/>
+	<field name="diagrams" class="java.util.List"/>
+	<field name="discarded" class="java.lang.Boolean"/>
+	<field name="doctorId" class="java.lang.String"/>
+	<field name="hospitalId" class="java.lang.String"/>
+	<field name="inHistory" class="java.lang.Boolean"/>
+	<field name="investigations" class="java.util.List"/>
+	<field name="locationId" class="java.lang.String"/>
+	<field name="notes" class="java.util.List"/>
+	<field name="observations" class="java.util.List"/>
+	<field name="updatedTime" class="java.util.Date"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<textField>
+				<reportElement x="225" y="30" width="100" height="20" uuid="ec74c31c-c805-4e80-8ed5-509daf88d063"/>
+				<textFieldExpression><![CDATA[""+$F{_id}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="85" splitType="Stretch">
+			<textField>
+				<reportElement x="100" y="0" width="455" height="20" uuid="42776f67-3778-47ac-b1c4-7aa4fa33d78e"/>
+				<textFieldExpression><![CDATA[$F{doctorId}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20" uuid="6a1b7ac1-a92f-4942-b59d-89efb7b9ddb4"/>
+				<text><![CDATA[Doctor Id]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="20" width="100" height="20" uuid="03f51adb-a3fa-41c8-9311-b6ad9930f4ad"/>
+				<text><![CDATA[Location Id]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="40" width="100" height="20" uuid="fad5ff32-cb09-444b-998d-f3dc23c8d7f3"/>
+				<text><![CDATA[Hospital Id]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="100" y="20" width="455" height="20" uuid="0c31ab0e-e01c-4545-b710-69e7c854138f"/>
+				<textFieldExpression><![CDATA[$F{locationId}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="40" width="455" height="20" uuid="4a639a9b-fdad-49ec-b1c1-488189e281eb"/>
+				<textFieldExpression><![CDATA[$F{hospitalId}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="125" splitType="Stretch">
+			<componentElement>
+				<reportElement key="table" style="table" x="0" y="0" width="555" height="125" uuid="155faf04-f334-440a-8336-f93c47d706d0"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="mongo-observation" uuid="b54a4f2c-e8e9-4ad8-a5df-2b0855a9ed7e">
+						<datasetParameter name="observationId">
+							<datasetParameterExpression><![CDATA[$P{observationIds}]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="90" uuid="9775637a-5e72-40ee-be0d-1e49c566589c">
+						<jr:tableHeader style="table_TH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="93b60920-88ec-4aef-92b0-a5feb6425a49"/>
+								<text><![CDATA[Observations]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:tableFooter style="table_TH" height="30" rowSpan="1"/>
+						<jr:columnHeader style="table_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="da92de24-ef28-4227-9529-95b47a2e3306"/>
+								<text><![CDATA[_id]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="b0587e93-e677-465b-8e5e-21e355a367f5"/>
+								<textFieldExpression><![CDATA[""+$F{_id}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="41efe598-2658-4cef-959f-48e0a2d71370">
+						<jr:tableHeader style="table_TH" height="30" rowSpan="1"/>
+						<jr:tableFooter style="table_TH" height="30" rowSpan="1"/>
+						<jr:columnHeader style="table_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="406e4b9e-112c-4947-9512-6d73152e11d5"/>
+								<text><![CDATA[observation]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="8cd371e0-bbe8-4c3c-9e6a-3ac3811dd185"/>
+								<textFieldExpression><![CDATA[$F{observation}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="b7ce3bfd-e188-4908-b72d-d8449eba57c8">
+						<jr:tableHeader style="table_TH" height="30" rowSpan="1"/>
+						<jr:tableFooter style="table_TH" height="30" rowSpan="1"/>
+						<jr:columnHeader style="table_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="e6dfe8f7-451d-4915-963b-ebda57a78e0c"/>
+								<text><![CDATA[createdBy]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="cacc6d45-51c3-43e4-a5c6-97d59c452d10"/>
+								<textFieldExpression><![CDATA[$F{createdBy}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="ba99a379-2222-43d0-a0c1-28a0fe309832">
+						<jr:tableHeader style="table_TH" height="30" rowSpan="1"/>
+						<jr:tableFooter style="table_TH" height="30" rowSpan="1"/>
+						<jr:columnHeader style="table_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="9c6f7331-c1e2-4b7e-93fe-d25d88904e25"/>
+								<text><![CDATA[createdTime]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="433bf392-1140-458b-8007-85f4073cb199"/>
+								<textFieldExpression><![CDATA[$F{createdTime}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="c04afb4d-eb9a-4738-94db-02d52a8423e9">
+						<jr:tableHeader style="table_TH" height="30" rowSpan="1"/>
+						<jr:tableFooter style="table_TH" height="30" rowSpan="1"/>
+						<jr:columnHeader style="table_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="35b8d7f5-bac5-47ce-a7e0-92ab06f9a82f"/>
+								<text><![CDATA[isDeleted]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="a529031a-d82d-4aa4-aab6-d126404846f5"/>
+								<textFieldExpression><![CDATA[$F{isDeleted}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="69e4f3db-bf51-41cc-a60d-2de89249c170">
+						<jr:tableHeader style="table_TH" height="30" rowSpan="1"/>
+						<jr:tableFooter style="table_TH" height="30" rowSpan="1"/>
+						<jr:columnHeader style="table_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="b7deb2e2-955a-4356-9dfe-dc078d48e17c"/>
+								<text><![CDATA[updatedTime]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="1c570bf0-9357-4e05-a980-bc871baad431"/>
+								<textFieldExpression><![CDATA[$F{updatedTime}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+		</band>
+		<band height="125">
+			<componentElement>
+				<reportElement key="table 1" style="table 1" x="0" y="0" width="555" height="125" uuid="78cd337f-3674-4156-a1b5-a08c670bd84a"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="mongo-notes" uuid="be7d3719-13dd-423a-b1c1-4ee707ededc8">
+						<datasetParameter name="noteIds">
+							<datasetParameterExpression><![CDATA[$P{noteIds}]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="90" uuid="ce3adfcb-594f-4529-aa39-8ef10ced7c21">
+						<jr:tableHeader style="table 1_TH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="d761a75d-40c8-4c2e-95d7-ce673ea9eea7"/>
+								<text><![CDATA[Notes]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:tableFooter style="table 1_TH" height="30" rowSpan="1"/>
+						<jr:columnHeader style="table 1_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="512c471b-b8c5-4591-8226-29f643097734"/>
+								<text><![CDATA[_id]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 1_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="c7affcd9-45e6-4416-91c6-348e969d69df"/>
+								<textFieldExpression><![CDATA[""+$F{_id}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="32396823-fd41-49f6-8d1b-c69c38767f9c">
+						<jr:tableHeader style="table 1_TH" height="30" rowSpan="1"/>
+						<jr:tableFooter style="table 1_TH" height="30" rowSpan="1"/>
+						<jr:columnHeader style="table 1_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="e55bb96a-6134-444f-85ad-e5ee4ce96bc0"/>
+								<text><![CDATA[createdTime]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 1_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="729cc531-8a17-4a00-95fc-4868cf57287c"/>
+								<textFieldExpression><![CDATA[$F{createdTime}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="fae23f75-7e7e-446c-a488-acf93129a50b">
+						<jr:tableHeader style="table 1_TH" height="30" rowSpan="1"/>
+						<jr:tableFooter style="table 1_TH" height="30" rowSpan="1"/>
+						<jr:columnHeader style="table 1_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="75e46b3b-5f0d-4746-8311-7b27edc35215"/>
+								<text><![CDATA[inHistory]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 1_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="71880c41-33ec-4638-b426-9ab7548609fc"/>
+								<textFieldExpression><![CDATA[$F{inHistory}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="1dabbc15-fade-4ca2-9b84-8827713ee05e">
+						<jr:tableHeader style="table 1_TH" height="30" rowSpan="1"/>
+						<jr:tableFooter style="table 1_TH" height="30" rowSpan="1"/>
+						<jr:columnHeader style="table 1_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="a09f5acf-5399-46cb-bf56-dac37afb86b9"/>
+								<text><![CDATA[note]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 1_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="c8985754-8cfd-46a8-943b-efddfd88337a"/>
+								<textFieldExpression><![CDATA[$F{note}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="c0a97069-2c99-436e-89b1-ed8befe8db3d">
+						<jr:tableHeader style="table 1_TH" height="30" rowSpan="1"/>
+						<jr:tableFooter style="table 1_TH" height="30" rowSpan="1"/>
+						<jr:columnHeader style="table 1_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="3eef5a8d-757c-46bd-854a-e92e4cf3f1c0"/>
+								<text><![CDATA[updatedTime]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 1_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="b620580e-0bde-4e43-aa01-f7825c494fe3"/>
+								<textFieldExpression><![CDATA[$F{updatedTime}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+		</band>
+		<band height="125">
+			<componentElement>
+				<reportElement key="table 2" style="table 2" x="0" y="0" width="555" height="125" uuid="1f3d07fb-b042-4372-8906-20f25e902528"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="mongo-investigations" uuid="1ee2103e-e5fb-48ad-b8bd-84f90ad58b57">
+						<datasetParameter name="investigationIds">
+							<datasetParameterExpression><![CDATA[$P{investigationIds}]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="90" uuid="984bb893-ec35-4e91-accd-cc977e46f80e">
+						<jr:tableHeader style="table 2_TH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="e1a679f4-dc76-4663-8b9e-8b489bcc7d8e"/>
+								<text><![CDATA[Investigation]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:tableFooter style="table 2_TH" height="0" rowSpan="1"/>
+						<jr:columnHeader style="table 2_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="1403778f-bfec-48c7-83db-a4417ae6f645"/>
+								<text><![CDATA[_id]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 2_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="2aa9f976-8761-49c3-81c7-6ad2e525e2e6"/>
+								<textFieldExpression><![CDATA[""+$F{_id}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="ecf004e0-2057-446b-9d13-03f3c89ac89f">
+						<jr:tableHeader style="table 2_TH" height="30" rowSpan="1"/>
+						<jr:tableFooter style="table 2_TH" height="0" rowSpan="1"/>
+						<jr:columnHeader style="table 2_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="676b63f0-2f49-4427-9ce4-3fdf7a18a112"/>
+								<text><![CDATA[createdBy]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 2_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="89e1443e-9ede-47a0-9084-a21f455f14ef"/>
+								<textFieldExpression><![CDATA[$F{createdBy}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="9f45b4f6-622c-48fd-8271-71d4380964eb">
+						<jr:tableHeader style="table 2_TH" height="30" rowSpan="1"/>
+						<jr:tableFooter style="table 2_TH" height="0" rowSpan="1"/>
+						<jr:columnHeader style="table 2_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="bf6babf2-ea09-4816-9c7c-28767b03c764"/>
+								<text><![CDATA[createdTime]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 2_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="cbb9e3fe-a69e-4af5-af56-3d286b841974"/>
+								<textFieldExpression><![CDATA[$F{createdTime}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="bb7209d5-b3c5-4081-8826-140f71bdb6fb">
+						<jr:tableHeader style="table 2_TH" height="30" rowSpan="1"/>
+						<jr:tableFooter style="table 2_TH" height="0" rowSpan="1"/>
+						<jr:columnHeader style="table 2_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="d28291f1-1fdc-45a9-998b-1a6a29b996fe"/>
+								<text><![CDATA[investigation]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 2_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="470b3a1a-ca67-44d0-acaf-58fa77408229"/>
+								<textFieldExpression><![CDATA[$F{investigation}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="1431f453-c700-412c-a664-2060f7517f87">
+						<jr:tableHeader style="table 2_TH" height="30" rowSpan="1"/>
+						<jr:tableFooter style="table 2_TH" height="0" rowSpan="1"/>
+						<jr:columnHeader style="table 2_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="4effcffe-d2d8-433b-8f14-ed1f2137caf8"/>
+								<text><![CDATA[isDeleted]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 2_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="148ef762-8ba2-42c6-aea8-5b854a1d3336"/>
+								<textFieldExpression><![CDATA[$F{isDeleted}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="32ab4382-51f0-4dd3-9237-d60e1cc47117">
+						<jr:tableHeader style="table 2_TH" height="30" rowSpan="1"/>
+						<jr:tableFooter style="table 2_TH" height="0" rowSpan="1"/>
+						<jr:columnHeader style="table 2_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="d4218e4a-7526-4541-bd73-ef9ca9715ea3"/>
+								<text><![CDATA[updatedTime]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 2_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="63c6ae8e-180d-4deb-807c-8852ab57303b"/>
+								<textFieldExpression><![CDATA[$F{updatedTime}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+		</band>
+		<band height="125">
+			<componentElement>
+				<reportElement key="table 3" style="table 3" x="0" y="0" width="555" height="125" uuid="4fc3f875-a8ac-42c1-8bd2-5395ef4f4ce7"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="mongo-diagnoses" uuid="412045f2-9dd3-4345-a982-4559e29dc5f0">
+						<datasetParameter name="diagnosesIds">
+							<datasetParameterExpression><![CDATA[$P{diagnosesIds}]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="90" uuid="85388615-7c3f-4177-96d5-e0908ba0648a">
+						<jr:tableHeader style="table 3_TH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="a3d65903-320f-4583-b7fd-72205e26144d"/>
+								<text><![CDATA[Diagnosis]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:tableFooter style="table 3_TH" height="30" rowSpan="1"/>
+						<jr:columnHeader style="table 3_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="69241316-6f13-4297-8ba1-b909d256a2bb"/>
+								<text><![CDATA[_id]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 3_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table 3_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="6e8d45c9-703f-46ef-a180-d4662214ab03"/>
+								<textFieldExpression><![CDATA[""+$F{_id}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="72e7823c-83ba-41db-a7be-a80c5f989354">
+						<jr:tableHeader style="table 3_TH" height="30" rowSpan="1"/>
+						<jr:tableFooter style="table 3_TH" height="30" rowSpan="1"/>
+						<jr:columnHeader style="table 3_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="ec78756b-da4d-4851-90a1-d475257772b9"/>
+								<text><![CDATA[createdBy]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 3_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table 3_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="b12cdcbd-9e2c-4233-98cc-47eba51290ed"/>
+								<textFieldExpression><![CDATA[$F{createdBy}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="8601a04b-bc2e-42dd-8644-6b977307cedb">
+						<jr:tableHeader style="table 3_TH" height="30" rowSpan="1"/>
+						<jr:tableFooter style="table 3_TH" height="30" rowSpan="1"/>
+						<jr:columnHeader style="table 3_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="a198aacb-a5f1-4025-a0b2-1373a685ce77"/>
+								<text><![CDATA[createdTime]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 3_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table 3_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="28988c04-aa28-4cf2-b8e7-0d508898cc92"/>
+								<textFieldExpression><![CDATA[$F{createdTime}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="62e89c4b-951e-4f22-8d06-085b1515958f">
+						<jr:tableHeader style="table 3_TH" height="30" rowSpan="1"/>
+						<jr:tableFooter style="table 3_TH" height="30" rowSpan="1"/>
+						<jr:columnHeader style="table 3_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="077d05f6-903b-43b8-adfe-a72894fab317"/>
+								<text><![CDATA[diagnosis]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 3_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table 3_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="2ea0fab6-2235-4fc0-a2d2-fc6fdcf18725"/>
+								<textFieldExpression><![CDATA[$F{diagnosis}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="65a6cd3a-bc1c-45c7-9702-91875b42b619">
+						<jr:tableHeader style="table 3_TH" height="30" rowSpan="1"/>
+						<jr:tableFooter style="table 3_TH" height="30" rowSpan="1"/>
+						<jr:columnHeader style="table 3_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="d788d0c9-907f-4772-aaa1-cbf00c610d35"/>
+								<text><![CDATA[isDeleted]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 3_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table 3_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="4b8013d4-6abd-4e42-b76e-95c0c3f9202c"/>
+								<textFieldExpression><![CDATA[$F{isDeleted}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="4784b664-dd10-43bb-a658-958767713b46">
+						<jr:tableHeader style="table 3_TH" height="30" rowSpan="1"/>
+						<jr:tableFooter style="table 3_TH" height="30" rowSpan="1"/>
+						<jr:columnHeader style="table 3_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="588e60ca-4ed4-4b1c-a71c-9ea1180d60bf"/>
+								<text><![CDATA[updatedTime]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 3_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table 3_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="2398f127-6f3e-4bc3-93d3-c59739b90e86"/>
+								<textFieldExpression><![CDATA[$F{updatedTime}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+		</band>
+		<band height="125">
+			<componentElement>
+				<reportElement key="table 4" style="table 4" x="0" y="0" width="555" height="125" uuid="45e2f671-b228-4b10-a557-79e4b8056e08"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="mongo-complaints" uuid="5b3b14d7-9d41-4fb4-9e1a-fa449a171e4e">
+						<datasetParameter name="complaintIds">
+							<datasetParameterExpression><![CDATA[$P{complaintIds}]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="90" uuid="e431268c-bd1a-4531-983e-061df1d721fa">
+						<jr:tableHeader style="table 4_TH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="3c889b5e-c506-41f7-a34d-8ebafbd3f3ed"/>
+								<text><![CDATA[Complaints]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:tableFooter style="table 4_TH" height="30" rowSpan="1"/>
+						<jr:columnHeader style="table 4_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="67e16023-d144-46f8-b241-71b2c79bdc9c"/>
+								<text><![CDATA[_id]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 4_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table 4_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="cae57b6e-56ee-44e1-8f9c-67dc9423e528"/>
+								<textFieldExpression><![CDATA[""+$F{_id}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="9983765d-f0e8-43ea-8689-e9dfd84d2d61">
+						<jr:tableHeader style="table 4_TH" height="30" rowSpan="1"/>
+						<jr:tableFooter style="table 4_TH" height="30" rowSpan="1"/>
+						<jr:columnHeader style="table 4_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="d1d99771-fa68-4e86-ac1e-bcbb421ce1d1"/>
+								<text><![CDATA[complaint]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 4_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table 4_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="9e9bdd9a-c766-4601-be07-f7629a5e0e57"/>
+								<textFieldExpression><![CDATA[$F{complaint}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="0af9430c-50a1-405f-9e3e-0e5f01996b3c">
+						<jr:tableHeader style="table 4_TH" height="30" rowSpan="1"/>
+						<jr:tableFooter style="table 4_TH" height="30" rowSpan="1"/>
+						<jr:columnHeader style="table 4_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="d9294870-ff88-441b-bc3d-8099930dbce9"/>
+								<text><![CDATA[createdBy]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 4_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table 4_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="71d0f0c7-9b86-4f42-a7f3-4c59b463f9d5"/>
+								<textFieldExpression><![CDATA[$F{createdBy}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="c781e251-b913-4260-aa5d-1167ff3f196a">
+						<jr:tableHeader style="table 4_TH" height="30" rowSpan="1"/>
+						<jr:tableFooter style="table 4_TH" height="30" rowSpan="1"/>
+						<jr:columnHeader style="table 4_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="a6e119f5-bf31-422e-8519-983cf6f4de9c"/>
+								<text><![CDATA[createdTime]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 4_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table 4_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="d0f10540-a3ac-468a-8a57-c13c23c65b3e"/>
+								<textFieldExpression><![CDATA[$F{createdTime}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="f324585c-d2d0-46e5-ac59-325a5dbb4860">
+						<jr:tableHeader style="table 4_TH" height="30" rowSpan="1"/>
+						<jr:tableFooter style="table 4_TH" height="30" rowSpan="1"/>
+						<jr:columnHeader style="table 4_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="b97fc8ef-dfc7-4a2f-aa67-2446af63dad4"/>
+								<text><![CDATA[isDeleted]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 4_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table 4_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="d4d652fc-2257-44da-bc61-53e275fb2fbe"/>
+								<textFieldExpression><![CDATA[$F{isDeleted}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="21f76e38-2eaa-4348-8eb5-15c55762c601">
+						<jr:tableHeader style="table 4_TH" height="30" rowSpan="1"/>
+						<jr:tableFooter style="table 4_TH" height="30" rowSpan="1"/>
+						<jr:columnHeader style="table 4_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="9796ec00-877d-4b47-b852-ee4c63cae77b"/>
+								<text><![CDATA[updatedTime]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 4_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table 4_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="176da35d-9e98-4c19-8757-3df61500cc6a"/>
+								<textFieldExpression><![CDATA[$F{updatedTime}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+		</band>
+		<band height="125">
+			<componentElement>
+				<reportElement key="table 5" style="table 5" x="0" y="0" width="555" height="125" uuid="47185534-4dad-4867-9623-15a35f52c928"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="mongo-diagrams" uuid="05eb4ef7-edd4-4ee2-8c04-8bb221bfc83e">
+						<datasetParameter name="diagramIds">
+							<datasetParameterExpression><![CDATA[$P{diagramIds}]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="90" uuid="63469751-bc0a-4d99-bc65-12d4baf3467f">
+						<jr:tableHeader style="table 5_TH" height="30">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="c38425ff-2dcb-4929-8d7e-e84bddf3ce6c"/>
+								<text><![CDATA[Diagrams]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:tableFooter style="table 5_TH" height="30"/>
+						<jr:columnHeader style="table 5_CH" height="30">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="f9a30320-991d-4ba6-8954-81098128c1f8"/>
+								<text><![CDATA[_id]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 5_CH" height="30"/>
+						<jr:detailCell style="table 5_TD" height="20">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="ea287e7d-1294-4fdd-b2d3-cb107fdf0e57"/>
+								<textFieldExpression><![CDATA[""+$F{_id}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="33b3e165-f9a8-4d43-89e0-d417557905dc">
+						<jr:tableHeader style="table 5_TH" height="30"/>
+						<jr:tableFooter style="table 5_TH" height="30"/>
+						<jr:columnHeader style="table 5_CH" height="30">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="e09272a2-5da0-4269-a2d5-03ae6f92dae9"/>
+								<text><![CDATA[Diagram]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 5_CH" height="30"/>
+						<jr:detailCell style="table 5_TD" height="20">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="06770154-0e1c-4bf9-9eec-7bfdd0a68574"/>
+								<textFieldExpression><![CDATA[$F{diagramUrl}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="3c91aeb6-5221-425f-a92a-577f6e76e413">
+						<jr:tableHeader style="table 5_TH" height="30"/>
+						<jr:tableFooter style="table 5_TH" height="30"/>
+						<jr:columnHeader style="table 5_CH" height="30">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="020a726e-2265-46d9-abba-47242f80307f"/>
+								<text><![CDATA[Tags]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 5_CH" height="30"/>
+						<jr:detailCell style="table 5_TD" height="20">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="a1a69e21-51f8-41d6-a208-15611d9e27ed"/>
+								<textFieldExpression><![CDATA[$F{tags}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="fac89e09-00fc-4828-9b78-c6913d4d2841">
+						<jr:tableHeader style="table 5_TH" height="30"/>
+						<jr:tableFooter style="table 5_TH" height="30"/>
+						<jr:columnHeader style="table 5_CH" height="30">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="2cc5c49e-9f50-4e8e-a9fa-6a730acc20a5"/>
+								<text><![CDATA[createdTime]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 5_CH" height="30"/>
+						<jr:detailCell style="table 5_TD" height="20">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="21673485-4fbc-40a9-af92-38d48094be1b"/>
+								<textFieldExpression><![CDATA[$F{createdTime}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="83c0c2b5-77a6-4a2e-a74d-e4685c7f65ef">
+						<jr:tableHeader style="table 5_TH" height="30"/>
+						<jr:tableFooter style="table 5_TH" height="30"/>
+						<jr:columnHeader style="table 5_CH" height="30">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="ae3f950b-e733-4e0c-89e7-b2ea866e82c2"/>
+								<text><![CDATA[isDeleted]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 5_CH" height="30"/>
+						<jr:detailCell style="table 5_TD" height="20">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="eb1534b9-eae6-4cb6-827d-4fd347f02f8c"/>
+								<textFieldExpression><![CDATA[$F{isDeleted}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="9880f7e7-9bad-48f1-8268-7712a0bcb253">
+						<jr:tableHeader style="table 5_TH" height="30"/>
+						<jr:tableFooter style="table 5_TH" height="30"/>
+						<jr:columnHeader style="table 5_CH" height="30">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" uuid="b901e106-91b1-4031-a6ef-3da960be062e"/>
+								<text><![CDATA[updatedTime]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 5_CH" height="30"/>
+						<jr:detailCell style="table 5_TD" height="20">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="12851730-5e6f-4284-aeec-6eaf761933dd"/>
+								<textFieldExpression><![CDATA[$F{updatedTime}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+		</band>
+	</detail>
+</jasperReport>

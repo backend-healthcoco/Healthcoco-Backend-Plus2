@@ -11,7 +11,7 @@ public class RecordsSearchRequest {
 
     private String hospitalId;
 
-    private String createdTime;
+    private String updatedTime;
 
     public String getLocationId() {
 	return locationId;
@@ -53,18 +53,17 @@ public class RecordsSearchRequest {
 	this.tagId = tagId;
     }
 
-    public String getCreatedTime() {
-	return createdTime;
-    }
+	public String getUpdatedTime() {
+		return updatedTime;
+	}
 
-    public void setCreatedTime(String createdTime) {
-	this.createdTime = createdTime;
-    }
+	public void setUpdatedTime(String updatedTime) {
+		this.updatedTime = updatedTime;
+	}
 
-    @Override
-    public String toString() {
-	return "RecordsSearchRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", tagId=" + tagId + ", locationId=" + locationId + ", hospitalId="
-		+ hospitalId + "]";
-    }
-
+	@Override
+	public String toString() {
+		return "RecordsSearchRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", tagId=" + tagId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", updatedTime=" + updatedTime + "]";
+	}
 }

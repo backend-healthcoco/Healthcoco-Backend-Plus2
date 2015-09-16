@@ -47,6 +47,8 @@ public interface DoctorProfileService {
 
     String addEditProfilePicture(DoctorProfilePictureAddEditRequest request);
 
+    String addEditCoverPicture(DoctorProfilePictureAddEditRequest request);
+    
     DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId);
 
     Boolean insertProfessionalMemberships(List<ProfessionalMembership> professionalMemberships);

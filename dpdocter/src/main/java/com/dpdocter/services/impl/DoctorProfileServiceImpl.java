@@ -327,6 +327,28 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	return response;
     }
 
+    @Override
+    public String addEditCoverPicture(DoctorProfilePictureAddEditRequest request) {
+	UserCollection userCollection = null;
+	String response = "";
+	try {
+	    userCollection = userRepository.findOne(request.getDoctorId());
+	    if (request.getImage() != null) {
+		String path = "cover-image";
+		// save image
+		String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
+		userCollection.setCoverImageUrl(imageurl);
+		userCollection = userRepository.save(userCollection);
+		response = userCollection.getCoverImageUrl();
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e+" Error Editing Doctor Profile");
+	    throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
+	}
+	return response;
+    }
+    
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId) {

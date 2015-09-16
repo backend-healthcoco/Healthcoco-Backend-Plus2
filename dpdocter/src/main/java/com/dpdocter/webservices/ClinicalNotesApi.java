@@ -352,5 +352,21 @@ public class ClinicalNotesApi {
 	response.setDataList(clinicalItems);
 	return response;
     }
+    
+    @Path(value = PathProxy.ClinicalNotesUrls.EMAIL_CLINICAL_NOTES)
+    @GET
+    public Response<Boolean> emailClinicalNotes(@PathParam(value = "clinicalNotesId") String clinicalNotesId, @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+    		@PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "emailAddress") String emailAddress) {
+
+	if (DPDoctorUtils.anyStringEmpty(clinicalNotesId, doctorId, locationId, hospitalId, emailAddress)) {
+		logger.warn("Invalid Input. Clinical Notes Id, Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Clinical Notes Id, Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
+	}
+	clinicalNotesService.emailClinicalNotes(clinicalNotesId, doctorId, locationId, hospitalId, emailAddress);
+
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(true);
+	return response;
+    }
 
 }

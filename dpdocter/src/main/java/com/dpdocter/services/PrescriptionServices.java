@@ -99,4 +99,6 @@ public interface PrescriptionServices {
     List<Object> getPrescriptionItems(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded);
 
+	void emailPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String emailAddress);
+
 }

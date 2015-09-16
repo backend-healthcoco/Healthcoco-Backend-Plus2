@@ -65,4 +65,16 @@ public interface DiagramsRepository extends MongoRepository<DiagramsCollection, 
 	@Query("{'doctorId': ?0, 'discarded': ?1}")
 	List<DiagramsCollection> findCustomDiagrams(String doctorId, Boolean discarded, Sort sort, PageRequest pageRequest);
 
+	@Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}},{'doctorId': null, 'updatedTime': {'$gte': ?1}}]}")
+	List<DiagramsCollection> findCustomGlobalDiagrams(String doctorId, Date date, Sort sort, PageRequest pageRequest);
+
+	@Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2},{'doctorId': null, 'updatedTime': {'$gte': ?1},'discarded': ?2}]}")
+	List<DiagramsCollection> findCustomGlobalDiagrams(String doctorId, Date date, Boolean discarded, Sort sort,	PageRequest pageRequest);
+
+	@Query("{'$or': [{'doctorId': ?0},{'doctorId': null}]}")
+	List<DiagramsCollection> findCustomGlobalDiagrams(String doctorId, Sort sort, PageRequest pageRequest);
+
+	@Query("{'$or': [{'doctorId': ?0,  'discarded': ?1},{'doctorId': null, 'discarded': ?1}]}")
+	List<DiagramsCollection> findCustomGlobalDiagrams(String doctorId, Boolean discarded, Sort sort, PageRequest pageRequest);
+
 }

@@ -201,6 +201,19 @@ public class DoctorProfileApi {
 	return response;
     }
 
+    @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_COVER_PICTURE)
+    @POST
+    public Response<String> addEditCoverPicture(DoctorProfilePictureAddEditRequest request) {
+	if (request == null) {
+		logger.warn("Doctor Profile Picture Request Is Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Profile Picture Request Is Empty");
+	}
+	String addEditCoverPictureResponse = doctorProfileService.addEditCoverPicture(request);
+	Response<String> response = new Response<String>();
+	response.setData(addEditCoverPictureResponse);
+	return response;
+    }
+
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFESSIONAL_MEMBERSHIP)
     @POST
     public Response<Boolean> addEditProfessionalMembership(DoctorProfessionalAddEditRequest request) {

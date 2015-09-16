@@ -137,6 +137,8 @@ public class RecordsServiceImpl implements RecordsService {
 	    RecordsCollection oldRecord = recordsRepository.findOne(request.getId());
 	    recordsCollection.setCreatedTime(oldRecord.getCreatedTime());
 	    recordsCollection.setCreatedBy(oldRecord.getCreatedBy());
+	    recordsCollection.setDiscarded(oldRecord.getDiscarded());
+	    recordsCollection.setInHistory(oldRecord.isInHistory());
 	    recordsCollection = recordsRepository.save(recordsCollection);
 	    BeanUtil.map(recordsCollection, records);
 	    return records;
@@ -238,8 +240,8 @@ public class RecordsServiceImpl implements RecordsService {
 		records = new ArrayList<Records>();
 		BeanUtil.map(recordCollections, records);
 	    } else {
-		if (request.getCreatedTime() != null) {
-		    long createdTimeStamp = Long.parseLong(request.getCreatedTime());
+		if (request.getUpdatedTime() != null) {
+		    long createdTimeStamp = Long.parseLong(request.getUpdatedTime());
 		    recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
 			    request.getHospitalId(), new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
 		} else {

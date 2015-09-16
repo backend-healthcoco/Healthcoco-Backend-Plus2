@@ -2,9 +2,12 @@ package com.dpdocter.services.impl;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -12,6 +15,7 @@ import org.apache.commons.collections.IteratorUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -27,8 +31,10 @@ import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.Diagnoses;
 import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.Investigation;
+import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Notes;
 import com.dpdocter.beans.Observation;
+import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.ComplaintCollection;
 import com.dpdocter.collections.DiagnosisCollection;
@@ -37,6 +43,7 @@ import com.dpdocter.collections.InvestigationCollection;
 import com.dpdocter.collections.NotesCollection;
 import com.dpdocter.collections.ObservationCollection;
 import com.dpdocter.collections.PatientClinicalNotesCollection;
+import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ClinicalItems;
 import com.dpdocter.enums.Range;
@@ -56,6 +63,10 @@ import com.dpdocter.request.ClinicalNotesAddRequest;
 import com.dpdocter.request.ClinicalNotesEditRequest;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.FileManager;
+import com.dpdocter.services.JasperReportService;
+import com.dpdocter.services.MailService;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 
 import common.util.web.DPDoctorUtils;
 
@@ -96,6 +107,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private JasperReportService jasperReportService;
+    
+    @Autowired
+    private MailService mailService;
+
 
     @Value(value = "${IMAGE_RESOURCE}")
     private String imageResource;
@@ -346,7 +364,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			List<Diagram> diagrams = new ArrayList<Diagram>();
 			for (DiagramsCollection diagramsCollection : diagramsCollections) {
 			    Diagram diagram = new Diagram();
-			    BeanUtil.map(diagramsCollection, diagrams);
+			    BeanUtil.map(diagramsCollection, diagram);
 			    diagram.setDoctorId(null);
 			    diagram.setHospitalId(null);
 			    diagram.setLocationId(null);
@@ -476,7 +494,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    
 	    ClinicalNotesCollection oldClinicalNotesCollection = clinicalNotesRepository.findOne(clinicalNotesCollection.getId());
 	    clinicalNotesCollection.setCreatedTime(oldClinicalNotesCollection.getCreatedTime());
-	    clinicalNotesCollection.setCreatedBy(oldClinicalNotesCollection.getCreatedBy());      
+	    clinicalNotesCollection.setCreatedBy(oldClinicalNotesCollection.getCreatedBy());   
+	    clinicalNotesCollection.setDiscarded(oldClinicalNotesCollection.getDiscarded());
+	    clinicalNotesCollection.setInHistory(oldClinicalNotesCollection.isInHistory());
+	    
 	    clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
 	    if (clinicalNotesCollection != null) {
 		if (request.getId() == null) {
@@ -662,6 +683,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    if (DPDoctorUtils.anyStringEmpty(complaintCollection.getId())) {
 		complaintCollection.setCreatedTime(new Date());
 	    }
+	    else{
+	    	ComplaintCollection oldComplaintCollection = complaintRepository.findOne(complaintCollection.getId());
+	    	complaintCollection.setCreatedBy(oldComplaintCollection.getCreatedBy());
+	    	complaintCollection.setCreatedTime(oldComplaintCollection.getCreatedTime()); 
+	    	complaintCollection.setDiscarded(oldComplaintCollection.getDiscarded());
+	    }
 	    complaintCollection = complaintRepository.save(complaintCollection);
 	    BeanUtil.map(complaintCollection, complaint);
 	} catch (Exception e) {
@@ -679,6 +706,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    BeanUtil.map(observation, observationCollection);
 	    if (DPDoctorUtils.anyStringEmpty(observationCollection.getId())) {
 		observationCollection.setCreatedTime(new Date());
+	    }
+	    else{
+	    	ObservationCollection oldObservationCollection = observationRepository.findOne(observationCollection.getId());
+	    	observationCollection.setCreatedBy(oldObservationCollection.getCreatedBy());
+	    	observationCollection.setCreatedTime(oldObservationCollection.getCreatedTime()); 
+	    	observationCollection.setDiscarded(oldObservationCollection.getDiscarded());
 	    }
 	    observationCollection = observationRepository.save(observationCollection);
 	    BeanUtil.map(observationCollection, observation);
@@ -698,6 +731,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    if (DPDoctorUtils.anyStringEmpty(investigationCollection.getId())) {
 		investigationCollection.setCreatedTime(new Date());
 	    }
+	    else{
+	    	InvestigationCollection oldInvestigationCollection = investigationRepository.findOne(investigationCollection.getId());
+	    	investigationCollection.setCreatedBy(oldInvestigationCollection.getCreatedBy());
+	    	investigationCollection.setCreatedTime(oldInvestigationCollection.getCreatedTime()); 
+	    	investigationCollection.setDiscarded(oldInvestigationCollection.getDiscarded());
+	    }
 	    investigationCollection = investigationRepository.save(investigationCollection);
 	    BeanUtil.map(investigationCollection, investigation);
 	} catch (Exception e) {
@@ -716,6 +755,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    if (DPDoctorUtils.anyStringEmpty(diagnosisCollection.getId())) {
 		diagnosisCollection.setCreatedTime(new Date());
 	    }
+	    else{
+	    	DiagnosisCollection oldDiagnosisCollection = diagnosisRepository.findOne(diagnosisCollection.getId());
+	    	diagnosisCollection.setCreatedBy(oldDiagnosisCollection.getCreatedBy());
+	    	diagnosisCollection.setCreatedTime(oldDiagnosisCollection.getCreatedTime()); 
+	    	diagnosisCollection.setDiscarded(oldDiagnosisCollection.getDiscarded());
+	    }
 	    diagnosisCollection = diagnosisRepository.save(diagnosisCollection);
 	    BeanUtil.map(diagnosisCollection, diagnosis);
 	} catch (Exception e) {
@@ -733,6 +778,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    BeanUtil.map(notes, notesCollection);
 	    if (DPDoctorUtils.anyStringEmpty(notesCollection.getId())) {
 		notesCollection.setCreatedTime(new Date());
+	    }
+	    else{
+	    	NotesCollection oldNotesCollection = notesRepository.findOne(notesCollection.getId());
+	    	notesCollection.setCreatedBy(oldNotesCollection.getCreatedBy());
+	    	notesCollection.setCreatedTime(oldNotesCollection.getCreatedTime()); 
+	    	notesCollection.setDiscarded(oldNotesCollection.getDiscarded());
 	    }
 	    notesCollection = notesRepository.save(notesCollection);
 	    BeanUtil.map(notesCollection, notes);
@@ -754,6 +805,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    BeanUtil.map(diagram, diagramsCollection);
 	    if (DPDoctorUtils.anyStringEmpty(diagramsCollection.getId())) {
 		diagramsCollection.setCreatedTime(new Date());
+	    }
+	    else{
+	    	DiagramsCollection oldDiagramsCollection = diagramsRepository.findOne(diagramsCollection.getId());
+	    	diagramsCollection.setCreatedBy(oldDiagramsCollection.getCreatedBy());
+	    	diagramsCollection.setCreatedTime(oldDiagramsCollection.getCreatedTime()); 
+	    	diagramsCollection.setDiscarded(oldDiagramsCollection.getDiscarded());
 	    }
 	    diagramsCollection = diagramsRepository.save(diagramsCollection);
 	    BeanUtil.map(diagramsCollection, diagram);
@@ -925,7 +982,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		if (diagramsCollection.getDoctorId() != null && diagramsCollection.getHospitalId() != null && diagramsCollection.getLocationId() != null) {
 		    if (diagramsCollection.getDoctorId().equals(doctorId) && diagramsCollection.getHospitalId().equals(hospitalId)
 			    && diagramsCollection.getLocationId().equals(locationId)) {
-			diagramsCollection.setDeleted(true);
+			diagramsCollection.setDiscarded(true);
 			diagramsRepository.save(diagramsCollection);
 		    } else {
 		    	logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
@@ -1075,21 +1132,39 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	    if (!DPDoctorUtils.allStringsEmpty(updatedTime)) {
 		long createdTimeStamp = Long.parseLong(updatedTime);
-		if (discarded)
-		    complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-			    new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-		else
-		    complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-			    discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-
+			if(locationId == null && hospitalId == null){
+				if (discarded)
+				    complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, new Date(createdTimeStamp),
+					    new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+				else
+				    complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, new Date(createdTimeStamp),
+					    discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+			}
+			else{
+				if (discarded)
+				    complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
+					    new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+				else
+				    complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
+					    discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+			}
 	    } else {
-		if (discarded)
-		    complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC,
-			    "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-		else
-		    complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId, discarded, new Sort(
-			    Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-
+	    	if(locationId == null && hospitalId == null){
+	    		if (discarded)
+	    		    complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, new Sort(Sort.Direction.DESC,
+	    			    "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+	    		else
+	    		    complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, discarded, new Sort(
+	    			    Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+	    	}
+	    	else{
+	    		if (discarded)
+	    		    complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC,
+	    			    "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+	    		else
+	    		    complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId, discarded, new Sort(
+	    			    Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+	    	}
 	    }
 	    BeanUtil.map(complaintCollections, response);
 	} catch (Exception e) {
@@ -1205,20 +1280,41 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	    if (!DPDoctorUtils.allStringsEmpty(updatedTime)) {
 		long createdTimeStamp = Long.parseLong(updatedTime);
-		if (discarded)
-		    investigationsCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId, new Date(
-			    createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
-		else
-		    investigationsCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId, new Date(
-			    createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-	    } else {
-		if (discarded)
-		    investigationsCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId, new Sort(
-			    Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-		else
-		    investigationsCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId, discarded, new Sort(
-			    Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+		if(locationId == null && hospitalId == null){
+			if (discarded)
+			    investigationsCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, new Date(
+				    createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+			else
+			    investigationsCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, new Date(
+				    createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);	
+		} else {
+			if (discarded)
+			    investigationsCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId, new Date(
+				    createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+			else
+			    investigationsCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId, new Date(
+				    createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+		 }
 	    }
+		else{
+			if(locationId == null && hospitalId == null){
+				if (discarded)
+				    investigationsCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, new Sort(
+					    Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+				else
+				    investigationsCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, discarded, new Sort(
+					    Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+			}
+			else{
+				if (discarded)
+				    investigationsCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId, new Sort(
+					    Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+				else
+				    investigationsCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId, discarded, new Sort(
+					    Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+			}
+		}
+		
 	    BeanUtil.map(investigationsCollections, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1333,21 +1429,39 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	try {
 	    if (!DPDoctorUtils.allStringsEmpty(updatedTime)) {
 		long createdTimeStamp = Long.parseLong(updatedTime);
-		if (discarded)
-		    observationCollections = observationRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-			    new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
-		else
-		    observationCollections = observationRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-			    discarded, new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
-
+			if(locationId == null && hospitalId == null){
+				if (discarded)
+				    observationCollections = observationRepository.findCustomGlobalObservations(doctorId, new Date(createdTimeStamp),
+					    new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				else
+				    observationCollections = observationRepository.findCustomGlobalObservations(doctorId, new Date(createdTimeStamp),
+					    discarded, new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+			}
+			else{
+				if (discarded)
+				    observationCollections = observationRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
+					    new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				else
+				    observationCollections = observationRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
+					    discarded, new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+			}
 	    } else {
-		if (discarded)
-		    observationCollections = observationRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC,
-			    "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-		else
-		    observationCollections = observationRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId, discarded, new Sort(
-			    Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
-
+	    	if(locationId == null && hospitalId == null){
+	    		if (discarded)
+	    		    observationCollections = observationRepository.findCustomGlobalObservations(doctorId, new Sort(Sort.Direction.DESC,
+	    			    "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+	    		else
+	    		    observationCollections = observationRepository.findCustomGlobalObservations(doctorId, discarded, new Sort(
+	    			    Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+	    	}
+	    	else{
+	    		if (discarded)
+	    		    observationCollections = observationRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC,
+	    			    "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+	    		else
+	    		    observationCollections = observationRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId, discarded, new Sort(
+	    			    Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+	    	}
 	    }
 	    BeanUtil.map(observationCollections, response);
 	} catch (Exception e) {
@@ -1462,21 +1576,39 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	try {
 	    if (!DPDoctorUtils.allStringsEmpty(updatedTime)) {
 		long createdTimeStamp = Long.parseLong(updatedTime);
-		if (discarded)
-		    diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-			    new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
-		else
-		    diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-			    discarded, new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
-
+			if(locationId == null && hospitalId == null){
+				if (discarded)
+				    diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(doctorId, new Date(createdTimeStamp),
+					    new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				else
+				    diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(doctorId, new Date(createdTimeStamp),
+					    discarded, new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+			}
+			else{
+				if (discarded)
+				    diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
+					    new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				else
+				    diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
+					    discarded, new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+			}
 	    } else {
-		if (discarded)
-		    diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC,
-			    "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-		else
-		    diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(doctorId, locationId, hospitalId, discarded, new Sort(
-			    Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
-
+		if(locationId == null && hospitalId == null){
+			if (discarded)
+			    diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(doctorId, new Sort(Sort.Direction.DESC,
+				    "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+			else
+			    diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(doctorId, discarded, new Sort(
+				    Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+		}
+		else{
+			if (discarded)
+			    diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC,
+				    "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+			else
+			    diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(doctorId, locationId, hospitalId, discarded, new Sort(
+				    Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+		}
 	    }
 	    BeanUtil.map(diagnosisCollections, response);
 	} catch (Exception e) {
@@ -1593,21 +1725,39 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	    if (!DPDoctorUtils.allStringsEmpty(updatedTime)) {
 		long createdTimeStamp = Long.parseLong(updatedTime);
-		if (discarded)
-		    notesCollections = notesRepository.findCustomGlobalNotes(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(
-			    Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
-		else
-		    notesCollections = notesRepository.findCustomGlobalNotes(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discarded, new Sort(
-			    Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
-
+			if(locationId == null && hospitalId == null){
+				if (discarded)
+				    notesCollections = notesRepository.findCustomGlobalNotes(doctorId, new Date(createdTimeStamp), new Sort(
+					    Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				else
+				    notesCollections = notesRepository.findCustomGlobalNotes(doctorId, new Date(createdTimeStamp), discarded, new Sort(
+					    Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+			}
+			else{
+				if (discarded)
+				    notesCollections = notesRepository.findCustomGlobalNotes(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(
+					    Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				else
+				    notesCollections = notesRepository.findCustomGlobalNotes(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discarded, new Sort(
+					    Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+			}
 	    } else {
-		if (discarded)
-		    notesCollections = notesRepository.findCustomGlobalNotes(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "updatedTime"),
-			    size > 0 ? new PageRequest(page, size) : null);
-		else
-		    notesCollections = notesRepository.findCustomGlobalNotes(doctorId, locationId, hospitalId, discarded, new Sort(Sort.Direction.DESC,
-			    "createdTime"), size > 0 ? new PageRequest(page, size) : null);
-
+	    	if(locationId == null && hospitalId == null){
+	    		if (discarded)
+	    		    notesCollections = notesRepository.findCustomGlobalNotes(doctorId, new Sort(Sort.Direction.DESC, "updatedTime"),
+	    			    size > 0 ? new PageRequest(page, size) : null);
+	    		else
+	    		    notesCollections = notesRepository.findCustomGlobalNotes(doctorId, discarded, new Sort(Sort.Direction.DESC,
+	    			    "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+	    	}
+	    	else{
+	    		if (discarded)
+	    		    notesCollections = notesRepository.findCustomGlobalNotes(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "updatedTime"),
+	    			    size > 0 ? new PageRequest(page, size) : null);
+	    		else
+	    		    notesCollections = notesRepository.findCustomGlobalNotes(doctorId, locationId, hospitalId, discarded, new Sort(Sort.Direction.DESC,
+	    			    "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+	    		}
 	    }
 	    BeanUtil.map(notesCollections, response);
 	} catch (Exception e) {
@@ -1724,21 +1874,39 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	    if (!DPDoctorUtils.allStringsEmpty(updatedTime)) {
 		long createdTimeStamp = Long.parseLong(updatedTime);
-		if (discarded)
-		    diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(
-			    Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
-		else
-		    diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discarded,
-			    new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
-
+			if(locationId == null && hospitalId == null){
+				if (discarded)
+				    diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, new Date(createdTimeStamp), new Sort(
+					    Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				else
+				    diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, new Date(createdTimeStamp), discarded,
+					    new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+			}
+			else{
+				if (discarded)
+				    diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(
+					    Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				else
+				    diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discarded,
+					    new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+			}
 	    } else {
-		if (discarded)
-		    diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC,
-			    "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-		else
-		    diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, discarded, new Sort(Sort.Direction.DESC,
-			    "createdTime"), size > 0 ? new PageRequest(page, size) : null);
-
+	    	if(locationId == null && hospitalId == null){
+	    		if (discarded)
+	    		    diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, new Sort(Sort.Direction.DESC,
+	    			    "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+	    		else
+	    		    diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, discarded, new Sort(Sort.Direction.DESC,
+	    			    "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+	    	}
+	    	else{
+	    		if (discarded)
+	    		    diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC,
+	    			    "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+	    		else
+	    		    diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, discarded, new Sort(Sort.Direction.DESC,
+	    			    "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+	    	}
 	    }
 	    BeanUtil.map(diagramCollections, response);
 	} catch (Exception e) {
@@ -1846,5 +2014,84 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
 	return response;
     }
+
+	@Override
+	public void emailClinicalNotes(String clinicalNotesId, String doctorId, String locationId, String hospitalId, String emailAddress) {
+		ClinicalNotesCollection clinicalNotesCollection = null;
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		try{
+			clinicalNotesCollection = clinicalNotesRepository.findOne(clinicalNotesId);
+		    if (clinicalNotesCollection != null) {
+			if (clinicalNotesCollection.getDoctorId() != null && clinicalNotesCollection.getHospitalId() != null
+				&& clinicalNotesCollection.getLocationId() != null) {
+			    if (clinicalNotesCollection.getDoctorId().equals(doctorId) && clinicalNotesCollection.getHospitalId().equals(hospitalId)
+				    && clinicalNotesCollection.getLocationId().equals(locationId)) {
+			   
+			    	    parameters.put("clinicalNotesId", clinicalNotesId);
+					    parameters.put("doctorId", doctorId);
+					    parameters.put("locationId", locationId);
+					    parameters.put("hospitalId", hospitalId);
+					    
+					    DBObject observationIds = new BasicDBObject();
+					    for(String observationId : clinicalNotesCollection.getObservations()){
+					    	observationIds.put("$oid", observationId);
+					    }
+					    parameters.put("observationIds", Arrays.asList(observationIds));
+					    
+					    DBObject noteIds = new BasicDBObject();
+					    for(String noteId : clinicalNotesCollection.getNotes()){
+					    	noteIds.put("$oid", noteId);
+					    }
+					    parameters.put("noteIds", Arrays.asList(noteIds));
+					    
+					    DBObject investigationIds = new BasicDBObject();
+					    for(String investigationId : clinicalNotesCollection.getInvestigations()){
+					    	investigationIds.put("$oid", investigationId);
+					    }
+					    parameters.put("investigationIds", Arrays.asList(investigationIds));
+					    
+					    DBObject diagnosesIds = new BasicDBObject();
+					    for(String diagnosesId : clinicalNotesCollection.getDiagnoses()){
+					    	diagnosesIds.put("$oid", diagnosesId);
+					    }
+					    parameters.put("diagnosesIds", Arrays.asList(diagnosesIds));
+					    
+					    DBObject complaintIds = new BasicDBObject();
+					    for(String complaintId : clinicalNotesCollection.getComplaints()){
+					    	complaintIds.put("$oid", complaintId);
+					    }
+					    parameters.put("complaintIds", Arrays.asList(complaintIds));
+					   
+					    DBObject diagramIds = new BasicDBObject();
+					    for(String diagramId : clinicalNotesCollection.getDiagrams()){
+					    	diagramIds.put("$oid", diagramId);
+					    }
+					    parameters.put("diagramIds", Arrays.asList(diagramIds));	    
+			    }
+			  
+			}
+		    String path = jasperReportService.createPDF(parameters,"mongo-clinical-notes");
+		    FileSystemResource file = new FileSystemResource(path);
+			MailAttachment mailAttachment = new MailAttachment();
+			mailAttachment.setAttachmentName(file.getFilename());
+			mailAttachment.setFileSystemResource(file);
+			mailService.sendEmail(emailAddress, "Clinical Notes", "PFA.", mailAttachment);
+
+		   }
+		    else {
+		    	logger.warn("Clinical Notes not found.Please check clinicalNotesId.");
+			   throw new BusinessException(ServiceError.Unknown, "Clinical Notes not found.Please check clinicalNotesId.");
+		    }
+		} catch (BusinessException e) {
+			logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+
+		
+	}
 
 }

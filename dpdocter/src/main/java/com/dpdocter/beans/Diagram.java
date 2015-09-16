@@ -19,6 +19,8 @@ public class Diagram extends GenericCollection {
 
     private String fileExtension;
 
+    private Boolean discarded = false;
+    
     public String getId() {
 	return id;
     }
@@ -83,10 +85,18 @@ public class Diagram extends GenericCollection {
 	this.fileExtension = fileExtension;
     }
 
-    @Override
-    public String toString() {
-	return "Diagram [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + ", doctorId=" + doctorId + ", locationId=" + locationId
-		+ ", hospitalId=" + hospitalId + ", diagram=" + diagram + ", fileExtension=" + fileExtension + "]";
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	@Override
+	public String toString() {
+		return "Diagram [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", diagram=" + diagram
+				+ ", fileExtension=" + fileExtension + ", discarded=" + discarded + "]";
+	}
 }

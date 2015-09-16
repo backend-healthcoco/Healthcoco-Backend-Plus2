@@ -1,51 +1,50 @@
 package com.dpdocter.services.impl;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.exceptions.BusinessException;
+import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.services.JasperReportService;
+import com.jaspersoft.mongodb.connection.MongoDbConnection;
 
-import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporter;
-import net.sf.jasperreports.engine.JRExporterParameter;
-import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.engine.util.JRProperties;
+
+//import com.jaspersoft.mongodb.connection.MongoDbConnection;
 
 @Service
 public class JasperReportServiceImpl implements JasperReportService {
 
-	@Override
-	public void createPDF() {
-		
-		try {
-    		String reportName = "Template";
-			Map<String, Object> parameters = new HashMap<String, Object>();
-			parameters.put("title","Prescription");
+	private static Logger logger=Logger.getLogger(JasperReportServiceImpl.class.getName());
+	
+	private static final String MONGO_HOST_URI = "mongodb://localhost:27017/dpdocter_db";
 
-			JRProperties.setProperty("net.sf.jasperreports.awt.ignore.missing.font", "true");
-			JRProperties.setProperty("net.sf.jasperreports.default.font.name", "Arial");
-			
-			JasperCompileManager.compileReportToFile(reportName + ".jrxml");
-			JasperPrint print = JasperFillManager.fillReport(reportName + ".jasper", parameters, new JREmptyDataSource());
-			
-			JRExporter exporter = new JRPdfExporter();
-			exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
-			exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(reportName + ".pdf"));
-			
-			exporter.exportReport();
-		} catch (JRException | FileNotFoundException e) {
-			e.printStackTrace();
-		}
+    private static final String REPORT_NAME = "src/main/resources/jasperTemplates/";
 
-		
+    @Override
+    public String createPDF(Map<String, Object> parameters, String fileName) {
+	try {
+		long createdTime = new Date().getTime();
+	    MongoDbConnection mongoConnection = new MongoDbConnection(MONGO_HOST_URI, null, null);
+
+//	    JasperCompileManager.compileReportToFile(REPORT_NAME+fileName + ".jrxml", REPORT_NAME+fileName + ".jasper");
+
+	    parameters.put("REPORT_CONNECTION", mongoConnection);
+	    JasperFillManager.fillReportToFile(REPORT_NAME+fileName + ".jasper", REPORT_NAME+fileName+createdTime+".jrprint", parameters);
+	    JasperExportManager.exportReportToPdfFile(REPORT_NAME+fileName+createdTime+".jrprint",REPORT_NAME+fileName+createdTime + ".pdf");
+	   
+	    return REPORT_NAME+fileName+createdTime+".pdf";
+	} catch (JRException e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
-
+	
+    }
 }

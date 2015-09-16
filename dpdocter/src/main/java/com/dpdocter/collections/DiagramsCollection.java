@@ -28,7 +28,7 @@ public class DiagramsCollection extends GenericCollection {
     private String fileExtension;
 
     @Field
-    private boolean discarded = false;
+    private Boolean discarded = false;
 
     public String getId() {
 	return id;
@@ -86,15 +86,15 @@ public class DiagramsCollection extends GenericCollection {
 	this.fileExtension = fileExtension;
     }
 
-    public boolean discarded() {
-	return discarded;
-    }
+    public Boolean getDiscarded() {
+		return discarded;
+	}
 
-    public void setDeleted(boolean discarded) {
-	this.discarded = discarded;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
-    @Override
+	@Override
     public String toString() {
 	return "DiagramsCollection [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + ", doctorId=" + doctorId + ", locationId=" + locationId
 		+ ", hospitalId=" + hospitalId + ", fileExtension=" + fileExtension + ", discarded=" + discarded + "]";

@@ -63,4 +63,16 @@ public interface NotesRepository extends MongoRepository<NotesCollection, String
 
 	@Query("{'doctorId': ?0, 'discarded': ?1}")
 	List<NotesCollection> findCustomNotes(String doctorId, Boolean discarded, Sort sort, PageRequest pageRequest);
+
+	@Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}},{'doctorId': null, 'updatedTime': {'$gte': ?1}}]}")
+	List<NotesCollection> findCustomGlobalNotes(String doctorId, Date date, Sort sort, PageRequest pageRequest);
+
+	@Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2},{'doctorId': null, 'updatedTime': {'$gte': ?1},'discarded': ?2}]}")
+	List<NotesCollection> findCustomGlobalNotes(String doctorId, Date date, Boolean discarded, Sort sort, PageRequest pageRequest);
+
+	@Query("{'$or': [{'doctorId': ?0},{'doctorId': null}]}")
+	List<NotesCollection> findCustomGlobalNotes(String doctorId, Sort sort, PageRequest pageRequest);
+
+	@Query("{'$or': [{'doctorId': ?0,  'discarded': ?1},{'doctorId': null, 'discarded': ?1}]}")
+	List<NotesCollection> findCustomGlobalNotes(String doctorId, Boolean discarded, Sort sort, PageRequest pageRequest);
 }

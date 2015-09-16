@@ -154,6 +154,8 @@ public interface PathProxy {
 	public static final String DELETE_DIAGRAM = "/diagram/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 	public static final String GET_CINICAL_ITEMS = "/{type}/{range}";
+	
+	public static final String EMAIL_CLINICAL_NOTES = "/{clinicalNotesId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 
     }
 
@@ -270,6 +272,8 @@ public interface PathProxy {
 	public static final String EDIT_DRUG_DURATION_UNIT = "/drugDurationUnit/{drugDurationUnitId}/update";
 
 	public static final String DELETE_DRUG_DURATION_UNIT = "/drugDurationUnit/{drugDurationUnitId}/delete";
+	
+	public static final String EMAIL_PRESCRIPTION = "/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 
     }
 
@@ -337,6 +341,8 @@ public interface PathProxy {
 	public static final String ADD_EDIT_EXPERIENCE_DETAIL = "/addEditExperienceDetail";
 
 	public static final String ADD_EDIT_PROFILE_PICTURE = "/addEditProfilePicture";
+	
+	public static final String ADD_EDIT_COVER_PICTURE = "/addEditCoverPicture";
 
 	public static final String ADD_EDIT_PROFESSIONAL_MEMBERSHIP = "/addEditProfessionalMembership";
 

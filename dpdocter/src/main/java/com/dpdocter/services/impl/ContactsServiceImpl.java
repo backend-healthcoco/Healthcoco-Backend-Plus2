@@ -270,6 +270,7 @@ public class ContactsServiceImpl implements ContactsService {
 	      GroupCollection oldGroupCollection = groupRepository.findOne(groupCollection.getId());
 	      groupCollection.setCreatedTime(oldGroupCollection.getCreatedTime());
 	      groupCollection.setCreatedBy(groupCollection.getCreatedBy());
+	      groupCollection.setDiscarded(oldGroupCollection.getDiscarded());
 	    }
 	    groupCollection = groupRepository.save(groupCollection);
 	    BeanUtil.map(groupCollection, group);

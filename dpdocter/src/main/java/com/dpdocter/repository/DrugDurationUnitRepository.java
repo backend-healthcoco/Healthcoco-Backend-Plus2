@@ -60,15 +60,24 @@ public interface DrugDurationUnitRepository extends MongoRepository<DrugDuration
 	List<DrugDurationUnitCollection> getCustomDrugDurationUnit(String doctorId, Sort sort, PageRequest pageRequest);
 
     @Query("{'doctorId': ?0, 'discarded': ?1}")
-	List<DrugDurationUnitCollection> getCustomDrugDurationUnit(String doctorId, boolean discarded, Sort sort,
-			PageRequest pageRequest);
+	List<DrugDurationUnitCollection> getCustomDrugDurationUnit(String doctorId, boolean discarded, Sort sort, PageRequest pageRequest);
 
     @Query("{'doctorId': ?0,'updatedTime': {'$gte': ?1}}")
-	List<DrugDurationUnitCollection> getCustomDrugDurationUnit(String doctorId, Date date, Sort sort,
-			PageRequest pageRequest);
+	List<DrugDurationUnitCollection> getCustomDrugDurationUnit(String doctorId, Date date, Sort sort, PageRequest pageRequest);
 
     @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1},'discarded': ?2}")
-	List<DrugDurationUnitCollection> getCustomDrugDurationUnit(String doctorId, Date date, boolean discarded, Sort sort,
-			PageRequest pageRequest);
+	List<DrugDurationUnitCollection> getCustomDrugDurationUnit(String doctorId, Date date, boolean discarded, Sort sort, PageRequest pageRequest);
+
+    @Query("{'$or': [{'doctorId': ?0},{'doctorId': null}]}")
+	List<DrugDurationUnitCollection> getCustomGlobalDrugDurationUnit(String doctorId, Sort sort, PageRequest pageRequest);
+
+    @Query("{'$or': [{'doctorId': ?0, 'discarded': ?1},{'doctorId': null,'discarded': ?1}]}")
+	List<DrugDurationUnitCollection> getCustomGlobalDrugDurationUnit(String doctorId, boolean discarded, Sort sort,	PageRequest pageRequest);
+
+    @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}},{'doctorId': null, 'updatedTime': {'$gte': ?1}}]}")
+	List<DrugDurationUnitCollection> getCustomGlobalDrugDurationUnit(String doctorId, Date date, Sort sort,	PageRequest pageRequest);
+
+    @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2},{'doctorId': null, 'updatedTime': {'$gte': ?1},'discarded': ?2}]}")
+	List<DrugDurationUnitCollection> getCustomGlobalDrugDurationUnit(String doctorId, Date date, boolean discarded,	Sort sort, PageRequest pageRequest);
 
 }
