@@ -285,9 +285,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 		BeanUtil.map(addressCollection, address);
 		registeredPatientDetails.setAddress(address);
 	    }
-	    groupCollections = (List<GroupCollection>) groupRepository.findAll(request.getGroups());
-	    groups = new ArrayList<Group>();
-	    BeanUtil.map(groupCollections, groups);
+	    if(request.getBloodGroup() != null){
+	    	groupCollections = (List<GroupCollection>) groupRepository.findAll(request.getGroups());
+	    	groups = new ArrayList<Group>();
+		    BeanUtil.map(groupCollections, groups);
+	    }
 	    /* registeredPatientDetails.setGroups(request.getGroups()); */
 	    registeredPatientDetails.setGroups(groups);
 	} catch (Exception e) {

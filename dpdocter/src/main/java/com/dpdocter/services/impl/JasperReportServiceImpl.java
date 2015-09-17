@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.exceptions.BusinessException;
@@ -25,7 +26,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 	
 	private static final String MONGO_HOST_URI = "mongodb://localhost:27017/dpdocter_db";
 
-    private static final String REPORT_NAME = "src/main/resources/jasperTemplates/";
+	@Value(value = "${JASPER_TEMPLATES_RESOURCE}")
+    private String REPORT_NAME;
 
     @Override
     public String createPDF(Map<String, Object> parameters, String fileName) {

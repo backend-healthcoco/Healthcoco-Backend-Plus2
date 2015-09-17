@@ -167,13 +167,13 @@ public class SignUpServiceImpl implements SignUpService {
 		userCollection.setImageUrl(imageurl);
 	    }
 	    userCollection.setCreatedTime(new Date());
-//	    userCollection = userRepository.save(userCollection);
+	    userCollection = userRepository.save(userCollection);
 	    // save doctor specific details
 	    DoctorCollection doctorCollection = new DoctorCollection();
 	    BeanUtil.map(request, doctorCollection);
 	    doctorCollection.setUserId(userCollection.getId());
 	    doctorCollection.setCreatedTime(new Date());
-//	    doctorCollection = doctorRepository.save(doctorCollection);
+	    doctorCollection = doctorRepository.save(doctorCollection);
 	    // assign role to doctor
 	    UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), hospitalAdmin.getId());
 	    userRoleCollection.setCreatedTime(new Date());
@@ -183,12 +183,12 @@ public class SignUpServiceImpl implements SignUpService {
 	    userRoleRepository.save(userRoleCollection);
 	    userRoleCollection = new UserRoleCollection(userCollection.getId(), doctorRole.getId());
 	    userRoleCollection.setCreatedTime(new Date());
-//	    userRoleRepository.save(userRoleCollection);
+	    userRoleRepository.save(userRoleCollection);
 	    // Save hospital
 	    HospitalCollection hospitalCollection = new HospitalCollection();
 	    BeanUtil.map(request, hospitalCollection);
 	    hospitalCollection.setCreatedTime(new Date());
-//	    hospitalCollection = hospitalRepository.save(hospitalCollection);
+	    hospitalCollection = hospitalRepository.save(hospitalCollection);
 
 	    // save location for hospital
 	    LocationCollection locationCollection = new LocationCollection();
@@ -201,13 +201,13 @@ public class SignUpServiceImpl implements SignUpService {
 	    // save user location.
 	    UserLocationCollection userLocationCollection = new UserLocationCollection(userCollection.getId(), locationCollection.getId());
 	    userLocationCollection.setCreatedTime(new Date());
-//	    userLocationRepository.save(userLocationCollection);
+	    userLocationRepository.save(userLocationCollection);
 
 	    // save token
 	    TokenCollection tokenCollection = new TokenCollection();
 	    tokenCollection.setUserId(userCollection.getId());
 	    tokenCollection.setCreatedTime(new Date());
-//	    tokenCollection = tokenRepository.save(tokenCollection);
+	    tokenCollection = tokenRepository.save(tokenCollection);
 
 	    // send activation email
 	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(),

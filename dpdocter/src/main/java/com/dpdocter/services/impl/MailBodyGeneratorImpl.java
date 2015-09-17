@@ -28,7 +28,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
         model.put("fName", fName);
         model.put("lName", lName);
         model.put("link", link +"signup/activate/" + tokenId);
-        String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "template.vm", "UTF-8", model);
+        String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "mailTemplate.vm", "UTF-8", model);
         return text;
     }
 

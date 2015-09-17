@@ -10,9 +10,6 @@
 	<profiles>
 		<profile>
 			<id>local</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -25,11 +22,7 @@
 						<filtering>true</filtering>
 					</resource>
 					<resource>
-						<directory>src/main/resources/jasperTemplate</directory>
-						<filtering>true</filtering>
-					</resource>
-					<resource>
-						<directory>src/main/resources/velocity</directory>
+						<directory>src/main/resources/velocityTemplates</directory>
 						<filtering>true</filtering>
 					</resource>
 				</resources>
@@ -37,7 +30,9 @@
 		</profile>
 		<profile>
 			<id>stagging</id>
-
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -50,11 +45,7 @@
 						<filtering>true</filtering>
 					</resource>
 					<resource>
-						<directory>src/main/resources/jasperTemplate</directory>
-						<filtering>true</filtering>
-					</resource>
-					<resource>
-						<directory>src/main/resources/velocity</directory>
+						<directory>src/main/resources/velocityTemplates</directory>
 						<filtering>true</filtering>
 					</resource>
 				</resources>
@@ -74,14 +65,10 @@
 						<filtering>true</filtering>
 					</resource>
 					<resource>
-						<directory>src/main/resources/jasperTemplate</directory>
+						<directory>src/main/resources/velocityTemplates</directory>
 						<filtering>true</filtering>
 					</resource>
-					<resource>
-						<directory>src/main/resources/velocity</directory>
-						<filtering>true</filtering>
-					</resource>
-				</resources>
+					</resources>
 			</build>
 		</profile>
 	</profiles>
