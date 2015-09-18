@@ -80,7 +80,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	List<SolrPatientResponse> response = new ArrayList<SolrPatientResponse>();
 	try {
 	    patients = solrPatientRepository.find(doctorId, locationId, hospitalId, searchTerm);
-	    // BeanUtil.map(patients, response);
+	    BeanUtil.map(patients, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e+" Error Occurred While Searching Patient");

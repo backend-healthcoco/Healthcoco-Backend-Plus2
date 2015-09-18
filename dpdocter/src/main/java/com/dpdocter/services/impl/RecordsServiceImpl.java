@@ -240,13 +240,28 @@ public class RecordsServiceImpl implements RecordsService {
 		records = new ArrayList<Records>();
 		BeanUtil.map(recordCollections, records);
 	    } else {
+	    	
+	    if(request.getDiscarded() == null)request.setDiscarded(true);
 		if (request.getUpdatedTime() != null) {
 		    long createdTimeStamp = Long.parseLong(request.getUpdatedTime());
-		    recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
-			    request.getHospitalId(), new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
+		    
+		    	if(request.getDiscarded()){
+		    		recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
+		    			    request.getHospitalId(), new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+		    	}
+		    	else{
+			    	recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
+						    request.getHospitalId(), new Date(createdTimeStamp), request.getDiscarded(), new Sort(Sort.Direction.DESC, "createdTime"));
+			    }    
 		} else {
-		    recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
-			    request.getHospitalId(), false, new Sort(Sort.Direction.DESC, "createdTime"));
+		    if(request.getDiscarded()){
+		    	recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
+					    request.getHospitalId(), new Sort(Sort.Direction.DESC, "createdTime"));
+		    }
+		    else{
+		    	recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
+					    request.getHospitalId(), request.getDiscarded(), new Sort(Sort.Direction.DESC, "createdTime"));
+		    }
 		}
 		records = new ArrayList<Records>();
 		BeanUtil.map(recordsCollections, records);

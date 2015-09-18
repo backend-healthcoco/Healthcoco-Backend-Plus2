@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.PatientTrack;
+import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientTrackCollection;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
@@ -51,6 +52,10 @@ public class PatientTrackServiceImpl implements PatientTrackService {
 	try {
 	    PatientTrackCollection patientTrackCollection = new PatientTrackCollection();
 	    BeanUtil.map(request, patientTrackCollection);
+	    PatientCollection patientCollection = patientRepository.findByUserId(request.getPatientId());
+	    if(patientCollection != null){
+	    	patientTrackCollection.setPatientId(patientCollection.getId());
+	    }
 	    patientTrackCollection.setVisitedTime(new Date());
 	    patientTrackCollection.setCreatedTime(new Date());
 	    patientTrackRepository.save(patientTrackCollection);
@@ -69,6 +74,10 @@ public class PatientTrackServiceImpl implements PatientTrackService {
 	try {
 	    PatientTrackCollection patientTrackCollection = new PatientTrackCollection();
 	    BeanUtil.map(details, patientTrackCollection);
+	    PatientCollection patientCollection = patientRepository.findByUserId(patientTrackCollection.getPatientId());
+	    if(patientCollection != null){
+	    	patientTrackCollection.setPatientId(patientCollection.getId());
+	    }
 	    patientTrackCollection.setVisitedFor(visitedFor);
 	    patientTrackCollection.setVisitedTime(new Date());
 	    patientTrackCollection.setCreatedTime(new Date());
@@ -88,7 +97,10 @@ public class PatientTrackServiceImpl implements PatientTrackService {
 	boolean response = false;
 	try {
 	    PatientTrackCollection patientTrackCollection = new PatientTrackCollection();
-	    patientTrackCollection.setPatientId(patientId);
+	    PatientCollection patientCollection = patientRepository.findByUserId(patientId);
+	    if(patientCollection != null){
+	    	patientTrackCollection.setPatientId(patientCollection.getId());
+	    }
 	    patientTrackCollection.setDoctorId(doctorId);
 	    patientTrackCollection.setLocationId(locationId);
 	    patientTrackCollection.setHospitalId(hospitalId);

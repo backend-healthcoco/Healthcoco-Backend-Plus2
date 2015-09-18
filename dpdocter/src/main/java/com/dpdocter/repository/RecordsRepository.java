@@ -22,7 +22,7 @@ public interface RecordsRepository extends MongoRepository<RecordsCollection, St
     @Query("{'patientId': ?0, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3, 'discarded': ?4}")
     List<RecordsCollection> findRecords(String patientId, String doctorId, String locationId, String hospitalId, boolean discarded, Sort sort);
 
-    @Query("{'patientId': ?0, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3, 'createdTime': {'$gte': ?4}, 'discarded': ?5}")
+    @Query("{'patientId': ?0, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3, 'updatedTime': {'$gte': ?4}, 'discarded': ?5}")
     List<RecordsCollection> findRecords(String patientId, String doctorId, String locationId, String hospitalId, Date date, boolean discarded, Sort sort);
 
     @Query("{'id':?0}")
@@ -42,4 +42,10 @@ public interface RecordsRepository extends MongoRepository<RecordsCollection, St
 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'createdTime': {'$gte': ?3}, 'discarded': ?4}")
     List<RecordsCollection> findAll(String doctorId, String locationId, String hospitalId, Date date, boolean discarded, Sort sort);
+
+    @Query("{'patientId': ?0, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3, 'updatedTime': {'$gte': ?4}}")
+	List<RecordsCollection> findRecords(String patientId, String doctorId, String locationId, String hospitalId, Date date, Sort sort);
+
+    @Query("{'patientId': ?0, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3}")
+	List<RecordsCollection> findRecords(String patientId, String doctorId, String locationId, String hospitalId,Sort sort);
 }

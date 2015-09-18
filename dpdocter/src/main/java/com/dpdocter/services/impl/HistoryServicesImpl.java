@@ -1155,12 +1155,14 @@ public class HistoryServicesImpl implements HistoryServices {
 	    historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
 	    List<String> medicalHistoryIds = historyCollection.getMedicalhistory();
 	    if (medicalHistoryIds != null) {
+	    if(response == null)response = new HistoryDetailsResponse();
 		List<DiseaseListResponse> medicalHistory = getDiseasesByIds(medicalHistoryIds);
 		response.setMedicalhistory(medicalHistory);
 	    }
 
 	    List<String> familyHistoryIds = historyCollection.getFamilyhistory();
 	    if (familyHistoryIds != null) {
+	    if(response == null)response = new HistoryDetailsResponse();
 		List<DiseaseListResponse> familyHistory = getDiseasesByIds(medicalHistoryIds);
 		response.setFamilyhistory(familyHistory);
 	    }

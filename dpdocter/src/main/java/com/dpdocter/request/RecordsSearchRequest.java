@@ -12,6 +12,8 @@ public class RecordsSearchRequest {
     private String hospitalId;
 
     private String updatedTime;
+    
+    private Boolean discarded;
 
     public String getLocationId() {
 	return locationId;
@@ -61,9 +63,18 @@ public class RecordsSearchRequest {
 		this.updatedTime = updatedTime;
 	}
 
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
 	@Override
 	public String toString() {
 		return "RecordsSearchRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", tagId=" + tagId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", updatedTime=" + updatedTime + "]";
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", updatedTime=" + updatedTime
+				+ ", discarded=" + discarded + "]";
 	}
 }
