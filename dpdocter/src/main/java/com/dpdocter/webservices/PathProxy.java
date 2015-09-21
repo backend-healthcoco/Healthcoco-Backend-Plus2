@@ -365,7 +365,7 @@ public interface PathProxy {
 	public static final String ADD_EDIT_APPOINTMENT_SLOT = "/clinicProfile/addEditAppointmentSlot";
     }
 
-    public static final String PATIENT_TRACK_BASE_URL = BASE_URL + "/patientTrack";
+//    public static final String PATIENT_TRACK_BASE_URL = BASE_URL + "/patientTrack";
 
     // public interface PatientTrackUrls {
     // public static final String RECENTLY_VISITED =
@@ -389,6 +389,28 @@ public interface PathProxy {
      * }
      */
 
+    public static final String ISSUE_TRACK_BASE_URL = BASE_URL + "/issueTrack";
+    
+    public interface IssueTrackUrls {
+        
+    	 public static final String RAISE_ISSUE =  "add";
+         
+         public static final String UPDATE_STATUS_DOCTOR_SPECIFIC = "/{issueId}/{status}/{doctorId}/{locationId}/{hospitalId}/update";
+         
+         public static final String UPDATE_STATUS_ADMIN = "/{issueId}/{status}/update";
+     }
+    	
+    public static final String PRINT_SETTINGS_BASE_URL = BASE_URL + "/printSettings";
+    
+    public interface PrintSettingsUrls {
+       
+    	 public static final String SAVE_SETTINGS_DEFAULT_DATA =  "saveDefault";
+    	
+    	 public static final String SAVE_PRINT_SETTINGS =  "add";
+        
+         public static final String GET_PRINT_SETTINGS = "/{printFilter}/{doctorId}/{locationId}/{hospitalId}";
+     }
+    
     public static final String SOLR_CLINICAL_NOTES_BASEURL = BASE_URL + "/solr/clinicalNotes";
 
     public interface SolrClinicalNotesUrls {

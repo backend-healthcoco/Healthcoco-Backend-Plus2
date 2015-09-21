@@ -1,0 +1,200 @@
+package com.dpdocter.services.impl;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import com.dpdocter.beans.IssueTrack;
+import com.dpdocter.collections.IssueTrackCollection;
+import com.dpdocter.enums.IssueStatus;
+import com.dpdocter.exceptions.BusinessException;
+import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.IssueTrackRepository;
+import com.dpdocter.services.IssueTrackService;
+
+import common.util.web.DPDoctorUtils;
+
+@Service
+public class IssueTrackServiceImpl implements IssueTrackService{
+
+	private static Logger logger=Logger.getLogger(IssueTrackServiceImpl.class.getName());
+	
+	@Autowired
+	private IssueTrackRepository issueTrackRepository;
+	
+	@Override
+	public IssueTrack addEditIssue(IssueTrack request) {
+		IssueTrack response = null;
+		IssueTrackCollection issueTrackCollection = new IssueTrackCollection();
+		BeanUtil.map(request, issueTrackCollection);
+		try{
+			if(request.getId() == null){
+				issueTrackCollection.setCreatedTime(new Date());
+			}
+			else{
+				IssueTrackCollection oldIssueTrackCollection = issueTrackRepository.findOne(request.getId());
+				issueTrackCollection.setCreatedTime(oldIssueTrackCollection.getCreatedTime());
+				issueTrackCollection.setCreatedBy(oldIssueTrackCollection.getCreatedBy());
+				issueTrackCollection.setDiscarded(oldIssueTrackCollection.getDiscarded());
+				issueTrackCollection.setStatus(oldIssueTrackCollection.getStatus());
+			}
+			issueTrackCollection = issueTrackRepository.save(issueTrackCollection);
+			if(issueTrackCollection != null){
+				response = new IssueTrack();
+				BeanUtil.map(issueTrackCollection, response);
+			}
+		    
+		}catch(Exception e){
+			e.printStackTrace();
+		    logger.error(e + " Error Occurred While Add Edit Issue");
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Add Edit Issue");
+		}
+		return response;
+	}
+
+	@Override
+	public List<IssueTrack> getIssues(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded) {
+		List<IssueTrack> response = null;
+		List<IssueTrackCollection> issueTrackCollection = null;
+		try{
+			if(doctorId == null)issueTrackCollection = issueTrackRepository.findAll();
+			else if (!DPDoctorUtils.allStringsEmpty(updatedTime)) {
+				long createdTimeStamp = Long.parseLong(updatedTime);
+					if(locationId == null && hospitalId == null){
+						if (discarded)
+						    issueTrackCollection = issueTrackRepository.find(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+						else
+						    issueTrackCollection = issueTrackRepository.find(doctorId, new Date(createdTimeStamp), discarded,
+							    new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+					}
+					else{
+						if (discarded)
+						    issueTrackCollection = issueTrackRepository.find(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(
+							    Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+						else
+						    issueTrackCollection = issueTrackRepository.find(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discarded,
+							    new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+					}
+			    } else {
+			    	if(locationId == null && hospitalId == null){
+			    		if (discarded)
+			    		    issueTrackCollection = issueTrackRepository.find(doctorId, new Sort(Sort.Direction.DESC,
+			    			    "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+			    		else
+			    		    issueTrackCollection = issueTrackRepository.find(doctorId, discarded, new Sort(Sort.Direction.DESC,
+			    			    "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+			    	}
+			    	else{
+			    		if (discarded)
+			    		    issueTrackCollection = issueTrackRepository.find(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC,
+			    			    "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+			    		else
+			    		    issueTrackCollection = issueTrackRepository.find(doctorId, locationId, hospitalId, discarded, new Sort(Sort.Direction.DESC,
+			    			    "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+			    	}
+				}
+
+			    if (issueTrackCollection != null) {
+				response = new ArrayList<IssueTrack>();
+				BeanUtil.map(issueTrackCollection, response);
+			    } else {
+			    	logger.warn("No Issues Found");
+				throw new BusinessException(ServiceError.NotFound, "No Issues Found");
+			    }
+
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		    logger.error(e + " Error Occurred While Getting Issue");
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Issue");
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean updateIssueStatus(String issueId, String status, String doctorId, String locationId,	String hospitalId) {
+		Boolean response = false;
+		IssueTrackCollection issueTrackCollection = null;
+		try{
+			issueTrackCollection = issueTrackRepository.findOne(issueId);
+			 if (issueTrackCollection != null) {
+					if (issueTrackCollection.getDoctorId() != null && issueTrackCollection.getHospitalId() != null
+						&& issueTrackCollection.getLocationId() != null) {
+					    if (issueTrackCollection.getDoctorId().equals(doctorId) && issueTrackCollection.getHospitalId().equals(hospitalId)
+						    && issueTrackCollection.getLocationId().equals(locationId)) {
+					    	if(issueTrackCollection.getStatus().equals(IssueStatus.COMPLETED)){
+					    		if(IssueStatus.valueOf(status.toUpperCase()).equals(IssueStatus.REOPEN)){
+					    			issueTrackCollection.setStatus(IssueStatus.valueOf(status.toUpperCase()));
+					    			issueTrackRepository.save(issueTrackCollection);
+					    			response = true;
+					    		}
+					    		else{
+					    			logger.warn("Doctor can only reopen the issue");
+								    throw new BusinessException(ServiceError.Unknown, "Doctor can only reopen the issue");
+					    		}	
+					    	}
+					    	else{
+					    		logger.warn("Doctor can only reopen the issue if issue is Completed");
+							    throw new BusinessException(ServiceError.Unknown, "Doctor can only reopen the issue if issue is Completed");
+					    	}	
+					    }
+					    else {
+					    	logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						    throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
+					    }
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				    } else {
+				    	logger.warn("Issue not found!");
+				    	throw new BusinessException(ServiceError.Unknown, "Issue not found!");
+					}
+			 }
+		catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e+ " Error while updating status");
+		    throw new BusinessException(ServiceError.Unknown, "Error while updating status");
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean updateIssueStatus(String issueId, String status) {
+		Boolean response = false;
+		IssueTrackCollection issueTrackCollection = null;
+		try{
+			issueTrackCollection = issueTrackRepository.findOne(issueId);
+			 if (issueTrackCollection != null) {
+				 if(!IssueStatus.valueOf(status.toUpperCase()).equals(IssueStatus.REOPEN)){
+					 issueTrackCollection.setStatus(IssueStatus.valueOf(status.toUpperCase()));
+					 issueTrackRepository.save(issueTrackCollection);
+						response = true;
+				 }
+				 else{
+					 logger.warn("Only Doctor can reopen the issue");
+				    	throw new BusinessException(ServiceError.Unknown, "Only Doctor can reopen the issue");
+				 }
+				
+		    } else {
+		    	logger.warn("Issue not found!");
+		    	throw new BusinessException(ServiceError.Unknown, "Issue not found!");
+			}
+		}
+		catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e+ " Error while updating status");
+		    throw new BusinessException(ServiceError.Unknown, "Error while updating status");
+		}
+		return response;
+
+	}
+
+}
