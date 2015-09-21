@@ -146,12 +146,11 @@ public class DoctorCollection extends GenericCollection {
 	this.professionalMemberships = professionalMemberships;
     }
 
-	@Override
-	public String toString() {
-		return "DoctorCollection [id=" + id + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses="
-				+ otherEmailAddresses + ", userId=" + userId + ", experience=" + experience + ", education=" + education
-				+ ", specialities=" + specialities + ", achievements=" + achievements + ", professionalStatement="
-				+ professionalStatement + ", registrationDetails=" + registrationDetails + ", experienceDetails="
-				+ experienceDetails + ", professionalMemberships=" + professionalMemberships + "]";
-	}
+    @Override
+    public String toString() {
+	return "DoctorCollection [id=" + id + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses=" + otherEmailAddresses + ", userId="
+		+ userId + ", experience=" + experience + ", education=" + education + ", specialities=" + specialities + ", achievements=" + achievements
+		+ ", professionalStatement=" + professionalStatement + ", registrationDetails=" + registrationDetails + ", experienceDetails="
+		+ experienceDetails + ", professionalMemberships=" + professionalMemberships + "]";
+    }
 }

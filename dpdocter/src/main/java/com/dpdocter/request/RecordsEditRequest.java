@@ -4,8 +4,8 @@ import com.dpdocter.beans.FileDetails;
 
 public class RecordsEditRequest {
 
-	private String id;
-	
+    private String id;
+
     private String patientId;
 
     private String doctorId;
@@ -19,14 +19,14 @@ public class RecordsEditRequest {
     private String hospitalId;
 
     public String getId() {
-		return id;
-	}
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getPatientId() {
+    public String getPatientId() {
 	return patientId;
     }
 
@@ -74,10 +74,9 @@ public class RecordsEditRequest {
 	this.hospitalId = hospitalId;
     }
 
-	@Override
-	public String toString() {
-		return "RecordsEditRequest [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId + ", description="
-				+ description + ", fileDetails=" + fileDetails + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + "]";
-	}
+    @Override
+    public String toString() {
+	return "RecordsEditRequest [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId + ", description=" + description + ", fileDetails="
+		+ fileDetails + ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
+    }
 }

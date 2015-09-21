@@ -4,49 +4,49 @@ import com.dpdocter.beans.ConsultationFee;
 
 public class DoctorConsultationFeeAddEditRequest {
 
-	private String id;
-	
-	private String doctorId;
-	
-	private String locationId;
-	
-	private ConsultationFee consultationFee;
+    private String id;
 
-	public String getId() {
-		return id;
-	}
+    private String doctorId;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    private String locationId;
 
-	public String getDoctorId() {
-		return doctorId;
-	}
+    private ConsultationFee consultationFee;
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public String getDoctorId() {
+	return doctorId;
+    }
 
-	public ConsultationFee getConsultationFee() {
-		return consultationFee;
-	}
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
+    }
 
-	public void setConsultationFee(ConsultationFee consultationFee) {
-		this.consultationFee = consultationFee;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	@Override
-	public String toString() {
-		return "DoctorConsultationFeeAddEditRequest [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", consultationFee=" + consultationFee + "]";
-	}	
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
+
+    public ConsultationFee getConsultationFee() {
+	return consultationFee;
+    }
+
+    public void setConsultationFee(ConsultationFee consultationFee) {
+	this.consultationFee = consultationFee;
+    }
+
+    @Override
+    public String toString() {
+	return "DoctorConsultationFeeAddEditRequest [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", consultationFee="
+		+ consultationFee + "]";
+    }
 }

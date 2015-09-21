@@ -26,7 +26,7 @@ public class Location {
     private List<ClinicImage> images;
 
     private String logoUrl;
-    
+
     private String hospitalId;
 
     private Double latitude;
@@ -117,23 +117,23 @@ public class Location {
 	this.websiteUrl = websiteUrl;
     }
 
-	public List<ClinicImage> getImages() {
-		return images;
-	}
+    public List<ClinicImage> getImages() {
+	return images;
+    }
 
-	public void setImages(List<ClinicImage> images) {
-		this.images = images;
-	}
+    public void setImages(List<ClinicImage> images) {
+	this.images = images;
+    }
 
-	public String getLogoUrl() {
-		return logoUrl;
-	}
+    public String getLogoUrl() {
+	return logoUrl;
+    }
 
-	public void setLogoUrl(String logoUrl) {
-		this.logoUrl = logoUrl;
-	}
+    public void setLogoUrl(String logoUrl) {
+	this.logoUrl = logoUrl;
+    }
 
-	public String getHospitalId() {
+    public String getHospitalId() {
 	return hospitalId;
     }
 
@@ -238,15 +238,13 @@ public class Location {
     }
 
     @Override
-	public String toString() {
-		return "Location [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state
-				+ ", city=" + city + ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode
-				+ ", websiteUrl=" + websiteUrl + ", images=" + images + ", logoUrl=" + logoUrl + ", hospitalId="
-				+ hospitalId + ", latitude=" + latitude + ", longitude=" + longitude + ", tagLine=" + tagLine
-				+ ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress=" + locationEmailAddress
-				+ ", specialization=" + specialization + ", streetAddress=" + streetAddress + ", locality=" + locality
-				+ ", mobileNumber=" + mobileNumber + ", alternateNumber=" + alternateNumber + ", workingSchedules="
-				+ workingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + "]";
-	}
+    public String toString() {
+	return "Location [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city
+		+ ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", images=" + images
+		+ ", logoUrl=" + logoUrl + ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude=" + longitude + ", tagLine=" + tagLine
+		+ ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress=" + locationEmailAddress + ", specialization=" + specialization
+		+ ", streetAddress=" + streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber + ", alternateNumber=" + alternateNumber
+		+ ", workingSchedules=" + workingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + "]";
+    }
 
 }

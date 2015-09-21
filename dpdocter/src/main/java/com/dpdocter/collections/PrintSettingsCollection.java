@@ -10,111 +10,111 @@ import com.dpdocter.beans.PageSetup;
 import com.dpdocter.enums.ComponentType;
 
 @Document(collection = "print_settings_cl")
-public class PrintSettingsCollection extends GenericCollection{
+public class PrintSettingsCollection extends GenericCollection {
 
-	@Id
-	private String id;
-	
-	@Field
-	private String doctorId;
+    @Id
+    private String id;
 
-	@Field
+    @Field
+    private String doctorId;
+
+    @Field
     private String locationId;
 
-	@Field
+    @Field
     private String hospitalId;
 
-	@Field
-	private ComponentType componentType = ComponentType.ALL;
+    @Field
+    private ComponentType componentType = ComponentType.ALL;
 
-	@Field
+    @Field
     private PageSetup pageSetup;
 
-	@Field
+    @Field
     private HeaderSetup headerSetup;
-    
-	@Field
+
+    @Field
     private FooterSetup footerSetup;
-    
-	@Field
+
+    @Field
     private Boolean discarded = false;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getDoctorId() {
-		return doctorId;
-	}
+    public String getDoctorId() {
+	return doctorId;
+    }
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
+    }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
 
-	public String getHospitalId() {
-		return hospitalId;
-	}
+    public String getHospitalId() {
+	return hospitalId;
+    }
 
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
 
-	public ComponentType getComponentType() {
-		return componentType;
-	}
+    public ComponentType getComponentType() {
+	return componentType;
+    }
 
-	public void setComponentType(ComponentType componentType) {
-		this.componentType = componentType;
-	}
+    public void setComponentType(ComponentType componentType) {
+	this.componentType = componentType;
+    }
 
-	public PageSetup getPageSetup() {
-		return pageSetup;
-	}
+    public PageSetup getPageSetup() {
+	return pageSetup;
+    }
 
-	public void setPageSetup(PageSetup pageSetup) {
-		this.pageSetup = pageSetup;
-	}
+    public void setPageSetup(PageSetup pageSetup) {
+	this.pageSetup = pageSetup;
+    }
 
-	public HeaderSetup getHeaderSetup() {
-		return headerSetup;
-	}
+    public HeaderSetup getHeaderSetup() {
+	return headerSetup;
+    }
 
-	public void setHeaderSetup(HeaderSetup headerSetup) {
-		this.headerSetup = headerSetup;
-	}
+    public void setHeaderSetup(HeaderSetup headerSetup) {
+	this.headerSetup = headerSetup;
+    }
 
-	public FooterSetup getFooterSetup() {
-		return footerSetup;
-	}
+    public FooterSetup getFooterSetup() {
+	return footerSetup;
+    }
 
-	public void setFooterSetup(FooterSetup footerSetup) {
-		this.footerSetup = footerSetup;
-	}
+    public void setFooterSetup(FooterSetup footerSetup) {
+	this.footerSetup = footerSetup;
+    }
 
-	public Boolean getDiscarded() {
-		return discarded;
-	}
+    public Boolean getDiscarded() {
+	return discarded;
+    }
 
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
 
-	@Override
-	public String toString() {
-		return "PrintSettingsCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", componentType=" + componentType + ", pageSetup=" + pageSetup
-				+ ", headerSetup=" + headerSetup + ", footerSetup=" + footerSetup + ", discarded=" + discarded + "]";
-	}
+    @Override
+    public String toString() {
+	return "PrintSettingsCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+		+ ", componentType=" + componentType + ", pageSetup=" + pageSetup + ", headerSetup=" + headerSetup + ", footerSetup=" + footerSetup
+		+ ", discarded=" + discarded + "]";
+    }
 }

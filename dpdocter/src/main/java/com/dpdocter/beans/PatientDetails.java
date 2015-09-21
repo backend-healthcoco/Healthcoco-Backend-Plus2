@@ -1,50 +1,49 @@
 package com.dpdocter.beans;
 
 public class PatientDetails {
-	
-	private Boolean showName;
-	
-	private Boolean showMobileNumber;
-	
-	private Boolean showDOB;
-	
-	private Boolean showGender;
 
-	public Boolean getShowName() {
-		return showName;
-	}
+    private Boolean showName;
 
-	public void setShowName(Boolean showName) {
-		this.showName = showName;
-	}
+    private Boolean showMobileNumber;
 
-	public Boolean getShowMobileNumber() {
-		return showMobileNumber;
-	}
+    private Boolean showDOB;
 
-	public void setShowMobileNumber(Boolean showMobileNumber) {
-		this.showMobileNumber = showMobileNumber;
-	}
-	
-	public Boolean getShowDOB() {
-		return showDOB;
-	}
+    private Boolean showGender;
 
-	public void setShowDOB(Boolean showDOB) {
-		this.showDOB = showDOB;
-	}
+    public Boolean getShowName() {
+	return showName;
+    }
 
-	public Boolean getShowGender() {
-		return showGender;
-	}
+    public void setShowName(Boolean showName) {
+	this.showName = showName;
+    }
 
-	public void setShowGender(Boolean showGender) {
-		this.showGender = showGender;
-	}
+    public Boolean getShowMobileNumber() {
+	return showMobileNumber;
+    }
 
-	@Override
-	public String toString() {
-		return "PatientDetails [showName=" + showName + ", showMobileNumber=" + showMobileNumber + ", showDOB="
-				+ showDOB + ", showGender=" + showGender + "]";
-	}
+    public void setShowMobileNumber(Boolean showMobileNumber) {
+	this.showMobileNumber = showMobileNumber;
+    }
+
+    public Boolean getShowDOB() {
+	return showDOB;
+    }
+
+    public void setShowDOB(Boolean showDOB) {
+	this.showDOB = showDOB;
+    }
+
+    public Boolean getShowGender() {
+	return showGender;
+    }
+
+    public void setShowGender(Boolean showGender) {
+	this.showGender = showGender;
+    }
+
+    @Override
+    public String toString() {
+	return "PatientDetails [showName=" + showName + ", showMobileNumber=" + showMobileNumber + ", showDOB=" + showDOB + ", showGender=" + showGender + "]";
+    }
 }

@@ -68,7 +68,7 @@
 						<directory>src/main/resources/velocityTemplates</directory>
 						<filtering>true</filtering>
 					</resource>
-					</resources>
+				</resources>
 			</build>
 		</profile>
 	</profiles>
@@ -79,7 +79,6 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
-
 		<!-- Jersey -->
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
@@ -239,35 +238,27 @@
 			<artifactId>spring-data-solr</artifactId>
 			<version>1.2.6.RELEASE</version>
 		</dependency>
-
 		<!-- Log4j -->
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.17</version>
-			 <exclusions>
-     <exclusion>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-     </exclusion>
-     <exclusion>
-        <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-log4j12</artifactId>
-     </exclusion>
-   </exclusions>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-log4j12</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!-- Jasper -->
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports</artifactId>
 			<version>5.1.0</version>
-<!-- 			<exclusions> -->
-<!-- 			<exclusion> -->
-<!-- 			<groupId>org.olap4j</groupId> -->
-<!--       <artifactId>olap4j</artifactId> -->
-<!--       <version>5.5.2</version> -->
-<!-- 			</exclusion> -->
-<!-- 			</exclusions> -->
 		</dependency>
 		<dependency>
 			<groupId>com.jaspersoft</groupId>
@@ -289,7 +280,6 @@
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.6.4</version>
 		</dependency>
-		
 		<!-- velocity -->
 		<dependency>
 			<groupId>org.apache.velocity</groupId>
@@ -349,9 +339,9 @@
 			<name>Spring Milestone Maven Repository</name>
 			<url>http://repo.springsource.org/libs-milestone</url>
 		</repository>
-	<repository>
+		<repository>
 			<id>bippo-nexus-public</id>
 			<url>http://nexus.bippo.co.id/nexus/content/groups/public/</url>
 		</repository>
-    	</repositories>
+	</repositories>
 </project>

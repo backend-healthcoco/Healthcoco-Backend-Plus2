@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.mongodb.repository.Query;
 
+import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.request.DrugAddEditRequest;
 import com.dpdocter.request.DrugDirectionAddEditRequest;
@@ -99,6 +100,8 @@ public interface PrescriptionServices {
     List<Object> getPrescriptionItems(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded);
 
-	void emailPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String emailAddress);
+    void emailPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String emailAddress);
+
+    MailAttachment getPrescriptionMailData(String prescriptionId, String doctorId, String locationId, String hospitalId);
 
 }

@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 
 import com.dpdocter.beans.FlexibleCounts;
+import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.RecordsDescription;
 import com.dpdocter.beans.Tags;
@@ -25,7 +26,9 @@ public interface RecordsService {
 
     Records getRecordById(String recordId);
 
-    void emailRecordToPatient(String recordId, String emailAddr);
+    void emailRecordToPatient(String recordId, String emailAddress);
+
+    MailAttachment getRecordMailData(String recordId);
 
     Tags addEditTag(Tags tags);
 

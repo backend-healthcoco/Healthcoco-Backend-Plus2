@@ -4,49 +4,49 @@ import com.dpdocter.beans.AppointmentSlot;
 
 public class DoctorAppointmentSlotAddEditRequest {
 
-	private String id;
-	
-	private String doctorId;
-	
-	private String locationId;
-	
-	private AppointmentSlot appointmentSlot;
+    private String id;
 
-	public String getId() {
-		return id;
-	}
+    private String doctorId;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    private String locationId;
 
-	public String getDoctorId() {
-		return doctorId;
-	}
+    private AppointmentSlot appointmentSlot;
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public String getDoctorId() {
+	return doctorId;
+    }
 
-	public AppointmentSlot getAppointmentSlot() {
-		return appointmentSlot;
-	}
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
+    }
 
-	public void setAppointmentSlot(AppointmentSlot appointmentSlot) {
-		this.appointmentSlot = appointmentSlot;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	@Override
-	public String toString() {
-		return "DoctorAppointmentSlotAddEditRequest [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", appointmentSlot=" + appointmentSlot + "]";
-	}	
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
+
+    public AppointmentSlot getAppointmentSlot() {
+	return appointmentSlot;
+    }
+
+    public void setAppointmentSlot(AppointmentSlot appointmentSlot) {
+	this.appointmentSlot = appointmentSlot;
+    }
+
+    @Override
+    public String toString() {
+	return "DoctorAppointmentSlotAddEditRequest [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", appointmentSlot="
+		+ appointmentSlot + "]";
+    }
 }

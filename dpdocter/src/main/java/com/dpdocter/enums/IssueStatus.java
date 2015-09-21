@@ -2,15 +2,15 @@ package com.dpdocter.enums;
 
 public enum IssueStatus {
 
-	OPEN("OPEN"), INPROGRESS("INPROGRESS"), COMPLETED("COMPLETED"), REOPEN("REOPEN");
-	
-	private String status;
+    OPEN("OPEN"), INPROGRESS("INPROGRESS"), COMPLETED("COMPLETED"), REOPEN("REOPEN");
 
-	public String getStatus() {
-		return status;
-	}
+    private String status;
 
-	private IssueStatus(String status) {
-		this.status = status;
-	}
+    public String getStatus() {
+	return status;
+    }
+
+    private IssueStatus(String status) {
+	this.status = status;
+    }
 }

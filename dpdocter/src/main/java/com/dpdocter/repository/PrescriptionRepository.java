@@ -44,9 +44,9 @@ public interface PrescriptionRepository extends MongoRepository<PrescriptionColl
     Integer getPrescriptionCount(String doctorId, String patientId, String hospitalId, String locationId, Boolean discarded);
 
     @Query("{'doctorId' : ?0, 'patientId' : ?2}")
-	List<PrescriptionCollection> getPrescription(String doctorId, String patientId, Sort sort, PageRequest pageRequest);
+    List<PrescriptionCollection> getPrescription(String doctorId, String patientId, Sort sort, PageRequest pageRequest);
 
     @Query("{'doctorId' : ?0, 'patientId' : ?2,'discarded' : ?3}")
-	List<PrescriptionCollection> getPrescription(String doctorId, String patientId, boolean discarded, Sort sort, PageRequest pageRequest);
+    List<PrescriptionCollection> getPrescription(String doctorId, String patientId, boolean discarded, Sort sort, PageRequest pageRequest);
 
 }

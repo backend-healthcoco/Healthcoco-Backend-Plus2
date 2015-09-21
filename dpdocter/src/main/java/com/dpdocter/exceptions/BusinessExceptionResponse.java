@@ -9,7 +9,7 @@ public class BusinessExceptionResponse {
     private String data;
 
     private String errMsg;
-    
+
     private int errCode;
 
     public BusinessExceptionResponse() {
@@ -19,8 +19,8 @@ public class BusinessExceptionResponse {
 	errorCode = e.getErrorCode();
 	data = e.getData();
 	errMsg = e.getMessage();
-	if(errorCode!=null)
-	errCode = errorCode.getErrorCode();
+	if (errorCode != null)
+	    errCode = errorCode.getErrorCode();
     }
 
     public ServiceError getErrorCode() {
@@ -47,13 +47,12 @@ public class BusinessExceptionResponse {
 	return errMsg;
     }
 
-	public int getErrCode() {
-		return errCode;
-	}
+    public int getErrCode() {
+	return errCode;
+    }
 
-	public void setErrCode(int errCode) {
-		this.errCode = errCode;
-	}
-    
-    
+    public void setErrCode(int errCode) {
+	this.errCode = errCode;
+    }
+
 }

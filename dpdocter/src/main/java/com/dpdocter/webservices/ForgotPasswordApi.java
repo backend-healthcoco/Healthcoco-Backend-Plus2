@@ -15,7 +15,6 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.ForgotUsernamePasswordRequest;
 import com.dpdocter.request.ResetPasswordRequest;
 import com.dpdocter.services.ForgotPasswordService;
-
 import common.util.web.Response;
 
 @Component
@@ -24,8 +23,8 @@ import common.util.web.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class ForgotPasswordApi {
 
-	private static Logger logger=Logger.getLogger(ForgotPasswordApi.class.getName());
-	
+    private static Logger logger = Logger.getLogger(ForgotPasswordApi.class.getName());
+
     @Autowired
     private ForgotPasswordService forgotPasswordService;
 
@@ -33,7 +32,7 @@ public class ForgotPasswordApi {
     @POST
     public Response<String> forgotPassword(ForgotUsernamePasswordRequest request) {
 	if (request == null) {
-		logger.warn("Invalid Input");
+	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	forgotPasswordService.forgotPasswordForDoctor(request);
@@ -46,7 +45,7 @@ public class ForgotPasswordApi {
     @POST
     public Response<Boolean> forgotPasswordForPatient(ForgotUsernamePasswordRequest request) {
 	if (request == null) {
-		logger.warn("Invalid Input");
+	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	boolean flag = forgotPasswordService.forgotPasswordForPatient(request);
@@ -60,7 +59,7 @@ public class ForgotPasswordApi {
     @POST
     public String resetPassword(ResetPasswordRequest request) {
 	if (request == null) {
-		logger.warn("Invalid Input");
+	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	String response = forgotPasswordService.resetPassword(request);
@@ -71,7 +70,7 @@ public class ForgotPasswordApi {
     @POST
     public Response<Boolean> forgotUsername(ForgotUsernamePasswordRequest request) {
 	if (request == null) {
-		logger.warn("Invalid Input");
+	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	boolean flag = forgotPasswordService.forgotUsername(request);

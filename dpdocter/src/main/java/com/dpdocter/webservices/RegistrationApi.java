@@ -222,15 +222,15 @@ public class RegistrationApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id or Location Id cannot be null");
 	}
 	Response<PatientInitialAndCounter> response = new Response<PatientInitialAndCounter>();
-	PatientInitialAndCounter  patientInitialAndCounter = registrationService.getPatientInitialAndCounter(doctorId, locationId);
+	PatientInitialAndCounter patientInitialAndCounter = registrationService.getPatientInitialAndCounter(doctorId, locationId);
 	response.setData(patientInitialAndCounter);
 	return response;
     }
 
     @Path(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_ID_GENERATOR_LOGIC)
     @GET
-    public Response<Boolean> updatePatientInitialAndCounter(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId, @PathParam("patientInitial") String patientInitial,
-	    @PathParam("patientCounter") int patientCounter) {
+    public Response<Boolean> updatePatientInitialAndCounter(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+	    @PathParam("patientInitial") String patientInitial, @PathParam("patientCounter") int patientCounter) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, patientInitial, new Integer(patientCounter).toString())) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Dcotor Id, ,Location Id, Patient Initial, Patient Counter Cannot Be Empty");
 	}
@@ -275,7 +275,7 @@ public class RegistrationApi {
 	response.setData(clinicAddressUpdateResponse);
 	return response;
     }
-    
+
     @Path(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_TIMING)
     @POST
     public Response<ClinicTiming> updateClinicTiming(ClinicTiming request) {
@@ -287,7 +287,7 @@ public class RegistrationApi {
 	response.setData(clinicTimingUpdateResponse);
 	return response;
     }
-        
+
     @Path(value = PathProxy.RegistrationUrls.CHANGE_CLINIC_LOGO)
     @POST
     public Response<ClinicLogo> changeClinicLogo(ClinicLogoAddRequest request) {
@@ -299,41 +299,38 @@ public class RegistrationApi {
 	response.setData(clinicLogoResponse);
 	return response;
     }
-    
+
     @Path(value = PathProxy.RegistrationUrls.ADD_CLINIC_IMAGE)
     @POST
     public Response<ClinicImage> addClinicImage(ClinicImageAddRequest request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
-	}
-	else if(request.getImages() == null){
-		throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Image Is Null");
-	}
-	else if(request.getImages().size()>5){
-		throw new BusinessException(ServiceError.Unknown, "More than 5 images cannot be uploaded at a time");
+	} else if (request.getImages() == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Image Is Null");
+	} else if (request.getImages().size() > 5) {
+	    throw new BusinessException(ServiceError.Unknown, "More than 5 images cannot be uploaded at a time");
 	}
 	List<ClinicImage> clinicImageResponse = registrationService.addClinicImage(request);
 	Response<ClinicImage> response = new Response<ClinicImage>();
 	response.setDataList(clinicImageResponse);
 	return response;
     }
-    
+
     @Path(value = PathProxy.RegistrationUrls.DELETE_CLINIC_IMAGE)
     @DELETE
     public Response<Boolean> deleteClinicImage(@PathParam(value = "locationId") String locationId, @PathParam(value = "counter") int counter) {
 	if (DPDoctorUtils.anyStringEmpty(locationId)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Location Id is null");
+	} else if (counter == 0) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Counter cannot be 0");
 	}
-	else if(counter == 0){
-		throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Counter cannot be 0");
-	}
-	
+
 	Boolean deleteImage = registrationService.deleteClinicImage(locationId, counter);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(deleteImage);
 	return response;
     }
-    
+
     @Path(value = PathProxy.RegistrationUrls.ADD_BLOOD_GROUP)
     @POST
     public Response<BloodGroup> addBloodGroup(BloodGroup request) {
@@ -345,7 +342,7 @@ public class RegistrationApi {
 	response.setData(bloodGroupResponse);
 	return response;
     }
-    
+
     @Path(value = PathProxy.RegistrationUrls.GET_BLOOD_GROUP)
     @GET
     public Response<BloodGroup> getBloodGroup() {
@@ -354,7 +351,7 @@ public class RegistrationApi {
 	response.setDataList(bloodGroupResponse);
 	return response;
     }
-    
+
     @Path(value = PathProxy.RegistrationUrls.ADD_PROFESSION)
     @POST
     public Response<Profession> addProfession(Profession request) {
@@ -366,11 +363,11 @@ public class RegistrationApi {
 	response.setData(professionResponse);
 	return response;
     }
-    
+
     @Path(value = PathProxy.RegistrationUrls.GET_PROFESSION)
     @GET
     public Response<Profession> getProfession() {
-	
+
 	List<Profession> professionResponse = registrationService.getProfession();
 	Response<Profession> response = new Response<Profession>();
 	response.setDataList(professionResponse);
@@ -378,25 +375,25 @@ public class RegistrationApi {
     }
 
     private SolrPatientDocument getSolrPatientDocument(RegisteredPatientDetails patient) {
-    	SolrPatientDocument solrPatientDocument = null;
-    	try {
-    	    solrPatientDocument = new SolrPatientDocument();
-    	    solrPatientDocument.setDays(patient.getDob().getDays());
-    	    solrPatientDocument.setMonths(patient.getDob().getMonths());
-    	    solrPatientDocument.setYears(patient.getDob().getYears());
+	SolrPatientDocument solrPatientDocument = null;
+	try {
+	    solrPatientDocument = new SolrPatientDocument();
+	    solrPatientDocument.setDays(patient.getDob().getDays());
+	    solrPatientDocument.setMonths(patient.getDob().getMonths());
+	    solrPatientDocument.setYears(patient.getDob().getYears());
 
-    	    if (patient.getAddress() != null) {
-    		BeanUtil.map(patient.getAddress(), solrPatientDocument);
-    	    }
-    	    if (patient.getPatient() != null) {
-    		BeanUtil.map(patient.getPatient(), solrPatientDocument);
-    	    }
-    	    BeanUtil.map(patient, solrPatientDocument);
-    	    solrPatientDocument.setId(patient.getPatient().getPatientId());
+	    if (patient.getAddress() != null) {
+		BeanUtil.map(patient.getAddress(), solrPatientDocument);
+	    }
+	    if (patient.getPatient() != null) {
+		BeanUtil.map(patient.getPatient(), solrPatientDocument);
+	    }
+	    BeanUtil.map(patient, solrPatientDocument);
+	    solrPatientDocument.setId(patient.getPatient().getPatientId());
 
-    	} catch (Exception e) {
-    	    e.printStackTrace();
-    	}
-    	return solrPatientDocument;
-   }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+	return solrPatientDocument;
+    }
 }

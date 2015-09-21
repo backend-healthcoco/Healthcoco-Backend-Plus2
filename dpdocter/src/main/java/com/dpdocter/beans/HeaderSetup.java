@@ -2,70 +2,69 @@ package com.dpdocter.beans;
 
 public class HeaderSetup {
 
-	private Boolean customHeader;
-	
-	private Boolean customLogo;
-	
-	private String logoType;
-	
-	private PatientDetails patientDetails;
-	
-	private String topLeftText;
-	
-	private String topRightText;
+    private Boolean customHeader;
 
-	public Boolean getCustomHeader() {
-		return customHeader;
-	}
+    private Boolean customLogo;
 
-	public void setCustomHeader(Boolean customHeader) {
-		this.customHeader = customHeader;
-	}
+    private String logoType;
 
-	public Boolean getCustomLogo() {
-		return customLogo;
-	}
+    private PatientDetails patientDetails;
 
-	public void setCustomLogo(Boolean customLogo) {
-		this.customLogo = customLogo;
-	}
+    private String topLeftText;
 
-	public String getLogoType() {
-		return logoType;
-	}
+    private String topRightText;
 
-	public void setLogoType(String logoType) {
-		this.logoType = logoType;
-	}
+    public Boolean getCustomHeader() {
+	return customHeader;
+    }
 
-	public PatientDetails getPatientDetails() {
-		return patientDetails;
-	}
+    public void setCustomHeader(Boolean customHeader) {
+	this.customHeader = customHeader;
+    }
 
-	public void setPatientDetails(PatientDetails patientDetails) {
-		this.patientDetails = patientDetails;
-	}
+    public Boolean getCustomLogo() {
+	return customLogo;
+    }
 
-	public String getTopLeftText() {
-		return topLeftText;
-	}
+    public void setCustomLogo(Boolean customLogo) {
+	this.customLogo = customLogo;
+    }
 
-	public void setTopLeftText(String topLeftText) {
-		this.topLeftText = topLeftText;
-	}
+    public String getLogoType() {
+	return logoType;
+    }
 
-	public String getTopRightText() {
-		return topRightText;
-	}
+    public void setLogoType(String logoType) {
+	this.logoType = logoType;
+    }
 
-	public void setTopRightText(String topRightText) {
-		this.topRightText = topRightText;
-	}
+    public PatientDetails getPatientDetails() {
+	return patientDetails;
+    }
 
-	@Override
-	public String toString() {
-		return "HeaderSetup [customHeader=" + customHeader + ", customLogo=" + customLogo + ", logoType=" + logoType
-				+ ", patientDetails=" + patientDetails + ", topLeftText=" + topLeftText + ", topRightText="
-				+ topRightText + "]";
-	}
+    public void setPatientDetails(PatientDetails patientDetails) {
+	this.patientDetails = patientDetails;
+    }
+
+    public String getTopLeftText() {
+	return topLeftText;
+    }
+
+    public void setTopLeftText(String topLeftText) {
+	this.topLeftText = topLeftText;
+    }
+
+    public String getTopRightText() {
+	return topRightText;
+    }
+
+    public void setTopRightText(String topRightText) {
+	this.topRightText = topRightText;
+    }
+
+    @Override
+    public String toString() {
+	return "HeaderSetup [customHeader=" + customHeader + ", customLogo=" + customLogo + ", logoType=" + logoType + ", patientDetails=" + patientDetails
+		+ ", topLeftText=" + topLeftText + ", topRightText=" + topRightText + "]";
+    }
 }

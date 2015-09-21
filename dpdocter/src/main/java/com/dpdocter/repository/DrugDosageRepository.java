@@ -53,27 +53,27 @@ public interface DrugDosageRepository extends MongoRepository<DrugDosageCollecti
 	    PageRequest pageRequest);
 
     @Query("{'doctorId': ?0}")
-	List<DrugDosageCollection> getCustomDrugDosage(String doctorId, Sort sort, PageRequest pageRequest);
+    List<DrugDosageCollection> getCustomDrugDosage(String doctorId, Sort sort, PageRequest pageRequest);
 
     @Query("{'doctorId': ?0, 'discarded': ?1}")
-	List<DrugDosageCollection> getCustomDrugDosage(String doctorId, boolean discarded, Sort sort, PageRequest pageRequest);
+    List<DrugDosageCollection> getCustomDrugDosage(String doctorId, boolean discarded, Sort sort, PageRequest pageRequest);
 
     @Query("{'doctorId': ?0,'updatedTime': {'$gte': ?1}}")
-	List<DrugDosageCollection> getCustomDrugDosage(String doctorId, Date date, Sort sort, PageRequest pageRequest);
+    List<DrugDosageCollection> getCustomDrugDosage(String doctorId, Date date, Sort sort, PageRequest pageRequest);
 
     @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1},'discarded': ?2}")
-	List<DrugDosageCollection> getCustomDrugDosage(String doctorId, Date date, boolean discarded, Sort sort, PageRequest pageRequest);
+    List<DrugDosageCollection> getCustomDrugDosage(String doctorId, Date date, boolean discarded, Sort sort, PageRequest pageRequest);
 
     @Query("{'$or': [{'doctorId': ?0},{'doctorId': null}]}")
-	List<DrugDosageCollection> getCustomGlobalDrugDosage(String doctorId, Sort sort, PageRequest pageRequest);
+    List<DrugDosageCollection> getCustomGlobalDrugDosage(String doctorId, Sort sort, PageRequest pageRequest);
 
     @Query("{'$or': [{'doctorId': ?0, 'discarded': ?1},{'doctorId': null,'discarded': ?1}]}")
-	List<DrugDosageCollection> getCustomGlobalDrugDosage(String doctorId, boolean discarded, Sort sort,	PageRequest pageRequest);
+    List<DrugDosageCollection> getCustomGlobalDrugDosage(String doctorId, boolean discarded, Sort sort, PageRequest pageRequest);
 
     @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}},{'doctorId': null, 'updatedTime': {'$gte': ?1}}]}")
-	List<DrugDosageCollection> getCustomGlobalDrugDosage(String doctorId, Date date, Sort sort,	PageRequest pageRequest);
+    List<DrugDosageCollection> getCustomGlobalDrugDosage(String doctorId, Date date, Sort sort, PageRequest pageRequest);
 
     @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2},{'doctorId': null, 'updatedTime': {'$gte': ?1},'discarded': ?2}]}")
-	List<DrugDosageCollection> getCustomGlobalDrugDosage(String doctorId, Date date, boolean discarded, Sort sort, PageRequest pageRequest);
+    List<DrugDosageCollection> getCustomGlobalDrugDosage(String doctorId, Date date, boolean discarded, Sort sort, PageRequest pageRequest);
 
 }

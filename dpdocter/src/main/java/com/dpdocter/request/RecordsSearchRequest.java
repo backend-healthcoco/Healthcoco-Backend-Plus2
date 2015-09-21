@@ -12,7 +12,7 @@ public class RecordsSearchRequest {
     private String hospitalId;
 
     private String updatedTime;
-    
+
     private Boolean discarded;
 
     public String getLocationId() {
@@ -55,26 +55,25 @@ public class RecordsSearchRequest {
 	this.tagId = tagId;
     }
 
-	public String getUpdatedTime() {
-		return updatedTime;
-	}
+    public String getUpdatedTime() {
+	return updatedTime;
+    }
 
-	public void setUpdatedTime(String updatedTime) {
-		this.updatedTime = updatedTime;
-	}
+    public void setUpdatedTime(String updatedTime) {
+	this.updatedTime = updatedTime;
+    }
 
-	public Boolean getDiscarded() {
-		return discarded;
-	}
+    public Boolean getDiscarded() {
+	return discarded;
+    }
 
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
 
-	@Override
-	public String toString() {
-		return "RecordsSearchRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", tagId=" + tagId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", updatedTime=" + updatedTime
-				+ ", discarded=" + discarded + "]";
-	}
+    @Override
+    public String toString() {
+	return "RecordsSearchRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", tagId=" + tagId + ", locationId=" + locationId + ", hospitalId="
+		+ hospitalId + ", updatedTime=" + updatedTime + ", discarded=" + discarded + "]";
+    }
 }

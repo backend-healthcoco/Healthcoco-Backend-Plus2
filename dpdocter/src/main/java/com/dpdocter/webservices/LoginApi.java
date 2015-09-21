@@ -17,7 +17,6 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.LoginRequest;
 import com.dpdocter.services.LoginService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -29,17 +28,17 @@ import common.util.web.Response;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class LoginApi {
-	
-	private static Logger logger=Logger.getLogger(LoginApi.class.getName());
 
-	@Autowired
+    private static Logger logger = Logger.getLogger(LoginApi.class.getName());
+
+    @Autowired
     private LoginService loginService;
 
     @Path(value = PathProxy.LoginUrls.LOGIN_USER)
     @POST
     public Response<LoginResponse> login(LoginRequest request) {
 	if (request == null) {
-		logger.warn("Invalid Input");
+	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	LoginResponse loginResponse = loginService.login(request);
@@ -52,7 +51,7 @@ public class LoginApi {
     @GET
     public Response<Boolean> verifyUser(@PathParam("userId") String userId) {
 	if (DPDoctorUtils.anyStringEmpty(userId)) {
-		logger.warn("Invalid Input. User Id Cannot Be Empty");
+	    logger.warn("Invalid Input. User Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. User Id Cannot Be Empty");
 	}
 	Boolean verifyUserResponse = loginService.verifyUser(userId);
@@ -65,7 +64,7 @@ public class LoginApi {
     @GET
     public Response<String> otpGenerator(@PathParam("mobileNumber") String mobileNumber) {
 	if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
-		logger.warn("Invalid Input. Mobile Number Cannot Be Empty");
+	    logger.warn("Invalid Input. Mobile Number Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Mobile Number Cannot Be Empty");
 	}
 	String OTP = loginService.otpGenerator(mobileNumber);

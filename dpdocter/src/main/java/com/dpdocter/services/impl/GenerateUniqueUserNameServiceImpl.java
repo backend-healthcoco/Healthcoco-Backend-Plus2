@@ -19,8 +19,8 @@ import com.dpdocter.services.GenerateUniqueUserNameService;
 @Service
 public class GenerateUniqueUserNameServiceImpl implements GenerateUniqueUserNameService {
 
-	private static Logger logger=Logger.getLogger(GenerateUniqueUserNameServiceImpl.class.getName());
-	
+    private static Logger logger = Logger.getLogger(GenerateUniqueUserNameServiceImpl.class.getName());
+
     @Autowired
     private UserRepository userRepository;
 

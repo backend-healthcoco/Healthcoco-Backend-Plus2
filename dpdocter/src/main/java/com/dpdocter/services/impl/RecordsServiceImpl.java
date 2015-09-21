@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import javax.mail.MessagingException;
+
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
@@ -48,9 +50,9 @@ import common.util.web.DPDoctorUtils;
 
 @Service
 public class RecordsServiceImpl implements RecordsService {
-	
-	private static Logger logger=Logger.getLogger(RecordsServiceImpl.class.getName());
-	
+
+    private static Logger logger = Logger.getLogger(RecordsServiceImpl.class.getName());
+
     @Autowired
     private FileManager fileManager;
 
@@ -152,26 +154,11 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public void emailRecordToPatient(String recordId, String emailAddr) {
+    public void emailRecordToPatient(String recordId, String emailAddress) {
 	try {
-	    RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
-	    if (recordsCollection != null) {
-		FileSystemResource file = new FileSystemResource(recordsCollection.getRecordsPath());
-		MailAttachment mailAttachment = new MailAttachment();
-		mailAttachment.setAttachmentName(recordsCollection.getRecordsLable());
-		mailAttachment.setFileSystemResource(file);
-		mailService.sendEmail(emailAddr, "Records", "PFA.", mailAttachment);
-
-	    } else {
-	    	logger.warn("Record not found.Please check recordId.");
-		throw new BusinessException(ServiceError.Unknown, "Record not found.Please check recordId.");
-	    }
-
-	} catch (BusinessException e) {
-		logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-	} catch (Exception e) {
-	    e.printStackTrace();
+	    MailAttachment mailAttachment = createMailData(recordId);
+	    mailService.sendEmail(emailAddress, "Records", "PFA.", mailAttachment);
+	} catch (MessagingException e) {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
@@ -210,13 +197,13 @@ public class RecordsServiceImpl implements RecordsService {
 	try {
 	    RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
 	    if (recordsCollection == null) {
-	    	logger.warn("Record not found.Check RecordId !");
+		logger.warn("Record not found.Check RecordId !");
 		throw new BusinessException(ServiceError.Unknown, "Record not found.Check RecordId !");
 	    }
 	    recordsCollection.setRecordsLable(label);
 	    recordsRepository.save(recordsCollection);
 	} catch (BusinessException e) {
-		logger.error(e);
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -240,27 +227,26 @@ public class RecordsServiceImpl implements RecordsService {
 		records = new ArrayList<Records>();
 		BeanUtil.map(recordCollections, records);
 	    } else {
-	    	
-	    if(request.getDiscarded() == null)request.setDiscarded(true);
+
+		if (request.getDiscarded() == null)
+		    request.setDiscarded(true);
 		if (request.getUpdatedTime() != null) {
 		    long createdTimeStamp = Long.parseLong(request.getUpdatedTime());
-		    
-		    	if(request.getDiscarded()){
-		    		recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
-		    			    request.getHospitalId(), new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
-		    	}
-		    	else{
-			    	recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
-						    request.getHospitalId(), new Date(createdTimeStamp), request.getDiscarded(), new Sort(Sort.Direction.DESC, "createdTime"));
-			    }    
-		} else {
-		    if(request.getDiscarded()){
-		    	recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
-					    request.getHospitalId(), new Sort(Sort.Direction.DESC, "createdTime"));
+
+		    if (request.getDiscarded()) {
+			recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+		    } else {
+			recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), new Date(createdTimeStamp), request.getDiscarded(), new Sort(Sort.Direction.DESC, "createdTime"));
 		    }
-		    else{
-		    	recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
-					    request.getHospitalId(), request.getDiscarded(), new Sort(Sort.Direction.DESC, "createdTime"));
+		} else {
+		    if (request.getDiscarded()) {
+			recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), new Sort(Sort.Direction.DESC, "createdTime"));
+		    } else {
+			recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), request.getDiscarded(), new Sort(Sort.Direction.DESC, "createdTime"));
 		    }
 		}
 		records = new ArrayList<Records>();
@@ -313,11 +299,11 @@ public class RecordsServiceImpl implements RecordsService {
 		tagsCollections = tagsRepository.findByDoctorId(doctorId);
 		BeanUtil.map(tagsCollections, tags);
 	    } else {
-	    	logger.warn("Invalid Input");
+		logger.warn("Invalid Input");
 		throw new BusinessException(ServiceError.Unknown, "Invalid Input !");
 	    }
 	} catch (BusinessException e) {
-		logger.error(e);
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -335,7 +321,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    if (patientCollection != null) {
 		emailAddress = patientCollection.getEmailAddress();
 	    } else {
-	    	logger.warn("Invalid PatientId");
+		logger.warn("Invalid PatientId");
 		throw new BusinessException(ServiceError.Unknown, "Invalid PatientId");
 	    }
 
@@ -355,11 +341,11 @@ public class RecordsServiceImpl implements RecordsService {
 		if (recordsCollection.getRecordsPath() != null) {
 		    return new File(recordsCollection.getRecordsPath());
 		} else {
-			logger.warn("Record Path for this Record is Empty.");
+		    logger.warn("Record Path for this Record is Empty.");
 		    throw new BusinessException(ServiceError.Unknown, "Record Path for this Record is Empty.");
 		}
 	    } else {
-	    	logger.warn("Record not found.Please check recordId.");
+		logger.warn("Record not found.Please check recordId.");
 		throw new BusinessException(ServiceError.Unknown, "Record not found.Please check recordId.");
 	    }
 
@@ -375,13 +361,13 @@ public class RecordsServiceImpl implements RecordsService {
 	try {
 	    RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
 	    if (recordsCollection == null) {
-	    	logger.warn("Record Not found.Check RecordId");
+		logger.warn("Record Not found.Check RecordId");
 		throw new BusinessException(ServiceError.Unknown, "Record Not found.Check RecordId");
 	    }
 	    recordsCollection.setDiscarded(true);
 	    recordsRepository.save(recordsCollection);
 	} catch (BusinessException e) {
-		logger.error(e);
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -447,7 +433,7 @@ public class RecordsServiceImpl implements RecordsService {
 		records = new ArrayList<Records>();
 		BeanUtil.map(recordsCollections, records);
 	    } else {
-	    	logger.warn("No Records Found");
+		logger.warn("No Records Found");
 		throw new BusinessException(ServiceError.Unknown, "No Records Found");
 	    }
 	} catch (Exception e) {
@@ -465,7 +451,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    recordCount = recordsRepository.getRecordCount(doctorId, patientId, hospitalId, locationId, false);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error while getting Records Count");
+	    logger.error(e + " Error while getting Records Count");
 	    throw new BusinessException(ServiceError.Unknown, "Error while getting Records Count");
 	}
 	return recordCount;
@@ -482,13 +468,13 @@ public class RecordsServiceImpl implements RecordsService {
 		recordsRepository.save(record);
 		response = true;
 	    } else {
-	    	logger.warn("No record found for the given record id");
+		logger.warn("No record found for the given record id");
 		throw new BusinessException(ServiceError.NotFound, "No record found for the given record id");
 	    }
 
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error while editing description");
+	    logger.error(e + " Error while editing description");
 	    throw new BusinessException(ServiceError.Unknown, "Error while editing description");
 	}
 	return response;
@@ -524,7 +510,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    flexibleCounts.setCounts(counts);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error while getting counts");
+	    logger.error(e + " Error while getting counts");
 	    throw new BusinessException(ServiceError.Unknown, "Error while getting counts");
 	}
 
@@ -543,9 +529,39 @@ public class RecordsServiceImpl implements RecordsService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+ " Error while getting record : " + e.getCause().getMessage());
+	    logger.error(e + " Error while getting record : " + e.getCause().getMessage());
 	    throw new BusinessException(ServiceError.Unknown, "Error while getting record : " + e.getCause().getMessage());
 	}
 	return record;
+    }
+
+    @Override
+    public MailAttachment getRecordMailData(String recordId) {
+	return createMailData(recordId);
+    }
+
+    private MailAttachment createMailData(String recordId) {
+	MailAttachment mailAttachment = null;
+	try {
+	    RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
+	    if (recordsCollection != null) {
+		FileSystemResource file = new FileSystemResource(recordsCollection.getRecordsPath());
+		mailAttachment = new MailAttachment();
+		mailAttachment.setAttachmentName(recordsCollection.getRecordsLable());
+		mailAttachment.setFileSystemResource(file);
+	    } else {
+		logger.warn("Record not found.Please check recordId.");
+		throw new BusinessException(ServiceError.NotFound, "Record not found.Please check recordId.");
+	    }
+	} catch (BusinessException e) {
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+
+	return mailAttachment;
     }
 }

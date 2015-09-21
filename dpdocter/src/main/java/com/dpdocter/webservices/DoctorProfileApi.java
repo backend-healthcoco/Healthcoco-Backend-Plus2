@@ -34,7 +34,6 @@ import com.dpdocter.request.DoctorRegistrationAddEditRequest;
 import com.dpdocter.request.DoctorSpecialityAddEditRequest;
 import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
 import com.dpdocter.services.DoctorProfileService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -44,18 +43,18 @@ import common.util.web.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class DoctorProfileApi {
 
-	private static Logger logger=Logger.getLogger(DoctorProfileApi.class.getName());
-	
+    private static Logger logger = Logger.getLogger(DoctorProfileApi.class.getName());
+
     @Autowired
     private DoctorProfileService doctorProfileService;
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_NAME)
     @POST
     public Response<Boolean> addEditName(DoctorNameAddEditRequest request) {
-    	if (request == null) {
-    		logger.warn("Request Cannot Be null");
-    	    throw new BusinessException(ServiceError.InvalidInput, "Request Cannot Be null");
-    	}
+	if (request == null) {
+	    logger.warn("Request Cannot Be null");
+	    throw new BusinessException(ServiceError.InvalidInput, "Request Cannot Be null");
+	}
 	Boolean addEditNameResponse = doctorProfileService.addEditName(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditNameResponse);
@@ -66,7 +65,7 @@ public class DoctorProfileApi {
     @GET
     public Response<Boolean> addEditExperience(@PathParam("doctorId") String doctorId, @PathParam("experience") String experience) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId, experience)) {
-		logger.warn("Doctor Id, Experience Cannot Be Empty");
+	    logger.warn("Doctor Id, Experience Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Experience Cannot Be Empty");
 	}
 	Boolean addEditExperienceResponse = doctorProfileService.addEditExperience(doctorId, experience);
@@ -79,7 +78,7 @@ public class DoctorProfileApi {
     @POST
     public Response<Boolean> addEditContact(DoctorContactAddEditRequest request) {
 	if (request == null) {
-		logger.warn("Doctor Contact Request Is Empty");
+	    logger.warn("Doctor Contact Request Is Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Contact Request Is Empty");
 	}
 	Boolean addEditContactResponse = doctorProfileService.addEditContact(request);
@@ -92,7 +91,7 @@ public class DoctorProfileApi {
     @POST
     public Response<Boolean> addEditEducation(DoctorEducationAddEditRequest request) {
 	if (request == null) {
-		logger.warn("Doctor Education Request Is Empty");
+	    logger.warn("Doctor Education Request Is Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Education Request Is Empty");
 	}
 	Boolean addEditEducationResponse = doctorProfileService.addEditEducation(request);
@@ -105,7 +104,7 @@ public class DoctorProfileApi {
     @POST
     public Response<Boolean> addEditMedicalCouncils(List<MedicalCouncil> medicalCouncils) {
 	if (medicalCouncils == null || medicalCouncils.isEmpty()) {
-		logger.warn("Medical Councils Cannot Be Empty");
+	    logger.warn("Medical Councils Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Medical Councils Cannot Be Empty");
 	}
 	Boolean addEditMedicalCouncil = doctorProfileService.addEditMedicalCouncils(medicalCouncils);
@@ -127,7 +126,7 @@ public class DoctorProfileApi {
     @POST
     public Response<Boolean> addEditSpeciality(DoctorSpecialityAddEditRequest request) {
 	if (request == null) {
-		logger.warn("Doctor Speciality Request Is Empty");
+	    logger.warn("Doctor Speciality Request Is Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Speciality Request Is Empty");
 	}
 	Boolean addEditSpecialityResponse = doctorProfileService.addEditSpeciality(request);
@@ -140,7 +139,7 @@ public class DoctorProfileApi {
     @POST
     public Response<Boolean> addEditAchievement(DoctorAchievementAddEditRequest request) {
 	if (request == null) {
-		logger.warn("Doctor Achievement Request Is Empty");
+	    logger.warn("Doctor Achievement Request Is Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Achievement Request Is Empty");
 	}
 	Boolean addEditSpecialityResponse = doctorProfileService.addEditAchievement(request);
@@ -153,7 +152,7 @@ public class DoctorProfileApi {
     @POST
     public Response<Boolean> addEditProfessionalStatement(DoctorProfessionalStatementAddEditRequest request) {
 	if (request == null) {
-		logger.warn("Doctor Professional Request Is Empty");
+	    logger.warn("Doctor Professional Request Is Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Professional Statement Request Is Empty");
 	}
 	Boolean addEditProfessionalStatementResponse = doctorProfileService.addEditProfessionalStatement(request);
@@ -166,7 +165,7 @@ public class DoctorProfileApi {
     @POST
     public Response<Boolean> addEditRegistrationDetail(DoctorRegistrationAddEditRequest request) {
 	if (request == null) {
-		logger.warn("Doctor Registration Detail Request Is Empty");
+	    logger.warn("Doctor Registration Detail Request Is Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Registration Detail Request Is Empty");
 	}
 	Boolean addEditRegistrationDetailResponse = doctorProfileService.addEditRegistrationDetail(request);
@@ -179,7 +178,7 @@ public class DoctorProfileApi {
     @POST
     public Response<Boolean> addEditExperienceDetail(DoctorExperienceAddEditRequest request) {
 	if (request == null) {
-		logger.warn("Doctor Experience Detail Request Is Empty");
+	    logger.warn("Doctor Experience Detail Request Is Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Experience Detail Request Is Empty");
 	}
 	Boolean addEditExperienceDetailResponse = doctorProfileService.addEditExperienceDetail(request);
@@ -192,7 +191,7 @@ public class DoctorProfileApi {
     @POST
     public Response<String> addEditProfilePicture(DoctorProfilePictureAddEditRequest request) {
 	if (request == null) {
-		logger.warn("Doctor Profile Picture Request Is Empty");
+	    logger.warn("Doctor Profile Picture Request Is Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Profile Picture Request Is Empty");
 	}
 	String addEditProfilePictureResponse = doctorProfileService.addEditProfilePicture(request);
@@ -205,7 +204,7 @@ public class DoctorProfileApi {
     @POST
     public Response<String> addEditCoverPicture(DoctorProfilePictureAddEditRequest request) {
 	if (request == null) {
-		logger.warn("Doctor Profile Picture Request Is Empty");
+	    logger.warn("Doctor Profile Picture Request Is Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Profile Picture Request Is Empty");
 	}
 	String addEditCoverPictureResponse = doctorProfileService.addEditCoverPicture(request);
@@ -218,7 +217,7 @@ public class DoctorProfileApi {
     @POST
     public Response<Boolean> addEditProfessionalMembership(DoctorProfessionalAddEditRequest request) {
 	if (request == null) {
-		logger.warn("Doctor Professional Membership Request Is Empty");
+	    logger.warn("Doctor Professional Membership Request Is Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Professional Membership Request Is Empty");
 	}
 	Boolean addEditProfessionalMembershipResponse = doctorProfileService.addEditProfessionalMembership(request);
@@ -232,7 +231,7 @@ public class DoctorProfileApi {
     public Response<DoctorProfile> getDoctorProfile(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
 	    @PathParam("hospitalId") String hospitalId) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
-		logger.warn("Doctor Id, Location Id and Hospital Id Cannot Be Empty");
+	    logger.warn("Doctor Id, Location Id and Hospital Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Location Id and Hospital Id Cannot Be Empty");
 	}
 	DoctorProfile doctorProfile = doctorProfileService.getDoctorProfile(doctorId, locationId, hospitalId);
@@ -245,7 +244,7 @@ public class DoctorProfileApi {
     @POST
     public Response<Boolean> insertProfessionalMemberships(List<ProfessionalMembership> professionalMemberships) {
 	if (professionalMemberships == null || professionalMemberships.isEmpty()) {
-		logger.warn("Professional Memberships Cannot Be Empty");
+	    logger.warn("Professional Memberships Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Professional Memberships Cannot Be Empty");
 	}
 	Boolean insertProfessionalMembershipResponse = doctorProfileService.insertProfessionalMemberships(professionalMemberships);

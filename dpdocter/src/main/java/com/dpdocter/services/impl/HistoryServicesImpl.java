@@ -21,6 +21,9 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.GeneralData;
+import com.dpdocter.beans.MailAttachment;
+import com.dpdocter.beans.MailData;
+import com.dpdocter.beans.MedicalData;
 import com.dpdocter.beans.MedicalHistoryHandler;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.Records;
@@ -47,15 +50,16 @@ import com.dpdocter.response.DiseaseListResponse;
 import com.dpdocter.response.HistoryDetailsResponse;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.HistoryServices;
+import com.dpdocter.services.MailService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.RecordsService;
 import common.util.web.DPDoctorUtils;
 
 @Service
 public class HistoryServicesImpl implements HistoryServices {
-	
-	private static Logger logger=Logger.getLogger(HistoryServicesImpl.class.getName());
-	
+
+    private static Logger logger = Logger.getLogger(HistoryServicesImpl.class.getName());
+
     @Autowired
     private DiseasesRepository diseasesRepository;
 
@@ -89,14 +93,17 @@ public class HistoryServicesImpl implements HistoryServices {
     @Autowired
     private MongoOperations mongoOperations;
 
+    @Autowired
+    private MailService mailService;
+
     @Override
     public List<DiseaseAddEditResponse> addDiseases(List<DiseaseAddEditRequest> request) {
 	List<DiseaseAddEditResponse> response = null;
 	List<DiseasesCollection> diseases = new ArrayList<DiseasesCollection>();
 	try {
 	    for (Iterator<DiseaseAddEditRequest> iterator = request.iterator(); iterator.hasNext();) {
-	    	DiseaseAddEditRequest diseaseaddEditRequest = iterator.next();
-	    	diseaseaddEditRequest.setCreatedTime(new Date());
+		DiseaseAddEditRequest diseaseaddEditRequest = iterator.next();
+		diseaseaddEditRequest.setCreatedTime(new Date());
 	    }
 	    BeanUtil.map(request, diseases);
 	    diseases = diseasesRepository.save(diseases);
@@ -104,7 +111,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    BeanUtil.map(diseases, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Saving Disease(s)");
+	    logger.error(e + " Error Occurred While Saving Disease(s)");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Disease(s)");
 	}
 	return response;
@@ -125,7 +132,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    BeanUtil.map(disease, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Editing Disease");
+	    logger.error(e + " Error Occurred While Editing Disease");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Disease");
 	}
 	return response;
@@ -144,20 +151,20 @@ public class HistoryServicesImpl implements HistoryServices {
 			disease = diseasesRepository.save(disease);
 			response = true;
 		    } else {
-		    	logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+			logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 			throw new BusinessException(ServiceError.NotAuthorized, "Invalid Doctor Id, Hospital Id, Or Location Id");
 		    }
 		} else {
-			logger.warn("Cannot Delete Global Disease");
+		    logger.warn("Cannot Delete Global Disease");
 		    throw new BusinessException(ServiceError.NotAuthorized, "Cannot Delete Global Disease");
 		}
 	    } else {
-	    	logger.warn("Disease Not Found");
+		logger.warn("Disease Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Disease Not Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Deleting Disease");
+	    logger.error(e + " Error Occurred While Deleting Disease");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Disease");
 	}
 	return response;
@@ -485,15 +492,15 @@ public class HistoryServicesImpl implements HistoryServices {
 			    recordsRepository.save(recordsCollection);
 			}
 		    } else {
-		    	logger.warn("This reports is not found for this patient to remove.");
+			logger.warn("This reports is not found for this patient to remove.");
 			throw new BusinessException(ServiceError.Unknown, "This reports is not found for this patient to remove.");
 		    }
 		} else {
-			logger.warn("No reports found for this patient to remove.");
+		    logger.warn("No reports found for this patient to remove.");
 		    throw new BusinessException(ServiceError.Unknown, "No reports found for this patient to remove.");
 		}
 	    } else {
-	    	logger.warn("No History found for this patient.");
+		logger.warn("No History found for this patient.");
 		throw new BusinessException(ServiceError.Unknown, "No History found for this patient.");
 	    }
 	} catch (Exception e) {
@@ -529,15 +536,15 @@ public class HistoryServicesImpl implements HistoryServices {
 			    clinicalNotesRepository.save(clinicalNotesCollection);
 			}
 		    } else {
-		    	logger.warn("This clinicalNote is not found for this patient to remove.");
+			logger.warn("This clinicalNote is not found for this patient to remove.");
 			throw new BusinessException(ServiceError.Unknown, "This clinicalNote is not found for this patient to remove.");
 		    }
 		} else {
-			logger.warn("No clinicalNote found for this patient to remove.");
+		    logger.warn("No clinicalNote found for this patient to remove.");
 		    throw new BusinessException(ServiceError.Unknown, "No clinicalNote found for this patient to remove.");
 		}
 	    } else {
-	    	logger.warn("No History found for this patient.");
+		logger.warn("No History found for this patient.");
 		throw new BusinessException(ServiceError.Unknown, "No History found for this patient.");
 	    }
 	} catch (Exception e) {
@@ -573,15 +580,15 @@ public class HistoryServicesImpl implements HistoryServices {
 			    prescriptionRepository.save(prescriptionCollection);
 			}
 		    } else {
-		    	logger.warn("This prescription is not found for this patient to remove.");
+			logger.warn("This prescription is not found for this patient to remove.");
 			throw new BusinessException(ServiceError.Unknown, "This prescription is not found for this patient to remove.");
 		    }
 		} else {
-			logger.warn("No prescription found for this patient to remove.");
+		    logger.warn("No prescription found for this patient to remove.");
 		    throw new BusinessException(ServiceError.Unknown, "No prescription found for this patient to remove.");
 		}
 	    } else {
-	    	logger.warn("No History found for this patient. ");
+		logger.warn("No History found for this patient. ");
 		throw new BusinessException(ServiceError.Unknown, "No History found for this patient.");
 	    }
 	} catch (Exception e) {
@@ -608,15 +615,15 @@ public class HistoryServicesImpl implements HistoryServices {
 			    historyRepository.save(historyCollection);
 			}
 		    } else {
-		    	logger.warn("This disease is not found for this patient to remove.");
+			logger.warn("This disease is not found for this patient to remove.");
 			throw new BusinessException(ServiceError.Unknown, "This disease is not found for this patient to remove.");
 		    }
 		} else {
-			logger.warn("No disease found for this patient to remove.");
+		    logger.warn("No disease found for this patient to remove.");
 		    throw new BusinessException(ServiceError.Unknown, "No disease found for this patient to remove.");
 		}
 	    } else {
-	    	logger.warn("No History found for this patient.");
+		logger.warn("No History found for this patient.");
 		throw new BusinessException(ServiceError.Unknown, "No History found for this patient.");
 	    }
 	} catch (Exception e) {
@@ -643,15 +650,15 @@ public class HistoryServicesImpl implements HistoryServices {
 			    historyRepository.save(historyCollection);
 			}
 		    } else {
-		    	logger.warn("This disease is not found for this patient to remove.");
+			logger.warn("This disease is not found for this patient to remove.");
 			throw new BusinessException(ServiceError.Unknown, "This disease is not found for this patient to remove.");
 		    }
 		} else {
-			logger.warn("No disease found for this patient to remove.");
+		    logger.warn("No disease found for this patient to remove.");
 		    throw new BusinessException(ServiceError.Unknown, "No disease found for this patient to remove.");
 		}
 	    } else {
-	    	logger.warn("No History found for this patient.");
+		logger.warn("No History found for this patient.");
 		throw new BusinessException(ServiceError.Unknown, "No History found for this patient.");
 	    }
 	} catch (Exception e) {
@@ -700,42 +707,41 @@ public class HistoryServicesImpl implements HistoryServices {
 	List<DiseaseListResponse> diseaseListResponses = null;
 	List<DiseasesCollection> diseasesCollections = null;
 	try {
-		if(doctorId == null)diseasesCollections = new ArrayList<DiseasesCollection>();
+	    if (doctorId == null)
+		diseasesCollections = new ArrayList<DiseasesCollection>();
 	    if (!DPDoctorUtils.allStringsEmpty(updatedTime)) {
 		long createdTimeStamp = Long.parseLong(updatedTime);
-			if(locationId == null && hospitalId == null){
-				if (discarded)
-				    diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, new Date(createdTimeStamp), new Sort(
-					    Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-				else
-				    diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, new Date(createdTimeStamp), discarded,
-					    new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-			}
-			else{
-				if (discarded)
-				    diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(
-					    Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-				else
-				    diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discarded,
-					    new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-			}
+		if (locationId == null && hospitalId == null) {
+		    if (discarded)
+			diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
+				"updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+		    else
+			diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, new Date(createdTimeStamp), discarded, new Sort(
+				Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+		} else {
+		    if (discarded)
+			diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(
+				Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+		    else
+			diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discarded,
+				new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+		}
 	    } else {
-	    	if(locationId == null && hospitalId == null){
-	    		if (discarded)
-	    		    diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, new Sort(Sort.Direction.DESC, "updatedTime"),
-	    			    size > 0 ? new PageRequest(page, size) : null);
-	    		else
-	    		    diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, discarded, new Sort(Sort.Direction.DESC,
-	    			    "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-	    	}
-	    	else{
-	    		if (discarded)
-	    		    diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "updatedTime"),
-	    			    size > 0 ? new PageRequest(page, size) : null);
-	    		else
-	    		    diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, locationId, hospitalId, discarded, new Sort(Sort.Direction.DESC,
-	    			    "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-	    	}
+		if (locationId == null && hospitalId == null) {
+		    if (discarded)
+			diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, new Sort(Sort.Direction.DESC, "updatedTime"),
+				size > 0 ? new PageRequest(page, size) : null);
+		    else
+			diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, discarded, new Sort(Sort.Direction.DESC, "updatedTime"),
+				size > 0 ? new PageRequest(page, size) : null);
+		} else {
+		    if (discarded)
+			diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC,
+				"updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+		    else
+			diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, locationId, hospitalId, discarded, new Sort(Sort.Direction.DESC,
+				"updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+		}
 	    }
 
 	    if (diseasesCollections != null) {
@@ -806,38 +812,36 @@ public class HistoryServicesImpl implements HistoryServices {
 
 	    if (!DPDoctorUtils.allStringsEmpty(updatedTime)) {
 		long createdTimeStamp = Long.parseLong(updatedTime);
-			if(locationId == null && hospitalId == null){
-				if (discarded)
-				    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, new Date(createdTimeStamp), new Sort(
-					    Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-				else
-				    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, new Date(createdTimeStamp), discarded,
-					    new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-			}
-			else{
-				if (discarded)
-				    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(
-					    Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-				else
-				    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discarded,
-					    new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-			}
-	    } else {
-		if(locationId == null && hospitalId == null){
-			if (discarded)
-			    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, new Sort(Sort.Direction.DESC,
-				    "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-			else
-			    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, discarded, new Sort(
-				    Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+		if (locationId == null && hospitalId == null) {
+		    if (discarded)
+			diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
+				"updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+		    else
+			diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, new Date(createdTimeStamp), discarded, new Sort(
+				Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+		} else {
+		    if (discarded)
+			diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
+				new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+		    else
+			diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
+				discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		}
-		else{
-			if (discarded)
-			    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC,
-				    "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-			else
-			    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, discarded, new Sort(
-				    Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+	    } else {
+		if (locationId == null && hospitalId == null) {
+		    if (discarded)
+			diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, new Sort(Sort.Direction.DESC, "updatedTime"),
+				size > 0 ? new PageRequest(page, size) : null);
+		    else
+			diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, discarded, new Sort(Sort.Direction.DESC, "updatedTime"),
+				size > 0 ? new PageRequest(page, size) : null);
+		} else {
+		    if (discarded)
+			diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC,
+				"updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+		    else
+			diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, discarded, new Sort(
+				Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		}
 	    }
 
@@ -1046,13 +1050,13 @@ public class HistoryServicesImpl implements HistoryServices {
 	    HistoryCollection historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
 		if (historyCollection.getGeneralRecords() != null && !historyCollection.getGeneralRecords().isEmpty()) {
-			List<GeneralData> generslData = fetchGeneralData(historyCollection.getGeneralRecords());
-		    historyCount = generslData.isEmpty() ? 0:generslData.size();
+		    List<GeneralData> generslData = fetchGeneralData(historyCollection.getGeneralRecords());
+		    historyCount = generslData.isEmpty() ? 0 : generslData.size();
 		}
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Getting History Count");
+	    logger.error(e + " Error Occurred While Getting History Count");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting History Count");
 	}
 	return historyCount;
@@ -1155,20 +1159,54 @@ public class HistoryServicesImpl implements HistoryServices {
 	    historyCollection = historyRepository.findOne(doctorId, locationId, hospitalId, patientId);
 	    List<String> medicalHistoryIds = historyCollection.getMedicalhistory();
 	    if (medicalHistoryIds != null) {
-	    if(response == null)response = new HistoryDetailsResponse();
+		if (response == null)
+		    response = new HistoryDetailsResponse();
 		List<DiseaseListResponse> medicalHistory = getDiseasesByIds(medicalHistoryIds);
 		response.setMedicalhistory(medicalHistory);
 	    }
 
 	    List<String> familyHistoryIds = historyCollection.getFamilyhistory();
 	    if (familyHistoryIds != null) {
-	    if(response == null)response = new HistoryDetailsResponse();
+		if (response == null)
+		    response = new HistoryDetailsResponse();
 		List<DiseaseListResponse> familyHistory = getDiseasesByIds(medicalHistoryIds);
 		response.setFamilyhistory(familyHistory);
 	    }
 
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return response;
+    }
+
+    @Override
+    public boolean mailMedicalData(MedicalData medicalData) {
+	boolean response = false;
+	List<MailAttachment> mailAttachments = null;
+	try {
+	    String doctorId = medicalData.getDoctorId();
+	    String locationId = medicalData.getLocationId();
+	    String hospitalId = medicalData.getHospitalId();
+	    String emailAddress = medicalData.getEmailAddress();
+	    mailAttachments = new ArrayList<MailAttachment>();
+	    for (MailData mailData : medicalData.getMailDataList()) {
+		switch (mailData.getMailType()) {
+		case CLINICAL_NOTE:
+		    mailAttachments.add(clinicalNotesService.getClinicalNotesMailData(mailData.getId(), doctorId, locationId, hospitalId));
+		    break;
+		case PRESCRIPTION:
+		    mailAttachments.add(prescriptionServices.getPrescriptionMailData(mailData.getId(), doctorId, locationId, hospitalId));
+		    break;
+		case REPORT:
+		    mailAttachments.add(recordsService.getRecordMailData(mailData.getId()));
+		    break;
+		}
+	    }
+	    mailService.sendEmailMultiAttach(emailAddress, "Medical Data", "PFA.", mailAttachments);
+	    response = true;
+	} catch (Exception e) {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}

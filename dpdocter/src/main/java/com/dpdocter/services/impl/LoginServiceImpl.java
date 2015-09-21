@@ -43,8 +43,8 @@ import common.util.web.LoginUtils;
 @Service
 public class LoginServiceImpl implements LoginService {
 
-	private static Logger logger=Logger.getLogger(LoginServiceImpl.class.getName());
-	
+    private static Logger logger = Logger.getLogger(LoginServiceImpl.class.getName());
+
     @Autowired
     private UserRepository userRepository;
 
@@ -77,13 +77,13 @@ public class LoginServiceImpl implements LoginService {
 	    if (userCollection == null) {
 		userCollection = userRepository.findByPasswordAndEmailAddressIgnoreCase(request.getPassword(), request.getUsername());
 		if (userCollection == null) {
-			logger.warn("Invalid username and Password");
+		    logger.warn("Invalid username and Password");
 		    throw new BusinessException(ServiceError.Unknown, "Invalid username and Password");
 		}
 
 	    }
 	    if (!userCollection.getIsVerified()) {
-	    	logger.warn("This user is not verified");
+		logger.warn("This user is not verified");
 		throw new BusinessException(ServiceError.NotAuthorized, "This user is not verified");
 	    }
 	    User user = new User();
@@ -137,11 +137,11 @@ public class LoginServiceImpl implements LoginService {
 		}
 	    }
 	} catch (BusinessException be) {
-		logger.error(be);
+	    logger.error(be);
 	    throw be;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error occured while login");
+	    logger.error(e + " Error occured while login");
 	    throw new BusinessException(ServiceError.Unknown, "Error occured while login");
 	}
 	return response;
@@ -158,12 +158,12 @@ public class LoginServiceImpl implements LoginService {
 		userRepository.save(userCollection);
 		response = true;
 	    } else {
-	    	logger.error("User Not Found For The Given User Id");
+		logger.error("User Not Found For The Given User Id");
 		throw new BusinessException(ServiceError.NotFound, "User Not Found For The Given User Id");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error While Verifying User");
+	    logger.error(e + " Error While Verifying User");
 	    throw new BusinessException(ServiceError.Unknown, "Error While Verifying User");
 	}
 	return response;
@@ -178,7 +178,7 @@ public class LoginServiceImpl implements LoginService {
 	    // Gateway integration.
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error While Generating OTP");
+	    logger.error(e + " Error While Generating OTP");
 	    throw new BusinessException(ServiceError.Unknown, "Error While Generating OTP");
 	}
 

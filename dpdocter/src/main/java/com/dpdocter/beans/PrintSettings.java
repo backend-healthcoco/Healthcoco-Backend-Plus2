@@ -4,100 +4,100 @@ import com.dpdocter.enums.ComponentType;
 
 public class PrintSettings {
 
-	private String id;
+    private String id;
 
-	private String doctorId;
+    private String doctorId;
 
-	private String locationId;
+    private String locationId;
 
-	private String hospitalId;
+    private String hospitalId;
 
-	private ComponentType componentType = ComponentType.ALL;
+    private ComponentType componentType = ComponentType.ALL;
 
-	private PageSetup pageSetup;
+    private PageSetup pageSetup;
 
-	private HeaderSetup headerSetup;
-    
-	private FooterSetup footerSetup;
-    
-	private Boolean discarded = false;
+    private HeaderSetup headerSetup;
 
-	public String getId() {
-		return id;
-	}
+    private FooterSetup footerSetup;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    private Boolean discarded = false;
 
-	public String getDoctorId() {
-		return doctorId;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public String getDoctorId() {
+	return doctorId;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
+    }
 
-	public String getHospitalId() {
-		return hospitalId;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
 
-	public ComponentType getComponentType() {
-		return componentType;
-	}
+    public String getHospitalId() {
+	return hospitalId;
+    }
 
-	public void setComponentType(ComponentType componentType) {
-		this.componentType = componentType;
-	}
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
 
-	public PageSetup getPageSetup() {
-		return pageSetup;
-	}
+    public ComponentType getComponentType() {
+	return componentType;
+    }
 
-	public void setPageSetup(PageSetup pageSetup) {
-		this.pageSetup = pageSetup;
-	}
+    public void setComponentType(ComponentType componentType) {
+	this.componentType = componentType;
+    }
 
-	public HeaderSetup getHeaderSetup() {
-		return headerSetup;
-	}
+    public PageSetup getPageSetup() {
+	return pageSetup;
+    }
 
-	public void setHeaderSetup(HeaderSetup headerSetup) {
-		this.headerSetup = headerSetup;
-	}
+    public void setPageSetup(PageSetup pageSetup) {
+	this.pageSetup = pageSetup;
+    }
 
-	public FooterSetup getFooterSetup() {
-		return footerSetup;
-	}
+    public HeaderSetup getHeaderSetup() {
+	return headerSetup;
+    }
 
-	public void setFooterSetup(FooterSetup footerSetup) {
-		this.footerSetup = footerSetup;
-	}
+    public void setHeaderSetup(HeaderSetup headerSetup) {
+	this.headerSetup = headerSetup;
+    }
 
-	public Boolean getDiscarded() {
-		return discarded;
-	}
+    public FooterSetup getFooterSetup() {
+	return footerSetup;
+    }
 
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+    public void setFooterSetup(FooterSetup footerSetup) {
+	this.footerSetup = footerSetup;
+    }
 
-	@Override
-	public String toString() {
-		return "PrintSettings [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + ", componentType=" + componentType + ", pageSetup=" + pageSetup + ", headerSetup="
-				+ headerSetup + ", footerSetup=" + footerSetup + ", discarded=" + discarded + "]";
-	}
+    public Boolean getDiscarded() {
+	return discarded;
+    }
+
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
+
+    @Override
+    public String toString() {
+	return "PrintSettings [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", componentType="
+		+ componentType + ", pageSetup=" + pageSetup + ", headerSetup=" + headerSetup + ", footerSetup=" + footerSetup + ", discarded=" + discarded
+		+ "]";
+    }
 }

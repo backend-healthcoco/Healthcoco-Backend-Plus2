@@ -2,49 +2,48 @@ package com.dpdocter.beans;
 
 public class PageSetup {
 
-	private String layout;
-	
-	private String color;
-	
-	private String margins;
-	
-	private String pageSize;
+    private String layout;
 
-	public String getLayout() {
-		return layout;
-	}
+    private String color;
 
-	public void setLayout(String layout) {
-		this.layout = layout;
-	}
+    private String margins;
 
-	public String getColor() {
-		return color;
-	}
+    private String pageSize;
 
-	public void setColor(String color) {
-		this.color = color;
-	}
+    public String getLayout() {
+	return layout;
+    }
 
-	public String getMargins() {
-		return margins;
-	}
+    public void setLayout(String layout) {
+	this.layout = layout;
+    }
 
-	public void setMargins(String margins) {
-		this.margins = margins;
-	}
+    public String getColor() {
+	return color;
+    }
 
-	public String getPageSize() {
-		return pageSize;
-	}
+    public void setColor(String color) {
+	this.color = color;
+    }
 
-	public void setPageSize(String pageSize) {
-		this.pageSize = pageSize;
-	}
+    public String getMargins() {
+	return margins;
+    }
 
-	@Override
-	public String toString() {
-		return "PageSetup [layout=" + layout + ", color=" + color + ", margins=" + margins + ", pageSize=" + pageSize
-				+ "]";
-	}	
+    public void setMargins(String margins) {
+	this.margins = margins;
+    }
+
+    public String getPageSize() {
+	return pageSize;
+    }
+
+    public void setPageSize(String pageSize) {
+	this.pageSize = pageSize;
+    }
+
+    @Override
+    public String toString() {
+	return "PageSetup [layout=" + layout + ", color=" + color + ", margins=" + margins + ", pageSize=" + pageSize + "]";
+    }
 }

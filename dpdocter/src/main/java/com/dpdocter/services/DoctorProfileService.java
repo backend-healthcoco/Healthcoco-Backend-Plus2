@@ -2,7 +2,6 @@ package com.dpdocter.services;
 
 import java.util.List;
 
-import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.DoctorProfile;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
@@ -48,7 +47,7 @@ public interface DoctorProfileService {
     String addEditProfilePicture(DoctorProfilePictureAddEditRequest request);
 
     String addEditCoverPicture(DoctorProfilePictureAddEditRequest request);
-    
+
     DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId);
 
     Boolean insertProfessionalMemberships(List<ProfessionalMembership> professionalMemberships);

@@ -285,10 +285,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 		BeanUtil.map(addressCollection, address);
 		registeredPatientDetails.setAddress(address);
 	    }
-	    if(request.getBloodGroup() != null){
-	    	groupCollections = (List<GroupCollection>) groupRepository.findAll(request.getGroups());
-	    	groups = new ArrayList<Group>();
-		    BeanUtil.map(groupCollections, groups);
+	    if (request.getBloodGroup() != null) {
+		groupCollections = (List<GroupCollection>) groupRepository.findAll(request.getGroups());
+		groups = new ArrayList<Group>();
+		BeanUtil.map(groupCollections, groups);
 	    }
 	    /* registeredPatientDetails.setGroups(request.getGroups()); */
 	    registeredPatientDetails.setGroups(groups);
@@ -855,7 +855,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	try {
 	    LocationCollection locationCollection = locationRepository.findOne(request.getId());
 	    if (locationCollection == null) {
-	    	logger.warn("Clinic not found");
+		logger.warn("Clinic not found");
 		throw new BusinessException(ServiceError.NotFound, "Clinic not found");
 	    } else {
 		if (request.getImage() != null) {
@@ -884,7 +884,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	try {
 	    LocationCollection locationCollection = locationRepository.findOne(request.getId());
 	    if (locationCollection == null) {
-	    	logger.warn("Clinic not found");
+		logger.warn("Clinic not found");
 		throw new BusinessException(ServiceError.NotFound, "Clinic not found");
 	    } else {
 		int counter = locationCollection.getImages() != null ? locationCollection.getImages().size() : 0;
@@ -920,7 +920,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	try {
 	    LocationCollection locationCollection = locationRepository.findOne(locationId);
 	    if (locationCollection == null) {
-	    	logger.warn("User not found");
+		logger.warn("User not found");
 		throw new BusinessException(ServiceError.NotFound, "Clinic not found");
 	    } else {
 		boolean foundImage = false;

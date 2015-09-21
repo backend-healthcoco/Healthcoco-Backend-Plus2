@@ -52,18 +52,18 @@ public interface RegistrationService {
 
     ClinicTiming updateClinicTiming(ClinicTiming request);
 
-	BloodGroup addBloodGroup(BloodGroup request);
+    BloodGroup addBloodGroup(BloodGroup request);
 
-	List<BloodGroup> getBloodGroup();
+    List<BloodGroup> getBloodGroup();
 
-	Profession addProfession(Profession request);
+    Profession addProfession(Profession request);
 
-	List<Profession> getProfession();
+    List<Profession> getProfession();
 
-	ClinicLogo changeClinicLogo(ClinicLogoAddRequest request);
+    ClinicLogo changeClinicLogo(ClinicLogoAddRequest request);
 
-	List<ClinicImage> addClinicImage(ClinicImageAddRequest request);
+    List<ClinicImage> addClinicImage(ClinicImageAddRequest request);
 
-	Boolean deleteClinicImage(String locationId, int counter);
+    Boolean deleteClinicImage(String locationId, int counter);
 
 }

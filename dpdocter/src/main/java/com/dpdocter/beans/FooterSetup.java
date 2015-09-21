@@ -2,39 +2,38 @@ package com.dpdocter.beans;
 
 public class FooterSetup {
 
-	private Boolean customFooter;
-	
-	private Boolean showSignature;
-	
-	private String bottomText;
+    private Boolean customFooter;
 
-	public Boolean getCustomFooter() {
-		return customFooter;
-	}
+    private Boolean showSignature;
 
-	public void setCustomFooter(Boolean customFooter) {
-		this.customFooter = customFooter;
-	}
+    private String bottomText;
 
-	public Boolean getShowSignature() {
-		return showSignature;
-	}
+    public Boolean getCustomFooter() {
+	return customFooter;
+    }
 
-	public void setShowSignature(Boolean showSignature) {
-		this.showSignature = showSignature;
-	}
+    public void setCustomFooter(Boolean customFooter) {
+	this.customFooter = customFooter;
+    }
 
-	public String getBottomText() {
-		return bottomText;
-	}
+    public Boolean getShowSignature() {
+	return showSignature;
+    }
 
-	public void setBottomText(String bottomText) {
-		this.bottomText = bottomText;
-	}
+    public void setShowSignature(Boolean showSignature) {
+	this.showSignature = showSignature;
+    }
 
-	@Override
-	public String toString() {
-		return "FooterSetup [customFooter=" + customFooter + ", showSignature=" + showSignature + ", bottomText="
-				+ bottomText + "]";
-	}
+    public String getBottomText() {
+	return bottomText;
+    }
+
+    public void setBottomText(String bottomText) {
+	this.bottomText = bottomText;
+    }
+
+    @Override
+    public String toString() {
+	return "FooterSetup [customFooter=" + customFooter + ", showSignature=" + showSignature + ", bottomText=" + bottomText + "]";
+    }
 }

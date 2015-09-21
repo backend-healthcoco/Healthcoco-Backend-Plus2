@@ -23,9 +23,9 @@ import common.util.web.DPDoctorUtils;
 
 @Service
 public class SolrRegistrationServiceImpl implements SolrRegistrationService {
-	
-	private static Logger logger=Logger.getLogger(SolrRegistrationServiceImpl.class.getName());
-	
+
+    private static Logger logger = Logger.getLogger(SolrRegistrationServiceImpl.class.getName());
+
     @Autowired
     private SolrPatientRepository solrPatientRepository;
 
@@ -40,7 +40,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Saving Patient");
+	    logger.error(e + " Error Occurred While Saving Patient");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Patient");
 	}
 	return response;
@@ -54,7 +54,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Editing Patient");
+	    logger.error(e + " Error Occurred While Editing Patient");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Patient");
 	}
 	return response;
@@ -68,7 +68,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Deleting Patient");
+	    logger.error(e + " Error Occurred While Deleting Patient");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Patient");
 	}
 	return response;
@@ -83,7 +83,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	    BeanUtil.map(patients, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Searching Patient");
+	    logger.error(e + " Error Occurred While Searching Patient");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
 	}
 	return response;
@@ -103,7 +103,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	    BeanUtil.map(patients, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Searching Patients");
+	    logger.error(e + " Error Occurred While Searching Patients");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
 	}
 	return response;
@@ -140,7 +140,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	    response = solrPatientRepository.findByFirstName(doctorId, locationId, hospitalId, searchValue);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Searching Patients");
+	    logger.error(e + " Error Occurred While Searching Patients");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
 	}
 	return response;
@@ -154,7 +154,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	    response = solrPatientRepository.findByMiddleName(doctorId, locationId, hospitalId, searchValue);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Searching Patients");
+	    logger.error(e + " Error Occurred While Searching Patients");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
 	}
 	return response;
@@ -167,7 +167,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	    response = solrPatientRepository.findByLastName(doctorId, locationId, hospitalId, searchValue);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Searching Patients");
+	    logger.error(e + " Error Occurred While Searching Patients");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
 	}
 	return response;
@@ -181,7 +181,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	    response = solrPatientRepository.findByPID(doctorId, locationId, hospitalId, searchValue);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Searching Patients");
+	    logger.error(e + " Error Occurred While Searching Patients");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
 	}
 	return response;
@@ -194,7 +194,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	    response = solrPatientRepository.findByMobileNumber(doctorId, locationId, hospitalId, searchValue);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Searching Patients");
+	    logger.error(e + " Error Occurred While Searching Patients");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
 	}
 	return response;
@@ -207,7 +207,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	    response = solrPatientRepository.findByEmailAddress(doctorId, locationId, hospitalId, searchValue);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Searching Patients");
+	    logger.error(e + " Error Occurred While Searching Patients");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
 	}
 	return response;
@@ -221,7 +221,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	    response = solrPatientRepository.findByUserName(doctorId, locationId, hospitalId, searchValue);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Searching Patients");
+	    logger.error(e + " Error Occurred While Searching Patients");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
 	}
 	return response;
@@ -235,7 +235,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	    response = solrPatientRepository.findByCity(doctorId, locationId, hospitalId, searchValue);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Searching Patients");
+	    logger.error(e + " Error Occurred While Searching Patients");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
 	}
 	return response;
@@ -249,7 +249,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	    response = solrPatientRepository.findByLocality(doctorId, locationId, hospitalId, searchValue);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Searching Patients");
+	    logger.error(e + " Error Occurred While Searching Patients");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
 	}
 	return response;
@@ -263,7 +263,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	    response = solrPatientRepository.findByBloodGroup(doctorId, locationId, hospitalId, searchValue);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Searching Patients");
+	    logger.error(e + " Error Occurred While Searching Patients");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
 	}
 	return response;
@@ -277,7 +277,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	    response = solrPatientRepository.findByReferredBy(doctorId, locationId, hospitalId, searchValue);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Searching Patients");
+	    logger.error(e + " Error Occurred While Searching Patients");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
 	}
 	return response;
@@ -291,7 +291,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	    response = solrPatientRepository.findByProfession(doctorId, locationId, hospitalId, searchValue);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Searching Patients");
+	    logger.error(e + " Error Occurred While Searching Patients");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
 	}
 	return response;
@@ -305,7 +305,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	    response = solrPatientRepository.findByPostalCode(doctorId, locationId, hospitalId, searchValue);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Searching Patients");
+	    logger.error(e + " Error Occurred While Searching Patients");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
 	}
 	return response;
@@ -319,7 +319,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	    response = solrPatientRepository.findByGender(doctorId, locationId, hospitalId, searchValue);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Searching Patients");
+	    logger.error(e + " Error Occurred While Searching Patients");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
 	}
 	return response;

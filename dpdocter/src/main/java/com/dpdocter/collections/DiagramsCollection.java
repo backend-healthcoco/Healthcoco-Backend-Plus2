@@ -87,14 +87,14 @@ public class DiagramsCollection extends GenericCollection {
     }
 
     public Boolean getDiscarded() {
-		return discarded;
-	}
+	return discarded;
+    }
 
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
 
-	@Override
+    @Override
     public String toString() {
 	return "DiagramsCollection [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + ", doctorId=" + doctorId + ", locationId=" + locationId
 		+ ", hospitalId=" + hospitalId + ", fileExtension=" + fileExtension + ", discarded=" + discarded + "]";

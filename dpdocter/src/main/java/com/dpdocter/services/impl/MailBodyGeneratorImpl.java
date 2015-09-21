@@ -4,32 +4,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.velocity.app.VelocityEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.velocity.VelocityEngineUtils;
-import org.apache.velocity.app.VelocityEngine;
+
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.services.MailBodyGenerator;
 
 @Service
 public class MailBodyGeneratorImpl implements MailBodyGenerator {
 
-	@Value(value = "${LINK}")
+    @Value(value = "${LINK}")
     private String link;
 
-	@Autowired
-	private VelocityEngine velocityEngine;
-	
+    @Autowired
+    private VelocityEngine velocityEngine;
+
     @Override
     public String generateActivationEmailBody(String userName, String fName, String mName, String lName, String tokenId) throws Exception {
 
-    	Map<String, Object> model = new HashMap<String, Object>();	             
-        model.put("fName", fName);
-        model.put("lName", lName);
-        model.put("link", link +"signup/activate/" + tokenId);
-        String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "mailTemplate.vm", "UTF-8", model);
-        return text;
+	Map<String, Object> model = new HashMap<String, Object>();
+	model.put("fName", fName);
+	model.put("lName", lName);
+	model.put("link", link + "signup/activate/" + tokenId);
+	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "mailTemplate.vm", "UTF-8", model);
+	return text;
     }
 
     @Override

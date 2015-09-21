@@ -1,5 +1,7 @@
 package com.dpdocter.services.impl;
 
+import java.util.List;
+
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
@@ -39,7 +41,6 @@ public class MailServiceImpl implements MailService {
      */
     @Override
     public void sendEmail(String to, String subject, String body, MailAttachment mailAttachment) throws MessagingException {
-
 	MimeMessage message = javaMailSender.createMimeMessage();
 
 	MimeMessageHelper helper = new MimeMessageHelper(message, true);
@@ -49,6 +50,23 @@ public class MailServiceImpl implements MailService {
 	helper.setText(body);
 	if (mailAttachment != null) {
 	    helper.addAttachment(mailAttachment.getAttachmentName(), mailAttachment.getFileSystemResource());
+	}
+	javaMailSender.send(message);
+    }
+
+    @Override
+    public void sendEmailMultiAttach(String to, String subject, String body, List<MailAttachment> mailAttachments) throws MessagingException {
+	MimeMessage message = javaMailSender.createMimeMessage();
+
+	MimeMessageHelper helper = new MimeMessageHelper(message, true);
+	helper.setFrom(from);
+	helper.setTo(to);
+	helper.setSubject(subject);
+	helper.setText(body);
+	if (mailAttachments != null && !mailAttachments.isEmpty()) {
+	    for (MailAttachment mailAttachment : mailAttachments) {
+		helper.addAttachment(mailAttachment.getAttachmentName(), mailAttachment.getFileSystemResource());
+	    }
 	}
 	javaMailSender.send(message);
     }

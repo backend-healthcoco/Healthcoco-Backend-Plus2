@@ -18,7 +18,6 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.solr.document.SolrDrugDocument;
 import com.dpdocter.solr.services.SolrPrescriptionService;
 import com.dpdocter.webservices.PathProxy;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -27,9 +26,9 @@ import common.util.web.Response;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class SolrPrescriptionApi {
-	
-	private static Logger logger=Logger.getLogger(SolrPrescriptionApi.class.getName());
-	
+
+    private static Logger logger = Logger.getLogger(SolrPrescriptionApi.class.getName());
+
     @Autowired
     private SolrPrescriptionService solrPrescriptionService;
 
@@ -66,7 +65,7 @@ public class SolrPrescriptionApi {
     @GET
     public Response<SolrDrugDocument> searchDrug(@PathParam(value = "searchTerm") String searchTerm) {
 	if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
-		logger.warn("Invalid Input");
+	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	List<SolrDrugDocument> complaints = solrPrescriptionService.searchDrug(searchTerm);

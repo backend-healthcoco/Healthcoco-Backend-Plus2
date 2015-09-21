@@ -7,12 +7,13 @@ import com.dpdocter.beans.PrintSettingsDefaultData;
 
 public interface PrintSettingsService {
 
-	PrintSettingsDefaultData saveDefaultSettings(PrintSettingsDefaultData request);
+    PrintSettingsDefaultData saveDefaultSettings(PrintSettingsDefaultData request);
 
-	List<PrintSettingsDefaultData> getDefaultSettings();
+    List<PrintSettingsDefaultData> getDefaultSettings();
 
-	PrintSettings saveSettings(PrintSettings request);
+    PrintSettings saveSettings(PrintSettings request);
 
-	List<PrintSettings> getSettings(String printFilter, String doctorId, String locationId, String hospitalId, int page, int size, String updatedTime, Boolean discarded);
+    List<PrintSettings> getSettings(String printFilter, String doctorId, String locationId, String hospitalId, int page, int size, String updatedTime,
+	    Boolean discarded);
 
 }

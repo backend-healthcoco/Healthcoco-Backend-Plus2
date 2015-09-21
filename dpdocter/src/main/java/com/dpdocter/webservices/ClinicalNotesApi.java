@@ -39,7 +39,6 @@ import com.dpdocter.solr.document.SolrInvestigationsDocument;
 import com.dpdocter.solr.document.SolrNotesDocument;
 import com.dpdocter.solr.document.SolrObservationsDocument;
 import com.dpdocter.solr.services.SolrClinicalNotesService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -49,8 +48,8 @@ import common.util.web.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class ClinicalNotesApi {
 
-	private static Logger logger=Logger.getLogger(ClinicalNotesApi.class.getName());
-	
+    private static Logger logger = Logger.getLogger(ClinicalNotesApi.class.getName());
+
     @Autowired
     private ClinicalNotesService clinicalNotesService;
 
@@ -79,7 +78,7 @@ public class ClinicalNotesApi {
     @PUT
     public Response<ClinicalNotes> editNotes(@PathParam(value = "clinicalNotesId") String clinicalNotesId, ClinicalNotesEditRequest request) {
 	if (DPDoctorUtils.anyStringEmpty(clinicalNotesId) || request == null) {
-		logger.warn("Invalid Input");
+	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	request.setId(clinicalNotesId);
@@ -343,7 +342,7 @@ public class ClinicalNotesApi {
 	    @QueryParam(value = "discarded") Boolean discarded) {
 
 	if (DPDoctorUtils.anyStringEmpty(type, range)) {
-		logger.warn("Invalid Input. Type or Range Cannot Be Empty");
+	    logger.warn("Invalid Input. Type or Range Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Type or Range Cannot Be Empty");
 	}
 	List<Object> clinicalItems = clinicalNotesService.getClinicalItems(type, range, page, size, doctorId, locationId, hospitalId, updatedTime,
@@ -352,15 +351,17 @@ public class ClinicalNotesApi {
 	response.setDataList(clinicalItems);
 	return response;
     }
-    
+
     @Path(value = PathProxy.ClinicalNotesUrls.EMAIL_CLINICAL_NOTES)
     @GET
-    public Response<Boolean> emailClinicalNotes(@PathParam(value = "clinicalNotesId") String clinicalNotesId, @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-    		@PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "emailAddress") String emailAddress) {
+    public Response<Boolean> emailClinicalNotes(@PathParam(value = "clinicalNotesId") String clinicalNotesId, @PathParam(value = "doctorId") String doctorId,
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+	    @PathParam(value = "emailAddress") String emailAddress) {
 
 	if (DPDoctorUtils.anyStringEmpty(clinicalNotesId, doctorId, locationId, hospitalId, emailAddress)) {
-		logger.warn("Invalid Input. Clinical Notes Id, Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Clinical Notes Id, Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
+	    logger.warn("Invalid Input. Clinical Notes Id, Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
+	    throw new BusinessException(ServiceError.InvalidInput,
+		    "Invalid Input. Clinical Notes Id, Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
 	}
 	clinicalNotesService.emailClinicalNotes(clinicalNotesId, doctorId, locationId, hospitalId, emailAddress);
 

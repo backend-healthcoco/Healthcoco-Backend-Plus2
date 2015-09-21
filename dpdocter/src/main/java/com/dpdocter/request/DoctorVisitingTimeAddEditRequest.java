@@ -6,49 +6,49 @@ import com.dpdocter.beans.WorkingSchedule;
 
 public class DoctorVisitingTimeAddEditRequest {
 
-	private String id;
-	
-	private String doctorId;
-	
-	private String locationId;
-	
-	private List<WorkingSchedule> workingSchedules;
+    private String id;
 
-	public String getId() {
-		return id;
-	}
+    private String doctorId;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    private String locationId;
 
-	public String getDoctorId() {
-		return doctorId;
-	}
+    private List<WorkingSchedule> workingSchedules;
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public String getDoctorId() {
+	return doctorId;
+    }
 
-	public List<WorkingSchedule> getWorkingSchedules() {
-		return workingSchedules;
-	}
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
+    }
 
-	public void setWorkingSchedules(List<WorkingSchedule> workingSchedules) {
-		this.workingSchedules = workingSchedules;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	@Override
-	public String toString() {
-		return "DoctorVisitingTimeAddEditRequest [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", workingSchedules=" + workingSchedules + "]";
-	}	
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
+
+    public List<WorkingSchedule> getWorkingSchedules() {
+	return workingSchedules;
+    }
+
+    public void setWorkingSchedules(List<WorkingSchedule> workingSchedules) {
+	this.workingSchedules = workingSchedules;
+    }
+
+    @Override
+    public String toString() {
+	return "DoctorVisitingTimeAddEditRequest [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", workingSchedules="
+		+ workingSchedules + "]";
+    }
 }

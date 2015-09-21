@@ -178,20 +178,19 @@ public class UserCollection extends GenericCollection {
 	this.isVerified = isVerified;
     }
 
-	public String getCoverImageUrl() {
-		return coverImageUrl;
-	}
+    public String getCoverImageUrl() {
+	return coverImageUrl;
+    }
 
-	public void setCoverImageUrl(String coverImageUrl) {
-		this.coverImageUrl = coverImageUrl;
-	}
+    public void setCoverImageUrl(String coverImageUrl) {
+	this.coverImageUrl = coverImageUrl;
+    }
 
-	@Override
-	public String toString() {
-		return "UserCollection [id=" + id + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName
-				+ ", middleName=" + middleName + ", userName=" + userName + ", password=" + password + ", emailAddress="
-				+ emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl=" + imageUrl
-				+ ", dob=" + dob + ", isActive=" + isActive + ", isTempPassword=" + isTempPassword + ", isVerified="
-				+ isVerified + ", coverImageUrl=" + coverImageUrl + "]";
-	}
+    @Override
+    public String toString() {
+	return "UserCollection [id=" + id + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName
+		+ ", userName=" + userName + ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender="
+		+ gender + ", imageUrl=" + imageUrl + ", dob=" + dob + ", isActive=" + isActive + ", isTempPassword=" + isTempPassword + ", isVerified="
+		+ isVerified + ", coverImageUrl=" + coverImageUrl + "]";
+    }
 }

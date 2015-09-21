@@ -4,69 +4,69 @@ import java.util.List;
 
 public class PrintSettingsDefaultData {
 
-	private String id;
-	
-	private List<String> layout;
-	
-	private List<String> color;
-	
-	private List<String> margins;
-	
-	private List<String> pageSize;
-	
-	private List<String> logoType;
+    private String id;
 
-	public String getId() {
-		return id;
-	}
+    private List<String> layout;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    private List<String> color;
 
-	public List<String> getLayout() {
-		return layout;
-	}
+    private List<String> margins;
 
-	public void setLayout(List<String> layout) {
-		this.layout = layout;
-	}
+    private List<String> pageSize;
 
-	public List<String> getColor() {
-		return color;
-	}
+    private List<String> logoType;
 
-	public void setColor(List<String> color) {
-		this.color = color;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public List<String> getMargins() {
-		return margins;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public void setMargins(List<String> margins) {
-		this.margins = margins;
-	}
+    public List<String> getLayout() {
+	return layout;
+    }
 
-	public List<String> getPageSize() {
-		return pageSize;
-	}
+    public void setLayout(List<String> layout) {
+	this.layout = layout;
+    }
 
-	public void setPageSize(List<String> pageSize) {
-		this.pageSize = pageSize;
-	}
+    public List<String> getColor() {
+	return color;
+    }
 
-	public List<String> getLogoType() {
-		return logoType;
-	}
+    public void setColor(List<String> color) {
+	this.color = color;
+    }
 
-	public void setLogoType(List<String> logoType) {
-		this.logoType = logoType;
-	}
+    public List<String> getMargins() {
+	return margins;
+    }
 
-	@Override
-	public String toString() {
-		return "PrintSettingsData [id=" + id + ", layout=" + layout + ", color=" + color + ", margins=" + margins
-				+ ", pageSize=" + pageSize + ", logoType=" + logoType + "]";
-	}
+    public void setMargins(List<String> margins) {
+	this.margins = margins;
+    }
+
+    public List<String> getPageSize() {
+	return pageSize;
+    }
+
+    public void setPageSize(List<String> pageSize) {
+	this.pageSize = pageSize;
+    }
+
+    public List<String> getLogoType() {
+	return logoType;
+    }
+
+    public void setLogoType(List<String> logoType) {
+	this.logoType = logoType;
+    }
+
+    @Override
+    public String toString() {
+	return "PrintSettingsData [id=" + id + ", layout=" + layout + ", color=" + color + ", margins=" + margins + ", pageSize=" + pageSize + ", logoType="
+		+ logoType + "]";
+    }
 }

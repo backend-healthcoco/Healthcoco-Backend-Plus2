@@ -22,8 +22,8 @@ import com.dpdocter.services.MailService;
 @Service
 public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
-	private static Logger logger=Logger.getLogger(ForgotPasswordServiceImpl.class.getName());
-	
+    private static Logger logger = Logger.getLogger(ForgotPasswordServiceImpl.class.getName());
+
     @Autowired
     private UserRepository userRepository;
 
@@ -53,16 +53,16 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		    response = new ForgotPasswordResponse(userCollection.getUserName(), userCollection.getMobileNumber(), userCollection.getEmailAddress(),
 			    RoleEnum.DOCTOR);
 		} else {
-			logger.warn("Email address is empty.");
+		    logger.warn("Email address is empty.");
 		    throw new BusinessException(ServiceError.Unknown, "Email address is empty.");
 		}
 	    } else {
-	    	logger.warn("User not Found.");
+		logger.warn("User not Found.");
 		throw new BusinessException(ServiceError.Unknown, "User not Found.");
 	    }
 	    return response;
 	} catch (BusinessException be) {
-		logger.error(be+" User not Found.");
+	    logger.error(be + " User not Found.");
 	    throw new BusinessException(ServiceError.Unknown, "User not Found.");
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -91,11 +91,11 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		    // SMS logic will go here.
 		    flag = true;
 		} else {
-			logger.warn("Email address or mobile number should be provided");
+		    logger.warn("Email address or mobile number should be provided");
 		    throw new BusinessException(ServiceError.Unknown, "Email address or mobile number should be provided");
 		}
 	    } else {
-	    	logger.warn("User not Found.");
+		logger.warn("User not Found.");
 		throw new BusinessException(ServiceError.Unknown, "User not Found.");
 	    }
 	} catch (Exception e) {
@@ -118,11 +118,11 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		if (userCollection != null) {
 		    response = new ForgotPasswordResponse(username, userCollection.getMobileNumber(), userCollection.getEmailAddress(), RoleEnum.PATIENT);
 		} else {
-			logger.warn("User not Found.");
+		    logger.warn("User not Found.");
 		    throw new BusinessException(ServiceError.Unknown, "User not Found.");
 		}
 	    } else {
-	    	logger.warn("Username cannot be empty");
+		logger.warn("Username cannot be empty");
 		throw new BusinessException(ServiceError.Unknown, "Username cannot be empty");
 	    }
 	    return response;
@@ -168,7 +168,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		    flag = true;
 		}
 	    } else {
-	    	logger.warn("Email Address or mobile should be provided!");
+		logger.warn("Email Address or mobile should be provided!");
 		throw new BusinessException(ServiceError.Unknown, "Email Address or mobile should be provided!");
 	    }
 	} catch (Exception e) {

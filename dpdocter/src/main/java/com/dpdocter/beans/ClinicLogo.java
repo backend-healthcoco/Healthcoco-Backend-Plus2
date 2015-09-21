@@ -2,28 +2,28 @@ package com.dpdocter.beans;
 
 public class ClinicLogo {
 
-	private String id;
-	
-	private String logoURL;
+    private String id;
 
-	public String getId() {
-		return id;
-	}
+    private String logoURL;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public String getLogoURL() {
-		return logoURL;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public void setLogoURL(String logoURL) {
-		this.logoURL = logoURL;
-	}
+    public String getLogoURL() {
+	return logoURL;
+    }
 
-	@Override
-	public String toString() {
-		return "ClinicLogo [id=" + id + ", logoURL=" + logoURL + "]";
-	}
+    public void setLogoURL(String logoURL) {
+	this.logoURL = logoURL;
+    }
+
+    @Override
+    public String toString() {
+	return "ClinicLogo [id=" + id + ", logoURL=" + logoURL + "]";
+    }
 }

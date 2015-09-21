@@ -2,8 +2,6 @@ package com.dpdocter.services;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.dpdocter.collections.UserCollection;
 
 public interface MailBodyGenerator {

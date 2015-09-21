@@ -99,22 +99,22 @@ public interface PathProxy {
 	public static final String UPDATE_CLINIC_ADDRESS = "/settings/updateClinicAddress";
 
 	public static final String UPDATE_CLINIC_TIMING = "/settings/updateClinicTiming";
-	
+
 	public static final String CHANGE_CLINIC_LOGO = "/settings/changeClinicLogo";
-	
+
 	public static final String ADD_CLINIC_IMAGE = "/settings/clinicImage/add";
-	
+
 	public static final String DELETE_CLINIC_IMAGE = "/settings/clinicImage/{locationId}/{counter}/delete";
-	
+
 	public static final String ADD_BLOOD_GROUP = "/settings/bloodGroup/add";
-	
+
 	public static final String GET_BLOOD_GROUP = "/settings/bloodGroup";
-	
+
 	public static final String ADD_PROFESSION = "/settings/profession/add";
-	
+
 	public static final String GET_PROFESSION = "/settings/profession";
-    
- }
+
+    }
 
     public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";
 
@@ -154,7 +154,7 @@ public interface PathProxy {
 	public static final String DELETE_DIAGRAM = "/diagram/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 	public static final String GET_CINICAL_ITEMS = "/{type}/{range}";
-	
+
 	public static final String EMAIL_CLINICAL_NOTES = "/{clinicalNotesId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 
     }
@@ -272,7 +272,7 @@ public interface PathProxy {
 	public static final String EDIT_DRUG_DURATION_UNIT = "/drugDurationUnit/{drugDurationUnitId}/update";
 
 	public static final String DELETE_DRUG_DURATION_UNIT = "/drugDurationUnit/{drugDurationUnitId}/delete";
-	
+
 	public static final String EMAIL_PRESCRIPTION = "/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 
     }
@@ -317,6 +317,8 @@ public interface PathProxy {
 	public static final String REMOVE_FAMILY_HISTORY = "/removeFamilyHistory/{diseaseId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
 
 	public static final String GET_PATIENT_HISTORY_OTP_VERIFIED = "/getPatientHistory/{patientId}/{doctorId}/{locationId}/{hospitalId}/{historyFilter}/{otpVerified}";
+
+	public static final String MAIL_MEDICAL_DATA = "mailMedicalData";
     }
 
     public static final String DOCTOR_PROFILE_URL = BASE_URL + "/doctorProfile";
@@ -341,7 +343,7 @@ public interface PathProxy {
 	public static final String ADD_EDIT_EXPERIENCE_DETAIL = "/addEditExperienceDetail";
 
 	public static final String ADD_EDIT_PROFILE_PICTURE = "/addEditProfilePicture";
-	
+
 	public static final String ADD_EDIT_COVER_PICTURE = "/addEditCoverPicture";
 
 	public static final String ADD_EDIT_PROFESSIONAL_MEMBERSHIP = "/addEditProfessionalMembership";
@@ -365,7 +367,8 @@ public interface PathProxy {
 	public static final String ADD_EDIT_APPOINTMENT_SLOT = "/clinicProfile/addEditAppointmentSlot";
     }
 
-//    public static final String PATIENT_TRACK_BASE_URL = BASE_URL + "/patientTrack";
+    // public static final String PATIENT_TRACK_BASE_URL = BASE_URL +
+    // "/patientTrack";
 
     // public interface PatientTrackUrls {
     // public static final String RECENTLY_VISITED =
@@ -390,27 +393,27 @@ public interface PathProxy {
      */
 
     public static final String ISSUE_TRACK_BASE_URL = BASE_URL + "/issueTrack";
-    
+
     public interface IssueTrackUrls {
-        
-    	 public static final String RAISE_ISSUE =  "add";
-         
-         public static final String UPDATE_STATUS_DOCTOR_SPECIFIC = "/{issueId}/{status}/{doctorId}/{locationId}/{hospitalId}/update";
-         
-         public static final String UPDATE_STATUS_ADMIN = "/{issueId}/{status}/update";
-     }
-    	
+
+	public static final String RAISE_ISSUE = "add";
+
+	public static final String UPDATE_STATUS_DOCTOR_SPECIFIC = "/{issueId}/{status}/{doctorId}/{locationId}/{hospitalId}/update";
+
+	public static final String UPDATE_STATUS_ADMIN = "/{issueId}/{status}/update";
+    }
+
     public static final String PRINT_SETTINGS_BASE_URL = BASE_URL + "/printSettings";
-    
+
     public interface PrintSettingsUrls {
-       
-    	 public static final String SAVE_SETTINGS_DEFAULT_DATA =  "saveDefault";
-    	
-    	 public static final String SAVE_PRINT_SETTINGS =  "add";
-        
-         public static final String GET_PRINT_SETTINGS = "/{printFilter}/{doctorId}/{locationId}/{hospitalId}";
-     }
-    
+
+	public static final String SAVE_SETTINGS_DEFAULT_DATA = "saveDefault";
+
+	public static final String SAVE_PRINT_SETTINGS = "add";
+
+	public static final String GET_PRINT_SETTINGS = "/{printFilter}/{doctorId}/{locationId}/{hospitalId}";
+    }
+
     public static final String SOLR_CLINICAL_NOTES_BASEURL = BASE_URL + "/solr/clinicalNotes";
 
     public interface SolrClinicalNotesUrls {

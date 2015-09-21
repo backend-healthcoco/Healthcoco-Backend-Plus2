@@ -7,75 +7,75 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 public class PrintSettingsDefaultDataCollection {
 
-	@Id
-	private String id;
-	
-	@Field
-	private List<String> layout;
-	
-	@Field
-	private List<String> color;
-	
-	@Field
-	private List<String> margins;
-	
-	@Field
-	private List<String> pageSize;
-	
-	@Field
-	private List<String> logoType;
+    @Id
+    private String id;
 
-	public String getId() {
-		return id;
-	}
+    @Field
+    private List<String> layout;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    @Field
+    private List<String> color;
 
-	public List<String> getLayout() {
-		return layout;
-	}
+    @Field
+    private List<String> margins;
 
-	public void setLayout(List<String> layout) {
-		this.layout = layout;
-	}
+    @Field
+    private List<String> pageSize;
 
-	public List<String> getColor() {
-		return color;
-	}
+    @Field
+    private List<String> logoType;
 
-	public void setColor(List<String> color) {
-		this.color = color;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public List<String> getMargins() {
-		return margins;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public void setMargins(List<String> margins) {
-		this.margins = margins;
-	}
+    public List<String> getLayout() {
+	return layout;
+    }
 
-	public List<String> getPageSize() {
-		return pageSize;
-	}
+    public void setLayout(List<String> layout) {
+	this.layout = layout;
+    }
 
-	public void setPageSize(List<String> pageSize) {
-		this.pageSize = pageSize;
-	}
+    public List<String> getColor() {
+	return color;
+    }
 
-	public List<String> getLogoType() {
-		return logoType;
-	}
+    public void setColor(List<String> color) {
+	this.color = color;
+    }
 
-	public void setLogoType(List<String> logoType) {
-		this.logoType = logoType;
-	}
+    public List<String> getMargins() {
+	return margins;
+    }
 
-	@Override
-	public String toString() {
-		return "PrintSettingsDefaultDataCollection [id=" + id + ", layout=" + layout + ", color=" + color + ", margins="
-				+ margins + ", pageSize=" + pageSize + ", logoType=" + logoType + "]";
-	}
+    public void setMargins(List<String> margins) {
+	this.margins = margins;
+    }
+
+    public List<String> getPageSize() {
+	return pageSize;
+    }
+
+    public void setPageSize(List<String> pageSize) {
+	this.pageSize = pageSize;
+    }
+
+    public List<String> getLogoType() {
+	return logoType;
+    }
+
+    public void setLogoType(List<String> logoType) {
+	this.logoType = logoType;
+    }
+
+    @Override
+    public String toString() {
+	return "PrintSettingsDefaultDataCollection [id=" + id + ", layout=" + layout + ", color=" + color + ", margins=" + margins + ", pageSize=" + pageSize
+		+ ", logoType=" + logoType + "]";
+    }
 }

@@ -6,12 +6,12 @@ import com.dpdocter.beans.IssueTrack;
 
 public interface IssueTrackService {
 
-	IssueTrack addEditIssue(IssueTrack request);
+    IssueTrack addEditIssue(IssueTrack request);
 
-	List<IssueTrack> getIssues(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean dicarded);
+    List<IssueTrack> getIssues(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean dicarded);
 
-	Boolean updateIssueStatus(String issueId, String status, String doctorId, String locationId, String hospitalId);
+    Boolean updateIssueStatus(String issueId, String status, String doctorId, String locationId, String hospitalId);
 
-	Boolean updateIssueStatus(String issueId, String status);
+    Boolean updateIssueStatus(String issueId, String status);
 
 }

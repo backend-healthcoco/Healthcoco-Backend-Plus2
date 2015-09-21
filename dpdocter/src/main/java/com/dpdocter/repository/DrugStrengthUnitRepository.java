@@ -57,28 +57,27 @@ public interface DrugStrengthUnitRepository extends MongoRepository<DrugStrength
 	    Sort sort, PageRequest pageRequest);
 
     @Query("{'doctorId': ?0}")
-	List<DrugStrengthUnitCollection> getCustomDrugStrengthUnit(String doctorId, Sort sort, PageRequest pageRequest);
+    List<DrugStrengthUnitCollection> getCustomDrugStrengthUnit(String doctorId, Sort sort, PageRequest pageRequest);
 
     @Query("{'doctorId': ?0, 'discarded': ?1}")
-	List<DrugStrengthUnitCollection> getCustomDrugStrengthUnit(String doctorId, boolean discarded, Sort sort, PageRequest pageRequest);
+    List<DrugStrengthUnitCollection> getCustomDrugStrengthUnit(String doctorId, boolean discarded, Sort sort, PageRequest pageRequest);
 
     @Query("{'doctorId': ?0,'updatedTime': {'$gte': ?1}}")
-	List<DrugStrengthUnitCollection> getCustomDrugStrengthUnit(String doctorId, Date date, Sort sort, PageRequest pageRequest);
+    List<DrugStrengthUnitCollection> getCustomDrugStrengthUnit(String doctorId, Date date, Sort sort, PageRequest pageRequest);
 
     @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1},'discarded': ?2}")
-	List<DrugStrengthUnitCollection> getCustomDrugStrengthUnit(String doctorId, Date date, boolean discarded, Sort sort,
-			PageRequest pageRequest);
+    List<DrugStrengthUnitCollection> getCustomDrugStrengthUnit(String doctorId, Date date, boolean discarded, Sort sort, PageRequest pageRequest);
 
     @Query("{'$or': [{'doctorId': ?0},{'doctorId': null}]}")
-	List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, Sort sort, PageRequest pageRequest);
+    List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, Sort sort, PageRequest pageRequest);
 
     @Query("{'$or': [{'doctorId': ?0, 'discarded': ?1},{'doctorId': null,'discarded': ?1}]}")
-	List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, boolean discarded, Sort sort,	PageRequest pageRequest);
+    List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, boolean discarded, Sort sort, PageRequest pageRequest);
 
     @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}},{'doctorId': null, 'updatedTime': {'$gte': ?1}}]}")
-	List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, Date date, Sort sort,	PageRequest pageRequest);
+    List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, Date date, Sort sort, PageRequest pageRequest);
 
     @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2},{'doctorId': null, 'updatedTime': {'$gte': ?1},'discarded': ?2}]}")
-	List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, Date date, boolean discarded,	Sort sort, PageRequest pageRequest);
+    List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, Date date, boolean discarded, Sort sort, PageRequest pageRequest);
 
 }

@@ -97,7 +97,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Editing Doctor Profile");
+	    logger.error(e + " Error Editing Doctor Profile");
 	    throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
 	}
 	return response;
@@ -117,7 +117,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Editing Doctor Profile");
+	    logger.error(e + " Error Editing Doctor Profile");
 	    throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
 	}
 	return response;
@@ -138,7 +138,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Editing Doctor Profile");
+	    logger.error(e + " Error Editing Doctor Profile");
 	    throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
 	}
 	return response;
@@ -155,7 +155,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Editing Doctor Profile");
+	    logger.error(e + " Error Editing Doctor Profile");
 	    throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
 	}
 	return response;
@@ -177,7 +177,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Editing Medical Councils");
+	    logger.error(e + " Error Editing Medical Councils");
 	    throw new BusinessException(ServiceError.Unknown, "Error Editing Medical Councils");
 	}
 	return response;
@@ -193,7 +193,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    BeanUtil.map(medicalCouncilCollections, medicalCouncils);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Getting Medical Councils");
+	    logger.error(e + " Error Getting Medical Councils");
 	    throw new BusinessException(ServiceError.Unknown, "Error Getting Medical Councils");
 	}
 	return medicalCouncils;
@@ -231,7 +231,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Editing Doctor Profile");
+	    logger.error(e + " Error Editing Doctor Profile");
 	    throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
 	}
 	return response;
@@ -248,7 +248,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Editing Doctor Profile");
+	    logger.error(e + " Error Editing Doctor Profile");
 	    throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
 	}
 	return response;
@@ -265,7 +265,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Editing Doctor Profile");
+	    logger.error(e + " Error Editing Doctor Profile");
 	    throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
 	}
 	return response;
@@ -282,7 +282,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Editing Doctor Profile");
+	    logger.error(e + " Error Editing Doctor Profile");
 	    throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
 	}
 	return response;
@@ -299,7 +299,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Editing Doctor Profile");
+	    logger.error(e + " Error Editing Doctor Profile");
 	    throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
 	}
 	return response;
@@ -321,7 +321,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Editing Doctor Profile");
+	    logger.error(e + " Error Editing Doctor Profile");
 	    throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
 	}
 	return response;
@@ -343,12 +343,12 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Editing Doctor Profile");
+	    logger.error(e + " Error Editing Doctor Profile");
 	    throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
 	}
 	return response;
     }
-    
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId) {
@@ -408,7 +408,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    doctorProfile.setClinicProfile(clinicProfile);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Getting Doctor Profile");
+	    logger.error(e + " Error Getting Doctor Profile");
 	    throw new BusinessException(ServiceError.Unknown, "Error Getting Doctor Profile");
 	}
 	return doctorProfile;
@@ -429,7 +429,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Inserting Professional Memberships");
+	    logger.error(e + " Error Inserting Professional Memberships");
 	    throw new BusinessException(ServiceError.Unknown, "Error Inserting Professional Memberships");
 	}
 	return response;
@@ -445,7 +445,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    BeanUtil.map(professionalMembershipCollections, professionalMemberships);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Getting Professional Memberships");
+	    logger.error(e + " Error Getting Professional Memberships");
 	    throw new BusinessException(ServiceError.Unknown, "Error Getting Professional Memberships");
 	}
 	return professionalMemberships;
@@ -483,7 +483,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Editing Doctor Profile");
+	    logger.error(e + " Error Editing Doctor Profile");
 	    throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
 	}
 	return response;
@@ -505,7 +505,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Editing Doctor Clinic Profile");
+	    logger.error(e + " Error Editing Doctor Clinic Profile");
 	    throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Clinic Profile");
 	}
 	return response;
@@ -527,7 +527,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Editing Doctor Clinic Profile");
+	    logger.error(e + " Error Editing Doctor Clinic Profile");
 	    throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Clinic Profile");
 	}
 	return response;
@@ -549,7 +549,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Editing Doctor Clinic Profile");
+	    logger.error(e + " Error Editing Doctor Clinic Profile");
 	    throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Clinic Profile");
 	}
 	return response;
@@ -571,7 +571,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Editing Doctor Clinic Profile");
+	    logger.error(e + " Error Editing Doctor Clinic Profile");
 	    throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Clinic Profile");
 	}
 	return response;

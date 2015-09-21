@@ -20,7 +20,6 @@ import com.dpdocter.solr.beans.AdvancedSearch;
 import com.dpdocter.solr.response.SolrPatientResponse;
 import com.dpdocter.solr.services.SolrRegistrationService;
 import com.dpdocter.webservices.PathProxy;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -29,9 +28,9 @@ import common.util.web.Response;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class SolrRegistrationApi {
-	
-	private static Logger logger=Logger.getLogger(SolrRegistrationApi.class.getName());
-	
+
+    private static Logger logger = Logger.getLogger(SolrRegistrationApi.class.getName());
+
     @Autowired
     private SolrRegistrationService solrRegistrationService;
 
@@ -40,7 +39,7 @@ public class SolrRegistrationApi {
     public Response<SolrPatientResponse> searchPatient(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "searchTerm") String searchTerm) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, searchTerm)) {
-		logger.warn("Doctor Id, Location Id, Hospital Id and Search Term Cannot Be Empty");
+	    logger.warn("Doctor Id, Location Id, Hospital Id and Search Term Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Location Id, Hospital Id and Search Term Cannot Be Empty");
 	}
 	List<SolrPatientResponse> patients = solrRegistrationService.searchPatient(doctorId, locationId, hospitalId, searchTerm);
@@ -56,7 +55,7 @@ public class SolrRegistrationApi {
 	List<SolrPatientResponse> patients = null;
 
 	if (request == null) {
-		logger.warn("Search Request Cannot Be Empty");
+	    logger.warn("Search Request Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Search Request Cannot Be Empty");
 	}
 

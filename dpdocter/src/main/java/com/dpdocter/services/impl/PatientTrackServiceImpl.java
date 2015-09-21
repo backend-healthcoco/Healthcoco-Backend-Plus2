@@ -31,8 +31,8 @@ import com.dpdocter.services.PatientTrackService;
 
 @Service
 public class PatientTrackServiceImpl implements PatientTrackService {
-	
-	private static Logger logger=Logger.getLogger(PatientTrackServiceImpl.class.getName());
+
+    private static Logger logger = Logger.getLogger(PatientTrackServiceImpl.class.getName());
 
     @Autowired
     private PatientTrackRepository patientTrackRepository;
@@ -53,8 +53,8 @@ public class PatientTrackServiceImpl implements PatientTrackService {
 	    PatientTrackCollection patientTrackCollection = new PatientTrackCollection();
 	    BeanUtil.map(request, patientTrackCollection);
 	    PatientCollection patientCollection = patientRepository.findByUserId(request.getPatientId());
-	    if(patientCollection != null){
-	    	patientTrackCollection.setPatientId(patientCollection.getId());
+	    if (patientCollection != null) {
+		patientTrackCollection.setPatientId(patientCollection.getId());
 	    }
 	    patientTrackCollection.setVisitedTime(new Date());
 	    patientTrackCollection.setCreatedTime(new Date());
@@ -62,7 +62,7 @@ public class PatientTrackServiceImpl implements PatientTrackService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error while saving patient track record : " + e.getCause().getMessage());
+	    logger.error(e + " Error while saving patient track record : " + e.getCause().getMessage());
 	    throw new BusinessException(ServiceError.Unknown, "Error while saving patient track record : " + e.getCause().getMessage());
 	}
 	return response;
@@ -75,8 +75,8 @@ public class PatientTrackServiceImpl implements PatientTrackService {
 	    PatientTrackCollection patientTrackCollection = new PatientTrackCollection();
 	    BeanUtil.map(details, patientTrackCollection);
 	    PatientCollection patientCollection = patientRepository.findByUserId(patientTrackCollection.getPatientId());
-	    if(patientCollection != null){
-	    	patientTrackCollection.setPatientId(patientCollection.getId());
+	    if (patientCollection != null) {
+		patientTrackCollection.setPatientId(patientCollection.getId());
 	    }
 	    patientTrackCollection.setVisitedFor(visitedFor);
 	    patientTrackCollection.setVisitedTime(new Date());
@@ -86,7 +86,7 @@ public class PatientTrackServiceImpl implements PatientTrackService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error while saving patient track record : " + e.getCause().getMessage());
+	    logger.error(e + " Error while saving patient track record : " + e.getCause().getMessage());
 	    throw new BusinessException(ServiceError.Unknown, "Error while saving patient track record : " + e.getCause().getMessage());
 	}
 	return response;
@@ -98,8 +98,8 @@ public class PatientTrackServiceImpl implements PatientTrackService {
 	try {
 	    PatientTrackCollection patientTrackCollection = new PatientTrackCollection();
 	    PatientCollection patientCollection = patientRepository.findByUserId(patientId);
-	    if(patientCollection != null){
-	    	patientTrackCollection.setPatientId(patientCollection.getId());
+	    if (patientCollection != null) {
+		patientTrackCollection.setPatientId(patientCollection.getId());
 	    }
 	    patientTrackCollection.setDoctorId(doctorId);
 	    patientTrackCollection.setLocationId(locationId);
@@ -111,7 +111,7 @@ public class PatientTrackServiceImpl implements PatientTrackService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error while saving patient track record : " + e.getCause().getMessage());
+	    logger.error(e + " Error while saving patient track record : " + e.getCause().getMessage());
 	    throw new BusinessException(ServiceError.Unknown, "Error while saving patient track record : " + e.getCause().getMessage());
 	}
 	return response;
@@ -134,7 +134,7 @@ public class PatientTrackServiceImpl implements PatientTrackService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error while recently visited patients record : " + e.getCause().getMessage());
+	    logger.error(e + " Error while recently visited patients record : " + e.getCause().getMessage());
 	    throw new BusinessException(ServiceError.Unknown, "Error while getting recently visited patients record : " + e.getCause().getMessage());
 	}
 	return response;
@@ -175,7 +175,7 @@ public class PatientTrackServiceImpl implements PatientTrackService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error while getting most visited patients record : " + e.getCause().getMessage());
+	    logger.error(e + " Error while getting most visited patients record : " + e.getCause().getMessage());
 	    throw new BusinessException(ServiceError.Unknown, "Error while getting most visited patients record : " + e.getCause().getMessage());
 	}
 	return response;

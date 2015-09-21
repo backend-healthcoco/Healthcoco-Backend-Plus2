@@ -24,9 +24,9 @@ import com.dpdocter.solr.services.SolrClinicalNotesService;
 
 @Service
 public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
-	
-	private static Logger logger=Logger.getLogger(SolrClinicalNotesServiceImpl.class.getName());
-	
+
+    private static Logger logger = Logger.getLogger(SolrClinicalNotesServiceImpl.class.getName());
+
     @Autowired
     private SolrComplaintsRepository solrComplaintsRepository;
 
@@ -53,7 +53,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Saving Complaints");
+	    logger.error(e + " Error Occurred While Saving Complaints");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Complaints");
 	}
 	return response;
@@ -67,7 +67,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Editing Complaints");
+	    logger.error(e + " Error Occurred While Editing Complaints");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Complaints");
 	}
 	return response;
@@ -81,7 +81,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Deleting Complaints");
+	    logger.error(e + " Error Occurred While Deleting Complaints");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Complaints");
 	}
 	return response;
@@ -94,7 +94,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    response = solrComplaintsRepository.findByQueryAnnotation(searchTerm);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Searching Complaints");
+	    logger.error(e + " Error Occurred While Searching Complaints");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Complaints");
 	}
 	return response;
@@ -108,7 +108,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Saving Diagnosis");
+	    logger.error(e + " Error Occurred While Saving Diagnosis");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Diagnoses");
 	}
 	return response;
@@ -122,7 +122,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Editing Diagnosis");
+	    logger.error(e + " Error Occurred While Editing Diagnosis");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Diagnoses");
 	}
 	return response;
@@ -136,7 +136,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Deleting Diagnosis");
+	    logger.error(e + " Error Occurred While Deleting Diagnosis");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Diagnoses");
 	}
 	return response;
@@ -149,7 +149,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    response = solrDiagnosesRepository.find(searchTerm);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Searching Diagnosis");
+	    logger.error(e + " Error Occurred While Searching Diagnosis");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Diagnoses");
 	}
 	return response;
@@ -163,7 +163,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Saving Notes");
+	    logger.error(e + " Error Occurred While Saving Notes");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Notes");
 	}
 	return response;
@@ -177,7 +177,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Editing Notes");
+	    logger.error(e + " Error Occurred While Editing Notes");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Notes");
 	}
 	return response;
@@ -191,7 +191,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Deleting Notes");
+	    logger.error(e + " Error Occurred While Deleting Notes");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Notes");
 	}
 	return response;
@@ -204,7 +204,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    response = solrNotesRepository.find(searchTerm);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Searching Notes");
+	    logger.error(e + " Error Occurred While Searching Notes");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Notes");
 	}
 	return response;
@@ -218,7 +218,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Saving Diagrams");
+	    logger.error(e + " Error Occurred While Saving Diagrams");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Diagrams");
 	}
 	return response;
@@ -232,7 +232,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Editing Diagrams");
+	    logger.error(e + " Error Occurred While Editing Diagrams");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Diagrams");
 	}
 	return response;
@@ -246,7 +246,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Deleting Diagrams");
+	    logger.error(e + " Error Occurred While Deleting Diagrams");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Diagrams");
 	}
 	return response;
@@ -259,7 +259,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    response = solrDiagramsRepository.find(searchTerm);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Searching Diagrams");
+	    logger.error(e + " Error Occurred While Searching Diagrams");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Diagrams");
 	}
 	return response;
@@ -273,7 +273,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Saving Investigations");
+	    logger.error(e + " Error Occurred While Saving Investigations");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Investigations");
 	}
 	return response;
@@ -287,7 +287,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Editing Investigations");
+	    logger.error(e + " Error Occurred While Editing Investigations");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Investigations");
 	}
 	return response;
@@ -301,7 +301,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Deleting Investigations");
+	    logger.error(e + " Error Occurred While Deleting Investigations");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Investigations");
 	}
 	return response;
@@ -314,7 +314,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    response = solrInvestigationsRepository.find(searchTerm);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Searching Investigations");
+	    logger.error(e + " Error Occurred While Searching Investigations");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Investigations");
 	}
 	return response;
@@ -328,7 +328,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Saving Observations");
+	    logger.error(e + " Error Occurred While Saving Observations");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Observations");
 	}
 	return response;
@@ -342,7 +342,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Editing Observations");
+	    logger.error(e + " Error Occurred While Editing Observations");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Observations");
 	}
 	return response;
@@ -356,7 +356,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Deleting Observations");
+	    logger.error(e + " Error Occurred While Deleting Observations");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Observations");
 	}
 	return response;
@@ -369,7 +369,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    response = solrObservationsRepository.find(searchTerm);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e+" Error Occurred While Searching Observations");
+	    logger.error(e + " Error Occurred While Searching Observations");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Observations");
 	}
 	return response;
