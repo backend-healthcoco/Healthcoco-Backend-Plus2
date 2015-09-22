@@ -12,4 +12,6 @@ public interface MailBodyGenerator {
     public String generateForgotUsernameEmailBody(List<UserCollection> userCollection);
 
     public String generatePatientRegistrationEmailBody(String userName, String password, String firstName, String lastName);
+
+	public String generateIssueTrackEmailBody(String userName, String firstName, String middleName, String lastName);
 }

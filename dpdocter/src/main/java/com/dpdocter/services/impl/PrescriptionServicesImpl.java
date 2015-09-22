@@ -245,8 +245,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
-    public TemplateAddEditResponse editTemplate(TemplateAddEditRequest request) {
-	TemplateAddEditResponse response = null;
+    public TemplateAddEditResponseDetails editTemplate(TemplateAddEditRequest request) {
+    TemplateAddEditResponseDetails response = null;
+	TemplateAddEditResponse template = null;
 	TemplateCollection templateCollection = new TemplateCollection();
 	BeanUtil.map(request, templateCollection);
 	try {
@@ -255,8 +256,25 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    templateCollection.setCreatedTime(oldTemplate.getCreatedTime());
 	    templateCollection.setDiscarded(oldTemplate.getDiscarded());
 	    templateCollection = templateRepository.save(templateCollection);
-	    response = new TemplateAddEditResponse();
-	    BeanUtil.map(templateCollection, response);
+	    template = new TemplateAddEditResponse();
+	    BeanUtil.map(templateCollection, template);
+	    
+	    if (template != null) {
+		    response = new TemplateAddEditResponseDetails();
+		    BeanUtil.map(template, response);
+		    List<TemplateItemDetail> templateItemDetails = new ArrayList<TemplateItemDetail>();
+		    for (TemplateItem templateItem : template.getItems()) {
+			TemplateItemDetail templateItemDetail = new TemplateItemDetail();
+			BeanUtil.map(templateItem, templateItemDetail);
+			DrugCollection drugCollection = drugRepository.findOne(templateItem.getDrugId());
+			Drug drug = new Drug();
+			if (drugCollection != null)
+			    BeanUtil.map(drugCollection, drug);
+			templateItemDetail.setDrug(drug);
+			templateItemDetails.add(templateItemDetail);
+		    }
+		    response.setItems(templateItemDetails);
+		}
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Template");
@@ -350,8 +368,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
-    public PrescriptionAddEditResponse editPrescription(PrescriptionAddEditRequest request) {
-	PrescriptionAddEditResponse response = null;
+    public PrescriptionAddEditResponseDetails editPrescription(PrescriptionAddEditRequest request) {
+    	PrescriptionAddEditResponseDetails response = null;
+	PrescriptionAddEditResponse prescription = null;
 	PrescriptionCollection prescriptionCollection = new PrescriptionCollection();
 	BeanUtil.map(request, prescriptionCollection);
 	try {
@@ -361,8 +380,25 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    prescriptionCollection.setDiscarded(oldPrescription.getDiscarded());
 	    prescriptionCollection.setInHistory(oldPrescription.isInHistory());
 	    prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
-	    response = new PrescriptionAddEditResponse();
-	    BeanUtil.map(prescriptionCollection, response);
+	    prescription = new PrescriptionAddEditResponse();
+	    BeanUtil.map(prescriptionCollection, prescription);
+	    
+	    if (prescription != null) {
+		    response = new PrescriptionAddEditResponseDetails();
+		    BeanUtil.map(prescription, response);
+		    List<PrescriptionItemDetail> prescriptionItemDetails = new ArrayList<PrescriptionItemDetail>();
+		    for (PrescriptionItem prescriptionItem : prescription.getItems()) {
+			PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
+			BeanUtil.map(prescriptionItem, prescriptionItemDetail);
+			DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
+			Drug drug = new Drug();
+			if (drugCollection != null)
+			    BeanUtil.map(drugCollection, drug);
+			prescriptionItemDetail.setDrug(drug);
+			prescriptionItemDetails.add(prescriptionItemDetail);
+		    }
+		    response.setItems(prescriptionItemDetails);
+		}
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Prescription");
@@ -1143,7 +1179,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    } else {
 		long createdTimeStamp = Long.parseLong(updatedTime);
 		if (discarded)
-		    drugCollections = drugRepository.getGlobalDrugs(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"),
+		    drugCollections = drugRepository.getGlobalDrugs(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"),
 			    size > 0 ? new PageRequest(page, size) : null);
 		else
 		    drugCollections = drugRepository.getGlobalDrugs(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"),
@@ -1189,7 +1225,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		long createdTimeStamp = Long.parseLong(updatedTime);
 		if (locationId == null && hospitalId == null) {
 		    if (discarded)
-			drugCollections = drugRepository.getCustomDrugs(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"),
+			drugCollections = drugRepository.getCustomDrugs(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"),
 				size > 0 ? new PageRequest(page, size) : null);
 		    else
 			drugCollections = drugRepository.getCustomDrugs(doctorId, new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC,
@@ -1241,7 +1277,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		if (locationId == null && hospitalId == null) {
 		    if (discarded)
 			drugCollections = drugRepository.getCustomGlobalDrugs(doctorId, new Date(createdTimeStamp),
-				new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		    else
 			drugCollections = drugRepository.getCustomGlobalDrugs(doctorId, new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC,
 				"createdTime"), size > 0 ? new PageRequest(page, size) : null);
@@ -1251,7 +1287,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
 		    else
 			drugCollections = drugRepository.getCustomGlobalDrugs(doctorId, hospitalId, locationId, new Date(createdTimeStamp), discarded,
-				new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		}
 	    }
 	    if (!drugCollections.isEmpty()) {
@@ -1281,7 +1317,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    } else {
 		long createdTimeStamp = Long.parseLong(updatedTime);
 		if (discarded)
-		    drugTypeCollections = drugTypeRepository.getGlobalDrugType(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"),
+		    drugTypeCollections = drugTypeRepository.getGlobalDrugType(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"),
 			    size > 0 ? new PageRequest(page, size) : null);
 		else
 		    drugTypeCollections = drugTypeRepository.getGlobalDrugType(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC,
@@ -1336,7 +1372,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
 		    else
 			drugTypeCollections = drugTypeRepository.getCustomDrugType(doctorId, hospitalId, locationId, new Date(createdTimeStamp), discarded,
-				new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		}
 	    }
 	    if (!drugTypeCollections.isEmpty()) {
@@ -1384,10 +1420,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		} else {
 		    if (discarded)
 			drugTypeCollections = drugTypeRepository.getCustomGlobalDrugType(doctorId, hospitalId, locationId, new Date(createdTimeStamp),
-				new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		    else
 			drugTypeCollections = drugTypeRepository.getCustomGlobalDrugType(doctorId, hospitalId, locationId, new Date(createdTimeStamp),
-				discarded, new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		}
 	    }
 	    if (!drugTypeCollections.isEmpty()) {
@@ -1470,10 +1506,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		} else {
 		    if (discarded)
 			drugDirectionCollections = drugDirectionRepository.getCustomDrugDirection(doctorId, hospitalId, locationId, new Date(createdTimeStamp),
-				new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		    else
 			drugDirectionCollections = drugDirectionRepository.getCustomDrugDirection(doctorId, hospitalId, locationId, new Date(createdTimeStamp),
-				discarded, new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		}
 	    }
 	    if (!drugDirectionCollections.isEmpty()) {
@@ -1517,14 +1553,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
 		    else
 			drugDirectionCollections = drugDirectionRepository.getCustomGlobalDrugDirection(doctorId, new Date(createdTimeStamp), discarded,
-				new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		} else {
 		    if (discarded)
 			drugDirectionCollections = drugDirectionRepository.getCustomGlobalDrugDirection(doctorId, hospitalId, locationId, new Date(
-				createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		    else
 			drugDirectionCollections = drugDirectionRepository.getCustomGlobalDrugDirection(doctorId, hospitalId, locationId, new Date(
-				createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		}
 	    }
 	    if (!drugDirectionCollections.isEmpty()) {
@@ -1554,7 +1590,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    } else {
 		long createdTimeStamp = Long.parseLong(updatedTime);
 		if (discarded)
-		    drugDosageCollections = drugDosageRepository.getGlobalDrugDosage(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"),
+		    drugDosageCollections = drugDosageRepository.getGlobalDrugDosage(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"),
 			    size > 0 ? new PageRequest(page, size) : null);
 		else
 		    drugDosageCollections = drugDosageRepository.getGlobalDrugDosage(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC,
@@ -1607,10 +1643,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		} else {
 		    if (discarded)
 			drugDosageCollections = drugDosageRepository.getCustomDrugDosage(doctorId, hospitalId, locationId, new Date(createdTimeStamp),
-				new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		    else
 			drugDosageCollections = drugDosageRepository.getCustomDrugDosage(doctorId, hospitalId, locationId, new Date(createdTimeStamp),
-				discarded, new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		}
 	    }
 	    if (!drugDosageCollections.isEmpty()) {
@@ -1658,10 +1694,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		} else {
 		    if (discarded)
 			drugDosageCollections = drugDosageRepository.getCustomGlobalDrugDosage(doctorId, hospitalId, locationId, new Date(createdTimeStamp),
-				new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		    else
 			drugDosageCollections = drugDosageRepository.getCustomGlobalDrugDosage(doctorId, hospitalId, locationId, new Date(createdTimeStamp),
-				discarded, new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		}
 	    }
 	    if (!drugDosageCollections.isEmpty()) {
@@ -1741,14 +1777,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
 		    else
 			drugDurationUnitCollections = drugDurationUnitRepository.getCustomDrugDurationUnit(doctorId, new Date(createdTimeStamp), discarded,
-				new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		} else {
 		    if (discarded)
 			drugDurationUnitCollections = drugDurationUnitRepository.getCustomDrugDurationUnit(doctorId, hospitalId, locationId, new Date(
-				createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		    else
 			drugDurationUnitCollections = drugDurationUnitRepository.getCustomDrugDurationUnit(doctorId, hospitalId, locationId, new Date(
-				createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		}
 	    }
 	    if (!drugDurationUnitCollections.isEmpty()) {
@@ -1789,17 +1825,17 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		if (locationId == null && hospitalId == null) {
 		    if (discarded)
 			drugDurationUnitCollections = drugDurationUnitRepository.getCustomGlobalDrugDurationUnit(doctorId, new Date(createdTimeStamp),
-				new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		    else
 			drugDurationUnitCollections = drugDurationUnitRepository.getCustomGlobalDrugDurationUnit(doctorId, new Date(createdTimeStamp),
-				discarded, new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		} else {
 		    if (discarded)
 			drugDurationUnitCollections = drugDurationUnitRepository.getCustomGlobalDrugDurationUnit(doctorId, hospitalId, locationId, new Date(
-				createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		    else
 			drugDurationUnitCollections = drugDurationUnitRepository.getCustomGlobalDrugDurationUnit(doctorId, hospitalId, locationId, new Date(
-				createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		}
 	    }
 	    if (!drugDurationUnitCollections.isEmpty()) {
@@ -1876,17 +1912,17 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		if (locationId == null && hospitalId == null) {
 		    if (discarded)
 			drugStrengthUnitCollections = drugStrengthRepository.getCustomDrugStrengthUnit(doctorId, new Date(createdTimeStamp), new Sort(
-				Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		    else
 			drugStrengthUnitCollections = drugStrengthRepository.getCustomDrugStrengthUnit(doctorId, new Date(createdTimeStamp), discarded,
-				new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		} else {
 		    if (discarded)
 			drugStrengthUnitCollections = drugStrengthRepository.getCustomDrugStrengthUnit(doctorId, hospitalId, locationId, new Date(
-				createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		    else
 			drugStrengthUnitCollections = drugStrengthRepository.getCustomDrugStrengthUnit(doctorId, hospitalId, locationId, new Date(
-				createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		}
 	    }
 	    if (!drugStrengthUnitCollections.isEmpty()) {
@@ -1927,17 +1963,17 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		if (locationId == null && hospitalId == null) {
 		    if (discarded)
 			drugStrengthUnitCollections = drugStrengthRepository.getCustomGlobalDrugStrengthUnit(doctorId, new Date(createdTimeStamp), new Sort(
-				Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		    else
 			drugStrengthUnitCollections = drugStrengthRepository.getCustomGlobalDrugStrengthUnit(doctorId, new Date(createdTimeStamp), discarded,
-				new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		} else {
 		    if (discarded)
 			drugStrengthUnitCollections = drugStrengthRepository.getCustomGlobalDrugStrengthUnit(doctorId, hospitalId, locationId, new Date(
-				createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		    else
 			drugStrengthUnitCollections = drugStrengthRepository.getCustomGlobalDrugStrengthUnit(doctorId, hospitalId, locationId, new Date(
-				createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "createdTime"), size > 0 ? new PageRequest(page, size) : null);
+				createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
 		}
 	    }
 	    if (!drugStrengthUnitCollections.isEmpty()) {
@@ -1995,7 +2031,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		String path = jasperReportService.createPDF(parameters, "mongo-prescription");
 		FileSystemResource file = new FileSystemResource(path);
 		mailAttachment = new MailAttachment();
-		System.out.println(file.getFilename());
 		mailAttachment.setAttachmentName(file.getFilename());
 		mailAttachment.setFileSystemResource(file);
 	    } else {

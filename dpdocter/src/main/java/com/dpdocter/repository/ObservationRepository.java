@@ -30,7 +30,7 @@ public interface ObservationRepository extends MongoRepository<ObservationCollec
     @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?2}")
     List<ObservationCollection> findGlobalObservations(Date date, Boolean discarded, Sort sort, PageRequest pageRequest);
 
-    @Query("{'createdTime': {'$gte': ?0}, 'isDeleted': ?1}")
+    @Query("{'updatedTime': {'$gte': ?0}, 'isDeleted': ?1}")
     List<ObservationCollection> findObservations(Date date, boolean b, Sort sort);
 
     @Query("{'doctorId': null, 'discarded': ?1}")

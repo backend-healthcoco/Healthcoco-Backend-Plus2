@@ -165,6 +165,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    if (request.getImage() != null) {
 		String path = "profile-pic";
 		// save image
+		request.getImage().setFileName(request.getImage().getFileName()+new Date().getTime());
 		String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 		userCollection.setImageUrl(imageurl);
 	    }
@@ -257,6 +258,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    if (request.getImage() != null) {
 		String path = "profile-image";
 		// save image
+		request.getImage().setFileName(request.getImage().getFileName()+new Date().getTime());
 		String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 		userCollection.setImageUrl(imageurl);
 	    }
@@ -377,6 +379,7 @@ public class SignUpServiceImpl implements SignUpService {
 		if (request.getImage() != null) {
 		    String path = "profile-image";
 		    // save image
+		    request.getImage().setFileName(request.getImage().getFileName()+new Date().getTime());
 		    String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 		    userCollection.setImageUrl(imageurl);
 		    userCollection = userRepository.save(userCollection);

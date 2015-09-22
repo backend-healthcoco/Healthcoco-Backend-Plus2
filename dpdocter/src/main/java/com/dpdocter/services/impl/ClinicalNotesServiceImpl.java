@@ -287,9 +287,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			Complaint complaint = new Complaint();
 			complaint.setComplaint(complaintCollection.getComplaint());
 			BeanUtil.map(complaintCollection, complaint);
-			complaint.setDoctorId(null);
-			complaint.setHospitalId(null);
-			complaint.setLocationId(null);
+//			complaint.setDoctorId(null);
+//			complaint.setHospitalId(null);
+//			complaint.setLocationId(null);
 			complaints.add(complaint);
 		    }
 		    clinicalNote.setComplaints(complaints);
@@ -302,9 +302,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    for (ObservationCollection observationCollection : observationCollections) {
 			Observation observation = new Observation();
 			BeanUtil.map(observationCollection, observation);
-			observation.setDoctorId(null);
-			observation.setHospitalId(null);
-			observation.setLocationId(null);
+//			observation.setDoctorId(null);
+//			observation.setHospitalId(null);
+//			observation.setLocationId(null);
 			observations.add(observation);
 		    }
 		    clinicalNote.setObservations(observations);
@@ -317,9 +317,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    for (InvestigationCollection investigationCollection : investigationCollections) {
 			Investigation investigation = new Investigation();
 			BeanUtil.map(investigationCollection, investigation);
-			investigation.setDoctorId(null);
-			investigation.setHospitalId(null);
-			investigation.setLocationId(null);
+//			investigation.setDoctorId(null);
+//			investigation.setHospitalId(null);
+//			investigation.setLocationId(null);
 			investigations.add(investigation);
 		    }
 		    clinicalNote.setInvestigations(investigations);
@@ -332,9 +332,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    for (DiagnosisCollection diagnosisCollection : diagnosisCollections) {
 			Diagnoses diagnosis = new Diagnoses();
 			BeanUtil.map(diagnosisCollection, diagnosis);
-			diagnosis.setDoctorId(null);
-			diagnosis.setHospitalId(null);
-			diagnosis.setLocationId(null);
+//			diagnosis.setDoctorId(null);
+//			diagnosis.setHospitalId(null);
+//			diagnosis.setLocationId(null);
 			diagnosisList.add(diagnosis);
 		    }
 		    clinicalNote.setDiagnoses(diagnosisList);
@@ -347,9 +347,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    for (NotesCollection notesCollection : notesCollections) {
 			Notes note = new Notes();
 			BeanUtil.map(notesCollection, note);
-			note.setDoctorId(null);
-			note.setLocationId(null);
-			note.setHospitalId(null);
+//			note.setDoctorId(null);
+//			note.setLocationId(null);
+//			note.setHospitalId(null);
 			notes.add(note);
 		    }
 		    clinicalNote.setNotes(notes);
@@ -363,9 +363,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			for (DiagramsCollection diagramsCollection : diagramsCollections) {
 			    Diagram diagram = new Diagram();
 			    BeanUtil.map(diagramsCollection, diagram);
-			    diagram.setDoctorId(null);
-			    diagram.setHospitalId(null);
-			    diagram.setLocationId(null);
+//			    diagram.setDoctorId(null);
+//			    diagram.setHospitalId(null);
+//			    diagram.setLocationId(null);
 			    diagrams.add(diagram);
 			}
 			clinicalNote.setDiagrams(diagrams);
@@ -791,10 +791,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     @Override
     public Diagram addEditDiagram(Diagram diagram) {
 	try {
-	    String path = "clinicalNotes" + File.separator + "diagrams";
-	    String diagramUrl = fileManager.saveImageAndReturnImageUrl(diagram.getDiagram(), path);
-	    diagram.setDiagramUrl(diagramUrl);
-	    DiagramsCollection diagramsCollection = new DiagramsCollection();
+	    if(diagram.getDiagram()!=null){
+	    	String path = "clinicalNotes" + File.separator + "diagrams";
+	    	diagram.getDiagram().setFileName(diagram.getDiagram().getFileName()+new Date().getTime());
+		    String diagramUrl = fileManager.saveImageAndReturnImageUrl(diagram.getDiagram(), path);
+		    diagram.setDiagramUrl(diagramUrl);
+		    
+	    }
+	    	DiagramsCollection diagramsCollection = new DiagramsCollection();
 	    BeanUtil.map(diagram, diagramsCollection);
 	    if (DPDoctorUtils.anyStringEmpty(diagramsCollection.getId())) {
 		diagramsCollection.setCreatedTime(new Date());

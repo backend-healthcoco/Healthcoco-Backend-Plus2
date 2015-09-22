@@ -2,7 +2,7 @@ package com.dpdocter.enums;
 
 public enum IssueStatus {
 
-    OPEN("OPEN"), INPROGRESS("INPROGRESS"), COMPLETED("COMPLETED"), REOPEN("REOPEN");
+    OPEN("OPEN"), INPROGRESS("INPROGRESS"), COMPLETED("COMPLETED"), REOPEN("REOPEN"), ALL("ALL");
 
     private String status;
 

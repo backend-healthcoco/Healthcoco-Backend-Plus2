@@ -422,9 +422,13 @@ public class ContactsServiceImpl implements ContactsService {
 	Boolean response = false;
 	ImportContactsRequestCollection importContactsRequestCollection = null;
 	try {
-	    String path = "contacts" + File.separator + request.getDoctorId();
-	    String contactsFileUrl = fileManager.saveImageAndReturnImageUrl(request.getContactsFile(), path);
-	    request.setContactsFileUrl(contactsFileUrl);
+		if(request.getContactsFile() != null){
+			request.getContactsFile().setFileName(request.getContactsFile().getFileName()+new Date().getTime());
+			String path = "contacts" + File.separator + request.getDoctorId();
+		    String contactsFileUrl = fileManager.saveImageAndReturnImageUrl(request.getContactsFile(), path);
+		    request.setContactsFileUrl(contactsFileUrl);
+		    
+		}
 	    importContactsRequestCollection = new ImportContactsRequestCollection();
 	    BeanUtil.map(request, importContactsRequestCollection);
 	    importContactsRequestCollection = importContactsRequestRepository.save(importContactsRequestCollection);

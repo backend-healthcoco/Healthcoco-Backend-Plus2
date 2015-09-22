@@ -192,6 +192,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    if (request.getImage() != null) {
 		String path = "profile-images";
 		// save image
+		request.getImage().setFileName(request.getImage().getFileName()+new Date().getTime());
 		String imageUrl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 		userCollection.setImageUrl(imageUrl);
 	    }
@@ -388,6 +389,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    if (request.getImage() != null) {
 		String path = "profile-images";
 		// save image
+		request.getImage().setFileName(request.getImage().getFileName()+new Date().getTime());
 		String imageUrl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 		userCollection.setImageUrl(imageUrl);
 		registeredPatientDetails.setImageUrl(imageUrl);
@@ -861,6 +863,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		if (request.getImage() != null) {
 		    String path = "clinic" + File.separator + "logos";
 		    // save image
+		    request.getImage().setFileName(request.getImage().getFileName()+new Date().getTime());
 		    String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 		    locationCollection.setLogoUrl(imageurl);
 		    locationCollection = locationRepository.save(locationCollection);
@@ -895,6 +898,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    for (FileDetails image : request.getImages()) {
 			counter++;
 			String path = "clinic" + File.separator + "images";
+			image.setFileName(image.getFileName()+new Date().getTime());
 			String imageurl = fileManager.saveImageAndReturnImageUrl(image, path);
 			ClinicImage clinicImage = new ClinicImage();
 			clinicImage.setImageUrl(imageurl);

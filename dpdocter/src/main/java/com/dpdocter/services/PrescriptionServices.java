@@ -38,7 +38,7 @@ public interface PrescriptionServices {
 
     TemplateAddEditResponse addTemplate(TemplateAddEditRequest request);
 
-    TemplateAddEditResponse editTemplate(TemplateAddEditRequest request);
+    TemplateAddEditResponseDetails editTemplate(TemplateAddEditRequest request);
 
     Boolean deleteTemplate(String templateId, String doctorId, String hospitalId, String locationId);
 
@@ -46,7 +46,7 @@ public interface PrescriptionServices {
 
     PrescriptionAddEditResponse addPrescription(PrescriptionAddEditRequest request);
 
-    PrescriptionAddEditResponse editPrescription(PrescriptionAddEditRequest request);
+    PrescriptionAddEditResponseDetails editPrescription(PrescriptionAddEditRequest request);
 
     Boolean deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId, String patientId);
 

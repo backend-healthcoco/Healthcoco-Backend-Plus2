@@ -314,6 +314,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    if (request.getImage() != null) {
 		String path = "profile-image";
 		// save image
+		request.getImage().setFileName(request.getImage().getFileName()+new Date().getTime());
 		String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 		userCollection.setImageUrl(imageurl);
 		userCollection = userRepository.save(userCollection);
@@ -336,6 +337,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    if (request.getImage() != null) {
 		String path = "cover-image";
 		// save image
+		request.getImage().setFileName(request.getImage().getFileName()+new Date().getTime());
 		String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 		userCollection.setCoverImageUrl(imageurl);
 		userCollection = userRepository.save(userCollection);

@@ -177,14 +177,14 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_TEMPLATE)
     @PUT
-    public Response<TemplateAddEditResponse> editTemplate(@PathParam(value = "templateId") String templateId, TemplateAddEditRequest request) {
+    public Response<TemplateAddEditResponseDetails> editTemplate(@PathParam(value = "templateId") String templateId, TemplateAddEditRequest request) {
 	if (StringUtils.isEmpty(templateId) || request == null) {
 	    logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
 	request.setId(templateId);
-	TemplateAddEditResponse templateAddEditResponse = prescriptionServices.editTemplate(request);
-	Response<TemplateAddEditResponse> response = new Response<TemplateAddEditResponse>();
+	TemplateAddEditResponseDetails templateAddEditResponse = prescriptionServices.editTemplate(request);
+	Response<TemplateAddEditResponseDetails> response = new Response<TemplateAddEditResponseDetails>();
 	response.setData(templateAddEditResponse);
 	return response;
     }
@@ -278,19 +278,19 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_PRESCRIPTION)
     @PUT
-    public Response<PrescriptionAddEditResponse> editPrescription(@PathParam(value = "prescriptionId") String prescriptionId, PrescriptionAddEditRequest request) {
+    public Response<PrescriptionAddEditResponseDetails> editPrescription(@PathParam(value = "prescriptionId") String prescriptionId, PrescriptionAddEditRequest request) {
 	if (StringUtils.isEmpty(prescriptionId) || request == null) {
 	    logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
 	request.setId(prescriptionId);
-	PrescriptionAddEditResponse prescriptionAddEditResponse = prescriptionServices.editPrescription(request);
+	PrescriptionAddEditResponseDetails prescriptionAddEditResponse = prescriptionServices.editPrescription(request);
 
 	if (prescriptionAddEditResponse != null) {
 	    patientTrackService.addRecord(prescriptionAddEditResponse, VisitedFor.PRESCRIPTION);
 	}
 
-	Response<PrescriptionAddEditResponse> response = new Response<PrescriptionAddEditResponse>();
+	Response<PrescriptionAddEditResponseDetails> response = new Response<PrescriptionAddEditResponseDetails>();
 	response.setData(prescriptionAddEditResponse);
 	return response;
     }

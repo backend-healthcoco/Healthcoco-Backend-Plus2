@@ -1,9 +1,11 @@
 package com.dpdocter.webservices;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -14,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.MatrixVariable;
 
 import com.dpdocter.beans.IssueTrack;
 import com.dpdocter.exceptions.BusinessException;
@@ -48,13 +51,14 @@ public class IssueTrackApi {
 	return response;
     }
 
+//    @Path(value = PathProxy.IssueTrackUrls.GET_ISSUE)
     @GET
     public Response<IssueTrack> getIssues(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
-	    @QueryParam(value = "updatedTime") String updatedTime, @QueryParam(value = "discarded") Boolean discarded) {
+	    @QueryParam(value = "updatedTime") String updatedTime, @QueryParam(value = "discarded") Boolean discarded,
+	    @MatrixParam("scope") List<String> scope) {
 
-	List<IssueTrack> issueTrack = issueTrackService.getIssues(page, size, doctorId, locationId, hospitalId, updatedTime, discarded != null ? discarded
-		: true);
+	List<IssueTrack> issueTrack = issueTrackService.getIssues(page, size, doctorId, locationId, hospitalId, updatedTime, discarded != null ? discarded: true, scope);
 	Response<IssueTrack> response = new Response<IssueTrack>();
 	response.setDataList(issueTrack);
 

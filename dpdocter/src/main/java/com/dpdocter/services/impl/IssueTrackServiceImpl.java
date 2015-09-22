@@ -12,12 +12,17 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.IssueTrack;
 import com.dpdocter.collections.IssueTrackCollection;
+import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.IssueStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.IssueTrackRepository;
+import com.dpdocter.repository.UserRepository;
 import com.dpdocter.services.IssueTrackService;
+import com.dpdocter.services.MailBodyGenerator;
+import com.dpdocter.services.MailService;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -27,6 +32,16 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 
     @Autowired
     private IssueTrackRepository issueTrackRepository;
+    
+    @Autowired
+    private MailService mailService;
+
+    @Autowired
+    private MailBodyGenerator mailBodyGenerator;
+
+    @Autowired
+    private UserRepository userRepository;
+
 
     @Override
     public IssueTrack addEditIssue(IssueTrack request) {
@@ -43,7 +58,16 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 		issueTrackCollection.setDiscarded(oldIssueTrackCollection.getDiscarded());
 		issueTrackCollection.setStatus(oldIssueTrackCollection.getStatus());
 	    }
+	    
+	    if(!DPDoctorUtils.anyStringEmpty(request.getDoctorId())){
+	    	UserCollection userCollection = userRepository.findOne(request.getDoctorId());
+	    	 String body = mailBodyGenerator.generateIssueTrackEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
+	 			    userCollection.getMiddleName(), userCollection.getLastName());
+	 		mailService.sendEmail(userCollection.getEmailAddress(), "Issue Track", body, null);
+	 		
+	    }
 	    issueTrackCollection = issueTrackRepository.save(issueTrackCollection);
+	       
 	    if (issueTrackCollection != null) {
 		response = new IssueTrack();
 		BeanUtil.map(issueTrackCollection, response);
@@ -58,47 +82,92 @@ public class IssueTrackServiceImpl implements IssueTrackService {
     }
 
     @Override
-    public List<IssueTrack> getIssues(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded) {
+    public List<IssueTrack> getIssues(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, List<String> scope) {
 	List<IssueTrack> response = null;
 	List<IssueTrackCollection> issueTrackCollection = null;
 	try {
-	    if (doctorId == null)
-		issueTrackCollection = issueTrackRepository.findAll();
-	    else if (!DPDoctorUtils.allStringsEmpty(updatedTime)) {
-		long createdTimeStamp = Long.parseLong(updatedTime);
-		if (locationId == null && hospitalId == null) {
-		    if (discarded)
-			issueTrackCollection = issueTrackRepository.find(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"),
-				size > 0 ? new PageRequest(page, size) : null);
-		    else
-			issueTrackCollection = issueTrackRepository.find(doctorId, new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC,
-				"updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-		} else {
-		    if (discarded)
-			issueTrackCollection = issueTrackRepository.find(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(
-				Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-		    else
-			issueTrackCollection = issueTrackRepository.find(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discarded, new Sort(
-				Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+		if(scope.isEmpty()){
+			if (doctorId == null)issueTrackCollection = issueTrackRepository.findAll();
+		    else if (!DPDoctorUtils.allStringsEmpty(updatedTime)) {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			if (locationId == null && hospitalId == null) {
+			    if (discarded)
+				issueTrackCollection = issueTrackRepository.find(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"),
+					size > 0 ? new PageRequest(page, size) : null);
+			    else
+				issueTrackCollection = issueTrackRepository.find(doctorId, new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC,
+					"updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+			} else {
+			    if (discarded)
+				issueTrackCollection = issueTrackRepository.find(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(
+					Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+			    else
+				issueTrackCollection = issueTrackRepository.find(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discarded, new Sort(
+					Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+			}
+		    } else {
+			if (locationId == null && hospitalId == null) {
+			    if (discarded)
+				issueTrackCollection = issueTrackRepository.find(doctorId, new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(
+					page, size) : null);
+			    else
+				issueTrackCollection = issueTrackRepository.find(doctorId, discarded, new Sort(Sort.Direction.DESC, "updatedTime"),
+					size > 0 ? new PageRequest(page, size) : null);
+			} else {
+			    if (discarded)
+				issueTrackCollection = issueTrackRepository.find(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "updatedTime"),
+					size > 0 ? new PageRequest(page, size) : null);
+			    else
+				issueTrackCollection = issueTrackRepository.find(doctorId, locationId, hospitalId, discarded, new Sort(Sort.Direction.DESC,
+					"updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+			}
+		    }
 		}
-	    } else {
-		if (locationId == null && hospitalId == null) {
-		    if (discarded)
-			issueTrackCollection = issueTrackRepository.find(doctorId, new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(
-				page, size) : null);
-		    else
-			issueTrackCollection = issueTrackRepository.find(doctorId, discarded, new Sort(Sort.Direction.DESC, "updatedTime"),
-				size > 0 ? new PageRequest(page, size) : null);
-		} else {
-		    if (discarded)
-			issueTrackCollection = issueTrackRepository.find(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "updatedTime"),
-				size > 0 ? new PageRequest(page, size) : null);
-		    else
-			issueTrackCollection = issueTrackRepository.find(doctorId, locationId, hospitalId, discarded, new Sort(Sort.Direction.DESC,
-				"updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+		else{
+			issueTrackCollection = new ArrayList<IssueTrackCollection>();
+			for(String status : scope){
+				List<IssueTrackCollection> localCollection = null;
+				status = status.toUpperCase();
+		    	if (doctorId == null)localCollection = issueTrackRepository.findByStatus(status, new Sort(Sort.Direction.DESC, "updatedTime"),
+						size > 0 ? new PageRequest(page, size) : null);
+			    else if (!DPDoctorUtils.allStringsEmpty(updatedTime)) {
+				long createdTimeStamp = Long.parseLong(updatedTime);
+				if (locationId == null && hospitalId == null) {
+				    if (discarded)
+				    	localCollection = issueTrackRepository.find(doctorId, status, new Date(createdTimeStamp),  new Sort(Sort.Direction.DESC, "updatedTime"),
+						size > 0 ? new PageRequest(page, size) : null);
+				    else
+				    	localCollection = issueTrackRepository.find(doctorId, status, new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC,
+						"updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+				} else {
+				    if (discarded)
+				    	localCollection = issueTrackRepository.find(doctorId, locationId, hospitalId, status, new Date(createdTimeStamp), new Sort(
+						Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+				    else
+				    	localCollection = issueTrackRepository.find(doctorId, locationId, hospitalId, status, new Date(createdTimeStamp), discarded, new Sort(
+						Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+				}
+			    } else {
+				if (locationId == null && hospitalId == null) {
+				    if (discarded)
+				    	localCollection = issueTrackRepository.find(doctorId, status, new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(
+						page, size) : null);
+				    else
+				    	localCollection = issueTrackRepository.find(doctorId, discarded, status, new Sort(Sort.Direction.DESC, "updatedTime"),
+						size > 0 ? new PageRequest(page, size) : null);
+				} else {
+				    if (discarded)
+				    	localCollection = issueTrackRepository.find(doctorId, locationId, hospitalId, status, new Sort(Sort.Direction.DESC, "updatedTime"),
+						size > 0 ? new PageRequest(page, size) : null);
+				    else
+				    	localCollection = issueTrackRepository.find(doctorId, locationId, hospitalId, discarded, status, new Sort(Sort.Direction.DESC,
+						"updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+				}
+			    }
+		    	issueTrackCollection.addAll(localCollection);
+		    }
 		}
-	    }
-
+	    
 	    if (issueTrackCollection != null) {
 		response = new ArrayList<IssueTrack>();
 		BeanUtil.map(issueTrackCollection, response);

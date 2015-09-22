@@ -37,4 +37,32 @@ public interface IssueTrackRepository extends MongoRepository<IssueTrackCollecti
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3}")
     List<IssueTrackCollection> find(String doctorId, String locationId, String hospitalId, Boolean discarded, Sort sort, PageRequest pageRequest);
 
+    @Query("{'doctorId': ?0, 'status': ?1, 'updatedTime': {'$gte': ?2}}")
+	List<IssueTrackCollection> find(String doctorId, String status, Date date, Sort sort, PageRequest pageRequest);
+
+    @Query("{'doctorId': ?0, 'status': ?1, 'updatedTime': {'$gte': ?2}, 'discarded': ?3}")
+	List<IssueTrackCollection> find(String doctorId, String status, Date date, Boolean discarded, Sort sort, PageRequest pageRequest);
+
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'status': ?3, 'updatedTime': {'$gte': ?4}}")
+	List<IssueTrackCollection> find(String doctorId, String locationId, String hospitalId, String status, Date date, Sort sort, PageRequest pageRequest);
+
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'status': ?3, 'updatedTime': {'$gte': ?4}, 'discarded': ?5}")
+	List<IssueTrackCollection> find(String doctorId, String locationId, String hospitalId, String status, Date date, Boolean discarded, Sort sort, PageRequest pageRequest);
+
+    @Query("{'doctorId': ?0, 'status': ?1}")
+	List<IssueTrackCollection> find(String doctorId, String status, Sort sort, PageRequest pageRequest);
+
+    @Query("{'doctorId': ?0, 'discarded': ?1, 'status': ?2}")
+	List<IssueTrackCollection> find(String doctorId, Boolean discarded, String status, Sort sort, PageRequest pageRequest);
+
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'status': ?3}")
+	List<IssueTrackCollection> find(String doctorId, String locationId, String hospitalId, String status, Sort sort, PageRequest pageRequest);
+
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3, 'status': ?4}")
+	List<IssueTrackCollection> find(String doctorId, String locationId, String hospitalId, Boolean discarded,
+			String status, Sort sort, PageRequest pageRequest);
+
+    @Query("{'status': ?0}")
+	List<IssueTrackCollection> findByStatus(String status, Sort sort, PageRequest pageRequest);
+
 }
