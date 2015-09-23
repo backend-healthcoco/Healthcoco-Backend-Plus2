@@ -49,9 +49,9 @@ import com.dpdocter.request.ExportContactsRequest;
 import com.dpdocter.request.GetDoctorContactsRequest;
 import com.dpdocter.request.ImportContactsRequest;
 import com.dpdocter.request.PatientGroupAddEditRequest;
-import com.dpdocter.request.SearchRequest;
 import com.dpdocter.services.ContactsService;
 import com.dpdocter.services.FileManager;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -104,9 +104,10 @@ public class ContactsServiceImpl implements ContactsService {
     public List<PatientCard> getDoctorContacts(GetDoctorContactsRequest request) {
 	List<DoctorContactCollection> doctorContactCollections = null;
 	try {
-	    doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(), false, new PageRequest(request.getPage(),
-		    request.getSize(), Direction.DESC, "updatedTime"));
-	    if (doctorContactCollections.isEmpty()) {
+	    if(request.getSize()>0)doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(), false,new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "updatedTime"));
+		else doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(), false,new Sort(Sort.Direction.DESC,"updatedTime"));
+		
+		if (doctorContactCollections.isEmpty()) {
 		return null;
 	    }
 	    if (request.getGroups() != null && !request.getGroups().isEmpty()) {
@@ -129,22 +130,25 @@ public class ContactsServiceImpl implements ContactsService {
 	List<DoctorContactCollection> doctorContactCollections = null;
 	try {
 	    if (DPDoctorUtils.anyStringEmpty(updatedTime)) {
-		if (discarded)
-		    doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false,
-			    new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-
-		else
-		    doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, discarded, new Sort(Sort.Direction.DESC,
-			    "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+		if (discarded){
+			if(size>0)doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false,new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			else doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false,new Sort(Sort.Direction.DESC,"updatedTime"));
+		}
+		else{
+			if(size>0)doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			else doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, discarded, new Sort(Sort.Direction.DESC,"updatedTime"));
+		}
 	    } else {
 		long createdTimestamp = Long.parseLong(updatedTime);
-		if (discarded)
-		    doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, new Date(createdTimestamp), new Sort(
-			    Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-		else
-		    doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, discarded, new Date(createdTimestamp),
-			    new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
-	    }
+		if (discarded){
+			if(size >0) doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, new Date(createdTimestamp), new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			else  doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+		}
+		else{
+			if(size>0)doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, discarded, new Date(createdTimestamp), new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			else doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, discarded, new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+		}    
+	   }
 
 	    if (doctorContactCollections.isEmpty()) {
 		return null;
@@ -314,16 +318,6 @@ public class ContactsServiceImpl implements ContactsService {
     }
 
     @Override
-    public List<PatientCard> searchPatients(SearchRequest request) {
-	try {
-
-	} catch (Exception e) {
-	    // TODO: handle exception
-	}
-	return null;
-    }
-
-    @Override
     public List<PatientCard> getDoctorsRecentlyVisitedContacts(String doctorId, int size, int page) {
 	try {
 	    List<PatientAdmissionCollection> patientAdmissionCollections = patientAdmissionRepository.findDistinctPatientByDoctorId(doctorId, new PageRequest(
@@ -343,22 +337,13 @@ public class ContactsServiceImpl implements ContactsService {
     }
 
     @Override
-    public List<PatientCard> getDoctorsMostVisitedContacts(String doctorId, int size, int page) {
-	try {
-
-	} catch (Exception e) {
-	    // TODO: handle exception
-	}
-	return null;
-    }
-
-    @Override
     public int getContactsTotalSize(GetDoctorContactsRequest request) {
 	List<DoctorContactCollection> doctorContactCollections = null;
 	try {
-	    doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(), false, new Sort(Sort.Direction.DESC,
-		    "createdTime"), null);
-	    if (doctorContactCollections.isEmpty()) {
+		if(request.getSize()>0)doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(), false,new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "updatedTime"));
+		else doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(), false,new Sort(Sort.Direction.DESC,"updatedTime"));
+		
+		if (doctorContactCollections.isEmpty()) {
 		return 0;
 	    }
 	    if (request.getGroups() != null && !request.getGroups().isEmpty()) {
@@ -387,18 +372,18 @@ public class ContactsServiceImpl implements ContactsService {
 	    if (DPDoctorUtils.anyStringEmpty(updatedTime)) {
 		if (discarded)
 		    groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC,
-			    "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+			    "updatedTime"), new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
 		    groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId, discarded, new Sort(
-			    Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+			    Sort.Direction.DESC, "updatedTime"), new PageRequest(page, size, Direction.DESC, "updatedTime"));
 	    } else {
 		long createdTimestamp = Long.parseLong(updatedTime);
 		if (discarded)
 		    groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId, new Date(createdTimestamp),
-			    new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+			    new Sort(Sort.Direction.DESC, "updatedTime"), new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
 		    groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId, discarded,
-			    new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"), size > 0 ? new PageRequest(page, size) : null);
+			    new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"), new PageRequest(page, size, Direction.DESC, "updatedTime"));
 	    }
 
 	    if (groupCollections != null) {

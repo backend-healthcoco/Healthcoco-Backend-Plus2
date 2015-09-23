@@ -20,6 +20,8 @@ import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.PatientProfilePicChangeRequest;
 import com.dpdocter.request.PatientSignUpRequest;
 import com.dpdocter.services.SignUpService;
+import com.dpdocter.solr.services.SolrRegistrationService;
+
 import common.util.web.Response;
 
 @Component
@@ -32,6 +34,10 @@ public class SignUpApi {
 
     @Autowired
     private SignUpService signUpService;
+    
+    @Autowired
+    private SolrRegistrationService solrRegistrationService;
+
 
     @Path(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP)
     @POST
@@ -67,6 +73,8 @@ public class SignUpApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request sent is NULL");
 	}
 	User user = signUpService.patientProfilePicChange(request);
+	
+	solrRegistrationService.patientProfilePicChange(request.getUsername(), user.getImageUrl());
 	Response<User> response = new Response<User>();
 	response.setData(user);
 	return response;

@@ -20,12 +20,8 @@ public interface ContactsService {
     Group addEditGroup(Group group);
 
     Boolean deleteGroup(String groupId);
-
-    List<PatientCard> searchPatients(SearchRequest request);
-
+   
     List<PatientCard> getDoctorsRecentlyVisitedContacts(String doctorId, int size, int page);
-
-    List<PatientCard> getDoctorsMostVisitedContacts(String doctorId, int size, int page);
 
     int getContactsTotalSize(GetDoctorContactsRequest request);
 

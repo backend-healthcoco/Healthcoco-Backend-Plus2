@@ -3,7 +3,7 @@ package com.dpdocter.repository;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
@@ -18,16 +18,28 @@ public interface PatientClinicalNotesRepository extends MongoRepository<PatientC
     List<PatientClinicalNotesCollection> findByClinicalNotesId(String clinicalNotesId);
 
     @Query("{'patientId': ?0}")
-    List<PatientClinicalNotesCollection> findByPatientId(String patientId, Sort sort, PageRequest pageRequest);
+    List<PatientClinicalNotesCollection> findByPatientId(String patientId, Pageable Pageable);
+
+    @Query("{'patientId': ?0}")
+    List<PatientClinicalNotesCollection> findByPatientId(String patientId, Sort sort);
 
     @Query("{'patientId': ?0, 'updatedTime': {'$gte': ?1}}")
-    List<PatientClinicalNotesCollection> findByPatientId(String patientId, Date date, Sort sort, PageRequest pageRequest);
+    List<PatientClinicalNotesCollection> findByPatientId(String patientId, Date date, Pageable Pageable);
+
+    @Query("{'patientId': ?0, 'updatedTime': {'$gte': ?1}}")
+    List<PatientClinicalNotesCollection> findByPatientId(String patientId, Date date, Sort sort);
 
     @Query("{'patientId': ?0, 'discarded': ?1, 'updatedTime': {'$gte': ?2}}")
-    List<PatientClinicalNotesCollection> findByPatientId(String patientId, boolean discarded, Date date, Sort sort, PageRequest pageRequest);
+    List<PatientClinicalNotesCollection> findByPatientId(String patientId, boolean discarded, Date date, Pageable Pageable);
+
+    @Query("{'patientId': ?0, 'discarded': ?1, 'updatedTime': {'$gte': ?2}}")
+    List<PatientClinicalNotesCollection> findByPatientId(String patientId, boolean discarded, Date date, Sort sort);
 
     @Query("{'patientId': ?0, 'discarded': ?1}")
-    List<PatientClinicalNotesCollection> findByPatientId(String patientId, boolean discarded, Sort sort, PageRequest pageRequest);
+    List<PatientClinicalNotesCollection> findByPatientId(String patientId, boolean discarded, Pageable Pageable);
+
+    @Query("{'patientId': ?0, 'discarded': ?1}")
+    List<PatientClinicalNotesCollection> findByPatientId(String patientId, boolean discarded, Sort sort);
 
     @Query("{'patientId': ?0, 'clinicalNotesId': {'$in': ?1}}")
     List<PatientClinicalNotesCollection> findAll(String patientId, List<String> clinicalNotesIds);

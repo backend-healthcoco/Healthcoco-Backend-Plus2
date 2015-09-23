@@ -397,6 +397,8 @@ public interface PathProxy {
     public interface IssueTrackUrls {
         
     	 public static final String RAISE_ISSUE =  "add";
+    	 
+    	 public static final String DELETE_ISSUE =  "/{issueId}/{doctorId}/{locationId}/{hospitalId}/delete";
          
          public static final String UPDATE_STATUS_DOCTOR_SPECIFIC = "/{issueId}/{status}/{doctorId}/{locationId}/{hospitalId}/update";
          
@@ -411,6 +413,8 @@ public interface PathProxy {
     	
     	 public static final String SAVE_PRINT_SETTINGS =  "add";
         
+    	 public static final String DELETE_PRINT_SETTINGS = "/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+    	 
          public static final String GET_PRINT_SETTINGS = "/{printFilter}/{doctorId}/{locationId}/{hospitalId}";
      }
     

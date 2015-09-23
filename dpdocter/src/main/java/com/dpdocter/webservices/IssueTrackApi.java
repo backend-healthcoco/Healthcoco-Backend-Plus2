@@ -1,9 +1,9 @@
 package com.dpdocter.webservices;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
@@ -16,12 +16,12 @@ import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.MatrixVariable;
 
 import com.dpdocter.beans.IssueTrack;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.services.IssueTrackService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -51,7 +51,21 @@ public class IssueTrackApi {
 	return response;
     }
 
-//    @Path(value = PathProxy.IssueTrackUrls.GET_ISSUE)
+    @Path(value = PathProxy.IssueTrackUrls.DELETE_ISSUE)
+    @DELETE
+    public Response<Boolean> deleteIssue(@PathParam(value = "issueId") String issueId, @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
+
+	if (DPDoctorUtils.anyStringEmpty(issueId, doctorId, locationId, hospitalId)) {
+	    logger.warn("IssueId or DoctorId or LocationId or HospitalId cannot be null");
+	    throw new BusinessException(ServiceError.InvalidInput, "IssueId or DoctorId or LocationId or HospitalId cannot be null");
+	}
+	Boolean issueTrack = issueTrackService.deleteIssue(issueId,doctorId,locationId,hospitalId);
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(issueTrack);
+
+	return response;
+    }
+
     @GET
     public Response<IssueTrack> getIssues(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,

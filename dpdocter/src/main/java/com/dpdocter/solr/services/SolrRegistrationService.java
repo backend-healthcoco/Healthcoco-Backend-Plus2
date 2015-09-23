@@ -2,6 +2,7 @@ package com.dpdocter.solr.services;
 
 import java.util.List;
 
+import com.dpdocter.request.PatientProfilePicChangeRequest;
 import com.dpdocter.solr.beans.AdvancedSearch;
 import com.dpdocter.solr.document.SolrPatientDocument;
 import com.dpdocter.solr.response.SolrPatientResponse;
@@ -44,5 +45,7 @@ public interface SolrRegistrationService {
     List<SolrPatientDocument> searchPatientByPostalCode(String doctorId, String locationId, String hospitalId, String searchValue);
 
     List<SolrPatientDocument> searchPatientByGender(String doctorId, String locationId, String hospitalId, String searchValue);
+
+		void patientProfilePicChange(String username, String imageUrl);
 
 }

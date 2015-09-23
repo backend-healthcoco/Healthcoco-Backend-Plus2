@@ -3,7 +3,7 @@ package com.dpdocter.repository;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
@@ -16,28 +16,52 @@ public interface TemplateRepository extends MongoRepository<TemplateCollection, 
     TemplateCollection getTemplate(String templateId, String doctorId, String hospitalId, String locationId);
 
     @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}}")
-    List<TemplateCollection> getTemplates(String doctorId, Date date, Sort sort, PageRequest pageRequest);
+    List<TemplateCollection> getTemplates(String doctorId, Date date, Pageable pageable);
 
     @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2}")
-    List<TemplateCollection> getTemplates(String doctorId, Date date, boolean discarded, Sort sort, PageRequest pageRequest);
+    List<TemplateCollection> getTemplates(String doctorId, Date date, boolean discarded, Pageable pageable);
 
     @Query("{'doctorId': ?0}")
-    List<TemplateCollection> getTemplates(String doctorId, Sort sort, PageRequest pageRequest);
+    List<TemplateCollection> getTemplates(String doctorId, Pageable pageable);
 
     @Query("{'doctorId': ?0, 'discarded': ?1}")
-    List<TemplateCollection> getTemplates(String doctorId, boolean discarded, Sort sort, PageRequest pageRequest);
+    List<TemplateCollection> getTemplates(String doctorId, boolean discarded, Pageable pageable);
 
     @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3}}")
-    List<TemplateCollection> getTemplates(String doctorId, String hospitalId, String locationId, Date date, Sort sort, PageRequest pageRequest);
+    List<TemplateCollection> getTemplates(String doctorId, String hospitalId, String locationId, Date date, Pageable pageable);
 
     @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': ?4}")
-    List<TemplateCollection> getTemplates(String doctorId, String hospitalId, String locationId, Date date, boolean discarded, Sort sort,
-	    PageRequest pageRequest);
+    List<TemplateCollection> getTemplates(String doctorId, String hospitalId, String locationId, Date date, boolean discarded, Pageable pageable);
 
     @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2}")
-    List<TemplateCollection> getTemplates(String doctorId, String hospitalId, String locationId, Sort sort, PageRequest pageRequest);
+    List<TemplateCollection> getTemplates(String doctorId, String hospitalId, String locationId, Pageable pageable);
 
     @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, , 'discarded': ?3}")
-    List<TemplateCollection> getTemplates(String doctorId, String hospitalId, String locationId, boolean discarded, Sort sort, PageRequest pageRequest);
+    List<TemplateCollection> getTemplates(String doctorId, String hospitalId, String locationId, boolean discarded, Pageable pageable);
+    
+    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}}")
+    List<TemplateCollection> getTemplates(String doctorId, Date date, Sort sort);
 
+    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2}")
+    List<TemplateCollection> getTemplates(String doctorId, Date date, boolean discarded, Sort sort);
+
+    @Query("{'doctorId': ?0}")
+    List<TemplateCollection> getTemplates(String doctorId, Sort sort);
+
+    @Query("{'doctorId': ?0, 'discarded': ?1}")
+    List<TemplateCollection> getTemplates(String doctorId, boolean discarded, Sort sort);
+
+    @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3}}")
+    List<TemplateCollection> getTemplates(String doctorId, String hospitalId, String locationId, Date date, Sort sort);
+
+    @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': ?4}")
+    List<TemplateCollection> getTemplates(String doctorId, String hospitalId, String locationId, Date date, boolean discarded, Sort sort);
+
+    @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2}")
+    List<TemplateCollection> getTemplates(String doctorId, String hospitalId, String locationId, Sort sort);
+
+    @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, , 'discarded': ?3}")
+    List<TemplateCollection> getTemplates(String doctorId, String hospitalId, String locationId, boolean discarded, Sort sort);
+    
+    
 }

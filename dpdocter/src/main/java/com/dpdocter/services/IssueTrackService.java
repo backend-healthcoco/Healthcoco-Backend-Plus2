@@ -14,4 +14,6 @@ public interface IssueTrackService {
 
     Boolean updateIssueStatus(String issueId, String status);
 
+	Boolean deleteIssue(String issueId, String doctorId, String locationId, String hospitalId);
+
 }

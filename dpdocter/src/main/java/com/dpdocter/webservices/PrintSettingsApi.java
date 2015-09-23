@@ -3,6 +3,7 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -85,6 +86,21 @@ public class PrintSettingsApi {
 		discarded != null ? discarded : true);
 	Response<PrintSettings> response = new Response<PrintSettings>();
 	response.setDataList(printSettings);
+	return response;
+    }
+    
+    @Path(value = PathProxy.PrintSettingsUrls.DELETE_PRINT_SETTINGS)
+    @DELETE
+    public Response<Boolean> deletePrintSettings(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
+
+	if (DPDoctorUtils.anyStringEmpty(id, doctorId, locationId, hospitalId)) {
+	    logger.warn("Id, DoctorId or locationId or hospitalId cannot be null");
+	    throw new BusinessException(ServiceError.InvalidInput, "Id, DoctorId or locationId or hospitalId cannot be null");
+	}
+	Boolean printSettings = printSettingsService.deletePrintSettings(id, doctorId, locationId, hospitalId);
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(printSettings);
 	return response;
     }
 }

@@ -12,6 +12,8 @@ public class IssueTrack extends GenericCollection {
 
     private String hospitalId;
 
+    private String issueCode;
+
     private String subject;
 
     private String description;
@@ -74,9 +76,19 @@ public class IssueTrack extends GenericCollection {
 	this.discarded = discarded;
     }
 
-    @Override
-    public String toString() {
-	return "IssueTrack [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", subject=" + subject
-		+ ", description=" + description + "," + ", discarded=" + discarded + "]";
-    }
+	public String getIssueCode() {
+		return issueCode;
+	}
+
+	public void setIssueCode(String issueCode) {
+		this.issueCode = issueCode;
+	}
+
+	@Override
+	public String toString() {
+		return "IssueTrack [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", issueCode=" + issueCode + ", subject=" + subject + ", description=" + description
+				+ ", discarded=" + discarded + "]";
+	}
+
 }

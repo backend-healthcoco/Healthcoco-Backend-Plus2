@@ -82,6 +82,10 @@ public class SolrPatientDocument {
 
     @Field
     private Date createdTime;
+    
+    @Field
+    private String imageUrl;
+
 
     public String getId() {
 	return id;
@@ -275,13 +279,22 @@ public class SolrPatientDocument {
 	this.createdTime = createdTime;
     }
 
-    @Override
-    public String toString() {
-	return "SolrPatientDocument [id=" + id + ", userId=" + userId + ", PID=" + PID + ", userName=" + userName + ", firstName=" + firstName
-		+ ", middleName=" + middleName + ", lastName=" + lastName + ", gender=" + gender + ", bloodGroup=" + bloodGroup + ", emailAddress="
-		+ emailAddress + ", dob=" + dob + ", days=" + days + ", months=" + months + ", years=" + years + ", city=" + city + ", locality=" + locality
-		+ ", postalCode=" + postalCode + ", mobileNumber=" + mobileNumber + ", profession=" + profession + ", doctorId=" + doctorId + ", locationId="
-		+ locationId + ", hospitalId=" + hospitalId + ", referredBy=" + referredBy + ", createdTime=" + createdTime + "]";
-    }
+	public String getImageUrl() {
+		return imageUrl;
+	}
 
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	@Override
+	public String toString() {
+		return "SolrPatientDocument [id=" + id + ", userId=" + userId + ", PID=" + PID + ", userName=" + userName
+				+ ", firstName=" + firstName + ", middleName=" + middleName + ", lastName=" + lastName + ", gender="
+				+ gender + ", bloodGroup=" + bloodGroup + ", emailAddress=" + emailAddress + ", days=" + days
+				+ ", months=" + months + ", years=" + years + ", dob=" + dob + ", city=" + city + ", locality="
+				+ locality + ", postalCode=" + postalCode + ", mobileNumber=" + mobileNumber + ", profession="
+				+ profession + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", referredBy=" + referredBy + ", createdTime=" + createdTime + ", imageUrl=" + imageUrl + "]";
+	}
 }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.request.PatientProfilePicChangeRequest;
 import com.dpdocter.solr.beans.AdvancedSearch;
 import com.dpdocter.solr.beans.AdvancedSearchParameter;
 import com.dpdocter.solr.document.SolrPatientDocument;
@@ -325,5 +326,21 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	return response;
 
     }
+
+	@Override
+	public void patientProfilePicChange(String username, String imageUrl) {
+		SolrPatientDocument document = null;
+		try {
+			document = solrPatientRepository.findByUserName(username);
+			document.setImageUrl(imageUrl);
+			solrPatientRepository.save(document);
+		    
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error Occurred While Searching Patients");
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
+		}
+
+	}
 
 }
