@@ -9,7 +9,6 @@ import com.dpdocter.request.ExportContactsRequest;
 import com.dpdocter.request.GetDoctorContactsRequest;
 import com.dpdocter.request.ImportContactsRequest;
 import com.dpdocter.request.PatientGroupAddEditRequest;
-import com.dpdocter.request.SearchRequest;
 
 public interface ContactsService {
 
@@ -20,7 +19,7 @@ public interface ContactsService {
     Group addEditGroup(Group group);
 
     Boolean deleteGroup(String groupId);
-   
+
     List<PatientCard> getDoctorsRecentlyVisitedContacts(String doctorId, int size, int page);
 
     int getContactsTotalSize(GetDoctorContactsRequest request);

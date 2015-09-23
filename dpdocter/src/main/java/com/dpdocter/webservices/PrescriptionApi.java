@@ -278,7 +278,8 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_PRESCRIPTION)
     @PUT
-    public Response<PrescriptionAddEditResponseDetails> editPrescription(@PathParam(value = "prescriptionId") String prescriptionId, PrescriptionAddEditRequest request) {
+    public Response<PrescriptionAddEditResponseDetails> editPrescription(@PathParam(value = "prescriptionId") String prescriptionId,
+	    PrescriptionAddEditRequest request) {
 	if (StringUtils.isEmpty(prescriptionId) || request == null) {
 	    logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");

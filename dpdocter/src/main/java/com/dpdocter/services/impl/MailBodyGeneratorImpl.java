@@ -59,12 +59,12 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	return body.toString();
     }
 
-	@Override
-	public String generateIssueTrackEmailBody(String userName, String firstName, String middleName, String lastName) {
-		StringBuffer body = new StringBuffer();
-		body.append("Dear " + firstName + " " + lastName + ", \n");
-		body.append("Issue is created");
-		return body.toString();
-	}
+    @Override
+    public String generateIssueTrackEmailBody(String userName, String firstName, String middleName, String lastName) {
+	StringBuffer body = new StringBuffer();
+	body.append("Dear " + firstName + " " + lastName + ", \n");
+	body.append("Issue is created");
+	return body.toString();
+    }
 
 }

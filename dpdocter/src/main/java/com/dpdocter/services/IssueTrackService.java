@@ -8,12 +8,13 @@ public interface IssueTrackService {
 
     IssueTrack addEditIssue(IssueTrack request);
 
-    List<IssueTrack> getIssues(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean dicarded, List<String> scope);
+    List<IssueTrack> getIssues(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean dicarded,
+	    List<String> scope);
 
     Boolean updateIssueStatus(String issueId, String status, String doctorId, String locationId, String hospitalId);
 
     Boolean updateIssueStatus(String issueId, String status);
 
-	Boolean deleteIssue(String issueId, String doctorId, String locationId, String hospitalId);
+    Boolean deleteIssue(String issueId, String doctorId, String locationId, String hospitalId);
 
 }

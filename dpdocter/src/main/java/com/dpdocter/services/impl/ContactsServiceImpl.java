@@ -51,7 +51,6 @@ import com.dpdocter.request.ImportContactsRequest;
 import com.dpdocter.request.PatientGroupAddEditRequest;
 import com.dpdocter.services.ContactsService;
 import com.dpdocter.services.FileManager;
-
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -104,10 +103,14 @@ public class ContactsServiceImpl implements ContactsService {
     public List<PatientCard> getDoctorContacts(GetDoctorContactsRequest request) {
 	List<DoctorContactCollection> doctorContactCollections = null;
 	try {
-	    if(request.getSize()>0)doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(), false,new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "updatedTime"));
-		else doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(), false,new Sort(Sort.Direction.DESC,"updatedTime"));
-		
-		if (doctorContactCollections.isEmpty()) {
+	    if (request.getSize() > 0)
+		doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(), false, new PageRequest(request.getPage(),
+			request.getSize(), Direction.DESC, "updatedTime"));
+	    else
+		doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(), false, new Sort(Sort.Direction.DESC,
+			"updatedTime"));
+
+	    if (doctorContactCollections.isEmpty()) {
 		return null;
 	    }
 	    if (request.getGroups() != null && !request.getGroups().isEmpty()) {
@@ -130,25 +133,39 @@ public class ContactsServiceImpl implements ContactsService {
 	List<DoctorContactCollection> doctorContactCollections = null;
 	try {
 	    if (DPDoctorUtils.anyStringEmpty(updatedTime)) {
-		if (discarded){
-			if(size>0)doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false,new PageRequest(page, size, Direction.DESC, "updatedTime"));
-			else doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false,new Sort(Sort.Direction.DESC,"updatedTime"));
-		}
-		else{
-			if(size>0)doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-			else doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, discarded, new Sort(Sort.Direction.DESC,"updatedTime"));
+		if (discarded) {
+		    if (size > 0)
+			doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, new PageRequest(page, size,
+				Direction.DESC, "updatedTime"));
+		    else
+			doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, new Sort(Sort.Direction.DESC,
+				"updatedTime"));
+		} else {
+		    if (size > 0)
+			doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, discarded, new PageRequest(page, size,
+				Direction.DESC, "updatedTime"));
+		    else
+			doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, discarded, new Sort(
+				Sort.Direction.DESC, "updatedTime"));
 		}
 	    } else {
 		long createdTimestamp = Long.parseLong(updatedTime);
-		if (discarded){
-			if(size >0) doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, new Date(createdTimestamp), new PageRequest(page, size, Direction.DESC, "updatedTime"));
-			else  doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+		if (discarded) {
+		    if (size > 0)
+			doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, new Date(createdTimestamp),
+				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+		    else
+			doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, new Date(createdTimestamp), new Sort(
+				Sort.Direction.DESC, "updatedTime"));
+		} else {
+		    if (size > 0)
+			doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, discarded, new Date(createdTimestamp),
+				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+		    else
+			doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, discarded, new Date(createdTimestamp),
+				new Sort(Sort.Direction.DESC, "updatedTime"));
 		}
-		else{
-			if(size>0)doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, discarded, new Date(createdTimestamp), new PageRequest(page, size, Direction.DESC, "updatedTime"));
-			else doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, discarded, new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
-		}    
-	   }
+	    }
 
 	    if (doctorContactCollections.isEmpty()) {
 		return null;
@@ -340,10 +357,14 @@ public class ContactsServiceImpl implements ContactsService {
     public int getContactsTotalSize(GetDoctorContactsRequest request) {
 	List<DoctorContactCollection> doctorContactCollections = null;
 	try {
-		if(request.getSize()>0)doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(), false,new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "updatedTime"));
-		else doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(), false,new Sort(Sort.Direction.DESC,"updatedTime"));
-		
-		if (doctorContactCollections.isEmpty()) {
+	    if (request.getSize() > 0)
+		doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(), false, new PageRequest(request.getPage(),
+			request.getSize(), Direction.DESC, "updatedTime"));
+	    else
+		doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(), false, new Sort(Sort.Direction.DESC,
+			"updatedTime"));
+
+	    if (doctorContactCollections.isEmpty()) {
 		return 0;
 	    }
 	    if (request.getGroups() != null && !request.getGroups().isEmpty()) {
@@ -383,7 +404,8 @@ public class ContactsServiceImpl implements ContactsService {
 			    new Sort(Sort.Direction.DESC, "updatedTime"), new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
 		    groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId, discarded,
-			    new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"), new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"),
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 	    }
 
 	    if (groupCollections != null) {
@@ -407,13 +429,13 @@ public class ContactsServiceImpl implements ContactsService {
 	Boolean response = false;
 	ImportContactsRequestCollection importContactsRequestCollection = null;
 	try {
-		if(request.getContactsFile() != null){
-			request.getContactsFile().setFileName(request.getContactsFile().getFileName()+new Date().getTime());
-			String path = "contacts" + File.separator + request.getDoctorId();
-		    String contactsFileUrl = fileManager.saveImageAndReturnImageUrl(request.getContactsFile(), path);
-		    request.setContactsFileUrl(contactsFileUrl);
-		    
-		}
+	    if (request.getContactsFile() != null) {
+		request.getContactsFile().setFileName(request.getContactsFile().getFileName() + new Date().getTime());
+		String path = "contacts" + File.separator + request.getDoctorId();
+		String contactsFileUrl = fileManager.saveImageAndReturnImageUrl(request.getContactsFile(), path);
+		request.setContactsFileUrl(contactsFileUrl);
+
+	    }
 	    importContactsRequestCollection = new ImportContactsRequestCollection();
 	    BeanUtil.map(request, importContactsRequestCollection);
 	    importContactsRequestCollection = importContactsRequestRepository.save(importContactsRequestCollection);

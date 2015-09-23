@@ -3,7 +3,7 @@ package com.dpdocter.repository;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -69,8 +69,7 @@ public interface ComplaintRepository extends MongoRepository<ComplaintCollection
     List<ComplaintCollection> findCustomGlobalComplaints(String doctorId, String locationId, String hospitalId, Date date, Sort sort);
 
     @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': ?4},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?3},'discarded': ?4}]}")
-    List<ComplaintCollection> findCustomGlobalComplaints(String doctorId, String locationId, String hospitalId, Date date, boolean discarded,
-	    Pageable pageable);
+    List<ComplaintCollection> findCustomGlobalComplaints(String doctorId, String locationId, String hospitalId, Date date, boolean discarded, Pageable pageable);
 
     @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': ?4},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?3},'discarded': ?4}]}")
     List<ComplaintCollection> findCustomGlobalComplaints(String doctorId, String locationId, String hospitalId, Date date, boolean discarded, Sort sort);
@@ -82,8 +81,7 @@ public interface ComplaintRepository extends MongoRepository<ComplaintCollection
     List<ComplaintCollection> findCustomGlobalComplaints(String doctorId, String locationId, String hospitalId, Sort sort);
 
     @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'discarded': ?3}]}")
-    List<ComplaintCollection> findCustomGlobalComplaints(String doctorId, String locationId, String hospitalId, Boolean discarded,
-	    Pageable pageable);
+    List<ComplaintCollection> findCustomGlobalComplaints(String doctorId, String locationId, String hospitalId, Boolean discarded, Pageable pageable);
 
     @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'discarded': ?3}]}")
     List<ComplaintCollection> findCustomGlobalComplaints(String doctorId, String locationId, String hospitalId, Boolean discarded, Sort sort);
@@ -95,7 +93,7 @@ public interface ComplaintRepository extends MongoRepository<ComplaintCollection
     List<ComplaintCollection> findCustomComplaints(String doctorId, Date date, Sort sort);
 
     @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2}")
-    List<ComplaintCollection> findCustomComplaints(String doctorId, Date date, Boolean discarded,  Pageable pageable);
+    List<ComplaintCollection> findCustomComplaints(String doctorId, Date date, Boolean discarded, Pageable pageable);
 
     @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2}")
     List<ComplaintCollection> findCustomComplaints(String doctorId, Date date, Boolean discarded, Sort sort);
@@ -136,6 +134,6 @@ public interface ComplaintRepository extends MongoRepository<ComplaintCollection
     @Query("{'$or': [{'doctorId': ?0,  'discarded': ?1},{'doctorId': null, 'discarded': ?1}]}")
     List<ComplaintCollection> findCustomGlobalComplaints(String doctorId, Boolean discarded, Sort sort);
 
-	List<ComplaintCollection> find(PageRequest pageRequest);
+    Page<ComplaintCollection> findAll(Pageable pageable);
 
 }

@@ -3,6 +3,7 @@ package com.dpdocter.repository;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -17,7 +18,7 @@ public interface DiseasesRepository extends MongoRepository<DiseasesCollection, 
     List<DiseasesCollection> findCustomGlobalDiseases(String doctorId, String locationId, String hospitalId, Date date, Pageable pageable);
 
     @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': ?4},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?3},'discarded': ?4}]}")
-    List<DiseasesCollection> findCustomGlobalDiseases(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded,  Pageable pageable);
+    List<DiseasesCollection> findCustomGlobalDiseases(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded, Pageable pageable);
 
     @Query("{'$or': [{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2} , {'doctorId': null, 'locationId': null, 'hospitalId': null}]}")
     List<DiseasesCollection> findCustomGlobalDiseases(String doctorId, String locationId, String hospitalId, Pageable pageable);
@@ -133,6 +134,6 @@ public interface DiseasesRepository extends MongoRepository<DiseasesCollection, 
     @Query("{'$or': [{'doctorId': ?0,  'discarded': ?1},{'doctorId': null, 'discarded': ?1}]}")
     List<DiseasesCollection> findCustomGlobalDiseases(String doctorId, Boolean discarded, Sort sort);
 
-	List<DiseasesCollection> find(Pageable pageable);
+    Page<DiseasesCollection> findAll(Pageable pageable);
 
 }

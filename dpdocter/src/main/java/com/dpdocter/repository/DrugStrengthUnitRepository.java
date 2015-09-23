@@ -3,6 +3,7 @@ package com.dpdocter.repository;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -48,7 +49,8 @@ public interface DrugStrengthUnitRepository extends MongoRepository<DrugStrength
     List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, String hospitalId, String locationId, Date date, Sort sort);
 
     @Query("{'$or': [{'doctorId': ?0,  'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': ?4},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?3},'discarded': ?4}]}")
-    List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, String hospitalId, String locationId, Date date, boolean discarded, Sort sort);
+    List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, String hospitalId, String locationId, Date date, boolean discarded,
+	    Sort sort);
 
     @Query("{'doctorId': ?0}")
     List<DrugStrengthUnitCollection> getCustomDrugStrengthUnit(String doctorId, Sort sort);
@@ -93,10 +95,11 @@ public interface DrugStrengthUnitRepository extends MongoRepository<DrugStrength
     List<DrugStrengthUnitCollection> getCustomDrugStrengthUnit(String doctorId, String hospitalId, String locationId, boolean discarded, Pageable pageable);
 
     @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3}}")
-    List<DrugStrengthUnitCollection> getCustomDrugStrengthUnit(String doctorId, String hospitalId, String locationId, Date date,  Pageable pageable);
+    List<DrugStrengthUnitCollection> getCustomDrugStrengthUnit(String doctorId, String hospitalId, String locationId, Date date, Pageable pageable);
 
     @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3},'discarded': ?4}")
-    List<DrugStrengthUnitCollection> getCustomDrugStrengthUnit(String doctorId, String hospitalId, String locationId, Date date, boolean discarded, Pageable pageable);
+    List<DrugStrengthUnitCollection> getCustomDrugStrengthUnit(String doctorId, String hospitalId, String locationId, Date date, boolean discarded,
+	    Pageable pageable);
 
     @Query("{'$or': [{'doctorId': ?0,  'hospitalId': ?1, 'locationId': ?2},{'doctorId': null, 'locationId': null, 'hospitalId': null}]}")
     List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, String hospitalId, String locationId, Pageable pageable);
@@ -108,7 +111,8 @@ public interface DrugStrengthUnitRepository extends MongoRepository<DrugStrength
     List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, String hospitalId, String locationId, Date date, Pageable pageable);
 
     @Query("{'$or': [{'doctorId': ?0,  'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': ?4},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?3},'discarded': ?4}]}")
-    List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, String hospitalId, String locationId, Date date, boolean discarded, Pageable pageable);
+    List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, String hospitalId, String locationId, Date date, boolean discarded,
+	    Pageable pageable);
 
     @Query("{'doctorId': ?0}")
     List<DrugStrengthUnitCollection> getCustomDrugStrengthUnit(String doctorId, Pageable pageable);
@@ -134,6 +138,6 @@ public interface DrugStrengthUnitRepository extends MongoRepository<DrugStrength
     @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2},{'doctorId': null, 'updatedTime': {'$gte': ?1},'discarded': ?2}]}")
     List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, Date date, boolean discarded, Pageable pageable);
 
-	List<DrugStrengthUnitCollection> find(Pageable pageable);
+    Page<DrugStrengthUnitCollection> findAll(Pageable pageable);
 
 }

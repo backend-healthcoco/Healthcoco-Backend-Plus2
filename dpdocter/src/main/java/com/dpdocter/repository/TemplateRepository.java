@@ -38,7 +38,7 @@ public interface TemplateRepository extends MongoRepository<TemplateCollection, 
 
     @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, , 'discarded': ?3}")
     List<TemplateCollection> getTemplates(String doctorId, String hospitalId, String locationId, boolean discarded, Pageable pageable);
-    
+
     @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}}")
     List<TemplateCollection> getTemplates(String doctorId, Date date, Sort sort);
 
@@ -62,6 +62,5 @@ public interface TemplateRepository extends MongoRepository<TemplateCollection, 
 
     @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, , 'discarded': ?3}")
     List<TemplateCollection> getTemplates(String doctorId, String hospitalId, String locationId, boolean discarded, Sort sort);
-    
-    
+
 }

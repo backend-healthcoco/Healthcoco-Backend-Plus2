@@ -3,6 +3,7 @@ package com.dpdocter.repository;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -14,7 +15,7 @@ import com.dpdocter.collections.DrugDurationUnitCollection;
 public interface DrugDurationUnitRepository extends MongoRepository<DrugDurationUnitCollection, String>,
 	PagingAndSortingRepository<DrugDurationUnitCollection, String> {
 
-	@Query("{'doctorId': null}")
+    @Query("{'doctorId': null}")
     List<DrugDurationUnitCollection> getGlobalDrugDurationUnit(Pageable pageable);
 
     @Query("{'doctorId': null, 'discarded': ?1}")
@@ -36,7 +37,8 @@ public interface DrugDurationUnitRepository extends MongoRepository<DrugDuration
     List<DrugDurationUnitCollection> getCustomDrugDurationUnit(String doctorId, String hospitalId, String locationId, Date date, Pageable pageable);
 
     @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3},'discarded': ?4}")
-    List<DrugDurationUnitCollection> getCustomDrugDurationUnit(String doctorId, String hospitalId, String locationId, Date date, boolean discarded, Pageable pageable);
+    List<DrugDurationUnitCollection> getCustomDrugDurationUnit(String doctorId, String hospitalId, String locationId, Date date, boolean discarded,
+	    Pageable pageable);
 
     @Query("{'$or': [{'doctorId': ?0,  'hospitalId': ?1, 'locationId': ?2},{'doctorId': null, 'locationId': null, 'hospitalId': null}]}")
     List<DrugDurationUnitCollection> getCustomGlobalDrugDurationUnit(String doctorId, String hospitalId, String locationId, Pageable pageable);
@@ -48,7 +50,8 @@ public interface DrugDurationUnitRepository extends MongoRepository<DrugDuration
     List<DrugDurationUnitCollection> getCustomGlobalDrugDurationUnit(String doctorId, String hospitalId, String locationId, Date date, Pageable pageable);
 
     @Query("{'$or': [{'doctorId': ?0,  'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': ?4},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?3},'discarded': ?4}]}")
-    List<DrugDurationUnitCollection> getCustomGlobalDrugDurationUnit(String doctorId, String hospitalId, String locationId, Date date, boolean discarded, Pageable pageable);
+    List<DrugDurationUnitCollection> getCustomGlobalDrugDurationUnit(String doctorId, String hospitalId, String locationId, Date date, boolean discarded,
+	    Pageable pageable);
 
     @Query("{'doctorId': ?0}")
     List<DrugDurationUnitCollection> getCustomDrugDurationUnit(String doctorId, Pageable pageable);
@@ -73,7 +76,8 @@ public interface DrugDurationUnitRepository extends MongoRepository<DrugDuration
 
     @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2},{'doctorId': null, 'updatedTime': {'$gte': ?1},'discarded': ?2}]}")
     List<DrugDurationUnitCollection> getCustomGlobalDrugDurationUnit(String doctorId, Date date, boolean discarded, Pageable pageable);
-	@Query("{'doctorId': null}")
+
+    @Query("{'doctorId': null}")
     List<DrugDurationUnitCollection> getGlobalDrugDurationUnit(Sort sort);
 
     @Query("{'doctorId': null, 'discarded': ?1}")
@@ -107,7 +111,8 @@ public interface DrugDurationUnitRepository extends MongoRepository<DrugDuration
     List<DrugDurationUnitCollection> getCustomGlobalDrugDurationUnit(String doctorId, String hospitalId, String locationId, Date date, Sort sort);
 
     @Query("{'$or': [{'doctorId': ?0,  'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': ?4},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?3},'discarded': ?4}]}")
-    List<DrugDurationUnitCollection> getCustomGlobalDrugDurationUnit(String doctorId, String hospitalId, String locationId, Date date, boolean discarded, Sort sort);
+    List<DrugDurationUnitCollection> getCustomGlobalDrugDurationUnit(String doctorId, String hospitalId, String locationId, Date date, boolean discarded,
+	    Sort sort);
 
     @Query("{'doctorId': ?0}")
     List<DrugDurationUnitCollection> getCustomDrugDurationUnit(String doctorId, Sort sort);
@@ -133,6 +138,6 @@ public interface DrugDurationUnitRepository extends MongoRepository<DrugDuration
     @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2},{'doctorId': null, 'updatedTime': {'$gte': ?1},'discarded': ?2}]}")
     List<DrugDurationUnitCollection> getCustomGlobalDrugDurationUnit(String doctorId, Date date, boolean discarded, Sort sort);
 
-	List<DrugDurationUnitCollection> find(Pageable pageable);
+    Page<DrugDurationUnitCollection> findAll(Pageable pageable);
 
 }

@@ -20,7 +20,7 @@ public interface DoctorContactsRepository extends MongoRepository<DoctorContactC
 
     @Query("{'doctorId': ?0, 'isBlocked': ?1}")
     List<DoctorContactCollection> findByDoctorIdAndIsBlocked(String doctorId, boolean isBlocked, Sort sort);
-    
+
     @Query("{'doctorId':?0,'isBlocked':?1, 'discarded':?2}")
     List<DoctorContactCollection> findByDoctorIdAndIsBlocked(String doctorId, boolean isBlocked, boolean discarded, Pageable pageRequest);
 
@@ -41,7 +41,5 @@ public interface DoctorContactsRepository extends MongoRepository<DoctorContactC
 
     @Query("{'doctorId':?0,'contactId':?1}")
     DoctorContactCollection findByDoctorIdAndContactId(String doctorId, String contactId);
-
-	
 
 }

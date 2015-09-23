@@ -3,6 +3,7 @@ package com.dpdocter.repository;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -13,7 +14,7 @@ import com.dpdocter.collections.DrugDosageCollection;
 
 public interface DrugDosageRepository extends MongoRepository<DrugDosageCollection, String>, PagingAndSortingRepository<DrugDosageCollection, String> {
 
-	@Query("{'doctorId': null}")
+    @Query("{'doctorId': null}")
     List<DrugDosageCollection> getGlobalDrugDosage(Pageable pageable);
 
     @Query("{'doctorId': null, 'discarded': ?1}")
@@ -72,7 +73,8 @@ public interface DrugDosageRepository extends MongoRepository<DrugDosageCollecti
 
     @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2},{'doctorId': null, 'updatedTime': {'$gte': ?1},'discarded': ?2}]}")
     List<DrugDosageCollection> getCustomGlobalDrugDosage(String doctorId, Date date, boolean discarded, Pageable pageable);
-	@Query("{'doctorId': null}")
+
+    @Query("{'doctorId': null}")
     List<DrugDosageCollection> getGlobalDrugDosage(Sort sort);
 
     @Query("{'doctorId': null, 'discarded': ?1}")
@@ -132,6 +134,6 @@ public interface DrugDosageRepository extends MongoRepository<DrugDosageCollecti
     @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2},{'doctorId': null, 'updatedTime': {'$gte': ?1},'discarded': ?2}]}")
     List<DrugDosageCollection> getCustomGlobalDrugDosage(String doctorId, Date date, boolean discarded, Sort sort);
 
-	List<DrugDosageCollection> find(Pageable pageable);
+    Page<DrugDosageCollection> findAll(Pageable pageable);
 
 }

@@ -128,7 +128,8 @@ public class PatientTrackServiceImpl implements PatientTrackService {
 		List<String> patientIds = (List<String>) CollectionUtils.collect(patientTrackCollections, new BeanToPropertyValueTransformer("patientId"));
 		List<PatientCard> patientCards = contactsService.getSpecifiedPatientCards(patientIds, doctorId, locationId, hospitalId);
 		int totalSize = patientCards.size();
-//				patientTrackRepository.count(doctorId, locationId, hospitalId);
+		// patientTrackRepository.count(doctorId, locationId,
+		// hospitalId);
 		response = new DoctorContactsResponse();
 		response.setPatientCards(patientCards);
 		response.setTotalSize(totalSize);
@@ -170,7 +171,9 @@ public class PatientTrackServiceImpl implements PatientTrackService {
 		List<String> patientIds = (List<String>) CollectionUtils.collect(patientTrackCollections, new BeanToPropertyValueTransformer("patientId"));
 		List<PatientCard> patientCards = contactsService.getSpecifiedPatientCards(patientIds, doctorId, locationId, hospitalId);
 		int totalSize = patientCards.size();
-//				mongoTemplate.aggregate(aggregationCount, PatientTrackCollection.class, PatientTrackCollection.class).getMappedResults().size();
+		// mongoTemplate.aggregate(aggregationCount,
+		// PatientTrackCollection.class,
+		// PatientTrackCollection.class).getMappedResults().size();
 		response = new DoctorContactsResponse();
 		response.setPatientCards(patientCards);
 		response.setTotalSize(totalSize);

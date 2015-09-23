@@ -3,7 +3,7 @@ package com.dpdocter.repository;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -18,7 +18,8 @@ public interface ObservationRepository extends MongoRepository<ObservationCollec
     List<ObservationCollection> findCustomGlobalObservations(String doctorId, String locationId, String hospitalId, Date date, Pageable pageable);
 
     @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': ?4},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?3},'discarded': ?4}]}")
-    List<ObservationCollection> findCustomGlobalObservations(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded, Pageable pageable);
+    List<ObservationCollection> findCustomGlobalObservations(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded,
+	    Pageable pageable);
 
     @Query("{'doctorId': null}")
     List<ObservationCollection> findGlobalObservations(Pageable pageable);
@@ -77,7 +78,7 @@ public interface ObservationRepository extends MongoRepository<ObservationCollec
     @Query("{'$or': [{'doctorId': ?0,  'discarded': ?1},{'doctorId': null, 'discarded': ?1}]}")
     List<ObservationCollection> findCustomGlobalObservations(String doctorId, Boolean discarded, Pageable pageable);
 
-	@Query("{'$or': [{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}} , {'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?3}}]}")
+    @Query("{'$or': [{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}} , {'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?3}}]}")
     List<ObservationCollection> findCustomGlobalObservations(String doctorId, String locationId, String hospitalId, Date date, Sort sort);
 
     @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': ?4},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?3},'discarded': ?4}]}")
@@ -140,6 +141,6 @@ public interface ObservationRepository extends MongoRepository<ObservationCollec
     @Query("{'$or': [{'doctorId': ?0,  'discarded': ?1},{'doctorId': null, 'discarded': ?1}]}")
     List<ObservationCollection> findCustomGlobalObservations(String doctorId, Boolean discarded, Sort sort);
 
-	List<ObservationCollection> find(PageRequest pageRequest);
+    Page<ObservationCollection> findAll(Pageable pageable);
 
 }

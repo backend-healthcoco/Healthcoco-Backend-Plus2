@@ -88,7 +88,7 @@ public class PrintSettingsApi {
 	response.setDataList(printSettings);
 	return response;
     }
-    
+
     @Path(value = PathProxy.PrintSettingsUrls.DELETE_PRINT_SETTINGS)
     @DELETE
     public Response<Boolean> deletePrintSettings(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,

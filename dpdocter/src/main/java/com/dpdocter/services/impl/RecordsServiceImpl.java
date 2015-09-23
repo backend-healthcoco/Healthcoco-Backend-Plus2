@@ -89,24 +89,24 @@ public class RecordsServiceImpl implements RecordsService {
     @Override
     public Records addRecord(RecordsAddRequest request) {
 	try {
-		
-		Date createdTime = new Date();
-		
-		RecordsCollection recordsCollection = new RecordsCollection();
-		BeanUtil.map(request, recordsCollection);
-		if(request.getFileDetails() != null){
-			request.getFileDetails().setFileName(request.getFileDetails().getFileName()+createdTime.getTime());
-		    String path = request.getPatientId() + File.separator + "records";
-		    // save image
-		    String recordUrl = fileManager.saveImageAndReturnImageUrl(request.getFileDetails(), path);
-		    String fileName = request.getFileDetails().getFileName() + "." + request.getFileDetails().getFileExtension();
-		    String recordPath = imageResource + File.separator + path + File.separator + fileName;
-		    
-		    recordsCollection.setRecordsUrl(recordUrl);
-		    recordsCollection.setRecordsPath(recordPath);
-		    recordsCollection.setRecordsLable(getFileNameFromImageURL(recordUrl));
-		}
-		recordsCollection.setCreatedTime(createdTime);
+
+	    Date createdTime = new Date();
+
+	    RecordsCollection recordsCollection = new RecordsCollection();
+	    BeanUtil.map(request, recordsCollection);
+	    if (request.getFileDetails() != null) {
+		request.getFileDetails().setFileName(request.getFileDetails().getFileName() + createdTime.getTime());
+		String path = request.getPatientId() + File.separator + "records";
+		// save image
+		String recordUrl = fileManager.saveImageAndReturnImageUrl(request.getFileDetails(), path);
+		String fileName = request.getFileDetails().getFileName() + "." + request.getFileDetails().getFileExtension();
+		String recordPath = imageResource + File.separator + path + File.separator + fileName;
+
+		recordsCollection.setRecordsUrl(recordUrl);
+		recordsCollection.setRecordsPath(recordPath);
+		recordsCollection.setRecordsLable(getFileNameFromImageURL(recordUrl));
+	    }
+	    recordsCollection.setCreatedTime(createdTime);
 	    recordsCollection = recordsRepository.save(recordsCollection);
 	    Records records = new Records();
 	    BeanUtil.map(recordsCollection, records);
@@ -129,7 +129,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    BeanUtil.map(request, recordsCollection);
 
 	    if (request.getFileDetails() != null) {
-	    request.getFileDetails().setFileName(request.getFileDetails().getFileName()+new Date().getTime());
+		request.getFileDetails().setFileName(request.getFileDetails().getFileName() + new Date().getTime());
 		String path = request.getPatientId() + File.separator + "records";
 		// save image
 		String recordUrl = fileManager.saveImageAndReturnImageUrl(request.getFileDetails(), path);
