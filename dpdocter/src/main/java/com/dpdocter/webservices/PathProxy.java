@@ -365,6 +365,8 @@ public interface PathProxy {
 	public static final String ADD_EDIT_CONSULTATION_FEE = "/clinicProfile/addEditConsultationFee";
 
 	public static final String ADD_EDIT_APPOINTMENT_SLOT = "/clinicProfile/addEditAppointmentSlot";
+
+	public static final String ADD_EDIT_GENERAL_INFO = "/clinicProfile/addEditGeneralInfo";
     }
 
     // public static final String PATIENT_TRACK_BASE_URL = BASE_URL +

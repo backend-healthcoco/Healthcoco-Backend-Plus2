@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.DoctorExperience;
+import com.dpdocter.beans.DoctorGeneralInfo;
 import com.dpdocter.beans.DoctorProfile;
 import com.dpdocter.beans.DoctorRegistrationDetail;
 import com.dpdocter.beans.MedicalCouncil;
@@ -167,11 +168,13 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	Boolean response = false;
 	try {
 	    medicalCouncilCollections = new ArrayList<MedicalCouncilCollection>();
-	    BeanUtil.map(medicalCouncils, medicalCouncilCollections);
-	    for (MedicalCouncilCollection medicalCouncil : medicalCouncilCollections) {
+	    for (MedicalCouncil medicalCouncil : medicalCouncils) {
+		MedicalCouncilCollection medicalCouncilCollection = new MedicalCouncilCollection();
 		if (medicalCouncil.getId() == null) {
-		    medicalCouncil.setCreatedTime(new Date());
+		    medicalCouncilCollection.setCreatedTime(new Date());
 		}
+		BeanUtil.map(medicalCouncil, medicalCouncilCollection);
+		medicalCouncilCollections.add(medicalCouncilCollection);
 	    }
 	    medicalCouncilRepository.save(medicalCouncilCollections);
 	    response = true;
@@ -575,6 +578,32 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Clinic Profile");
 	    throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Clinic Profile");
+	}
+	return response;
+    }
+
+    @Override
+    public Boolean addEditGeneralInfo(DoctorGeneralInfo request) {
+	boolean response = false;
+	try {
+	    if (request.getAppointmentBookingNumber() != null || !request.getAppointmentBookingNumber().isEmpty()) {
+		DoctorAppointmentNumbersAddEditRequest appointmentNumbersAddEditRequest = new DoctorAppointmentNumbersAddEditRequest();
+		BeanUtil.map(request, appointmentNumbersAddEditRequest);
+		response = addEditAppointmentNumbers(appointmentNumbersAddEditRequest);
+	    }
+	    if (request.getAppointmentSlot() != null) {
+		DoctorAppointmentSlotAddEditRequest appointmentSlotAddEditRequest = new DoctorAppointmentSlotAddEditRequest();
+		BeanUtil.map(request, appointmentSlotAddEditRequest);
+		response = addEditAppointmentSlot(appointmentSlotAddEditRequest);
+	    }
+	    if (request.getConsultationFee() != null) {
+		DoctorConsultationFeeAddEditRequest consultationFeeAddEditRequest = new DoctorConsultationFeeAddEditRequest();
+		BeanUtil.map(request, consultationFeeAddEditRequest);
+		response = addEditConsultationFee(consultationFeeAddEditRequest);
+	    }
+	} catch (Exception e) {
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, "Error while adding or editing general info : " + e.getMessage());
 	}
 	return response;
     }

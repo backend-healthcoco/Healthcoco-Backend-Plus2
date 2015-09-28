@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.DoctorGeneralInfo;
 import com.dpdocter.beans.DoctorProfile;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
@@ -295,6 +296,19 @@ public class DoctorProfileApi {
 	Boolean addEditAppointmentSlotResponse = doctorProfileService.addEditAppointmentSlot(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditAppointmentSlotResponse);
+	return response;
+    }
+
+    @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_GENERAL_INFO)
+    @POST
+    public Response<Boolean> addEditGeneralInfo(DoctorGeneralInfo request) {
+	if (request == null) {
+	    logger.warn("Request Cannot Be Empty!");
+	    throw new BusinessException(ServiceError.InvalidInput, "Request Cannot Be Empty!");
+	}
+	Boolean addEditGeneralInfoResponse = doctorProfileService.addEditGeneralInfo(request);
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(addEditGeneralInfoResponse);
 	return response;
     }
 

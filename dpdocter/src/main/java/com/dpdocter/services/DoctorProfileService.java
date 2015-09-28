@@ -2,6 +2,7 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import com.dpdocter.beans.DoctorGeneralInfo;
 import com.dpdocter.beans.DoctorProfile;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
@@ -63,5 +64,7 @@ public interface DoctorProfileService {
     Boolean addEditConsultationFee(DoctorConsultationFeeAddEditRequest request);
 
     Boolean addEditAppointmentSlot(DoctorAppointmentSlotAddEditRequest request);
+
+    Boolean addEditGeneralInfo(DoctorGeneralInfo request);
 
 }
