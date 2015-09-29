@@ -857,12 +857,37 @@ public class HistoryServicesImpl implements HistoryServices {
 	List<DiseasesCollection> diseasesCollections = null;
 	try {
 	    if (doctorId == null) {
-		if (size > 0)
-		    diseasesCollections = diseasesRepository.findAll(new PageRequest(page, size, Direction.DESC, "updatedTime")).getContent();
-		else
-		    diseasesCollections = diseasesRepository.findAll(new Sort(Sort.Direction.DESC, "updatedTime"));
+		    	if (!DPDoctorUtils.allStringsEmpty(updatedTime)) {
+		    		long createdTimeStamp = Long.parseLong(updatedTime);
+		    		if(discarded){
+		    			if (size > 0)
+		    				diseasesCollections = diseasesRepository.findCustomGlobalDiseases(new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC, "updatedTime"));
+		    			else
+		    				diseasesCollections = diseasesRepository.findCustomGlobalDiseases(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+		    		}
+		    		else{
+		    			if (size > 0)
+		    				diseasesCollections = diseasesRepository.findCustomGlobalDiseases(new Date(createdTimeStamp),discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+		    			else
+		    				diseasesCollections = diseasesRepository.findCustomGlobalDiseases(new Date(createdTimeStamp),discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+		    		}
+		    	}
+		    	else{
+		    		if(discarded){
+		    			if (size > 0)
+		    				diseasesCollections = diseasesRepository.findAll(new PageRequest(page, size, Direction.DESC, "updatedTime")).getContent();
+		    			else
+		    				diseasesCollections = diseasesRepository.findAll(new Sort(Sort.Direction.DESC, "updatedTime"));
+		    		}
+		    		else{
+		    			if (size > 0)
+		    				diseasesCollections = diseasesRepository.findCustomGlobalDiseases(discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+		    			else
+		    				diseasesCollections = diseasesRepository.findCustomGlobalDiseases(discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+		    		}
+		    	}
 	    }
-	    if (!DPDoctorUtils.allStringsEmpty(updatedTime)) {
+	    else if (!DPDoctorUtils.allStringsEmpty(updatedTime)) {
 		long createdTimeStamp = Long.parseLong(updatedTime);
 		if (locationId == null && hospitalId == null) {
 		    if (discarded) {

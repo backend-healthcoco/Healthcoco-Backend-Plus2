@@ -34,7 +34,7 @@ public interface DoctorContactsRepository extends MongoRepository<DoctorContactC
     List<DoctorContactCollection> findByDoctorIdAndIsBlocked(String doctorId, boolean isBlocked, Date date, Sort sort);
 
     @Query("{'doctorId':?0, 'isBlocked':?1, 'updatedTime': {'$gte' : ?2}, 'discarded':?3}")
-    List<DoctorContactCollection> findByDoctorIdAndIsBlocked(String doctorId, boolean isBlocked, boolean discarded, Date date, PageRequest pageRequest);
+    List<DoctorContactCollection> findByDoctorIdAndIsBlocked(String doctorId, boolean isBlocked, boolean discarded, Date date, Pageable pageRequest);
 
     @Query("{'doctorId':?0, 'isBlocked':?1, 'updatedTime': {'$gte' : ?2}, 'discarded':?3}")
     List<DoctorContactCollection> findByDoctorIdAndIsBlocked(String doctorId, boolean isBlocked, boolean discarded, Date date, Sort sort);

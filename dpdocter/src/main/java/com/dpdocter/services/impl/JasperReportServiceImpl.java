@@ -1,11 +1,10 @@
+
+
 package com.dpdocter.services.impl;
 
+import java.awt.Color;
 import java.util.Date;
 import java.util.Map;
-
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +15,19 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.services.JasperReportService;
 import com.jaspersoft.mongodb.connection.MongoDbConnection;
 
-//import com.jaspersoft.mongodb.connection.MongoDbConnection;
+import ar.com.fdvs.dj.domain.constants.Page;
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
+import net.sf.jasperreports.engine.JRStyle;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.base.JRBaseStyle;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
 @Service
 public class JasperReportServiceImpl implements JasperReportService {
@@ -29,17 +40,59 @@ public class JasperReportServiceImpl implements JasperReportService {
     private String REPORT_NAME;
 
     @Override
-    public String createPDF(Map<String, Object> parameters, String fileName) {
+    public String createPDF(Map<String, Object> parameters, String fileName, String layout, String pageSize, String margins) {
 	try {
 	    long createdTime = new Date().getTime();
 	    MongoDbConnection mongoConnection = new MongoDbConnection(MONGO_HOST_URI, null, null);
 
-	    // JasperCompileManager.compileReportToFile(REPORT_NAME+fileName +
-	    // ".jrxml", REPORT_NAME+fileName + ".jasper");
-
 	    parameters.put("REPORT_CONNECTION", mongoConnection);
-	    JasperFillManager.fillReportToFile(REPORT_NAME + fileName + ".jasper", REPORT_NAME + fileName + createdTime + ".jrprint", parameters);
-	    JasperExportManager.exportReportToPdfFile(REPORT_NAME + fileName + createdTime + ".jrprint", REPORT_NAME + fileName + createdTime + ".pdf");
+	    parameters.put("path", REPORT_NAME);
+
+	    String defaultPDFFont = "Lobster";
+
+	    DefaultJasperReportsContext context = DefaultJasperReportsContext.getInstance();
+	    JRPropertiesUtil propertiesUtil = JRPropertiesUtil.getInstance(context);
+	    propertiesUtil.setProperty(JasperDesign.PROPERTY_DEFAULT_FONT, defaultPDFFont);
+
+	    JRStyle style = new JRBaseStyle();
+	    style.setFontName("Arial");
+	    style.setFontSize(15);
+	    style.setForecolor(new Color(255, 0, 0));
+	    JasperDesign design = JRXmlLoader.load(REPORT_NAME +fileName+ ".jrxml");
+	    design.setDefaultStyle(style);
+	    
+	    if(layout.equals("LANDSCAPE")){
+	    	if(pageSize.equalsIgnoreCase("LETTER")){
+	    		design.setPageHeight(Page.Page_Letter_Landscape().getHeight());
+	    	    design.setPageWidth(Page.Page_Letter_Landscape().getWidth());
+	    	}
+	    	else if(pageSize.equalsIgnoreCase("LEGAL")){
+	    		design.setPageHeight(Page.Page_Legal_Landscape().getHeight());
+	    	    design.setPageWidth(Page.Page_Legal_Landscape().getWidth());
+	    	}
+	    	else{
+	    		design.setPageHeight(Page.Page_A4_Landscape().getHeight());
+	    	    design.setPageWidth(Page.Page_A4_Landscape().getWidth());
+	    	}
+	    }else{
+	    	if(pageSize.equalsIgnoreCase("LETTER")){
+	    		design.setPageHeight(Page.Page_Letter_Portrait().getHeight());
+	    	    design.setPageWidth(Page.Page_Letter_Portrait().getWidth());
+	    	}
+	    	else if(pageSize.equalsIgnoreCase("LEGAL")){
+	    		design.setPageHeight(Page.Page_Legal_Portrait().getHeight());
+	    	    design.setPageWidth(Page.Page_Legal_Portrait().getWidth());
+	    	}
+	    	else{
+	    		design.setPageHeight(Page.Page_A4_Portrait().getHeight());
+	    	    design.setPageWidth(Page.Page_A4_Portrait().getWidth());
+	    	}
+	    }
+	    JasperReport jasperReport = JasperCompileManager.compileReport(design);
+
+	    JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters);
+
+	    JasperExportManager.exportReportToPdfFile(jasperPrint, REPORT_NAME + fileName + createdTime + ".pdf");
 
 	    return REPORT_NAME + fileName + createdTime + ".pdf";
 	} catch (JRException e) {

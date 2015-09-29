@@ -95,6 +95,8 @@ public interface PathProxy {
 	public static final String GET_CLINIC_DETAILS = "/settings/getClinicDetails/{clinicId}";
 
 	public static final String UPDATE_CLINIC_PROFILE = "/settings/updateClinicProfile";
+	
+	public static final String UPDATE_CLINIC_SPECIALIZATION = "/settings/updateClinicSpecialization";
 
 	public static final String UPDATE_CLINIC_ADDRESS = "/settings/updateClinicAddress";
 
@@ -358,6 +360,8 @@ public interface PathProxy {
 
 	public static final String GET_PROFESSIONAL_MEMBERSHIPS = "/getProfessionalMemberships";
 
+	public static final String ADD_EDIT_CLINIC_PROFILE = "/clinicProfile/addEdit";
+	
 	public static final String ADD_EDIT_APPOINTMENT_NUMBERS = "/clinicProfile/addEditAppointmentNumbers";
 
 	public static final String ADD_EDIT_VISITING_TIME = "/clinicProfile/addEditVisitingTime";

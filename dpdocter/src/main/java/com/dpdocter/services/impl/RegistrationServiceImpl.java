@@ -24,6 +24,7 @@ import com.dpdocter.beans.ClinicAddress;
 import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.ClinicLogo;
 import com.dpdocter.beans.ClinicProfile;
+import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.ClinicTiming;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Group;
@@ -79,6 +80,7 @@ import com.dpdocter.services.GenerateUniqueUserNameService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.RegistrationService;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -782,6 +784,25 @@ public class RegistrationServiceImpl implements RegistrationService {
 	return response;
     }
 
+	@Override
+	public ClinicSpecialization updateClinicSpecialization(ClinicSpecialization request) {
+		ClinicSpecialization response = null;
+		LocationCollection locationCollection = null;
+		try {
+		    locationCollection = locationRepository.findOne(request.getId());
+		    if (locationCollection != null)
+			BeanUtil.map(request, locationCollection);
+		    locationCollection.setSpecialization(request.getSpecialization());
+		    locationCollection = locationRepository.save(locationCollection);
+		    response = new ClinicSpecialization();
+		    BeanUtil.map(locationCollection, response);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error While Updating Clinic Details");
+		    throw new BusinessException(ServiceError.Unknown, "Error While Updating Clinic Details");
+		}
+		return response;
+	}
     @Override
     public BloodGroup addBloodGroup(BloodGroup request) {
 	BloodGroup bloodGroup = new BloodGroup();
@@ -953,4 +974,5 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 
     }
+
 }

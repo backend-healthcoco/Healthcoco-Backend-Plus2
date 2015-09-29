@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -29,7 +30,7 @@ public interface DiseasesRepository extends MongoRepository<DiseasesCollection, 
     @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}}")
     List<DiseasesCollection> findGlobalDiseases(Date date, Pageable pageable);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?2}")
+    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
     List<DiseasesCollection> findGlobalDiseases(Date date, Boolean discarded, Pageable pageable);
 
     @Query("{'doctorId': null}")
@@ -89,7 +90,7 @@ public interface DiseasesRepository extends MongoRepository<DiseasesCollection, 
     @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}}")
     List<DiseasesCollection> findGlobalDiseases(Date date, Sort sort);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?2}")
+    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
     List<DiseasesCollection> findGlobalDiseases(Date date, Boolean discarded, Sort sort);
 
     @Query("{'doctorId': null}")
@@ -135,5 +136,23 @@ public interface DiseasesRepository extends MongoRepository<DiseasesCollection, 
     List<DiseasesCollection> findCustomGlobalDiseases(String doctorId, Boolean discarded, Sort sort);
 
     Page<DiseasesCollection> findAll(Pageable pageable);
+
+    @Query("{'updatedTime': {'$gte': ?0}}")
+	List<DiseasesCollection> findCustomGlobalDiseases(Date date, Pageable pageable);
+
+    @Query("{'updatedTime': {'$gte': ?0}}")
+	List<DiseasesCollection> findCustomGlobalDiseases(Date date, Sort sort);
+
+    @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
+	List<DiseasesCollection> findCustomGlobalDiseases(Date date, Boolean discarded, Pageable pageable);
+
+    @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
+	List<DiseasesCollection> findCustomGlobalDiseases(Date date, Boolean discarded, Sort sort);
+
+    @Query("{'discarded': ?0}")
+	List<DiseasesCollection> findCustomGlobalDiseases(Boolean discarded, Pageable pageable);
+
+    @Query("{'discarded': ?0}")
+	List<DiseasesCollection> findCustomGlobalDiseases(Boolean discarded, Sort sort);
 
 }

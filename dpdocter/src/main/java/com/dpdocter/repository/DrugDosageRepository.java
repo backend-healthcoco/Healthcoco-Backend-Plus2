@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -17,13 +18,13 @@ public interface DrugDosageRepository extends MongoRepository<DrugDosageCollecti
     @Query("{'doctorId': null}")
     List<DrugDosageCollection> getGlobalDrugDosage(Pageable pageable);
 
-    @Query("{'doctorId': null, 'discarded': ?1}")
+    @Query("{'doctorId': null, 'discarded': ?0}")
     List<DrugDosageCollection> getGlobalDrugDosage(boolean discarded, Pageable pageable);
 
     @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}}")
     List<DrugDosageCollection> getGlobalDrugDosage(Date date, Pageable pageable);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?2}")
+    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
     List<DrugDosageCollection> getGlobalDrugDosage(Date date, boolean discarded, Pageable pageable);
 
     @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2}")
@@ -77,13 +78,13 @@ public interface DrugDosageRepository extends MongoRepository<DrugDosageCollecti
     @Query("{'doctorId': null}")
     List<DrugDosageCollection> getGlobalDrugDosage(Sort sort);
 
-    @Query("{'doctorId': null, 'discarded': ?1}")
+    @Query("{'doctorId': null, 'discarded': ?0}")
     List<DrugDosageCollection> getGlobalDrugDosage(boolean discarded, Sort sort);
 
     @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}}")
     List<DrugDosageCollection> getGlobalDrugDosage(Date date, Sort sort);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?2}")
+    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
     List<DrugDosageCollection> getGlobalDrugDosage(Date date, boolean discarded, Sort sort);
 
     @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2}")
@@ -135,5 +136,23 @@ public interface DrugDosageRepository extends MongoRepository<DrugDosageCollecti
     List<DrugDosageCollection> getCustomGlobalDrugDosage(String doctorId, Date date, boolean discarded, Sort sort);
 
     Page<DrugDosageCollection> findAll(Pageable pageable);
+
+    @Query("{'updatedTime': {'$gte': ?0}}")
+	List<DrugDosageCollection> getCustomGlobalDrugDosage(Date date, Pageable pageable);
+
+    @Query("{'updatedTime': {'$gte': ?0}}")
+	List<DrugDosageCollection> getCustomGlobalDrugDosage(Date date, Sort sort);
+
+    @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
+	List<DrugDosageCollection> getCustomGlobalDrugDosage(Date date, boolean discarded, Pageable pageable);
+
+    @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
+	List<DrugDosageCollection> getCustomGlobalDrugDosage(Date date, boolean discarded, Sort sort);
+
+    @Query("{'discarded': ?0}")
+	List<DrugDosageCollection> getCustomGlobalDrugDosage(boolean discarded, Pageable pageable);
+
+    @Query("{'discarded': ?0}")
+	List<DrugDosageCollection> getCustomGlobalDrugDosage(boolean discarded, Sort sort);
 
 }

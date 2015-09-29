@@ -19,6 +19,7 @@ import com.dpdocter.beans.ClinicAddress;
 import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.ClinicLogo;
 import com.dpdocter.beans.ClinicProfile;
+import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.ClinicTiming;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Profession;
@@ -288,6 +289,18 @@ public class RegistrationApi {
 	return response;
     }
 
+    @Path(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_SPECIALIZATION)
+    @POST
+    public Response<ClinicSpecialization> updateClinicSpecialization(ClinicSpecialization request) {
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
+	}
+	ClinicSpecialization clinicSpecializationUpdateResponse = registrationService.updateClinicSpecialization(request);
+	Response<ClinicSpecialization> response = new Response<ClinicSpecialization>();
+	response.setData(clinicSpecializationUpdateResponse);
+	return response;
+    }
+    
     @Path(value = PathProxy.RegistrationUrls.CHANGE_CLINIC_LOGO)
     @POST
     public Response<ClinicLogo> changeClinicLogo(ClinicLogoAddRequest request) {

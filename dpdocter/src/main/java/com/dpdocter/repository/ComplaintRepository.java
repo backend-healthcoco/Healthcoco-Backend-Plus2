@@ -20,10 +20,10 @@ public interface ComplaintRepository extends MongoRepository<ComplaintCollection
     @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}}")
     List<ComplaintCollection> findGlobalComplaints(Date date, Pageable pageable);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?2}")
+    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
     List<ComplaintCollection> findGlobalComplaints(Date date, Boolean discarded, Pageable pageable);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?2}")
+    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
     List<ComplaintCollection> findGlobalComplaints(Date date, Boolean discarded, Sort sort);
 
     @Query("{'doctorId': null}")
@@ -32,10 +32,10 @@ public interface ComplaintRepository extends MongoRepository<ComplaintCollection
     @Query("{'doctorId': null}")
     List<ComplaintCollection> findGlobalComplaints(Sort sort);
 
-    @Query("{'doctorId': null, 'discarded': ?1}")
+    @Query("{'doctorId': null, 'discarded': ?0}")
     List<ComplaintCollection> findGlobalComplaints(Boolean discarded, Pageable pageable);
 
-    @Query("{'doctorId': null, 'discarded': ?1}")
+    @Query("{'doctorId': null, 'discarded': ?0}")
     List<ComplaintCollection> findGlobalComplaints(Boolean discarded, Sort sort);
 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}}")
@@ -135,5 +135,23 @@ public interface ComplaintRepository extends MongoRepository<ComplaintCollection
     List<ComplaintCollection> findCustomGlobalComplaints(String doctorId, Boolean discarded, Sort sort);
 
     Page<ComplaintCollection> findAll(Pageable pageable);
+
+    @Query("{'updatedTime': {'$gte': ?0}}")
+    List<ComplaintCollection> findCustomGlobalComplaints(Date date, Pageable pageable);
+
+    @Query("{'updatedTime': {'$gte': ?0}}")
+	List<ComplaintCollection> findCustomGlobalComplaints(Date date, Sort sort);
+
+    @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
+	List<ComplaintCollection> findCustomGlobalComplaints(Date date, Boolean discarded, Pageable pageable);
+
+    @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
+	List<ComplaintCollection> findCustomGlobalComplaints(Date date, Boolean discarded, Sort sort);
+
+    @Query("{'discarded': ?0}")
+	List<ComplaintCollection> findCustomGlobalComplaints(Boolean discarded, Pageable pageable);
+
+    @Query("{'discarded': ?0}")
+	List<ComplaintCollection> findCustomGlobalComplaints(Boolean discarded, Sort sort);
 
 }

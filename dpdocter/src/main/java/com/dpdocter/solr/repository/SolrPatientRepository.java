@@ -53,7 +53,7 @@ public interface SolrPatientRepository extends SolrCrudRepository<SolrPatientDoc
     @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND gender:?3")
     List<SolrPatientDocument> findByGender(String doctorId, String locationId, String hospitalId, String searchValue);
 
-    @Query("userName:*?1*")
-    SolrPatientDocument findByUserName(String username);
+    @Query("userName:*?0*")
+	SolrPatientDocument findByUserName(String username);
 
 }

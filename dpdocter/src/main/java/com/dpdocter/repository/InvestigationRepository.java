@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -23,7 +24,7 @@ public interface InvestigationRepository extends MongoRepository<InvestigationCo
     @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}}")
     List<InvestigationCollection> findGlobalInvestigations(Date date, Pageable pageable);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?2}")
+    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
     List<InvestigationCollection> findGlobalInvestigations(Date date, Boolean discarded, Pageable pageable);
 
     @Query("{'doctorId': null}")
@@ -84,7 +85,7 @@ public interface InvestigationRepository extends MongoRepository<InvestigationCo
     @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}}")
     List<InvestigationCollection> findGlobalInvestigations(Date date, Sort sort);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?2}")
+    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
     List<InvestigationCollection> findGlobalInvestigations(Date date, Boolean discarded, Sort sort);
 
     @Query("{'doctorId': null}")
@@ -136,5 +137,23 @@ public interface InvestigationRepository extends MongoRepository<InvestigationCo
     List<InvestigationCollection> findCustomGlobalInvestigations(String doctorId, Boolean discarded, Sort sort);
 
     Page<InvestigationCollection> findAll(Pageable pageable);
+
+    @Query("{'updatedTime': {'$gte': ?0}}")
+	List<InvestigationCollection> findCustomGlobalInvestigations(Date date, Pageable pageable);
+
+    @Query("{'updatedTime': {'$gte': ?0}}")
+	List<InvestigationCollection> findCustomGlobalInvestigations(Date date, Sort sort);
+
+    @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
+	List<InvestigationCollection> findCustomGlobalInvestigations(Date date, Boolean discarded, Pageable pageable);
+
+    @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
+	List<InvestigationCollection> findCustomGlobalInvestigations(Date date, Boolean discarded, Sort sort);
+
+    @Query("{'discarded': ?0}")
+	List<InvestigationCollection> findCustomGlobalInvestigations(Boolean discarded, Pageable pageable);
+
+    @Query("{'discarded': ?0}")
+	List<InvestigationCollection> findCustomGlobalInvestigations(Boolean discarded, Sort sort);
 
 }

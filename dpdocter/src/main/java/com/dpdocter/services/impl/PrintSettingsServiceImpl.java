@@ -97,9 +97,9 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 		    if (request.getFooterSetup() == null)
 			printSettingsCollection.setFooterSetup(oldPrintSettingsCollection.getFooterSetup());
 		}
-		printSettingsCollection = printSettingsRepository.save(printSettingsCollection);
+		
 	    }
-
+	    printSettingsCollection = printSettingsRepository.save(printSettingsCollection);
 	    BeanUtil.map(printSettingsCollection, response);
 
 	} catch (Exception e) {

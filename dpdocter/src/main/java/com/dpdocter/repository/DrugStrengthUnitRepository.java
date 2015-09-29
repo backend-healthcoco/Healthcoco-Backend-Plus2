@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -18,13 +19,13 @@ public interface DrugStrengthUnitRepository extends MongoRepository<DrugStrength
     @Query("{'doctorId': null}")
     List<DrugStrengthUnitCollection> getGlobalDrugStrengthUnit(Sort sort);
 
-    @Query("{'doctorId': null, 'discarded': ?1}")
+    @Query("{'doctorId': null, 'discarded': ?0}")
     List<DrugStrengthUnitCollection> getGlobalDrugStrengthUnit(boolean discarded, Sort sort);
 
     @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}}")
     List<DrugStrengthUnitCollection> getGlobalDrugStrengthUnit(Date date, Sort sort);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?2}")
+    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
     List<DrugStrengthUnitCollection> getGlobalDrugStrengthUnit(Date date, boolean discarded, Sort sort);
 
     @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2}")
@@ -79,13 +80,13 @@ public interface DrugStrengthUnitRepository extends MongoRepository<DrugStrength
     @Query("{'doctorId': null}")
     List<DrugStrengthUnitCollection> getGlobalDrugStrengthUnit(Pageable pageable);
 
-    @Query("{'doctorId': null, 'discarded': ?1}")
+    @Query("{'doctorId': null, 'discarded': ?0}")
     List<DrugStrengthUnitCollection> getGlobalDrugStrengthUnit(boolean discarded, Pageable pageable);
 
     @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}}")
     List<DrugStrengthUnitCollection> getGlobalDrugStrengthUnit(Date date, Pageable pageable);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?2}")
+    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
     List<DrugStrengthUnitCollection> getGlobalDrugStrengthUnit(Date date, boolean discarded, Pageable pageable);
 
     @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2}")
@@ -139,5 +140,24 @@ public interface DrugStrengthUnitRepository extends MongoRepository<DrugStrength
     List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, Date date, boolean discarded, Pageable pageable);
 
     Page<DrugStrengthUnitCollection> findAll(Pageable pageable);
+
+    @Query("{'updatedTime': {'$gte': ?0}}")
+	List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(Date date, Pageable pageable);
+
+    @Query("{'updatedTime': {'$gte': ?0}}")
+	List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(Date date, Sort sort);
+
+    @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
+	List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(Date date, boolean discarded,
+			Pageable pageable);
+
+    @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
+	List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(Date date, boolean discarded, Sort sort);
+
+	@Query("{'discarded': ?0}")
+	List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(boolean discarded, Pageable pageable);
+
+	@Query("{'discarded': ?0}")
+	List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(boolean discarded, Sort sort);
 
 }

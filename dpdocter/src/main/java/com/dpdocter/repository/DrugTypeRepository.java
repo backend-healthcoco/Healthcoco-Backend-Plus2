@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -17,13 +18,13 @@ public interface DrugTypeRepository extends MongoRepository<DrugTypeCollection, 
     @Query("{'doctorId': null}")
     List<DrugTypeCollection> getGlobalDrugType(Sort sort);
 
-    @Query("{'doctorId': null, 'discarded': ?1}")
+    @Query("{'doctorId': null, 'discarded': ?0}")
     List<DrugTypeCollection> getGlobalDrugType(boolean discarded, Sort sort);
 
     @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}}")
     List<DrugTypeCollection> getGlobalDrugType(Date date, Sort sort);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?2}")
+    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
     List<DrugTypeCollection> getGlobalDrugType(Date date, boolean discarded, Sort sort);
 
     @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2}")
@@ -77,7 +78,7 @@ public interface DrugTypeRepository extends MongoRepository<DrugTypeCollection, 
     @Query("{'doctorId': null}")
     List<DrugTypeCollection> getGlobalDrugType(Pageable pageable);
 
-    @Query("{'doctorId': null, 'discarded': ?1}")
+    @Query("{'doctorId': null, 'discarded': ?0}")
     List<DrugTypeCollection> getGlobalDrugType(boolean discarded, Pageable pageable);
 
     @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}}")
@@ -135,5 +136,23 @@ public interface DrugTypeRepository extends MongoRepository<DrugTypeCollection, 
     List<DrugTypeCollection> getCustomGlobalDrugType(String doctorId, Date date, boolean discarded, Pageable pageable);
 
     Page<DrugTypeCollection> findAll(Pageable pageable);
+
+    @Query("{'updatedTime': {'$gte': ?0}}")
+	List<DrugTypeCollection> getCustomGlobalDrugType(Date date, Pageable pageable);
+
+    @Query("{'updatedTime': {'$gte': ?0}}")
+	List<DrugTypeCollection> getCustomGlobalDrugType(Date date, Sort sort);
+
+    @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
+	List<DrugTypeCollection> getCustomGlobalDrugType(Date date, boolean discarded, Pageable pageable);
+
+    @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
+	List<DrugTypeCollection> getCustomGlobalDrugType(Date date, boolean discarded, Sort sort);
+
+    @Query("{'discarded': ?0}")
+	List<DrugTypeCollection> getCustomGlobalDrugType(boolean discarded, Pageable pageable);
+
+    @Query("{'discarded': ?0}")
+	List<DrugTypeCollection> getCustomGlobalDrugType(boolean discarded, Sort sort);
 
 }

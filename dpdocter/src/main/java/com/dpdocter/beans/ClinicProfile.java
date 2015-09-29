@@ -2,6 +2,8 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 public class ClinicProfile {
 
     private String id;
@@ -17,6 +19,10 @@ public class ClinicProfile {
     private String websiteUrl;
 
     private String landmarkDetails;
+
+    private String mobileNumber;
+
+    private List<String> alternateNumbers;
 
     public String getId() {
 	return id;
@@ -74,10 +80,11 @@ public class ClinicProfile {
 	this.landmarkDetails = landmarkDetails;
     }
 
-    @Override
-    public String toString() {
-	return "ClinicProfile [id=" + id + ", locationName=" + locationName + ", tagLine=" + tagLine + ", specialization=" + specialization
-		+ ", locationEmailAddress=" + locationEmailAddress + ", websiteUrl=" + websiteUrl + ", landmarkDetails=" + landmarkDetails + "]";
-    }
-
+	@Override
+	public String toString() {
+		return "ClinicProfile [id=" + id + ", locationName=" + locationName + ", tagLine=" + tagLine
+				+ ", specialization=" + specialization + ", locationEmailAddress=" + locationEmailAddress
+				+ ", websiteUrl=" + websiteUrl + ", landmarkDetails=" + landmarkDetails + ", mobileNumber="
+				+ mobileNumber + ", alternateNumbers=" + alternateNumbers + "]";
+	}
 }

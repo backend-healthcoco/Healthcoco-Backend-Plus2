@@ -53,8 +53,11 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 			request.getHospitalId());
 		if (issueTrackCollections.isEmpty())
 		    issueTrackCollection.setIssueCode("ISH" + 1);
-		else
-		    issueTrackCollection.setIssueCode("ISH" + issueTrackCollections.size() + 1);
+		else{
+			int counter = issueTrackCollections.size() + 1;
+			issueTrackCollection.setIssueCode("ISH" + counter);
+		}
+		    
 		issueTrackCollection.setCreatedTime(new Date());
 	    } else {
 		IssueTrackCollection oldIssueTrackCollection = issueTrackRepository.findOne(request.getId());

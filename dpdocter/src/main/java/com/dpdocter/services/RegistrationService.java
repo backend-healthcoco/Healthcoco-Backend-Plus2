@@ -7,6 +7,7 @@ import com.dpdocter.beans.ClinicAddress;
 import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.ClinicLogo;
 import com.dpdocter.beans.ClinicProfile;
+import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.ClinicTiming;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Profession;
@@ -52,6 +53,8 @@ public interface RegistrationService {
 
     ClinicTiming updateClinicTiming(ClinicTiming request);
 
+    ClinicSpecialization updateClinicSpecialization(ClinicSpecialization request);
+    
     BloodGroup addBloodGroup(BloodGroup request);
 
     List<BloodGroup> getBloodGroup();

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -23,7 +24,7 @@ public interface NotesRepository extends MongoRepository<NotesCollection, String
     @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}}")
     List<NotesCollection> findGlobalNotes(Date date, Pageable pageable);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?2}")
+    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
     List<NotesCollection> findGlobalNotes(Date date, Boolean discarded, Pageable pageable);
 
     @Query("{'doctorId': null}")
@@ -83,7 +84,7 @@ public interface NotesRepository extends MongoRepository<NotesCollection, String
     @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}}")
     List<NotesCollection> findGlobalNotes(Date date, Sort sort);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?2}")
+    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
     List<NotesCollection> findGlobalNotes(Date date, Boolean discarded, Sort sort);
 
     @Query("{'doctorId': null}")
@@ -135,5 +136,23 @@ public interface NotesRepository extends MongoRepository<NotesCollection, String
     List<NotesCollection> findCustomGlobalNotes(String doctorId, Boolean discarded, Sort sort);
 
     Page<NotesCollection> findAll(Pageable pageable);
+
+    @Query("{'updatedTime': {'$gte': ?0}}")
+	List<NotesCollection> findCustomGlobalNotes(Date date, Pageable pageable);
+
+    @Query("{'updatedTime': {'$gte': ?0}}")
+	List<NotesCollection> findCustomGlobalNotes(Date date, Sort sort);
+
+    @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
+	List<NotesCollection> findCustomGlobalNotes(Date date, Boolean discarded, Pageable pageable);
+
+    @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
+	List<NotesCollection> findCustomGlobalNotes(Date date, Boolean discarded, Sort sort);
+
+    @Query("{'discarded': ?0}")
+	List<NotesCollection> findCustomGlobalNotes(Boolean discarded, Pageable pageable);
+
+    @Query("{'discarded': ?0}")
+	List<NotesCollection> findCustomGlobalNotes(Boolean discarded, Sort sort);
 
 }

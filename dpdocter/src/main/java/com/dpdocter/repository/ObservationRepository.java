@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -27,7 +28,7 @@ public interface ObservationRepository extends MongoRepository<ObservationCollec
     @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}}")
     List<ObservationCollection> findGlobalObservations(Date date, Pageable pageable);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?2}")
+    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
     List<ObservationCollection> findGlobalObservations(Date date, Boolean discarded, Pageable pageable);
 
     @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
@@ -93,7 +94,7 @@ public interface ObservationRepository extends MongoRepository<ObservationCollec
     @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?2}")
     List<ObservationCollection> findGlobalObservations(Date date, Boolean discarded, Sort sort);
 
-    @Query("{'updatedTime': {'$gte': ?0}, 'isDeleted': ?1}")
+    @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
     List<ObservationCollection> findObservations(Date date, boolean b, Sort sort);
 
     @Query("{'doctorId': null, 'discarded': ?1}")
@@ -142,5 +143,23 @@ public interface ObservationRepository extends MongoRepository<ObservationCollec
     List<ObservationCollection> findCustomGlobalObservations(String doctorId, Boolean discarded, Sort sort);
 
     Page<ObservationCollection> findAll(Pageable pageable);
+
+    @Query("{'updatedTime': {'$gte': ?0}}")
+	List<ObservationCollection> findCustomGlobalObservations(Date date, Pageable pageable);
+
+    @Query("{'updatedTime': {'$gte': ?0}}")
+	List<ObservationCollection> findCustomGlobalObservations(Date date, Sort sort);
+
+    @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
+	List<ObservationCollection> findCustomGlobalObservations(Date date, Boolean discarded, Pageable pageable);
+
+    @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
+	List<ObservationCollection> findCustomGlobalObservations(Date date, Boolean discarded, Sort sort);
+
+    @Query("{'discarded': ?0}")
+	List<ObservationCollection> findCustomGlobalObservations(Boolean discarded, Pageable pageable);
+
+    @Query("{'discarded': ?0}")
+	List<ObservationCollection> findCustomGlobalObservations(Boolean discarded, Sort sort);
 
 }

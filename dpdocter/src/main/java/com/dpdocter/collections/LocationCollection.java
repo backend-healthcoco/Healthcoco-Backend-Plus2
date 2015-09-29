@@ -73,7 +73,7 @@ public class LocationCollection extends GenericCollection {
     private String mobileNumber;
 
     @Field
-    private String alternateNumber;
+    private List<String> alternateNumbers;
 
     @Field
     private List<WorkingSchedule> workingSchedules;
@@ -241,15 +241,15 @@ public class LocationCollection extends GenericCollection {
 	this.mobileNumber = mobileNumber;
     }
 
-    public String getAlternateNumber() {
-	return alternateNumber;
-    }
+    public List<String> getAlternateNumbers() {
+		return alternateNumbers;
+	}
 
-    public void setAlternateNumber(String alternateNumber) {
-	this.alternateNumber = alternateNumber;
-    }
+	public void setAlternateNumbers(List<String> alternateNumbers) {
+		this.alternateNumbers = alternateNumbers;
+	}
 
-    public List<WorkingSchedule> getWorkingSchedules() {
+	public List<WorkingSchedule> getWorkingSchedules() {
 	return workingSchedules;
     }
 
@@ -265,14 +265,16 @@ public class LocationCollection extends GenericCollection {
 	this.isTwentyFourSevenOpen = isTwentyFourSevenOpen;
     }
 
-    @Override
-    public String toString() {
-	return "LocationCollection [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city
-		+ ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", images=" + images
-		+ ", logoUrl=" + logoUrl + ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude=" + longitude + ", tagLine=" + tagLine
-		+ ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress=" + locationEmailAddress + ", specialization=" + specialization
-		+ ", streetAddress=" + streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber + ", alternateNumber=" + alternateNumber
-		+ ", workingSchedules=" + workingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + "]";
-    }
+	@Override
+	public String toString() {
+		return "LocationCollection [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state="
+				+ state + ", city=" + city + ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode="
+				+ postalCode + ", websiteUrl=" + websiteUrl + ", images=" + images + ", logoUrl=" + logoUrl
+				+ ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude=" + longitude + ", tagLine="
+				+ tagLine + ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress=" + locationEmailAddress
+				+ ", specialization=" + specialization + ", streetAddress=" + streetAddress + ", locality=" + locality
+				+ ", mobileNumber=" + mobileNumber + ", alternateNumbers=" + alternateNumbers + ", workingSchedules="
+				+ workingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + "]";
+	}
 
 }
