@@ -625,7 +625,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    if (clinicalNotes != null) {
 			UserCollection userCollection = userRepository.findOne(clinicalNotes.getDoctorId());
 			if (userCollection != null) {
-			    clinicalNotes.setDoctorName(userCollection.getFirstName() + userCollection.getLastName());
+			    clinicalNotes.setDoctorName(userCollection.getFirstName());
 			}
 
 			clinicalNotesList.add(clinicalNotes);
@@ -2785,11 +2785,19 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    }
 		}
 		
-		PrintSettingsCollection printSettings = printSettingsRepository.findOne(doctorId, locationId, hospitalId, ComponentType.PRESCRIPTIONS.getType());
+		PrintSettingsCollection printSettings = printSettingsRepository.findOne(doctorId, locationId, hospitalId, ComponentType.CLINICAL_NOTES.getType());
+		DBObject printId = new BasicDBObject();
 		if(printSettings == null){
-			printSettings = printSettingsRepository.findOne(doctorId, locationId, hospitalId, ComponentType.PRESCRIPTIONS.getType());
-			parameters.put("printSettingsId", printSettings.getId());
-	    }
+			printSettings = printSettingsRepository.findOne(doctorId, locationId, hospitalId, ComponentType.ALL.getType());
+			if(printSettings!=null){
+				printId.put("$oid", printSettings.getId());				
+				 
+			}
+	    }else printId.put("$oid", printSettings.getId());
+		
+		
+		parameters.put("printSettingsId", Arrays.asList(printId));
+
 		LocationCollection location = locationRepository.findOne(locationId);
 		parameters.put("logoURL", location.getLogoUrl());
 		

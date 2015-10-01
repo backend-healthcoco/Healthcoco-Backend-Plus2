@@ -27,6 +27,7 @@ import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.PrescriptionJasperDetails;
+import com.dpdocter.beans.Records;
 import com.dpdocter.beans.TemplateItem;
 import com.dpdocter.beans.TemplateItemDetail;
 import com.dpdocter.collections.DrugCollection;
@@ -580,6 +581,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    prescriptionItemDetailsList.add(prescriptionItemDetails);
 			}
 			prescription.setItems(prescriptionItemDetailsList);
+			UserCollection userCollection = userRepository.findOne(prescription.getDoctorId());
+			if (userCollection != null) {
+					prescription.setDoctorName(userCollection.getFirstName());
+				}
 			prescriptions.add(prescription);
 		    }
 
@@ -624,6 +629,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    prescriptionItemDetailsList.add(prescriptionItemDetails);
 			}
 			prescription.setItems(prescriptionItemDetailsList);
+			UserCollection userCollection = userRepository.findOne(prescription.getDoctorId());
+			if (userCollection != null) {
+					prescription.setDoctorName(userCollection.getFirstName());
+				}
+
 			prescriptions.add(prescription);
 		    }
 
@@ -2842,14 +2852,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		PrintSettingsCollection printSettings = printSettingsRepository.findOne(doctorId, locationId, hospitalId, ComponentType.PRESCRIPTIONS.getType());
 		DBObject printId = new BasicDBObject();
 		if(printSettings == null){
-			printSettings = printSettingsRepository.findOne(doctorId, locationId, hospitalId, ComponentType.PRESCRIPTIONS.getType());
-			if(printSettings ==  null)
-				printSettings = printSettingsRepository.findOne(doctorId, locationId, hospitalId, ComponentType.ALL.getType());
+			printSettings = printSettingsRepository.findOne(doctorId, locationId, hospitalId, ComponentType.ALL.getType());
 			if(printSettings!=null){
 				printId.put("$oid", printSettings.getId());				
 				 
 			}
-	    }
+	    }else printId.put("$oid", printSettings.getId());
 		
 		parameters.put("printSettingsId", Arrays.asList(printId));
 		LocationCollection location = locationRepository.findOne(locationId);

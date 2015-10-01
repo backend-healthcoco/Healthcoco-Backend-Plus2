@@ -26,6 +26,8 @@ public class User {
 
     private String imageUrl;
 
+    private String colorCode;
+    
     public String getImageUrl() {
 	return imageUrl;
     }
@@ -126,11 +128,19 @@ public class User {
 	this.secPhoneNumber = secPhoneNumber;
     }
 
-    @Override
-    public String toString() {
-	return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", userName=" + userName
-		+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob=" + dob + ", secPhoneNumber="
-		+ secPhoneNumber + "]";
-    }
+	public String getColorCode() {
+		return colorCode;
+	}
 
+	public void setColorCode(String colorCode) {
+		this.colorCode = colorCode;
+	}
+
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName
+				+ ", userName=" + userName + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
+				+ ", gender=" + gender + ", dob=" + dob + ", secPhoneNumber=" + secPhoneNumber + ", isPartOfClinic="
+				+ isPartOfClinic + ", imageUrl=" + imageUrl + ", colorCode=" + colorCode + "]";
+	}
 }

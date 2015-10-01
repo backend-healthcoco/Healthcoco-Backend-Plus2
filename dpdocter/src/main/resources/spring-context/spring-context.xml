@@ -14,7 +14,7 @@
 	<context:annotation-config />
 	<context:component-scan base-package="com.dpdocter" />
 	<context:property-placeholder
-		location="classpath:jdbc.properties,classpath:mail.properties,classpath:commons.properties"
+		location="classpath:jdbc.properties,classpath:mail.properties,classpath:commons.properties,classpath:jasperreports.properties"
 		ignore-unresolvable="true" />
 	<import resource="application-context-solr.xml" />
 	<import resource="database-connection.xml" />

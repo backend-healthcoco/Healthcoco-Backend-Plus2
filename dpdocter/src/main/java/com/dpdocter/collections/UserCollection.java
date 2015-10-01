@@ -58,6 +58,9 @@ public class UserCollection extends GenericCollection {
     @Field
     private String coverImageUrl;
 
+    @Field
+    private String colorCode;
+
     public String getId() {
 	return id;
     }
@@ -186,7 +189,15 @@ public class UserCollection extends GenericCollection {
 	this.coverImageUrl = coverImageUrl;
     }
 
-    @Override
+    public String getColorCode() {
+		return colorCode;
+	}
+
+	public void setColorCode(String colorCode) {
+		this.colorCode = colorCode;
+	}
+
+	@Override
     public String toString() {
 	return "UserCollection [id=" + id + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName
 		+ ", userName=" + userName + ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender="

@@ -20,6 +20,8 @@ public class Prescription extends GenericCollection {
     private boolean inHistory = false;
 
     private Boolean discarded;
+    
+    private String doctorName;
 
     public String getId() {
 	return id;
@@ -85,9 +87,18 @@ public class Prescription extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
-    @Override
-    public String toString() {
-	return "Prescription [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ ", items=" + items + ", inHistory=" + inHistory + ", discarded=" + discarded + "]";
-    }
+	public String getDoctorName() {
+		return doctorName;
+	}
+
+	public void setDoctorName(String doctorName) {
+		this.doctorName = doctorName;
+	}
+
+	@Override
+	public String toString() {
+		return "Prescription [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", items=" + items + ", inHistory=" + inHistory + ", discarded="
+				+ discarded + ", doctorName=" + doctorName + "]";
+	}
 }

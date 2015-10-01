@@ -34,6 +34,7 @@ import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.NotesCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.RecordsCollection;
+import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.HistoryFilter;
 import com.dpdocter.enums.Range;
 import com.dpdocter.exceptions.BusinessException;
@@ -45,6 +46,7 @@ import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.repository.NotesRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.RecordsRepository;
+import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DiseaseAddEditRequest;
 import com.dpdocter.response.DiseaseAddEditResponse;
 import com.dpdocter.response.DiseaseListResponse;
@@ -96,6 +98,9 @@ public class HistoryServicesImpl implements HistoryServices {
 
     @Autowired
     private MailService mailService;
+    
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public List<DiseaseAddEditResponse> addDiseases(List<DiseaseAddEditRequest> request) {
@@ -1040,6 +1045,8 @@ public class HistoryServicesImpl implements HistoryServices {
 		case CLINICAL_NOTES:
 		    ClinicalNotes clinicalNote = clinicalNotesService.getNotesById(id.getData().toString());
 		    if (clinicalNote != null) {
+		    UserCollection userCollection = userRepository.findOne(clinicalNote.getDoctorId());
+			if (userCollection != null) clinicalNote.setDoctorName(userCollection.getFirstName());
 			generalData.setData(clinicalNote);
 			generalData.setDataType(HistoryFilter.CLINICAL_NOTES);
 		    }
@@ -1047,6 +1054,8 @@ public class HistoryServicesImpl implements HistoryServices {
 		case PRESCRIPTIONS:
 		    Prescription prescription = prescriptionServices.getPrescriptionById(id.getData().toString());
 		    if (prescription != null) {
+		    	UserCollection userCollection = userRepository.findOne(prescription.getDoctorId());
+				if (userCollection != null) prescription.setDoctorName(userCollection.getFirstName());
 			generalData.setData(prescription);
 			generalData.setDataType(HistoryFilter.PRESCRIPTIONS);
 		    }
@@ -1054,6 +1063,8 @@ public class HistoryServicesImpl implements HistoryServices {
 		case REPORTS:
 		    Records record = recordsService.getRecordById(id.getData().toString());
 		    if (record != null) {
+		    UserCollection userCollection = userRepository.findOne(record.getDoctorId());
+			if (userCollection != null) record.setDoctorName(userCollection.getFirstName());
 			generalData.setData(record);
 			generalData.setDataType(HistoryFilter.REPORTS);
 		    }

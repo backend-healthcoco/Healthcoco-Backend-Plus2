@@ -23,6 +23,8 @@ import com.dpdocter.collections.TokenCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
 import com.dpdocter.collections.UserRoleCollection;
+import com.dpdocter.enums.ColorCode;
+import com.dpdocter.enums.ColorCode.RandomEnum;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -170,6 +172,7 @@ public class SignUpServiceImpl implements SignUpService {
 		userCollection.setImageUrl(imageurl);
 	    }
 	    userCollection.setCreatedTime(new Date());
+	    userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
 	    userCollection = userRepository.save(userCollection);
 	    // save doctor specific details
 	    DoctorCollection doctorCollection = new DoctorCollection();
@@ -263,6 +266,7 @@ public class SignUpServiceImpl implements SignUpService {
 		userCollection.setImageUrl(imageurl);
 	    }
 	    userCollection.setCreatedTime(new Date());
+	    userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
 	    userCollection = userRepository.save(userCollection);
 
 	    // assign roles

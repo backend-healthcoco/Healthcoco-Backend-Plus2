@@ -50,6 +50,8 @@ import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
 import com.dpdocter.collections.UserRoleCollection;
+import com.dpdocter.enums.ColorCode;
+import com.dpdocter.enums.ColorCode.RandomEnum;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -199,6 +201,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		userCollection.setImageUrl(imageUrl);
 	    }
 	    userCollection.setCreatedTime(createdTime);
+	    userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
 	    userCollection = userRepository.save(userCollection);
 
 	    // assign roles
@@ -793,6 +796,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    if (locationCollection != null)
 			BeanUtil.map(request, locationCollection);
 		    locationCollection.setSpecialization(request.getSpecialization());
+		    locationCollection.setId(request.getId());
 		    locationCollection = locationRepository.save(locationCollection);
 		    response = new ClinicSpecialization();
 		    BeanUtil.map(locationCollection, response);

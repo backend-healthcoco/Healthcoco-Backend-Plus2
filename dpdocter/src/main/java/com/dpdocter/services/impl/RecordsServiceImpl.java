@@ -28,6 +28,7 @@ import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.RecordsCollection;
 import com.dpdocter.collections.RecordsTagsCollection;
 import com.dpdocter.collections.TagsCollection;
+import com.dpdocter.collections.UserCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -46,6 +47,7 @@ import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.RecordsService;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -255,7 +257,15 @@ public class RecordsServiceImpl implements RecordsService {
 		    }
 		}
 		records = new ArrayList<Records>();
-		BeanUtil.map(recordsCollections, records);
+		for(RecordsCollection recordCollection : recordsCollections){
+			Records record = new Records();
+			BeanUtil.map(recordCollection, record);
+			UserCollection userCollection = userRepository.findOne(record.getDoctorId());
+			if (userCollection != null) {
+				record.setDoctorName(userCollection.getFirstName());
+			}
+			records.add(record);
+		}
 	    }
 
 	} catch (Exception e) {
@@ -403,7 +413,15 @@ public class RecordsServiceImpl implements RecordsService {
 		@SuppressWarnings("unchecked")
 		List<RecordsCollection> recordsCollections = IteratorUtils.toList(recordsCollectionIterable.iterator());
 		records = new ArrayList<Records>();
-		BeanUtil.map(recordsCollections, records);
+		for(RecordsCollection recordCollection : recordsCollections){
+			Records record = new Records();
+			BeanUtil.map(recordCollection, record);
+			UserCollection userCollection = userRepository.findOne(record.getDoctorId());
+			if (userCollection != null) {
+				record.setDoctorName(userCollection.getFirstName());
+			}
+			records.add(record);
+		}
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -436,7 +454,15 @@ public class RecordsServiceImpl implements RecordsService {
 
 	    if (recordsCollections != null && !recordsCollections.isEmpty()) {
 		records = new ArrayList<Records>();
-		BeanUtil.map(recordsCollections, records);
+		for(RecordsCollection recordCollection : recordsCollections){
+			Records record = new Records();
+			BeanUtil.map(recordCollection, record);
+			UserCollection userCollection = userRepository.findOne(record.getDoctorId());
+			if (userCollection != null) {
+				record.setDoctorName(userCollection.getFirstName());
+			}
+			records.add(record);
+		}
 	    } else {
 		logger.warn("No Records Found");
 		throw new BusinessException(ServiceError.Unknown, "No Records Found");
@@ -531,7 +557,11 @@ public class RecordsServiceImpl implements RecordsService {
 	    if (recordCollection != null) {
 		record = new Records();
 		BeanUtil.map(recordCollection, record);
-	    }
+			UserCollection userCollection = userRepository.findOne(record.getDoctorId());
+			if (userCollection != null) {
+				record.setDoctorName(userCollection.getFirstName());
+			}
+		}
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error while getting record : " + e.getCause().getMessage());
