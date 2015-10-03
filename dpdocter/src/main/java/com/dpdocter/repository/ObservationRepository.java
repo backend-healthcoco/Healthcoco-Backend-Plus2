@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -142,24 +141,25 @@ public interface ObservationRepository extends MongoRepository<ObservationCollec
     @Query("{'$or': [{'doctorId': ?0,  'discarded': ?1},{'doctorId': null, 'discarded': ?1}]}")
     List<ObservationCollection> findCustomGlobalObservations(String doctorId, Boolean discarded, Sort sort);
 
+    @Override
     Page<ObservationCollection> findAll(Pageable pageable);
 
     @Query("{'updatedTime': {'$gte': ?0}}")
-	List<ObservationCollection> findCustomGlobalObservations(Date date, Pageable pageable);
+    List<ObservationCollection> findCustomGlobalObservations(Date date, Pageable pageable);
 
     @Query("{'updatedTime': {'$gte': ?0}}")
-	List<ObservationCollection> findCustomGlobalObservations(Date date, Sort sort);
+    List<ObservationCollection> findCustomGlobalObservations(Date date, Sort sort);
 
     @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
-	List<ObservationCollection> findCustomGlobalObservations(Date date, Boolean discarded, Pageable pageable);
+    List<ObservationCollection> findCustomGlobalObservations(Date date, Boolean discarded, Pageable pageable);
 
     @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
-	List<ObservationCollection> findCustomGlobalObservations(Date date, Boolean discarded, Sort sort);
+    List<ObservationCollection> findCustomGlobalObservations(Date date, Boolean discarded, Sort sort);
 
     @Query("{'discarded': ?0}")
-	List<ObservationCollection> findCustomGlobalObservations(Boolean discarded, Pageable pageable);
+    List<ObservationCollection> findCustomGlobalObservations(Boolean discarded, Pageable pageable);
 
     @Query("{'discarded': ?0}")
-	List<ObservationCollection> findCustomGlobalObservations(Boolean discarded, Sort sort);
+    List<ObservationCollection> findCustomGlobalObservations(Boolean discarded, Sort sort);
 
 }

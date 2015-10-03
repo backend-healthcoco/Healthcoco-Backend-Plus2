@@ -39,7 +39,7 @@ public class RegisteredPatientDetails extends GenericCollection {
     private String PID;
 
     private String colorCode;
-    
+
     public String getUserId() {
 	return userId;
     }
@@ -168,20 +168,19 @@ public class RegisteredPatientDetails extends GenericCollection {
 	PID = pID;
     }
 
-	public String getColorCode() {
-		return colorCode;
-	}
+    public String getColorCode() {
+	return colorCode;
+    }
 
-	public void setColorCode(String colorCode) {
-		this.colorCode = colorCode;
-	}
+    public void setColorCode(String colorCode) {
+	this.colorCode = colorCode;
+    }
 
-	@Override
-	public String toString() {
-		return "RegisteredPatientDetails [firstName=" + firstName + ", lastName=" + lastName + ", middleName="
-				+ middleName + ", imageUrl=" + imageUrl + ", dob=" + dob + ", userId=" + userId + ", userName="
-				+ userName + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", patient=" + patient
-				+ ", address=" + address + ", groups=" + groups + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", PID=" + PID + ", colorCode=" + colorCode + "]";
-	}
+    @Override
+    public String toString() {
+	return "RegisteredPatientDetails [firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", imageUrl=" + imageUrl
+		+ ", dob=" + dob + ", userId=" + userId + ", userName=" + userName + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", patient="
+		+ patient + ", address=" + address + ", groups=" + groups + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+		+ hospitalId + ", PID=" + PID + ", colorCode=" + colorCode + "]";
+    }
 }

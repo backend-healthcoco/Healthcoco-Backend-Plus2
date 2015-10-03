@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -135,24 +134,25 @@ public interface DrugDosageRepository extends MongoRepository<DrugDosageCollecti
     @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2},{'doctorId': null, 'updatedTime': {'$gte': ?1},'discarded': ?2}]}")
     List<DrugDosageCollection> getCustomGlobalDrugDosage(String doctorId, Date date, boolean discarded, Sort sort);
 
+    @Override
     Page<DrugDosageCollection> findAll(Pageable pageable);
 
     @Query("{'updatedTime': {'$gte': ?0}}")
-	List<DrugDosageCollection> getCustomGlobalDrugDosage(Date date, Pageable pageable);
+    List<DrugDosageCollection> getCustomGlobalDrugDosage(Date date, Pageable pageable);
 
     @Query("{'updatedTime': {'$gte': ?0}}")
-	List<DrugDosageCollection> getCustomGlobalDrugDosage(Date date, Sort sort);
+    List<DrugDosageCollection> getCustomGlobalDrugDosage(Date date, Sort sort);
 
     @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
-	List<DrugDosageCollection> getCustomGlobalDrugDosage(Date date, boolean discarded, Pageable pageable);
+    List<DrugDosageCollection> getCustomGlobalDrugDosage(Date date, boolean discarded, Pageable pageable);
 
     @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
-	List<DrugDosageCollection> getCustomGlobalDrugDosage(Date date, boolean discarded, Sort sort);
+    List<DrugDosageCollection> getCustomGlobalDrugDosage(Date date, boolean discarded, Sort sort);
 
     @Query("{'discarded': ?0}")
-	List<DrugDosageCollection> getCustomGlobalDrugDosage(boolean discarded, Pageable pageable);
+    List<DrugDosageCollection> getCustomGlobalDrugDosage(boolean discarded, Pageable pageable);
 
     @Query("{'discarded': ?0}")
-	List<DrugDosageCollection> getCustomGlobalDrugDosage(boolean discarded, Sort sort);
+    List<DrugDosageCollection> getCustomGlobalDrugDosage(boolean discarded, Sort sort);
 
 }

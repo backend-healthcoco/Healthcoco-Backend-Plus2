@@ -54,7 +54,7 @@ public interface RegistrationService {
     ClinicTiming updateClinicTiming(ClinicTiming request);
 
     ClinicSpecialization updateClinicSpecialization(ClinicSpecialization request);
-    
+
     BloodGroup addBloodGroup(BloodGroup request);
 
     List<BloodGroup> getBloodGroup();

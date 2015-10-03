@@ -289,23 +289,21 @@ public class SolrPatientDocument {
 	this.imageUrl = imageUrl;
     }
 
-	public String getColorCode() {
-		return colorCode;
-	}
+    public String getColorCode() {
+	return colorCode;
+    }
 
-	public void setColorCode(String colorCode) {
-		this.colorCode = colorCode;
-	}
+    public void setColorCode(String colorCode) {
+	this.colorCode = colorCode;
+    }
 
-	@Override
-	public String toString() {
-		return "SolrPatientDocument [id=" + id + ", userId=" + userId + ", PID=" + PID + ", userName=" + userName
-				+ ", firstName=" + firstName + ", middleName=" + middleName + ", lastName=" + lastName + ", gender="
-				+ gender + ", bloodGroup=" + bloodGroup + ", emailAddress=" + emailAddress + ", days=" + days
-				+ ", months=" + months + ", years=" + years + ", dob=" + dob + ", city=" + city + ", locality="
-				+ locality + ", postalCode=" + postalCode + ", mobileNumber=" + mobileNumber + ", profession="
-				+ profession + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", referredBy=" + referredBy + ", createdTime=" + createdTime + ", imageUrl=" + imageUrl
-				+ ", colorCode=" + colorCode + "]";
-	}
+    @Override
+    public String toString() {
+	return "SolrPatientDocument [id=" + id + ", userId=" + userId + ", PID=" + PID + ", userName=" + userName + ", firstName=" + firstName
+		+ ", middleName=" + middleName + ", lastName=" + lastName + ", gender=" + gender + ", bloodGroup=" + bloodGroup + ", emailAddress="
+		+ emailAddress + ", days=" + days + ", months=" + months + ", years=" + years + ", dob=" + dob + ", city=" + city + ", locality=" + locality
+		+ ", postalCode=" + postalCode + ", mobileNumber=" + mobileNumber + ", profession=" + profession + ", doctorId=" + doctorId + ", locationId="
+		+ locationId + ", hospitalId=" + hospitalId + ", referredBy=" + referredBy + ", createdTime=" + createdTime + ", imageUrl=" + imageUrl
+		+ ", colorCode=" + colorCode + "]";
+    }
 }

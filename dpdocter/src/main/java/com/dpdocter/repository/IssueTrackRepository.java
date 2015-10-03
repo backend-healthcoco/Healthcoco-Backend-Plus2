@@ -116,6 +116,7 @@ public interface IssueTrackRepository extends MongoRepository<IssueTrackCollecti
     @Query("{'status': ?0}")
     List<IssueTrackCollection> findByStatus(String status, Sort sort);
 
+    @Override
     Page<IssueTrackCollection> findAll(Pageable pageable);
 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2}")

@@ -3,7 +3,7 @@ package com.dpdocter.beans;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.ComponentType;
 
-public class PrintSettings extends GenericCollection{
+public class PrintSettings extends GenericCollection {
 
     private String id;
 

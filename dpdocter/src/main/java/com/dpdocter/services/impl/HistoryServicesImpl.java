@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.GeneralData;
 import com.dpdocter.beans.MailAttachment;
-import com.dpdocter.beans.MailData;
 import com.dpdocter.beans.MedicalData;
 import com.dpdocter.beans.MedicalHistoryHandler;
 import com.dpdocter.beans.Prescription;
@@ -98,7 +97,7 @@ public class HistoryServicesImpl implements HistoryServices {
 
     @Autowired
     private MailService mailService;
-    
+
     @Autowired
     private UserRepository userRepository;
 
@@ -862,37 +861,38 @@ public class HistoryServicesImpl implements HistoryServices {
 	List<DiseasesCollection> diseasesCollections = null;
 	try {
 	    if (doctorId == null) {
-		    	if (!DPDoctorUtils.allStringsEmpty(updatedTime)) {
-		    		long createdTimeStamp = Long.parseLong(updatedTime);
-		    		if(discarded){
-		    			if (size > 0)
-		    				diseasesCollections = diseasesRepository.findCustomGlobalDiseases(new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC, "updatedTime"));
-		    			else
-		    				diseasesCollections = diseasesRepository.findCustomGlobalDiseases(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
-		    		}
-		    		else{
-		    			if (size > 0)
-		    				diseasesCollections = diseasesRepository.findCustomGlobalDiseases(new Date(createdTimeStamp),discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-		    			else
-		    				diseasesCollections = diseasesRepository.findCustomGlobalDiseases(new Date(createdTimeStamp),discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
-		    		}
-		    	}
-		    	else{
-		    		if(discarded){
-		    			if (size > 0)
-		    				diseasesCollections = diseasesRepository.findAll(new PageRequest(page, size, Direction.DESC, "updatedTime")).getContent();
-		    			else
-		    				diseasesCollections = diseasesRepository.findAll(new Sort(Sort.Direction.DESC, "updatedTime"));
-		    		}
-		    		else{
-		    			if (size > 0)
-		    				diseasesCollections = diseasesRepository.findCustomGlobalDiseases(discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-		    			else
-		    				diseasesCollections = diseasesRepository.findCustomGlobalDiseases(discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
-		    		}
-		    	}
-	    }
-	    else if (!DPDoctorUtils.allStringsEmpty(updatedTime)) {
+		if (!DPDoctorUtils.allStringsEmpty(updatedTime)) {
+		    long createdTimeStamp = Long.parseLong(updatedTime);
+		    if (discarded) {
+			if (size > 0)
+			    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(new Date(createdTimeStamp), new PageRequest(page, size,
+				    Direction.DESC, "updatedTime"));
+			else
+			    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
+				    "updatedTime"));
+		    } else {
+			if (size > 0)
+			    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(new Date(createdTimeStamp), discarded, new PageRequest(page,
+				    size, Direction.DESC, "updatedTime"));
+			else
+			    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(new Date(createdTimeStamp), discarded, new Sort(
+				    Sort.Direction.DESC, "updatedTime"));
+		    }
+		} else {
+		    if (discarded) {
+			if (size > 0)
+			    diseasesCollections = diseasesRepository.findAll(new PageRequest(page, size, Direction.DESC, "updatedTime")).getContent();
+			else
+			    diseasesCollections = diseasesRepository.findAll(new Sort(Sort.Direction.DESC, "updatedTime"));
+		    } else {
+			if (size > 0)
+			    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(discarded, new PageRequest(page, size, Direction.DESC,
+				    "updatedTime"));
+			else
+			    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+		    }
+		}
+	    } else if (!DPDoctorUtils.allStringsEmpty(updatedTime)) {
 		long createdTimeStamp = Long.parseLong(updatedTime);
 		if (locationId == null && hospitalId == null) {
 		    if (discarded) {
@@ -1045,8 +1045,9 @@ public class HistoryServicesImpl implements HistoryServices {
 		case CLINICAL_NOTES:
 		    ClinicalNotes clinicalNote = clinicalNotesService.getNotesById(id.getData().toString());
 		    if (clinicalNote != null) {
-		    UserCollection userCollection = userRepository.findOne(clinicalNote.getDoctorId());
-			if (userCollection != null) clinicalNote.setDoctorName(userCollection.getFirstName());
+			UserCollection userCollection = userRepository.findOne(clinicalNote.getDoctorId());
+			if (userCollection != null)
+			    clinicalNote.setDoctorName(userCollection.getFirstName());
 			generalData.setData(clinicalNote);
 			generalData.setDataType(HistoryFilter.CLINICAL_NOTES);
 		    }
@@ -1054,8 +1055,9 @@ public class HistoryServicesImpl implements HistoryServices {
 		case PRESCRIPTIONS:
 		    Prescription prescription = prescriptionServices.getPrescriptionById(id.getData().toString());
 		    if (prescription != null) {
-		    	UserCollection userCollection = userRepository.findOne(prescription.getDoctorId());
-				if (userCollection != null) prescription.setDoctorName(userCollection.getFirstName());
+			UserCollection userCollection = userRepository.findOne(prescription.getDoctorId());
+			if (userCollection != null)
+			    prescription.setDoctorName(userCollection.getFirstName());
 			generalData.setData(prescription);
 			generalData.setDataType(HistoryFilter.PRESCRIPTIONS);
 		    }
@@ -1063,8 +1065,9 @@ public class HistoryServicesImpl implements HistoryServices {
 		case REPORTS:
 		    Records record = recordsService.getRecordById(id.getData().toString());
 		    if (record != null) {
-		    UserCollection userCollection = userRepository.findOne(record.getDoctorId());
-			if (userCollection != null) record.setDoctorName(userCollection.getFirstName());
+			UserCollection userCollection = userRepository.findOne(record.getDoctorId());
+			if (userCollection != null)
+			    record.setDoctorName(userCollection.getFirstName());
 			generalData.setData(record);
 			generalData.setDataType(HistoryFilter.REPORTS);
 		    }
@@ -1314,19 +1317,20 @@ public class HistoryServicesImpl implements HistoryServices {
 	    String hospitalId = medicalData.getHospitalId();
 	    String emailAddress = medicalData.getEmailAddress();
 	    mailAttachments = new ArrayList<MailAttachment>();
+	    /*=====CODE COMMENTED BECAUSE PDF CREATION IS NOT WORKING - UNCOMMENT WHEN FIXED
 	    for (MailData mailData : medicalData.getMailDataList()) {
-		switch (mailData.getMailType()) {
-		case CLINICAL_NOTE:
-		    mailAttachments.add(clinicalNotesService.getClinicalNotesMailData(mailData.getId(), doctorId, locationId, hospitalId));
-		    break;
-		case PRESCRIPTION:
-		    mailAttachments.add(prescriptionServices.getPrescriptionMailData(mailData.getId(), doctorId, locationId, hospitalId));
-		    break;
-		case REPORT:
-		    mailAttachments.add(recordsService.getRecordMailData(mailData.getId()));
-		    break;
-		}
+	    switch (mailData.getMailType()) {
+	    case CLINICAL_NOTE:
+	        mailAttachments.add(clinicalNotesService.getClinicalNotesMailData(mailData.getId(), doctorId, locationId, hospitalId));
+	        break;
+	    case PRESCRIPTION:
+	        mailAttachments.add(prescriptionServices.getPrescriptionMailData(mailData.getId(), doctorId, locationId, hospitalId));
+	        break;
+	    case REPORT:
+	        mailAttachments.add(recordsService.getRecordMailData(mailData.getId()));
+	        break;
 	    }
+	    }=====*/
 	    mailService.sendEmailMultiAttach(emailAddress, "Medical Data", "PFA.", mailAttachments);
 	    response = true;
 	} catch (Exception e) {

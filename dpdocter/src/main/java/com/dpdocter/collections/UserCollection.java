@@ -190,14 +190,14 @@ public class UserCollection extends GenericCollection {
     }
 
     public String getColorCode() {
-		return colorCode;
-	}
+	return colorCode;
+    }
 
-	public void setColorCode(String colorCode) {
-		this.colorCode = colorCode;
-	}
+    public void setColorCode(String colorCode) {
+	this.colorCode = colorCode;
+    }
 
-	@Override
+    @Override
     public String toString() {
 	return "UserCollection [id=" + id + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName
 		+ ", userName=" + userName + ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender="

@@ -1,24 +1,11 @@
-
-
 package com.dpdocter.services.impl;
 
 import java.awt.Color;
+import java.io.File;
 import java.util.Date;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-import com.dpdocter.exceptions.BusinessException;
-import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.services.JasperReportService;
-import com.jaspersoft.mongodb.connection.MongoDbConnection;
-
-import ar.com.fdvs.dj.domain.constants.Page;
-import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -28,6 +15,17 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.base.JRBaseStyle;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import ar.com.fdvs.dj.domain.constants.Page;
+
+import com.dpdocter.exceptions.BusinessException;
+import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.services.JasperReportService;
+import com.jaspersoft.mongodb.connection.MongoDbConnection;
 
 @Service
 public class JasperReportServiceImpl implements JasperReportService {
@@ -50,43 +48,45 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 	    String defaultPDFFont = "Lobster";
 
-	    DefaultJasperReportsContext context = DefaultJasperReportsContext.getInstance();
+	    /*DefaultJasperReportsContext context = DefaultJasperReportsContext.getInstance();
+	    context.setValue("net.sf.jasperreports.extension.registry.factory.queryexecuters.mongodb",
+	        "com.jaspersoft.mongodb.query.MongoDbQueryExecuterExtensionsRegistryFactory");
 	    JRPropertiesUtil propertiesUtil = JRPropertiesUtil.getInstance(context);
 	    propertiesUtil.setProperty(JasperDesign.PROPERTY_DEFAULT_FONT, defaultPDFFont);
+	    propertiesUtil.setProperty("net.sf.jasperreports.extension.registry.factory.queryexecuters.mongodb",
+	        "com.jaspersoft.mongodb.query.MongoDbQueryExecuterExtensionsRegistryFactory");*/
 
 	    JRStyle style = new JRBaseStyle();
 	    style.setFontName("Arial");
 	    style.setFontSize(15);
 	    style.setForecolor(new Color(255, 0, 0));
-	    JasperDesign design = JRXmlLoader.load(REPORT_NAME +fileName+ ".jrxml");
+
+	    JasperDesign design = JRXmlLoader.load(new File(REPORT_NAME + fileName + ".jrxml"));
+
 	    design.setDefaultStyle(style);
-	    
-	    if(layout.equals("LANDSCAPE")){
-	    	if(pageSize.equalsIgnoreCase("LETTER")){
-	    		design.setPageHeight(Page.Page_Letter_Landscape().getHeight());
-	    	    design.setPageWidth(Page.Page_Letter_Landscape().getWidth());
-	    	}
-	    	else if(pageSize.equalsIgnoreCase("LEGAL")){
-	    		design.setPageHeight(Page.Page_Legal_Landscape().getHeight());
-	    	    design.setPageWidth(Page.Page_Legal_Landscape().getWidth());
-	    	}
-	    	else{
-	    		design.setPageHeight(Page.Page_A4_Landscape().getHeight());
-	    	    design.setPageWidth(Page.Page_A4_Landscape().getWidth());
-	    	}
-	    }else{
-	    	if(pageSize.equalsIgnoreCase("LETTER")){
-	    		design.setPageHeight(Page.Page_Letter_Portrait().getHeight());
-	    	    design.setPageWidth(Page.Page_Letter_Portrait().getWidth());
-	    	}
-	    	else if(pageSize.equalsIgnoreCase("LEGAL")){
-	    		design.setPageHeight(Page.Page_Legal_Portrait().getHeight());
-	    	    design.setPageWidth(Page.Page_Legal_Portrait().getWidth());
-	    	}
-	    	else{
-	    		design.setPageHeight(Page.Page_A4_Portrait().getHeight());
-	    	    design.setPageWidth(Page.Page_A4_Portrait().getWidth());
-	    	}
+
+	    if (layout.equals("LANDSCAPE")) {
+		if (pageSize.equalsIgnoreCase("LETTER")) {
+		    design.setPageHeight(Page.Page_Letter_Landscape().getHeight());
+		    design.setPageWidth(Page.Page_Letter_Landscape().getWidth());
+		} else if (pageSize.equalsIgnoreCase("LEGAL")) {
+		    design.setPageHeight(Page.Page_Legal_Landscape().getHeight());
+		    design.setPageWidth(Page.Page_Legal_Landscape().getWidth());
+		} else {
+		    design.setPageHeight(Page.Page_A4_Landscape().getHeight());
+		    design.setPageWidth(Page.Page_A4_Landscape().getWidth());
+		}
+	    } else {
+		if (pageSize.equalsIgnoreCase("LETTER")) {
+		    design.setPageHeight(Page.Page_Letter_Portrait().getHeight());
+		    design.setPageWidth(Page.Page_Letter_Portrait().getWidth());
+		} else if (pageSize.equalsIgnoreCase("LEGAL")) {
+		    design.setPageHeight(Page.Page_Legal_Portrait().getHeight());
+		    design.setPageWidth(Page.Page_Legal_Portrait().getWidth());
+		} else {
+		    design.setPageHeight(Page.Page_A4_Portrait().getHeight());
+		    design.setPageWidth(Page.Page_A4_Portrait().getWidth());
+		}
 	    }
 	    JasperReport jasperReport = JasperCompileManager.compileReport(design);
 
@@ -95,11 +95,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 	    JasperExportManager.exportReportToPdfFile(jasperPrint, REPORT_NAME + fileName + createdTime + ".pdf");
 
 	    return REPORT_NAME + fileName + createdTime + ".pdf";
+
 	} catch (JRException e) {
 	    e.printStackTrace();
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
-
     }
 }

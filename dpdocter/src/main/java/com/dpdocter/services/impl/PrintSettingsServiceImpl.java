@@ -97,7 +97,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 		    if (request.getFooterSetup() == null)
 			printSettingsCollection.setFooterSetup(oldPrintSettingsCollection.getFooterSetup());
 		}
-		
+
 	    }
 	    printSettingsCollection = printSettingsRepository.save(printSettingsCollection);
 	    BeanUtil.map(printSettingsCollection, response);
@@ -187,8 +187,8 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			    printSettingsCollections = printSettingsRepository.findAll(doctorId, locationId, hospitalId, discarded, new PageRequest(page, size,
 				    Direction.DESC, "updatedTime"));
 			else
-			    printSettingsCollections = printSettingsRepository.findAll(doctorId, locationId, hospitalId, discarded, new Sort(Sort.Direction.DESC,
-				    "updatedTime"));
+			    printSettingsCollections = printSettingsRepository.findAll(doctorId, locationId, hospitalId, discarded, new Sort(
+				    Sort.Direction.DESC, "updatedTime"));
 		    }
 		}
 	    }

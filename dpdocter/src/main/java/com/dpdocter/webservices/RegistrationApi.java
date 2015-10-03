@@ -300,7 +300,7 @@ public class RegistrationApi {
 	response.setData(clinicSpecializationUpdateResponse);
 	return response;
     }
-    
+
     @Path(value = PathProxy.RegistrationUrls.CHANGE_CLINIC_LOGO)
     @POST
     public Response<ClinicLogo> changeClinicLogo(ClinicLogoAddRequest request) {

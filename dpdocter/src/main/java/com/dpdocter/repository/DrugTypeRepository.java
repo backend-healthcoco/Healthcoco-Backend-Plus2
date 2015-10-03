@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -135,24 +134,25 @@ public interface DrugTypeRepository extends MongoRepository<DrugTypeCollection, 
     @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2},{'doctorId': null, 'updatedTime': {'$gte': ?1},'discarded': ?2}]}")
     List<DrugTypeCollection> getCustomGlobalDrugType(String doctorId, Date date, boolean discarded, Pageable pageable);
 
+    @Override
     Page<DrugTypeCollection> findAll(Pageable pageable);
 
     @Query("{'updatedTime': {'$gte': ?0}}")
-	List<DrugTypeCollection> getCustomGlobalDrugType(Date date, Pageable pageable);
+    List<DrugTypeCollection> getCustomGlobalDrugType(Date date, Pageable pageable);
 
     @Query("{'updatedTime': {'$gte': ?0}}")
-	List<DrugTypeCollection> getCustomGlobalDrugType(Date date, Sort sort);
+    List<DrugTypeCollection> getCustomGlobalDrugType(Date date, Sort sort);
 
     @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
-	List<DrugTypeCollection> getCustomGlobalDrugType(Date date, boolean discarded, Pageable pageable);
+    List<DrugTypeCollection> getCustomGlobalDrugType(Date date, boolean discarded, Pageable pageable);
 
     @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
-	List<DrugTypeCollection> getCustomGlobalDrugType(Date date, boolean discarded, Sort sort);
+    List<DrugTypeCollection> getCustomGlobalDrugType(Date date, boolean discarded, Sort sort);
 
     @Query("{'discarded': ?0}")
-	List<DrugTypeCollection> getCustomGlobalDrugType(boolean discarded, Pageable pageable);
+    List<DrugTypeCollection> getCustomGlobalDrugType(boolean discarded, Pageable pageable);
 
     @Query("{'discarded': ?0}")
-	List<DrugTypeCollection> getCustomGlobalDrugType(boolean discarded, Sort sort);
+    List<DrugTypeCollection> getCustomGlobalDrugType(boolean discarded, Sort sort);
 
 }

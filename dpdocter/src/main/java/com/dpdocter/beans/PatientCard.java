@@ -44,7 +44,7 @@ public class PatientCard {
     private String doctorSepecificPatientId;
 
     private String colorCode;
-    
+
     public String getId() {
 	return id;
     }
@@ -205,22 +205,20 @@ public class PatientCard {
 	this.doctorSepecificPatientId = doctorSepecificPatientId;
     }
 
-	public String getColorCode() {
-		return colorCode;
-	}
+    public String getColorCode() {
+	return colorCode;
+    }
 
-	public void setColorCode(String colorCode) {
-		this.colorCode = colorCode;
-	}
+    public void setColorCode(String colorCode) {
+	this.colorCode = colorCode;
+    }
 
-	@Override
-	public String toString() {
-		return "PatientCard [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName="
-				+ middleName + ", userName=" + userName + ", emailAddress=" + emailAddress + ", imageUrl=" + imageUrl
-				+ ", bloodGroup=" + bloodGroup + ", PID=" + PID + ", gender=" + gender + ", mobileNumber="
-				+ mobileNumber + ", secPhoneNumber=" + secPhoneNumber + ", dob=" + dob + ", count=" + count
-				+ ", dateOfVisit=" + dateOfVisit + ", groups=" + groups + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", doctorSepecificPatientId=" + doctorSepecificPatientId
-				+ ", colorCode=" + colorCode + "]";
-	}
+    @Override
+    public String toString() {
+	return "PatientCard [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", userName=" + userName
+		+ ", emailAddress=" + emailAddress + ", imageUrl=" + imageUrl + ", bloodGroup=" + bloodGroup + ", PID=" + PID + ", gender=" + gender
+		+ ", mobileNumber=" + mobileNumber + ", secPhoneNumber=" + secPhoneNumber + ", dob=" + dob + ", count=" + count + ", dateOfVisit="
+		+ dateOfVisit + ", groups=" + groups + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+		+ ", doctorSepecificPatientId=" + doctorSepecificPatientId + ", colorCode=" + colorCode + "]";
+    }
 }

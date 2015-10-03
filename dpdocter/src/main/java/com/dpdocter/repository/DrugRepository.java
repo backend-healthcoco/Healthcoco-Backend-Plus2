@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -143,24 +142,25 @@ public interface DrugRepository extends MongoRepository<DrugCollection, String>,
     @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2},{'doctorId': null, 'updatedTime': {'$gte': ?1},'discarded': ?2}]}")
     List<DrugCollection> getCustomGlobalDrugs(String doctorId, Date date, boolean discarded, Sort sort);
 
+    @Override
     Page<DrugCollection> findAll(Pageable pageRequest);
 
     @Query("{'updatedTime': {'$gte': ?0}}")
-	List<DrugCollection> getCustomGlobalDrugs(Date date, Pageable pageable);
+    List<DrugCollection> getCustomGlobalDrugs(Date date, Pageable pageable);
 
     @Query("{'updatedTime': {'$gte': ?0}}")
-	List<DrugCollection> getCustomGlobalDrugs(Date date, Sort sort);
+    List<DrugCollection> getCustomGlobalDrugs(Date date, Sort sort);
 
     @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
-	List<DrugCollection> getCustomGlobalDrugs(Date date, boolean discarded, Pageable pageable);
+    List<DrugCollection> getCustomGlobalDrugs(Date date, boolean discarded, Pageable pageable);
 
     @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
-	List<DrugCollection> getCustomGlobalDrugs(Date date, boolean discarded, Sort sort);
+    List<DrugCollection> getCustomGlobalDrugs(Date date, boolean discarded, Sort sort);
 
     @Query("{'discarded': ?0}")
-	List<DrugCollection> getCustomGlobalDrugs(boolean discarded, Pageable pageable);
+    List<DrugCollection> getCustomGlobalDrugs(boolean discarded, Pageable pageable);
 
     @Query("{'discarded': ?0}")
-	List<DrugCollection> getCustomGlobalDrugs(boolean discarded, Sort sort);
+    List<DrugCollection> getCustomGlobalDrugs(boolean discarded, Sort sort);
 
 }

@@ -65,9 +65,10 @@ public interface PrintSettingsRepository extends MongoRepository<PrintSettingsCo
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3}")
     List<PrintSettingsCollection> findAll(String doctorId, String locationId, String hospitalId, Boolean discarded, Sort sort);
 
+    @Override
     Page<PrintSettingsCollection> findAll(Pageable pageable);
 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'componentType': ?3}")
-	PrintSettingsCollection findOne(String doctorId, String locationId, String hospitalId, String type);
-	
+    PrintSettingsCollection findOne(String doctorId, String locationId, String hospitalId, String type);
+
 }

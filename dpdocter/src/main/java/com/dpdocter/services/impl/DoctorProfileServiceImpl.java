@@ -390,7 +390,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		    DoctorRegistrationDetail doctorRegistrationDetail = new DoctorRegistrationDetail();
 		    BeanUtil.map(registrationDetail, doctorRegistrationDetail);
 		    MedicalCouncilCollection medicalCouncilCollection = medicalCouncilRepository.findOne(registrationDetail.getMedicalCouncil());
-		    if(medicalCouncilCollection != null)doctorRegistrationDetail.setMedicalCouncil(medicalCouncilCollection.getMedicalCouncil());
+		    if (medicalCouncilCollection != null)
+			doctorRegistrationDetail.setMedicalCouncil(medicalCouncilCollection.getMedicalCouncil());
 		    registrationDetails.add(doctorRegistrationDetail);
 		}
 	    }

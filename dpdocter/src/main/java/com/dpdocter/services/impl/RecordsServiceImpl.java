@@ -47,7 +47,6 @@ import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.RecordsService;
-
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -257,14 +256,14 @@ public class RecordsServiceImpl implements RecordsService {
 		    }
 		}
 		records = new ArrayList<Records>();
-		for(RecordsCollection recordCollection : recordsCollections){
-			Records record = new Records();
-			BeanUtil.map(recordCollection, record);
-			UserCollection userCollection = userRepository.findOne(record.getDoctorId());
-			if (userCollection != null) {
-				record.setDoctorName(userCollection.getFirstName());
-			}
-			records.add(record);
+		for (RecordsCollection recordCollection : recordsCollections) {
+		    Records record = new Records();
+		    BeanUtil.map(recordCollection, record);
+		    UserCollection userCollection = userRepository.findOne(record.getDoctorId());
+		    if (userCollection != null) {
+			record.setDoctorName(userCollection.getFirstName());
+		    }
+		    records.add(record);
 		}
 	    }
 
@@ -413,14 +412,14 @@ public class RecordsServiceImpl implements RecordsService {
 		@SuppressWarnings("unchecked")
 		List<RecordsCollection> recordsCollections = IteratorUtils.toList(recordsCollectionIterable.iterator());
 		records = new ArrayList<Records>();
-		for(RecordsCollection recordCollection : recordsCollections){
-			Records record = new Records();
-			BeanUtil.map(recordCollection, record);
-			UserCollection userCollection = userRepository.findOne(record.getDoctorId());
-			if (userCollection != null) {
-				record.setDoctorName(userCollection.getFirstName());
-			}
-			records.add(record);
+		for (RecordsCollection recordCollection : recordsCollections) {
+		    Records record = new Records();
+		    BeanUtil.map(recordCollection, record);
+		    UserCollection userCollection = userRepository.findOne(record.getDoctorId());
+		    if (userCollection != null) {
+			record.setDoctorName(userCollection.getFirstName());
+		    }
+		    records.add(record);
 		}
 	    }
 	} catch (Exception e) {
@@ -454,14 +453,14 @@ public class RecordsServiceImpl implements RecordsService {
 
 	    if (recordsCollections != null && !recordsCollections.isEmpty()) {
 		records = new ArrayList<Records>();
-		for(RecordsCollection recordCollection : recordsCollections){
-			Records record = new Records();
-			BeanUtil.map(recordCollection, record);
-			UserCollection userCollection = userRepository.findOne(record.getDoctorId());
-			if (userCollection != null) {
-				record.setDoctorName(userCollection.getFirstName());
-			}
-			records.add(record);
+		for (RecordsCollection recordCollection : recordsCollections) {
+		    Records record = new Records();
+		    BeanUtil.map(recordCollection, record);
+		    UserCollection userCollection = userRepository.findOne(record.getDoctorId());
+		    if (userCollection != null) {
+			record.setDoctorName(userCollection.getFirstName());
+		    }
+		    records.add(record);
 		}
 	    } else {
 		logger.warn("No Records Found");
@@ -557,11 +556,11 @@ public class RecordsServiceImpl implements RecordsService {
 	    if (recordCollection != null) {
 		record = new Records();
 		BeanUtil.map(recordCollection, record);
-			UserCollection userCollection = userRepository.findOne(record.getDoctorId());
-			if (userCollection != null) {
-				record.setDoctorName(userCollection.getFirstName());
-			}
+		UserCollection userCollection = userRepository.findOne(record.getDoctorId());
+		if (userCollection != null) {
+		    record.setDoctorName(userCollection.getFirstName());
 		}
+	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error while getting record : " + e.getCause().getMessage());

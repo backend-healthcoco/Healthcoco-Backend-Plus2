@@ -134,24 +134,25 @@ public interface ComplaintRepository extends MongoRepository<ComplaintCollection
     @Query("{'$or': [{'doctorId': ?0,  'discarded': ?1},{'doctorId': null, 'discarded': ?1}]}")
     List<ComplaintCollection> findCustomGlobalComplaints(String doctorId, Boolean discarded, Sort sort);
 
+    @Override
     Page<ComplaintCollection> findAll(Pageable pageable);
 
     @Query("{'updatedTime': {'$gte': ?0}}")
     List<ComplaintCollection> findCustomGlobalComplaints(Date date, Pageable pageable);
 
     @Query("{'updatedTime': {'$gte': ?0}}")
-	List<ComplaintCollection> findCustomGlobalComplaints(Date date, Sort sort);
+    List<ComplaintCollection> findCustomGlobalComplaints(Date date, Sort sort);
 
     @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
-	List<ComplaintCollection> findCustomGlobalComplaints(Date date, Boolean discarded, Pageable pageable);
+    List<ComplaintCollection> findCustomGlobalComplaints(Date date, Boolean discarded, Pageable pageable);
 
     @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
-	List<ComplaintCollection> findCustomGlobalComplaints(Date date, Boolean discarded, Sort sort);
+    List<ComplaintCollection> findCustomGlobalComplaints(Date date, Boolean discarded, Sort sort);
 
     @Query("{'discarded': ?0}")
-	List<ComplaintCollection> findCustomGlobalComplaints(Boolean discarded, Pageable pageable);
+    List<ComplaintCollection> findCustomGlobalComplaints(Boolean discarded, Pageable pageable);
 
     @Query("{'discarded': ?0}")
-	List<ComplaintCollection> findCustomGlobalComplaints(Boolean discarded, Sort sort);
+    List<ComplaintCollection> findCustomGlobalComplaints(Boolean discarded, Sort sort);
 
 }

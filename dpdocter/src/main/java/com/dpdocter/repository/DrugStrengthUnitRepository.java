@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -139,25 +138,25 @@ public interface DrugStrengthUnitRepository extends MongoRepository<DrugStrength
     @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2},{'doctorId': null, 'updatedTime': {'$gte': ?1},'discarded': ?2}]}")
     List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, Date date, boolean discarded, Pageable pageable);
 
+    @Override
     Page<DrugStrengthUnitCollection> findAll(Pageable pageable);
 
     @Query("{'updatedTime': {'$gte': ?0}}")
-	List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(Date date, Pageable pageable);
+    List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(Date date, Pageable pageable);
 
     @Query("{'updatedTime': {'$gte': ?0}}")
-	List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(Date date, Sort sort);
+    List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(Date date, Sort sort);
 
     @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
-	List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(Date date, boolean discarded,
-			Pageable pageable);
+    List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(Date date, boolean discarded, Pageable pageable);
 
     @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
-	List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(Date date, boolean discarded, Sort sort);
+    List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(Date date, boolean discarded, Sort sort);
 
-	@Query("{'discarded': ?0}")
-	List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(boolean discarded, Pageable pageable);
+    @Query("{'discarded': ?0}")
+    List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(boolean discarded, Pageable pageable);
 
-	@Query("{'discarded': ?0}")
-	List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(boolean discarded, Sort sort);
+    @Query("{'discarded': ?0}")
+    List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(boolean discarded, Sort sort);
 
 }

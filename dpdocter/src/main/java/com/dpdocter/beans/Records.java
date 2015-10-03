@@ -22,7 +22,7 @@ public class Records extends GenericCollection {
     private boolean inHistory = false;
 
     private Boolean discarded = false;
-    
+
     private String doctorName;
 
     public String getId() {
@@ -105,19 +105,18 @@ public class Records extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
-	public String getDoctorName() {
-		return doctorName;
-	}
+    public String getDoctorName() {
+	return doctorName;
+    }
 
-	public void setDoctorName(String doctorName) {
-		this.doctorName = doctorName;
-	}
+    public void setDoctorName(String doctorName) {
+	this.doctorName = doctorName;
+    }
 
-	@Override
-	public String toString() {
-		return "Records [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + ", recordsUrl=" + recordsUrl + ", recordsLable=" + recordsLable + ", recordsType="
-				+ recordsType + ", description=" + description + ", inHistory=" + inHistory + ", discarded=" + discarded
-				+ ", doctorName=" + doctorName + "]";
-	}
+    @Override
+    public String toString() {
+	return "Records [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", recordsUrl=" + recordsUrl
+		+ ", recordsLable=" + recordsLable + ", recordsType=" + recordsType + ", description=" + description + ", inHistory=" + inHistory
+		+ ", discarded=" + discarded + ", doctorName=" + doctorName + "]";
+    }
 }
