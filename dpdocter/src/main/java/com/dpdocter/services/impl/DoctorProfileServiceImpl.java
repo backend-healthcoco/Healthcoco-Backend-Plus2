@@ -132,8 +132,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	try {
 	    userCollection = userRepository.findOne(request.getDoctorId());
 	    doctorCollection = doctorRepository.findByUserId(request.getDoctorId());
-	    BeanUtil.map(request, userCollection);
-	    BeanUtil.map(request, doctorCollection);
+	    userCollection.setMobileNumber(request.getMobileNumber());
+	    doctorCollection.setAdditionalNumbers(request.getAdditionalNumbers());
+	    doctorCollection.setOtherEmailAddresses(request.getOtherEmailAddresses());
 	    userRepository.save(userCollection);
 	    doctorRepository.save(doctorCollection);
 	    response = true;
@@ -151,7 +152,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	Boolean response = false;
 	try {
 	    doctorCollection = doctorRepository.findByUserId(request.getDoctorId());
-	    BeanUtil.map(request, doctorCollection);
+	    doctorCollection.setEducation(request.getEducation());
 	    doctorRepository.save(doctorCollection);
 	    response = true;
 	} catch (Exception e) {
