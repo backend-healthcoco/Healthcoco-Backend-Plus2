@@ -357,10 +357,10 @@ public class ContactsServiceImpl implements ContactsService {
     public int getContactsTotalSize(GetDoctorContactsRequest request) {
 	List<DoctorContactCollection> doctorContactCollections = null;
 	try {
-	    if (request.getSize() > 0)
-		doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(), false, new PageRequest(request.getPage(),
-			request.getSize(), Direction.DESC, "updatedTime"));
-	    else
+//	    if (request.getSize() > 0)
+//		doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(), false, new PageRequest(request.getPage(),
+//			request.getSize(), Direction.DESC, "updatedTime"));
+//	    else
 		doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(), false, new Sort(Sort.Direction.DESC,
 			"updatedTime"));
 

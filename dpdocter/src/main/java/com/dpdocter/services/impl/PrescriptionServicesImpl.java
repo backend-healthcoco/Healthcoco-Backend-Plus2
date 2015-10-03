@@ -144,6 +144,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	try {
 	    Date createdTime = new Date();
 	    drugCollection.setCreatedTime(createdTime);
+	    if(drugCollection.getDrugType() != null){
+	    	if(drugCollection.getDrugType().getId() == null)drugCollection.setDrugType(null);
+	    }
+	    if(drugCollection.getStrength() != null && drugCollection.getStrength().getStrengthUnit() != null){
+	    	if(drugCollection.getStrength().getStrengthUnit().getId() == null)drugCollection.getStrength().setStrengthUnit(null);
+	    }
 	    drugCollection = drugRepository.save(drugCollection);
 	    response = new DrugAddEditResponse();
 	    BeanUtil.map(drugCollection, response);
@@ -165,6 +171,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    drugCollection.setCreatedBy(oldDrug.getCreatedBy());
 	    drugCollection.setCreatedTime(oldDrug.getCreatedTime());
 	    drugCollection.setDiscarded(oldDrug.getDiscarded());
+	    if(drugCollection.getDrugType() != null){
+	    	if(drugCollection.getDrugType().getId() == null)drugCollection.setDrugType(null);
+	    }
+	    if(drugCollection.getStrength() != null && drugCollection.getStrength().getStrengthUnit() != null){
+	    	if(drugCollection.getStrength().getStrengthUnit().getId() == null)drugCollection.getStrength().setStrengthUnit(null);
+	    }
 	    drugCollection = drugRepository.save(drugCollection);
 	    response = new DrugAddEditResponse();
 	    BeanUtil.map(drugCollection, response);
@@ -382,6 +394,16 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    Date createdTime = new Date();
 	    prescriptionCollection.setCreatedTime(createdTime);
 	    prescriptionCollection.setPrescriptionCode(PrescriptionUtils.generatePrescriptionCode());
+	    for(PrescriptionItem item : prescriptionCollection.getItems()){
+	    	List<DrugDirection> directions = new ArrayList<DrugDirection>();
+	    	for(DrugDirection drugDirection : item.getDirection()){
+	    		if(drugDirection != null && drugDirection.getId() != null)directions.add(drugDirection);
+	    	}
+	    	item.setDirection(directions);
+		    if(item.getDuration() != null && item.getDuration().getDurationUnit() != null){
+		    	if(item.getDuration().getDurationUnit().getId() == null)item.getDuration().setDurationUnit(null);
+		    }
+	    }
 	    prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 	    response = new PrescriptionAddEditResponse();
 	    BeanUtil.map(prescriptionCollection, response);
@@ -405,6 +427,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    prescriptionCollection.setCreatedTime(oldPrescription.getCreatedTime());
 	    prescriptionCollection.setDiscarded(oldPrescription.getDiscarded());
 	    prescriptionCollection.setInHistory(oldPrescription.isInHistory());
+	    for(PrescriptionItem item : prescriptionCollection.getItems()){
+	    	List<DrugDirection> directions = item.getDirection();
+	    	for(DrugDirection drugDirection : directions){
+	    		if(drugDirection != null && drugDirection.getId() == null)item.getDirection().remove(drugDirection);
+	    	}
+		    if(item.getDuration() != null && item.getDuration().getDurationUnit() != null){
+		    	if(item.getDuration().getDurationUnit().getId() == null)item.getDuration().setDurationUnit(null);
+		    }
+	    }
 	    prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 	    prescription = new PrescriptionAddEditResponse();
 	    BeanUtil.map(prescriptionCollection, prescription);
