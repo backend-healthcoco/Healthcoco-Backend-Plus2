@@ -485,4 +485,10 @@ public interface PathProxy {
 	public static final String SEARCH_LANDMARK_LOCALITY = "searchLandmarkLocality/{cityId}/{searchTerm}";
     }
 
+    public static final String SMS_BASE_URL = BASE_URL + "/smsService";
+
+    public interface SMSUrls {
+	public static final String SEND_SMS = "/sendSMS";
+    }
+
 }
