@@ -5,7 +5,9 @@ import java.io.File;
 import java.util.Date;
 import java.util.Map;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -14,6 +16,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.base.JRBaseStyle;
 import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
 import org.apache.log4j.Logger;
@@ -37,7 +40,8 @@ public class JasperReportServiceImpl implements JasperReportService {
     @Value(value = "${JASPER_TEMPLATES_RESOURCE}")
     private String REPORT_NAME;
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     public String createPDF(Map<String, Object> parameters, String fileName, String layout, String pageSize, String margins) {
 	try {
 	    long createdTime = new Date().getTime();
@@ -48,14 +52,13 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 	    String defaultPDFFont = "Lobster";
 
-	    /*DefaultJasperReportsContext context = DefaultJasperReportsContext.getInstance();
+	    DefaultJasperReportsContext context = DefaultJasperReportsContext.getInstance();
 	    context.setValue("net.sf.jasperreports.extension.registry.factory.queryexecuters.mongodb",
 	        "com.jaspersoft.mongodb.query.MongoDbQueryExecuterExtensionsRegistryFactory");
 	    JRPropertiesUtil propertiesUtil = JRPropertiesUtil.getInstance(context);
 	    propertiesUtil.setProperty(JasperDesign.PROPERTY_DEFAULT_FONT, defaultPDFFont);
-	    propertiesUtil.setProperty("net.sf.jasperreports.extension.registry.factory.queryexecuters.mongodb",
-	        "com.jaspersoft.mongodb.query.MongoDbQueryExecuterExtensionsRegistryFactory");*/
 
+	    JRProperties.setProperty ("net.sf.jasperreports.query.executer.factory.MongoDbQuery", "com.jaspersoft.mongodb.query.MongoDbQueryExecuterFactory");
 	    JRStyle style = new JRBaseStyle();
 	    style.setFontName("Arial");
 	    style.setFontSize(15);

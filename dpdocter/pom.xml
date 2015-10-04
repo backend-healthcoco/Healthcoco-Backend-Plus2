@@ -33,6 +33,10 @@
 		</profile>
 		<profile>
 			<id>stagging</id>
+<<<<<<< Updated upstream
+=======
+			
+>>>>>>> Stashed changes
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -265,18 +269,22 @@
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports</artifactId>
+<<<<<<< Updated upstream
 			<version>6.1.1</version>
+=======
+			<version>6.0.4</version>
+>>>>>>> Stashed changes
 		</dependency>
 		<dependency>
 			<groupId>com.jaspersoft</groupId>
 			<artifactId>com.jaspersoft.studio.data.mongodb</artifactId>
 			<version>2.0.1</version>
 		</dependency>
-		<dependency>
+		 <dependency>
 			<groupId>ar.com.fdvs</groupId>
 			<artifactId>DynamicJasper</artifactId>
 			<version>3.0.13</version>
-		</dependency>
+		</dependency> 
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
