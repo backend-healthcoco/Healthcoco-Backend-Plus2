@@ -34,6 +34,10 @@ import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.ReferenceDetail;
 import com.dpdocter.beans.RegisteredPatientDetails;
+import com.dpdocter.beans.SMS;
+import com.dpdocter.beans.SMSAddress;
+import com.dpdocter.beans.SMSDetail;
+import com.dpdocter.beans.SMSTrackDetail;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.AddressCollection;
 import com.dpdocter.collections.BloodGroupCollection;
@@ -82,6 +86,9 @@ import com.dpdocter.services.GenerateUniqueUserNameService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.RegistrationService;
+import com.dpdocter.sms.services.SMSServices;
+import com.dpdocter.sms.webservices.SMSServicesAPI;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -149,6 +156,9 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Autowired
     private ProfessionRepository professionRepository;
 
+    @Autowired
+    private SMSServices sMSServices;
+    
     @Value(value = "${mail.signup.subject.activation}")
     private String signupSubject;
 
@@ -297,6 +307,29 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    }
 	    /* registeredPatientDetails.setGroups(request.getGroups()); */
 	    registeredPatientDetails.setGroups(groups);
+	    
+	    if(userCollection.getMobileNumber() !=null){
+	    	SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+		    smsTrackDetail.setDoctorId(patientCollection.getDoctorId());
+		    smsTrackDetail.setHospitalId(patientCollection.getHospitalId());
+		    smsTrackDetail.setLocationId(patientCollection.getLocationId());
+		    
+		    SMSDetail smsDetail = new SMSDetail();
+		    smsDetail.setPatientId(patientCollection.getUserId());
+		    
+		    SMS sms = new SMS();
+		    sms.setSmsText("OTP Verification");
+		    
+		    SMSAddress smsAddress = new SMSAddress(); 
+		    smsAddress.setRecipient(userCollection.getMobileNumber());
+		    sms.setSmsAddress(smsAddress);
+		    
+		    smsDetail.setSms(sms);
+		    List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+		    smsDetails.add(smsDetail);
+		    smsTrackDetail.setSmsDetails(smsDetails);
+		    sMSServices.sendSMS(smsTrackDetail, false);
+	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
@@ -540,6 +573,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    ReferencesCollection referrencesCollection = referrenceRepository.findOne(referenceId);
 	    if (referrencesCollection != null) {
 		referrencesCollection.setDiscarded(true);
+		referrencesCollection.setUpdatedTime(new Date());
 		referrenceRepository.save(referrencesCollection);
 	    } else {
 		logger.warn("Invalid Referrence Id!");
@@ -931,6 +965,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			response.add(clinicImage);
 		    }
 		    locationCollection.setImages(response);
+		    locationCollection.setUpdatedTime(new Date());
 		    locationCollection = locationRepository.save(locationCollection);
 		    BeanUtil.map(locationCollection, response);
 		}
@@ -968,6 +1003,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    }
 		}
 		locationCollection.setImages(images);
+		locationCollection.setUpdatedTime(new Date());
 		locationCollection = locationRepository.save(locationCollection);
 		return true;
 	    }

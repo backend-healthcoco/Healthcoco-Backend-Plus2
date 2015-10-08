@@ -153,6 +153,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		if (disease.getDoctorId() != null && disease.getHospitalId() != null && disease.getLocationId() != null) {
 		    if (disease.getDoctorId().equals(doctorId) && disease.getHospitalId().equals(hospitalId) && disease.getLocationId().equals(locationId)) {
 			disease.setDiscarded(true);
+			disease.setUpdatedTime(new Date());
 			disease = diseasesRepository.save(disease);
 			response = true;
 		    } else {
@@ -222,6 +223,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    recordsCollection = recordsRepository.findOne(reportId);
 	    if (recordsCollection != null) {
 		recordsCollection.setInHistory(true);
+		recordsCollection.setUpdatedTime(new Date());
 		recordsRepository.save(recordsCollection);
 	    }
 
@@ -278,6 +280,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    clinicalNotesCollection = clinicalNotesRepository.findOne(clinicalNotesId);
 	    if (clinicalNotesCollection != null) {
 		clinicalNotesCollection.setInHistory(true);
+		clinicalNotesCollection.setUpdatedTime(new Date());
 		clinicalNotesRepository.save(clinicalNotesCollection);
 	    }
 
@@ -334,6 +337,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    // modify prescription that it has been added to history.
 	    prescriptionCollection = prescriptionRepository.findOne(prescriptionId);
 	    if (prescriptionCollection != null) {
+	    	prescriptionCollection.setUpdatedTime(new Date());
 		prescriptionCollection.setInHistory(true);
 		prescriptionRepository.save(prescriptionCollection);
 	    }
@@ -494,6 +498,7 @@ public class HistoryServicesImpl implements HistoryServices {
 			recordsCollection = recordsRepository.findOne(reportId);
 			if (recordsCollection != null) {
 			    recordsCollection.setInHistory(false);
+			    recordsCollection.setUpdatedTime(new Date());
 			    recordsRepository.save(recordsCollection);
 			}
 		    } else {
@@ -538,6 +543,7 @@ public class HistoryServicesImpl implements HistoryServices {
 			clinicalNotesCollection = clinicalNotesRepository.findOne(clinicalNotesId);
 			if (clinicalNotesCollection != null) {
 			    clinicalNotesCollection.setInHistory(false);
+			    clinicalNotesCollection.setUpdatedTime(new Date());
 			    clinicalNotesRepository.save(clinicalNotesCollection);
 			}
 		    } else {
@@ -582,6 +588,7 @@ public class HistoryServicesImpl implements HistoryServices {
 			prescriptionCollection = prescriptionRepository.findOne(prescriptionId);
 			if (prescriptionCollection != null) {
 			    prescriptionCollection.setInHistory(false);
+			    prescriptionCollection.setUpdatedTime(new Date());
 			    prescriptionRepository.save(prescriptionCollection);
 			}
 		    } else {

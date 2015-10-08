@@ -7,24 +7,37 @@ import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.Message;
 import com.dpdocter.beans.SMS;
+import com.dpdocter.beans.SMSDeliveryReports;
 import com.dpdocter.beans.SMSDetail;
+import com.dpdocter.beans.SMSTrack;
 import com.dpdocter.beans.SMSTrackDetail;
+import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.UserRepository;
+import com.dpdocter.response.DoctorSMSResponse;
+import com.dpdocter.response.SMSResponse;
 import com.dpdocter.sms.repository.SMSTrackRepository;
 import com.dpdocter.sms.services.SMSServices;
 
@@ -49,9 +62,12 @@ public class SMSServicesImpl implements SMSServices {
 
     @Value(value = "${SMS_POST_URL}")
     private String SMS_POST_URL;
+    
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
-    public void sendSMS(SMSTrackDetail smsTrackDetail) {
+    public void sendSMS(SMSTrackDetail smsTrackDetail, Boolean save) {
 	try {
 	    Message message = new Message();
 	    List<SMS> smsList = new ArrayList<SMS>();
@@ -68,7 +84,7 @@ public class SMSServicesImpl implements SMSServices {
 	    String xmlSMSData = createXMLData(message);
 	    String responseId = hitSMSUrl(SMS_POST_URL, xmlSMSData);
 	    smsTrackDetail.setResponseId(responseId);
-	    smsTrackRepository.save(smsTrackDetail);
+	    if(save)smsTrackRepository.save(smsTrackDetail);
 	} catch (Exception e) {
 	    logger.error("Error : " + e.getMessage());
 	    throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -134,4 +150,106 @@ public class SMSServicesImpl implements SMSServices {
 	return xmlData;
     }
 
+	@Override
+	public SMSResponse getSMS(int page, int size, String doctorId, String locationId, String hospitalId) {
+		SMSResponse response = null;
+		List<SMSTrackDetail> smsTrackDetails = null;
+		try{
+			if(doctorId == null){
+				if(size>0) smsTrackDetails = smsTrackRepository.findAll(locationId, hospitalId,new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else smsTrackDetails = smsTrackRepository.findAll(locationId, hospitalId, new Sort(Sort.Direction.DESC, "updatedTime"));
+		}else{
+			if(size>0) smsTrackDetails = smsTrackRepository.findAll(doctorId, locationId, hospitalId,new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			else smsTrackDetails = smsTrackRepository.findAll(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "updatedTime"));
+		}
+			
+			@SuppressWarnings("unchecked")
+		    Collection<String> doctorIds = CollectionUtils.collect(smsTrackDetails, new BeanToPropertyValueTransformer("doctorId"));
+		    if(doctorIds != null && !doctorIds.isEmpty()){
+		    	response = new SMSResponse();
+		    	List<DoctorSMSResponse> doctors = getSpecifiedDoctors(doctorIds, locationId, hospitalId);
+		    	response.setDoctors(doctors);
+		    }
+		    	
+		    
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error Occurred While Getting SMS");
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting SMS");
+		}
+		return response;
+	}
+
+	private List<DoctorSMSResponse> getSpecifiedDoctors(Collection<String> doctorIds, String locationId, String hospitalId) {
+		List<DoctorSMSResponse> doctors = new ArrayList<DoctorSMSResponse>();
+		for(String doctorId : doctorIds){
+			DoctorSMSResponse doctorSMSResponse = new DoctorSMSResponse();
+			int count = smsTrackRepository.getDoctorsSMSCount(doctorId, locationId, hospitalId);
+			UserCollection user = userRepository.findOne(doctorId);
+			doctorSMSResponse.setDoctorId(doctorId);
+			if(user != null)doctorSMSResponse.setDoctorName(user.getFirstName());
+			doctorSMSResponse.setMsgSentCount(count+"");
+			doctors.add(doctorSMSResponse);
+		}
+		return doctors;
+	}
+
+	@Override
+	public List<SMSTrack> getSMSDetails(int page, int size, String doctorId, String locationId, String hospitalId) {
+		List<SMSTrack> response = null;
+		List<SMSTrackDetail> smsTrackCollections = null;
+		try{
+			if(doctorId == null){
+				if(locationId == null && hospitalId == null){
+					if(size >0)smsTrackCollections = smsTrackRepository.findAll(new PageRequest(page, size, Direction.DESC,"sentTime")).getContent();
+					else smsTrackCollections = smsTrackRepository.findAll(new Sort(Sort.Direction.DESC,"sentTime"));
+				}
+				else{
+					if(size >0)smsTrackCollections = smsTrackRepository.findAll(locationId, hospitalId, new PageRequest(page, size, Direction.DESC,"sentTime"));
+					else smsTrackCollections = smsTrackRepository.findAll(locationId, hospitalId, new Sort(Sort.Direction.DESC,"sentTime"));
+				}
+			}
+			else{
+				if(locationId == null && hospitalId == null){
+					if(size >0)smsTrackCollections = smsTrackRepository.findAll(doctorId, new PageRequest(page, size, Direction.DESC,"sentTime"));
+					else smsTrackCollections = smsTrackRepository.findAll(doctorId, new Sort(Sort.Direction.DESC,"sentTime"));
+				}
+				else{
+					if(size >0)smsTrackCollections = smsTrackRepository.findAll(doctorId, locationId, hospitalId, new PageRequest(page, size, Direction.DESC,"sentTime"));
+					else smsTrackCollections = smsTrackRepository.findAll(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC,"sentTime"));
+				}
+			}
+			
+			if(smsTrackCollections != null){
+				response = new ArrayList<SMSTrack>();
+				BeanUtil.map(smsTrackCollections, response);
+			}
+		}catch (BusinessException e) {
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+
+	}
+
+	@Override
+	public void updateDeliveryReports(List<SMSDeliveryReports> request) {
+		try{
+			for(SMSDeliveryReports smsDeliveryReport : request){
+				SMSTrackDetail smsTrackDetail = smsTrackRepository.findByResponseId(smsDeliveryReport.getRequestId());
+				if(smsTrackDetail != null){
+					for(SMSDetail smsDetail : smsTrackDetail.getSmsDetails()){
+						smsDetail.setDeliveredTime(smsDeliveryReport.getReport().getDate());
+						smsDetail.setDeliveryStatus(SMSStatus.valueOf(smsDeliveryReport.getReport().getStatus()));
+					}
+					smsTrackRepository.save(smsTrackDetail);
+				}
+				
+			}
+		}catch (BusinessException e) {
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		
+	}
 }

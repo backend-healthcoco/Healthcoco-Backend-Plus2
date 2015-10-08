@@ -41,6 +41,7 @@ import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.ComplaintCollection;
 import com.dpdocter.collections.DiagnosisCollection;
 import com.dpdocter.collections.DiagramsCollection;
+import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.InvestigationCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.NotesCollection;
@@ -68,6 +69,7 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.ClinicalNotesAddRequest;
 import com.dpdocter.request.ClinicalNotesEditRequest;
 import com.dpdocter.services.ClinicalNotesService;
+import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailService;
@@ -124,6 +126,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
     @Autowired
     private LocationRepository locationRepository;
+    
+    @Autowired
+	private EmailTackService emailTackService;
+    
 
     @Value(value = "${IMAGE_RESOURCE}")
     private String imageResource;
@@ -559,6 +565,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    if (patientClinicalNotesCollections != null) {
 		for (PatientClinicalNotesCollection patientClinicalNotesCollection : patientClinicalNotesCollections) {
 		    patientClinicalNotesCollection.setDiscarded(true);
+		    patientClinicalNotesCollection.setUpdatedTime(new Date());
 		    patientClinicalNotesRepository.save(patientClinicalNotesCollection);
 		}
 
@@ -864,6 +871,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    if (complaintCollection.getDoctorId().equals(doctorId) && complaintCollection.getHospitalId().equals(hospitalId)
 			    && complaintCollection.getLocationId().equals(locationId)) {
 			complaintCollection.setDiscarded(true);
+			complaintCollection.setUpdatedTime(new Date());
 			complaintRepository.save(complaintCollection);
 		    } else {
 			logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
@@ -896,6 +904,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    if (observationCollection.getDoctorId().equals(doctorId) && observationCollection.getHospitalId().equals(hospitalId)
 			    && observationCollection.getLocationId().equals(locationId)) {
 			observationCollection.setDiscarded(true);
+			observationCollection.setUpdatedTime(new Date());
 			observationRepository.save(observationCollection);
 		    } else {
 			logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
@@ -926,6 +935,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    if (investigationCollection.getDoctorId().equals(doctorId) && investigationCollection.getHospitalId().equals(hospitalId)
 			    && investigationCollection.getLocationId().equals(locationId)) {
 			investigationCollection.setDiscarded(true);
+			investigationCollection.setUpdatedTime(new Date());
 			investigationRepository.save(investigationCollection);
 		    } else {
 			logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
@@ -955,6 +965,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    if (diagnosisCollection.getDoctorId().equals(doctorId) && diagnosisCollection.getHospitalId().equals(hospitalId)
 			    && diagnosisCollection.getLocationId().equals(locationId)) {
 			diagnosisCollection.setDiscarded(true);
+			diagnosisCollection.setUpdatedTime(new Date());
 			diagnosisRepository.save(diagnosisCollection);
 		    } else {
 			logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
@@ -984,6 +995,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    if (notesCollection.getDoctorId().equals(doctorId) && notesCollection.getHospitalId().equals(hospitalId)
 			    && notesCollection.getLocationId().equals(locationId)) {
 			notesCollection.setDiscarded(true);
+			notesCollection.setUpdatedTime(new Date());
 			notesRepository.save(notesCollection);
 		    } else {
 			logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
@@ -1014,6 +1026,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    if (diagramsCollection.getDoctorId().equals(doctorId) && diagramsCollection.getHospitalId().equals(hospitalId)
 			    && diagramsCollection.getLocationId().equals(locationId)) {
 			diagramsCollection.setDiscarded(true);
+			diagramsCollection.setUpdatedTime(new Date());
 			diagramsRepository.save(diagramsCollection);
 		    } else {
 			logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
@@ -2797,8 +2810,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    }
 		}
 
-		PrintSettingsCollection printSettings = printSettingsRepository.findOne(doctorId, locationId, hospitalId,
-			ComponentType.CLINICAL_NOTES.getType());
+		PrintSettingsCollection printSettings = printSettingsRepository.findOne(doctorId, locationId, hospitalId, ComponentType.CLINICAL_NOTES.getType());
 		DBObject printId = new BasicDBObject();
 		if (printSettings == null) {
 		    printSettings = printSettingsRepository.findOne(doctorId, locationId, hospitalId, ComponentType.ALL.getType());
@@ -2824,6 +2836,16 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		mailAttachment = new MailAttachment();
 		mailAttachment.setAttachmentName(file.getFilename());
 		mailAttachment.setFileSystemResource(file);
+		
+		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
+		emailTrackCollection.setDoctorId(doctorId);
+		emailTrackCollection.setHospitalId(hospitalId);
+		emailTrackCollection.setLocationId(locationId);
+		emailTrackCollection.setType(ComponentType.CLINICAL_NOTES.getType());
+		emailTrackCollection.setSubject("Clinical Notes");
+		
+		emailTackService.saveEmailTrack(emailTrackCollection);
+		
 
 	    } else {
 		logger.warn("Clinical Notes not found. Please check clinicalNotesId.");

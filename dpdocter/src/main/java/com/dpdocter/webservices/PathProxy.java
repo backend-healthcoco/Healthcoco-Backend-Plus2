@@ -158,6 +158,8 @@ public interface PathProxy {
 	public static final String GET_CINICAL_ITEMS = "/{type}/{range}";
 
 	public static final String EMAIL_CLINICAL_NOTES = "/{clinicalNotesId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
+	
+	//public static final String SMS_CLINICAL_NOTES = "/{clinicalNotesId}/{doctorId}/{locationId}/{hospitalId}/{mobileNumber}/sms";
 
     }
 
@@ -276,6 +278,8 @@ public interface PathProxy {
 	public static final String DELETE_DRUG_DURATION_UNIT = "/drugDurationUnit/{drugDurationUnitId}/delete";
 
 	public static final String EMAIL_PRESCRIPTION = "/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
+	
+	public static final String SMS_PRESCRIPTION = "/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{mobileNumber}/sms";
 
     }
 
@@ -485,10 +489,20 @@ public interface PathProxy {
 	public static final String SEARCH_LANDMARK_LOCALITY = "searchLandmarkLocality/{cityId}/{searchTerm}";
     }
 
-    public static final String SMS_BASE_URL = BASE_URL + "/smsService";
+    public static final String SMS_BASE_URL = BASE_URL + "/sms";
 
     public interface SMSUrls {
-	public static final String SEND_SMS = "/sendSMS";
+    	public static final String SEND_SMS = "/send";
+    	
+    	public static final String GET_SMS_DETAILS = "/getDetails";
+    	
+    	public static final String UPDATE_DELIVERY_REPORTS = "/updateDeliveryReports";
+    }
+
+    public static final String EMAIL_TRACK_BASE_URL = BASE_URL + "/email";
+
+    public interface EmailTrackUrls {
+    	
     }
 
 }

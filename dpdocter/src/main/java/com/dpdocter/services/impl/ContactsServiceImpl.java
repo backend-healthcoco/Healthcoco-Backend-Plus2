@@ -310,12 +310,13 @@ public class ContactsServiceImpl implements ContactsService {
 	    groupCollection = groupRepository.findOne(groupId);
 	    if (groupCollection != null) {
 		groupCollection.setDiscarded(true);
+		groupCollection.setUpdatedTime(new Date());
 		groupCollection = groupRepository.save(groupCollection);
 		patientGroupCollection = patientGroupRepository.findByGroupId(groupCollection.getId());
 		if (patientGroupCollection != null) {
 		    for (PatientGroupCollection patientGroup : patientGroupCollection) {
 			PatientCollection patientCollection = patientRepository.findOne(patientGroup.getPatientId());
-			patientCollection.setCreatedTime(new Date());
+			patientCollection.setUpdatedTime(new Date());
 			patientCollection = patientRepository.save(patientCollection);
 			patientGroupRepository.delete(patientGroup);
 		    }

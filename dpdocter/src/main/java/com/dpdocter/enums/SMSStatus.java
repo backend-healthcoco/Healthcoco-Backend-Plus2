@@ -1,7 +1,7 @@
 package com.dpdocter.enums;
 
 public enum SMSStatus {
-    IN_PROGRESS("IN_PROGRESS"), DELIVERED("DELIVERED"), FAILED("FAILED");
+    IN_PROGRESS("IN_PROGRESS"), DELIVERED("DELIVERED"), FAILED("FAILED"),REJECTED("REJECTED");
 
     private String smsStatus;
 

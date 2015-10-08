@@ -22,7 +22,7 @@ public class NotesCollection extends GenericCollection {
     private String hospitalId;
 
     @Field
-    private Boolean discarded;
+    private Boolean discarded = false;
 
     @Field
     private boolean inHistory = false;

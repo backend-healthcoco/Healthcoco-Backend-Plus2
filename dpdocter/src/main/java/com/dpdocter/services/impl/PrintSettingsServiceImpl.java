@@ -235,6 +235,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 		    if (printSettingsCollection.getDoctorId().equals(doctorId) && printSettingsCollection.getHospitalId().equals(hospitalId)
 			    && printSettingsCollection.getLocationId().equals(locationId)) {
 			printSettingsCollection.setDiscarded(true);
+			printSettingsCollection.setUpdatedTime(new Date());
 			printSettingsRepository.save(printSettingsCollection);
 			return true;
 		    } else {

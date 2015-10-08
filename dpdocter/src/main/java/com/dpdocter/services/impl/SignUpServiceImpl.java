@@ -12,6 +12,10 @@ import org.springframework.stereotype.Service;
 import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.Location;
+import com.dpdocter.beans.SMS;
+import com.dpdocter.beans.SMSAddress;
+import com.dpdocter.beans.SMSDetail;
+import com.dpdocter.beans.SMSTrackDetail;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.AddressCollection;
 import com.dpdocter.collections.DoctorCollection;
@@ -47,6 +51,7 @@ import com.dpdocter.services.FileManager;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.SignUpService;
+import com.dpdocter.sms.services.SMSServices;
 
 /**
  * @author veeraj
@@ -97,6 +102,9 @@ public class SignUpServiceImpl implements SignUpService {
 
     @Autowired
     private TokenRepository tokenRepository;
+    
+    @Autowired
+    private SMSServices sMSServices;
 
     @Value(value = "${mail.signup.subject.activation}")
     private String signupSubject;
@@ -234,6 +242,29 @@ public class SignUpServiceImpl implements SignUpService {
 	    hospital.setLocations(locations);
 	    response.setHospital(hospital);
 	    // user.setPassword(null);
+	    
+	    if(userCollection.getMobileNumber() !=null){
+	    	SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+		    smsTrackDetail.setDoctorId(doctorCollection.getUserId());
+		    smsTrackDetail.setHospitalId(hospitalCollection.getId());
+		    smsTrackDetail.setLocationId(locationCollection.getId());
+		    
+		    SMSDetail smsDetail = new SMSDetail();
+		    smsDetail.setPatientId(doctorCollection.getUserId());
+		    
+		    SMS sms = new SMS();
+		    sms.setSmsText("OTP Verification");
+		    
+		    SMSAddress smsAddress = new SMSAddress(); 
+		    smsAddress.setRecipient(userCollection.getMobileNumber());
+		    sms.setSmsAddress(smsAddress);
+		    
+		    smsDetail.setSms(sms);
+		    List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+		    smsDetails.add(smsDetail);
+		    smsTrackDetail.setSmsDetails(smsDetails);
+		    sMSServices.sendSMS(smsTrackDetail,false);
+	    }
 	} catch (BusinessException be) {
 	    logger.error(be);
 	    throw be;
