@@ -33,10 +33,7 @@
 		</profile>
 		<profile>
 			<id>stagging</id>
-<<<<<<< Updated upstream
-=======
 			
->>>>>>> Stashed changes
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -269,11 +266,9 @@
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports</artifactId>
-<<<<<<< Updated upstream
-			<version>6.1.1</version>
-=======
-			<version>6.0.4</version>
->>>>>>> Stashed changes
+<!-- 			<version>6.1.1</version> -->
+<!-- 			<version>6.0.4</version> -->
+				<version>5.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.jaspersoft</groupId>
@@ -284,7 +279,13 @@
 			<groupId>ar.com.fdvs</groupId>
 			<artifactId>DynamicJasper</artifactId>
 			<version>3.0.13</version>
-		</dependency> 
+			<exclusions>
+				<exclusion>
+					<artifactId>jasperreports</artifactId>
+					<groupId>jasperreports</groupId>
+				</exclusion>
+			</exclusions>
+		 </dependency> 
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -319,11 +320,11 @@
 				<artifactId>miredot-plugin</artifactId>
 				<version>1.6.0</version>
 				<executions>
-					<execution>
-						<goals>
-							<goal>restdoc</goal>
-						</goals>
-					</execution>
+<!-- 					<execution> -->
+<!-- 						<goals> -->
+<!-- 							<goal>restdoc</goal> -->
+<!-- 						</goals> -->
+<!-- 					</execution> -->
 				</executions>
 				<configuration>
 					<licence>UHJvamVjdHxkcGRvY3Rlci5kcGRvY3RlcnwyMDE2LTA1LTE5fHRydWUjTUMwQ0ZRQ0REYVhWU0dyNlJMSFhWSnE5TGtlN1NoM3dZZ0lVVjNIQjRDR0hBTVBJR2pWaW1TWlE4ZVE0WnBZPQ==</licence>
