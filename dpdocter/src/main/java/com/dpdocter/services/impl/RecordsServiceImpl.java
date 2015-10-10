@@ -86,10 +86,9 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Autowired
     private HistoryServices historyServices;
-    
+
     @Autowired
-	private EmailTackService emailTackService;
-    
+    private EmailTackService emailTackService;
 
     @Value(value = "${IMAGE_RESOURCE}")
     private String imageResource;
@@ -97,13 +96,13 @@ public class RecordsServiceImpl implements RecordsService {
     @Override
     public Records addRecord(RecordsAddRequest request) {
 	try {
-		
+
 	    Date createdTime = new Date();
 
 	    RecordsCollection recordsCollection = new RecordsCollection();
 	    BeanUtil.map(request, recordsCollection);
 	    if (request.getFileDetails() != null) {
-	    String recordLabel = request.getFileDetails().getFileName();
+		String recordLabel = request.getFileDetails().getFileName();
 		request.getFileDetails().setFileName(request.getFileDetails().getFileName() + createdTime.getTime());
 		String path = request.getPatientId() + File.separator + "records";
 		// save image
@@ -138,7 +137,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    BeanUtil.map(request, recordsCollection);
 
 	    if (request.getFileDetails() != null) {
-	    	String recordLabel = request.getFileDetails().getFileName();
+		String recordLabel = request.getFileDetails().getFileName();
 		request.getFileDetails().setFileName(request.getFileDetails().getFileName() + new Date().getTime());
 		String path = request.getPatientId() + File.separator + "records";
 		// save image
@@ -593,19 +592,20 @@ public class RecordsServiceImpl implements RecordsService {
 		mailAttachment = new MailAttachment();
 		mailAttachment.setAttachmentName(recordsCollection.getRecordsLable());
 		mailAttachment.setFileSystemResource(file);
-		
+
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 		emailTrackCollection.setDoctorId(recordsCollection.getDoctorId());
 		emailTrackCollection.setHospitalId(recordsCollection.getHospitalId());
 		emailTrackCollection.setLocationId(recordsCollection.getLocationId());
 		emailTrackCollection.setPatientId(recordsCollection.getPatientId());
 		UserCollection userCollection = userRepository.findOne(recordsCollection.getPatientId());
-		if(userCollection != null)emailTrackCollection.setPatientName(userCollection.getFirstName());
+		if (userCollection != null)
+		    emailTrackCollection.setPatientName(userCollection.getFirstName());
 		emailTrackCollection.setType(ComponentType.REPORTS.getType());
 		emailTrackCollection.setSubject("Reports");
-		
+
 		emailTackService.saveEmailTrack(emailTrackCollection);
-		
+
 	    } else {
 		logger.warn("Record not found.Please check recordId.");
 		throw new BusinessException(ServiceError.NotFound, "Record not found.Please check recordId.");

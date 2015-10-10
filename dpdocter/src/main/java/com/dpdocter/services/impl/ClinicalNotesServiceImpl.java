@@ -126,10 +126,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
     @Autowired
     private LocationRepository locationRepository;
-    
+
     @Autowired
-	private EmailTackService emailTackService;
-    
+    private EmailTackService emailTackService;
 
     @Value(value = "${IMAGE_RESOURCE}")
     private String imageResource;
@@ -2810,7 +2809,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    }
 		}
 
-		PrintSettingsCollection printSettings = printSettingsRepository.findOne(doctorId, locationId, hospitalId, ComponentType.CLINICAL_NOTES.getType());
+		PrintSettingsCollection printSettings = printSettingsRepository.findOne(doctorId, locationId, hospitalId,
+			ComponentType.CLINICAL_NOTES.getType());
 		DBObject printId = new BasicDBObject();
 		if (printSettings == null) {
 		    printSettings = printSettingsRepository.findOne(doctorId, locationId, hospitalId, ComponentType.ALL.getType());
@@ -2836,16 +2836,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		mailAttachment = new MailAttachment();
 		mailAttachment.setAttachmentName(file.getFilename());
 		mailAttachment.setFileSystemResource(file);
-		
+
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 		emailTrackCollection.setDoctorId(doctorId);
 		emailTrackCollection.setHospitalId(hospitalId);
 		emailTrackCollection.setLocationId(locationId);
 		emailTrackCollection.setType(ComponentType.CLINICAL_NOTES.getType());
 		emailTrackCollection.setSubject("Clinical Notes");
-		
+
 		emailTackService.saveEmailTrack(emailTrackCollection);
-		
 
 	    } else {
 		logger.warn("Clinical Notes not found. Please check clinicalNotesId.");

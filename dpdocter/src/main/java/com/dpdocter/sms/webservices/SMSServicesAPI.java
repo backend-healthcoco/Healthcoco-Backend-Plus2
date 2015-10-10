@@ -20,7 +20,6 @@ import com.dpdocter.beans.SMSTrackDetail;
 import com.dpdocter.response.SMSResponse;
 import com.dpdocter.sms.services.SMSServices;
 import com.dpdocter.webservices.PathProxy;
-
 import common.util.web.Response;
 
 @Component
@@ -36,33 +35,35 @@ public class SMSServicesAPI {
     @Path(value = PathProxy.SMSUrls.SEND_SMS)
     @POST
     public Response<Boolean> sendSMS(SMSTrackDetail request) {
-	smsServices.sendSMS(request,true);
+	smsServices.sendSMS(request, true);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
     }
-    
+
     @GET
-    public Response<SMSResponse> getSMS(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId) {
-    SMSResponse smsTrackDetails = smsServices.getSMS(page, size, doctorId, locationId, hospitalId);
+    public Response<SMSResponse> getSMS(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId) {
+	SMSResponse smsTrackDetails = smsServices.getSMS(page, size, doctorId, locationId, hospitalId);
 	Response<SMSResponse> response = new Response<SMSResponse>();
 	response.setData(smsTrackDetails);
 	return response;
     }
-    
+
     @Path(value = PathProxy.SMSUrls.GET_SMS_DETAILS)
     @GET
-    public Response<SMSTrack> getSMSDetails(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId) {
-    List<SMSTrack> smsTrackDetails = smsServices.getSMSDetails(page, size, doctorId, locationId, hospitalId);
+    public Response<SMSTrack> getSMSDetails(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId) {
+	List<SMSTrack> smsTrackDetails = smsServices.getSMSDetails(page, size, doctorId, locationId, hospitalId);
 	Response<SMSTrack> response = new Response<SMSTrack>();
 	response.setDataList(smsTrackDetails);
 	return response;
     }
-    
+
     @Path(value = PathProxy.SMSUrls.UPDATE_DELIVERY_REPORTS)
     @POST
     public Response<Boolean> updateDeliveryReports(List<SMSDeliveryReports> request) {
-    	System.out.println("updating delivery Reports");
+	System.out.println("updating delivery Reports");
 	smsServices.updateDeliveryReports(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);

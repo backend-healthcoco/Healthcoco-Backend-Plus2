@@ -7,8 +7,8 @@ import com.dpdocter.collections.EmailTrackCollection;
 
 public interface EmailTackService {
 
-	void saveEmailTrack(EmailTrackCollection emailTrack);
-	
-	List<EmailTrack> getEmailDetails(String doctorId, String locationId, String hospitalId, int page, int size);
+    void saveEmailTrack(EmailTrackCollection emailTrack);
+
+    List<EmailTrack> getEmailDetails(String doctorId, String locationId, String hospitalId, int page, int size);
 
 }

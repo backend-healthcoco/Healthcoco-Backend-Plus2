@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.collections.GenericCollection;
 
 @Document(collection = "sms_track_cl")
-public class SMSTrackDetail extends GenericCollection{
+public class SMSTrackDetail extends GenericCollection {
     @Id
     private String id;
 

@@ -4,48 +4,48 @@ import java.util.Date;
 
 public class SMSReport {
 
-	private String desc;
-	
-	private String status;
-	
-	private SMSReport number;
-	
-	private Date date;
+    private String desc;
 
-	public String getDesc() {
-		return desc;
-	}
+    private String status;
 
-	public void setDesc(String desc) {
-		this.desc = desc;
-	}
+    private SMSReport number;
 
-	public String getStatus() {
-		return status;
-	}
+    private Date date;
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    public String getDesc() {
+	return desc;
+    }
 
-	public SMSReport getNumber() {
-		return number;
-	}
+    public void setDesc(String desc) {
+	this.desc = desc;
+    }
 
-	public void setNumber(SMSReport number) {
-		this.number = number;
-	}
+    public String getStatus() {
+	return status;
+    }
 
-	public Date getDate() {
-		return date;
-	}
+    public void setStatus(String status) {
+	this.status = status;
+    }
 
-	public void setDate(Date date) {
-		this.date = date;
-	}
+    public SMSReport getNumber() {
+	return number;
+    }
 
-	@Override
-	public String toString() {
-		return "SMSReport [desc=" + desc + ", status=" + status + ", number=" + number + ", date=" + date + "]";
-	}	
+    public void setNumber(SMSReport number) {
+	this.number = number;
+    }
+
+    public Date getDate() {
+	return date;
+    }
+
+    public void setDate(Date date) {
+	this.date = date;
+    }
+
+    @Override
+    public String toString() {
+	return "SMSReport [desc=" + desc + ", status=" + status + ", number=" + number + ", date=" + date + "]";
+    }
 }

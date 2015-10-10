@@ -9,9 +9,12 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.BloodGroup;
@@ -54,6 +57,12 @@ public class RegistrationApi {
     @Autowired
     private SolrRegistrationService solrRegistrationService;
 
+    @Context
+    private UriInfo uriInfo;
+
+    @Value(value = "${IMAGE_URL_ROOT_PATH}")
+    private String imageUrlRootPath;
+
     @Path(value = PathProxy.RegistrationUrls.PATIENT_REGISTER)
     @POST
     public Response<RegisteredPatientDetails> patientRegister(PatientRegistrationRequest request) {
@@ -70,6 +79,7 @@ public class RegistrationApi {
 	    registeredPatientDetails = registrationService.registerExistingPatient(request);
 	    solrRegistrationService.editPatient(getSolrPatientDocument(registeredPatientDetails));
 	}
+	registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));
 	response.setData(registeredPatientDetails);
 	return response;
     }
@@ -90,6 +100,11 @@ public class RegistrationApi {
 	Response<User> response = new Response<User>();
 
 	List<User> users = registrationService.getUsersByPhoneNumber(mobileNumber, locationId, hospitalId);
+	if (users != null && !users.isEmpty()) {
+	    for (User user : users) {
+		user.setImageUrl(getFinalImageURL(user.getImageUrl()));
+	    }
+	}
 	response.setDataList(users);
 	return response;
     }
@@ -129,6 +144,7 @@ public class RegistrationApi {
 	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 
 	RegisteredPatientDetails registeredPatientDetails = registrationService.getPatientProfileByUserId(userId, doctorId, locationId, hospitalId);
+	registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));
 	response.setData(registeredPatientDetails);
 	return response;
     }
@@ -248,6 +264,15 @@ public class RegistrationApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Clinic Id Cannot Be Empty");
 	}
 	Location clinicDetails = registrationService.getClinicDetails(clinicId);
+	if (clinicDetails != null) {
+	    if (clinicDetails.getImages() != null && !clinicDetails.getImages().isEmpty()) {
+		for (ClinicImage clinicImage : clinicDetails.getImages()) {
+		    if (clinicImage.getImageUrl() != null) {
+			clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl()));
+		    }
+		}
+	    }
+	}
 	Response<Location> response = new Response<Location>();
 	response.setData(clinicDetails);
 	return response;
@@ -308,6 +333,11 @@ public class RegistrationApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
 	}
 	ClinicLogo clinicLogoResponse = registrationService.changeClinicLogo(request);
+	if (clinicLogoResponse != null) {
+	    if (clinicLogoResponse.getLogoURL() != null) {
+		clinicLogoResponse.setLogoURL(getFinalImageURL(clinicLogoResponse.getLogoURL()));
+	    }
+	}
 	Response<ClinicLogo> response = new Response<ClinicLogo>();
 	response.setData(clinicLogoResponse);
 	return response;
@@ -324,6 +354,13 @@ public class RegistrationApi {
 	    throw new BusinessException(ServiceError.Unknown, "More than 5 images cannot be uploaded at a time");
 	}
 	List<ClinicImage> clinicImageResponse = registrationService.addClinicImage(request);
+	if (clinicImageResponse != null && !clinicImageResponse.isEmpty()) {
+	    for (ClinicImage clinicalImage : clinicImageResponse) {
+		if (clinicalImage.getImageUrl() != null) {
+		    clinicalImage.setImageUrl(getFinalImageURL(clinicalImage.getImageUrl()));
+		}
+	    }
+	}
 	Response<ClinicImage> response = new Response<ClinicImage>();
 	response.setDataList(clinicImageResponse);
 	return response;
@@ -408,5 +445,10 @@ public class RegistrationApi {
 	    e.printStackTrace();
 	}
 	return solrPatientDocument;
+    }
+
+    private String getFinalImageURL(String imageURL) {
+	String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+	return finalImageURL + imageURL;
     }
 }

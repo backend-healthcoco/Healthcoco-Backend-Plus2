@@ -90,7 +90,6 @@ import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.sms.services.SMSServices;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.PrescriptionUtils;
 
@@ -143,10 +142,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
     @Autowired
     private SMSServices sMSServices;
-    
+
     @Autowired
-	private EmailTackService emailTackService;
-    
+    private EmailTackService emailTackService;
+
     @Override
     public DrugAddEditResponse addDrug(DrugAddEditRequest request) {
 	DrugAddEditResponse response = null;
@@ -246,7 +245,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	try {
 	    drugCollection = drugRepository.findOne(drugId);
 	    if (drugCollection != null) {
-	    	drugCollection.setUpdatedTime(new Date());
+		drugCollection.setUpdatedTime(new Date());
 		drugCollection.setDiscarded(true);
 		drugCollection = drugRepository.save(drugCollection);
 		response = true;
@@ -350,7 +349,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		if (templateCollection.getDoctorId() != null && templateCollection.getHospitalId() != null && templateCollection.getLocationId() != null) {
 		    if (templateCollection.getDoctorId().equals(doctorId) && templateCollection.getHospitalId().equals(hospitalId)
 			    && templateCollection.getLocationId().equals(locationId)) {
-		    templateCollection.setUpdatedTime(new Date());
+			templateCollection.setUpdatedTime(new Date());
 			templateCollection.setDiscarded(true);
 			templateCollection = templateRepository.save(templateCollection);
 			response = true;
@@ -415,14 +414,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    prescriptionCollection.setPrescriptionCode(PrescriptionUtils.generatePrescriptionCode());
 	    for (PrescriptionItem item : prescriptionCollection.getItems()) {
 		List<DrugDirection> directions = null;
-		if(item.getDirection() != null){
-			for (DrugDirection drugDirection : item.getDirection()) {
-			    if (drugDirection != null && drugDirection.getId() != null){
-			    	if(directions == null)directions = new ArrayList<DrugDirection>();
-			    	directions.add(drugDirection);
-			    }
+		if (item.getDirection() != null) {
+		    for (DrugDirection drugDirection : item.getDirection()) {
+			if (drugDirection != null && drugDirection.getId() != null) {
+			    if (directions == null)
+				directions = new ArrayList<DrugDirection>();
+			    directions.add(drugDirection);
 			}
-			item.setDirection(directions);
+		    }
+		    item.setDirection(directions);
 		}
 		if (item.getDuration() != null && item.getDuration().getDurationUnit() != null) {
 		    if (item.getDuration().getDurationUnit().getId() == null)
@@ -988,7 +988,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	try {
 	    drugStrengthCollection = drugStrengthRepository.findOne(drugStrengthId);
 	    if (drugStrengthCollection != null) {
-	    	drugStrengthCollection.setUpdatedTime(new Date());
+		drugStrengthCollection.setUpdatedTime(new Date());
 		drugStrengthCollection.setDiscarded(true);
 		drugStrengthCollection = drugStrengthRepository.save(drugStrengthCollection);
 		response = true;
@@ -2921,7 +2921,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			} else {
 			    user = userRepository.findOne(prescriptionCollection.getPatientId());
 			}
-			
+
 			EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 			emailTrackCollection.setDoctorId(doctorId);
 			emailTrackCollection.setHospitalId(hospitalId);
@@ -2943,7 +2943,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 		}
 
-		PrintSettingsCollection printSettings = printSettingsRepository.findOne(doctorId, locationId, hospitalId, ComponentType.PRESCRIPTIONS.getType());
+		PrintSettingsCollection printSettings = printSettingsRepository
+			.findOne(doctorId, locationId, hospitalId, ComponentType.PRESCRIPTIONS.getType());
 		DBObject printId = new BasicDBObject();
 		if (printSettings == null) {
 		    printSettings = printSettingsRepository.findOne(doctorId, locationId, hospitalId, ComponentType.ALL.getType());
@@ -2983,91 +2984,92 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	return mailAttachment;
     }
 
-	@Override
-	public void smsPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String mobileNumber) {
-		PrescriptionCollection prescriptionCollection = null;
-		try {
-		    prescriptionCollection = prescriptionRepository.findOne(prescriptionId);
-		    if (prescriptionCollection != null) {
-			if (prescriptionCollection.getDoctorId() != null && prescriptionCollection.getHospitalId() != null
-				&& prescriptionCollection.getLocationId() != null) {
-			    if (prescriptionCollection.getDoctorId().equals(doctorId) && prescriptionCollection.getHospitalId().equals(hospitalId)
-				    && prescriptionCollection.getLocationId().equals(locationId)) {
-			    	
-			    	UserCollection userCollection = userRepository.findOne(prescriptionCollection.getPatientId());
-			    	PatientCollection patientCollection = patientRepository.findByUserId(prescriptionCollection.getPatientId());
-			    	LocationCollection location = locationRepository.findOne(locationId);
-			    	if(patientCollection != null){
-			    		String prescriptionDetails = "";
-			    		int i = 0;
-			    		for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
-						    if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
-							DrugCollection drug = drugRepository.findOne(prescriptionItem.getDrugId());
-							if (drug != null) {
-								i++;
-								
-								String drugType = drug.getDrugType() != null ? (drug.getDrugType().getType() != null ? drug.getDrugType().getType() : "")
-								    : "";
-							    String drugName = drug.getDrugName() != null ? drug.getDrugName() : "";
-							    String strengthValue = drug.getStrength() != null ? (drug.getStrength().getValue() != null ? drug.getStrength().getValue()
-								    : "") : "";
-							    String strengthUnit = drug.getStrength() != null ? (drug.getStrength().getStrengthUnit() != null ? drug.getStrength()
-								    .getStrengthUnit().getUnit() : "") : "";
+    @Override
+    public void smsPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String mobileNumber) {
+	PrescriptionCollection prescriptionCollection = null;
+	try {
+	    prescriptionCollection = prescriptionRepository.findOne(prescriptionId);
+	    if (prescriptionCollection != null) {
+		if (prescriptionCollection.getDoctorId() != null && prescriptionCollection.getHospitalId() != null
+			&& prescriptionCollection.getLocationId() != null) {
+		    if (prescriptionCollection.getDoctorId().equals(doctorId) && prescriptionCollection.getHospitalId().equals(hospitalId)
+			    && prescriptionCollection.getLocationId().equals(locationId)) {
 
-							    String durationValue = prescriptionItem.getDuration() != null ? (prescriptionItem.getDuration().getValue() != null ? prescriptionItem
-								    .getDuration().getValue() : "")
-								    : "";
-							    String durationUnit = prescriptionItem.getDuration() != null ? (prescriptionItem.getDuration().getDurationUnit() != null ? prescriptionItem
-								    .getDuration().getDurationUnit().getUnit()
-								    : "")
-								    : "";
+			UserCollection userCollection = userRepository.findOne(prescriptionCollection.getPatientId());
+			PatientCollection patientCollection = patientRepository.findByUserId(prescriptionCollection.getPatientId());
+			LocationCollection location = locationRepository.findOne(locationId);
+			if (patientCollection != null) {
+			    String prescriptionDetails = "";
+			    int i = 0;
+			    for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
+				if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
+				    DrugCollection drug = drugRepository.findOne(prescriptionItem.getDrugId());
+				    if (drug != null) {
+					i++;
 
-							    List<String> directions = new ArrayList<String>();
-							    for (DrugDirection drugDirection : prescriptionItem.getDirection()) {
-								if (drugDirection.getDirection() != null)
-								    directions.add(drugDirection.getDirection());
-							    }
-							    prescriptionDetails = prescriptionDetails+i+"."+drugType + " " + drugName + strengthValue +  strengthUnit+" "+prescriptionItem.getDosage()+" "+durationValue + " " + durationUnit+" "+directions;
-							}
-						  }
-						}
-			    		SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-					    smsTrackDetail.setDoctorId(doctorId);
-					    smsTrackDetail.setHospitalId(hospitalId);
-					    smsTrackDetail.setLocationId(locationId);
-					    
-					    SMSDetail smsDetail = new SMSDetail();
-					    smsDetail.setPatientId(prescriptionCollection.getPatientId());
-					    if(userCollection != null)smsDetail.setPatientName(userCollection.getFirstName());
-					    SMS sms = new SMS();
-					    sms.setSmsText("PID : "+patientCollection.getPID()+", "+prescriptionDetails);//location.getLocationName()+
-					    
-					    SMSAddress smsAddress = new SMSAddress(); 
-					    smsAddress.setRecipient(mobileNumber);
-					    sms.setSmsAddress(smsAddress);
-					    
-					    smsDetail.setSms(sms);
-					    smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-					    List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-					    smsDetails.add(smsDetail);
-					    smsTrackDetail.setSmsDetails(smsDetails);
-					    sMSServices.sendSMS(smsTrackDetail, true);
+					String drugType = drug.getDrugType() != null ? (drug.getDrugType().getType() != null ? drug.getDrugType().getType()
+						: "") : "";
+					String drugName = drug.getDrugName() != null ? drug.getDrugName() : "";
+					String strengthValue = drug.getStrength() != null ? (drug.getStrength().getValue() != null ? drug.getStrength()
+						.getValue() : "") : "";
+					String strengthUnit = drug.getStrength() != null ? (drug.getStrength().getStrengthUnit() != null ? drug.getStrength()
+						.getStrengthUnit().getUnit() : "") : "";
 
-			    	}
-			    } else {
-						logger.warn("Prescription not found.Please check prescriptionId.");
-						throw new BusinessException(ServiceError.Unknown, "Prescription not found.Please check prescriptionId.");
+					String durationValue = prescriptionItem.getDuration() != null ? (prescriptionItem.getDuration().getValue() != null ? prescriptionItem
+						.getDuration().getValue() : "")
+						: "";
+					String durationUnit = prescriptionItem.getDuration() != null ? (prescriptionItem.getDuration().getDurationUnit() != null ? prescriptionItem
+						.getDuration().getDurationUnit().getUnit()
+						: "")
+						: "";
+
+					List<String> directions = new ArrayList<String>();
+					for (DrugDirection drugDirection : prescriptionItem.getDirection()) {
+					    if (drugDirection.getDirection() != null)
+						directions.add(drugDirection.getDirection());
+					}
+					prescriptionDetails = prescriptionDetails + i + "." + drugType + " " + drugName + strengthValue + strengthUnit + " "
+						+ prescriptionItem.getDosage() + " " + durationValue + " " + durationUnit + " " + directions;
 				    }
-				} 
-		    }		
-	}
-		catch (BusinessException e) {
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+				}
+			    }
+			    SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+			    smsTrackDetail.setDoctorId(doctorId);
+			    smsTrackDetail.setHospitalId(hospitalId);
+			    smsTrackDetail.setLocationId(locationId);
+
+			    SMSDetail smsDetail = new SMSDetail();
+			    smsDetail.setPatientId(prescriptionCollection.getPatientId());
+			    if (userCollection != null)
+				smsDetail.setPatientName(userCollection.getFirstName());
+			    SMS sms = new SMS();
+			    sms.setSmsText("PID : " + patientCollection.getPID() + ", " + prescriptionDetails);// location.getLocationName()+
+
+			    SMSAddress smsAddress = new SMSAddress();
+			    smsAddress.setRecipient(mobileNumber);
+			    sms.setSmsAddress(smsAddress);
+
+			    smsDetail.setSms(sms);
+			    smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+			    List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+			    smsDetails.add(smsDetail);
+			    smsTrackDetail.setSmsDetails(smsDetails);
+			    sMSServices.sendSMS(smsTrackDetail, true);
+
+			}
+		    } else {
+			logger.warn("Prescription not found.Please check prescriptionId.");
+			throw new BusinessException(ServiceError.Unknown, "Prescription not found.Please check prescriptionId.");
+		    }
 		}
+	    }
+	} catch (BusinessException e) {
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+    }
 }

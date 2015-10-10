@@ -102,7 +102,7 @@ public class SignUpServiceImpl implements SignUpService {
 
     @Autowired
     private TokenRepository tokenRepository;
-    
+
     @Autowired
     private SMSServices sMSServices;
 
@@ -242,28 +242,28 @@ public class SignUpServiceImpl implements SignUpService {
 	    hospital.setLocations(locations);
 	    response.setHospital(hospital);
 	    // user.setPassword(null);
-	    
-	    if(userCollection.getMobileNumber() !=null){
-	    	SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-		    smsTrackDetail.setDoctorId(doctorCollection.getUserId());
-		    smsTrackDetail.setHospitalId(hospitalCollection.getId());
-		    smsTrackDetail.setLocationId(locationCollection.getId());
-		    
-		    SMSDetail smsDetail = new SMSDetail();
-		    smsDetail.setPatientId(doctorCollection.getUserId());
-		    
-		    SMS sms = new SMS();
-		    sms.setSmsText("OTP Verification");
-		    
-		    SMSAddress smsAddress = new SMSAddress(); 
-		    smsAddress.setRecipient(userCollection.getMobileNumber());
-		    sms.setSmsAddress(smsAddress);
-		    
-		    smsDetail.setSms(sms);
-		    List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-		    smsDetails.add(smsDetail);
-		    smsTrackDetail.setSmsDetails(smsDetails);
-		    sMSServices.sendSMS(smsTrackDetail,false);
+
+	    if (userCollection.getMobileNumber() != null) {
+		SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+		smsTrackDetail.setDoctorId(doctorCollection.getUserId());
+		smsTrackDetail.setHospitalId(hospitalCollection.getId());
+		smsTrackDetail.setLocationId(locationCollection.getId());
+
+		SMSDetail smsDetail = new SMSDetail();
+		smsDetail.setPatientId(doctorCollection.getUserId());
+
+		SMS sms = new SMS();
+		sms.setSmsText("OTP Verification");
+
+		SMSAddress smsAddress = new SMSAddress();
+		smsAddress.setRecipient(userCollection.getMobileNumber());
+		sms.setSmsAddress(smsAddress);
+
+		smsDetail.setSms(sms);
+		List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+		smsDetails.add(smsDetail);
+		smsTrackDetail.setSmsDetails(smsDetails);
+		sMSServices.sendSMS(smsTrackDetail, false);
 	    }
 	} catch (BusinessException be) {
 	    logger.error(be);

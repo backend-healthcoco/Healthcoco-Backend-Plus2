@@ -337,7 +337,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    // modify prescription that it has been added to history.
 	    prescriptionCollection = prescriptionRepository.findOne(prescriptionId);
 	    if (prescriptionCollection != null) {
-	    	prescriptionCollection.setUpdatedTime(new Date());
+		prescriptionCollection.setUpdatedTime(new Date());
 		prescriptionCollection.setInHistory(true);
 		prescriptionRepository.save(prescriptionCollection);
 	    }

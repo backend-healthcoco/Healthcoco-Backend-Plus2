@@ -12,10 +12,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.DoctorContactsResponse;
@@ -52,11 +55,22 @@ public class ContactsApi {
     @Autowired
     private PatientTrackService patientTrackService;
 
+    @Context
+    private UriInfo uriInfo;
+
+    @Value(value = "${IMAGE_URL_ROOT_PATH}")
+    private String imageUrlRootPath;
+
     @POST
     public Response<DoctorContactsResponse> doctorContacts(GetDoctorContactsRequest request) {
 	List<PatientCard> patientCards = contactsService.getDoctorContacts(request);
 	int ttlCount = contactsService.getContactsTotalSize(request);
 	DoctorContactsResponse doctorContactsResponse = new DoctorContactsResponse();
+	if (patientCards != null && !patientCards.isEmpty()) {
+	    for (PatientCard patientCard : patientCards) {
+		patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
+	    }
+	}
 	doctorContactsResponse.setPatientCards(patientCards);
 	doctorContactsResponse.setTotalSize(ttlCount);
 	Response<DoctorContactsResponse> response = new Response<DoctorContactsResponse>();
@@ -91,6 +105,12 @@ public class ContactsApi {
 	    break;
 	}
 
+	if (doctorContactsResponse.getPatientCards() != null && !doctorContactsResponse.getPatientCards().isEmpty()) {
+	    for (PatientCard patientCard : doctorContactsResponse.getPatientCards()) {
+		patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
+	    }
+	}
+
 	Response<DoctorContactsResponse> response = new Response<DoctorContactsResponse>();
 	response.setData(doctorContactsResponse);
 
@@ -107,6 +127,12 @@ public class ContactsApi {
 	List<PatientCard> patientCards = contactsService.getDoctorContacts(doctorId, updatedTime, discarded != null ? discarded : true, page, size);
 
 	int ttlCount = patientCards != null ? patientCards.size() : 0;
+
+	if (patientCards != null && !patientCards.isEmpty()) {
+	    for (PatientCard patientCard : patientCards) {
+		patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
+	    }
+	}
 	DoctorContactsResponse doctorContactsResponse = new DoctorContactsResponse();
 	doctorContactsResponse.setPatientCards(patientCards);
 	doctorContactsResponse.setTotalSize(ttlCount);
@@ -129,6 +155,11 @@ public class ContactsApi {
 	    boolean discarded) {
 	List<RegisteredPatientDetails> registeredPatientDetails = contactsService.getDoctorContactsHandheld(doctorId, locationId, hospitalId, updatedTime,
 		discarded);
+	if (registeredPatientDetails != null && !registeredPatientDetails.isEmpty()) {
+	    for (RegisteredPatientDetails registeredPatientDetail : registeredPatientDetails) {
+		registeredPatientDetail.setImageUrl(getFinalImageURL(registeredPatientDetail.getImageUrl()));
+	    }
+	}
 	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 	response.setDataList(registeredPatientDetails);
 	return response;
@@ -248,5 +279,10 @@ public class ContactsApi {
 	Response<PatientGroupAddEditRequest> response = new Response<PatientGroupAddEditRequest>();
 	response.setData(groups);
 	return response;
+    }
+
+    private String getFinalImageURL(String imageURL) {
+	String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+	return finalImageURL + imageURL;
     }
 }

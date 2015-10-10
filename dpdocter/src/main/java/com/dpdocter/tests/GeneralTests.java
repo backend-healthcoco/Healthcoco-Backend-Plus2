@@ -1,51 +1,51 @@
 package com.dpdocter.tests;
 
 import java.util.Arrays;
-import java.util.Date;
+import java.util.List;
 
-import com.dpdocter.beans.SMS;
-import com.dpdocter.beans.SMSAddress;
-import com.dpdocter.beans.SMSDetail;
-import com.dpdocter.beans.SMSTrackDetail;
-import com.dpdocter.enums.SMSStatus;
+class Test {
+    private String firstName;
+
+    private String lastName;
+
+    public Test(String firstName, String lastName) {
+	super();
+	this.firstName = firstName;
+	this.lastName = lastName;
+    }
+
+    public String getFirstName() {
+	return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+	this.firstName = firstName;
+    }
+
+    public String getLastName() {
+	return lastName;
+    }
+
+    public void setLastName(String lastName) {
+	this.lastName = lastName;
+    }
+
+    @Override
+    public String toString() {
+	return "Test [firstName=" + firstName + ", lastName=" + lastName + "]";
+    }
+
+}
 
 public class GeneralTests {
 
     public static void main(String[] args) {
-	SMS sms1 = new SMS();
-	sms1.setSmsText("This is a test SMS");
-	SMSAddress smsAddress1 = new SMSAddress();
-	smsAddress1.setRecipient("919021703700");
-	sms1.setSmsAddress(smsAddress1);
-
-	SMS sms2 = new SMS();
-	sms2.setSmsText("This is a second test SMS");
-	SMSAddress smsAddress2 = new SMSAddress();
-	smsAddress2.setRecipient("919371747404");
-	sms2.setSmsAddress(smsAddress2);
-
-	SMSDetail smsDetail1 = new SMSDetail();
-
-	smsDetail1.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-	smsDetail1.setPatientId("55ef30f1426e2ee85c67fd10");
-	smsDetail1.setSentTime(new Date());
-	smsDetail1.setSms(sms1);
-
-	SMSDetail smsDetail2 = new SMSDetail();
-
-	smsDetail2.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-	smsDetail2.setPatientId("55ef30f1426e2ee85c67fd10");
-	smsDetail2.setSentTime(new Date());
-	smsDetail2.setSms(sms2);
-
-	SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-
-	smsTrackDetail.setDoctorId("55edf013426eb4845f2e0f9b");
-	smsTrackDetail.setHospitalId("55edf013426eb4845f2e0fa0");
-	smsTrackDetail.setLocationId("55edf013426eb4845f2e0fa1");
-	smsTrackDetail.setSmsDetails(Arrays.asList(smsDetail1, smsDetail2));
-
-	System.out.println(Converter.ObjectToJSON(smsTrackDetail));
-
+	List<Test> tests = Arrays.asList(new Test("Isank", "Agarwal"), new Test("Juby", "Agarwal"), new Test("Binny", "Agarwal"));
+	System.out.println(tests);
+	for (Test test : tests) {
+	    test.setFirstName("Isanka");
+	    test.setLastName("Agarwala");
+	}
+	System.out.println(tests);
     }
 }

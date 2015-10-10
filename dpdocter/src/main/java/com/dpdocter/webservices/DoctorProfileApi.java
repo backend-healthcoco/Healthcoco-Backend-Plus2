@@ -8,10 +8,13 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.DoctorGeneralInfo;
@@ -48,6 +51,12 @@ public class DoctorProfileApi {
 
     @Autowired
     private DoctorProfileService doctorProfileService;
+
+    @Context
+    private UriInfo uriInfo;
+
+    @Value(value = "${IMAGE_URL_ROOT_PATH}")
+    private String imageUrlRootPath;
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_NAME)
     @POST
@@ -196,6 +205,7 @@ public class DoctorProfileApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Profile Picture Request Is Empty");
 	}
 	String addEditProfilePictureResponse = doctorProfileService.addEditProfilePicture(request);
+	addEditProfilePictureResponse = getFinalImageURL(addEditProfilePictureResponse);
 	Response<String> response = new Response<String>();
 	response.setData(addEditProfilePictureResponse);
 	return response;
@@ -209,6 +219,7 @@ public class DoctorProfileApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Profile Picture Request Is Empty");
 	}
 	String addEditCoverPictureResponse = doctorProfileService.addEditCoverPicture(request);
+	addEditCoverPictureResponse = getFinalImageURL(addEditCoverPictureResponse);
 	Response<String> response = new Response<String>();
 	response.setData(addEditCoverPictureResponse);
 	return response;
@@ -236,6 +247,11 @@ public class DoctorProfileApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Location Id and Hospital Id Cannot Be Empty");
 	}
 	DoctorProfile doctorProfile = doctorProfileService.getDoctorProfile(doctorId, locationId, hospitalId);
+	if (doctorProfile != null) {
+	    if (doctorProfile.getImageUrl() != null) {
+		doctorProfile.setImageUrl(getFinalImageURL(doctorProfile.getImageUrl()));
+	    }
+	}
 	Response<DoctorProfile> response = new Response<DoctorProfile>();
 	response.setData(doctorProfile);
 	return response;
@@ -312,4 +328,8 @@ public class DoctorProfileApi {
 	return response;
     }
 
+    private String getFinalImageURL(String imageURL) {
+	String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+	return finalImageURL + imageURL;
+    }
 }

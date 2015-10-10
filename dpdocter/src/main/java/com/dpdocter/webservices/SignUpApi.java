@@ -6,10 +6,13 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.DoctorSignUp;
@@ -37,6 +40,12 @@ public class SignUpApi {
     @Autowired
     private SolrRegistrationService solrRegistrationService;
 
+    @Context
+    private UriInfo uriInfo;
+
+    @Value(value = "${IMAGE_URL_ROOT_PATH}")
+    private String imageUrlRootPath;
+
     @Path(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP)
     @POST
     public Response<DoctorSignUp> doctorSignup(DoctorSignupRequest request) {
@@ -45,6 +54,18 @@ public class SignUpApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
 	}
 	DoctorSignUp doctorSignUp = signUpService.doctorSignUp(request);
+	if (doctorSignUp != null) {
+	    if (doctorSignUp.getUser() != null) {
+		if (doctorSignUp.getUser().getImageUrl() != null) {
+		    doctorSignUp.getUser().setImageUrl(getFinalImageURL(doctorSignUp.getUser().getImageUrl()));
+		}
+	    }
+	    if (doctorSignUp.getHospital() != null) {
+		if (doctorSignUp.getHospital().getHospitalImageUrl() != null) {
+		    doctorSignUp.getHospital().setHospitalImageUrl(getFinalImageURL(doctorSignUp.getHospital().getHospitalImageUrl()));
+		}
+	    }
+	}
 	Response<DoctorSignUp> response = new Response<DoctorSignUp>();
 	response.setData(doctorSignUp);
 	return response;
@@ -58,6 +79,11 @@ public class SignUpApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request send is NULL");
 	}
 	User user = signUpService.patientSignUp(request);
+	if (user != null) {
+	    if (user.getImageUrl() != null) {
+		user.setImageUrl(getFinalImageURL(user.getImageUrl()));
+	    }
+	}
 	Response<User> response = new Response<User>();
 	response.setData(user);
 	return response;
@@ -73,6 +99,11 @@ public class SignUpApi {
 	User user = signUpService.patientProfilePicChange(request);
 
 	solrRegistrationService.patientProfilePicChange(request.getUsername(), user.getImageUrl());
+	if (user != null) {
+	    if (user.getImageUrl() != null) {
+		user.setImageUrl(getFinalImageURL(user.getImageUrl()));
+	    }
+	}
 	Response<User> response = new Response<User>();
 	response.setData(user);
 	return response;
@@ -126,4 +157,8 @@ public class SignUpApi {
 	return response;
     }
 
+    private String getFinalImageURL(String imageURL) {
+	String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+	return finalImageURL + imageURL;
+    }
 }

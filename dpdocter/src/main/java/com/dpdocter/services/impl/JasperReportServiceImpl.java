@@ -41,7 +41,7 @@ public class JasperReportServiceImpl implements JasperReportService {
     private String REPORT_NAME;
 
     @SuppressWarnings("deprecation")
-	@Override
+    @Override
     public String createPDF(Map<String, Object> parameters, String fileName, String layout, String pageSize, String margins) {
 	try {
 	    long createdTime = new Date().getTime();
@@ -54,11 +54,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 	    DefaultJasperReportsContext context = DefaultJasperReportsContext.getInstance();
 	    context.setValue("net.sf.jasperreports.extension.registry.factory.queryexecuters.mongodb",
-	        "com.jaspersoft.mongodb.query.MongoDbQueryExecuterExtensionsRegistryFactory");
+		    "com.jaspersoft.mongodb.query.MongoDbQueryExecuterExtensionsRegistryFactory");
 	    JRPropertiesUtil propertiesUtil = JRPropertiesUtil.getInstance(context);
 	    propertiesUtil.setProperty(JasperDesign.PROPERTY_DEFAULT_FONT, defaultPDFFont);
 
-	    JRProperties.setProperty ("net.sf.jasperreports.query.executer.factory.MongoDbQuery", "com.jaspersoft.mongodb.query.MongoDbQueryExecuterFactory");
+	    JRProperties.setProperty("net.sf.jasperreports.query.executer.factory.MongoDbQuery", "com.jaspersoft.mongodb.query.MongoDbQueryExecuterFactory");
 	    JRStyle style = new JRBaseStyle();
 	    style.setFontName("Arial");
 	    style.setFontSize(15);

@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class SMSTrack {
 
-	private String id;
+    private String id;
 
     private String doctorId;
 
@@ -17,77 +17,76 @@ public class SMSTrack {
     private String deliveryStatus;
 
     private String deliveredTime;
-    
+
     private Date sentTime;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getDoctorId() {
-		return doctorId;
-	}
+    public String getDoctorId() {
+	return doctorId;
+    }
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
+    }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
 
-	public String getHospitalId() {
-		return hospitalId;
-	}
+    public String getHospitalId() {
+	return hospitalId;
+    }
 
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
 
-	public String getPatientName() {
-		return patientName;
-	}
+    public String getPatientName() {
+	return patientName;
+    }
 
-	public void setPatientName(String patientName) {
-		this.patientName = patientName;
-	}
+    public void setPatientName(String patientName) {
+	this.patientName = patientName;
+    }
 
-	public String getDeliveryStatus() {
-		return deliveryStatus;
-	}
+    public String getDeliveryStatus() {
+	return deliveryStatus;
+    }
 
-	public void setDeliveryStatus(String deliveryStatus) {
-		this.deliveryStatus = deliveryStatus;
-	}
+    public void setDeliveryStatus(String deliveryStatus) {
+	this.deliveryStatus = deliveryStatus;
+    }
 
-	public String getDeliveredTime() {
-		return deliveredTime;
-	}
+    public String getDeliveredTime() {
+	return deliveredTime;
+    }
 
-	public void setDeliveredTime(String deliveredTime) {
-		this.deliveredTime = deliveredTime;
-	}
+    public void setDeliveredTime(String deliveredTime) {
+	this.deliveredTime = deliveredTime;
+    }
 
-	public Date getSentTime() {
-		return sentTime;
-	}
+    public Date getSentTime() {
+	return sentTime;
+    }
 
-	public void setSentTime(Date sentTime) {
-		this.sentTime = sentTime;
-	}
+    public void setSentTime(Date sentTime) {
+	this.sentTime = sentTime;
+    }
 
-	@Override
-	public String toString() {
-		return "SMSTrack [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + ", patientName=" + patientName + ", deliveryStatus=" + deliveryStatus
-				+ ", deliveredTime=" + deliveredTime + ", sentTime=" + sentTime + "]";
-	}
+    @Override
+    public String toString() {
+	return "SMSTrack [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientName=" + patientName
+		+ ", deliveryStatus=" + deliveryStatus + ", deliveredTime=" + deliveredTime + ", sentTime=" + sentTime + "]";
+    }
 }

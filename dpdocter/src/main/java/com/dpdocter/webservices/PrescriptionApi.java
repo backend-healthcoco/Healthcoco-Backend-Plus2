@@ -593,7 +593,7 @@ public class PrescriptionApi {
 	response.setData(true);
 	return response;
     }
-    
+
     @Path(value = PathProxy.PrescriptionUrls.SMS_PRESCRIPTION)
     @GET
     public Response<Boolean> smsPrescription(@PathParam(value = "prescriptionId") String prescriptionId, @PathParam(value = "doctorId") String doctorId,

@@ -21,57 +21,63 @@ import com.dpdocter.services.EmailTackService;
 @Service
 public class EmailTrackServiceImpl implements EmailTackService {
 
-	private static Logger logger = Logger.getLogger(EmailTrackServiceImpl.class.getName());
-	
-	@Autowired
-	private EmailTrackRepository emailTrackRepository;
-	
-	@Override
-	public List<EmailTrack> getEmailDetails(String doctorId, String locationId, String hospitalId, int page, int size) {
-		List<EmailTrack> response = null;
-		List<EmailTrackCollection> emailTrackCollections = null;
-		try{
-			if(doctorId == null){
-				if(locationId == null && hospitalId == null){
-					if(size >0)emailTrackCollections = emailTrackRepository.findAll(new PageRequest(page, size, Direction.DESC,"sentTime")).getContent();
-					else emailTrackCollections = emailTrackRepository.findAll(new Sort(Sort.Direction.DESC,"sentTime"));
-				}
-				else{
-					if(size >0)emailTrackCollections = emailTrackRepository.findAll(locationId, hospitalId, new PageRequest(page, size, Direction.DESC,"sentTime"));
-					else emailTrackCollections = emailTrackRepository.findAll(locationId, hospitalId, new Sort(Sort.Direction.DESC,"sentTime"));
-				}
-			}
-			else{
-				if(locationId == null && hospitalId == null){
-					if(size >0)emailTrackCollections = emailTrackRepository.findAll(doctorId, new PageRequest(page, size, Direction.DESC,"sentTime"));
-					else emailTrackCollections = emailTrackRepository.findAll(doctorId, new Sort(Sort.Direction.DESC,"sentTime"));
-				}
-				else{
-					if(size >0)emailTrackCollections = emailTrackRepository.findAll(doctorId, locationId, hospitalId, new PageRequest(page, size, Direction.DESC,"sentTime"));
-					else emailTrackCollections = emailTrackRepository.findAll(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC,"sentTime"));
-				}
-			}
-			
-			if(emailTrackCollections != null){
-				response = new ArrayList<EmailTrack>();
-				BeanUtil.map(emailTrackCollections, response);
-			}
-		}catch (BusinessException e) {
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+    private static Logger logger = Logger.getLogger(EmailTrackServiceImpl.class.getName());
+
+    @Autowired
+    private EmailTrackRepository emailTrackRepository;
+
+    @Override
+    public List<EmailTrack> getEmailDetails(String doctorId, String locationId, String hospitalId, int page, int size) {
+	List<EmailTrack> response = null;
+	List<EmailTrackCollection> emailTrackCollections = null;
+	try {
+	    if (doctorId == null) {
+		if (locationId == null && hospitalId == null) {
+		    if (size > 0)
+			emailTrackCollections = emailTrackRepository.findAll(new PageRequest(page, size, Direction.DESC, "sentTime")).getContent();
+		    else
+			emailTrackCollections = emailTrackRepository.findAll(new Sort(Sort.Direction.DESC, "sentTime"));
+		} else {
+		    if (size > 0)
+			emailTrackCollections = emailTrackRepository.findAll(locationId, hospitalId, new PageRequest(page, size, Direction.DESC, "sentTime"));
+		    else
+			emailTrackCollections = emailTrackRepository.findAll(locationId, hospitalId, new Sort(Sort.Direction.DESC, "sentTime"));
 		}
-		return response;
+	    } else {
+		if (locationId == null && hospitalId == null) {
+		    if (size > 0)
+			emailTrackCollections = emailTrackRepository.findAll(doctorId, new PageRequest(page, size, Direction.DESC, "sentTime"));
+		    else
+			emailTrackCollections = emailTrackRepository.findAll(doctorId, new Sort(Sort.Direction.DESC, "sentTime"));
+		} else {
+		    if (size > 0)
+			emailTrackCollections = emailTrackRepository.findAll(doctorId, locationId, hospitalId, new PageRequest(page, size, Direction.DESC,
+				"sentTime"));
+		    else
+			emailTrackCollections = emailTrackRepository.findAll(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "sentTime"));
+		}
+	    }
+
+	    if (emailTrackCollections != null) {
+		response = new ArrayList<EmailTrack>();
+		BeanUtil.map(emailTrackCollections, response);
+	    }
+	} catch (BusinessException e) {
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return response;
+    }
+
+    @Override
+    public void saveEmailTrack(EmailTrackCollection emailTrack) {
+	try {
+	    emailTrackRepository.save(emailTrack);
+	} catch (BusinessException e) {
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
-	@Override
-	public void saveEmailTrack(EmailTrackCollection emailTrack) {
-		try{
-			emailTrackRepository.save(emailTrack);
-		}catch (BusinessException e) {
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		
-	}
+    }
 
 }

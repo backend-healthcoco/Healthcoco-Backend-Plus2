@@ -11,11 +11,14 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.FlexibleCounts;
@@ -46,6 +49,12 @@ public class RecordsApi {
     @Autowired
     private PatientTrackService patientTrackService;
 
+    @Context
+    private UriInfo uriInfo;
+
+    @Value(value = "${IMAGE_URL_ROOT_PATH}")
+    private String imageUrlRootPath;
+
     @POST
     @Path(value = PathProxy.RecordsUrls.ADD_RECORDS)
     public Response<Records> addRecords(RecordsAddRequest request) {
@@ -57,6 +66,7 @@ public class RecordsApi {
 
 	// patient track
 	if (records != null) {
+	    records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
 	    patientTrackService.addRecord(request, VisitedFor.REPORTS);
 	}
 
@@ -84,6 +94,11 @@ public class RecordsApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	List<Records> records = recordsService.searchRecords(request);
+	if (records != null && !records.isEmpty()) {
+	    for (Records record : records) {
+		record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl()));
+	    }
+	}
 	Response<Records> response = new Response<Records>();
 	response.setDataList(records);
 	return response;
@@ -214,6 +229,7 @@ public class RecordsApi {
 
 	// patient track
 	if (records != null) {
+	    records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
 	    patientTrackService.addRecord(request, VisitedFor.REPORTS);
 	}
 
@@ -223,4 +239,8 @@ public class RecordsApi {
 
     }
 
+    private String getFinalImageURL(String imageURL) {
+	String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+	return finalImageURL + imageURL;
+    }
 }

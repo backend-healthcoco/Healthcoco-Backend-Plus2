@@ -11,10 +11,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.ClinicalNotes;
@@ -58,6 +61,12 @@ public class ClinicalNotesApi {
 
     @Autowired
     private PatientTrackService patientTrackService;
+
+    @Context
+    private UriInfo uriInfo;
+
+    @Value(value = "${IMAGE_URL_ROOT_PATH}")
+    private String imageUrlRootPath;
 
     @Path(value = PathProxy.ClinicalNotesUrls.SAVE_CLINICAL_NOTE)
     @POST
@@ -107,6 +116,9 @@ public class ClinicalNotesApi {
     @GET
     public Response<ClinicalNotes> getNotesById(@PathParam(value = "clinicalNotesId") String clinicalNotesId) {
 	ClinicalNotes clinicalNotes = clinicalNotesService.getNotesById(clinicalNotesId);
+	if (clinicalNotes.getDiagrams() != null && !clinicalNotes.getDiagrams().isEmpty()) {
+	    clinicalNotes.setDiagrams(getFinalDiagrams(clinicalNotes.getDiagrams()));
+	}
 	Response<ClinicalNotes> response = new Response<ClinicalNotes>();
 	response.setData(clinicalNotes);
 	return response;
@@ -137,6 +149,13 @@ public class ClinicalNotesApi {
 		    updatedTime, discarded != null ? discarded : true);
 	}
 
+	if (clinicalNotes != null && !clinicalNotes.isEmpty()) {
+	    for (ClinicalNotes clinicalNote : clinicalNotes) {
+		if (clinicalNote.getDiagrams() != null && !clinicalNote.getDiagrams().isEmpty()) {
+		    clinicalNote.setDiagrams(getFinalDiagrams(clinicalNote.getDiagrams()));
+		}
+	    }
+	}
 	Response<ClinicalNotes> response = new Response<ClinicalNotes>();
 	response.setDataList(clinicalNotes);
 	return response;
@@ -255,7 +274,9 @@ public class ClinicalNotesApi {
 	} else {
 	    solrClinicalNotesService.editDiagrams(solrDiagrams);
 	}
-
+	if (diagram.getDiagramUrl() != null) {
+	    diagram.setDiagramUrl(getFinalImageURL(diagram.getDiagramUrl()));
+	}
 	Response<Diagram> response = new Response<Diagram>();
 	response.setData(diagram);
 	return response;
@@ -347,6 +368,13 @@ public class ClinicalNotesApi {
 	}
 	List<Object> clinicalItems = clinicalNotesService.getClinicalItems(type, range, page, size, doctorId, locationId, hospitalId, updatedTime,
 		discarded != null ? discarded : true);
+	if (clinicalItems != null && !clinicalItems.isEmpty()) {
+	    for (Object clinicalItem : clinicalItems) {
+		if (clinicalItem instanceof Diagram) {
+		    ((Diagram) clinicalItem).setDiagramUrl(getFinalImageURL(((Diagram) clinicalItem).getDiagramUrl()));
+		}
+	    }
+	}
 	Response<Object> response = new Response<Object>();
 	response.setDataList(clinicalItems);
 	return response;
@@ -368,6 +396,20 @@ public class ClinicalNotesApi {
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
+    }
+
+    private List<Diagram> getFinalDiagrams(List<Diagram> diagrams) {
+	for (Diagram diagram : diagrams) {
+	    if (diagram.getDiagramUrl() != null) {
+		diagram.setDiagramUrl(getFinalImageURL(diagram.getDiagramUrl()));
+	    }
+	}
+	return diagrams;
+    }
+
+    private String getFinalImageURL(String imageURL) {
+	String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+	return finalImageURL + imageURL;
     }
 
 }

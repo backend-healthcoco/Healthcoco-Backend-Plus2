@@ -2,49 +2,48 @@ package com.dpdocter.beans;
 
 public class SMSDeliveryReports {
 
-	private String requestId;
-	
-	private String userId;
-	
-	private SMSReport report;
-	
-	private String senderId;
+    private String requestId;
 
-	public String getRequestId() {
-		return requestId;
-	}
+    private String userId;
 
-	public void setRequestId(String requestId) {
-		this.requestId = requestId;
-	}
+    private SMSReport report;
 
-	public String getUserId() {
-		return userId;
-	}
+    private String senderId;
 
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
+    public String getRequestId() {
+	return requestId;
+    }
 
-	public SMSReport getReport() {
-		return report;
-	}
+    public void setRequestId(String requestId) {
+	this.requestId = requestId;
+    }
 
-	public void setReport(SMSReport report) {
-		this.report = report;
-	}
+    public String getUserId() {
+	return userId;
+    }
 
-	public String getSenderId() {
-		return senderId;
-	}
+    public void setUserId(String userId) {
+	this.userId = userId;
+    }
 
-	public void setSenderId(String senderId) {
-		this.senderId = senderId;
-	}
+    public SMSReport getReport() {
+	return report;
+    }
 
-	@Override
-	public String toString() {
-		return "SMSDeliveryReports [requestId=" + requestId + ", userId=" + userId + ", report=" + report
-				+ ", senderId=" + senderId + "]";
-	}
+    public void setReport(SMSReport report) {
+	this.report = report;
+    }
+
+    public String getSenderId() {
+	return senderId;
+    }
+
+    public void setSenderId(String senderId) {
+	this.senderId = senderId;
+    }
+
+    @Override
+    public String toString() {
+	return "SMSDeliveryReports [requestId=" + requestId + ", userId=" + userId + ", report=" + report + ", senderId=" + senderId + "]";
+    }
 }

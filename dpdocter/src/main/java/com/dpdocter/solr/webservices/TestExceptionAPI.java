@@ -18,11 +18,9 @@ import com.dpdocter.exceptions.ServiceError;
 @Consumes(MediaType.APPLICATION_JSON)
 public class TestExceptionAPI {
 
-	
-	
-	@GET
-	@Path("/exception/{id}")
-	public String exceptionTest(@PathParam("id")String id)throws BusinessException{
-		throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
-	}
+    @GET
+    @Path("/exception/{id}")
+    public String exceptionTest(@PathParam("id") String id) throws BusinessException {
+	throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
+    }
 }
