@@ -439,6 +439,8 @@ public interface PathProxy {
 	public static final String SEARCH_NOTES = "searchNotes/{searchTerm}";
 
 	public static final String SEARCH_DIAGRAMS = "searchDiagrams/{searchTerm}";
+	
+	public static final String SEARCH_DIAGRAMS_BY_SPECIALITY = "searchDiagramsBySpeciality/{searchTerm}";
 
 	public static final String SEARCH_INVESTIGATIONS = "searchInvestigations/{searchTerm}";
 
@@ -493,11 +495,17 @@ public interface PathProxy {
     public static final String SMS_BASE_URL = BASE_URL + "/sms";
 
     public interface SMSUrls {
-	public static final String SEND_SMS = "/send";
 
-	public static final String GET_SMS_DETAILS = "/getDetails";
+    	public static final String SEND_SMS = "/send";
+    	
+    	public static final String GET_SMS_DETAILS = "/getDetails";
+    	
+    	public static final String UPDATE_DELIVERY_REPORTS = "/updateDeliveryReports";
+    	
+    	public static final String ADD_NUMBER = "/addNumber/{mobileNumber}";
+    	
+    	public static final String DELETE_NUMBER = "/deleteNumber/{mobileNumber}";
 
-	public static final String UPDATE_DELIVERY_REPORTS = "/updateDeliveryReports";
     }
 
     public static final String EMAIL_TRACK_BASE_URL = BASE_URL + "/email";

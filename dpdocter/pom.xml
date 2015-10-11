@@ -10,9 +10,6 @@
 	<profiles>
 		<profile>
 			<id>local</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -33,6 +30,9 @@
 		</profile>
 		<profile>
 			<id>stagging</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -284,7 +284,7 @@
 					<groupId>jasperreports</groupId>
 				</exclusion>
 			</exclusions>
-		</dependency>
+		 </dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -321,11 +321,11 @@
 				<artifactId>miredot-plugin</artifactId>
 				<version>1.6.0</version>
 				<executions>
-					<!-- <execution> -->
-					<!-- <goals> -->
-					<!-- <goal>restdoc</goal> -->
-					<!-- </goals> -->
-					<!-- </execution> -->
+					<execution>
+						<goals>
+							<goal>restdoc</goal>
+						</goals>
+					</execution>
 				</executions>
 				<configuration>
 					<licence>UHJvamVjdHxkcGRvY3Rlci5kcGRvY3RlcnwyMDE2LTA1LTE5fHRydWUjTUMwQ0ZRQ0REYVhWU0dyNlJMSFhWSnE5TGtlN1NoM3dZZ0lVVjNIQjRDR0hBTVBJR2pWaW1TWlE4ZVE0WnBZPQ==</licence>

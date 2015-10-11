@@ -43,6 +43,8 @@ public interface SolrClinicalNotesService {
 
     List<SolrDiagramsDocument> searchDiagrams(String searchTerm);
 
+    List<SolrDiagramsDocument> searchDiagramsBySpeciality(String searchTerm);
+    
     boolean addInvestigations(SolrInvestigationsDocument request);
 
     boolean editInvestigations(SolrInvestigationsDocument request);

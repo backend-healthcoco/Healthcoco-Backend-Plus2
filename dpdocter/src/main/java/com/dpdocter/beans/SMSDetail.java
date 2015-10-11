@@ -15,7 +15,7 @@ public class SMSDetail {
 
     private Date sentTime = new Date();
 
-    private Date deliveredTime;
+    private String deliveredTime;
 
     public String getPatientId() {
 	return patientId;
@@ -57,11 +57,11 @@ public class SMSDetail {
 	this.sentTime = sentTime;
     }
 
-    public Date getDeliveredTime() {
+    public String getDeliveredTime() {
 	return deliveredTime;
     }
 
-    public void setDeliveredTime(Date deliveredTime) {
+    public void setDeliveredTime(String deliveredTime) {
 	this.deliveredTime = deliveredTime;
     }
 

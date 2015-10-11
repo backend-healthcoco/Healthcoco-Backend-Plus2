@@ -2,12 +2,19 @@ package com.dpdocter.sms.services.impl;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -28,8 +35,10 @@ import com.dpdocter.beans.Message;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSDeliveryReports;
 import com.dpdocter.beans.SMSDetail;
+import com.dpdocter.beans.SMSReport;
 import com.dpdocter.beans.SMSTrack;
 import com.dpdocter.beans.SMSTrackDetail;
+import com.dpdocter.beans.UserMobileNumbers;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
@@ -62,7 +71,14 @@ public class SMSServicesImpl implements SMSServices {
 
     @Value(value = "${SMS_POST_URL}")
     private String SMS_POST_URL;
-
+    
+    @Value("${IS_ENV_PRODUCTION}")
+    private Boolean isEnvProduction;
+    
+    @Value(value = "${MOBILE_NUMBERS_RESOURCE}")
+    private String MOBILE_NUMBERS_RESOURCE;
+    
+    
     @Autowired
     private UserRepository userRepository;
 
@@ -75,17 +91,39 @@ public class SMSServicesImpl implements SMSServices {
 	    message.setCountryCode(COUNTRY_CODE);
 	    message.setRoute(ROUTE);
 	    message.setSenderId(SENDER_ID);
-	    for (SMSDetail smsDetails : smsTrackDetail.getSmsDetails()) {
-		SMS sms = new SMS();
-		BeanUtil.map(smsDetails.getSms(), sms);
-		smsList.add(sms);
+
+	    UserMobileNumbers userNumber = null;
+	    
+	    if(!isEnvProduction){
+	    	FileInputStream fileIn = new FileInputStream(MOBILE_NUMBERS_RESOURCE);
+	        ObjectInputStream in = new ObjectInputStream(fileIn);
+	        userNumber = (UserMobileNumbers) in.readObject();
+	        in.close();
+	        fileIn.close();
 	    }
+	    for (SMSDetail smsDetails : smsTrackDetail.getSmsDetails()) {
+	    if(!isEnvProduction){
+	    	if(userNumber !=null &&	smsDetails.getSms() != null && smsDetails.getSms().getSmsAddress() != null)
+	    		{
+	    			String recipient = smsDetails.getSms().getSmsAddress().getRecipient();
+	    			if(userNumber.mobileNumber.contains(recipient)){
+	    				SMS sms = new SMS();
+	    				BeanUtil.map(smsDetails.getSms(), sms);
+	    				smsList.add(sms);
+	    			}
+	    		}
+	    }
+	    else{
+	    	SMS sms = new SMS();
+			BeanUtil.map(smsDetails.getSms(), sms);
+			smsList.add(sms);
+	    }
+		}
 	    message.setSms(smsList);
-	    String xmlSMSData = createXMLData(message);
-	    String responseId = hitSMSUrl(SMS_POST_URL, xmlSMSData);
-	    smsTrackDetail.setResponseId(responseId);
-	    if (save)
-		smsTrackRepository.save(smsTrackDetail);
+//	    String xmlSMSData = createXMLData(message);
+//	    String responseId = hitSMSUrl(SMS_POST_URL, xmlSMSData);
+//	    smsTrackDetail.setResponseId(responseId);
+	    if(save)smsTrackRepository.save(smsTrackDetail);
 	} catch (Exception e) {
 	    logger.error("Error : " + e.getMessage());
 	    throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -250,8 +288,14 @@ public class SMSServicesImpl implements SMSServices {
 		SMSTrackDetail smsTrackDetail = smsTrackRepository.findByResponseId(smsDeliveryReport.getRequestId());
 		if (smsTrackDetail != null) {
 		    for (SMSDetail smsDetail : smsTrackDetail.getSmsDetails()) {
-			smsDetail.setDeliveredTime(smsDeliveryReport.getReport().getDate());
-			smsDetail.setDeliveryStatus(SMSStatus.valueOf(smsDeliveryReport.getReport().getStatus()));
+			for(SMSReport report :smsDeliveryReport.getReport()){
+				if(smsDetail.getSms() != null && smsDetail.getSms().getSmsAddress() != null && smsDetail.getSms().getSmsAddress().getRecipient() != null){
+					if(smsDetail.getSms().getSmsAddress().getRecipient().equals(report.getNumber())){
+						smsDetail.setDeliveredTime(report.getDate());
+						smsDetail.setDeliveryStatus(SMSStatus.valueOf(report.getStatus()));  
+					}
+				}
+			}
 		    }
 		    smsTrackRepository.save(smsTrackDetail);
 		}
@@ -261,6 +305,56 @@ public class SMSServicesImpl implements SMSServices {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+   }
+    
+	@Override
+	public void addNumber(String mobileNumber) {
+		try{
+			if(!isEnvProduction){
+				FileInputStream fileIn = new FileInputStream(MOBILE_NUMBERS_RESOURCE);
+		        ObjectInputStream in = new ObjectInputStream(fileIn);
+		        UserMobileNumbers userNumber = (UserMobileNumbers) in.readObject();
+		        in.close();
+		        fileIn.close();
+	        
+		        if(!userNumber.mobileNumber.contains(mobileNumber))userNumber.mobileNumber.add(mobileNumber);
+		    
+		        FileOutputStream fileOut = new FileOutputStream(MOBILE_NUMBERS_RESOURCE);
+		        ObjectOutputStream out = new ObjectOutputStream(fileOut);
+		        out.writeObject(userNumber);
+		        out.close();
+		        fileOut.close();		
+		        System.out.println(userNumber.mobileNumber);
+			}
+		}catch (BusinessException | IOException | ClassNotFoundException e) {
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}		
+	}
+	
+	@Override
+	public void deleteNumber(String mobileNumber) {
+		try{
+			if(!isEnvProduction){
+				FileInputStream fileIn = new FileInputStream(MOBILE_NUMBERS_RESOURCE);
+		        ObjectInputStream in = new ObjectInputStream(fileIn);
+		        UserMobileNumbers userNumber = (UserMobileNumbers) in.readObject();
+		        in.close();
+		        fileIn.close();
+	        
+		        if(userNumber.mobileNumber.contains(mobileNumber))userNumber.mobileNumber.remove(mobileNumber);
+		        
+		        FileOutputStream fileOut = new FileOutputStream(MOBILE_NUMBERS_RESOURCE);
+		        ObjectOutputStream out = new ObjectOutputStream(fileOut);
+		        out.writeObject(userNumber);
+		        out.close();
+		        fileOut.close();		    
+			}
+		}catch (BusinessException | IOException | ClassNotFoundException e) {
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
 
-    }
+		
+	}
 }

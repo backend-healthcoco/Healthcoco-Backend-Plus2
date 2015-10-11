@@ -50,17 +50,17 @@ public class JasperReportServiceImpl implements JasperReportService {
 	    parameters.put("REPORT_CONNECTION", mongoConnection);
 	    parameters.put("path", REPORT_NAME);
 
-	    String defaultPDFFont = "Lobster";
+//	    String defaultPDFFont = "Lobster";
 
 	    DefaultJasperReportsContext context = DefaultJasperReportsContext.getInstance();
 	    context.setValue("net.sf.jasperreports.extension.registry.factory.queryexecuters.mongodb",
 		    "com.jaspersoft.mongodb.query.MongoDbQueryExecuterExtensionsRegistryFactory");
 	    JRPropertiesUtil propertiesUtil = JRPropertiesUtil.getInstance(context);
-	    propertiesUtil.setProperty(JasperDesign.PROPERTY_DEFAULT_FONT, defaultPDFFont);
+//	    propertiesUtil.setProperty(JasperDesign.PROPERTY_DEFAULT_FONT, defaultPDFFont);
 
 	    JRProperties.setProperty("net.sf.jasperreports.query.executer.factory.MongoDbQuery", "com.jaspersoft.mongodb.query.MongoDbQueryExecuterFactory");
 	    JRStyle style = new JRBaseStyle();
-	    style.setFontName("Arial");
+//	    style.setFontName("Arial");
 	    style.setFontSize(15);
 	    style.setForecolor(new Color(255, 0, 0));
 

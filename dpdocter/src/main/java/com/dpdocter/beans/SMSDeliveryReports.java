@@ -1,12 +1,14 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 public class SMSDeliveryReports {
 
     private String requestId;
 
     private String userId;
 
-    private SMSReport report;
+    private List<SMSReport> report;
 
     private String senderId;
 
@@ -26,15 +28,15 @@ public class SMSDeliveryReports {
 	this.userId = userId;
     }
 
-    public SMSReport getReport() {
-	return report;
-    }
+    public List<SMSReport> getReport() {
+		return report;
+	}
 
-    public void setReport(SMSReport report) {
-	this.report = report;
-    }
+	public void setReport(List<SMSReport> report) {
+		this.report = report;
+	}
 
-    public String getSenderId() {
+	public String getSenderId() {
 	return senderId;
     }
 

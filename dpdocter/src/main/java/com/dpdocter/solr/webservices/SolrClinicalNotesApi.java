@@ -204,6 +204,18 @@ public class SolrClinicalNotesApi {
 	return response;
     }
 
+    @Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_DIAGRAMS_BY_SPECIALITY)
+    @GET
+    public Response<SolrDiagramsDocument> searchDiagramsBySpeciality(@PathParam(value = "searchTerm") String searchTerm) {
+	if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
+	    logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	}
+	List<SolrDiagramsDocument> diagrams = solrClinicalNotesService.searchDiagramsBySpeciality(searchTerm);
+	Response<SolrDiagramsDocument> response = new Response<SolrDiagramsDocument>();
+	response.setDataList(diagrams);
+	return response;
+    }
     /*
      * @Path(value = PathProxy.SolrClinicalNotesUrls.ADD_INVESTIGATIONS)
      * 

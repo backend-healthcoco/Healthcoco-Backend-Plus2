@@ -29,6 +29,10 @@ public class DiagramsCollection extends GenericCollection {
 
     @Field
     private Boolean discarded = false;
+    
+    @Field
+    private String speciality;
+
 
     public String getId() {
 	return id;
@@ -94,9 +98,18 @@ public class DiagramsCollection extends GenericCollection {
 	this.discarded = discarded;
     }
 
-    @Override
-    public String toString() {
-	return "DiagramsCollection [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + ", doctorId=" + doctorId + ", locationId=" + locationId
-		+ ", hospitalId=" + hospitalId + ", fileExtension=" + fileExtension + ", discarded=" + discarded + "]";
-    }
+	public String getSpeciality() {
+		return speciality;
+	}
+
+	public void setSpeciality(String speciality) {
+		this.speciality = speciality;
+	}
+
+	@Override
+	public String toString() {
+		return "DiagramsCollection [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + ", doctorId="
+				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", fileExtension="
+				+ fileExtension + ", discarded=" + discarded + ", speciality=" + speciality + "]";
+	}
 }
