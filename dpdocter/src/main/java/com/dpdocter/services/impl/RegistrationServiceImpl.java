@@ -185,6 +185,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 	List<GroupCollection> groupCollections = null;
 	List<Group> groups = null;
 	try {
+		
+		if(checkPatientCount(request.getMobileNumber()) >=9){
+			logger.warn("Only Nine patients can register with same mobile number");
+			throw new BusinessException(ServiceError.NoRecord, "Only Nine patients can register with same mobile number");
+		    
+		}
 	    // get role of specified type
 	    RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.PATIENT.getRole());
 	    if (roleCollection == null) {
@@ -343,6 +349,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 	List<GroupCollection> groupCollections = null;
 	List<Group> groups = null;
 	try {
+		if(checkPatientCount(request.getMobileNumber()) >=9){
+			logger.warn("Only Nine patients can register with same mobile number");
+			throw new BusinessException(ServiceError.NoRecord, "Only Nine patients can register with same mobile number");
+		    
+		}
 	    // save address
 	    AddressCollection addressCollection = null;
 	    if (request.getAddress() != null) {
@@ -458,7 +469,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 	return registeredPatientDetails;
     }
 
-    @Override
+    private int checkPatientCount(String mobileNumber) {
+    	List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
+    	if(userCollections !=null && !userCollections.isEmpty()){
+    		return userCollections.size();
+    	}
+    	else return 0;
+	}
+
+	@Override
     public List<User> getUsersByPhoneNumber(String phoneNumber, String locationId, String hospitalId) {
 	List<User> users = null;
 	try {

@@ -90,6 +90,7 @@ import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.sms.services.SMSServices;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.PrescriptionUtils;
 
@@ -2957,7 +2958,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 		parameters.put("printSettingsId", Arrays.asList(printId));
 		LocationCollection location = locationRepository.findOne(locationId);
-		parameters.put("logoURL", location.getLogoUrl());
+		if(location != null)parameters.put("logoURL", location.getLogoUrl());
 
 		String layout = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 			: "PORTRAIT";
