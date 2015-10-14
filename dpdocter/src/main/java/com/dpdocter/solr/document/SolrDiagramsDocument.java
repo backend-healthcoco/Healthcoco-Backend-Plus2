@@ -16,9 +16,9 @@ public class SolrDiagramsDocument {
     @Field
     private String tags;
 
-//    @Field
-//    private String speciality;
-//    
+    @Field
+    private String speciality;
+    
     public String getId() {
 	return id;
     }

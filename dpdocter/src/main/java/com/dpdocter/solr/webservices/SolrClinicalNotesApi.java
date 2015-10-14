@@ -7,12 +7,16 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.Diagram;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.solr.document.SolrComplaintsDocument;
@@ -33,6 +37,12 @@ import common.util.web.Response;
 public class SolrClinicalNotesApi {
 
     private static Logger logger = Logger.getLogger(SolrClinicalNotesApi.class.getName());
+    
+    @Context
+    private UriInfo uriInfo;
+
+    @Value(value = "${IMAGE_URL_ROOT_PATH}")
+    private String imageUrlRootPath;
 
     @Autowired
     private SolrClinicalNotesService solrClinicalNotesService;
@@ -199,6 +209,7 @@ public class SolrClinicalNotesApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	List<SolrDiagramsDocument> diagrams = solrClinicalNotesService.searchDiagrams(searchTerm);
+	diagrams = getFinalDiagrams(diagrams);
 	Response<SolrDiagramsDocument> response = new Response<SolrDiagramsDocument>();
 	response.setDataList(diagrams);
 	return response;
@@ -212,6 +223,7 @@ public class SolrClinicalNotesApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	List<SolrDiagramsDocument> diagrams = solrClinicalNotesService.searchDiagramsBySpeciality(searchTerm);
+	diagrams = getFinalDiagrams(diagrams);
 	Response<SolrDiagramsDocument> response = new Response<SolrDiagramsDocument>();
 	response.setDataList(diagrams);
 	return response;
@@ -303,4 +315,19 @@ public class SolrClinicalNotesApi {
 	response.setDataList(observations);
 	return response;
     }
+    
+    private List<SolrDiagramsDocument> getFinalDiagrams(List<SolrDiagramsDocument> diagrams) {
+    for (SolrDiagramsDocument diagram : diagrams) {
+    	    if (diagram.getDiagramUrl() != null) {
+    		diagram.setDiagramUrl(getFinalImageURL(diagram.getDiagramUrl()));
+    	    }
+    	}
+    	return diagrams;
+        }
+    
+    private String getFinalImageURL(String imageURL) {
+	String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+	return finalImageURL + imageURL;
+    }
+
 }

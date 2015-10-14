@@ -86,6 +86,10 @@ public class LoginServiceImpl implements LoginService {
 		logger.warn("This user is not verified");
 		throw new BusinessException(ServiceError.NotAuthorized, "This user is not verified");
 	    }
+	    if (!userCollection.getIsActive()) {
+			logger.warn("This user is not activated");
+			throw new BusinessException(ServiceError.NotAuthorized, "This user is not activated");
+		    }
 	    User user = new User();
 	    BeanUtil.map(userCollection, user);
 	    /**

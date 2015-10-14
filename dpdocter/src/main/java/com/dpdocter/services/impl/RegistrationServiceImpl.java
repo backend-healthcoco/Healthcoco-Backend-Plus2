@@ -160,6 +160,9 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Value(value = "${mail.signup.subject.activation}")
     private String signupSubject;
 
+    @Value(value = "${PATIENT_COUNT}")
+    private String patientCount;
+    
     @Override
     public User checkIfPatientExist(PatientRegistrationRequest request) {
 	try {
@@ -186,7 +189,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	List<Group> groups = null;
 	try {
 		
-		if(checkPatientCount(request.getMobileNumber()) >=9){
+		if(checkPatientCount(request.getMobileNumber()) >= Integer.parseInt(patientCount)){
 			logger.warn("Only Nine patients can register with same mobile number");
 			throw new BusinessException(ServiceError.NoRecord, "Only Nine patients can register with same mobile number");
 		    
@@ -349,7 +352,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	List<GroupCollection> groupCollections = null;
 	List<Group> groups = null;
 	try {
-		if(checkPatientCount(request.getMobileNumber()) >=9){
+		if(checkPatientCount(request.getMobileNumber()) >= Integer.parseInt(patientCount)){
 			logger.warn("Only Nine patients can register with same mobile number");
 			throw new BusinessException(ServiceError.NoRecord, "Only Nine patients can register with same mobile number");
 		    
