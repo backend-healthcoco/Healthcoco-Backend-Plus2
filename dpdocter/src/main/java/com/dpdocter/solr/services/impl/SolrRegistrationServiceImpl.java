@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.data.solr.core.query.Criteria;
 import org.springframework.data.solr.core.query.SimpleQuery;
@@ -75,11 +78,12 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     }
 
     @Override
-    public List<SolrPatientResponse> searchPatient(String doctorId, String locationId, String hospitalId, String searchTerm) {
+    public List<SolrPatientResponse> searchPatient(String doctorId, String locationId, String hospitalId, String searchTerm, int page, int size) {
 	List<SolrPatientDocument> patients = null;
 	List<SolrPatientResponse> response = new ArrayList<SolrPatientResponse>();
 	try {
-	    patients = solrPatientRepository.find(doctorId, locationId, hospitalId, searchTerm);
+		if(size > 0)patients = solrPatientRepository.find(doctorId, locationId, hospitalId, searchTerm, new PageRequest(page, size, Direction.DESC, "createdTime"));
+		else patients = solrPatientRepository.find(doctorId, locationId, hospitalId, searchTerm, new Sort(Sort.Direction.DESC, "createdTime"));
 	    BeanUtil.map(patients, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -99,7 +103,11 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	    SimpleQuery query = new SimpleQuery(advancedCriteria);
 
 	    solrTemplate.setSolrCore("patients");
-	    patients = solrTemplate.queryForPage(query, SolrPatientDocument.class).getContent();
+	    if(request.getSize() > 0)
+	    	patients = solrTemplate.queryForPage(query.setPageRequest(new PageRequest(request.getSize(), request.getPage(), Direction.DESC, "createdTime")), SolrPatientDocument.class).getContent();
+	    else
+	    	patients = solrTemplate.queryForPage(query.addSort(new Sort(Sort.Direction.DESC, "createdTime")), SolrPatientDocument.class).getContent();
+	    	
 	    BeanUtil.map(patients, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -121,11 +129,21 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 		String searchValue = searchParameter.getSearchValue();
 		String searchType = searchParameter.getSearchType().getSearchType();
 		if (!DPDoctorUtils.anyStringEmpty(searchValue, searchType)) {
-		    if (advancedCriteria == null) {
-			advancedCriteria = new Criteria(searchType).contains(searchValue);
-		    } else {
-			advancedCriteria = advancedCriteria.and(searchType).contains(searchValue);
-		    }
+			if(searchType.equalsIgnoreCase("DOB")){
+				if (advancedCriteria == null) {
+					advancedCriteria = new Criteria("days").contains(searchValue).and("months").contains(searchValue).and("years").contains(searchValue);
+				    } else {
+					advancedCriteria = advancedCriteria.and("days").contains(searchValue).and("months").contains(searchValue).and("years").contains(searchValue);
+				    }
+			}
+			else{
+				if (advancedCriteria == null) {
+					advancedCriteria = new Criteria(searchType).contains(searchValue);
+				    } else {
+					advancedCriteria = advancedCriteria.and(searchType).contains(searchValue);
+				    }
+			}
+		    
 		}
 	    }
 	}
@@ -133,198 +151,198 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	return advancedCriteria;
     }
 
-    @Override
-    public List<SolrPatientDocument> searchPatientByFirstName(String doctorId, String locationId, String hospitalId, String searchValue) {
-	List<SolrPatientDocument> response = null;
-	try {
-	    response = solrPatientRepository.findByFirstName(doctorId, locationId, hospitalId, searchValue);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error Occurred While Searching Patients");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
-	}
-	return response;
-
-    }
-
-    @Override
-    public List<SolrPatientDocument> searchPatientByMiddleName(String doctorId, String locationId, String hospitalId, String searchValue) {
-	List<SolrPatientDocument> response = null;
-	try {
-	    response = solrPatientRepository.findByMiddleName(doctorId, locationId, hospitalId, searchValue);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error Occurred While Searching Patients");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
-	}
-	return response;
-    }
-
-    @Override
-    public List<SolrPatientDocument> searchPatientByLastName(String doctorId, String locationId, String hospitalId, String searchValue) {
-	List<SolrPatientDocument> response = null;
-	try {
-	    response = solrPatientRepository.findByLastName(doctorId, locationId, hospitalId, searchValue);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error Occurred While Searching Patients");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
-	}
-	return response;
-
-    }
-
-    @Override
-    public List<SolrPatientDocument> searchPatientByPID(String doctorId, String locationId, String hospitalId, String searchValue) {
-	List<SolrPatientDocument> response = null;
-	try {
-	    response = solrPatientRepository.findByPID(doctorId, locationId, hospitalId, searchValue);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error Occurred While Searching Patients");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
-	}
-	return response;
-    }
-
-    @Override
-    public List<SolrPatientDocument> searchPatientByMobileNumber(String doctorId, String locationId, String hospitalId, String searchValue) {
-	List<SolrPatientDocument> response = null;
-	try {
-	    response = solrPatientRepository.findByMobileNumber(doctorId, locationId, hospitalId, searchValue);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error Occurred While Searching Patients");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
-	}
-	return response;
-    }
-
-    @Override
-    public List<SolrPatientDocument> searchPatientByEmailAddress(String doctorId, String locationId, String hospitalId, String searchValue) {
-	List<SolrPatientDocument> response = null;
-	try {
-	    response = solrPatientRepository.findByEmailAddress(doctorId, locationId, hospitalId, searchValue);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error Occurred While Searching Patients");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
-	}
-	return response;
-
-    }
-
-    @Override
-    public List<SolrPatientDocument> searchPatientByUserName(String doctorId, String locationId, String hospitalId, String searchValue) {
-	List<SolrPatientDocument> response = null;
-	try {
-	    response = solrPatientRepository.findByUserName(doctorId, locationId, hospitalId, searchValue);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error Occurred While Searching Patients");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
-	}
-	return response;
-
-    }
-
-    @Override
-    public List<SolrPatientDocument> searchPatientByCity(String doctorId, String locationId, String hospitalId, String searchValue) {
-	List<SolrPatientDocument> response = null;
-	try {
-	    response = solrPatientRepository.findByCity(doctorId, locationId, hospitalId, searchValue);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error Occurred While Searching Patients");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
-	}
-	return response;
-
-    }
-
-    @Override
-    public List<SolrPatientDocument> searchPatientByLocality(String doctorId, String locationId, String hospitalId, String searchValue) {
-	List<SolrPatientDocument> response = null;
-	try {
-	    response = solrPatientRepository.findByLocality(doctorId, locationId, hospitalId, searchValue);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error Occurred While Searching Patients");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
-	}
-	return response;
-
-    }
-
-    @Override
-    public List<SolrPatientDocument> searchPatientByBloodGroup(String doctorId, String locationId, String hospitalId, String searchValue) {
-	List<SolrPatientDocument> response = null;
-	try {
-	    response = solrPatientRepository.findByBloodGroup(doctorId, locationId, hospitalId, searchValue);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error Occurred While Searching Patients");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
-	}
-	return response;
-
-    }
-
-    @Override
-    public List<SolrPatientDocument> searchPatientByReferredBy(String doctorId, String locationId, String hospitalId, String searchValue) {
-	List<SolrPatientDocument> response = null;
-	try {
-	    response = solrPatientRepository.findByReferredBy(doctorId, locationId, hospitalId, searchValue);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error Occurred While Searching Patients");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
-	}
-	return response;
-
-    }
-
-    @Override
-    public List<SolrPatientDocument> searchPatientByProfession(String doctorId, String locationId, String hospitalId, String searchValue) {
-	List<SolrPatientDocument> response = null;
-	try {
-	    response = solrPatientRepository.findByProfession(doctorId, locationId, hospitalId, searchValue);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error Occurred While Searching Patients");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
-	}
-	return response;
-
-    }
-
-    @Override
-    public List<SolrPatientDocument> searchPatientByPostalCode(String doctorId, String locationId, String hospitalId, String searchValue) {
-	List<SolrPatientDocument> response = null;
-	try {
-	    response = solrPatientRepository.findByPostalCode(doctorId, locationId, hospitalId, searchValue);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error Occurred While Searching Patients");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
-	}
-	return response;
-
-    }
-
-    @Override
-    public List<SolrPatientDocument> searchPatientByGender(String doctorId, String locationId, String hospitalId, String searchValue) {
-	List<SolrPatientDocument> response = null;
-	try {
-	    response = solrPatientRepository.findByGender(doctorId, locationId, hospitalId, searchValue);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error Occurred While Searching Patients");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
-	}
-	return response;
-
-    }
+//    @Override
+//    public List<SolrPatientDocument> searchPatientByFirstName(String doctorId, String locationId, String hospitalId, String searchValue) {
+//	List<SolrPatientDocument> response = null;
+//	try {
+//	    response = solrPatientRepository.findByFirstName(doctorId, locationId, hospitalId, searchValue);
+//	} catch (Exception e) {
+//	    e.printStackTrace();
+//	    logger.error(e + " Error Occurred While Searching Patients");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
+//	}
+//	return response;
+//
+//    }
+//
+//    @Override
+//    public List<SolrPatientDocument> searchPatientByMiddleName(String doctorId, String locationId, String hospitalId, String searchValue) {
+//	List<SolrPatientDocument> response = null;
+//	try {
+//	    response = solrPatientRepository.findByMiddleName(doctorId, locationId, hospitalId, searchValue);
+//	} catch (Exception e) {
+//	    e.printStackTrace();
+//	    logger.error(e + " Error Occurred While Searching Patients");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
+//	}
+//	return response;
+//    }
+//
+//    @Override
+//    public List<SolrPatientDocument> searchPatientByLastName(String doctorId, String locationId, String hospitalId, String searchValue) {
+//	List<SolrPatientDocument> response = null;
+//	try {
+//	    response = solrPatientRepository.findByLastName(doctorId, locationId, hospitalId, searchValue);
+//	} catch (Exception e) {
+//	    e.printStackTrace();
+//	    logger.error(e + " Error Occurred While Searching Patients");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
+//	}
+//	return response;
+//
+//    }
+//
+//    @Override
+//    public List<SolrPatientDocument> searchPatientByPID(String doctorId, String locationId, String hospitalId, String searchValue) {
+//	List<SolrPatientDocument> response = null;
+//	try {
+//	    response = solrPatientRepository.findByPID(doctorId, locationId, hospitalId, searchValue);
+//	} catch (Exception e) {
+//	    e.printStackTrace();
+//	    logger.error(e + " Error Occurred While Searching Patients");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
+//	}
+//	return response;
+//    }
+//
+//    @Override
+//    public List<SolrPatientDocument> searchPatientByMobileNumber(String doctorId, String locationId, String hospitalId, String searchValue) {
+//	List<SolrPatientDocument> response = null;
+//	try {
+//	    response = solrPatientRepository.findByMobileNumber(doctorId, locationId, hospitalId, searchValue);
+//	} catch (Exception e) {
+//	    e.printStackTrace();
+//	    logger.error(e + " Error Occurred While Searching Patients");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
+//	}
+//	return response;
+//    }
+//
+//    @Override
+//    public List<SolrPatientDocument> searchPatientByEmailAddress(String doctorId, String locationId, String hospitalId, String searchValue) {
+//	List<SolrPatientDocument> response = null;
+//	try {
+//	    response = solrPatientRepository.findByEmailAddress(doctorId, locationId, hospitalId, searchValue);
+//	} catch (Exception e) {
+//	    e.printStackTrace();
+//	    logger.error(e + " Error Occurred While Searching Patients");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
+//	}
+//	return response;
+//
+//    }
+//
+//    @Override
+//    public List<SolrPatientDocument> searchPatientByUserName(String doctorId, String locationId, String hospitalId, String searchValue) {
+//	List<SolrPatientDocument> response = null;
+//	try {
+//	    response = solrPatientRepository.findByUserName(doctorId, locationId, hospitalId, searchValue);
+//	} catch (Exception e) {
+//	    e.printStackTrace();
+//	    logger.error(e + " Error Occurred While Searching Patients");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
+//	}
+//	return response;
+//
+//    }
+//
+//    @Override
+//    public List<SolrPatientDocument> searchPatientByCity(String doctorId, String locationId, String hospitalId, String searchValue) {
+//	List<SolrPatientDocument> response = null;
+//	try {
+//	    response = solrPatientRepository.findByCity(doctorId, locationId, hospitalId, searchValue);
+//	} catch (Exception e) {
+//	    e.printStackTrace();
+//	    logger.error(e + " Error Occurred While Searching Patients");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
+//	}
+//	return response;
+//
+//    }
+//
+//    @Override
+//    public List<SolrPatientDocument> searchPatientByLocality(String doctorId, String locationId, String hospitalId, String searchValue) {
+//	List<SolrPatientDocument> response = null;
+//	try {
+//	    response = solrPatientRepository.findByLocality(doctorId, locationId, hospitalId, searchValue);
+//	} catch (Exception e) {
+//	    e.printStackTrace();
+//	    logger.error(e + " Error Occurred While Searching Patients");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
+//	}
+//	return response;
+//
+//    }
+//
+//    @Override
+//    public List<SolrPatientDocument> searchPatientByBloodGroup(String doctorId, String locationId, String hospitalId, String searchValue) {
+//	List<SolrPatientDocument> response = null;
+//	try {
+//	    response = solrPatientRepository.findByBloodGroup(doctorId, locationId, hospitalId, searchValue);
+//	} catch (Exception e) {
+//	    e.printStackTrace();
+//	    logger.error(e + " Error Occurred While Searching Patients");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
+//	}
+//	return response;
+//
+//    }
+//
+//    @Override
+//    public List<SolrPatientDocument> searchPatientByReferredBy(String doctorId, String locationId, String hospitalId, String searchValue) {
+//	List<SolrPatientDocument> response = null;
+//	try {
+//	    response = solrPatientRepository.findByReferredBy(doctorId, locationId, hospitalId, searchValue);
+//	} catch (Exception e) {
+//	    e.printStackTrace();
+//	    logger.error(e + " Error Occurred While Searching Patients");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
+//	}
+//	return response;
+//
+//    }
+//
+//    @Override
+//    public List<SolrPatientDocument> searchPatientByProfession(String doctorId, String locationId, String hospitalId, String searchValue) {
+//	List<SolrPatientDocument> response = null;
+//	try {
+//	    response = solrPatientRepository.findByProfession(doctorId, locationId, hospitalId, searchValue);
+//	} catch (Exception e) {
+//	    e.printStackTrace();
+//	    logger.error(e + " Error Occurred While Searching Patients");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
+//	}
+//	return response;
+//
+//    }
+//
+//    @Override
+//    public List<SolrPatientDocument> searchPatientByPostalCode(String doctorId, String locationId, String hospitalId, String searchValue) {
+//	List<SolrPatientDocument> response = null;
+//	try {
+//	    response = solrPatientRepository.findByPostalCode(doctorId, locationId, hospitalId, searchValue);
+//	} catch (Exception e) {
+//	    e.printStackTrace();
+//	    logger.error(e + " Error Occurred While Searching Patients");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
+//	}
+//	return response;
+//
+//    }
+//
+//    @Override
+//    public List<SolrPatientDocument> searchPatientByGender(String doctorId, String locationId, String hospitalId, String searchValue) {
+//	List<SolrPatientDocument> response = null;
+//	try {
+//	    response = solrPatientRepository.findByGender(doctorId, locationId, hospitalId, searchValue);
+//	} catch (Exception e) {
+//	    e.printStackTrace();
+//	    logger.error(e + " Error Occurred While Searching Patients");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
+//	}
+//	return response;
+//
+//    }
 
     @Override
     public void patientProfilePicChange(String username, String imageUrl) {

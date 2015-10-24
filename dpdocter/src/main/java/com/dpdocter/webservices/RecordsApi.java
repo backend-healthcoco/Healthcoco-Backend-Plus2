@@ -33,7 +33,7 @@ import com.dpdocter.request.RecordsAddRequest;
 import com.dpdocter.request.RecordsEditRequest;
 import com.dpdocter.request.RecordsSearchRequest;
 import com.dpdocter.request.TagRecordRequest;
-import com.dpdocter.services.PatientTrackService;
+import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.RecordsService;
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -47,7 +47,7 @@ public class RecordsApi {
     private RecordsService recordsService;
 
     @Autowired
-    private PatientTrackService patientTrackService;
+    private PatientVisitService patientTrackService;
 
     @Context
     private UriInfo uriInfo;
@@ -67,8 +67,9 @@ public class RecordsApi {
 	// patient track
 	if (records != null) {
 	    records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
-	    patientTrackService.addRecord(request, VisitedFor.REPORTS);
-	}
+	    String visitId = patientTrackService.addRecord(records, VisitedFor.REPORTS, request.getVisitId());
+	    records.setVisitId(visitId);
+	 }
 
 	Response<Records> response = new Response<Records>();
 	response.setData(records);
@@ -228,10 +229,10 @@ public class RecordsApi {
 	Records records = recordsService.editRecord(request);
 
 	// patient track
-	if (records != null) {
-	    records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
-	    patientTrackService.addRecord(request, VisitedFor.REPORTS);
-	}
+//	if (records != null) {
+//	    records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
+//	    patientTrackService.addRecord(request, VisitedFor.REPORTS, request.getVisitId());
+//	}
 
 	Response<Records> response = new Response<Records>();
 	response.setData(records);
@@ -240,7 +241,11 @@ public class RecordsApi {
     }
 
     private String getFinalImageURL(String imageURL) {
-	String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-	return finalImageURL + imageURL;
+    	if(imageURL != null){
+    		String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+    		return finalImageURL + imageURL;
+    	}
+    	else return null;
+
     }
 }

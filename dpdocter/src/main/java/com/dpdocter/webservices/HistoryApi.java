@@ -30,7 +30,7 @@ import com.dpdocter.response.DiseaseAddEditResponse;
 import com.dpdocter.response.DiseaseListResponse;
 import com.dpdocter.response.HistoryDetailsResponse;
 import com.dpdocter.services.HistoryServices;
-import com.dpdocter.services.PatientTrackService;
+import com.dpdocter.services.PatientVisitService;
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -46,7 +46,7 @@ public class HistoryApi {
     private HistoryServices historyServices;
 
     @Autowired
-    private PatientTrackService patientTrackService;
+    private PatientVisitService patientTrackService;
 
     @Path(value = PathProxy.HistoryUrls.ADD_DISEASE)
     @POST

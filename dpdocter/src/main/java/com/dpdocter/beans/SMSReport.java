@@ -12,6 +12,8 @@ public class SMSReport {
 
     private String date;
 
+    private String panelId;
+    
     public String getDesc() {
 	return desc;
     }
@@ -44,8 +46,18 @@ public class SMSReport {
 	this.date = date;
     }
 
-    @Override
-    public String toString() {
-	return "SMSReport [desc=" + desc + ", status=" + status + ", number=" + number + ", date=" + date + "]";
-    }
+	public String getPanelId() {
+		return panelId;
+	}
+
+	public void setPanelId(String panelId) {
+		this.panelId = panelId;
+	}
+
+	@Override
+	public String toString() {
+		return "SMSReport [desc=" + desc + ", status=" + status + ", number=" + number + ", date=" + date + ", panelId="
+				+ panelId + "]";
+	}
+
 }

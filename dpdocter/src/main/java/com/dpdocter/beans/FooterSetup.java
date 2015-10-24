@@ -1,12 +1,14 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 public class FooterSetup {
 
     private Boolean customFooter;
 
     private Boolean showSignature;
 
-    private String bottomText;
+    private List<PrintSettingsText> bottomText;
 
     public Boolean getCustomFooter() {
 	return customFooter;
@@ -24,11 +26,11 @@ public class FooterSetup {
 	this.showSignature = showSignature;
     }
 
-    public String getBottomText() {
+    public List<PrintSettingsText> getBottomText() {
 	return bottomText;
     }
 
-    public void setBottomText(String bottomText) {
+    public void setBottomText(List<PrintSettingsText> bottomText) {
 	this.bottomText = bottomText;
     }
 

@@ -54,7 +54,7 @@ public class MailServiceImpl implements MailService {
 	helper.setFrom(from);
 	helper.setTo(to);
 	helper.setSubject(subject);
-	helper.setText(body);
+	helper.setText(body,true);
 	if (mailAttachment != null) {
 	    helper.addAttachment(mailAttachment.getAttachmentName(), mailAttachment.getFileSystemResource());
 	}

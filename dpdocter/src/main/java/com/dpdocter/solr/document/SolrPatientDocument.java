@@ -43,13 +43,13 @@ public class SolrPatientDocument {
     private String emailAddress;
 
     @Field
-    private int days = 1;
+    private String days = "1";
 
     @Field
-    private int months = 1;
+    private String months = "1";
 
     @Field
-    private int years = 1;
+    private String years = "1";
 
     private DOB dob;
 
@@ -88,6 +88,9 @@ public class SolrPatientDocument {
 
     @Field
     private String colorCode;
+
+    @Field
+    private Long registrationDate;
 
     public String getId() {
 	return id;
@@ -169,32 +172,32 @@ public class SolrPatientDocument {
 	this.emailAddress = emailAddress;
     }
 
-    public int getDays() {
+    public String getDays() {
 	return days;
     }
 
-    public void setDays(int days) {
+    public void setDays(String days) {
 	this.days = days;
     }
 
-    public int getMonths() {
+    public String getMonths() {
 	return months;
     }
 
-    public void setMonths(int months) {
+    public void setMonths(String months) {
 	this.months = months;
     }
 
-    public int getYears() {
+    public String getYears() {
 	return years;
     }
 
-    public void setYears(int years) {
+    public void setYears(String years) {
 	this.years = years;
     }
 
     public DOB getDob() {
-	return new DOB(days, months, years);
+	return new DOB(Integer.parseInt(days), Integer.parseInt(months), Integer.parseInt(years));
     }
 
     public void setDob(DOB dob) {
@@ -297,13 +300,23 @@ public class SolrPatientDocument {
 	this.colorCode = colorCode;
     }
 
-    @Override
-    public String toString() {
-	return "SolrPatientDocument [id=" + id + ", userId=" + userId + ", PID=" + PID + ", userName=" + userName + ", firstName=" + firstName
-		+ ", middleName=" + middleName + ", lastName=" + lastName + ", gender=" + gender + ", bloodGroup=" + bloodGroup + ", emailAddress="
-		+ emailAddress + ", days=" + days + ", months=" + months + ", years=" + years + ", dob=" + dob + ", city=" + city + ", locality=" + locality
-		+ ", postalCode=" + postalCode + ", mobileNumber=" + mobileNumber + ", profession=" + profession + ", doctorId=" + doctorId + ", locationId="
-		+ locationId + ", hospitalId=" + hospitalId + ", referredBy=" + referredBy + ", createdTime=" + createdTime + ", imageUrl=" + imageUrl
-		+ ", colorCode=" + colorCode + "]";
-    }
+	public Long getRegistrationDate() {
+		return registrationDate;
+	}
+
+	public void setRegistrationDate(Long registrationDate) {
+		this.registrationDate = registrationDate;
+	}
+
+	@Override
+	public String toString() {
+		return "SolrPatientDocument [id=" + id + ", userId=" + userId + ", PID=" + PID + ", userName=" + userName
+				+ ", firstName=" + firstName + ", middleName=" + middleName + ", lastName=" + lastName + ", gender="
+				+ gender + ", bloodGroup=" + bloodGroup + ", emailAddress=" + emailAddress + ", days=" + days
+				+ ", months=" + months + ", years=" + years + ", dob=" + dob + ", city=" + city + ", locality="
+				+ locality + ", postalCode=" + postalCode + ", mobileNumber=" + mobileNumber + ", profession="
+				+ profession + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", referredBy=" + referredBy + ", createdTime=" + createdTime + ", imageUrl=" + imageUrl
+				+ ", colorCode=" + colorCode + ", registrationDate=" + registrationDate + "]";
+	}
 }

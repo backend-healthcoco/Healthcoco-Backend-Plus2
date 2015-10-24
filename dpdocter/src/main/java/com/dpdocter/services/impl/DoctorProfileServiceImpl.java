@@ -43,6 +43,7 @@ import com.dpdocter.request.DoctorConsultationFeeAddEditRequest;
 import com.dpdocter.request.DoctorContactAddEditRequest;
 import com.dpdocter.request.DoctorEducationAddEditRequest;
 import com.dpdocter.request.DoctorExperienceAddEditRequest;
+import com.dpdocter.request.DoctorExperienceDetailAddEditRequest;
 import com.dpdocter.request.DoctorNameAddEditRequest;
 import com.dpdocter.request.DoctorProfessionalAddEditRequest;
 import com.dpdocter.request.DoctorProfessionalStatementAddEditRequest;
@@ -105,13 +106,13 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
-    public Boolean addEditExperience(String doctorId, String experience) {
+    public Boolean addEditExperience(DoctorExperienceAddEditRequest request) {
 	DoctorCollection doctorCollection = null;
 	Boolean response = false;
 	try {
-	    doctorCollection = doctorRepository.findByUserId(doctorId);
+	    doctorCollection = doctorRepository.findByUserId(request.getDoctorId());
 	    DoctorExperience doctorExperience = new DoctorExperience();
-	    doctorExperience.setExperience(Float.parseFloat(experience));
+	    doctorExperience.setExperience(Float.parseFloat(request.getExperience()));
 	    doctorExperience.setPeriod(DoctorExperienceUnit.YEAR);
 	    doctorCollection.setExperience(doctorExperience);
 	    doctorRepository.save(doctorCollection);
@@ -293,7 +294,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
-    public Boolean addEditExperienceDetail(DoctorExperienceAddEditRequest request) {
+    public Boolean addEditExperienceDetail(DoctorExperienceDetailAddEditRequest request) {
 	DoctorCollection doctorCollection = null;
 	Boolean response = false;
 	try {

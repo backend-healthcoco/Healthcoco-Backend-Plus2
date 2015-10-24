@@ -13,6 +13,7 @@ import com.dpdocter.request.DoctorConsultationFeeAddEditRequest;
 import com.dpdocter.request.DoctorContactAddEditRequest;
 import com.dpdocter.request.DoctorEducationAddEditRequest;
 import com.dpdocter.request.DoctorExperienceAddEditRequest;
+import com.dpdocter.request.DoctorExperienceDetailAddEditRequest;
 import com.dpdocter.request.DoctorNameAddEditRequest;
 import com.dpdocter.request.DoctorProfessionalAddEditRequest;
 import com.dpdocter.request.DoctorProfessionalStatementAddEditRequest;
@@ -25,7 +26,7 @@ public interface DoctorProfileService {
 
     Boolean addEditName(DoctorNameAddEditRequest request);
 
-    Boolean addEditExperience(String doctorId, String experience);
+    Boolean addEditExperience(DoctorExperienceAddEditRequest request);
 
     Boolean addEditContact(DoctorContactAddEditRequest request);
 
@@ -43,7 +44,7 @@ public interface DoctorProfileService {
 
     Boolean addEditRegistrationDetail(DoctorRegistrationAddEditRequest request);
 
-    Boolean addEditExperienceDetail(DoctorExperienceAddEditRequest request);
+    Boolean addEditExperienceDetail(DoctorExperienceDetailAddEditRequest request);
 
     String addEditProfilePicture(DoctorProfilePictureAddEditRequest request);
 

@@ -1,6 +1,6 @@
 package com.dpdocter.services.impl;
 
-import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -42,6 +42,7 @@ import com.dpdocter.collections.DrugStrengthUnitCollection;
 import com.dpdocter.collections.DrugTypeCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.PatientAdmissionCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
@@ -61,6 +62,7 @@ import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.DrugStrengthUnitRepository;
 import com.dpdocter.repository.DrugTypeRepository;
 import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
@@ -147,6 +149,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
     @Autowired
     private EmailTackService emailTackService;
+    
+    @Autowired
+    private PatientAdmissionRepository patientAdmissionRepository;
 
     @Override
     public DrugAddEditResponse addDrug(DrugAddEditRequest request) {
@@ -434,6 +439,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 	    response = new PrescriptionAddEditResponse();
 	    BeanUtil.map(prescriptionCollection, response);
+	    response.setVisitId(request.getVisitId());
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Prescription");
@@ -2875,6 +2881,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	Map<String, Object> parameters = new HashMap<String, Object>();
 	MailAttachment mailAttachment = null;
 	List<PrescriptionJasperDetails> prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
+	PatientCollection patient = null;
+	PatientAdmissionCollection patientAdmission = null;
+	UserCollection user = null;
 	try {
 	    prescriptionCollection = prescriptionRepository.findOne(prescriptionId);
 	    if (prescriptionCollection != null) {
@@ -2916,12 +2925,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    }
 			    parameters.put("prescriptionItems", prescriptionItems);
 			}
-			PatientCollection patient = patientRepository.findOne(prescriptionCollection.getPatientId());
-			UserCollection user = null;
+			patient = patientRepository.findOne(prescriptionCollection.getPatientId());
+			patientAdmission = patientAdmissionRepository.findByPatientIdAndDoctorId(prescriptionCollection.getPatientId(), doctorId);
+			
 			if (patient != null) {
 			    user = userRepository.findOne(patient.getUserId());
 			} else {
 			    user = userRepository.findOne(prescriptionCollection.getPatientId());
+			    patient = patientRepository.findByUserId(prescriptionCollection.getPatientId());
 			}
 
 			EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
@@ -2931,11 +2942,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			emailTrackCollection.setType(ComponentType.PRESCRIPTIONS.getType());
 			emailTrackCollection.setSubject("Prescription");
 			if (user != null) {
-			    parameters.put("name", user.getFirstName());
-			    parameters.put("dob", user.getDob() != null ? (user.getDob().getDays() + "/" + user.getDob().getMonths() + "/" + user.getDob()
-				    .getYears()) : "");
-			    parameters.put("gender", user.getGender());
-			    parameters.put("mobileNumber", user.getMobileNumber());
 			    emailTrackCollection.setPatientName(user.getFirstName());
 			    emailTrackCollection.setPatientId(user.getId());
 			}
@@ -2958,6 +2964,29 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    printId.put("$oid", printSettings.getId());
 
 		parameters.put("printSettingsId", Arrays.asList(printId));
+		String headerLeftText="",headerRightText="",footerBottomText ="";
+		String patientName="", dob="", gender="", mobileNumber="";
+		if(printSettings!=null){
+			if(printSettings.getHeaderSetup() != null){
+//				for(String str: printSettings.getHeaderSetup().getTopLeftText())headerLeftText=headerLeftText+"<br/>"+str;
+//				for(String str: printSettings.getHeaderSetup().getTopRightText())headerRightText=headerRightText+"<br/>"+str;
+				if(printSettings.getHeaderSetup().getPatientDetails() !=null && user!=null){
+					patientName=printSettings.getHeaderSetup().getPatientDetails().getShowName()?"Patient Name: "+user.getFirstName()+"<br>":"";
+					dob = printSettings.getHeaderSetup().getPatientDetails().getShowDOB()?"Patient Age: "+(user.getDob() != null ? (user.getDob().getAge())+"<br>":""):"";
+					gender = printSettings.getHeaderSetup().getPatientDetails().getShowGender()?"Patient Gender: "+user.getGender()+"<br>":"";
+					mobileNumber = printSettings.getHeaderSetup().getPatientDetails().getShowGender()?"Patient Gender: "+user.getMobileNumber()+"<br>":"";
+				}
+			}
+			if(printSettings.getFooterSetup() != null){
+//				for(String str: printSettings.getFooterSetup().getBottomText())footerBottomText=footerBottomText+"<br/>"+str;
+			}
+		}
+		parameters.put("patientLeftText",patientName+"Patient Id: "+patient.getPID()+"<br>"+dob+gender);
+	    parameters.put("patientRightText",mobileNumber+(patientAdmission!= null ? "Reffered By:"+patientAdmission.getReferredBy()+"<br>":"")+"Date:"+new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
+		parameters.put("headerLeftText", headerLeftText);
+		parameters.put("headerRightText", headerRightText);
+		parameters.put("footerBottomText",footerBottomText);
+		
 		LocationCollection location = locationRepository.findOne(locationId);
 		if(location != null)parameters.put("logoURL", location.getLogoUrl());
 

@@ -333,7 +333,7 @@ public interface PathProxy {
     public interface DoctorProfileUrls {
 	public static final String ADD_EDIT_NAME = "/addEditName";
 
-	public static final String ADD_EDIT_EXPERIENCE = "/addEditExperience/{doctorId}/{experience}";
+	public static final String ADD_EDIT_EXPERIENCE = "/addEditExperience";
 
 	public static final String ADD_EDIT_CONTACT = "/addEditContact";
 
@@ -378,16 +378,15 @@ public interface PathProxy {
 	public static final String ADD_EDIT_GENERAL_INFO = "/clinicProfile/addEditGeneralInfo";
     }
 
-    // public static final String PATIENT_TRACK_BASE_URL = BASE_URL +
-    // "/patientTrack";
+     public static final String PATIENT_VISIT_BASE_URL = BASE_URL + "/patientVisit";
 
-    // public interface PatientTrackUrls {
-    // public static final String RECENTLY_VISITED =
-    // "recentlyVisited/{doctorId}/{locationId}/{hospitalId}/{page}/{size}";
-    //
-    // public static final String MOST_VISITED =
-    // "mostVisited/{doctorId}/{locationId}/{hospitalId}/{page}/{size}";
-    // }
+     public interface PatientVisitUrls {
+     
+    	 public static final String ADD_MULTIPLE_DATA = "/add";
+//    	 
+    	 public static final String GET_VISITS = "/{doctorId}/{locationId}/{hospitalId}/{patientId}";
+    
+     }
 
     /*
      * public interface SolrTemp { public static final String ADD = "/add";

@@ -12,7 +12,7 @@ public interface SMSServices {
 
     SMSResponse getSMS(int page, int size, String doctorId, String locationId, String hospitalId);
 
-    List<SMSTrack> getSMSDetails(int page, int size, String doctorId, String locationId, String hospitalId);
+    List<SMSTrack> getSMSDetails(int page, int size, String patientId, String doctorId, String locationId, String hospitalId);
 
 	void updateDeliveryReports(List<SMSDeliveryReports> request);
 

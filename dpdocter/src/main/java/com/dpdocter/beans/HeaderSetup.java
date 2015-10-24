@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 public class HeaderSetup {
 
     private Boolean customHeader;
@@ -10,9 +12,9 @@ public class HeaderSetup {
 
     private PatientDetails patientDetails;
 
-    private String topLeftText;
+    private List<PrintSettingsText> topLeftText;
 
-    private String topRightText;
+    private List<PrintSettingsText> topRightText;
 
     public Boolean getCustomHeader() {
 	return customHeader;
@@ -46,23 +48,23 @@ public class HeaderSetup {
 	this.patientDetails = patientDetails;
     }
 
-    public String getTopLeftText() {
-	return topLeftText;
-    }
+    public List<PrintSettingsText> getTopLeftText() {
+		return topLeftText;
+	}
 
-    public void setTopLeftText(String topLeftText) {
-	this.topLeftText = topLeftText;
-    }
+	public void setTopLeftText(List<PrintSettingsText> topLeftText) {
+		this.topLeftText = topLeftText;
+	}
 
-    public String getTopRightText() {
-	return topRightText;
-    }
+	public List<PrintSettingsText> getTopRightText() {
+		return topRightText;
+	}
 
-    public void setTopRightText(String topRightText) {
-	this.topRightText = topRightText;
-    }
+	public void setTopRightText(List<PrintSettingsText> topRightText) {
+		this.topRightText = topRightText;
+	}
 
-    @Override
+	@Override
     public String toString() {
 	return "HeaderSetup [customHeader=" + customHeader + ", customLogo=" + customLogo + ", logoType=" + logoType + ", patientDetails=" + patientDetails
 		+ ", topLeftText=" + topLeftText + ", topRightText=" + topRightText + "]";

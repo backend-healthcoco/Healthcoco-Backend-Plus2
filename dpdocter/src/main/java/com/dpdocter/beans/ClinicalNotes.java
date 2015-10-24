@@ -34,6 +34,8 @@ public class ClinicalNotes extends GenericCollection {
 
     private Boolean discarded = false;
 
+    private String visitId;
+    
     public String getId() {
 	return id;
     }
@@ -146,11 +148,20 @@ public class ClinicalNotes extends GenericCollection {
 	this.doctorName = doctorName;
     }
 
-    @Override
-    public String toString() {
-	return "ClinicalNotes [id=" + id + ", complaints=" + complaints + ", observations=" + observations + ", investigations=" + investigations
-		+ ", diagnoses=" + diagnoses + ", diagrams=" + diagrams + ", notes=" + notes + ", doctorId=" + doctorId + ", locationId=" + locationId
-		+ ", hospitalId=" + hospitalId + ", doctorName=" + doctorName + ", inHistory=" + inHistory + ", discarded=" + discarded + "]";
-    }
+	public String getVisitId() {
+		return visitId;
+	}
 
+	public void setVisitId(String visitId) {
+		this.visitId = visitId;
+	}
+
+	@Override
+	public String toString() {
+		return "ClinicalNotes [id=" + id + ", complaints=" + complaints + ", observations=" + observations
+				+ ", investigations=" + investigations + ", diagnoses=" + diagnoses + ", createdDate=" + createdDate
+				+ ", diagrams=" + diagrams + ", notes=" + notes + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", doctorName=" + doctorName + ", inHistory=" + inHistory
+				+ ", discarded=" + discarded + ", visitId=" + visitId + "]";
+	}
 }

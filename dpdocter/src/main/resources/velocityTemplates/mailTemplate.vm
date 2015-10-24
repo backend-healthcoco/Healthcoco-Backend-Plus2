@@ -1,11 +1,68 @@
-<html>
-	<body>
-		<h3>Dear ${fName} ${lName}</h3>
-		<p>
-			Please click on below link to activate the account.<br>
-			${link}
-		</p>
-		
-	</body>
- 
-</html>
+<HTML>
+<BODY>
+
+<DIV style="padding:0;width:100%!important;margin:0" marginheight="0" marginwidth="0">
+
+<CENTER>
+<TABLE style="padding:0;width:100%!important;background:#ffffff;margin:0;background-color:#ffffff" border="0" cellpadding="8" cellspacing="0">
+<TBODY>
+<TR>
+<TD valign="top">
+<TABLE style="border-radius:4px;border:1px #dceaf5 solid" border="0" cellpadding="0" cellspacing="0" align="center">
+<TBODY>
+<TR>
+<TD colspan="3" height="6"></TD>
+</TR>
+<TR style="line-height:0px">
+<TD width="100%" align="center">
+<H1 style="color:#0077b5; margin-top:30px;">Healthcoco Logo</H1>
+</TD>
+</TR>
+<TR>
+<TD>
+<TABLE style="line-height:25px" border="0" cellpadding="0" cellspacing="0" align="center">
+<TBODY>
+<TR>
+<TD colspan="3" height="30"></TD>
+</TR>
+
+<TR>
+<TD width="36"></TD>
+<TD style="color:#444444;border-collapse:collapse;font-size:11pt;font-family:proxima_nova,'Open Sans','Lucida Grande','Segoe UI',Arial,Verdana,'Lucida Sans Unicode',Tahoma,'Sans Serif';max-width:454px" valign="top" width="454" align="left">
+Dear ${fName} ${lName},<BR><BR>Please click on below link to activate the account.<BR>
+			<BR><BR>
+
+<CENTER>
+<A style="border-radius:3px;color:white;font-size:15px;padding:14px 7px 14px 7px;max-width:210px;font-family:proxima_nova,'Open Sans','lucida grande','Segoe UI',arial,verdana,'lucida sans unicode',tahoma,sans-serif;border:1px #1373b5 solid;text-align:center;text-decoration:none;width:210px;margin:6px auto;display:block;background-color:#007ee6" href=${link} target="_blank">Verify your email</a>
+</CENTER>
+
+<BR>Thanks!<br>- The <SPAN class="il">Healthcoco</SPAN> Team</TD>
+
+<TD width="36"></TD>
+</TR>
+
+<TR>
+<TD colspan="3" height="36"></TD>
+</TR>
+</TBODY>
+</TABLE>
+</TD>
+</TR>
+</TBODY>
+</TABLE>
+<TABLE border="0" cellpadding="0" cellspacing="0" align="center">
+<TBODY>
+<TR><TD height="10"></TD></TR>
+<TR><TD style="padding:0;border-collapse:collapse">
+<TABLE border="0" cellpadding="0" cellspacing="0" align="center">
+<TBODY>
+<TR style="color:#0077b5;font-size:12px;font-family:proxima_nova,'Open Sans','Lucida Grande','Segoe UI',Arial,Verdana,'Lucida Sans Unicode',Tahoma,'Sans Serif'">
+<TD width="350" align="left"></TD>
+<TD width="160" align="right" >- 2015 <SPAN class="il">@Healthcoco.com</SPAN></TD>
+</TR></TBODY></TABLE>
+</TD></TR>
+</TBODY></TABLE></TD></TR>
+</TBODY></TABLE></CENTER></DIV>
+
+</BODY>
+</HTML>

@@ -33,7 +33,7 @@ import com.dpdocter.request.GetDoctorContactsRequest;
 import com.dpdocter.request.ImportContactsRequest;
 import com.dpdocter.request.PatientGroupAddEditRequest;
 import com.dpdocter.services.ContactsService;
-import com.dpdocter.services.PatientTrackService;
+import com.dpdocter.services.PatientVisitService;
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -53,7 +53,7 @@ public class ContactsApi {
     private ContactsService contactsService;
 
     @Autowired
-    private PatientTrackService patientTrackService;
+    private PatientVisitService patientTrackService;
 
     @Context
     private UriInfo uriInfo;
@@ -282,7 +282,10 @@ public class ContactsApi {
     }
 
     private String getFinalImageURL(String imageURL) {
-	String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-	return finalImageURL + imageURL;
+    	if(imageURL != null){
+    		String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+    		return finalImageURL + imageURL;
+    	}
+    	else return null;
     }
 }

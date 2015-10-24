@@ -107,6 +107,7 @@ public class SMSServicesImpl implements SMSServices {
 	    		{
 	    			String recipient = smsDetails.getSms().getSmsAddress().getRecipient();
 	    			if(userNumber.mobileNumber.contains(recipient)){
+	    				smsDetails.getSms().getSmsAddress().setRecipient(COUNTRY_CODE+recipient);
 	    				SMS sms = new SMS();
 	    				BeanUtil.map(smsDetails.getSms(), sms);
 	    				smsList.add(sms);
@@ -120,9 +121,9 @@ public class SMSServicesImpl implements SMSServices {
 	    }
 		}
 	    message.setSms(smsList);
-//	    String xmlSMSData = createXMLData(message);
-//	    String responseId = hitSMSUrl(SMS_POST_URL, xmlSMSData);
-//	    smsTrackDetail.setResponseId(responseId);
+	    String xmlSMSData = createXMLData(message);
+	    String responseId = hitSMSUrl(SMS_POST_URL, xmlSMSData);
+	    smsTrackDetail.setResponseId(responseId);
 	    if(save)smsTrackRepository.save(smsTrackDetail);
 	} catch (Exception e) {
 	    logger.error("Error : " + e.getMessage());
@@ -238,7 +239,7 @@ public class SMSServicesImpl implements SMSServices {
     }
 
     @Override
-    public List<SMSTrack> getSMSDetails(int page, int size, String doctorId, String locationId, String hospitalId) {
+    public List<SMSTrack> getSMSDetails(int page, int size, String patientId, String doctorId, String locationId, String hospitalId) {
 	List<SMSTrack> response = null;
 	List<SMSTrackDetail> smsTrackCollections = null;
 	try {
@@ -250,22 +251,22 @@ public class SMSServicesImpl implements SMSServices {
 			smsTrackCollections = smsTrackRepository.findAll(new Sort(Sort.Direction.DESC, "sentTime"));
 		} else {
 		    if (size > 0)
-			smsTrackCollections = smsTrackRepository.findAll(locationId, hospitalId, new PageRequest(page, size, Direction.DESC, "sentTime"));
+			smsTrackCollections = smsTrackRepository.findByLocationHospitalPatientId(locationId, hospitalId, patientId, new PageRequest(page, size, Direction.DESC, "sentTime"));
 		    else
-			smsTrackCollections = smsTrackRepository.findAll(locationId, hospitalId, new Sort(Sort.Direction.DESC, "sentTime"));
+			smsTrackCollections = smsTrackRepository.findByLocationHospitalPatientId(locationId, hospitalId, patientId, new Sort(Sort.Direction.DESC, "sentTime"));
 		}
 	    } else {
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
-			smsTrackCollections = smsTrackRepository.findAll(doctorId, new PageRequest(page, size, Direction.DESC, "sentTime"));
+			smsTrackCollections = smsTrackRepository.findAll(doctorId, patientId, new PageRequest(page, size, Direction.DESC, "sentTime"));
 		    else
-			smsTrackCollections = smsTrackRepository.findAll(doctorId, new Sort(Sort.Direction.DESC, "sentTime"));
+			smsTrackCollections = smsTrackRepository.findAll(doctorId, patientId, new Sort(Sort.Direction.DESC, "sentTime"));
 		} else {
 		    if (size > 0)
-			smsTrackCollections = smsTrackRepository.findAll(doctorId, locationId, hospitalId, new PageRequest(page, size, Direction.DESC,
+			smsTrackCollections = smsTrackRepository.findAll(doctorId, locationId, hospitalId, patientId, new PageRequest(page, size, Direction.DESC,
 				"sentTime"));
 		    else
-			smsTrackCollections = smsTrackRepository.findAll(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "sentTime"));
+			smsTrackCollections = smsTrackRepository.findAll(doctorId, locationId, hospitalId, patientId, new Sort(Sort.Direction.DESC, "sentTime"));
 		}
 	    }
 
@@ -292,7 +293,7 @@ public class SMSServicesImpl implements SMSServices {
 				if(smsDetail.getSms() != null && smsDetail.getSms().getSmsAddress() != null && smsDetail.getSms().getSmsAddress().getRecipient() != null){
 					if(smsDetail.getSms().getSmsAddress().getRecipient().equals(report.getNumber())){
 						smsDetail.setDeliveredTime(report.getDate());
-						smsDetail.setDeliveryStatus(SMSStatus.valueOf(report.getStatus()));  
+						smsDetail.setDeliveryStatus(SMSStatus.valueOf(report.getDesc()));  
 					}
 				}
 			}

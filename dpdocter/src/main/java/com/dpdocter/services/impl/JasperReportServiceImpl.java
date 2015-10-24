@@ -35,7 +35,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
     private static Logger logger = Logger.getLogger(JasperReportServiceImpl.class.getName());
 
-    private static final String MONGO_HOST_URI = "mongodb://localhost:27017/dpdocter_db";
+    private static final String MONGO_HOST_URI = "mongodb://52.23.201.29:27017/dpdocter_db";
 
     @Value(value = "${JASPER_TEMPLATES_RESOURCE}")
     private String REPORT_NAME;
@@ -48,9 +48,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 	    MongoDbConnection mongoConnection = new MongoDbConnection(MONGO_HOST_URI, null, null);
 
 	    parameters.put("REPORT_CONNECTION", mongoConnection);
-	    parameters.put("path", REPORT_NAME);
-
-//	    String defaultPDFFont = "Lobster";
 
 	    DefaultJasperReportsContext context = DefaultJasperReportsContext.getInstance();
 	    context.setValue("net.sf.jasperreports.extension.registry.factory.queryexecuters.mongodb",
@@ -61,8 +58,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 	    JRProperties.setProperty("net.sf.jasperreports.query.executer.factory.MongoDbQuery", "com.jaspersoft.mongodb.query.MongoDbQueryExecuterFactory");
 	    JRStyle style = new JRBaseStyle();
 //	    style.setFontName("Arial");
-	    style.setFontSize(15);
-	    style.setForecolor(new Color(255, 0, 0));
+//	    style.setFontSize(15);
+//	    style.setForecolor(new Color(255, 0, 0));
 
 	    JasperDesign design = JRXmlLoader.load(new File(REPORT_NAME + fileName + ".jrxml"));
 

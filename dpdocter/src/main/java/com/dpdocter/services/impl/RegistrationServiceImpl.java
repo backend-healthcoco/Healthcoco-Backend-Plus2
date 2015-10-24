@@ -204,6 +204,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    // save user
 	    UserCollection userCollection = new UserCollection();
 	    BeanUtil.map(request, userCollection);
+	    if(userCollection.getDob() != null && userCollection.getDob().getAge()<0){
+	    	logger.warn("Incorrect Date of Birth");
+			throw new BusinessException(ServiceError.NotAcceptable, "Incorrect Date of Birth");
+	    }
 	    User user = new User();
 	    BeanUtil.map(request, user);
 	    String uniqueUserName = generateUniqueUserNameService.generate(user);

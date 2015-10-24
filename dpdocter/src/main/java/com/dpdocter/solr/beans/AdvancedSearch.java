@@ -11,6 +11,10 @@ public class AdvancedSearch {
 
     private List<AdvancedSearchParameter> searchParameters;
 
+    private int page;
+
+    private int size;
+
     public String getDoctorId() {
 	return doctorId;
     }
@@ -43,10 +47,25 @@ public class AdvancedSearch {
 	this.searchParameters = searchParameters;
     }
 
-    @Override
-    public String toString() {
-	return "AdvancedSearch [doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", searchParameters=" + searchParameters
-		+ "]";
-    }
+	public int getPage() {
+		return page;
+	}
 
+	public void setPage(int page) {
+		this.page = page;
+	}
+
+	public int getSize() {
+		return size;
+	}
+
+	public void setSize(int size) {
+		this.size = size;
+	}
+
+	@Override
+	public String toString() {
+		return "AdvancedSearch [doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", searchParameters=" + searchParameters + ", page=" + page + ", size=" + size + "]";
+	}
 }

@@ -23,6 +23,8 @@ public class PrescriptionAddEditResponse extends GenericCollection {
     private String prescriptionCode;
 
     private Boolean discarded;
+    
+    private String visitId;
 
     public String getId() {
 	return id;
@@ -96,10 +98,18 @@ public class PrescriptionAddEditResponse extends GenericCollection {
 	this.discarded = discarded;
     }
 
-    @Override
-    public String toString() {
-	return "PrescriptionAddEditResponse [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-		+ hospitalId + ", items=" + items + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + ", discarded=" + discarded + "]";
-    }
+	public String getVisitId() {
+		return visitId;
+	}
 
+	public void setVisitId(String visitId) {
+		this.visitId = visitId;
+	}
+
+	@Override
+	public String toString() {
+		return "PrescriptionAddEditResponse [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", items=" + items + ", patientId=" + patientId
+				+ ", prescriptionCode=" + prescriptionCode + ", discarded=" + discarded + ", visitId=" + visitId + "]";
+	}
 }

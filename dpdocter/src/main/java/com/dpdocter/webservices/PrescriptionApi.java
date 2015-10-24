@@ -41,7 +41,7 @@ import com.dpdocter.response.PrescriptionAddEditResponse;
 import com.dpdocter.response.PrescriptionAddEditResponseDetails;
 import com.dpdocter.response.TemplateAddEditResponse;
 import com.dpdocter.response.TemplateAddEditResponseDetails;
-import com.dpdocter.services.PatientTrackService;
+import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.solr.document.SolrDrugDocument;
 import com.dpdocter.solr.services.SolrPrescriptionService;
@@ -63,7 +63,7 @@ public class PrescriptionApi {
     private SolrPrescriptionService solrPrescriptionService;
 
     @Autowired
-    private PatientTrackService patientTrackService;
+    private PatientVisitService patientTrackService;
 
     @Path(value = PathProxy.PrescriptionUrls.ADD_DRUG)
     @POST
@@ -247,7 +247,8 @@ public class PrescriptionApi {
 
 	// patient track
 	if (prescriptionAddEditResponse != null) {
-	    patientTrackService.addRecord(prescriptionAddEditResponse, VisitedFor.PRESCRIPTION);
+	    String visitId = patientTrackService.addRecord(prescriptionAddEditResponse, VisitedFor.PRESCRIPTION, prescriptionAddEditResponse.getVisitId());
+	    prescriptionAddEditResponse.setVisitId(visitId);
 	}
 
 	Response<PrescriptionAddEditResponse> response = new Response<PrescriptionAddEditResponse>();
@@ -264,11 +265,6 @@ public class PrescriptionApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
 	PrescriptionAddEditResponseDetails prescriptionAddEditResponse = prescriptionServices.addPrescriptionHandheld(request);
-
-	// patient track
-	if (prescriptionAddEditResponse != null) {
-	    patientTrackService.addRecord(prescriptionAddEditResponse, VisitedFor.PRESCRIPTION);
-	}
 
 	Response<PrescriptionAddEditResponseDetails> response = new Response<PrescriptionAddEditResponseDetails>();
 	response.setData(prescriptionAddEditResponse);
@@ -287,9 +283,9 @@ public class PrescriptionApi {
 	request.setId(prescriptionId);
 	PrescriptionAddEditResponseDetails prescriptionAddEditResponse = prescriptionServices.editPrescription(request);
 
-	if (prescriptionAddEditResponse != null) {
-	    patientTrackService.addRecord(prescriptionAddEditResponse, VisitedFor.PRESCRIPTION);
-	}
+//	if (prescriptionAddEditResponse != null) {
+//	    patientTrackService.addRecord(prescriptionAddEditResponse, VisitedFor.PRESCRIPTION, request.getVisitId());
+//	}
 
 	Response<PrescriptionAddEditResponseDetails> response = new Response<PrescriptionAddEditResponseDetails>();
 	response.setData(prescriptionAddEditResponse);

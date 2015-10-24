@@ -34,7 +34,7 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.ClinicalNotesAddRequest;
 import com.dpdocter.request.ClinicalNotesEditRequest;
 import com.dpdocter.services.ClinicalNotesService;
-import com.dpdocter.services.PatientTrackService;
+import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.solr.document.SolrComplaintsDocument;
 import com.dpdocter.solr.document.SolrDiagnosesDocument;
 import com.dpdocter.solr.document.SolrDiagramsDocument;
@@ -60,7 +60,7 @@ public class ClinicalNotesApi {
     private SolrClinicalNotesService solrClinicalNotesService;
 
     @Autowired
-    private PatientTrackService patientTrackService;
+    private PatientVisitService patientTrackService;
 
     @Context
     private UriInfo uriInfo;
@@ -75,7 +75,8 @@ public class ClinicalNotesApi {
 
 	// patient track
 	if (clinicalNotes != null) {
-	    patientTrackService.addRecord(request, VisitedFor.CLINICAL_NOTES);
+	    String visitId = patientTrackService.addRecord(clinicalNotes, VisitedFor.CLINICAL_NOTES, request.getVisitId());
+	    clinicalNotes.setVisitId(visitId);
 	}
 
 	Response<ClinicalNotes> response = new Response<ClinicalNotes>();
@@ -92,11 +93,6 @@ public class ClinicalNotesApi {
 	}
 	request.setId(clinicalNotesId);
 	ClinicalNotes clinicalNotes = clinicalNotesService.editNotes(request);
-
-	// patient track
-	if (clinicalNotes != null) {
-	    patientTrackService.addRecord(request, VisitedFor.CLINICAL_NOTES);
-	}
 
 	Response<ClinicalNotes> response = new Response<ClinicalNotes>();
 	response.setData(clinicalNotes);
@@ -408,8 +404,12 @@ public class ClinicalNotesApi {
     }
 
     private String getFinalImageURL(String imageURL) {
-	String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-	return finalImageURL + imageURL;
+    	if(imageURL != null){
+    		String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+    		return finalImageURL + imageURL;
+    	}
+    	else return null;
+
     }
 
 }

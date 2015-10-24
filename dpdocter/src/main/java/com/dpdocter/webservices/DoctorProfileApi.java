@@ -30,6 +30,7 @@ import com.dpdocter.request.DoctorConsultationFeeAddEditRequest;
 import com.dpdocter.request.DoctorContactAddEditRequest;
 import com.dpdocter.request.DoctorEducationAddEditRequest;
 import com.dpdocter.request.DoctorExperienceAddEditRequest;
+import com.dpdocter.request.DoctorExperienceDetailAddEditRequest;
 import com.dpdocter.request.DoctorNameAddEditRequest;
 import com.dpdocter.request.DoctorProfessionalAddEditRequest;
 import com.dpdocter.request.DoctorProfessionalStatementAddEditRequest;
@@ -72,13 +73,13 @@ public class DoctorProfileApi {
     }
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_EXPERIENCE)
-    @GET
-    public Response<Boolean> addEditExperience(@PathParam("doctorId") String doctorId, @PathParam("experience") String experience) {
-	if (DPDoctorUtils.anyStringEmpty(doctorId, experience)) {
-	    logger.warn("Doctor Id, Experience Cannot Be Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Experience Cannot Be Empty");
-	}
-	Boolean addEditExperienceResponse = doctorProfileService.addEditExperience(doctorId, experience);
+    @POST
+    public Response<Boolean> addEditExperience(DoctorExperienceAddEditRequest request) {
+    	if (request == null) {
+    	    logger.warn("Doctor Experience Request Is Empty");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Experience Request Is Empty");
+    	}
+	Boolean addEditExperienceResponse = doctorProfileService.addEditExperience(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditExperienceResponse);
 	return response;
@@ -186,7 +187,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_EXPERIENCE_DETAIL)
     @POST
-    public Response<Boolean> addEditExperienceDetail(DoctorExperienceAddEditRequest request) {
+    public Response<Boolean> addEditExperienceDetail(DoctorExperienceDetailAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Doctor Experience Detail Request Is Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Experience Detail Request Is Empty");
@@ -329,7 +330,10 @@ public class DoctorProfileApi {
     }
 
     private String getFinalImageURL(String imageURL) {
-	String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-	return finalImageURL + imageURL;
+    	if(imageURL != null){
+    		String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+    		return finalImageURL + imageURL;
+    	}
+    	else return null;
     }
 }

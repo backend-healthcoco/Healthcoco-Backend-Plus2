@@ -8,6 +8,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
@@ -37,12 +38,13 @@ public class SolrRegistrationApi {
     @Path(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT)
     @GET
     public Response<SolrPatientResponse> searchPatient(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "searchTerm") String searchTerm) {
+	    @PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "searchTerm") String searchTerm, @QueryParam("page") int page,
+	    @QueryParam("size") int size) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, searchTerm)) {
 	    logger.warn("Doctor Id, Location Id, Hospital Id and Search Term Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Location Id, Hospital Id and Search Term Cannot Be Empty");
 	}
-	List<SolrPatientResponse> patients = solrRegistrationService.searchPatient(doctorId, locationId, hospitalId, searchTerm);
+	List<SolrPatientResponse> patients = solrRegistrationService.searchPatient(doctorId, locationId, hospitalId, searchTerm, page, size);
 
 	Response<SolrPatientResponse> response = new Response<SolrPatientResponse>();
 	response.setDataList(patients);
