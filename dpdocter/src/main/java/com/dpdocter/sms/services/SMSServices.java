@@ -14,9 +14,9 @@ public interface SMSServices {
 
     List<SMSTrack> getSMSDetails(int page, int size, String patientId, String doctorId, String locationId, String hospitalId);
 
-	void updateDeliveryReports(List<SMSDeliveryReports> request);
+    void updateDeliveryReports(List<SMSDeliveryReports> request);
 
-	void addNumber(String mobileNumber);
+    void addNumber(String mobileNumber);
 
-	void deleteNumber(String mobileNumber);
+    void deleteNumber(String mobileNumber);
 }

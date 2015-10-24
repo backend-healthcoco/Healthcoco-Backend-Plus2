@@ -378,15 +378,16 @@ public interface PathProxy {
 	public static final String ADD_EDIT_GENERAL_INFO = "/clinicProfile/addEditGeneralInfo";
     }
 
-     public static final String PATIENT_VISIT_BASE_URL = BASE_URL + "/patientVisit";
+    public static final String PATIENT_VISIT_BASE_URL = BASE_URL + "/patientVisit";
 
-     public interface PatientVisitUrls {
-     
-    	 public static final String ADD_MULTIPLE_DATA = "/add";
-//    	 
-    	 public static final String GET_VISITS = "/{doctorId}/{locationId}/{hospitalId}/{patientId}";
-    
-     }
+    public interface PatientVisitUrls {
+
+	public static final String ADD_MULTIPLE_DATA = "/add";
+
+	//
+	public static final String GET_VISITS = "/{doctorId}/{locationId}/{hospitalId}/{patientId}";
+
+    }
 
     /*
      * public interface SolrTemp { public static final String ADD = "/add";
@@ -401,6 +402,13 @@ public interface PathProxy {
      * 
      * }
      */
+    public static final String ACCESS_CONTROL_BASE_URL = BASE_URL + "/accessControl";
+
+    public interface AccessControlUrls {
+	public static final String GET_ACCESS_CONTROLS = "getAccessControls/{roleOrUserId}/{locationId}/{hospitalId}";
+
+	public static final String SET_ACCESS_CONTROLS = "setAccessControls";
+    }
 
     public static final String ISSUE_TRACK_BASE_URL = BASE_URL + "/issueTrack";
 
@@ -438,7 +446,7 @@ public interface PathProxy {
 	public static final String SEARCH_NOTES = "searchNotes/{searchTerm}";
 
 	public static final String SEARCH_DIAGRAMS = "searchDiagrams/{searchTerm}";
-	
+
 	public static final String SEARCH_DIAGRAMS_BY_SPECIALITY = "searchDiagramsBySpeciality/{searchTerm}";
 
 	public static final String SEARCH_INVESTIGATIONS = "searchInvestigations/{searchTerm}";
@@ -495,15 +503,15 @@ public interface PathProxy {
 
     public interface SMSUrls {
 
-    	public static final String SEND_SMS = "/send";
-    	
-    	public static final String GET_SMS_DETAILS = "/getDetails";
-    	
-    	public static final String UPDATE_DELIVERY_REPORTS = "/updateDeliveryReports";
-    	
-    	public static final String ADD_NUMBER = "/addNumber/{mobileNumber}";
-    	
-    	public static final String DELETE_NUMBER = "/deleteNumber/{mobileNumber}";
+	public static final String SEND_SMS = "/send";
+
+	public static final String GET_SMS_DETAILS = "/getDetails";
+
+	public static final String UPDATE_DELIVERY_REPORTS = "/updateDeliveryReports";
+
+	public static final String ADD_NUMBER = "/addNumber/{mobileNumber}";
+
+	public static final String DELETE_NUMBER = "/deleteNumber/{mobileNumber}";
 
     }
 

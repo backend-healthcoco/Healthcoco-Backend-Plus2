@@ -1,7 +1,5 @@
 package com.dpdocter.beans;
 
-import java.util.Date;
-
 public class SMSReport {
 
     private String desc;
@@ -13,7 +11,7 @@ public class SMSReport {
     private String date;
 
     private String panelId;
-    
+
     public String getDesc() {
 	return desc;
     }
@@ -46,18 +44,17 @@ public class SMSReport {
 	this.date = date;
     }
 
-	public String getPanelId() {
-		return panelId;
-	}
+    public String getPanelId() {
+	return panelId;
+    }
 
-	public void setPanelId(String panelId) {
-		this.panelId = panelId;
-	}
+    public void setPanelId(String panelId) {
+	this.panelId = panelId;
+    }
 
-	@Override
-	public String toString() {
-		return "SMSReport [desc=" + desc + ", status=" + status + ", number=" + number + ", date=" + date + ", panelId="
-				+ panelId + "]";
-	}
+    @Override
+    public String toString() {
+	return "SMSReport [desc=" + desc + ", status=" + status + ", number=" + number + ", date=" + date + ", panelId=" + panelId + "]";
+    }
 
 }

@@ -29,14 +29,14 @@ public class SMSDeliveryReports {
     }
 
     public List<SMSReport> getReport() {
-		return report;
-	}
+	return report;
+    }
 
-	public void setReport(List<SMSReport> report) {
-		this.report = report;
-	}
+    public void setReport(List<SMSReport> report) {
+	this.report = report;
+    }
 
-	public String getSenderId() {
+    public String getSenderId() {
 	return senderId;
     }
 

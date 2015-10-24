@@ -2,49 +2,48 @@ package com.dpdocter.beans;
 
 public class PrintSettingsText {
 
-	private String text;
-	
-	private String fontStyle;
-	
-	private String fontColor;
-	
-	private String fontSize;
+    private String text;
 
-	public String getText() {
-		return text;
-	}
+    private String fontStyle;
 
-	public void setText(String text) {
-		this.text = text;
-	}
+    private String fontColor;
 
-	public String getFontStyle() {
-		return fontStyle;
-	}
+    private String fontSize;
 
-	public void setFontStyle(String fontStyle) {
-		this.fontStyle = fontStyle;
-	}
+    public String getText() {
+	return text;
+    }
 
-	public String getFontColor() {
-		return fontColor;
-	}
+    public void setText(String text) {
+	this.text = text;
+    }
 
-	public void setFontColor(String fontColor) {
-		this.fontColor = fontColor;
-	}
+    public String getFontStyle() {
+	return fontStyle;
+    }
 
-	public String getFontSize() {
-		return fontSize;
-	}
+    public void setFontStyle(String fontStyle) {
+	this.fontStyle = fontStyle;
+    }
 
-	public void setFontSize(String fontSize) {
-		this.fontSize = fontSize;
-	}
+    public String getFontColor() {
+	return fontColor;
+    }
 
-	@Override
-	public String toString() {
-		return "PrintSettingsText [text=" + text + ", fontStyle=" + fontStyle + ", fontColor=" + fontColor
-				+ ", fontSize=" + fontSize + "]";
-	}	
+    public void setFontColor(String fontColor) {
+	this.fontColor = fontColor;
+    }
+
+    public String getFontSize() {
+	return fontSize;
+    }
+
+    public void setFontSize(String fontSize) {
+	this.fontSize = fontSize;
+    }
+
+    @Override
+    public String toString() {
+	return "PrintSettingsText [text=" + text + ", fontStyle=" + fontStyle + ", fontColor=" + fontColor + ", fontSize=" + fontSize + "]";
+    }
 }

@@ -17,7 +17,7 @@ public class RecordsEditRequest {
     private String locationId;
 
     private String hospitalId;
-    
+
     private String visitId;
 
     public String getId() {
@@ -76,18 +76,17 @@ public class RecordsEditRequest {
 	this.hospitalId = hospitalId;
     }
 
-	public String getVisitId() {
-		return visitId;
-	}
+    public String getVisitId() {
+	return visitId;
+    }
 
-	public void setVisitId(String visitId) {
-		this.visitId = visitId;
-	}
+    public void setVisitId(String visitId) {
+	this.visitId = visitId;
+    }
 
-	@Override
-	public String toString() {
-		return "RecordsEditRequest [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId + ", description="
-				+ description + ", fileDetails=" + fileDetails + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + ", visitId=" + visitId + "]";
-	}
+    @Override
+    public String toString() {
+	return "RecordsEditRequest [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId + ", description=" + description + ", fileDetails="
+		+ fileDetails + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", visitId=" + visitId + "]";
+    }
 }

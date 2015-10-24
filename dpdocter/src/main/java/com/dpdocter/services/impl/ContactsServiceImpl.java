@@ -281,7 +281,7 @@ public class ContactsServiceImpl implements ContactsService {
     @Override
     public Group addEditGroup(Group group) {
 	try {
-		checkIfGroupIsExistWithSameName(group);
+	    checkIfGroupIsExistWithSameName(group);
 	    GroupCollection groupCollection = new GroupCollection();
 	    BeanUtil.map(group, groupCollection);
 	    if (DPDoctorUtils.allStringsEmpty(groupCollection.getId())) {
@@ -303,32 +303,29 @@ public class ContactsServiceImpl implements ContactsService {
     }
 
     private void checkIfGroupIsExistWithSameName(Group group) {
-    	List<GroupCollection> groupCollection = null;
-    	try {
-    		if(group.getId() == null){
-    			groupCollection = groupRepository.findByName(group.getName());
-    		}
-    		else{
-    			Query query =new Query().addCriteria(Criteria.where("id").ne(group.getId())
-    				    .andOperator(Criteria.where("name").is(group.getName())));
-    			groupCollection = mongoTemplate.find(query, GroupCollection.class);
-    		}
-    		
-    		if(groupCollection != null && !groupCollection.isEmpty() && groupCollection.size()>0){
-				logger.error("Group Name already exist.Please try with some other name");
-	    	    throw new BusinessException(ServiceError.NotAcceptable,"Group Name already exist.Please try with some other name");
-			}
-    		
-    		
-    	} catch (Exception e) {
-    	    e.printStackTrace();
-    	    logger.error(e);
-    	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-    	}
-		
+	List<GroupCollection> groupCollection = null;
+	try {
+	    if (group.getId() == null) {
+		groupCollection = groupRepository.findByName(group.getName());
+	    } else {
+		Query query = new Query().addCriteria(Criteria.where("id").ne(group.getId()).andOperator(Criteria.where("name").is(group.getName())));
+		groupCollection = mongoTemplate.find(query, GroupCollection.class);
+	    }
+
+	    if (groupCollection != null && !groupCollection.isEmpty() && groupCollection.size() > 0) {
+		logger.error("Group Name already exist.Please try with some other name");
+		throw new BusinessException(ServiceError.NotAcceptable, "Group Name already exist.Please try with some other name");
+	    }
+
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
-	@Override
+    }
+
+    @Override
     public Boolean deleteGroup(String groupId) {
 	Boolean response = false;
 	GroupCollection groupCollection = null;

@@ -2,28 +2,28 @@ package com.dpdocter.request;
 
 public class DoctorExperienceAddEditRequest {
 
-	private String doctorId;
-	
-	private String experience;
+    private String doctorId;
 
-	public String getDoctorId() {
-		return doctorId;
-	}
+    private String experience;
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
+    public String getDoctorId() {
+	return doctorId;
+    }
 
-	public String getExperience() {
-		return experience;
-	}
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
+    }
 
-	public void setExperience(String experience) {
-		this.experience = experience;
-	}
+    public String getExperience() {
+	return experience;
+    }
 
-	@Override
-	public String toString() {
-		return "DoctorExperienceAddEditRequest [doctorId=" + doctorId + ", experience=" + experience + "]";
-	}
+    public void setExperience(String experience) {
+	this.experience = experience;
+    }
+
+    @Override
+    public String toString() {
+	return "DoctorExperienceAddEditRequest [doctorId=" + doctorId + ", experience=" + experience + "]";
+    }
 }

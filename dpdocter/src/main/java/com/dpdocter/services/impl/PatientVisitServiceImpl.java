@@ -68,104 +68,103 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
     @Autowired
     private MongoTemplate mongoTemplate;
-    
+
     @Autowired
     private ClinicalNotesService clinicalNotesService;
-    
+
     @Autowired
     private PrescriptionServices prescriptionServices;
-    
+
     @Autowired
     private RecordsService recordsService;
-    
+
     @Autowired
     private DrugRepository drugRepository;
-    
+
     @Context
     private UriInfo uriInfo;
 
     @Value(value = "${IMAGE_URL_ROOT_PATH}")
     private String imageUrlRootPath;
 
-
-//    @Override
-//    public boolean addRecord(PatientVisit request) {
-//	boolean response = false;
-//	try {
-//	    PatientVisitCollection patientTrackCollection = new PatientVisitCollection();
-//	    BeanUtil.map(request, patientTrackCollection);
-//	    PatientCollection patientCollection = patientRepository.findByUserId(request.getPatientId());
-//	    if (patientCollection != null) {
-//		patientTrackCollection.setPatientId(patientCollection.getId());
-//	    }
-//	    patientTrackCollection.setVisitedTime(new Date());
-//	    patientTrackCollection.setCreatedTime(new Date());
-//	    patientTrackRepository.save(patientTrackCollection);
-//	    response = true;
-//	} catch (Exception e) {
-//	    e.printStackTrace();
-//	    logger.error(e + " Error while saving patient track record : " + e.getCause().getMessage());
-//	    throw new BusinessException(ServiceError.Unknown, "Error while saving patient visit record : " + e.getCause().getMessage());
-//	}
-//	return response;
-//    }
+    // @Override
+    // public boolean addRecord(PatientVisit request) {
+    // boolean response = false;
+    // try {
+    // PatientVisitCollection patientTrackCollection = new
+    // PatientVisitCollection();
+    // BeanUtil.map(request, patientTrackCollection);
+    // PatientCollection patientCollection =
+    // patientRepository.findByUserId(request.getPatientId());
+    // if (patientCollection != null) {
+    // patientTrackCollection.setPatientId(patientCollection.getId());
+    // }
+    // patientTrackCollection.setVisitedTime(new Date());
+    // patientTrackCollection.setCreatedTime(new Date());
+    // patientTrackRepository.save(patientTrackCollection);
+    // response = true;
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // logger.error(e + " Error while saving patient track record : " +
+    // e.getCause().getMessage());
+    // throw new BusinessException(ServiceError.Unknown,
+    // "Error while saving patient visit record : " +
+    // e.getCause().getMessage());
+    // }
+    // return response;
+    // }
 
     @Override
     public String addRecord(Object details, VisitedFor visitedFor, String visitId) {
-    	PatientVisitCollection patientTrackCollection = new PatientVisitCollection();
+	PatientVisitCollection patientTrackCollection = new PatientVisitCollection();
 	try {
-		
-		BeanUtil.map(details, patientTrackCollection);
-    	String id = patientTrackCollection.getId();
-	    if(visitId != null)patientTrackCollection = patientTrackRepository.findOne(visitId);
-	    
-	    if(patientTrackCollection.getCreatedTime() == null){
-	    	patientTrackCollection.setCreatedTime(new Date());
+
+	    BeanUtil.map(details, patientTrackCollection);
+	    String id = patientTrackCollection.getId();
+	    if (visitId != null)
+		patientTrackCollection = patientTrackRepository.findOne(visitId);
+
+	    if (patientTrackCollection.getCreatedTime() == null) {
+		patientTrackCollection.setCreatedTime(new Date());
 	    }
-	    
-	    if(patientTrackCollection.getVisitedFor()!= null){	
-	    	patientTrackCollection.getVisitedFor().add(visitedFor); 
+
+	    if (patientTrackCollection.getVisitedFor() != null) {
+		patientTrackCollection.getVisitedFor().add(visitedFor);
+	    } else {
+		List<VisitedFor> visitedforList = new ArrayList<VisitedFor>();
+		visitedforList.add(visitedFor);
+		patientTrackCollection.setVisitedFor(visitedforList);
 	    }
-	    else{
-	    	List<VisitedFor> visitedforList = new ArrayList<VisitedFor>();
-	    	visitedforList.add(visitedFor);
-	    	patientTrackCollection.setVisitedFor(visitedforList);
-	    }
-	    
+
 	    patientTrackCollection.setVisitedTime(new Date());
-	    if(visitedFor.equals(VisitedFor.PRESCRIPTION)){
-	    	if(patientTrackCollection.getPrescriptionId() == null){
-	    		List<String> prescriptionId = new ArrayList<String>();
-	    		prescriptionId.add(id);
-	    		patientTrackCollection.setPrescriptionId(prescriptionId);
-	    	}
-	    	else{
-	    		patientTrackCollection.getPrescriptionId().add(id);
-	    	}
+	    if (visitedFor.equals(VisitedFor.PRESCRIPTION)) {
+		if (patientTrackCollection.getPrescriptionId() == null) {
+		    List<String> prescriptionId = new ArrayList<String>();
+		    prescriptionId.add(id);
+		    patientTrackCollection.setPrescriptionId(prescriptionId);
+		} else {
+		    patientTrackCollection.getPrescriptionId().add(id);
+		}
+	    } else if (visitedFor.equals(VisitedFor.CLINICAL_NOTES)) {
+		if (patientTrackCollection.getClinicalNotesId() == null) {
+		    List<String> clinicalNotes = new ArrayList<String>();
+		    clinicalNotes.add(id);
+		    patientTrackCollection.setClinicalNotesId(clinicalNotes);
+		} else {
+		    patientTrackCollection.getClinicalNotesId().add(id);
+		}
+	    } else if (visitedFor.equals(VisitedFor.REPORTS)) {
+		if (patientTrackCollection.getRecordId() == null) {
+		    List<String> recordId = new ArrayList<String>();
+		    recordId.add(id);
+		    patientTrackCollection.setRecordId(recordId);
+		} else {
+		    patientTrackCollection.getRecordId().add(id);
+		}
 	    }
-	    else if(visitedFor.equals(VisitedFor.CLINICAL_NOTES)){
-	    	if(patientTrackCollection.getClinicalNotesId() == null){
-	    		List<String> clinicalNotes = new ArrayList<String>();
-	    		clinicalNotes.add(id);
-	    		patientTrackCollection.setClinicalNotesId(clinicalNotes);
-	    	}
-	    	else{
-	    		patientTrackCollection.getClinicalNotesId().add(id);
-	    	}
-	    }
-	    else if(visitedFor.equals(VisitedFor.REPORTS)){
-	    	if(patientTrackCollection.getRecordId() == null){
-	    		List<String> recordId = new ArrayList<String>();
-	    		recordId.add(id);
-	    		patientTrackCollection.setRecordId(recordId);
-	    	}
-	    	else{
-	    		patientTrackCollection.getRecordId().add(id);
-	    	}
-	    }
-	    
+
 	    patientTrackCollection = patientTrackRepository.save(patientTrackCollection);
-	  
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error while saving patient visit record : " + e.getCause().getMessage());
@@ -181,23 +180,22 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    PatientVisitCollection patientTrackCollection = patientTrackRepository.find(doctorId, locationId, hospitalId, patientId);
 	    PatientCollection patientCollection = patientRepository.findByUserId(patientId);
 	    if (patientCollection != null) {
-	    	patientTrackCollection.setPatientId(patientCollection.getId());
+		patientTrackCollection.setPatientId(patientCollection.getId());
 	    }
-	    if(patientTrackCollection == null){
-	    	patientTrackCollection = new PatientVisitCollection();
-	    	patientTrackCollection.setDoctorId(doctorId);
-		    patientTrackCollection.setLocationId(locationId);
-		    patientTrackCollection.setHospitalId(hospitalId);
-		    patientTrackCollection.setVisitedTime(new Date());
-		    patientTrackCollection.setCreatedTime(new Date());
-		    
-		    List<VisitedFor> visitedforList = new ArrayList<VisitedFor>();
-	    	visitedforList.add(visitedFor);
-	    	patientTrackCollection.setVisitedFor(visitedforList);
-	    }
-	    else{
-	    	patientTrackCollection.setVisitedTime(new Date());
-	    	patientTrackCollection.getVisitedFor().add(visitedFor);
+	    if (patientTrackCollection == null) {
+		patientTrackCollection = new PatientVisitCollection();
+		patientTrackCollection.setDoctorId(doctorId);
+		patientTrackCollection.setLocationId(locationId);
+		patientTrackCollection.setHospitalId(hospitalId);
+		patientTrackCollection.setVisitedTime(new Date());
+		patientTrackCollection.setCreatedTime(new Date());
+
+		List<VisitedFor> visitedforList = new ArrayList<VisitedFor>();
+		visitedforList.add(visitedFor);
+		patientTrackCollection.setVisitedFor(visitedforList);
+	    } else {
+		patientTrackCollection.setVisitedTime(new Date());
+		patientTrackCollection.getVisitedFor().add(visitedFor);
 	    }
 	    patientTrackRepository.save(patientTrackCollection);
 	    response = true;
@@ -208,7 +206,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 	return response;
     }
-
 
     @Override
     public DoctorContactsResponse recentlyVisited(String doctorId, String locationId, String hospitalId, int page, int size) {
@@ -279,159 +276,164 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	return response;
     }
 
-	@Override
-	public PatientVisitResponse addMultipleData(AddMultipleDataRequest request) {
-		PatientVisitResponse response = new PatientVisitResponse();
-		try {
-			BeanUtil.map(request, response);
-		    if(request.getClinicalNote() != null){
-		    	ClinicalNotes  clinicalNotes = clinicalNotesService.addNotes(request.getClinicalNote());
-		    	String visitId = addRecord(clinicalNotes, VisitedFor.CLINICAL_NOTES, request.getVisitId());
-			    clinicalNotes.setVisitId(visitId);
-			    request.setVisitId(visitId);
-			    List<ClinicalNotes> list = new ArrayList<ClinicalNotes>();
-			    list.add(clinicalNotes);
-			    response.setClinicalNotes(list);
-		    }
-		    
-		    if(request.getPrescription() != null){
-		    	PrescriptionAddEditResponse prescriptionResponse = prescriptionServices.addPrescription(request.getPrescription());
-		    	Prescription prescription = new Prescription();
-				BeanUtil.map(prescriptionResponse, prescription);
-				
-		    	if (prescriptionResponse.getItems() != null) {
-					List<PrescriptionItemDetail> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetail>();
-					for (PrescriptionItem prescriptionItem : prescriptionResponse.getItems()) {
-					    PrescriptionItemDetail prescriptionItemDetails = new PrescriptionItemDetail();
-					    BeanUtil.map(prescriptionItem, prescriptionItemDetails);
-					    if (prescriptionItem.getDrugId() != null) {
-						DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
-						Drug drug = new Drug();
-						if (drugCollection != null) BeanUtil.map(drugCollection, drug);
-						prescriptionItemDetails.setDrug(drug);
-					    }
-					    prescriptionItemDetailsList.add(prescriptionItemDetails);
-					}
-					prescription.setItems(prescriptionItemDetailsList);
-		    	}	
-		    	if (prescriptionResponse != null) {
-		    	    String visitId = addRecord(prescriptionResponse, VisitedFor.PRESCRIPTION, request.getVisitId());
-		    	    prescriptionResponse.setVisitId(visitId);
-		    	    request.setVisitId(visitId);
-		    	    List<Prescription> list = new ArrayList<Prescription>();
-		    	    list.add(prescription);
-		    	    response.setPrescriptions(list);
-		    	}
-		    }
-		    
-		    if(request.getRecord() !=null){
-		    	Records records = recordsService.addRecord(request.getRecord());
+    @Override
+    public PatientVisitResponse addMultipleData(AddMultipleDataRequest request) {
+	PatientVisitResponse response = new PatientVisitResponse();
+	try {
+	    BeanUtil.map(request, response);
+	    if (request.getClinicalNote() != null) {
+		ClinicalNotes clinicalNotes = clinicalNotesService.addNotes(request.getClinicalNote());
+		String visitId = addRecord(clinicalNotes, VisitedFor.CLINICAL_NOTES, request.getVisitId());
+		clinicalNotes.setVisitId(visitId);
+		request.setVisitId(visitId);
+		List<ClinicalNotes> list = new ArrayList<ClinicalNotes>();
+		list.add(clinicalNotes);
+		response.setClinicalNotes(list);
+	    }
 
-		    	if (records != null) {
-		    	    records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
-		    	    String visitId = addRecord(records, VisitedFor.REPORTS, request.getVisitId());
-		    	    records.setVisitId(visitId);
-		    	    request.setVisitId(visitId);
-		    	    List<Records> list = new ArrayList<Records>();
-		    	    list.add(records);
-		    	    response.setRecords(list);
-		    	 }
+	    if (request.getPrescription() != null) {
+		PrescriptionAddEditResponse prescriptionResponse = prescriptionServices.addPrescription(request.getPrescription());
+		Prescription prescription = new Prescription();
+		BeanUtil.map(prescriptionResponse, prescription);
+
+		if (prescriptionResponse.getItems() != null) {
+		    List<PrescriptionItemDetail> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetail>();
+		    for (PrescriptionItem prescriptionItem : prescriptionResponse.getItems()) {
+			PrescriptionItemDetail prescriptionItemDetails = new PrescriptionItemDetail();
+			BeanUtil.map(prescriptionItem, prescriptionItemDetails);
+			if (prescriptionItem.getDrugId() != null) {
+			    DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
+			    Drug drug = new Drug();
+			    if (drugCollection != null)
+				BeanUtil.map(drugCollection, drug);
+			    prescriptionItemDetails.setDrug(drug);
+			}
+			prescriptionItemDetailsList.add(prescriptionItemDetails);
 		    }
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e + " Error while adding patient Visit : " + e.getCause().getMessage());
-		    throw new BusinessException(ServiceError.Unknown, "Error while adding patient Visit : " + e.getCause().getMessage());
+		    prescription.setItems(prescriptionItemDetailsList);
 		}
-		return response;
-	}
-
-	@Override
-	public List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId, int page,	int size) {
-		List<PatientVisitResponse> response = null;
-		List<PatientVisitCollection> patientVisitCollections = null;
-		try {
-			if(size > 0)patientVisitCollections = patientTrackRepository.find(doctorId, locationId, hospitalId, patientId, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-			
-			else patientVisitCollections = patientTrackRepository.find(doctorId, locationId, hospitalId, patientId, new Sort(Sort.Direction.DESC, "updatedTime"));
-		   
-			if(patientVisitCollections != null){
-			   response = new ArrayList<PatientVisitResponse>();
-			  
-			  for(PatientVisitCollection patientVisitCollection : patientVisitCollections){
-				  PatientVisitResponse patientVisitResponse = new PatientVisitResponse();
-				  BeanUtil.map(patientVisitCollection, patientVisitResponse);
-				  
-				  if(patientVisitCollection.getPrescriptionId() !=null){
-					  List<Prescription> prescriptions = getPrescriptions(patientVisitCollection.getPrescriptionId());
-					  patientVisitResponse.setPrescriptions(prescriptions);
-				  }
-				  if(patientVisitCollection.getClinicalNotesId() !=null){
-					  List<ClinicalNotes> clinicalNotes = getClinicalNotes(patientVisitCollection.getClinicalNotesId());
-					  patientVisitResponse.setClinicalNotes(clinicalNotes);
-				  }
-				if(patientVisitCollection.getRecordId() != null){
-					 List<Records> records = getRecords(patientVisitCollection.getRecordId());
-					 patientVisitResponse.setRecords(records);
-				}
-				  response.add(patientVisitResponse);
-			  }
-		   }
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e + " Error while geting patient Visit : " + e.getCause().getMessage());
-		    throw new BusinessException(ServiceError.Unknown, "Error while geting patient Visit : " + e.getCause().getMessage());
+		if (prescriptionResponse != null) {
+		    String visitId = addRecord(prescriptionResponse, VisitedFor.PRESCRIPTION, request.getVisitId());
+		    prescriptionResponse.setVisitId(visitId);
+		    request.setVisitId(visitId);
+		    List<Prescription> list = new ArrayList<Prescription>();
+		    list.add(prescription);
+		    response.setPrescriptions(list);
 		}
-		return response;
-	}
+	    }
 
-	private List<Records> getRecords(Collection<String> recordIds) {
-		List<Records> response = null;
-		Query query = new Query();
-	   
-		query.addCriteria(Criteria.where("id").in(recordIds));
-			
-	   List<RecordsCollection> recordCollection = mongoTemplate.find(query, RecordsCollection.class);
-	   if(recordCollection != null){
-		   response = new ArrayList<Records>();
-		   BeanUtil.map(recordCollection, response);
-	   }
-	   return response;
-	}
+	    if (request.getRecord() != null) {
+		Records records = recordsService.addRecord(request.getRecord());
 
-	private List<ClinicalNotes> getClinicalNotes(Collection<String> clinicalNotesIds) {
-		List<ClinicalNotes> response = null;
-		Query query = new Query();
-	   
-		query.addCriteria(Criteria.where("id").in(clinicalNotesIds));
-			
-	   List<ClinicalNotesCollection> clinicalNotesCollection = mongoTemplate.find(query, ClinicalNotesCollection.class);
-	   if(clinicalNotesCollection != null){
-		   response = new ArrayList<ClinicalNotes>();
-		   BeanUtil.map(clinicalNotesCollection, response);
-	   }
-	   return response;
+		if (records != null) {
+		    records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
+		    String visitId = addRecord(records, VisitedFor.REPORTS, request.getVisitId());
+		    records.setVisitId(visitId);
+		    request.setVisitId(visitId);
+		    List<Records> list = new ArrayList<Records>();
+		    list.add(records);
+		    response.setRecords(list);
+		}
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e + " Error while adding patient Visit : " + e.getCause().getMessage());
+	    throw new BusinessException(ServiceError.Unknown, "Error while adding patient Visit : " + e.getCause().getMessage());
 	}
+	return response;
+    }
 
-	private List<Prescription> getPrescriptions(Collection<String> prescriptionIds) {
-		List<Prescription> response = null;
-			Query query = new Query();
-		   
-			query.addCriteria(Criteria.where("id").in(prescriptionIds));
-				
-		   List<PrescriptionCollection> prescriptionCollection = mongoTemplate.find(query, PrescriptionCollection.class);
-		   if(prescriptionCollection != null){
-			   response = new ArrayList<Prescription>();
-			   BeanUtil.map(prescriptionCollection, response);
-		   }
-		   return response;
+    @Override
+    public List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId, int page, int size) {
+	List<PatientVisitResponse> response = null;
+	List<PatientVisitCollection> patientVisitCollections = null;
+	try {
+	    if (size > 0)
+		patientVisitCollections = patientTrackRepository.find(doctorId, locationId, hospitalId, patientId, new PageRequest(page, size, Direction.DESC,
+			"updatedTime"));
+
+	    else
+		patientVisitCollections = patientTrackRepository
+			.find(doctorId, locationId, hospitalId, patientId, new Sort(Sort.Direction.DESC, "updatedTime"));
+
+	    if (patientVisitCollections != null) {
+		response = new ArrayList<PatientVisitResponse>();
+
+		for (PatientVisitCollection patientVisitCollection : patientVisitCollections) {
+		    PatientVisitResponse patientVisitResponse = new PatientVisitResponse();
+		    BeanUtil.map(patientVisitCollection, patientVisitResponse);
+
+		    if (patientVisitCollection.getPrescriptionId() != null) {
+			List<Prescription> prescriptions = getPrescriptions(patientVisitCollection.getPrescriptionId());
+			patientVisitResponse.setPrescriptions(prescriptions);
+		    }
+		    if (patientVisitCollection.getClinicalNotesId() != null) {
+			List<ClinicalNotes> clinicalNotes = getClinicalNotes(patientVisitCollection.getClinicalNotesId());
+			patientVisitResponse.setClinicalNotes(clinicalNotes);
+		    }
+		    if (patientVisitCollection.getRecordId() != null) {
+			List<Records> records = getRecords(patientVisitCollection.getRecordId());
+			patientVisitResponse.setRecords(records);
+		    }
+		    response.add(patientVisitResponse);
+		}
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e + " Error while geting patient Visit : " + e.getCause().getMessage());
+	    throw new BusinessException(ServiceError.Unknown, "Error while geting patient Visit : " + e.getCause().getMessage());
 	}
-	
-	private String getFinalImageURL(String imageURL) {
-    	if(imageURL != null && uriInfo != null){
-    		String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-    		return finalImageURL + imageURL;
-    	}
-    	else return null;
+	return response;
+    }
+
+    private List<Records> getRecords(Collection<String> recordIds) {
+	List<Records> response = null;
+	Query query = new Query();
+
+	query.addCriteria(Criteria.where("id").in(recordIds));
+
+	List<RecordsCollection> recordCollection = mongoTemplate.find(query, RecordsCollection.class);
+	if (recordCollection != null) {
+	    response = new ArrayList<Records>();
+	    BeanUtil.map(recordCollection, response);
+	}
+	return response;
+    }
+
+    private List<ClinicalNotes> getClinicalNotes(Collection<String> clinicalNotesIds) {
+	List<ClinicalNotes> response = null;
+	Query query = new Query();
+
+	query.addCriteria(Criteria.where("id").in(clinicalNotesIds));
+
+	List<ClinicalNotesCollection> clinicalNotesCollection = mongoTemplate.find(query, ClinicalNotesCollection.class);
+	if (clinicalNotesCollection != null) {
+	    response = new ArrayList<ClinicalNotes>();
+	    BeanUtil.map(clinicalNotesCollection, response);
+	}
+	return response;
+    }
+
+    private List<Prescription> getPrescriptions(Collection<String> prescriptionIds) {
+	List<Prescription> response = null;
+	Query query = new Query();
+
+	query.addCriteria(Criteria.where("id").in(prescriptionIds));
+
+	List<PrescriptionCollection> prescriptionCollection = mongoTemplate.find(query, PrescriptionCollection.class);
+	if (prescriptionCollection != null) {
+	    response = new ArrayList<Prescription>();
+	    BeanUtil.map(prescriptionCollection, response);
+	}
+	return response;
+    }
+
+    private String getFinalImageURL(String imageURL) {
+	if (imageURL != null && uriInfo != null) {
+	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+	    return finalImageURL + imageURL;
+	} else
+	    return null;
 
     }
 }

@@ -3,7 +3,6 @@ package com.dpdocter.repository;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -24,23 +23,21 @@ public interface EmailTrackRepository extends MongoRepository<EmailTrackCollecti
     List<EmailTrackCollection> findAll(String doctorId, Sort sort);
 
     @Query("{'locationId': ?0, 'hospitalId': ?1, 'patientId': ?2}")
-	List<EmailTrackCollection> findAll(String locationId, String hospitalId, String patientId, Pageable pageRequest);
+    List<EmailTrackCollection> findAll(String locationId, String hospitalId, String patientId, Pageable pageRequest);
 
     @Query("{'locationId': ?0, 'hospitalId': ?1, 'patientId': ?2}")
-	List<EmailTrackCollection> findAll(String locationId, String hospitalId, String patientId, Sort sort);
+    List<EmailTrackCollection> findAll(String locationId, String hospitalId, String patientId, Sort sort);
 
     @Query("{'doctorId': ?0, 'patientId': ?1}")
-	List<EmailTrackCollection> findAll(String doctorId, String patientId, Pageable pageRequest);
+    List<EmailTrackCollection> findAll(String doctorId, String patientId, Pageable pageRequest);
 
     @Query("{'doctorId': ?0, 'patientId': ?1}")
-	List<EmailTrackCollection> findAll(String doctorId, String patientId, Sort sort);
+    List<EmailTrackCollection> findAll(String doctorId, String patientId, Sort sort);
 
-	@Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'patientId': ?3}")
-	List<EmailTrackCollection> findAll(String doctorId, String locationId, String hospitalId, String patientId,	Pageable pageRequest);
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'patientId': ?3}")
+    List<EmailTrackCollection> findAll(String doctorId, String locationId, String hospitalId, String patientId, Pageable pageRequest);
 
-	@Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'patientId': ?3}")
-	List<EmailTrackCollection> findAll(String doctorId, String locationId, String hospitalId, String patientId,	Sort sort);
-
-    
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'patientId': ?3}")
+    List<EmailTrackCollection> findAll(String doctorId, String locationId, String hospitalId, String patientId, Sort sort);
 
 }

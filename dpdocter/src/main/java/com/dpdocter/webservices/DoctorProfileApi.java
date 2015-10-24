@@ -75,10 +75,10 @@ public class DoctorProfileApi {
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_EXPERIENCE)
     @POST
     public Response<Boolean> addEditExperience(DoctorExperienceAddEditRequest request) {
-    	if (request == null) {
-    	    logger.warn("Doctor Experience Request Is Empty");
-    	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Experience Request Is Empty");
-    	}
+	if (request == null) {
+	    logger.warn("Doctor Experience Request Is Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Experience Request Is Empty");
+	}
 	Boolean addEditExperienceResponse = doctorProfileService.addEditExperience(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditExperienceResponse);
@@ -330,10 +330,10 @@ public class DoctorProfileApi {
     }
 
     private String getFinalImageURL(String imageURL) {
-    	if(imageURL != null){
-    		String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-    		return finalImageURL + imageURL;
-    	}
-    	else return null;
+	if (imageURL != null) {
+	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+	    return finalImageURL + imageURL;
+	} else
+	    return null;
     }
 }

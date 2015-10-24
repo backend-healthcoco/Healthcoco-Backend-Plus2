@@ -49,22 +49,22 @@ public class HeaderSetup {
     }
 
     public List<PrintSettingsText> getTopLeftText() {
-		return topLeftText;
-	}
+	return topLeftText;
+    }
 
-	public void setTopLeftText(List<PrintSettingsText> topLeftText) {
-		this.topLeftText = topLeftText;
-	}
+    public void setTopLeftText(List<PrintSettingsText> topLeftText) {
+	this.topLeftText = topLeftText;
+    }
 
-	public List<PrintSettingsText> getTopRightText() {
-		return topRightText;
-	}
+    public List<PrintSettingsText> getTopRightText() {
+	return topRightText;
+    }
 
-	public void setTopRightText(List<PrintSettingsText> topRightText) {
-		this.topRightText = topRightText;
-	}
+    public void setTopRightText(List<PrintSettingsText> topRightText) {
+	this.topRightText = topRightText;
+    }
 
-	@Override
+    @Override
     public String toString() {
 	return "HeaderSetup [customHeader=" + customHeader + ", customLogo=" + customLogo + ", logoType=" + logoType + ", patientDetails=" + patientDetails
 		+ ", topLeftText=" + topLeftText + ", topRightText=" + topRightText + "]";

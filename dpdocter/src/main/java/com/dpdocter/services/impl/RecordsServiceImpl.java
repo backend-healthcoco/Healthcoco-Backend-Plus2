@@ -1,8 +1,6 @@
 package com.dpdocter.services.impl;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -591,12 +589,11 @@ public class RecordsServiceImpl implements RecordsService {
 	    RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
 	    if (recordsCollection != null) {
 
-	    	FileSystemResource file = new FileSystemResource(recordsCollection.getRecordsPath());
-			mailAttachment = new MailAttachment();
-			mailAttachment.setAttachmentName(file.getFilename());
-			mailAttachment.setFileSystemResource(file);
-		    
-		
+		FileSystemResource file = new FileSystemResource(recordsCollection.getRecordsPath());
+		mailAttachment = new MailAttachment();
+		mailAttachment.setAttachmentName(file.getFilename());
+		mailAttachment.setFileSystemResource(file);
+
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 		emailTrackCollection.setDoctorId(recordsCollection.getDoctorId());
 		emailTrackCollection.setHospitalId(recordsCollection.getHospitalId());

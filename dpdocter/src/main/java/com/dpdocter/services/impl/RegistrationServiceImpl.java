@@ -162,7 +162,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Value(value = "${PATIENT_COUNT}")
     private String patientCount;
-    
+
     @Override
     public User checkIfPatientExist(PatientRegistrationRequest request) {
 	try {
@@ -188,12 +188,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 	List<GroupCollection> groupCollections = null;
 	List<Group> groups = null;
 	try {
-		
-		if(checkPatientCount(request.getMobileNumber()) >= Integer.parseInt(patientCount)){
-			logger.warn("Only Nine patients can register with same mobile number");
-			throw new BusinessException(ServiceError.NoRecord, "Only Nine patients can register with same mobile number");
-		    
-		}
+
+	    if (checkPatientCount(request.getMobileNumber()) >= Integer.parseInt(patientCount)) {
+		logger.warn("Only Nine patients can register with same mobile number");
+		throw new BusinessException(ServiceError.NoRecord, "Only Nine patients can register with same mobile number");
+
+	    }
 	    // get role of specified type
 	    RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.PATIENT.getRole());
 	    if (roleCollection == null) {
@@ -204,9 +204,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    // save user
 	    UserCollection userCollection = new UserCollection();
 	    BeanUtil.map(request, userCollection);
-	    if(userCollection.getDob() != null && userCollection.getDob().getAge()<0){
-	    	logger.warn("Incorrect Date of Birth");
-			throw new BusinessException(ServiceError.NotAcceptable, "Incorrect Date of Birth");
+	    if (userCollection.getDob() != null && userCollection.getDob().getAge() < 0) {
+		logger.warn("Incorrect Date of Birth");
+		throw new BusinessException(ServiceError.NotAcceptable, "Incorrect Date of Birth");
 	    }
 	    User user = new User();
 	    BeanUtil.map(request, user);
@@ -356,11 +356,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 	List<GroupCollection> groupCollections = null;
 	List<Group> groups = null;
 	try {
-		if(checkPatientCount(request.getMobileNumber()) >= Integer.parseInt(patientCount)){
-			logger.warn("Only Nine patients can register with same mobile number");
-			throw new BusinessException(ServiceError.NoRecord, "Only Nine patients can register with same mobile number");
-		    
-		}
+	    if (checkPatientCount(request.getMobileNumber()) >= Integer.parseInt(patientCount)) {
+		logger.warn("Only Nine patients can register with same mobile number");
+		throw new BusinessException(ServiceError.NoRecord, "Only Nine patients can register with same mobile number");
+
+	    }
 	    // save address
 	    AddressCollection addressCollection = null;
 	    if (request.getAddress() != null) {
@@ -477,14 +477,14 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     private int checkPatientCount(String mobileNumber) {
-    	List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
-    	if(userCollections !=null && !userCollections.isEmpty()){
-    		return userCollections.size();
-    	}
-    	else return 0;
-	}
+	List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
+	if (userCollections != null && !userCollections.isEmpty()) {
+	    return userCollections.size();
+	} else
+	    return 0;
+    }
 
-	@Override
+    @Override
     public List<User> getUsersByPhoneNumber(String phoneNumber, String locationId, String hospitalId) {
 	List<User> users = null;
 	try {

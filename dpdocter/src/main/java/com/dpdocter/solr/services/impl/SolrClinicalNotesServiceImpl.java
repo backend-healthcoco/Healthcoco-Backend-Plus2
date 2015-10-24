@@ -265,18 +265,18 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	return response;
     }
 
-	@Override
-	public List<SolrDiagramsDocument> searchDiagramsBySpeciality(String searchTerm) {
-		List<SolrDiagramsDocument> response = null;
-		try {
-		    response = solrDiagramsRepository.findBySpeciality(searchTerm);
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e + " Error Occurred While Searching Diagrams");
-		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Diagrams");
-		}
-		return response;
+    @Override
+    public List<SolrDiagramsDocument> searchDiagramsBySpeciality(String searchTerm) {
+	List<SolrDiagramsDocument> response = null;
+	try {
+	    response = solrDiagramsRepository.findBySpeciality(searchTerm);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e + " Error Occurred While Searching Diagrams");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Diagrams");
 	}
+	return response;
+    }
 
     @Override
     public boolean addInvestigations(SolrInvestigationsDocument request) {

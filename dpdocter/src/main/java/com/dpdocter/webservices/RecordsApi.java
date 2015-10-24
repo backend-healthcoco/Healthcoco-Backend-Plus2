@@ -69,7 +69,7 @@ public class RecordsApi {
 	    records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
 	    String visitId = patientTrackService.addRecord(records, VisitedFor.REPORTS, request.getVisitId());
 	    records.setVisitId(visitId);
-	 }
+	}
 
 	Response<Records> response = new Response<Records>();
 	response.setData(records);
@@ -229,10 +229,11 @@ public class RecordsApi {
 	Records records = recordsService.editRecord(request);
 
 	// patient track
-//	if (records != null) {
-//	    records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
-//	    patientTrackService.addRecord(request, VisitedFor.REPORTS, request.getVisitId());
-//	}
+	// if (records != null) {
+	// records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
+	// patientTrackService.addRecord(request, VisitedFor.REPORTS,
+	// request.getVisitId());
+	// }
 
 	Response<Records> response = new Response<Records>();
 	response.setData(records);
@@ -241,11 +242,11 @@ public class RecordsApi {
     }
 
     private String getFinalImageURL(String imageURL) {
-    	if(imageURL != null){
-    		String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-    		return finalImageURL + imageURL;
-    	}
-    	else return null;
+	if (imageURL != null) {
+	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+	    return finalImageURL + imageURL;
+	} else
+	    return null;
 
     }
 }

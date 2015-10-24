@@ -32,7 +32,7 @@ public class ClinicalNotesEditRequest {
     private String hospitalId;
 
     private String visitId;
-    
+
     public String getId() {
 	return id;
     }
@@ -121,19 +121,18 @@ public class ClinicalNotesEditRequest {
 	this.hospitalId = hospitalId;
     }
 
-	public String getVisitId() {
-		return visitId;
-	}
+    public String getVisitId() {
+	return visitId;
+    }
 
-	public void setVisitId(String visitId) {
-		this.visitId = visitId;
-	}
+    public void setVisitId(String visitId) {
+	this.visitId = visitId;
+    }
 
-	@Override
-	public String toString() {
-		return "ClinicalNotesEditRequest [id=" + id + ", patientId=" + patientId + ", complaints=" + complaints
-				+ ", observations=" + observations + ", investigations=" + investigations + ", diagnoses=" + diagnoses
-				+ ", notes=" + notes + ", diagrams=" + diagrams + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", visitId=" + visitId + "]";
-	}
+    @Override
+    public String toString() {
+	return "ClinicalNotesEditRequest [id=" + id + ", patientId=" + patientId + ", complaints=" + complaints + ", observations=" + observations
+		+ ", investigations=" + investigations + ", diagnoses=" + diagnoses + ", notes=" + notes + ", diagrams=" + diagrams + ", doctorId=" + doctorId
+		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", visitId=" + visitId + "]";
+    }
 }

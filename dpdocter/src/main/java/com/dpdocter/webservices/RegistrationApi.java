@@ -428,9 +428,9 @@ public class RegistrationApi {
 	SolrPatientDocument solrPatientDocument = null;
 	try {
 	    solrPatientDocument = new SolrPatientDocument();
-	    solrPatientDocument.setDays(patient.getDob().getDays()+"");
-	    solrPatientDocument.setMonths(patient.getDob().getMonths()+"");
-	    solrPatientDocument.setYears(patient.getDob().getYears()+"");
+	    solrPatientDocument.setDays(patient.getDob().getDays() + "");
+	    solrPatientDocument.setMonths(patient.getDob().getMonths() + "");
+	    solrPatientDocument.setYears(patient.getDob().getYears() + "");
 
 	    if (patient.getAddress() != null) {
 		BeanUtil.map(patient.getAddress(), solrPatientDocument);
@@ -448,10 +448,10 @@ public class RegistrationApi {
     }
 
     private String getFinalImageURL(String imageURL) {
-    	if(imageURL != null){
-    		String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-    		return finalImageURL + imageURL;
-    	}
-    	else return null;	
+	if (imageURL != null) {
+	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+	    return finalImageURL + imageURL;
+	} else
+	    return null;
     }
 }

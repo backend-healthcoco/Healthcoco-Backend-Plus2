@@ -28,7 +28,6 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.SMSResponse;
 import com.dpdocter.sms.services.SMSServices;
 import com.dpdocter.webservices.PathProxy;
-
 import common.util.web.Response;
 
 @Component
@@ -65,8 +64,9 @@ public class SMSServicesAPI {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path(value = PathProxy.SMSUrls.GET_SMS_DETAILS)
     @GET
-    public Response<SMSTrack> getSMSDetails(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "patientId") String patientId, @QueryParam(value = "doctorId") String doctorId,
-	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId) {
+    public Response<SMSTrack> getSMSDetails(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "patientId") String patientId,
+	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+	    @QueryParam(value = "hospitalId") String hospitalId) {
 	List<SMSTrack> smsTrackDetails = smsServices.getSMSDetails(page, size, patientId, doctorId, locationId, hospitalId);
 	Response<SMSTrack> response = new Response<SMSTrack>();
 	response.setDataList(smsTrackDetails);
@@ -76,25 +76,25 @@ public class SMSServicesAPI {
     @Path(value = PathProxy.SMSUrls.UPDATE_DELIVERY_REPORTS)
     @POST
     public String updateDeliveryReports(String request) {
-    	
-    try {
-    	request = request.replaceFirst("data=", "");
-        ObjectMapper mapper = new ObjectMapper();
-        List<SMSDeliveryReports> list = mapper.readValue(request,TypeFactory.collectionType(List.class, SMSDeliveryReports.class));
-		smsServices.updateDeliveryReports(list);	    
+
+	try {
+	    request = request.replaceFirst("data=", "");
+	    ObjectMapper mapper = new ObjectMapper();
+	    List<SMSDeliveryReports> list = mapper.readValue(request, TypeFactory.collectionType(List.class, SMSDeliveryReports.class));
+	    smsServices.updateDeliveryReports(list);
 	} catch (JsonParseException e) {
-		logger.error(e);
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.InvalidInput, e.getMessage());
 	} catch (JsonMappingException e) {
-		logger.error(e);
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.InvalidInput, e.getMessage());
 	} catch (IOException e) {
-		logger.error(e);
+	    logger.error(e);
 	    throw new BusinessException(ServiceError.InvalidInput, e.getMessage());
 	}
-    return "true";
+	return "true";
     }
-    
+
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path(value = PathProxy.SMSUrls.ADD_NUMBER)
@@ -105,7 +105,7 @@ public class SMSServicesAPI {
 	response.setData(true);
 	return response;
     }
-    
+
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path(value = PathProxy.SMSUrls.DELETE_NUMBER)

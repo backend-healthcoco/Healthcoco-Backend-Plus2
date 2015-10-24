@@ -8,10 +8,10 @@ import org.springframework.data.solr.repository.SolrCrudRepository;
 import com.dpdocter.solr.document.SolrDiagramsDocument;
 
 public interface SolrDiagramsRepository extends SolrCrudRepository<SolrDiagramsDocument, String> {
-    
-	@Query("speciality:*?0* OR tags:*?0*")
+
+    @Query("speciality:*?0* OR tags:*?0*")
     public List<SolrDiagramsDocument> find(String searchTerm);
 
-	@Query("speciality:*?0*")
-	public List<SolrDiagramsDocument> findBySpeciality(String searchTerm);
+    @Query("speciality:*?0*")
+    public List<SolrDiagramsDocument> findBySpeciality(String searchTerm);
 }

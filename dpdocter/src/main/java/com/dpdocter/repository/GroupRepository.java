@@ -54,6 +54,6 @@ public interface GroupRepository extends MongoRepository<GroupCollection, String
 	    Sort sort);
 
     @Query("{'name': ?0}")
-	public List<GroupCollection> findByName(String name);
-    
+    public List<GroupCollection> findByName(String name);
+
 }

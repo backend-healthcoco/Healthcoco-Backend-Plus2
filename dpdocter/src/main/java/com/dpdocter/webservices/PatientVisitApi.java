@@ -21,7 +21,6 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.AddMultipleDataRequest;
 import com.dpdocter.response.PatientVisitResponse;
 import com.dpdocter.services.PatientVisitService;
-
 import common.util.web.Response;
 
 @Component
@@ -29,39 +28,40 @@ import common.util.web.Response;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class PatientVisitApi {
-  
-	private static Logger logger = Logger.getLogger(PatientVisitApi.class.getName());
-	
-	@Autowired
+
+    private static Logger logger = Logger.getLogger(PatientVisitApi.class.getName());
+
+    @Autowired
     private PatientVisitService patientVisitService;
-    
-     @Path(value = PathProxy.PatientVisitUrls.ADD_MULTIPLE_DATA)
-     @POST
-     public Response<PatientVisitResponse> addMultipleData(AddMultipleDataRequest request) {
-    
-    	if (request == null) {
-    	    logger.warn("Request Sent Is NULL");
-    	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
-    	}
-     PatientVisitResponse patienVisitResponse = patientVisitService.addMultipleData(request);
-     Response<PatientVisitResponse> response = new   Response<PatientVisitResponse>();
-     response.setData(patienVisitResponse);
-     return response;
-     }
-     
-     @Path(value = PathProxy.PatientVisitUrls.GET_VISITS)
-     @GET
-     public Response<PatientVisitResponse> getVisit(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
-    		 @PathParam(value = "patientId") String patientId, @QueryParam(value = "page") int page, @QueryParam(value = "size") int size) {
-    	
-      if (StringUtils.isEmpty(patientId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
-    	   logger.warn("Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
-    	   throw new BusinessException(ServiceError.InvalidInput, "Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
-      }
-      List<PatientVisitResponse> patienVisitResponse = patientVisitService.getVisit(doctorId, locationId, hospitalId, patientId, page, size);
-     Response<PatientVisitResponse> response = new   Response<PatientVisitResponse>();
-     response.setDataList(patienVisitResponse);
-     return response;
-     }
-     
- }
+
+    @Path(value = PathProxy.PatientVisitUrls.ADD_MULTIPLE_DATA)
+    @POST
+    public Response<PatientVisitResponse> addMultipleData(AddMultipleDataRequest request) {
+
+	if (request == null) {
+	    logger.warn("Request Sent Is NULL");
+	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
+	}
+	PatientVisitResponse patienVisitResponse = patientVisitService.addMultipleData(request);
+	Response<PatientVisitResponse> response = new Response<PatientVisitResponse>();
+	response.setData(patienVisitResponse);
+	return response;
+    }
+
+    @Path(value = PathProxy.PatientVisitUrls.GET_VISITS)
+    @GET
+    public Response<PatientVisitResponse> getVisit(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+	    @PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "patientId") String patientId, @QueryParam(value = "page") int page,
+	    @QueryParam(value = "size") int size) {
+
+	if (StringUtils.isEmpty(patientId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
+	    logger.warn("Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+	}
+	List<PatientVisitResponse> patienVisitResponse = patientVisitService.getVisit(doctorId, locationId, hospitalId, patientId, page, size);
+	Response<PatientVisitResponse> response = new Response<PatientVisitResponse>();
+	response.setDataList(patienVisitResponse);
+	return response;
+    }
+
+}

@@ -18,7 +18,7 @@ public class SolrDiagramsDocument {
 
     @Field
     private String speciality;
-    
+
     public String getId() {
 	return id;
     }
@@ -43,16 +43,16 @@ public class SolrDiagramsDocument {
 	this.tags = tags;
     }
 
-//	public String getSpeciality() {
-//		return speciality;
-//	}
-//
-//	public void setSpeciality(String speciality) {
-//		this.speciality = speciality;
-//	}
+    // public String getSpeciality() {
+    // return speciality;
+    // }
+    //
+    // public void setSpeciality(String speciality) {
+    // this.speciality = speciality;
+    // }
 
-	@Override
-	public String toString() {
-		return "SolrDiagramsDocument [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + "]";
-	}
+    @Override
+    public String toString() {
+	return "SolrDiagramsDocument [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + "]";
+    }
 }

@@ -282,10 +282,10 @@ public class ContactsApi {
     }
 
     private String getFinalImageURL(String imageURL) {
-    	if(imageURL != null){
-    		String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-    		return finalImageURL + imageURL;
-    	}
-    	else return null;
+	if (imageURL != null) {
+	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+	    return finalImageURL + imageURL;
+	} else
+	    return null;
     }
 }

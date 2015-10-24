@@ -283,9 +283,10 @@ public class PrescriptionApi {
 	request.setId(prescriptionId);
 	PrescriptionAddEditResponseDetails prescriptionAddEditResponse = prescriptionServices.editPrescription(request);
 
-//	if (prescriptionAddEditResponse != null) {
-//	    patientTrackService.addRecord(prescriptionAddEditResponse, VisitedFor.PRESCRIPTION, request.getVisitId());
-//	}
+	// if (prescriptionAddEditResponse != null) {
+	// patientTrackService.addRecord(prescriptionAddEditResponse,
+	// VisitedFor.PRESCRIPTION, request.getVisitId());
+	// }
 
 	Response<PrescriptionAddEditResponseDetails> response = new Response<PrescriptionAddEditResponseDetails>();
 	response.setData(prescriptionAddEditResponse);

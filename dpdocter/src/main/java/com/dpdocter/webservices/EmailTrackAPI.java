@@ -29,8 +29,9 @@ public class EmailTrackAPI {
     private EmailTackService emailTackService;
 
     @GET
-    public Response<EmailTrack> getEmailDetails(@QueryParam(value = "patientId") String patientId, @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
-	    @QueryParam(value = "hospitalId") String hospitalId, @QueryParam("page") int page, @QueryParam("size") int size) {
+    public Response<EmailTrack> getEmailDetails(@QueryParam(value = "patientId") String patientId, @QueryParam(value = "doctorId") String doctorId,
+	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId, @QueryParam("page") int page,
+	    @QueryParam("size") int size) {
 
 	List<EmailTrack> emailTrackList = emailTackService.getEmailDetails(patientId, doctorId, locationId, hospitalId, page, size);
 	Response<EmailTrack> response = new Response<EmailTrack>();

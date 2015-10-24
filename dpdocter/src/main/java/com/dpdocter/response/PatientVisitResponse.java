@@ -10,7 +10,7 @@ import com.dpdocter.enums.VisitedFor;
 
 public class PatientVisitResponse {
 
-	private String id;
+    private String id;
 
     private String patientId;
 
@@ -23,13 +23,12 @@ public class PatientVisitResponse {
     private Date visitedTime;
 
     private List<VisitedFor> visitedFor;
-    
+
     private List<Prescription> prescriptions;
 
     private List<ClinicalNotes> clinicalNotes;
 
     private List<Records> records;
-
 
     public String getId() {
 	return id;
@@ -79,44 +78,43 @@ public class PatientVisitResponse {
 	this.visitedTime = visitedTime;
     }
 
-	public List<VisitedFor> getVisitedFor() {
-		return visitedFor;
-	}
+    public List<VisitedFor> getVisitedFor() {
+	return visitedFor;
+    }
 
-	public void setVisitedFor(List<VisitedFor> visitedFor) {
-		this.visitedFor = visitedFor;
-	}
+    public void setVisitedFor(List<VisitedFor> visitedFor) {
+	this.visitedFor = visitedFor;
+    }
 
-	public List<Prescription> getPrescriptions() {
-		return prescriptions;
-	}
+    public List<Prescription> getPrescriptions() {
+	return prescriptions;
+    }
 
-	public void setPrescriptions(List<Prescription> prescriptions) {
-		this.prescriptions = prescriptions;
-	}
+    public void setPrescriptions(List<Prescription> prescriptions) {
+	this.prescriptions = prescriptions;
+    }
 
-	public List<ClinicalNotes> getClinicalNotes() {
-		return clinicalNotes;
-	}
+    public List<ClinicalNotes> getClinicalNotes() {
+	return clinicalNotes;
+    }
 
-	public void setClinicalNotes(List<ClinicalNotes> clinicalNotes) {
-		this.clinicalNotes = clinicalNotes;
-	}
+    public void setClinicalNotes(List<ClinicalNotes> clinicalNotes) {
+	this.clinicalNotes = clinicalNotes;
+    }
 
-	public List<Records> getRecords() {
-		return records;
-	}
+    public List<Records> getRecords() {
+	return records;
+    }
 
-	public void setRecords(List<Records> records) {
-		this.records = records;
-	}
+    public void setRecords(List<Records> records) {
+	this.records = records;
+    }
 
-	@Override
-	public String toString() {
-		return "PatientVisitResponse [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", visitedTime=" + visitedTime
-				+ ", visitedFor=" + visitedFor + ", prescriptions=" + prescriptions + ", clinicalNotes=" + clinicalNotes
-				+ ", records=" + records + "]";
-	}
+    @Override
+    public String toString() {
+	return "PatientVisitResponse [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+		+ hospitalId + ", visitedTime=" + visitedTime + ", visitedFor=" + visitedFor + ", prescriptions=" + prescriptions + ", clinicalNotes="
+		+ clinicalNotes + ", records=" + records + "]";
+    }
 
 }

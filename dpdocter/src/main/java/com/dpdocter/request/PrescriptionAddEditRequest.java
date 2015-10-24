@@ -22,7 +22,7 @@ public class PrescriptionAddEditRequest {
     private String prescriptionCode;
 
     private String createdBy;
-    
+
     private String visitId;
 
     public String getId() {
@@ -97,18 +97,18 @@ public class PrescriptionAddEditRequest {
 	this.createdBy = createdBy;
     }
 
-	public String getVisitId() {
-		return visitId;
-	}
+    public String getVisitId() {
+	return visitId;
+    }
 
-	public void setVisitId(String visitId) {
-		this.visitId = visitId;
-	}
+    public void setVisitId(String visitId) {
+	this.visitId = visitId;
+    }
 
-	@Override
-	public String toString() {
-		return "PrescriptionAddEditRequest [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", items=" + items + ", patientId=" + patientId
-				+ ", prescriptionCode=" + prescriptionCode + ", createdBy=" + createdBy + ", visitId=" + visitId + "]";
-	}
+    @Override
+    public String toString() {
+	return "PrescriptionAddEditRequest [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+		+ hospitalId + ", items=" + items + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + ", createdBy=" + createdBy
+		+ ", visitId=" + visitId + "]";
+    }
 }

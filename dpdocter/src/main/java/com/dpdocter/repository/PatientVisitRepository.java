@@ -20,11 +20,11 @@ public interface PatientVisitRepository extends MongoRepository<PatientVisitColl
     Integer count(String doctorId, String locationId, String hospitalId);
 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'patientId': ?3}")
-	List<PatientVisitCollection> find(String doctorId, String locationId, String hospitalId, String patientId, Pageable pageable);
+    List<PatientVisitCollection> find(String doctorId, String locationId, String hospitalId, String patientId, Pageable pageable);
 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'patientId': ?3}")
-	List<PatientVisitCollection> find(String doctorId, String locationId, String hospitalId, String patientId, Sort sort);
+    List<PatientVisitCollection> find(String doctorId, String locationId, String hospitalId, String patientId, Sort sort);
 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'patientId': ?3}")
-	PatientVisitCollection find(String doctorId, String locationId, String hospitalId, String patientId);
+    PatientVisitCollection find(String doctorId, String locationId, String hospitalId, String patientId);
 }

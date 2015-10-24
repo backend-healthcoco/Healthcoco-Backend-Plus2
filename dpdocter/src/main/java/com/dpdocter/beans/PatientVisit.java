@@ -3,8 +3,6 @@ package com.dpdocter.beans;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
 import com.dpdocter.enums.VisitedFor;
 
 public class PatientVisit {
@@ -21,13 +19,12 @@ public class PatientVisit {
     private Date visitedTime;
 
     private List<VisitedFor> visitedFor;
-    
+
     private List<String> prescriptionId;
 
     private List<String> clinicalNotesId;
 
     private List<String> recordId;
-
 
     public String getId() {
 	return id;
@@ -77,44 +74,43 @@ public class PatientVisit {
 	this.visitedTime = visitedTime;
     }
 
-	public List<VisitedFor> getVisitedFor() {
-		return visitedFor;
-	}
+    public List<VisitedFor> getVisitedFor() {
+	return visitedFor;
+    }
 
-	public void setVisitedFor(List<VisitedFor> visitedFor) {
-		this.visitedFor = visitedFor;
-	}
+    public void setVisitedFor(List<VisitedFor> visitedFor) {
+	this.visitedFor = visitedFor;
+    }
 
-	public List<String> getPrescriptionId() {
-		return prescriptionId;
-	}
+    public List<String> getPrescriptionId() {
+	return prescriptionId;
+    }
 
-	public void setPrescriptionId(List<String> prescriptionId) {
-		this.prescriptionId = prescriptionId;
-	}
+    public void setPrescriptionId(List<String> prescriptionId) {
+	this.prescriptionId = prescriptionId;
+    }
 
-	public List<String> getClinicalNotesId() {
-		return clinicalNotesId;
-	}
+    public List<String> getClinicalNotesId() {
+	return clinicalNotesId;
+    }
 
-	public void setClinicalNotesId(List<String> clinicalNotesId) {
-		this.clinicalNotesId = clinicalNotesId;
-	}
+    public void setClinicalNotesId(List<String> clinicalNotesId) {
+	this.clinicalNotesId = clinicalNotesId;
+    }
 
-	public List<String> getRecordId() {
-		return recordId;
-	}
+    public List<String> getRecordId() {
+	return recordId;
+    }
 
-	public void setRecordId(List<String> recordId) {
-		this.recordId = recordId;
-	}
+    public void setRecordId(List<String> recordId) {
+	this.recordId = recordId;
+    }
 
-	@Override
-	public String toString() {
-		return "PatientVisit [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", visitedTime=" + visitedTime + ", visitedFor="
-				+ visitedFor + ", prescriptionId=" + prescriptionId + ", clinicalNotesId=" + clinicalNotesId
-				+ ", recordId=" + recordId + "]";
-	}
+    @Override
+    public String toString() {
+	return "PatientVisit [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+		+ ", visitedTime=" + visitedTime + ", visitedFor=" + visitedFor + ", prescriptionId=" + prescriptionId + ", clinicalNotesId=" + clinicalNotesId
+		+ ", recordId=" + recordId + "]";
+    }
 
 }

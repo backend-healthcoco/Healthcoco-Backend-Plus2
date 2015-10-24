@@ -1,6 +1,5 @@
 package com.dpdocter.services.impl;
 
-import java.awt.Color;
 import java.io.File;
 import java.util.Date;
 import java.util.Map;
@@ -53,13 +52,14 @@ public class JasperReportServiceImpl implements JasperReportService {
 	    context.setValue("net.sf.jasperreports.extension.registry.factory.queryexecuters.mongodb",
 		    "com.jaspersoft.mongodb.query.MongoDbQueryExecuterExtensionsRegistryFactory");
 	    JRPropertiesUtil propertiesUtil = JRPropertiesUtil.getInstance(context);
-//	    propertiesUtil.setProperty(JasperDesign.PROPERTY_DEFAULT_FONT, defaultPDFFont);
+	    // propertiesUtil.setProperty(JasperDesign.PROPERTY_DEFAULT_FONT,
+	    // defaultPDFFont);
 
 	    JRProperties.setProperty("net.sf.jasperreports.query.executer.factory.MongoDbQuery", "com.jaspersoft.mongodb.query.MongoDbQueryExecuterFactory");
 	    JRStyle style = new JRBaseStyle();
-//	    style.setFontName("Arial");
-//	    style.setFontSize(15);
-//	    style.setForecolor(new Color(255, 0, 0));
+	    // style.setFontName("Arial");
+	    // style.setFontSize(15);
+	    // style.setForecolor(new Color(255, 0, 0));
 
 	    JasperDesign design = JRXmlLoader.load(new File(REPORT_NAME + fileName + ".jrxml"));
 

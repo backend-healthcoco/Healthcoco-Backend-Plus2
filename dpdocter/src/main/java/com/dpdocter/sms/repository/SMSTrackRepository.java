@@ -3,7 +3,6 @@ package com.dpdocter.sms.repository;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -36,21 +35,21 @@ public interface SMSTrackRepository extends MongoRepository<SMSTrackDetail, Stri
     SMSTrackDetail findByResponseId(String requestId);
 
     @Query("{'locationId': ?0, 'hospitalId': ?1, 'patientId': ?2}")
-	List<SMSTrackDetail> findByLocationHospitalPatientId(String locationId, String hospitalId, String patientId, Pageable pageable);
+    List<SMSTrackDetail> findByLocationHospitalPatientId(String locationId, String hospitalId, String patientId, Pageable pageable);
 
     @Query("{'locationId': ?0, 'hospitalId': ?1, 'patientId': ?2}")
-	List<SMSTrackDetail> findByLocationHospitalPatientId(String locationId, String hospitalId, String patientId, Sort sort);
+    List<SMSTrackDetail> findByLocationHospitalPatientId(String locationId, String hospitalId, String patientId, Sort sort);
 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'patientId': ?3}")
-	List<SMSTrackDetail> findAll(String doctorId, String locationId, String hospitalId, String patientId, Pageable pageable);
+    List<SMSTrackDetail> findAll(String doctorId, String locationId, String hospitalId, String patientId, Pageable pageable);
 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'patientId': ?3}")
-	List<SMSTrackDetail> findAll(String doctorId, String locationId, String hospitalId, String patientId, Sort sort);
+    List<SMSTrackDetail> findAll(String doctorId, String locationId, String hospitalId, String patientId, Sort sort);
 
     @Query("{'doctorId': ?0, 'patientId': ?1}")
-	List<SMSTrackDetail> findAll(String doctorId, String patientId, Pageable pageable);
+    List<SMSTrackDetail> findAll(String doctorId, String patientId, Pageable pageable);
 
     @Query("{'doctorId': ?0, 'patientId': ?1}")
-	List<SMSTrackDetail> findAll(String doctorId, String patientId, Sort sort);
+    List<SMSTrackDetail> findAll(String doctorId, String patientId, Sort sort);
 
 }

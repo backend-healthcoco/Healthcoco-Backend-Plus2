@@ -20,7 +20,7 @@ public class Diagram extends GenericCollection {
     private String fileExtension;
 
     private Boolean discarded = false;
-    
+
     private String speciality;
 
     public String getId() {
@@ -95,18 +95,18 @@ public class Diagram extends GenericCollection {
 	this.discarded = discarded;
     }
 
-	public String getSpeciality() {
-		return speciality;
-	}
+    public String getSpeciality() {
+	return speciality;
+    }
 
-	public void setSpeciality(String speciality) {
-		this.speciality = speciality;
-	}
+    public void setSpeciality(String speciality) {
+	this.speciality = speciality;
+    }
 
-	@Override
-	public String toString() {
-		return "Diagram [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", diagram=" + diagram
-				+ ", fileExtension=" + fileExtension + ", discarded=" + discarded + ", speciality=" + speciality + "]";
-	}
+    @Override
+    public String toString() {
+	return "Diagram [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + ", doctorId=" + doctorId + ", locationId=" + locationId
+		+ ", hospitalId=" + hospitalId + ", diagram=" + diagram + ", fileExtension=" + fileExtension + ", discarded=" + discarded + ", speciality="
+		+ speciality + "]";
+    }
 }
