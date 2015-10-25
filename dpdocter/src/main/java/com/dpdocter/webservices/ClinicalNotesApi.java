@@ -27,6 +27,8 @@ import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.Investigation;
 import com.dpdocter.beans.Notes;
 import com.dpdocter.beans.Observation;
+import com.dpdocter.collections.DiagramsCollection;
+import com.dpdocter.enums.ClinicalItems;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -364,11 +366,9 @@ public class ClinicalNotesApi {
 	}
 	List<Object> clinicalItems = clinicalNotesService.getClinicalItems(type, range, page, size, doctorId, locationId, hospitalId, updatedTime,
 		discarded != null ? discarded : true);
-	if (clinicalItems != null && !clinicalItems.isEmpty()) {
+	if (clinicalItems != null && !clinicalItems.isEmpty() && ClinicalItems.DIAGRAMS.getType().equalsIgnoreCase(type)) {
 	    for (Object clinicalItem : clinicalItems) {
-		if (clinicalItem instanceof Diagram) {
-		    ((Diagram) clinicalItem).setDiagramUrl(getFinalImageURL(((Diagram) clinicalItem).getDiagramUrl()));
-		}
+		    ((DiagramsCollection) clinicalItem).setDiagramUrl(getFinalImageURL(((DiagramsCollection) clinicalItem).getDiagramUrl()));
 	    }
 	}
 	Response<Object> response = new Response<Object>();

@@ -322,6 +322,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
 		String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 		userCollection.setImageUrl(imageurl);
+		String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(),path);
+	    userCollection.setThumbnailUrl(thumbnailUrl);
+
 		userCollection = userRepository.save(userCollection);
 		response = userCollection.getImageUrl();
 	    }
@@ -345,6 +348,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
 		String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 		userCollection.setCoverImageUrl(imageurl);
+		String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(),path);
+	    userCollection.setCoverThumbnailImageUrl(thumbnailUrl);
 		userCollection = userRepository.save(userCollection);
 		response = userCollection.getCoverImageUrl();
 	    }

@@ -4,6 +4,16 @@ import java.io.File;
 import java.util.Date;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import com.dpdocter.exceptions.BusinessException;
+import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.services.JasperReportService;
+import com.jaspersoft.mongodb.connection.MongoDbConnection;
+
+import ar.com.fdvs.dj.domain.constants.Page;
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRPropertiesUtil;
@@ -18,23 +28,12 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-import ar.com.fdvs.dj.domain.constants.Page;
-
-import com.dpdocter.exceptions.BusinessException;
-import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.services.JasperReportService;
-import com.jaspersoft.mongodb.connection.MongoDbConnection;
-
 @Service
 public class JasperReportServiceImpl implements JasperReportService {
 
     private static Logger logger = Logger.getLogger(JasperReportServiceImpl.class.getName());
 
-    private static final String MONGO_HOST_URI = "mongodb://52.23.201.29:27017/dpdocter_db";
+    private static final String MONGO_HOST_URI = "mongodb://localhost:27017/dpdocter_db";
 
     @Value(value = "${JASPER_TEMPLATES_RESOURCE}")
     private String REPORT_NAME;
@@ -47,6 +46,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 	    MongoDbConnection mongoConnection = new MongoDbConnection(MONGO_HOST_URI, null, null);
 
 	    parameters.put("REPORT_CONNECTION", mongoConnection);
+	    parameters.put("SUBREPORT_DIR", REPORT_NAME);
 
 	    DefaultJasperReportsContext context = DefaultJasperReportsContext.getInstance();
 	    context.setValue("net.sf.jasperreports.extension.registry.factory.queryexecuters.mongodb",

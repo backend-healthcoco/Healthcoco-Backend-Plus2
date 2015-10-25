@@ -252,6 +252,9 @@ public class DoctorProfileApi {
 	    if (doctorProfile.getImageUrl() != null) {
 		doctorProfile.setImageUrl(getFinalImageURL(doctorProfile.getImageUrl()));
 	    }
+	    if (doctorProfile.getThumbnailUrl() != null) {
+			doctorProfile.setThumbnailUrl(getFinalImageURL(doctorProfile.getThumbnailUrl()));
+		    }
 	}
 	Response<DoctorProfile> response = new Response<DoctorProfile>();
 	response.setData(doctorProfile);

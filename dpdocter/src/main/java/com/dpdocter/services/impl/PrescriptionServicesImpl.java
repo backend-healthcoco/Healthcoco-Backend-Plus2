@@ -28,6 +28,7 @@ import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.PrescriptionJasperDetails;
+import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
@@ -2883,6 +2884,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	PatientCollection patient = null;
 	PatientAdmissionCollection patientAdmission = null;
 	UserCollection user = null;
+	EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 	try {
 	    prescriptionCollection = prescriptionRepository.findOne(prescriptionId);
 	    if (prescriptionCollection != null) {
@@ -2890,13 +2892,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			&& prescriptionCollection.getLocationId() != null) {
 		    if (prescriptionCollection.getDoctorId().equals(doctorId) && prescriptionCollection.getHospitalId().equals(hospitalId)
 			    && prescriptionCollection.getLocationId().equals(locationId)) {
+		    	int no = 0;
 			for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
 			    if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
 				DrugCollection drug = drugRepository.findOne(prescriptionItem.getDrugId());
 				if (drug != null) {
-				    String drugType = drug.getDrugType() != null ? (drug.getDrugType().getType() != null ? drug.getDrugType().getType() : "")
+				    String drugType = drug.getDrugType() != null ? (drug.getDrugType().getType() != null ? drug.getDrugType().getType()+" -" : "")
 					    : "";
-				    String drugName = drug.getDrugName() != null ? drug.getDrugName() : "";
+				    String drugName = drug.getDrugName() != null ? drug.getDrugName() : "-";
 				    String strengthValue = drug.getStrength() != null ? (drug.getStrength().getValue() != null ? drug.getStrength().getValue()
 					    : "") : "";
 				    String strengthUnit = drug.getStrength() != null ? (drug.getStrength().getStrengthUnit() != null ? drug.getStrength()
@@ -2910,13 +2913,17 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					    : "")
 					    : "";
 
-				    List<String> directions = new ArrayList<String>();
+				    String directions = "";
 				    for (DrugDirection drugDirection : prescriptionItem.getDirection()) {
 					if (drugDirection.getDirection() != null)
-					    directions.add(drugDirection.getDirection());
+						if(directions=="")directions=directions+(drugDirection.getDirection());
+						else directions=directions+","+(drugDirection.getDirection());
 				    }
-				    PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(drugType + " " + drugName + " "
-					    + strengthValue + " " + strengthUnit, prescriptionItem.getDosage(), durationValue + " " + durationUnit, directions,
+				    String duration ="";
+				    if(durationValue == "" && durationValue == "")duration = "-";
+				    else duration = durationValue+" "+durationUnit;
+				    PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(++no,drugType + " " + drugName + " "
+					    + strengthValue + " " + strengthUnit, prescriptionItem.getDosage(), duration, directions,
 					    prescriptionItem.getInstructions());
 
 				    prescriptionItems.add(prescriptionJasperDetails);
@@ -2933,8 +2940,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    user = userRepository.findOne(prescriptionCollection.getPatientId());
 			    patient = patientRepository.findByUserId(prescriptionCollection.getPatientId());
 			}
-
-			EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 			emailTrackCollection.setDoctorId(doctorId);
 			emailTrackCollection.setHospitalId(hospitalId);
 			emailTrackCollection.setLocationId(locationId);
@@ -2944,17 +2949,18 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    emailTrackCollection.setPatientName(user.getFirstName());
 			    emailTrackCollection.setPatientId(user.getId());
 			}
-			emailTackService.saveEmailTrack(emailTrackCollection);
 			parameters.put("prescriptionId", prescriptionId);
 		    }
-
+		    else{
+				logger.warn("Prescription Id, doctorId, location Id, hospital Id does not match");
+				throw new BusinessException(ServiceError.NotFound, "Prescription Id, doctorId, location Id, hospital Id does not match");
+			}
 		}
 
-		PrintSettingsCollection printSettings = printSettingsRepository
-			.findOne(doctorId, locationId, hospitalId, ComponentType.PRESCRIPTIONS.getType());
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(doctorId, locationId, hospitalId, ComponentType.PRESCRIPTIONS.getType());
 		DBObject printId = new BasicDBObject();
 		if (printSettings == null) {
-		    printSettings = printSettingsRepository.findOne(doctorId, locationId, hospitalId, ComponentType.ALL.getType());
+		    printSettings = printSettingsRepository.getSettings(doctorId, locationId, hospitalId, ComponentType.ALL.getType());
 		    if (printSettings != null) {
 			printId.put("$oid", printSettings.getId());
 
@@ -2963,28 +2969,27 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    printId.put("$oid", printSettings.getId());
 
 		parameters.put("printSettingsId", Arrays.asList(printId));
-		String headerLeftText = "", headerRightText = "", footerBottomText = "";
-		String patientName = "", dob = "", gender = "", mobileNumber = "";
-		if (printSettings != null) {
-		    if (printSettings.getHeaderSetup() != null) {
-			// for(String str:
-			// printSettings.getHeaderSetup().getTopLeftText())headerLeftText=headerLeftText+"<br/>"+str;
-			// for(String str:
-			// printSettings.getHeaderSetup().getTopRightText())headerRightText=headerRightText+"<br/>"+str;
-			if (printSettings.getHeaderSetup().getPatientDetails() != null && user != null) {
-			    patientName = printSettings.getHeaderSetup().getPatientDetails().getShowName() ? "Patient Name: " + user.getFirstName() + "<br>"
-				    : "";
-			    dob = printSettings.getHeaderSetup().getPatientDetails().getShowDOB() ? "Patient Age: "
-				    + (user.getDob() != null ? (user.getDob().getAge()) + "<br>" : "") : "";
-			    gender = printSettings.getHeaderSetup().getPatientDetails().getShowGender() ? "Patient Gender: " + user.getGender() + "<br>" : "";
-			    mobileNumber = printSettings.getHeaderSetup().getPatientDetails().getShowGender() ? "Patient Gender: " + user.getMobileNumber()
-				    + "<br>" : "";
+		String headerLeftText="",headerRightText="",footerBottomText ="";
+		String patientName="", dob="", gender="", mobileNumber="";
+		if(printSettings!=null){
+			if(printSettings.getHeaderSetup() != null){
+				for(PrintSettingsText str: printSettings.getHeaderSetup().getTopLeftText())headerLeftText=headerLeftText+"<br/>"+str.getText();
+				for(PrintSettingsText str: printSettings.getHeaderSetup().getTopRightText())headerRightText=headerRightText+"<br/>"+str.getText();
+				if(printSettings.getHeaderSetup().getPatientDetails() !=null && user!=null){
+					patientName=printSettings.getHeaderSetup().getPatientDetails().getShowName()?"Patient Name: "+user.getFirstName()+"<br>":"";
+					dob = printSettings.getHeaderSetup().getPatientDetails().getShowDOB()?"Patient Age: "+(user.getDob() != null ? (user.getDob().getAge())+"<br>":""):"";
+					gender = printSettings.getHeaderSetup().getPatientDetails().getShowGender()?"Patient Gender: "+user.getGender()+"<br>":"";
+					mobileNumber = printSettings.getHeaderSetup().getPatientDetails().getShowGender()?"Patient Mobile Number: "+user.getMobileNumber()+"<br>":"";
+				}
 			}
-		    }
-		    if (printSettings.getFooterSetup() != null) {
-			// for(String str:
-			// printSettings.getFooterSetup().getBottomText())footerBottomText=footerBottomText+"<br/>"+str;
-		    }
+			if(printSettings.getFooterSetup() != null){
+				if(printSettings.getFooterSetup().getCustomFooter())
+					for(PrintSettingsText str: printSettings.getFooterSetup().getBottomText())footerBottomText=footerBottomText+"<br/>"+str.getText();
+				if(printSettings.getFooterSetup().getShowSignature()){
+					UserCollection doctorUser = userRepository.findOne(doctorId);
+					if(doctorUser != null)parameters.put("footerSignature","Dr."+doctorUser.getFirstName());
+				}
+		}
 		}
 		parameters.put("patientLeftText", patientName + "Patient Id: " + patient.getPID() + "<br>" + dob + gender);
 		parameters.put("patientRightText", mobileNumber + (patientAdmission != null ? "Reffered By:" + patientAdmission.getReferredBy() + "<br>" : "")
@@ -3007,6 +3012,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		mailAttachment = new MailAttachment();
 		mailAttachment.setAttachmentName(file.getFilename());
 		mailAttachment.setFileSystemResource(file);
+		emailTackService.saveEmailTrack(emailTrackCollection);
 	    } else {
 		logger.warn("Prescription not found.Please check prescriptionId.");
 		throw new BusinessException(ServiceError.Unknown, "Prescription not found.Please check prescriptionId.");

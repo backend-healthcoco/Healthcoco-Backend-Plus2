@@ -1,6 +1,7 @@
 package com.dpdocter.services.impl;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,6 +38,7 @@ import com.dpdocter.beans.Investigation;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Notes;
 import com.dpdocter.beans.Observation;
+import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.ComplaintCollection;
 import com.dpdocter.collections.DiagnosisCollection;
@@ -46,7 +48,9 @@ import com.dpdocter.collections.InvestigationCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.NotesCollection;
 import com.dpdocter.collections.ObservationCollection;
+import com.dpdocter.collections.PatientAdmissionCollection;
 import com.dpdocter.collections.PatientClinicalNotesCollection;
+import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ClinicalItems;
@@ -63,7 +67,9 @@ import com.dpdocter.repository.InvestigationRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.NotesRepository;
 import com.dpdocter.repository.ObservationRepository;
+import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientClinicalNotesRepository;
+import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.ClinicalNotesAddRequest;
@@ -75,6 +81,7 @@ import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -129,6 +136,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
     @Autowired
     private EmailTackService emailTackService;
+    
+    @Autowired
+    private PatientRepository patientRepository;
+
+    @Autowired
+    private PatientAdmissionRepository patientAdmissionRepository;
 
     @Value(value = "${IMAGE_RESOURCE}")
     private String imageResource;
@@ -851,7 +864,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    }
 	    diagramsCollection = diagramsRepository.save(diagramsCollection);
 	    BeanUtil.map(diagramsCollection, diagram);
-	    // diagram.setDiagram(null);
+	    diagram.setDiagram(null);
 
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -2758,6 +2771,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	ClinicalNotesCollection clinicalNotesCollection = null;
 	Map<String, Object> parameters = new HashMap<String, Object>();
 	MailAttachment mailAttachment = null;
+	PatientCollection patient = null;
+	PatientAdmissionCollection patientAdmission = null;
+	UserCollection user = null;
+	EmailTrackCollection emailTrackCollection = new EmailTrackCollection(); 
+	String patientId = null;
 	try {
 	    clinicalNotesCollection = clinicalNotesRepository.findOne(clinicalNotesId);
 	    if (clinicalNotesCollection != null) {
@@ -2766,40 +2784,55 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    if (clinicalNotesCollection.getDoctorId().equals(doctorId) && clinicalNotesCollection.getHospitalId().equals(hospitalId)
 			    && clinicalNotesCollection.getLocationId().equals(locationId)) {
 
-			parameters.put("clinicalNotesId", clinicalNotesId);
-			parameters.put("doctorId", doctorId);
-			parameters.put("locationId", locationId);
-			parameters.put("hospitalId", hospitalId);
-
-			DBObject observationIds = new BasicDBObject();
+		    String observations = "";
 			for (String observationId : clinicalNotesCollection.getObservations()) {
-			    observationIds.put("$oid", observationId);
+				ObservationCollection observationCollection = observationRepository.findOne(observationId);
+			    if(observationCollection!= null){
+			    	if(observations == "")observations = observationCollection.getObservation();
+			    	else observations = observations +", "+observationCollection.getObservation();
+			    }
 			}
-			parameters.put("observationIds", Arrays.asList(observationIds));
+			parameters.put("observationIds", observations);
 
-			DBObject noteIds = new BasicDBObject();
+			String notes = "";
 			for (String noteId : clinicalNotesCollection.getNotes()) {
-			    noteIds.put("$oid", noteId);
+				NotesCollection note = notesRepository.findOne(noteId);
+			    if(note!= null){
+			    	if(notes == "")notes = note.getNote();
+			    	else notes = notes +", "+note.getNote();
+			    }
 			}
-			parameters.put("noteIds", Arrays.asList(noteIds));
+			parameters.put("noteIds", notes);
 
-			DBObject investigationIds = new BasicDBObject();
+			String investigations = "";
 			for (String investigationId : clinicalNotesCollection.getInvestigations()) {
-			    investigationIds.put("$oid", investigationId);
+				InvestigationCollection investigation = investigationRepository.findOne(investigationId);
+			    if(investigation!= null){
+			    	if(investigations == "")investigations = investigation.getInvestigation();
+			    	else investigations = investigations +", "+investigation.getInvestigation();
+			    }
 			}
-			parameters.put("investigationIds", Arrays.asList(investigationIds));
+			parameters.put("investigationIds",investigations);
 
-			DBObject diagnosesIds = new BasicDBObject();
-			for (String diagnosesId : clinicalNotesCollection.getDiagnoses()) {
-			    diagnosesIds.put("$oid", diagnosesId);
+			String diagnosis = "";
+			for (String diagnosisId : clinicalNotesCollection.getDiagnoses()) {
+				DiagnosisCollection diagnosisCollection = diagnosisRepository.findOne(diagnosisId);
+			    if(diagnosisCollection!= null){
+			    	if(diagnosis == "")diagnosis= diagnosisCollection.getDiagnosis();
+			    	else diagnosis = diagnosis +", "+diagnosisCollection.getDiagnosis();
+			    }
 			}
-			parameters.put("diagnosesIds", Arrays.asList(diagnosesIds));
+			parameters.put("diagnosesIds", diagnosis);
 
-			DBObject complaintIds = new BasicDBObject();
+		    String complaints = "";
 			for (String complaintId : clinicalNotesCollection.getComplaints()) {
-			    complaintIds.put("$oid", complaintId);
+			    ComplaintCollection complaint = complaintRepository.findOne(complaintId);
+			    if(complaint!= null){
+			    	if(complaints == "")complaints = complaint.getComplaint();
+			    	else complaints = complaints +", "+complaint.getComplaint();
+			    }
 			}
-			parameters.put("complaintIds", Arrays.asList(complaintIds));
+			parameters.put("complaintIds", complaints);
 
 			DBObject diagramIds = new BasicDBObject();
 			for (String diagramId : clinicalNotesCollection.getDiagrams()) {
@@ -2807,13 +2840,39 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 			parameters.put("diagramIds", Arrays.asList(diagramIds));
 		    }
+		    List<PatientClinicalNotesCollection> patientClinicalNotesCollection = patientClinicalNotesRepository.findByClinicalNotesId(clinicalNotesId);
+		    if(patientClinicalNotesCollection != null && !patientClinicalNotesCollection.isEmpty()){
+		    	patientId = patientClinicalNotesCollection.get(0).getPatientId();
+		    	patientAdmission = patientAdmissionRepository.findByPatientIdAndDoctorId(patientId, doctorId);
+		    }
+		    else{
+				logger.warn("No patient found");
+				throw new BusinessException(ServiceError.NotFound, "No patient found");
+			}
+			user = userRepository.findOne(patientId);
+			patient = patientRepository.findByUserId(patientId);
+			
+			emailTrackCollection.setDoctorId(doctorId);
+			emailTrackCollection.setHospitalId(hospitalId);
+			emailTrackCollection.setLocationId(locationId);
+			emailTrackCollection.setType(ComponentType.CLINICAL_NOTES.getType());
+			emailTrackCollection.setSubject("Prescription");
+			if (user != null) {
+			    emailTrackCollection.setPatientName(user.getFirstName());
+			    emailTrackCollection.setPatientId(user.getId());
+			}
+			parameters.put("clinicalNotesId", clinicalNotesId);
+		    
+		}
+		else{
+			logger.warn("Clinical Notes Id, doctorId, location Id, hospital Id does not match");
+			throw new BusinessException(ServiceError.NotFound, "Clinical Notes Id, doctorId, location Id, hospital Id does not match");
 		}
 
-		PrintSettingsCollection printSettings = printSettingsRepository.findOne(doctorId, locationId, hospitalId,
-			ComponentType.CLINICAL_NOTES.getType());
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(doctorId, locationId, hospitalId, ComponentType.CLINICAL_NOTES.getType());
 		DBObject printId = new BasicDBObject();
 		if (printSettings == null) {
-		    printSettings = printSettingsRepository.findOne(doctorId, locationId, hospitalId, ComponentType.ALL.getType());
+		    printSettings = printSettingsRepository.getSettings(doctorId, locationId, hospitalId, ComponentType.ALL.getType());
 		    if (printSettings != null) {
 			printId.put("$oid", printSettings.getId());
 
@@ -2822,9 +2881,36 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    printId.put("$oid", printSettings.getId());
 
 		parameters.put("printSettingsId", Arrays.asList(printId));
-
+		String headerLeftText="",headerRightText="",footerBottomText ="";
+		String patientName="", dob="", gender="", mobileNumber="";
+		if(printSettings!=null){
+			if(printSettings.getHeaderSetup() != null){
+				for(PrintSettingsText str: printSettings.getHeaderSetup().getTopLeftText())headerLeftText=headerLeftText+"<br/>"+str.getText();
+				for(PrintSettingsText str: printSettings.getHeaderSetup().getTopRightText())headerRightText=headerRightText+"<br/>"+str.getText();
+				if(printSettings.getHeaderSetup().getPatientDetails() !=null && user!=null){
+					patientName=printSettings.getHeaderSetup().getPatientDetails().getShowName()?"Patient Name: "+user.getFirstName()+"<br>":"";
+					dob = printSettings.getHeaderSetup().getPatientDetails().getShowDOB()?"Patient Age: "+(user.getDob() != null ? (user.getDob().getAge())+"<br>":""):"";
+					gender = printSettings.getHeaderSetup().getPatientDetails().getShowGender()?"Patient Gender: "+user.getGender()+"<br>":"";
+					mobileNumber = printSettings.getHeaderSetup().getPatientDetails().getShowGender()?"Patient Mobile Number: "+user.getMobileNumber()+"<br>":"";
+				}
+			}
+			if(printSettings.getFooterSetup() != null){
+				if(printSettings.getFooterSetup().getCustomFooter())
+					for(PrintSettingsText str: printSettings.getFooterSetup().getBottomText())footerBottomText=footerBottomText+"<br/>"+str.getText();
+				if(printSettings.getFooterSetup().getShowSignature()){
+					UserCollection doctorUser = userRepository.findOne(doctorId);
+					if(doctorUser != null)parameters.put("footerSignature","Dr."+doctorUser.getFirstName());
+				}
+			}
+		}
+		parameters.put("patientLeftText",patientName+"Patient Id: "+patient.getPID()+"<br>"+dob+gender);
+	    parameters.put("patientRightText",mobileNumber+(patientAdmission!= null ? "Reffered By:"+patientAdmission.getReferredBy()+"<br>":"")+"Date:"+new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
+		parameters.put("headerLeftText", headerLeftText);
+		parameters.put("headerRightText", headerRightText);
+		parameters.put("footerBottomText",footerBottomText);
+		
 		LocationCollection location = locationRepository.findOne(locationId);
-		parameters.put("logoURL", location.getLogoUrl());
+		if(location != null)parameters.put("logoURL", location.getLogoUrl());
 
 		String layout = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 			: "PORTRAIT";
@@ -2836,13 +2922,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		mailAttachment = new MailAttachment();
 		mailAttachment.setAttachmentName(file.getFilename());
 		mailAttachment.setFileSystemResource(file);
-
-		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
-		emailTrackCollection.setDoctorId(doctorId);
-		emailTrackCollection.setHospitalId(hospitalId);
-		emailTrackCollection.setLocationId(locationId);
-		emailTrackCollection.setType(ComponentType.CLINICAL_NOTES.getType());
-		emailTrackCollection.setSubject("Clinical Notes");
 
 		emailTackService.saveEmailTrack(emailTrackCollection);
 

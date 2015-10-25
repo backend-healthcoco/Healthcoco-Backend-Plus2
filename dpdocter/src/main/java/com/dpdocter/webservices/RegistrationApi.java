@@ -103,6 +103,7 @@ public class RegistrationApi {
 	if (users != null && !users.isEmpty()) {
 	    for (User user : users) {
 		user.setImageUrl(getFinalImageURL(user.getImageUrl()));
+		user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
 	    }
 	}
 	response.setDataList(users);
@@ -145,6 +146,7 @@ public class RegistrationApi {
 
 	RegisteredPatientDetails registeredPatientDetails = registrationService.getPatientProfileByUserId(userId, doctorId, locationId, hospitalId);
 	registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));
+	registeredPatientDetails.setThumbnailUrl(getFinalImageURL(registeredPatientDetails.getThumbnailUrl()));
 	response.setData(registeredPatientDetails);
 	return response;
     }
@@ -270,7 +272,12 @@ public class RegistrationApi {
 		    if (clinicImage.getImageUrl() != null) {
 			clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl()));
 		    }
+		    if (clinicImage.getThumbnailUrl() != null) {
+				clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
+			    }
 		}
+		if(clinicDetails.getLogoUrl() != null)clinicDetails.setLogoUrl(getFinalImageURL(clinicDetails.getLogoUrl()));
+		if(clinicDetails.getLogoThumbnailUrl() != null)clinicDetails.setLogoThumbnailUrl(getFinalImageURL(clinicDetails.getLogoThumbnailUrl()));
 	    }
 	}
 	Response<Location> response = new Response<Location>();
@@ -337,6 +344,9 @@ public class RegistrationApi {
 	    if (clinicLogoResponse.getLogoURL() != null) {
 		clinicLogoResponse.setLogoURL(getFinalImageURL(clinicLogoResponse.getLogoURL()));
 	    }
+	    if (clinicLogoResponse.getLogoThumbnailURL() != null) {
+			clinicLogoResponse.setLogoThumbnailURL(getFinalImageURL(clinicLogoResponse.getLogoThumbnailURL()));
+		   }
 	}
 	Response<ClinicLogo> response = new Response<ClinicLogo>();
 	response.setData(clinicLogoResponse);
@@ -358,6 +368,9 @@ public class RegistrationApi {
 	    for (ClinicImage clinicalImage : clinicImageResponse) {
 		if (clinicalImage.getImageUrl() != null) {
 		    clinicalImage.setImageUrl(getFinalImageURL(clinicalImage.getImageUrl()));
+		}
+		if (clinicalImage.getThumbnailUrl() != null) {
+		    clinicalImage.setThumbnailUrl(getFinalImageURL(clinicalImage.getThumbnailUrl()));
 		}
 	    }
 	}

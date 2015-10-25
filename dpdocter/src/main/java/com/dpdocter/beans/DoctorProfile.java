@@ -22,6 +22,8 @@ public class DoctorProfile {
     private String gender;
 
     private String imageUrl;
+    
+    private String thumbnailUrl;
 
     private DOB dob;
 
@@ -223,14 +225,23 @@ public class DoctorProfile {
 	this.clinicProfile = clinicProfile;
     }
 
-    @Override
-    public String toString() {
-	return "DoctorProfile [id=" + id + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName
-		+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl=" + imageUrl + ", dob=" + dob
-		+ ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses=" + otherEmailAddresses + ", experience=" + experience + ", education="
-		+ education + ", specialities=" + specialities + ", achievements=" + achievements + ", professionalStatement=" + professionalStatement
-		+ ", registrationDetails=" + registrationDetails + ", experienceDetails=" + experienceDetails + ", professionalMemberships="
-		+ professionalMemberships + ", clinicProfile=" + clinicProfile + "]";
-    }
+	public String getThumbnailUrl() {
+		return thumbnailUrl;
+	}
 
+	public void setThumbnailUrl(String thumbnailUrl) {
+		this.thumbnailUrl = thumbnailUrl;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorProfile [id=" + id + ", userId=" + userId + ", title=" + title + ", firstName=" + firstName
+				+ ", lastName=" + lastName + ", middleName=" + middleName + ", emailAddress=" + emailAddress
+				+ ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl=" + imageUrl + ", thumbnailUrl="
+				+ thumbnailUrl + ", dob=" + dob + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses="
+				+ otherEmailAddresses + ", experience=" + experience + ", education=" + education + ", specialities="
+				+ specialities + ", achievements=" + achievements + ", professionalStatement=" + professionalStatement
+				+ ", registrationDetails=" + registrationDetails + ", experienceDetails=" + experienceDetails
+				+ ", professionalMemberships=" + professionalMemberships + ", clinicProfile=" + clinicProfile + "]";
+	}
 }

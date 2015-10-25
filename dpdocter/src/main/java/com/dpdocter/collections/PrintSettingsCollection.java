@@ -25,7 +25,7 @@ public class PrintSettingsCollection extends GenericCollection {
     private String hospitalId;
 
     @Field
-    private ComponentType componentType = ComponentType.ALL;
+    private String componentType = ComponentType.ALL.getType();
 
     @Field
     private PageSetup pageSetup;
@@ -71,11 +71,11 @@ public class PrintSettingsCollection extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
-    public ComponentType getComponentType() {
+    public String getComponentType() {
 	return componentType;
     }
 
-    public void setComponentType(ComponentType componentType) {
+    public void setComponentType(String componentType) {
 	this.componentType = componentType;
     }
 

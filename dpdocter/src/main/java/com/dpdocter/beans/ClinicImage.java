@@ -3,6 +3,8 @@ package com.dpdocter.beans;
 public class ClinicImage {
 
     private String imageUrl;
+    
+    private String thumbnailUrl;
 
     private int counter;
 
@@ -22,8 +24,17 @@ public class ClinicImage {
 	this.counter = counter;
     }
 
-    @Override
-    public String toString() {
-	return "ClinicImage [imageUrl=" + imageUrl + ", counter=" + counter + "]";
-    }
-}
+	public String getThumbnailUrl() {
+		return thumbnailUrl;
+	}
+
+	public void setThumbnailUrl(String thumbnailUrl) {
+		this.thumbnailUrl = thumbnailUrl;
+	}
+
+	@Override
+	public String toString() {
+		return "ClinicImage [imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", counter=" + counter + "]";
+	}
+
+   }

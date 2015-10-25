@@ -74,7 +74,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 	PrintSettingsCollection printSettingsCollection = new PrintSettingsCollection();
 	try {
 	    if (request.getId() == null) {
-		PrintSettingsCollection collection = printSettingsRepository.findOne(request.getDoctorId(), request.getLocationId(), request.getHospitalId());
+		PrintSettingsCollection collection = printSettingsRepository.getSettings(request.getDoctorId(), request.getLocationId(), request.getHospitalId());
 		if (collection != null && !collection.getDiscarded() && request.getComponentType().equals(collection.getComponentType()))
 		    request.setId(collection.getId());
 	    }
@@ -127,34 +127,34 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 		if (locationId == null && hospitalId == null) {
 		    if (discarded) {
 			if (size > 0)
-			    printSettingsCollections = printSettingsRepository.findAll(doctorId, new Date(createdTimeStamp), new PageRequest(page, size,
+			    printSettingsCollections = printSettingsRepository.getSettings(doctorId, new Date(createdTimeStamp), new PageRequest(page, size,
 				    Direction.DESC, "updatedTime"));
 			else
-			    printSettingsCollections = printSettingsRepository.findAll(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
+			    printSettingsCollections = printSettingsRepository.getSettings(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
 				    "updatedTime"));
 		    } else {
 			if (size > 0)
-			    printSettingsCollections = printSettingsRepository.findAll(doctorId, new Date(createdTimeStamp), discarded, new PageRequest(page,
+			    printSettingsCollections = printSettingsRepository.getSettings(doctorId, new Date(createdTimeStamp), discarded, new PageRequest(page,
 				    size, Direction.DESC, "updatedTime"));
 			else
-			    printSettingsCollections = printSettingsRepository.findAll(doctorId, new Date(createdTimeStamp), discarded, new Sort(
+			    printSettingsCollections = printSettingsRepository.getSettings(doctorId, new Date(createdTimeStamp), discarded, new Sort(
 				    Sort.Direction.DESC, "updatedTime"));
 		    }
 
 		} else {
 		    if (discarded) {
 			if (size > 0)
-			    printSettingsCollections = printSettingsRepository.findAll(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
+			    printSettingsCollections = printSettingsRepository.getSettings(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
 				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    printSettingsCollections = printSettingsRepository.findAll(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(
+			    printSettingsCollections = printSettingsRepository.getSettings(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(
 				    Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
-			    printSettingsCollections = printSettingsRepository.findAll(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discarded,
+			    printSettingsCollections = printSettingsRepository.getSettings(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discarded,
 				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    printSettingsCollections = printSettingsRepository.findAll(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discarded,
+			    printSettingsCollections = printSettingsRepository.getSettings(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discarded,
 				    new Sort(Sort.Direction.DESC, "updatedTime"));
 		    }
 		}
@@ -162,32 +162,32 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 		if (locationId == null && hospitalId == null) {
 		    if (discarded) {
 			if (size > 0)
-			    printSettingsCollections = printSettingsRepository.findAll(doctorId, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    printSettingsCollections = printSettingsRepository.getSettings(doctorId, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    printSettingsCollections = printSettingsRepository.findAll(doctorId, new Sort(Sort.Direction.DESC, "updatedTime"));
+			    printSettingsCollections = printSettingsRepository.getSettings(doctorId, new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
-			    printSettingsCollections = printSettingsRepository.findAll(doctorId, discarded, new PageRequest(page, size, Direction.DESC,
+			    printSettingsCollections = printSettingsRepository.getSettings(doctorId, discarded, new PageRequest(page, size, Direction.DESC,
 				    "updatedTime"));
 
 			else
-			    printSettingsCollections = printSettingsRepository.findAll(doctorId, discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+			    printSettingsCollections = printSettingsRepository.getSettings(doctorId, discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
 
 		    }
 		} else {
 		    if (discarded) {
 			if (size > 0)
-			    printSettingsCollections = printSettingsRepository.findAll(doctorId, locationId, hospitalId, new PageRequest(page, size,
+			    printSettingsCollections = printSettingsRepository.getSettings(doctorId, locationId, hospitalId, new PageRequest(page, size,
 				    Direction.DESC, "updatedTime"));
 			else
-			    printSettingsCollections = printSettingsRepository.findAll(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC,
+			    printSettingsCollections = printSettingsRepository.getSettings(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC,
 				    "updatedTime"));
 		    } else {
 			if (size > 0)
-			    printSettingsCollections = printSettingsRepository.findAll(doctorId, locationId, hospitalId, discarded, new PageRequest(page, size,
+			    printSettingsCollections = printSettingsRepository.getSettings(doctorId, locationId, hospitalId, discarded, new PageRequest(page, size,
 				    Direction.DESC, "updatedTime"));
 			else
-			    printSettingsCollections = printSettingsRepository.findAll(doctorId, locationId, hospitalId, discarded, new Sort(
+			    printSettingsCollections = printSettingsRepository.getSettings(doctorId, locationId, hospitalId, discarded, new Sort(
 				    Sort.Direction.DESC, "updatedTime"));
 		    }
 		}

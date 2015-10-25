@@ -26,6 +26,8 @@ public class Location {
     private List<ClinicImage> images;
 
     private String logoUrl;
+    
+    private String logoThumbnailUrl;
 
     private String hospitalId;
 
@@ -237,14 +239,24 @@ public class Location {
 	this.isTwentyFourSevenOpen = isTwentyFourSevenOpen;
     }
 
-    @Override
-    public String toString() {
-	return "Location [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city
-		+ ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", images=" + images
-		+ ", logoUrl=" + logoUrl + ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude=" + longitude + ", tagLine=" + tagLine
-		+ ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress=" + locationEmailAddress + ", specialization=" + specialization
-		+ ", streetAddress=" + streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber + ", alternateNumber=" + alternateNumber
-		+ ", workingSchedules=" + workingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + "]";
-    }
+	public String getLogoThumbnailUrl() {
+		return logoThumbnailUrl;
+	}
 
+	public void setLogoThumbnailUrl(String logoThumbnailUrl) {
+		this.logoThumbnailUrl = logoThumbnailUrl;
+	}
+
+	@Override
+	public String toString() {
+		return "Location [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state
+				+ ", city=" + city + ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode
+				+ ", websiteUrl=" + websiteUrl + ", images=" + images + ", logoUrl=" + logoUrl + ", logoThumbnailUrl="
+				+ logoThumbnailUrl + ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude="
+				+ longitude + ", tagLine=" + tagLine + ", landmarkDetails=" + landmarkDetails
+				+ ", locationEmailAddress=" + locationEmailAddress + ", specialization=" + specialization
+				+ ", streetAddress=" + streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber
+				+ ", alternateNumber=" + alternateNumber + ", workingSchedules=" + workingSchedules
+				+ ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + "]";
+	}
 }

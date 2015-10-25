@@ -949,6 +949,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
 		    String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 		    locationCollection.setLogoUrl(imageurl);
+		    
+		    String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(),path);
+		    locationCollection.setLogoThumbnailUrl(thumbnailUrl);
 		    locationCollection = locationRepository.save(locationCollection);
 
 		    response = new ClinicLogo();
@@ -983,8 +986,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 			String path = "clinic" + File.separator + "images";
 			image.setFileName(image.getFileName() + new Date().getTime());
 			String imageurl = fileManager.saveImageAndReturnImageUrl(image, path);
+			String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(image,path);
 			ClinicImage clinicImage = new ClinicImage();
 			clinicImage.setImageUrl(imageurl);
+			clinicImage.setThumbnailUrl(thumbnailUrl);
 			clinicImage.setCounter(counter);
 			response.add(clinicImage);
 		    }

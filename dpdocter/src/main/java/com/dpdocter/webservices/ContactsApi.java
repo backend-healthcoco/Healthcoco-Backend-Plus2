@@ -69,6 +69,7 @@ public class ContactsApi {
 	if (patientCards != null && !patientCards.isEmpty()) {
 	    for (PatientCard patientCard : patientCards) {
 		patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
+		patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
 	    }
 	}
 	doctorContactsResponse.setPatientCards(patientCards);
@@ -108,6 +109,7 @@ public class ContactsApi {
 	if (doctorContactsResponse.getPatientCards() != null && !doctorContactsResponse.getPatientCards().isEmpty()) {
 	    for (PatientCard patientCard : doctorContactsResponse.getPatientCards()) {
 		patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
+		patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
 	    }
 	}
 
@@ -128,11 +130,6 @@ public class ContactsApi {
 
 	int ttlCount = patientCards != null ? patientCards.size() : 0;
 
-	if (patientCards != null && !patientCards.isEmpty()) {
-	    for (PatientCard patientCard : patientCards) {
-		patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
-	    }
-	}
 	DoctorContactsResponse doctorContactsResponse = new DoctorContactsResponse();
 	doctorContactsResponse.setPatientCards(patientCards);
 	doctorContactsResponse.setTotalSize(ttlCount);
@@ -158,6 +155,7 @@ public class ContactsApi {
 	if (registeredPatientDetails != null && !registeredPatientDetails.isEmpty()) {
 	    for (RegisteredPatientDetails registeredPatientDetail : registeredPatientDetails) {
 		registeredPatientDetail.setImageUrl(getFinalImageURL(registeredPatientDetail.getImageUrl()));
+		registeredPatientDetail.setThumbnailUrl(getFinalImageURL(registeredPatientDetail.getThumbnailUrl()));
 	    }
 	}
 	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();

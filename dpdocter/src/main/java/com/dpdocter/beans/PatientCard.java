@@ -16,6 +16,8 @@ public class PatientCard {
     private String emailAddress;
 
     private String imageUrl;
+    
+    private String thumbnailUrl;
 
     private String bloodGroup;
 
@@ -213,12 +215,23 @@ public class PatientCard {
 	this.colorCode = colorCode;
     }
 
-    @Override
-    public String toString() {
-	return "PatientCard [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", userName=" + userName
-		+ ", emailAddress=" + emailAddress + ", imageUrl=" + imageUrl + ", bloodGroup=" + bloodGroup + ", PID=" + PID + ", gender=" + gender
-		+ ", mobileNumber=" + mobileNumber + ", secPhoneNumber=" + secPhoneNumber + ", dob=" + dob + ", count=" + count + ", dateOfVisit="
-		+ dateOfVisit + ", groups=" + groups + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ ", doctorSepecificPatientId=" + doctorSepecificPatientId + ", colorCode=" + colorCode + "]";
-    }
+	public String getThumbnailUrl() {
+		return thumbnailUrl;
+	}
+
+	public void setThumbnailUrl(String thumbnailUrl) {
+		this.thumbnailUrl = thumbnailUrl;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientCard [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName="
+				+ middleName + ", userName=" + userName + ", emailAddress=" + emailAddress + ", imageUrl=" + imageUrl
+				+ ", thumbnailUrl=" + thumbnailUrl + ", bloodGroup=" + bloodGroup + ", PID=" + PID + ", gender="
+				+ gender + ", mobileNumber=" + mobileNumber + ", secPhoneNumber=" + secPhoneNumber + ", dob=" + dob
+				+ ", count=" + count + ", dateOfVisit=" + dateOfVisit + ", groups=" + groups + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorSepecificPatientId="
+				+ doctorSepecificPatientId + ", colorCode=" + colorCode + "]";
+	}
+
 }

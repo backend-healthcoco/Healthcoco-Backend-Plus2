@@ -59,6 +59,9 @@ public class SignUpApi {
 		if (doctorSignUp.getUser().getImageUrl() != null) {
 		    doctorSignUp.getUser().setImageUrl(getFinalImageURL(doctorSignUp.getUser().getImageUrl()));
 		}
+		if (doctorSignUp.getUser().getThumbnailUrl() != null) {
+		    doctorSignUp.getUser().setThumbnailUrl(getFinalImageURL(doctorSignUp.getUser().getThumbnailUrl()));
+		}
 	    }
 	    if (doctorSignUp.getHospital() != null) {
 		if (doctorSignUp.getHospital().getHospitalImageUrl() != null) {
@@ -83,7 +86,10 @@ public class SignUpApi {
 	    if (user.getImageUrl() != null) {
 		user.setImageUrl(getFinalImageURL(user.getImageUrl()));
 	    }
+	    if (user.getThumbnailUrl() != null) {
+			user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
 	}
+	    }
 	Response<User> response = new Response<User>();
 	response.setData(user);
 	return response;
@@ -102,6 +108,9 @@ public class SignUpApi {
 	if (user != null) {
 	    if (user.getImageUrl() != null) {
 		user.setImageUrl(getFinalImageURL(user.getImageUrl()));
+	    }
+	    if(user.getThumbnailUrl() != null){
+	    	user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
 	    }
 	}
 	Response<User> response = new Response<User>();

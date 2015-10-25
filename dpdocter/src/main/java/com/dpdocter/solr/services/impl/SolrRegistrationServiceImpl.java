@@ -396,8 +396,10 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	SolrPatientDocument document = null;
 	try {
 	    document = solrPatientRepository.findByUserName(username);
-	    document.setImageUrl(imageUrl);
-	    solrPatientRepository.save(document);
+	   if(document != null){
+		   document.setImageUrl(imageUrl);
+		   solrPatientRepository.save(document);
+	   }
 
 	} catch (Exception e) {
 	    e.printStackTrace();

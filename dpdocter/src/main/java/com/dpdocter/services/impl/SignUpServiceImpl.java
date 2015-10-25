@@ -182,6 +182,9 @@ public class SignUpServiceImpl implements SignUpService {
 		request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
 		String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 		userCollection.setImageUrl(imageurl);
+		
+		String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(),path);
+	    userCollection.setThumbnailUrl(thumbnailUrl);
 	    }
 	    userCollection.setCreatedTime(new Date());
 	    userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
@@ -303,6 +306,9 @@ public class SignUpServiceImpl implements SignUpService {
 		request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
 		String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 		userCollection.setImageUrl(imageurl);
+		
+		String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(),path);
+	    userCollection.setThumbnailUrl(thumbnailUrl);
 	    }
 	    userCollection.setCreatedTime(new Date());
 	    userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
@@ -425,6 +431,9 @@ public class SignUpServiceImpl implements SignUpService {
 		    request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
 		    String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 		    userCollection.setImageUrl(imageurl);
+		   
+		    String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(),path);
+		    userCollection.setThumbnailUrl(thumbnailUrl);
 		    userCollection = userRepository.save(userCollection);
 
 		    user = new User();
