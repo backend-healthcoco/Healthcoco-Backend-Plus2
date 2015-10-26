@@ -609,29 +609,48 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    prescriptionCollections = prescriptionRepository.getPrescription(patientId, new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
-			    prescriptionCollections = prescriptionRepository.getPrescription(patientId, false, new PageRequest(page, size, Direction.DESC,
+			    prescriptionCollections = prescriptionRepository.getPrescription(patientId, discarded, new PageRequest(page, size, Direction.DESC,
 				    "updatedTime"));
 			else
-			    prescriptionCollections = prescriptionRepository.getPrescription(patientId, false, new Sort(Sort.Direction.DESC, "updatedTime"));
+			    prescriptionCollections = prescriptionRepository.getPrescription(patientId, discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
 		    }
 		}
 	    } else {
 		long createdTimestamp = Long.parseLong(updatedTime);
 		if (!isOTPVerified) {
-		    if (discarded) {
-			if (size > 0)
-			    prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId, new Date(
-				    createdTimestamp), new PageRequest(page, size, Direction.DESC, "updatedTime"));
-			else
-			    prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId, new Date(
-				    createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
-		    } else {
-			if (size > 0)
-			    prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId, new Date(
-				    createdTimestamp), discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-			else
-			    prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId, new Date(
-				    createdTimestamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+		    if(locationId == null && hospitalId == null){
+		    	if (discarded) {
+					if (size > 0)
+					    prescriptionCollections = prescriptionRepository.getPrescription(doctorId, patientId, new Date(
+						    createdTimestamp), new PageRequest(page, size, Direction.DESC, "updatedTime"));
+					else
+					    prescriptionCollections = prescriptionRepository.getPrescription(doctorId, patientId, new Date(
+						    createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+				    } else {
+					if (size > 0)
+					    prescriptionCollections = prescriptionRepository.getPrescription(doctorId, patientId, new Date(
+						    createdTimestamp), discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+					else
+					    prescriptionCollections = prescriptionRepository.getPrescription(doctorId, patientId, new Date(
+						    createdTimestamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+				    }
+		    }
+		    else{
+		    	if (discarded) {
+					if (size > 0)
+					    prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId, new Date(
+						    createdTimestamp), new PageRequest(page, size, Direction.DESC, "updatedTime"));
+					else
+					    prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId, new Date(
+						    createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+				    } else {
+					if (size > 0)
+					    prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId, new Date(
+						    createdTimestamp), discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+					else
+					    prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId, locationId, patientId, new Date(
+						    createdTimestamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+				    }
 		    }
 		} else {
 		    if (discarded) {

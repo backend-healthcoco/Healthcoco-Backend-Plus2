@@ -52,13 +52,20 @@ public class PatientVisitApi {
     @GET
     public Response<PatientVisitResponse> getVisit(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "patientId") String patientId, @QueryParam(value = "page") int page,
-	    @QueryParam(value = "size") int size) {
+	    @QueryParam(value = "size") int size, @QueryParam("isOTPVerified") Boolean isOTPVerified, @QueryParam("updatedTime") String updatedTime) {
 
 	if (StringUtils.isEmpty(patientId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
 	    logger.warn("Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	}
-	List<PatientVisitResponse> patienVisitResponse = patientVisitService.getVisit(doctorId, locationId, hospitalId, patientId, page, size);
+	List<PatientVisitResponse> patienVisitResponse = null;
+	if(isOTPVerified != null){
+		 patienVisitResponse = patientVisitService.getVisit(doctorId, locationId, hospitalId, patientId, page, size, isOTPVerified, updatedTime);
+	}
+	else{
+		 patienVisitResponse = patientVisitService.getVisit(doctorId, locationId, hospitalId, patientId, page, size, false, updatedTime);
+	}
+	
 	Response<PatientVisitResponse> response = new Response<PatientVisitResponse>();
 	response.setDataList(patienVisitResponse);
 	return response;

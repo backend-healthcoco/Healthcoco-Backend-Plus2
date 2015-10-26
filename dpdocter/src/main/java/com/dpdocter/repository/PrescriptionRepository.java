@@ -3,6 +3,7 @@ package com.dpdocter.repository;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -77,5 +78,17 @@ public interface PrescriptionRepository extends MongoRepository<PrescriptionColl
 
     @Query(value = "{'doctorId' : ?0, 'patientId': ?1, 'hospitalId' : ?2, 'locationId' : ?3, 'discarded' : ?4}", count = true)
     Integer getPrescriptionCount(String doctorId, String patientId, String hospitalId, String locationId, Boolean discarded);
+
+    @Query("{'doctorId' : ?0, 'patientId' : ?2, 'updatedTime' : {'$gte' : ?3}}")
+	List<PrescriptionCollection> getPrescription(String doctorId, String patientId, Date date, Pageable pageable);
+
+    @Query("{'doctorId' : ?0, 'patientId' : ?2, 'updatedTime' : {'$gte' : ?3}}")
+	List<PrescriptionCollection> getPrescription(String doctorId, String patientId, Date date, Sort sort);
+
+    @Query("{'doctorId' : ?0, 'patientId' : ?2, 'updatedTime' : {'$gte' : ?3}, 'discarded' : ?4}")
+	List<PrescriptionCollection> getPrescription(String doctorId, String patientId, Date date, boolean discarded, Pageable pageable);
+
+    @Query("{'doctorId' : ?0, 'patientId' : ?2, 'updatedTime' : {'$gte' : ?3}, 'discarded' : ?4}")
+	List<PrescriptionCollection> getPrescription(String doctorId, String patientId, Date date, boolean discarded, Sort sort);
 
 }

@@ -395,7 +395,7 @@ public class PrescriptionApi {
 	    prescriptions = prescriptionServices.getPrescriptions(page, size, doctorId, hospitalId, locationId, patientId, updatedTime, isOTPVarified,
 		    discarded != null ? discarded : true);
 	else
-	    prescriptions = prescriptionServices.getPrescriptions(page, size, doctorId, hospitalId, locationId, patientId, updatedTime, true,
+	    prescriptions = prescriptionServices.getPrescriptions(page, size, doctorId, hospitalId, locationId, patientId, updatedTime, false,
 		    discarded != null ? discarded : true);
 
 	Response<Prescription> response = new Response<Prescription>();

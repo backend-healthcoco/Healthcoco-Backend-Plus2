@@ -10,6 +10,9 @@
 	<profiles>
 		<profile>
 			<id>local</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -30,9 +33,6 @@
 		</profile>
 		<profile>
 			<id>stagging</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
