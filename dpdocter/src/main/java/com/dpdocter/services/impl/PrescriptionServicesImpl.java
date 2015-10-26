@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.DrugDirection;
+import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionItem;
@@ -42,6 +43,7 @@ import com.dpdocter.collections.DrugDurationUnitCollection;
 import com.dpdocter.collections.DrugStrengthUnitCollection;
 import com.dpdocter.collections.DrugTypeCollection;
 import com.dpdocter.collections.EmailTrackCollection;
+import com.dpdocter.collections.LabTestCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientAdmissionCollection;
 import com.dpdocter.collections.PatientCollection;
@@ -62,6 +64,7 @@ import com.dpdocter.repository.DrugDurationUnitRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.DrugStrengthUnitRepository;
 import com.dpdocter.repository.DrugTypeRepository;
+import com.dpdocter.repository.LabTestRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientRepository;
@@ -152,6 +155,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
     @Autowired
     private PatientAdmissionRepository patientAdmissionRepository;
+    
+    @Autowired
+    private LabTestRepository labTestRepository;
+
 
     @Override
     public DrugAddEditResponse addDrug(DrugAddEditRequest request) {
@@ -436,6 +443,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			item.getDuration().setDurationUnit(null);
 		}
 	    }
+	    List<LabTest> labTests = null;
+	    for (LabTest labTest : prescriptionCollection.getLabTests()) {
+		    if (labTest.getId() != null) {
+				if(labTests == null)labTests = new ArrayList<LabTest>();
+				labTests.add(labTest);
+			}
+	    }
+	    prescriptionCollection.setLabTests(labTests);
 	    prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 	    response = new PrescriptionAddEditResponse();
 	    BeanUtil.map(prescriptionCollection, response);
@@ -471,6 +486,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			item.getDuration().setDurationUnit(null);
 		}
 	    }
+	    List<LabTest> labTests = null;
+	    for (LabTest labTest : prescriptionCollection.getLabTests()) {
+		    if (labTest.getId() != null) {
+				if(labTests == null)labTests = new ArrayList<LabTest>();
+				labTests.add(labTest);
+			}
+	    }
+	    prescriptionCollection.setLabTests(labTests);
+	    
 	    prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 	    prescription = new PrescriptionAddEditResponse();
 	    BeanUtil.map(prescriptionCollection, prescription);
@@ -1341,13 +1365,270 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    }
 	    break;
 	}
+	case LABTEST: {
+
+	    switch (Range.valueOf(range.toUpperCase())) {
+
+	    case GLOBAL:
+		response = getGlobalLabTests(page, size, updatedTime, discarded);
+		break;
+	    case CUSTOM:
+		response = getCustomLabTests(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+		break;
+	    case BOTH:
+		response = getCustomGlobalLabTests(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+		break;
+	    }
+	    break;
+	}
+
 	default:
 	    break;
 	}
 	return response;
     }
 
-    private List<Object> getGlobalDrugs(int page, int size, String updatedTime, boolean discarded) {
+	private List<Object> getGlobalLabTests(int page, int size, String updatedTime, Boolean discarded) {
+		List<Object> response = null;
+		List<LabTestCollection> labTestCollections = null;
+		try {
+		    if (DPDoctorUtils.anyStringEmpty(updatedTime)) {
+			if (discarded) {
+			    if (size > 0)
+				labTestCollections = labTestRepository.getGlobalLabTests(new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    else
+				labTestCollections = labTestRepository.getGlobalLabTests(new Sort(Sort.Direction.DESC, "updatedTime"));
+			} else {
+			    if (size > 0)
+				labTestCollections = labTestRepository.getGlobalLabTests(discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    else
+				labTestCollections = labTestRepository.getGlobalLabTests(discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+			}
+
+		    } else {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			if (discarded) {
+			    if (size > 0)
+				labTestCollections = labTestRepository.getGlobalLabTests(new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    else
+				labTestCollections = labTestRepository.getGlobalLabTests(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+			} else {
+			    if (size > 0)
+				labTestCollections = labTestRepository.getGlobalLabTests(new Date(createdTimeStamp), discarded, new PageRequest(page, size, Direction.DESC,
+					"updatedTime"));
+
+			    else
+				labTestCollections = labTestRepository.getGlobalLabTests(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+			}
+		    }
+		    if (!labTestCollections.isEmpty()) {
+			response = new ArrayList<Object>();
+			BeanUtil.map(labTestCollections, response);
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error Occurred While Getting LabTests");
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting LabTests");
+		}
+		return response;
+	    }
+
+	    private List<Object> getCustomLabTests(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
+		List<Object> response = null;
+		List<LabTestCollection> labTestCollections = null;
+		try {
+		    if (doctorId == null)
+			labTestCollections = new ArrayList<LabTestCollection>();
+
+		    else if (DPDoctorUtils.anyStringEmpty(updatedTime)) {
+			if (locationId == null && hospitalId == null) {
+			    if (discarded) {
+				if (size > 0)
+				    labTestCollections = labTestRepository.getCustomLabTests(doctorId, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else
+				    labTestCollections = labTestRepository.getCustomLabTests(doctorId, new Sort(Sort.Direction.DESC, "updatedTime"));
+			    } else {
+				if (size > 0)
+				    labTestCollections = labTestRepository.getCustomLabTests(doctorId, discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else
+				    labTestCollections = labTestRepository.getCustomLabTests(doctorId, discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+			    }
+			} else {
+			    if (discarded) {
+				if (size > 0)
+				    labTestCollections = labTestRepository.getCustomLabTests(doctorId, hospitalId, locationId, new PageRequest(page, size, Direction.DESC,
+					    "updatedTime"));
+				else
+				    labTestCollections = labTestRepository.getCustomLabTests(doctorId, hospitalId, locationId, new Sort(Sort.Direction.DESC, "updatedTime"));
+			    } else {
+				if (size > 0)
+				    labTestCollections = labTestRepository.getCustomLabTests(doctorId, hospitalId, locationId, discarded, new PageRequest(page, size,
+					    Direction.DESC, "updatedTime"));
+				else
+				    labTestCollections = labTestRepository.getCustomLabTests(doctorId, hospitalId, locationId, discarded, new Sort(Sort.Direction.DESC,
+					    "updatedTime"));
+			    }
+			}
+		    } else {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			if (locationId == null && hospitalId == null) {
+			    if (discarded) {
+				if (size > 0)
+				    labTestCollections = labTestRepository.getCustomLabTests(doctorId, new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC,
+					    "updatedTime"));
+				else
+				    labTestCollections = labTestRepository.getCustomLabTests(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+			    } else {
+				if (size > 0)
+				    labTestCollections = labTestRepository.getCustomLabTests(doctorId, new Date(createdTimeStamp), discarded, new PageRequest(page, size,
+					    Direction.DESC, "updatedTime"));
+				else
+				    labTestCollections = labTestRepository.getCustomLabTests(doctorId, new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC,
+					    "updatedTime"));
+			    }
+			} else {
+			    if (discarded) {
+				if (size > 0)
+				    labTestCollections = labTestRepository.getCustomLabTests(doctorId, hospitalId, locationId, new Date(createdTimeStamp), new PageRequest(page,
+					    size, Direction.DESC, "updatedTime"));
+				else
+				    labTestCollections = labTestRepository.getCustomLabTests(doctorId, hospitalId, locationId, new Date(createdTimeStamp), new Sort(
+					    Sort.Direction.DESC, "updatedTime"));
+			    } else {
+				if (size > 0)
+				    labTestCollections = labTestRepository.getCustomLabTests(doctorId, hospitalId, locationId, new Date(createdTimeStamp), discarded,
+					    new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else
+				    labTestCollections = labTestRepository.getCustomLabTests(doctorId, hospitalId, locationId, new Date(createdTimeStamp), discarded, new Sort(
+					    Sort.Direction.DESC, "updatedTime"));
+			    }
+			}
+		    }
+		    if (!labTestCollections.isEmpty()) {
+			response = new ArrayList<Object>();
+			BeanUtil.map(labTestCollections, response);
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error Occurred While Getting LabTests");
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting LabTests");
+		}
+		return response;
+	    }
+
+	    private List<Object> getCustomGlobalLabTests(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
+		List<Object> response = null;
+		List<LabTestCollection> labTestCollections = null;
+		try {
+		    if (doctorId == null) {
+			if (!DPDoctorUtils.allStringsEmpty(updatedTime)) {
+			    long createdTimeStamp = Long.parseLong(updatedTime);
+			    if (discarded) {
+				if (size > 0)
+				    labTestCollections = labTestRepository.getCustomGlobalLabTests(new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC,
+					    "updatedTime"));
+				else
+				    labTestCollections = labTestRepository.getCustomGlobalLabTests(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+			    } else {
+				if (size > 0)
+				    labTestCollections = labTestRepository.getCustomGlobalLabTests(new Date(createdTimeStamp), discarded, new PageRequest(page, size,
+					    Direction.DESC, "updatedTime"));
+				else
+				    labTestCollections = labTestRepository.getCustomGlobalLabTests(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC,
+					    "updatedTime"));
+			    }
+			} else {
+			    if (discarded) {
+				if (size > 0)
+				    labTestCollections = labTestRepository.findAll(new PageRequest(page, size, Direction.DESC, "updatedTime")).getContent();
+				else
+				    labTestCollections = labTestRepository.findAll(new Sort(Sort.Direction.DESC, "updatedTime"));
+			    } else {
+				if (size > 0)
+				    labTestCollections = labTestRepository.getCustomGlobalLabTests(discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else
+				    labTestCollections = labTestRepository.getCustomGlobalLabTests(discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+			    }
+			}
+		    } else if (DPDoctorUtils.anyStringEmpty(updatedTime)) {
+			if (locationId == null && hospitalId == null) {
+			    if (discarded) {
+				if (size > 0)
+				    labTestCollections = labTestRepository.getCustomGlobalLabTests(doctorId, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else
+				    labTestCollections = labTestRepository.getCustomGlobalLabTests(doctorId, new Sort(Sort.Direction.DESC, "updatedTime"));
+			    } else {
+				if (size > 0)
+				    labTestCollections = labTestRepository.getCustomGlobalLabTests(doctorId, discarded, new PageRequest(page, size, Direction.DESC,
+					    "updatedTime"));
+				else
+				    labTestCollections = labTestRepository.getCustomGlobalLabTests(doctorId, discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+			    }
+			} else {
+			    if (discarded) {
+				if (size > 0)
+				    labTestCollections = labTestRepository.getCustomGlobalLabTests(doctorId, hospitalId, locationId, new PageRequest(page, size, Direction.DESC,
+					    "updatedTime"));
+				else
+				    labTestCollections = labTestRepository.getCustomGlobalLabTests(doctorId, hospitalId, locationId,
+					    new Sort(Sort.Direction.DESC, "updatedTime"));
+			    } else {
+				if (size > 0)
+				    labTestCollections = labTestRepository.getCustomGlobalLabTests(doctorId, hospitalId, locationId, discarded, new PageRequest(page, size,
+					    Direction.DESC, "updatedTime"));
+				else
+				    labTestCollections = labTestRepository.getCustomGlobalLabTests(doctorId, hospitalId, locationId, discarded, new Sort(Sort.Direction.DESC,
+					    "updatedTime"));
+			    }
+			}
+		    } else {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			if (locationId == null && hospitalId == null) {
+			    if (discarded) {
+				if (size > 0)
+				    labTestCollections = labTestRepository.getCustomGlobalLabTests(doctorId, new Date(createdTimeStamp), new PageRequest(page, size,
+					    Direction.DESC, "updatedTime"));
+				else
+				    labTestCollections = labTestRepository.getCustomGlobalLabTests(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
+					    "updatedTime"));
+			    } else {
+				if (size > 0)
+				    labTestCollections = labTestRepository.getCustomGlobalLabTests(doctorId, new Date(createdTimeStamp), discarded, new PageRequest(page, size,
+					    Direction.DESC, "updatedTime"));
+				else
+				    labTestCollections = labTestRepository.getCustomGlobalLabTests(doctorId, new Date(createdTimeStamp), discarded, new Sort(
+					    Sort.Direction.DESC, "updatedTime"));
+			    }
+			} else {
+			    if (discarded) {
+				if (size > 0)
+				    labTestCollections = labTestRepository.getCustomGlobalLabTests(doctorId, hospitalId, locationId, new Date(createdTimeStamp),
+					    new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else
+				    labTestCollections = labTestRepository.getCustomGlobalLabTests(doctorId, hospitalId, locationId, new Date(createdTimeStamp), new Sort(
+					    Sort.Direction.DESC, "updatedTime"));
+			    } else {
+				if (size > 0)
+				    labTestCollections = labTestRepository.getCustomGlobalLabTests(doctorId, hospitalId, locationId, new Date(createdTimeStamp), discarded,
+					    new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else
+				    labTestCollections = labTestRepository.getCustomGlobalLabTests(doctorId, hospitalId, locationId, new Date(createdTimeStamp), discarded,
+					    new Sort(Sort.Direction.DESC, "updatedTime"));
+			    }
+			}
+		    }
+		    if (!labTestCollections.isEmpty()) {
+			response = new ArrayList<Object>();
+			BeanUtil.map(labTestCollections, response);
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error Occurred While Getting LabTests");
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting LabTests");
+		}
+		return response;
+	    }
+	private List<Object> getGlobalDrugs(int page, int size, String updatedTime, boolean discarded) {
 	List<Object> response = null;
 	List<DrugCollection> drugCollections = null;
 	try {
@@ -3116,4 +3397,125 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
+
+	@Override
+	public LabTest addLabTest(LabTest request) {
+		LabTest response = null;
+		LabTestCollection labTestCollection = new LabTestCollection();
+		BeanUtil.map(request, labTestCollection);
+		try {
+		    Date createdTime = new Date();
+		    labTestCollection.setCreatedTime(createdTime);
+		    labTestCollection = labTestRepository.save(labTestCollection);
+		    response = new LabTest();
+		    BeanUtil.map(labTestCollection, response);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error Occurred While Saving Lab Test");
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Lab Test");
+		}
+		return response;
+	}
+
+	@Override
+	public LabTest editLabTest(LabTest request) {
+		LabTest response = null;
+		LabTestCollection labTestCollection = new LabTestCollection();
+		BeanUtil.map(request, labTestCollection);
+		try {
+			LabTestCollection oldLabTest = labTestRepository.findOne(request.getId());
+		    labTestCollection.setCreatedBy(oldLabTest.getCreatedBy());
+		    labTestCollection.setCreatedTime(oldLabTest.getCreatedTime());
+		    labTestCollection.setDiscarded(oldLabTest.getDiscarded());
+		    
+		    labTestCollection = labTestRepository.save(labTestCollection);
+		    response = new LabTest();
+		    BeanUtil.map(labTestCollection, response);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error Occurred While Editing Lab Test");
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Lab Test");
+		}
+		return response;
+	    
+	}
+
+	@Override
+	public Boolean deleteLabTest(String labTestId, String doctorId, String hospitalId, String locationId) {
+		Boolean response = false;
+		LabTestCollection labTestCollection = null;
+		try {
+		    labTestCollection = labTestRepository.findOne(labTestId);
+		    if (labTestCollection != null) {
+			if (labTestCollection.getDoctorId() != null && labTestCollection.getHospitalId() != null && labTestCollection.getLocationId() != null) {
+			    if (labTestCollection.getDoctorId().equals(doctorId) && labTestCollection.getHospitalId().equals(hospitalId)
+				    && labTestCollection.getLocationId().equals(locationId)) {
+				labTestCollection.setDiscarded(true);
+				labTestCollection.setUpdatedTime(new Date());
+				labTestCollection = labTestRepository.save(labTestCollection);
+				response = true;
+			    } else {
+				logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+				throw new BusinessException(ServiceError.NotAuthorized, "Invalid Doctor Id, Hospital Id, Or Location Id");
+			    }
+			} else {
+			    logger.warn("Cannot Delete Global Lab Test");
+			    throw new BusinessException(ServiceError.NotAuthorized, "Cannot Delete Global Lab Test");
+			}
+		    } else {
+			logger.warn("Lab Test Not Found");
+			throw new BusinessException(ServiceError.NotFound, "Lab Test Not Found");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error Occurred While Deleting Lab Test");
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Lab Test");
+		}
+		return response;
+
+	}
+
+	@Override
+	public Boolean deleteLabTest(String labTestId) {
+		Boolean response = false;
+		LabTestCollection labTestCollection = null;
+		try {
+			labTestCollection = labTestRepository.findOne(labTestId);
+		    if (labTestCollection != null) {
+		    	labTestCollection.setUpdatedTime(new Date());
+		    	labTestCollection.setDiscarded(true);
+		    	labTestCollection = labTestRepository.save(labTestCollection);
+			response = true;
+		    } else {
+			logger.warn("Lab Test Not Found");
+			throw new BusinessException(ServiceError.NotFound, "Lab Test Not Found");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error Occurred While Deleting Lab Test");
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Lab Test");
+		}
+		return response;
+	}
+
+	@Override
+	public LabTest getLabTestById(String labTestId) {
+		LabTest response = null;
+		try {
+			LabTestCollection labTestCollection = labTestRepository.findOne(labTestId);
+		    if (labTestCollection != null) {
+			response = new LabTest();
+			BeanUtil.map(labTestCollection, response);
+		    } else {
+			logger.warn("Lab Test not found. Please check Lab Test Id");
+			throw new BusinessException(ServiceError.Unknown, "Lab Test not found. Please check Lab Test Id");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error Occurred While Getting Lab Test");
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Lab Test");
+		}
+		return response;
+	    
+	}
 }

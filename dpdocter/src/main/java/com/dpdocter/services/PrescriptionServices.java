@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.mongodb.repository.Query;
 
+import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.request.DrugAddEditRequest;
@@ -105,5 +106,15 @@ public interface PrescriptionServices {
     MailAttachment getPrescriptionMailData(String prescriptionId, String doctorId, String locationId, String hospitalId);
 
     void smsPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String mobileNumber);
+
+	LabTest addLabTest(LabTest request);
+
+	LabTest editLabTest(LabTest request);
+
+	Boolean deleteLabTest(String labTestId, String doctorId, String hospitalId, String locationId);
+
+	Boolean deleteLabTest(String labTestId);
+
+	LabTest getLabTestById(String labTestId);
 
 }

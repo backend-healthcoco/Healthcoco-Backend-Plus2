@@ -224,6 +224,16 @@ public interface PathProxy {
 
 	public static final String DELETE_GLOBAL_DRUG = "/drug/{drugId}/delete";
 
+	public static final String ADD_LAB_TEST = "/labTest/add";
+
+	public static final String EDIT_LAB_TEST = "/labTest/{labTestId}/update";
+
+	public static final String DELETE_LAB_TEST = "/labTest/{labTestId}/{doctorId}/{locationId}/{hospitalId}/delete";
+
+	public static final String GET_LAB_TEST_BY_ID = "/labTest/{labTestId}";
+
+	public static final String DELETE_GLOBAL_LAB_TEST = "/labTest/{labTestId}/delete";
+
 	public static final String GET_PRESCRIPTION_ITEMS = "/{type}/{range}";
 
 	public static final String ADD_TEMPLATE = "/template/add";
@@ -459,6 +469,8 @@ public interface PathProxy {
     public interface SolrPrescriptionUrls {
 
 	public static final String SEARCH_DRUG = "searchDrug/{searchTerm}";
+	
+	public static final String SEARCH_LAB_TEST = "searchLabTest/{searchTerm}";
     }
 
     public static final String SOLR_REGISTRATION_BASEURL = BASE_URL + "/solr/registration";

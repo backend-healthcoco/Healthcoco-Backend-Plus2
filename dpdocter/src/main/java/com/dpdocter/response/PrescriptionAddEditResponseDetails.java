@@ -2,6 +2,7 @@ package com.dpdocter.response;
 
 import java.util.List;
 
+import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.collections.GenericCollection;
 
@@ -25,6 +26,10 @@ public class PrescriptionAddEditResponseDetails extends GenericCollection {
     private Boolean discarded;
 
     private String visitId;
+
+    private List<LabTest> labTests;
+
+    private String advice;
 
     public String getId() {
 	return id;
@@ -106,11 +111,27 @@ public class PrescriptionAddEditResponseDetails extends GenericCollection {
 	this.visitId = visitId;
     }
 
-    @Override
-    public String toString() {
-	return "PrescriptionAddEditResponseDetails [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-		+ hospitalId + ", items=" + items + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + ", discarded=" + discarded
-		+ ", visitId=" + visitId + "]";
-    }
+	public List<LabTest> getLabTests() {
+		return labTests;
+	}
 
+	public void setLabTests(List<LabTest> labTests) {
+		this.labTests = labTests;
+	}
+
+	public String getAdvice() {
+		return advice;
+	}
+
+	public void setAdvice(String advice) {
+		this.advice = advice;
+	}
+
+	@Override
+	public String toString() {
+		return "PrescriptionAddEditResponseDetails [id=" + id + ", name=" + name + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", items=" + items + ", patientId="
+				+ patientId + ", prescriptionCode=" + prescriptionCode + ", discarded=" + discarded + ", visitId="
+				+ visitId + ", labTests=" + labTests + ", advice=" + advice + "]";
+	}
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.PrescriptionItem;
 
 @Document(collection = "prescription_cl")
@@ -31,6 +32,9 @@ public class PrescriptionCollection extends GenericCollection {
     private List<PrescriptionItem> items;
 
     @Field
+    private List<LabTest> labTests;
+
+    @Field
     private String patientId;
 
     @Field
@@ -38,6 +42,9 @@ public class PrescriptionCollection extends GenericCollection {
 
     @Field
     private boolean inHistory = false;
+
+    @Field
+    private String advice;
 
     public String getId() {
 	return id;
@@ -119,10 +126,28 @@ public class PrescriptionCollection extends GenericCollection {
 	this.inHistory = inHistory;
     }
 
-    @Override
-    public String toString() {
-	return "PrescriptionCollection [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ ", discarded=" + discarded + ", items=" + items + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + ", inHistory="
-		+ inHistory + "]";
-    }
+	public List<LabTest> getLabTests() {
+		return labTests;
+	}
+
+	public void setLabTests(List<LabTest> labTests) {
+		this.labTests = labTests;
+	}
+
+	public String getAdvice() {
+		return advice;
+	}
+
+	public void setAdvice(String advice) {
+		this.advice = advice;
+	}
+
+	@Override
+	public String toString() {
+		return "PrescriptionCollection [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", items=" + items
+				+ ", labTests=" + labTests + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode
+				+ ", inHistory=" + inHistory + ", advice=" + advice + "]";
+	}
+
 }

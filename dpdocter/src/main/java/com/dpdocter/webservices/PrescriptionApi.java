@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
@@ -44,6 +45,7 @@ import com.dpdocter.response.TemplateAddEditResponseDetails;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.solr.document.SolrDrugDocument;
+import com.dpdocter.solr.document.SolrLabTestDocument;
 import com.dpdocter.solr.services.SolrPrescriptionService;
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -148,7 +150,86 @@ public class PrescriptionApi {
 	response.setData(drugAddEditResponse);
 	return response;
     }
+    
+    @Path(value = PathProxy.PrescriptionUrls.ADD_LAB_TEST)
+    @POST
+    public Response<LabTest> addLabTest(LabTest request) {
+	if (request == null) {
+	    logger.warn("Request Sent Is NULL");
+	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
+	}
+	LabTest labTestResponse = prescriptionServices.addLabTest(request);
 
+	SolrLabTestDocument solrLabTestDocument = new SolrLabTestDocument();
+	BeanUtil.map(labTestResponse, solrLabTestDocument);
+	solrPrescriptionService.addLabTest(solrLabTestDocument);
+	Response<LabTest> response = new Response<LabTest>();
+	response.setData(labTestResponse);
+	return response;
+    }
+
+    @Path(value = PathProxy.PrescriptionUrls.EDIT_LAB_TEST)
+    @PUT
+    public Response<LabTest> editLabTest(@PathParam(value = "labTestId") String labTestId, LabTest request) {
+	if (StringUtils.isEmpty(labTestId) || request == null) {
+	    logger.warn("Request Sent Is NULL");
+	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
+	}
+	request.setId(labTestId);
+	LabTest labTestResponse = prescriptionServices.editLabTest(request);
+
+	SolrLabTestDocument solrLabTestDocument = new SolrLabTestDocument();
+	BeanUtil.map(labTestResponse, solrLabTestDocument);
+	solrPrescriptionService.editLabTest(solrLabTestDocument);
+
+	Response<LabTest> response = new Response<LabTest>();
+	response.setData(labTestResponse);
+	return response;
+    }
+
+    @Path(value = PathProxy.PrescriptionUrls.DELETE_LAB_TEST)
+    @DELETE
+    public Response<Boolean> deleteLabTest(@PathParam(value = "labTestId") String labTestId, @PathParam(value = "doctorId") String doctorId,
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
+	if (StringUtils.isEmpty(labTestId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
+	    logger.warn("Lab Test Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Lab Test Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+	}
+	Boolean labTestDeleteResponse = prescriptionServices.deleteLabTest(labTestId, doctorId, hospitalId, locationId);
+
+	solrPrescriptionService.deleteLabTest(labTestId);
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(labTestDeleteResponse);
+	return response;
+    }
+
+    @Path(value = PathProxy.PrescriptionUrls.DELETE_GLOBAL_LAB_TEST)
+    @DELETE
+    public Response<Boolean> deleteLabTest(@PathParam(value = "labTestId") String labTestId) {
+	if (StringUtils.isEmpty(labTestId)) {
+	    logger.warn("Lab Test Id Cannot Be Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Lab Test Id Cannot Be Empty");
+	}
+	Boolean labTestDeleteResponse = prescriptionServices.deleteLabTest(labTestId);
+
+	solrPrescriptionService.deleteDrug(labTestId);
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(labTestDeleteResponse);
+	return response;
+    }
+
+    @Path(value = PathProxy.PrescriptionUrls.GET_LAB_TEST_BY_ID)
+    @GET
+    public Response<LabTest> getLabTestDetails(@PathParam("labTestId") String labTestId) {
+	if (labTestId == null) {
+	    logger.error("Lab Test Id Is NULL");
+	    throw new BusinessException(ServiceError.InvalidInput, "Lab Test Id Is NULL");
+	}
+	LabTest labTestResponse = prescriptionServices.getLabTestById(labTestId);
+	Response<LabTest> response = new Response<LabTest>();
+	response.setData(labTestResponse);
+	return response;
+    }
     @Path(value = PathProxy.PrescriptionUrls.ADD_TEMPLATE)
     @POST
     public Response<TemplateAddEditResponse> addTemplate(TemplateAddEditRequest request) {
@@ -282,11 +363,6 @@ public class PrescriptionApi {
 	}
 	request.setId(prescriptionId);
 	PrescriptionAddEditResponseDetails prescriptionAddEditResponse = prescriptionServices.editPrescription(request);
-
-	// if (prescriptionAddEditResponse != null) {
-	// patientTrackService.addRecord(prescriptionAddEditResponse,
-	// VisitedFor.PRESCRIPTION, request.getVisitId());
-	// }
 
 	Response<PrescriptionAddEditResponseDetails> response = new Response<PrescriptionAddEditResponseDetails>();
 	response.setData(prescriptionAddEditResponse);

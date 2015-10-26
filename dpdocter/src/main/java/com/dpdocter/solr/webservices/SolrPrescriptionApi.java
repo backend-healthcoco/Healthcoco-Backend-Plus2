@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.solr.document.SolrDrugDocument;
+import com.dpdocter.solr.document.SolrLabTestDocument;
 import com.dpdocter.solr.services.SolrPrescriptionService;
 import com.dpdocter.webservices.PathProxy;
 import common.util.web.DPDoctorUtils;
@@ -73,4 +74,18 @@ public class SolrPrescriptionApi {
 	response.setDataList(complaints);
 	return response;
     }
+    
+    @Path(value = PathProxy.SolrPrescriptionUrls.SEARCH_LAB_TEST)
+    @GET
+    public Response<SolrLabTestDocument> searchLabTest(@PathParam(value = "searchTerm") String searchTerm) {
+	if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
+	    logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	}
+	List<SolrLabTestDocument> labTests = solrPrescriptionService.searchLabTest(searchTerm);
+	Response<SolrLabTestDocument> response = new Response<SolrLabTestDocument>();
+	response.setDataList(labTests);
+	return response;
+    }
+
 }
