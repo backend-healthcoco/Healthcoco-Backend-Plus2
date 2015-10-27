@@ -326,14 +326,15 @@ public class ContactsServiceImpl implements ContactsService {
     }
 
     @Override
-    public Boolean deleteGroup(String groupId) {
+    public Boolean deleteGroup(String groupId, Boolean discarded) {
 	Boolean response = false;
 	GroupCollection groupCollection = null;
 	List<PatientGroupCollection> patientGroupCollection = null;
 	try {
 	    groupCollection = groupRepository.findOne(groupId);
 	    if (groupCollection != null) {
-		groupCollection.setDiscarded(true);
+	    	if(discarded == null)groupCollection.setDiscarded(true);
+	    	else groupCollection.setDiscarded(discarded);
 		groupCollection.setUpdatedTime(new Date());
 		groupCollection = groupRepository.save(groupCollection);
 		patientGroupCollection = patientGroupRepository.findByGroupId(groupCollection.getId());
@@ -344,7 +345,6 @@ public class ContactsServiceImpl implements ContactsService {
 			patientCollection = patientRepository.save(patientCollection);
 			patientGroupRepository.delete(patientGroup);
 		    }
-
 		}
 		response = true;
 	    } else {

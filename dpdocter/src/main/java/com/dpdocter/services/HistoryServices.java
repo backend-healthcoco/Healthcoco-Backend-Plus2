@@ -15,7 +15,7 @@ public interface HistoryServices {
 
     DiseaseAddEditResponse editDiseases(DiseaseAddEditRequest request);
 
-    Boolean deleteDisease(String diseaseId, String doctorId, String hospitalId, String locationId);
+    Boolean deleteDisease(String diseaseId, String doctorId, String hospitalId, String locationId, Boolean discarded);
 
     List<DiseaseListResponse> getDiseases(String range, int page, int size, String doctorId, String hospitalId, String locationId, String updatedTime,
 	    Boolean discarded);

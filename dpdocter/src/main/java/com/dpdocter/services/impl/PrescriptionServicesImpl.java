@@ -219,7 +219,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
-    public Boolean deleteDrug(String drugId, String doctorId, String hospitalId, String locationId) {
+    public Boolean deleteDrug(String drugId, String doctorId, String hospitalId, String locationId, Boolean discarded) {
 	Boolean response = false;
 	DrugCollection drugCollection = null;
 	try {
@@ -228,7 +228,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		if (drugCollection.getDoctorId() != null && drugCollection.getHospitalId() != null && drugCollection.getLocationId() != null) {
 		    if (drugCollection.getDoctorId().equals(doctorId) && drugCollection.getHospitalId().equals(hospitalId)
 			    && drugCollection.getLocationId().equals(locationId)) {
-			drugCollection.setDiscarded(true);
+			if(discarded == null)drugCollection.setDiscarded(true);
+			else drugCollection.setDiscarded(discarded);
 			drugCollection.setUpdatedTime(new Date());
 			drugCollection = drugRepository.save(drugCollection);
 			response = true;
@@ -253,14 +254,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
-    public Boolean deleteDrug(String drugId) {
+    public Boolean deleteDrug(String drugId, Boolean discarded) {
 	Boolean response = false;
 	DrugCollection drugCollection = null;
 	try {
 	    drugCollection = drugRepository.findOne(drugId);
 	    if (drugCollection != null) {
 		drugCollection.setUpdatedTime(new Date());
-		drugCollection.setDiscarded(true);
+		if(discarded == null) drugCollection.setDiscarded(true);
+		else drugCollection.setDiscarded(discarded);
 		drugCollection = drugRepository.save(drugCollection);
 		response = true;
 	    } else {
@@ -354,7 +356,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
-    public Boolean deleteTemplate(String templateId, String doctorId, String hospitalId, String locationId) {
+    public Boolean deleteTemplate(String templateId, String doctorId, String hospitalId, String locationId, Boolean discarded) {
 	Boolean response = false;
 	TemplateCollection templateCollection = null;
 	try {
@@ -364,7 +366,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    if (templateCollection.getDoctorId().equals(doctorId) && templateCollection.getHospitalId().equals(hospitalId)
 			    && templateCollection.getLocationId().equals(locationId)) {
 			templateCollection.setUpdatedTime(new Date());
-			templateCollection.setDiscarded(true);
+			if(discarded == null)templateCollection.setDiscarded(true);
+			else templateCollection.setDiscarded(discarded);
 			templateCollection = templateRepository.save(templateCollection);
 			response = true;
 		    } else {
@@ -524,7 +527,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
-    public Boolean deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId, String patientId) {
+    public Boolean deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId, String patientId, Boolean discarded) {
 	Boolean response = false;
 	PrescriptionCollection prescriptionCollection = null;
 	try {
@@ -534,7 +537,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			&& prescriptionCollection.getLocationId() != null && prescriptionCollection.getPatientId() != null) {
 		    if (prescriptionCollection.getDoctorId().equals(doctorId) && prescriptionCollection.getHospitalId().equals(hospitalId)
 			    && prescriptionCollection.getLocationId().equals(locationId) && prescriptionCollection.getPatientId().equals(patientId)) {
-			prescriptionCollection.setDiscarded(true);
+			if(discarded == null)prescriptionCollection.setDiscarded(true);
+			else prescriptionCollection.setDiscarded(discarded);
 			prescriptionCollection.setUpdatedTime(new Date());
 			prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 			response = true;
@@ -965,14 +969,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
-    public Boolean deleteDrugType(String drugTypeId) {
+    public Boolean deleteDrugType(String drugTypeId, Boolean discarded) {
 
 	Boolean response = false;
 	DrugTypeCollection drugTypeCollection = null;
 	try {
 	    drugTypeCollection = drugTypeRepository.findOne(drugTypeId);
 	    if (drugTypeCollection != null) {
-		drugTypeCollection.setDiscarded(true);
+		if(discarded == null)drugTypeCollection.setDiscarded(true);
+		else drugTypeCollection.setDiscarded(discarded);
 		drugTypeCollection.setUpdatedTime(new Date());
 		drugTypeCollection = drugTypeRepository.save(drugTypeCollection);
 		response = true;
@@ -1032,7 +1037,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
-    public Boolean deleteDrugStrength(String drugStrengthId) {
+    public Boolean deleteDrugStrength(String drugStrengthId, Boolean discarded) {
 
 	Boolean response = false;
 	DrugStrengthUnitCollection drugStrengthCollection = null;
@@ -1040,7 +1045,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    drugStrengthCollection = drugStrengthRepository.findOne(drugStrengthId);
 	    if (drugStrengthCollection != null) {
 		drugStrengthCollection.setUpdatedTime(new Date());
-		drugStrengthCollection.setDiscarded(true);
+		if(discarded == null)drugStrengthCollection.setDiscarded(true);
+		else drugStrengthCollection.setDiscarded(discarded);
 		drugStrengthCollection = drugStrengthRepository.save(drugStrengthCollection);
 		response = true;
 	    } else {
@@ -1099,13 +1105,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
-    public Boolean deleteDrugDosage(String drugDosageId) {
+    public Boolean deleteDrugDosage(String drugDosageId, Boolean discarded) {
 	Boolean response = false;
 	DrugDosageCollection drugDosageCollection = null;
 	try {
 	    drugDosageCollection = drugDosageRepository.findOne(drugDosageId);
 	    if (drugDosageCollection != null) {
-		drugDosageCollection.setDiscarded(true);
+		if(discarded == null)drugDosageCollection.setDiscarded(true);
+		else drugDosageCollection.setDiscarded(discarded);
 		drugDosageCollection.setUpdatedTime(new Date());
 		drugDosageCollection = drugDosageRepository.save(drugDosageCollection);
 		response = true;
@@ -1166,13 +1173,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
-    public Boolean deleteDrugDirection(String drugDirectionId) {
+    public Boolean deleteDrugDirection(String drugDirectionId, Boolean discarded) {
 	Boolean response = false;
 	DrugDirectionCollection drugDirectionCollection = null;
 	try {
 	    drugDirectionCollection = drugDirectionRepository.findOne(drugDirectionId);
 	    if (drugDirectionCollection != null) {
-		drugDirectionCollection.setDiscarded(true);
+		if(discarded == null)drugDirectionCollection.setDiscarded(true);
+		else drugDirectionCollection.setDiscarded(discarded);
 		drugDirectionCollection.setUpdatedTime(new Date());
 		drugDirectionCollection = drugDirectionRepository.save(drugDirectionCollection);
 		response = true;
@@ -1233,13 +1241,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
-    public Boolean deleteDrugDurationUnit(String drugDurationUnitId) {
+    public Boolean deleteDrugDurationUnit(String drugDurationUnitId, Boolean discarded) {
 	Boolean response = false;
 	DrugDurationUnitCollection drugDurationUnitCollection = null;
 	try {
 	    drugDurationUnitCollection = drugDurationUnitRepository.findOne(drugDurationUnitId);
 	    if (drugDurationUnitCollection != null) {
-		drugDurationUnitCollection.setDiscarded(true);
+		if(discarded == null)drugDurationUnitCollection.setDiscarded(true);
+		else drugDurationUnitCollection.setDiscarded(discarded);
 		drugDurationUnitCollection.setUpdatedTime(new Date());
 		drugDurationUnitCollection = drugDurationUnitRepository.save(drugDurationUnitCollection);
 		response = true;
@@ -3460,7 +3469,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	@Override
-	public Boolean deleteLabTest(String labTestId, String doctorId, String hospitalId, String locationId) {
+	public Boolean deleteLabTest(String labTestId, String doctorId, String hospitalId, String locationId, Boolean discarded) {
 		Boolean response = false;
 		LabTestCollection labTestCollection = null;
 		try {
@@ -3469,7 +3478,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (labTestCollection.getDoctorId() != null && labTestCollection.getHospitalId() != null && labTestCollection.getLocationId() != null) {
 			    if (labTestCollection.getDoctorId().equals(doctorId) && labTestCollection.getHospitalId().equals(hospitalId)
 				    && labTestCollection.getLocationId().equals(locationId)) {
-				labTestCollection.setDiscarded(true);
+			    	if(discarded == null)labTestCollection.setDiscarded(true);
+			    	else labTestCollection.setDiscarded(discarded);
+			    	
 				labTestCollection.setUpdatedTime(new Date());
 				labTestCollection = labTestRepository.save(labTestCollection);
 				response = true;
@@ -3495,14 +3506,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	@Override
-	public Boolean deleteLabTest(String labTestId) {
+	public Boolean deleteLabTest(String labTestId, Boolean discarded) {
 		Boolean response = false;
 		LabTestCollection labTestCollection = null;
 		try {
 			labTestCollection = labTestRepository.findOne(labTestId);
 		    if (labTestCollection != null) {
 		    	labTestCollection.setUpdatedTime(new Date());
-		    	labTestCollection.setDiscarded(true);
+		    	if(discarded == null)labTestCollection.setDiscarded(true);
+		    	else labTestCollection.setDiscarded(discarded);
 		    	labTestCollection = labTestRepository.save(labTestCollection);
 			response = true;
 		    } else {

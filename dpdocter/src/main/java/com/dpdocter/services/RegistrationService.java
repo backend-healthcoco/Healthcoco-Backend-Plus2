@@ -33,7 +33,7 @@ public interface RegistrationService {
 
     Reference addEditReference(Reference referrence);
 
-    void deleteReferrence(String referrenceId);
+    void deleteReferrence(String referrenceId, Boolean discarded);
 
     ReferenceResponse getReferences(String doctorId, String locationId, String hospitalId);
 

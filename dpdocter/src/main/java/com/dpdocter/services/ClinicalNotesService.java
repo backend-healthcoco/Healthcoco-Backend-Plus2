@@ -22,7 +22,7 @@ public interface ClinicalNotesService {
 
     ClinicalNotes editNotes(ClinicalNotesEditRequest request);
 
-    void deleteNote(String id);
+    void deleteNote(String id, Boolean discarded);
 
     List<ClinicalNotes> getPatientsClinicalNotesWithVerifiedOTP(int page, int size, String patientId, String updatedTime, boolean discarded);
 
@@ -41,17 +41,17 @@ public interface ClinicalNotesService {
 
     Diagram addEditDiagram(Diagram diagram);
 
-    void deleteComplaint(String id, String doctorId, String locationId, String hospitalId);
+    void deleteComplaint(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
-    void deleteObservation(String id, String doctorId, String locationId, String hospitalId);
+    void deleteObservation(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
-    void deleteInvestigation(String id, String doctorId, String locationId, String hospitalId);
+    void deleteInvestigation(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
-    void deleteDiagnosis(String id, String doctorId, String locationId, String hospitalId);
+    void deleteDiagnosis(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
-    void deleteNotes(String id, String doctorId, String locationId, String hospitalId);
+    void deleteNotes(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
-    void deleteDiagram(String id, String doctorId, String locationId, String hospitalId);
+    void deleteDiagram(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
     @Query(value = "{'doctorId': ?0, 'patientId': ?1, 'locationId': ?2, 'hospitalId': ?3}", count = true)
     Integer getClinicalNotesCount(String doctorId, String patientId, String locationId, String hospitalId);

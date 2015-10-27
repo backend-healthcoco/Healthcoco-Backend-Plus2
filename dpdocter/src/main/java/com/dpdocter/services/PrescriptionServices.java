@@ -31,9 +31,9 @@ public interface PrescriptionServices {
 
     DrugAddEditResponse editDrug(DrugAddEditRequest request);
 
-    Boolean deleteDrug(String drugId, String doctorId, String hospitalId, String locationIdString);
+    Boolean deleteDrug(String drugId, String doctorId, String hospitalId, String locationIdString, Boolean discarded);
 
-    Boolean deleteDrug(String drugId);
+    Boolean deleteDrug(String drugId, Boolean discarded);
 
     DrugAddEditResponse getDrugById(String drugId);
 
@@ -41,7 +41,7 @@ public interface PrescriptionServices {
 
     TemplateAddEditResponseDetails editTemplate(TemplateAddEditRequest request);
 
-    Boolean deleteTemplate(String templateId, String doctorId, String hospitalId, String locationId);
+    Boolean deleteTemplate(String templateId, String doctorId, String hospitalId, String locationId, Boolean discarded);
 
     TemplateAddEditResponseDetails getTemplate(String templateId, String doctorId, String hospitalId, String locationId);
 
@@ -49,7 +49,7 @@ public interface PrescriptionServices {
 
     PrescriptionAddEditResponseDetails editPrescription(PrescriptionAddEditRequest request);
 
-    Boolean deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId, String patientId);
+    Boolean deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId, String patientId, Boolean discarded);
 
     List<Prescription> getPrescriptions(int page, int size, String doctorId, String hospitalId, String locationId, String patientId, String updatedTime,
 	    boolean isOTPVarified, boolean discarded);
@@ -84,19 +84,19 @@ public interface PrescriptionServices {
 
     DrugDirectionAddEditResponse editDrugDirection(DrugDirectionAddEditRequest request);
 
-    Boolean deleteDrugType(String drugTypeId);
+    Boolean deleteDrugType(String drugTypeId, Boolean discarded);
 
-    Boolean deleteDrugStrength(String drugStrengthId);
+    Boolean deleteDrugStrength(String drugStrengthId, Boolean discarded);
 
-    Boolean deleteDrugDosage(String drugDosageId);
+    Boolean deleteDrugDosage(String drugDosageId, Boolean discarded);
 
-    Boolean deleteDrugDirection(String drugDirectionId);
+    Boolean deleteDrugDirection(String drugDirectionId, Boolean discarded);
 
     DrugDurationUnitAddEditResponse addDrugDurationUnit(DrugDurationUnitAddEditRequest request);
 
     DrugDurationUnitAddEditResponse editDrugDurationUnit(DrugDurationUnitAddEditRequest request);
 
-    Boolean deleteDrugDurationUnit(String drugDurationUnitId);
+    Boolean deleteDrugDurationUnit(String drugDurationUnitId, Boolean discarded);
 
     List<Object> getPrescriptionItems(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded);
@@ -111,9 +111,9 @@ public interface PrescriptionServices {
 
 	LabTest editLabTest(LabTest request);
 
-	Boolean deleteLabTest(String labTestId, String doctorId, String hospitalId, String locationId);
+	Boolean deleteLabTest(String labTestId, String doctorId, String hospitalId, String locationId, Boolean discarded);
 
-	Boolean deleteLabTest(String labTestId);
+	Boolean deleteLabTest(String labTestId, Boolean discarded);
 
 	LabTest getLabTestById(String labTestId);
 

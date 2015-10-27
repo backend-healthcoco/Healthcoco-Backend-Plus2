@@ -144,7 +144,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
-    public Boolean deleteDisease(String diseaseId, String doctorId, String hospitalId, String locationId) {
+    public Boolean deleteDisease(String diseaseId, String doctorId, String hospitalId, String locationId, Boolean discarded) {
 	Boolean response = false;
 	DiseasesCollection disease = null;
 	try {
@@ -152,7 +152,8 @@ public class HistoryServicesImpl implements HistoryServices {
 	    if (disease != null) {
 		if (disease.getDoctorId() != null && disease.getHospitalId() != null && disease.getLocationId() != null) {
 		    if (disease.getDoctorId().equals(doctorId) && disease.getHospitalId().equals(hospitalId) && disease.getLocationId().equals(locationId)) {
-			disease.setDiscarded(true);
+			if(discarded == null)disease.setDiscarded(true);
+			else disease.setDiscarded(discarded);
 			disease.setUpdatedTime(new Date());
 			disease = diseasesRepository.save(disease);
 			response = true;

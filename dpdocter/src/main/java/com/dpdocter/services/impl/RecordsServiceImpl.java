@@ -379,14 +379,15 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public void deleteRecord(String recordId) {
+    public void deleteRecord(String recordId, Boolean discarded) {
 	try {
 	    RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
 	    if (recordsCollection == null) {
 		logger.warn("Record Not found.Check RecordId");
 		throw new BusinessException(ServiceError.Unknown, "Record Not found.Check RecordId");
 	    }
-	    recordsCollection.setDiscarded(true);
+	    if(discarded == null)recordsCollection.setDiscarded(true);
+	    else recordsCollection.setDiscarded(true);
 	    recordsCollection.setUpdatedTime(new Date());
 	    recordsRepository.save(recordsCollection);
 	} catch (BusinessException e) {

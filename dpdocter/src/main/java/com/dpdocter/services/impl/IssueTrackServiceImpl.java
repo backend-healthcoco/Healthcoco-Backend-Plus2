@@ -340,14 +340,15 @@ public class IssueTrackServiceImpl implements IssueTrackService {
     }
 
     @Override
-    public Boolean deleteIssue(String issueId, String doctorId, String locationId, String hospitalId) {
+    public Boolean deleteIssue(String issueId, String doctorId, String locationId, String hospitalId, Boolean discarded) {
 	try {
 	    IssueTrackCollection issueTrackCollection = issueTrackRepository.findOne(issueId);
 	    if (issueTrackCollection != null) {
 		if (issueTrackCollection.getDoctorId() != null && issueTrackCollection.getHospitalId() != null && issueTrackCollection.getLocationId() != null) {
 		    if (issueTrackCollection.getDoctorId().equals(doctorId) && issueTrackCollection.getHospitalId().equals(hospitalId)
 			    && issueTrackCollection.getLocationId().equals(locationId)) {
-			issueTrackCollection.setDiscarded(true);
+			if(discarded == null)issueTrackCollection.setDiscarded(true);
+			else issueTrackCollection.setDiscarded(discarded);
 			issueTrackCollection.setUpdatedTime(new Date());
 			issueTrackRepository.save(issueTrackCollection);
 			return true;

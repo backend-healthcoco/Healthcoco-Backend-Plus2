@@ -592,11 +592,12 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     @Override
-    public void deleteReferrence(String referenceId) {
+    public void deleteReferrence(String referenceId, Boolean discarded) {
 	try {
 	    ReferencesCollection referrencesCollection = referrenceRepository.findOne(referenceId);
 	    if (referrencesCollection != null) {
-		referrencesCollection.setDiscarded(true);
+	    	if(discarded == null)referrencesCollection.setDiscarded(true);
+	    	else referrencesCollection.setDiscarded(discarded);
 		referrencesCollection.setUpdatedTime(new Date());
 		referrenceRepository.save(referrencesCollection);
 	    } else {

@@ -571,19 +571,21 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
-    public void deleteNote(String id) {
+    public void deleteNote(String id, Boolean discarded) {
 	try {
 	    List<PatientClinicalNotesCollection> patientClinicalNotesCollections = patientClinicalNotesRepository.findByClinicalNotesId(id);
 	    if (patientClinicalNotesCollections != null) {
 		for (PatientClinicalNotesCollection patientClinicalNotesCollection : patientClinicalNotesCollections) {
-		    patientClinicalNotesCollection.setDiscarded(true);
+		    if(discarded == null)patientClinicalNotesCollection.setDiscarded(true);
+		    else patientClinicalNotesCollection.setDiscarded(discarded);
 		    patientClinicalNotesCollection.setUpdatedTime(new Date());
 		    patientClinicalNotesRepository.save(patientClinicalNotesCollection);
 		}
 
 	    }
 	    ClinicalNotesCollection clinicalNotes = clinicalNotesRepository.findOne(id);
-	    clinicalNotes.setDiscarded(true);
+	    if(discarded == null)clinicalNotes.setDiscarded(true);
+	    else clinicalNotes.setDiscarded(discarded);
 	    clinicalNotesRepository.save(clinicalNotes);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -875,14 +877,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
-    public void deleteComplaint(String id, String doctorId, String locationId, String hospitalId) {
+    public void deleteComplaint(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
 	try {
 	    ComplaintCollection complaintCollection = complaintRepository.findOne(id);
 	    if (complaintCollection != null) {
 		if (complaintCollection.getDoctorId() != null && complaintCollection.getHospitalId() != null && complaintCollection.getLocationId() != null) {
 		    if (complaintCollection.getDoctorId().equals(doctorId) && complaintCollection.getHospitalId().equals(hospitalId)
 			    && complaintCollection.getLocationId().equals(locationId)) {
-			complaintCollection.setDiscarded(true);
+			if(discarded == null)complaintCollection.setDiscarded(true);
+			else complaintCollection.setDiscarded(discarded);
 			complaintCollection.setUpdatedTime(new Date());
 			complaintRepository.save(complaintCollection);
 		    } else {
@@ -907,7 +910,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
-    public void deleteObservation(String id, String doctorId, String locationId, String hospitalId) {
+    public void deleteObservation(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
 	try {
 	    ObservationCollection observationCollection = observationRepository.findOne(id);
 	    if (observationCollection != null) {
@@ -915,7 +918,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			&& observationCollection.getLocationId() != null) {
 		    if (observationCollection.getDoctorId().equals(doctorId) && observationCollection.getHospitalId().equals(hospitalId)
 			    && observationCollection.getLocationId().equals(locationId)) {
-			observationCollection.setDiscarded(true);
+			if(discarded == null)observationCollection.setDiscarded(true);
+			else observationCollection.setDiscarded(discarded);
 			observationCollection.setUpdatedTime(new Date());
 			observationRepository.save(observationCollection);
 		    } else {
@@ -938,7 +942,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
-    public void deleteInvestigation(String id, String doctorId, String locationId, String hospitalId) {
+    public void deleteInvestigation(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
 	try {
 	    InvestigationCollection investigationCollection = investigationRepository.findOne(id);
 	    if (investigationCollection != null) {
@@ -946,7 +950,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			&& investigationCollection.getLocationId() != null) {
 		    if (investigationCollection.getDoctorId().equals(doctorId) && investigationCollection.getHospitalId().equals(hospitalId)
 			    && investigationCollection.getLocationId().equals(locationId)) {
-			investigationCollection.setDiscarded(true);
+			if(discarded == null)investigationCollection.setDiscarded(true);
+			else investigationCollection.setDiscarded(discarded);
 			investigationCollection.setUpdatedTime(new Date());
 			investigationRepository.save(investigationCollection);
 		    } else {
@@ -969,14 +974,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
-    public void deleteDiagnosis(String id, String doctorId, String locationId, String hospitalId) {
+    public void deleteDiagnosis(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
 	try {
 	    DiagnosisCollection diagnosisCollection = diagnosisRepository.findOne(id);
 	    if (diagnosisCollection != null) {
 		if (diagnosisCollection.getDoctorId() != null && diagnosisCollection.getHospitalId() != null && diagnosisCollection.getLocationId() != null) {
 		    if (diagnosisCollection.getDoctorId().equals(doctorId) && diagnosisCollection.getHospitalId().equals(hospitalId)
 			    && diagnosisCollection.getLocationId().equals(locationId)) {
-			diagnosisCollection.setDiscarded(true);
+			if(discarded == null)diagnosisCollection.setDiscarded(true);
+			else diagnosisCollection.setDiscarded(discarded);
 			diagnosisCollection.setUpdatedTime(new Date());
 			diagnosisRepository.save(diagnosisCollection);
 		    } else {
@@ -999,14 +1005,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
-    public void deleteNotes(String id, String doctorId, String locationId, String hospitalId) {
+    public void deleteNotes(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
 	try {
 	    NotesCollection notesCollection = notesRepository.findOne(id);
 	    if (notesCollection != null) {
 		if (notesCollection.getDoctorId() != null && notesCollection.getHospitalId() != null && notesCollection.getLocationId() != null) {
 		    if (notesCollection.getDoctorId().equals(doctorId) && notesCollection.getHospitalId().equals(hospitalId)
 			    && notesCollection.getLocationId().equals(locationId)) {
-			notesCollection.setDiscarded(true);
+			if(discarded == null)notesCollection.setDiscarded(true);
+			else notesCollection.setDiscarded(discarded);
 			notesCollection.setUpdatedTime(new Date());
 			notesRepository.save(notesCollection);
 		    } else {
@@ -1030,14 +1037,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
-    public void deleteDiagram(String id, String doctorId, String locationId, String hospitalId) {
+    public void deleteDiagram(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
 	try {
 	    DiagramsCollection diagramsCollection = diagramsRepository.findOne(id);
 	    if (diagramsCollection != null) {
 		if (diagramsCollection.getDoctorId() != null && diagramsCollection.getHospitalId() != null && diagramsCollection.getLocationId() != null) {
 		    if (diagramsCollection.getDoctorId().equals(doctorId) && diagramsCollection.getHospitalId().equals(hospitalId)
 			    && diagramsCollection.getLocationId().equals(locationId)) {
-			diagramsCollection.setDiscarded(true);
+			if(discarded == null)diagramsCollection.setDiscarded(true);
+			else diagramsCollection.setDiscarded(discarded);
 			diagramsCollection.setUpdatedTime(new Date());
 			diagramsRepository.save(diagramsCollection);
 		    } else {

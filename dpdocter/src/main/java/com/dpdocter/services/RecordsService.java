@@ -40,7 +40,7 @@ public interface RecordsService {
 
     File getRecordFile(String recordId);
 
-    void deleteRecord(String recordId);
+    void deleteRecord(String recordId, Boolean discarded);
 
     List<Records> searchRecords(String doctorId, String locationId, String hospitalId, String createdTime);
 

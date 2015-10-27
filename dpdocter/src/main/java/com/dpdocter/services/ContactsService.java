@@ -18,7 +18,7 @@ public interface ContactsService {
 
     Group addEditGroup(Group group);
 
-    Boolean deleteGroup(String groupId);
+    Boolean deleteGroup(String groupId, Boolean discarded);
 
     List<PatientCard> getDoctorsRecentlyVisitedContacts(String doctorId, int size, int page);
 

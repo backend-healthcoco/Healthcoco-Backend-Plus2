@@ -9,6 +9,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
@@ -164,12 +165,12 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.DELETE_REFERRENCE)
     @DELETE
-    public Response<Boolean> deleteReferrence(@PathParam("referrenceId") String referrenceId) {
+    public Response<Boolean> deleteReferrence(@PathParam("referrenceId") String referrenceId, @QueryParam("discarded") Boolean discarded) {
 	if (referrenceId == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.referrenceId is null");
 	}
 	Response<Boolean> response = new Response<Boolean>();
-	registrationService.deleteReferrence(referrenceId);
+	registrationService.deleteReferrence(referrenceId, discarded);
 	response.setData(true);
 	return response;
     }
