@@ -1,5 +1,9 @@
 package com.dpdocter.services.impl;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.DrugDirection;
+import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Prescription;
@@ -3548,5 +3553,71 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		return response;
 	    
+	}
+
+	@Override
+	public void importDrug() {
+		String csvFile = "/home/suresh/drug.csv";
+    	BufferedReader br = null;
+    	String line = "";
+    	String cvsSplitBy = ",";
+    	
+    	try {
+
+    		br = new BufferedReader(new FileReader(csvFile));
+    		while ((line = br.readLine()) != null) {
+    			String[] obj = line.split(cvsSplitBy);
+    			String drugType = obj[1];
+    			DrugTypeCollection drugTypeCollection = null;
+    			if(drugType.equals("TAB")){
+    				drugTypeCollection = drugTypeRepository.findByType("TABLET");
+    			}
+    			else if(drugType.equals("CAP")){
+    				drugTypeCollection = drugTypeRepository.findByType("CAPSULE");
+    			}
+    			else if(drugType.equals("OINT")){
+    				drugTypeCollection = drugTypeRepository.findByType("OINTMENT");
+    			}
+    			else if(drugType.equals("SYP")){
+    				drugTypeCollection = drugTypeRepository.findByType("SYRUP");
+    			}
+    			
+    			DrugType type = null;
+    			if(drugTypeCollection!= null){
+    				type = new DrugType();
+    				drugTypeCollection.setType(drugType);
+    				BeanUtil.map(drugTypeCollection, type);
+    				
+    			}
+    			
+    			DrugCollection drugCollection = new DrugCollection();
+    			drugCollection.setCreatedBy("ADMIN");
+    			drugCollection.setCreatedTime(new Date());
+    			drugCollection.setDiscarded(false);
+    			drugCollection.setDrugName(obj[0]);
+    			drugCollection.setDrugType(type);
+    			drugCollection.setDoctorId(null);
+    			drugCollection.setHospitalId(null);
+    			drugCollection.setLocationId(null);
+    			
+    			drugRepository.save(drugCollection);
+    			
+    		}
+    	} catch (FileNotFoundException e) {
+    		e.printStackTrace();
+    	} catch (IOException e) {
+    		e.printStackTrace();
+    	} finally {
+    		if (br != null) {
+    			try {
+    				br.close();
+    			} catch (IOException e) {
+    				e.printStackTrace();
+    			}
+    		}
+    	}
+
+    	System.out.println("Done");
+
 	}
 }

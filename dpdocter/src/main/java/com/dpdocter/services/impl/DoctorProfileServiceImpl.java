@@ -9,6 +9,7 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.DoctorClinicProfile;
@@ -16,10 +17,15 @@ import com.dpdocter.beans.DoctorExperience;
 import com.dpdocter.beans.DoctorGeneralInfo;
 import com.dpdocter.beans.DoctorProfile;
 import com.dpdocter.beans.DoctorRegistrationDetail;
+import com.dpdocter.beans.EducationInstitute;
+import com.dpdocter.beans.EducationQualification;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
+import com.dpdocter.beans.Speciality;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
+import com.dpdocter.collections.EducationInstituteCollection;
+import com.dpdocter.collections.EducationQualificationCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.MedicalCouncilCollection;
 import com.dpdocter.collections.ProfessionalMembershipCollection;
@@ -31,6 +37,8 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorRepository;
+import com.dpdocter.repository.EducationInstituteRepository;
+import com.dpdocter.repository.EducationQualificationRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.MedicalCouncilRepository;
 import com.dpdocter.repository.ProfessionalMembershipRepository;
@@ -57,7 +65,7 @@ import com.dpdocter.services.FileManager;
 @Service
 public class DoctorProfileServiceImpl implements DoctorProfileService {
 
-    private static Logger logger = Logger.getLogger(DoctorProfileServiceImpl.class.getName());
+	private static Logger logger = Logger.getLogger(DoctorProfileServiceImpl.class.getName());
 
     @Autowired
     private UserRepository userRepository;
@@ -82,6 +90,13 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
     @Autowired
     private FileManager fileManager;
+    
+    @Autowired
+    private EducationQualificationRepository educationQualificationRepository;
+
+	@Autowired
+    private EducationInstituteRepository educationInstituteRepository;
+
 
     @Override
     public Boolean addEditName(DoctorNameAddEditRequest request) {
@@ -615,5 +630,53 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	}
 	return response;
     }
+
+	@Override
+	public List<Speciality> getSpecialities() {
+		List<Speciality> specialities = null;
+		List<SpecialityCollection> specialitiesCollections = null;
+		try {
+			specialitiesCollections = specialityRepository.findAll();
+			specialities = new ArrayList<Speciality>();
+		    BeanUtil.map(specialitiesCollections, specialities);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error Getting Specialities");
+		    throw new BusinessException(ServiceError.Unknown, "Error Getting Specialities");
+		}
+		return specialities;
+	}
+
+	@Override
+	public List<EducationInstitute> getEducationInstitutes() {
+		List<EducationInstitute> educationInstitutes = null;
+		List<EducationInstituteCollection> educationInstituteCollections = null;
+		try {
+			educationInstituteCollections = educationInstituteRepository.findAll();
+		    educationInstitutes = new ArrayList<EducationInstitute>();
+		    BeanUtil.map(educationInstituteCollections, educationInstitutes);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error Getting Education Institutes");
+		    throw new BusinessException(ServiceError.Unknown, "Error Getting Education Institutes");
+		}
+		return educationInstitutes;
+	}
+
+	@Override
+	public List<EducationQualification> getEducationQualifications() {
+		List<EducationQualification> qualifications = null;
+		List<EducationQualificationCollection> qualificationCollections = null;
+		try {
+			qualificationCollections = educationQualificationRepository.findAll();
+		    qualifications = new ArrayList<EducationQualification>();
+		    BeanUtil.map(qualificationCollections, qualifications);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error Getting Professional Memberships");
+		    throw new BusinessException(ServiceError.Unknown, "Error Getting Professional Memberships");
+		}
+		return qualifications;
+	}
 
 }

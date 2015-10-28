@@ -117,4 +117,6 @@ public interface PrescriptionServices {
 
 	LabTest getLabTestById(String labTestId);
 
+	void importDrug();
+
 }

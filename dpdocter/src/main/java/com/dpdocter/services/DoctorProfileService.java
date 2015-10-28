@@ -4,8 +4,11 @@ import java.util.List;
 
 import com.dpdocter.beans.DoctorGeneralInfo;
 import com.dpdocter.beans.DoctorProfile;
+import com.dpdocter.beans.EducationInstitute;
+import com.dpdocter.beans.EducationQualification;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
+import com.dpdocter.beans.Speciality;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
 import com.dpdocter.request.DoctorAppointmentNumbersAddEditRequest;
 import com.dpdocter.request.DoctorAppointmentSlotAddEditRequest;
@@ -67,5 +70,11 @@ public interface DoctorProfileService {
     Boolean addEditAppointmentSlot(DoctorAppointmentSlotAddEditRequest request);
 
     Boolean addEditGeneralInfo(DoctorGeneralInfo request);
+
+	List<Speciality> getSpecialities();
+
+	List<EducationInstitute> getEducationInstitutes();
+
+	List<EducationQualification> getEducationQualifications();
 
 }

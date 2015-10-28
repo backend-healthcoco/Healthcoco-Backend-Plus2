@@ -19,8 +19,11 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.DoctorGeneralInfo;
 import com.dpdocter.beans.DoctorProfile;
+import com.dpdocter.beans.EducationInstitute;
+import com.dpdocter.beans.EducationQualification;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
+import com.dpdocter.beans.Speciality;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
@@ -338,5 +341,32 @@ public class DoctorProfileApi {
 	    return finalImageURL + imageURL;
 	} else
 	    return null;
+    }
+    
+    @Path(value = PathProxy.DoctorProfileUrls.GET_SPECIALITIES)
+    @GET
+    public Response<Speciality> getSpeciality() {
+	List<Speciality> specialities = doctorProfileService.getSpecialities();
+	Response<Speciality> response = new Response<Speciality>();
+	response.setDataList(specialities);
+	return response;
+    }
+    
+    @Path(value = PathProxy.DoctorProfileUrls.GET_EDUCATION_INSTITUTES)
+    @GET
+    public Response<EducationInstitute> getEducationInstitutes() {
+	List<EducationInstitute> educationInstitutes = doctorProfileService.getEducationInstitutes();
+	Response<EducationInstitute> response = new Response<EducationInstitute>();
+	response.setDataList(educationInstitutes);
+	return response;
+    }
+    
+    @Path(value = PathProxy.DoctorProfileUrls.GET_EDUCATION_QUALIFICATIONS)
+    @GET
+    public Response<EducationQualification> getEducationQualifications() {
+	List<EducationQualification> qualifications = doctorProfileService.getEducationQualifications();
+	Response<EducationQualification> response = new Response<EducationQualification>();
+	response.setDataList(qualifications);
+	return response;
     }
 }

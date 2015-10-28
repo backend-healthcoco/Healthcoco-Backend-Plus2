@@ -291,6 +291,8 @@ public interface PathProxy {
 	public static final String EMAIL_PRESCRIPTION = "/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 
 	public static final String SMS_PRESCRIPTION = "/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{mobileNumber}/sms";
+	
+	public static final String IMPORT_DRUG = "/importDrug";
 
     }
 
@@ -386,6 +388,14 @@ public interface PathProxy {
 	public static final String ADD_EDIT_APPOINTMENT_SLOT = "/clinicProfile/addEditAppointmentSlot";
 
 	public static final String ADD_EDIT_GENERAL_INFO = "/clinicProfile/addEditGeneralInfo";
+	
+	public static final String GET_SPECIALITIES = "/getSpecialities";
+	
+	public static final String GET_EDUCATION_INSTITUTES = "/getEducationInstitutes";
+	
+	public static final String GET_EDUCATION_QUALIFICATIONS = "/getEducationQualifications";
+	
+	
     }
 
     public static final String PATIENT_VISIT_BASE_URL = BASE_URL + "/patientVisit";

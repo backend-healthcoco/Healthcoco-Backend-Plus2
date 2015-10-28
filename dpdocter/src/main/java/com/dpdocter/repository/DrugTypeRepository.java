@@ -155,4 +155,7 @@ public interface DrugTypeRepository extends MongoRepository<DrugTypeCollection, 
     @Query("{'discarded': ?0}")
     List<DrugTypeCollection> getCustomGlobalDrugType(boolean discarded, Sort sort);
 
+    @Query("{'type': ?0, 'doctorId': null, 'locationId': null, 'hospitalId': null}")
+	DrugTypeCollection findByType(String string);
+
 }

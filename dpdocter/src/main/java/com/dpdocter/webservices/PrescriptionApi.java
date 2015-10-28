@@ -684,4 +684,15 @@ public class PrescriptionApi {
 	response.setData(true);
 	return response;
     }
+    
+    @Path(value = PathProxy.PrescriptionUrls.IMPORT_DRUG)
+    @GET
+    public Response<Boolean> importDrug() {
+	prescriptionServices.importDrug();
+
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(true);
+	return response;
+    }
+
 }
