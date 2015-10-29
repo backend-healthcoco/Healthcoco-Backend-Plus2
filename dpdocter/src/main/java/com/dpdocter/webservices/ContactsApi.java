@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -242,13 +243,13 @@ public class ContactsApi {
     @Path(value = PathProxy.ContactsUrls.GET_ALL_GROUPS)
     @GET
     public Response<Group> getAllGroups(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
-	    @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId, @QueryParam("updatedTime") String updatedTime,
-	    @QueryParam("discarded") Boolean discarded) {
+	    @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 
-	if (discarded != null)
+	/*if (discarded != null)*/
 	    return getGroups(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
-	else
-	    return getGroups(page, size, doctorId, locationId, hospitalId, updatedTime, true);
+	/*else
+	    return getGroups(page, size, doctorId, locationId, hospitalId, updatedTime, true);*/
     }
 
     private Response<Group> getGroups(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {

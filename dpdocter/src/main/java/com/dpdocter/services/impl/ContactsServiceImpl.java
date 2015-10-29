@@ -333,8 +333,10 @@ public class ContactsServiceImpl implements ContactsService {
 	try {
 	    groupCollection = groupRepository.findOne(groupId);
 	    if (groupCollection != null) {
-	    	if(discarded == null)groupCollection.setDiscarded(true);
-	    	else groupCollection.setDiscarded(discarded);
+		if (discarded == null)
+		    groupCollection.setDiscarded(true);
+		else
+		    groupCollection.setDiscarded(discarded);
 		groupCollection.setUpdatedTime(new Date());
 		groupCollection = groupRepository.save(groupCollection);
 		patientGroupCollection = patientGroupRepository.findByGroupId(groupCollection.getId());
@@ -382,12 +384,6 @@ public class ContactsServiceImpl implements ContactsService {
     public int getContactsTotalSize(GetDoctorContactsRequest request) {
 	List<DoctorContactCollection> doctorContactCollections = null;
 	try {
-	    // if (request.getSize() > 0)
-	    // doctorContactCollections =
-	    // doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(),
-	    // false, new PageRequest(request.getPage(),
-	    // request.getSize(), Direction.DESC, "updatedTime"));
-	    // else
 	    doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(), false, new Sort(Sort.Direction.DESC,
 		    "updatedTime"));
 
@@ -416,43 +412,28 @@ public class ContactsServiceImpl implements ContactsService {
     public List<Group> getAllGroups(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
 	List<Group> groups = null;
 	List<GroupCollection> groupCollections = null;
+	boolean[] discards = new boolean[2];
+	discards[0] = false;
 	try {
-	    if (DPDoctorUtils.anyStringEmpty(updatedTime)) {
-		if (discarded) {
-		    if (size > 0)
-			groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId, new PageRequest(page, size,
-				Direction.DESC, "updatedTime"));
-		    else
-			groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC,
-				"updatedTime"));
+	    if (discarded) {
+		discards[1] = true;
+	    }
+	    if (size > 0) {
+		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+		    groupCollections = groupRepository.findAll(doctorId, discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		} else {
-		    if (size > 0)
-			groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId, discarded, new PageRequest(page,
-				size, Direction.DESC, "updatedTime"));
-		    else
-			groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId, discarded, new Sort(
-				Sort.Direction.DESC, "updatedTime"));
+		    groupCollections = groupRepository.findAll(doctorId, locationId, hospitalId, discards, new PageRequest(page, size, Direction.DESC,
+			    "updatedTime"));
 		}
 	    } else {
-		long createdTimestamp = Long.parseLong(updatedTime);
-		if (discarded) {
-		    if (size > 0)
-			groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId, new Date(createdTimestamp),
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
-		    else
-			groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId, new Date(createdTimestamp),
-				new Sort(Sort.Direction.DESC, "updatedTime"));
+		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+		    groupCollections = groupRepository.findAll(doctorId, discards, new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
-		    if (size > 0)
-			groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId, discarded, new Date(
-				createdTimestamp), new PageRequest(page, size, Direction.DESC, "updatedTime"));
-		    else
-			groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorId, locationId, hospitalId, discarded, new Date(
-				createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+		    groupCollections = groupRepository.findAll(doctorId, locationId, hospitalId, discards, new Sort(Sort.Direction.DESC, "updatedTime"));
 		}
 	    }
 
-	    if (groupCollections != null) {
+	    if (groupCollections != null && !groupCollections.isEmpty()) {
 		groups = new ArrayList<Group>();
 		for (GroupCollection groupCollection : groupCollections) {
 		    Group group = new Group();
