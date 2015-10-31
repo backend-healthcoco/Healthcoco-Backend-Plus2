@@ -14,7 +14,7 @@ public class TokenCollection extends GenericCollection {
     private Boolean isUsed = false;
 
     @Field
-    private String userId;
+    private String userLocationId;
 
     public String getId() {
 	return id;
@@ -32,16 +32,17 @@ public class TokenCollection extends GenericCollection {
 	this.isUsed = isUsed;
     }
 
-    public String getUserId() {
-	return userId;
-    }
+	public String getUserLocationId() {
+		return userLocationId;
+	}
 
-    public void setUserId(String userId) {
-	this.userId = userId;
-    }
+	public void setUserLocationId(String userLocationId) {
+		this.userLocationId = userLocationId;
+	}
 
-    @Override
-    public String toString() {
-	return "TokenCollection [id=" + id + ", isUsed=" + isUsed + ", userId=" + userId + "]";
-    }
+	@Override
+	public String toString() {
+		return "TokenCollection [id=" + id + ", isUsed=" + isUsed + ", userLocationId=" + userLocationId + "]";
+	}
+
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -76,14 +77,13 @@ public class PrintSettingsApi {
     @GET
     public Response<PrintSettings> getSettings(@PathParam(value = "printFilter") String printFilter, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId, @QueryParam(value = "page") int page,
-	    @QueryParam(value = "size") int size, @QueryParam(value = "updatedTime") String updatedTime, @QueryParam(value = "discarded") Boolean discarded) {
+	    @QueryParam(value = "size") int size, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 
 	if (DPDoctorUtils.anyStringEmpty(printFilter, doctorId, locationId, hospitalId)) {
 	    logger.warn("PrintFilter, DoctorId or locationId or hospitalId cannot be null");
 	    throw new BusinessException(ServiceError.InvalidInput, "PrintFilter, DoctorId or locationId or hospitalId cannot be null");
 	}
-	List<PrintSettings> printSettings = printSettingsService.getSettings(printFilter, doctorId, locationId, hospitalId, page, size, updatedTime,
-		discarded != null ? discarded : true);
+	List<PrintSettings> printSettings = printSettingsService.getSettings(printFilter, doctorId, locationId, hospitalId, page, size, updatedTime, discarded);
 	Response<PrintSettings> response = new Response<PrintSettings>();
 	response.setDataList(printSettings);
 	return response;

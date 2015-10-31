@@ -42,8 +42,6 @@ public interface RecordsService {
 
     void deleteRecord(String recordId, Boolean discarded);
 
-    List<Records> searchRecords(String doctorId, String locationId, String hospitalId, String createdTime);
-
     Integer getRecordCount(String doctorId, String patientId, String locationId, String hospitalId);
 
     boolean editDescription(RecordsDescription recordsDescription);

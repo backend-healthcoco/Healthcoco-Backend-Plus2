@@ -12,13 +12,15 @@ import com.dpdocter.beans.ClinicTiming;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.Reference;
+import com.dpdocter.beans.ReferenceDetail;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
 import com.dpdocter.request.ClinicImageAddRequest;
 import com.dpdocter.request.ClinicLogoAddRequest;
+import com.dpdocter.request.DoctorRegisterRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.PatientInitialAndCounter;
-import com.dpdocter.response.ReferenceResponse;
+import com.dpdocter.response.RegisterDoctorResponse;
 
 public interface RegistrationService {
     User checkIfPatientExist(PatientRegistrationRequest request);
@@ -35,13 +37,11 @@ public interface RegistrationService {
 
     void deleteReferrence(String referrenceId, Boolean discarded);
 
-    ReferenceResponse getReferences(String doctorId, String locationId, String hospitalId);
+    List<ReferenceDetail> getReferences(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded);
 
     String patientIdGenerator(String doctorId, String locationId, String hospitalId);
 
     PatientInitialAndCounter getPatientInitialAndCounter(String doctorId, String locationId);
-
-    ReferenceResponse getCustomReferences(String doctorId, String locationId, String hospitalId);
 
     Boolean updatePatientInitialAndCounter(String doctorId, String locationId, String patientInitial, int patientCounter);
 
@@ -68,5 +68,11 @@ public interface RegistrationService {
     List<ClinicImage> addClinicImage(ClinicImageAddRequest request);
 
     Boolean deleteClinicImage(String locationId, int counter);
+
+	User getDoctorsByEmailAddress(String emailAddress);
+
+	RegisterDoctorResponse registerNewDoctor(DoctorRegisterRequest request);
+
+	RegisterDoctorResponse registerExisitingDoctor(DoctorRegisterRequest request);
 
 }

@@ -17,30 +17,12 @@ import com.dpdocter.collections.PatientVisitCollection;
 public interface PatientVisitRepository extends MongoRepository<PatientVisitCollection, String>, PagingAndSortingRepository<PatientVisitCollection, String> {
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2}")
     List<PatientVisitCollection> findAll(String doctorId, String locationId, String hospitalId, Pageable pageable);
-
-    @Query(value = "{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2}", count = true)
-    Integer count(String doctorId, String locationId, String hospitalId);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'patientId': ?3}")
-    List<PatientVisitCollection> find(String doctorId, String locationId, String hospitalId, String patientId, Pageable pageable);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'patientId': ?3}")
-    List<PatientVisitCollection> find(String doctorId, String locationId, String hospitalId, String patientId, Sort sort);
+    
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2}")
+    List<PatientVisitCollection> findAll(String doctorId, String locationId, String hospitalId, Sort sort);
 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'patientId': ?3}")
     PatientVisitCollection find(String doctorId, String locationId, String hospitalId, String patientId);
-
-    @Query("{'doctorId': ?0, 'patientId': ?1}")
-	List<PatientVisitCollection> find(String doctorId, String patientId, Pageable pageable);
-
-    @Query("{'doctorId': ?0, 'patientId': ?1}")
-	List<PatientVisitCollection> find(String doctorId, String patientId, Sort sort);
-
-    @Query("{'patientId': ?0}")
-	List<PatientVisitCollection> find(String patientId, Pageable pageable);
-
-    @Query("{'patientId': ?0}")
-	List<PatientVisitCollection> find(String patientId, Sort sort);
 
     @Query("{'doctorId': ?0, 'patientId' : ?1, 'updatedTime' : {'$gte' : ?2}}")
 	List<PatientVisitCollection> find(String doctorId, String patientId, Date date, Pageable pageable);
@@ -59,4 +41,5 @@ public interface PatientVisitRepository extends MongoRepository<PatientVisitColl
 
     @Query("{'patientId' : ?0, 'updatedTime' : {'$gte' : ?1}}")
 	List<PatientVisitCollection> find(String patientId, Date date, Sort sort);
+
 }

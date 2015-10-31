@@ -14,81 +14,27 @@ import com.dpdocter.collections.PrescriptionCollection;
 
 public interface PrescriptionRepository extends MongoRepository<PrescriptionCollection, String>, PagingAndSortingRepository<PrescriptionCollection, String> {
 
-    @Query("{'doctorId' : ?0, 'hospitalId' : ?1, 'locationId' : ?2, 'patientId' : ?3, 'discarded' : ?4}")
-    List<PrescriptionCollection> getPrescription(String doctorId, String hospitalId, String locationId, String patientId, Boolean discarded, Pageable pageable);
-
-    @Query("{'doctorId' : ?0, 'hospitalId' : ?1, 'locationId' : ?2, 'patientId' : ?3}")
-    List<PrescriptionCollection> getPrescription(String doctorId, String hospitalId, String locationId, String patientId, Pageable pageable);
-
-    @Query("{'doctorId' : ?0, 'hospitalId' : ?1, 'locationId' : ?2, 'patientId' : ?3, 'updatedTime' : {'$gte' : ?4}, 'discarded' : ?5}")
-    List<PrescriptionCollection> getPrescription(String doctorId, String hospitalId, String locationId, String patientId, Date date, Boolean discarded,
+    @Query("{'doctorId' : ?0, 'hospitalId' : ?1, 'locationId' : ?2, 'patientId' : ?3, 'updatedTime' : {'$gte' : ?4}, 'discarded' : {$in: ?5}}")
+    List<PrescriptionCollection> getPrescription(String doctorId, String hospitalId, String locationId, String patientId, Date date, boolean[] discards,
 	    Pageable pageable);
 
-    @Query("{'doctorId' : ?0, 'hospitalId' : ?1, 'locationId' : ?2, 'patientId' : ?3, 'updatedTime' : {'$gte' : ?4}}")
-    List<PrescriptionCollection> getPrescription(String doctorId, String hospitalId, String locationId, String patientId, Date date, Pageable pageable);
+    @Query("{'patientId' : ?0, 'updatedTime' : {'$gte' : ?1}, 'discarded' : {$in: ?2}}")
+    List<PrescriptionCollection> getPrescription(String patientId, Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'patientId' : ?0,'discarded' : ?1}")
-    List<PrescriptionCollection> getPrescription(String patientId, Boolean discarded, Pageable pageable);
+    @Query("{'patientId' : ?0, 'updatedTime' : {'$gte' : ?1}, 'discarded' : {$in: ?2}}")
+    List<PrescriptionCollection> getPrescription(String patientId, Date date, boolean[] discards, Sort sort);
 
-    @Query("{'patientId' : ?0}")
-    List<PrescriptionCollection> getPrescription(String patientId, Pageable pageable);
-
-    @Query("{'patientId' : ?0, 'updatedTime' : {'$gte' : ?1}, 'discarded' : ?2}")
-    List<PrescriptionCollection> getPrescription(String patientId, Date date, Boolean discarded, Pageable pageable);
-
-    @Query("{'patientId' : ?0, 'updatedTime' : {'$gte' : ?1}}")
-    List<PrescriptionCollection> getPrescription(String patientId, Date date, Pageable pageable);
-
-    @Query("{'doctorId' : ?0, 'patientId' : ?2}")
-    List<PrescriptionCollection> getPrescription(String doctorId, String patientId, Pageable pageable);
-
-    @Query("{'doctorId' : ?0, 'patientId' : ?2,'discarded' : ?3}")
-    List<PrescriptionCollection> getPrescription(String doctorId, String patientId, boolean discarded, Pageable pageable);
-
-    @Query("{'doctorId' : ?0, 'hospitalId' : ?1, 'locationId' : ?2, 'patientId' : ?3,'discarded' : ?4}")
-    List<PrescriptionCollection> getPrescription(String doctorId, String hospitalId, String locationId, String patientId, Boolean discarded, Sort sort);
-
-    @Query("{'doctorId' : ?0, 'hospitalId' : ?1, 'locationId' : ?2, 'patientId' : ?3}")
-    List<PrescriptionCollection> getPrescription(String doctorId, String hospitalId, String locationId, String patientId, Sort sort);
-
-    @Query("{'doctorId' : ?0, 'hospitalId' : ?1, 'locationId' : ?2, 'patientId' : ?3, 'updatedTime' : {'$gte' : ?4}, 'discarded' : ?5}")
-    List<PrescriptionCollection> getPrescription(String doctorId, String hospitalId, String locationId, String patientId, Date date, Boolean discarded,
+    @Query("{'doctorId' : ?0, 'hospitalId' : ?1, 'locationId' : ?2, 'patientId' : ?3, 'updatedTime' : {'$gte' : ?4}, 'discarded' : {$in: ?5}}")
+    List<PrescriptionCollection> getPrescription(String doctorId, String hospitalId, String locationId, String patientId, Date date, boolean[] discards,
 	    Sort sort);
 
-    @Query("{'doctorId' : ?0, 'hospitalId' : ?1, 'locationId' : ?2, 'patientId' : ?3, 'updatedTime' : {'$gte' : ?4}}")
-    List<PrescriptionCollection> getPrescription(String doctorId, String hospitalId, String locationId, String patientId, Date date, Sort sort);
-
-    @Query("{'patientId' : ?0,'discarded' : ?1}")
-    List<PrescriptionCollection> getPrescription(String patientId, Boolean discarded, Sort sort);
-
-    @Query("{'patientId' : ?0}")
-    List<PrescriptionCollection> getPrescription(String patientId, Sort sort);
-
-    @Query("{'patientId' : ?0, 'updatedTime' : {'$gte' : ?1}, 'discarded' : ?2}")
-    List<PrescriptionCollection> getPrescription(String patientId, Date date, Boolean discarded, Sort sort);
-
-    @Query("{'patientId' : ?0, 'updatedTime' : {'$gte' : ?1}}")
-    List<PrescriptionCollection> getPrescription(String patientId, Date date, Sort sort);
-
-    @Query("{'doctorId' : ?0, 'patientId' : ?2}")
-    List<PrescriptionCollection> getPrescription(String doctorId, String patientId, Sort sort);
-
-    @Query("{'doctorId' : ?0, 'patientId' : ?2,'discarded' : ?3}")
-    List<PrescriptionCollection> getPrescription(String doctorId, String patientId, boolean discarded, Sort sort);
-
     @Query(value = "{'doctorId' : ?0, 'patientId': ?1, 'hospitalId' : ?2, 'locationId' : ?3, 'discarded' : ?4}", count = true)
-    Integer getPrescriptionCount(String doctorId, String patientId, String hospitalId, String locationId, Boolean discarded);
+    Integer getPrescriptionCount(String doctorId, String patientId, String hospitalId, String locationId, boolean discarded);
 
-    @Query("{'doctorId' : ?0, 'patientId' : ?2, 'updatedTime' : {'$gte' : ?3}}")
-	List<PrescriptionCollection> getPrescription(String doctorId, String patientId, Date date, Pageable pageable);
+    @Query("{'doctorId' : ?0, 'patientId' : ?1, 'updatedTime' : {'$gte' : ?2}, 'discarded' : {$in: ?3}}")
+	List<PrescriptionCollection> getPrescription(String doctorId, String patientId, Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'doctorId' : ?0, 'patientId' : ?2, 'updatedTime' : {'$gte' : ?3}}")
-	List<PrescriptionCollection> getPrescription(String doctorId, String patientId, Date date, Sort sort);
-
-    @Query("{'doctorId' : ?0, 'patientId' : ?2, 'updatedTime' : {'$gte' : ?3}, 'discarded' : ?4}")
-	List<PrescriptionCollection> getPrescription(String doctorId, String patientId, Date date, boolean discarded, Pageable pageable);
-
-    @Query("{'doctorId' : ?0, 'patientId' : ?2, 'updatedTime' : {'$gte' : ?3}, 'discarded' : ?4}")
-	List<PrescriptionCollection> getPrescription(String doctorId, String patientId, Date date, boolean discarded, Sort sort);
+    @Query("{'doctorId' : ?0, 'patientId' : ?1, 'updatedTime' : {'$gte' : ?2}, 'discarded' : {$in: ?3}}")
+	List<PrescriptionCollection> getPrescription(String doctorId, String patientId, Date date, boolean[] discards, Sort sort);
 
 }

@@ -15,61 +15,28 @@ import com.dpdocter.enums.ComponentType;
 
 public interface PrintSettingsRepository extends MongoRepository<PrintSettingsCollection, String>, PagingAndSortingRepository<PrintSettingsCollection, String> {
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2}")
-    PrintSettingsCollection getSettings(String doctorId, String locationId, String hospitalId);
+    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': {$in: ?2}}")
+    List<PrintSettingsCollection> getSettings(String doctorId, Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}}")
-    List<PrintSettingsCollection> getSettings(String doctorId, Date date, Pageable pageable);
+    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': {$in: ?2}}")
+    List<PrintSettingsCollection> getSettings(String doctorId, Date date, boolean[] discards, Sort sort);
 
-    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}}")
-    List<PrintSettingsCollection> getSettings(String doctorId, Date date, Sort sort);
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': {$in: ?4}}")
+    List<PrintSettingsCollection> getSettings(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards, Sort sort);
 
-    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2}")
-    List<PrintSettingsCollection> getSettings(String doctorId, Date date, Boolean discarded, Pageable pageable);
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': {$in: ?4}}")
+    List<PrintSettingsCollection> getSettings(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2}")
-    List<PrintSettingsCollection> getSettings(String doctorId, Date date, Boolean discarded, Sort sort);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}}")
-    List<PrintSettingsCollection> getSettings(String doctorId, String locationId, String hospitalId, Date date, Pageable pageable);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}}")
-    List<PrintSettingsCollection> getSettings(String doctorId, String locationId, String hospitalId, Date date, Sort sort);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': ?4}")
-    List<PrintSettingsCollection> getSettings(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded, Sort sort);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': ?4}")
-    List<PrintSettingsCollection> getSettings(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded, Pageable pageable);
-
-    @Query("{'doctorId': ?0}")
-    List<PrintSettingsCollection> getSettings(String doctorId, Pageable pageable);
-
-    @Query("{'doctorId': ?0}")
-    List<PrintSettingsCollection> getSettings(String doctorId, Sort sort);
-
-    @Query("{'doctorId': ?0, 'discarded': ?1}")
-    List<PrintSettingsCollection> getSettings(String doctorId, Boolean discarded, Pageable pageable);
-
-    @Query("{'doctorId': ?0, 'discarded': ?1}")
-    List<PrintSettingsCollection> getSettings(String doctorId, Boolean discarded, Sort sort);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2}")
-    List<PrintSettingsCollection> getSettings(String doctorId, String locationId, String hospitalId, Pageable pageable);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2}")
-    List<PrintSettingsCollection> getSettings(String doctorId, String locationId, String hospitalId, Sort sort);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3}")
-    List<PrintSettingsCollection> getSettings(String doctorId, String locationId, String hospitalId, Boolean discarded, Pageable pageable);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3}")
-    List<PrintSettingsCollection> getSettings(String doctorId, String locationId, String hospitalId, Boolean discarded, Sort sort);
-
-    @Override
-    Page<PrintSettingsCollection> findAll(Pageable pageable);
+    @Query("{'updatedTime': {'$gte': ?0}, 'discarded': {$in: ?1}}")
+    List<PrintSettingsCollection> findAll(Date date, boolean[] discards, Pageable pageable);
+    
+    @Query("{'updatedTime': {'$gte': ?0}, 'discarded': {$in: ?1}}")
+    List<PrintSettingsCollection> findAll(Date date, boolean[] discards, Sort sort);
 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'componentType': ?3}")
     PrintSettingsCollection getSettings(String doctorId, String locationId, String hospitalId, String type);
+
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2}")
+	PrintSettingsCollection getSettings(String doctorId, String locationId, String hospitalId);
 
 }

@@ -30,15 +30,12 @@ public class DrugCollection extends GenericCollection {
     private List<String> genericNames;
 
     @Field
-    /* @Indexed(sparse = true) */
     private String doctorId;
 
     @Field
-    /* @Indexed(sparse = true) */
     private String hospitalId;
 
     @Field
-    /* @Indexed(sparse = true) */
     private String locationId;
 
     @Field

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -125,8 +126,8 @@ public class ClinicalNotesApi {
     @GET
     public Response<ClinicalNotes> getNotes(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
-	    @QueryParam(value = "patientId") String patientId, @QueryParam("updatedTime") String updatedTime,
-	    @QueryParam(value = "isOTPVerified") Boolean isOTPVerified, @QueryParam(value = "discarded") Boolean discarded) {
+	    @QueryParam(value = "patientId") String patientId, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
+	    @QueryParam(value = "isOTPVerified") Boolean isOTPVerified, @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 	return getAllNotes(page, size, doctorId, locationId, hospitalId, patientId, updatedTime, isOTPVerified, discarded);
     }
 
@@ -136,15 +137,14 @@ public class ClinicalNotesApi {
 
 	if (isOTPVerified != null) {
 	    if (isOTPVerified) {
-		clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithVerifiedOTP(page, size, patientId, updatedTime, discarded != null ? discarded
-			: true);
+		clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithVerifiedOTP(page, size, patientId, updatedTime, discarded);
 	    } else {
 		clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(page, size, patientId, doctorId, locationId, hospitalId,
-			updatedTime, discarded != null ? discarded : true);
+			updatedTime, discarded);
 	    }
 	} else {
 	    clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(page, size, patientId, doctorId, locationId, hospitalId,
-		    updatedTime, discarded != null ? discarded : true);
+		    updatedTime, discarded);
 	}
 
 	if (clinicalNotes != null && !clinicalNotes.isEmpty()) {
@@ -357,8 +357,8 @@ public class ClinicalNotesApi {
     @GET
     public Response<Object> getClinicalItems(@PathParam("type") String type, @PathParam("range") String range, @QueryParam("page") int page,
 	    @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
-	    @QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "updatedTime") String updatedTime,
-	    @QueryParam(value = "discarded") Boolean discarded) {
+	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 
 	if (DPDoctorUtils.anyStringEmpty(type, range)) {
 	    logger.warn("Invalid Input. Type or Range Cannot Be Empty");

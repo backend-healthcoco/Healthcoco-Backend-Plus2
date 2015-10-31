@@ -84,7 +84,7 @@ public class ContactsApi {
     @GET
     public Response<DoctorContactsResponse> getDoctorContacts(@PathParam("type") String type, @QueryParam("page") int page, @QueryParam("size") int size,
 	    @QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-	    @QueryParam("updatedTime") String updatedTime, @QueryParam("discarded") Boolean discarded) {
+	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 
 	DoctorContactsResponse doctorContactsResponse = null;
 
@@ -121,13 +121,12 @@ public class ContactsApi {
 
     }
 
-    private DoctorContactsResponse doctorContacts(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
-	    @QueryParam("updatedTime") String updatedTime, @QueryParam("discarded") Boolean discarded) {
+    private DoctorContactsResponse doctorContacts(int page, int size, String doctorId, String updatedTime, Boolean discarded) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 	    logger.warn("Invalid Input. Doctor Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id Cannot Be Empty");
 	}
-	List<PatientCard> patientCards = contactsService.getDoctorContacts(doctorId, updatedTime, discarded != null ? discarded : true, page, size);
+	List<PatientCard> patientCards = contactsService.getDoctorContacts(doctorId, updatedTime, discarded, page, size);
 
 	int ttlCount = patientCards != null ? patientCards.size() : 0;
 
@@ -141,12 +140,9 @@ public class ContactsApi {
     @GET
     public Response<RegisteredPatientDetails> getDoctorContactsHandheld(@QueryParam(value = "doctorId") String doctorId,
 	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
-	    @QueryParam(value = "updatedTime") String updatedTime, @QueryParam(value = "discarded") Boolean discarded) {
+	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 
-	if (discarded != null)
 	    return doctorContactsHandheld(doctorId, locationId, hospitalId, updatedTime, discarded);
-	else
-	    return doctorContactsHandheld(doctorId, locationId, hospitalId, updatedTime, true);
     }
 
     private Response<RegisteredPatientDetails> doctorContactsHandheld(String doctorId, String locationId, String hospitalId, String updatedTime,
@@ -246,11 +242,8 @@ public class ContactsApi {
 	    @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 
-	/*if (discarded != null)*/
 	    return getGroups(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
-	/*else
-	    return getGroups(page, size, doctorId, locationId, hospitalId, updatedTime, true);*/
-    }
+	}
 
     private Response<Group> getGroups(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
 	List<Group> groups = contactsService.getAllGroups(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);

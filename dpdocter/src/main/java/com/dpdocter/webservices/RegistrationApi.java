@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -14,6 +15,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -25,9 +27,11 @@ import com.dpdocter.beans.ClinicLogo;
 import com.dpdocter.beans.ClinicProfile;
 import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.ClinicTiming;
+import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.Reference;
+import com.dpdocter.beans.ReferenceDetail;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
 import com.dpdocter.exceptions.BusinessException;
@@ -35,12 +39,15 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.ClinicImageAddRequest;
 import com.dpdocter.request.ClinicLogoAddRequest;
+import com.dpdocter.request.DoctorRegisterRequest;
+import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.PatientInitialAndCounter;
-import com.dpdocter.response.ReferenceResponse;
+import com.dpdocter.response.RegisterDoctorResponse;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.solr.document.SolrPatientDocument;
 import com.dpdocter.solr.services.SolrRegistrationService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -52,6 +59,9 @@ import common.util.web.Response;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class RegistrationApi {
+	
+	private static Logger logger = Logger.getLogger(RegistrationApi.class.getName());
+	
     @Autowired
     private RegistrationService registrationService;
 
@@ -177,42 +187,18 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.GET_REFERRENCES)
     @GET
-    public Response<ReferenceResponse> getReferences(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
-	    @PathParam("hospitalId") String hospitalId) {
-	if (doctorId == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.doctorId is null");
-	}
-	if (locationId == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.locationId is null");
-	}
-	if (hospitalId == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.hospitalId is null");
-	}
-	ReferenceResponse references = registrationService.getReferences(doctorId, locationId, hospitalId);
-	Response<ReferenceResponse> response = new Response<ReferenceResponse>();
-	response.setData(references);
+    public Response<ReferenceDetail> getReferences(@PathParam("range") String range, @QueryParam("page") int page,
+    	    @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+    	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+    	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
+	
+    List<ReferenceDetail> references = registrationService.getReferences(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+	Response<ReferenceDetail> response = new Response<ReferenceDetail>();
+	response.setDataList(references);
 	return response;
     }
-
-    @Path(value = PathProxy.RegistrationUrls.GET_CUSTOM_REFERENCES)
-    @GET
-    public Response<ReferenceResponse> getCustomReferences(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
-	    @PathParam("hospitalId") String hospitalId) {
-	if (doctorId == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.doctorId is null");
-	}
-	if (locationId == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.locationId is null");
-	}
-	if (hospitalId == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.hospitalId is null");
-	}
-	ReferenceResponse references = registrationService.getCustomReferences(doctorId, locationId, hospitalId);
-	Response<ReferenceResponse> response = new Response<ReferenceResponse>();
-	response.setData(references);
-	return response;
-    }
-
+ 
+    
     @Path(value = PathProxy.RegistrationUrls.PATIENT_ID_GENERATOR)
     @GET
     public Response<String> patientIDGenerator(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
@@ -435,6 +421,41 @@ public class RegistrationApi {
 	List<Profession> professionResponse = registrationService.getProfession();
 	Response<Profession> response = new Response<Profession>();
 	response.setDataList(professionResponse);
+	return response;
+    }
+    
+    @Path(value = PathProxy.RegistrationUrls.EXISTING_DOCTOR_BY_EMAIL_ADDRESS)
+    @GET
+    public Response<User> getExistingDoctor(@PathParam("emailAddress") String emailAddress) {
+	if (emailAddress == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.email Address is null");
+	}
+	
+	Response<User> response = new Response<User>();
+
+	User user = registrationService.getDoctorsByEmailAddress(emailAddress);
+	if (DPDoctorUtils.anyStringEmpty(user.getImageUrl()) ) {
+	    user.setImageUrl(getFinalImageURL(user.getImageUrl()));
+		user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
+	    }
+	response.setData(user);
+	return response;
+    }
+   
+    @Path(value = PathProxy.RegistrationUrls.DOCTOR_REGISTER)
+    @POST
+    public Response<RegisterDoctorResponse> doctorRegister(DoctorRegisterRequest request) {
+	if (request == null) {
+	    logger.warn("Request send  is NULL");
+	    throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
+	}
+	
+	RegisterDoctorResponse doctorResponse = null;
+	if(request.getUserId() == null)doctorResponse = registrationService.registerNewDoctor(request);
+	else doctorResponse = registrationService.registerExisitingDoctor(request);
+	
+	Response<RegisterDoctorResponse> response = new Response<RegisterDoctorResponse>();
+	response.setData(doctorResponse);
 	return response;
     }
 

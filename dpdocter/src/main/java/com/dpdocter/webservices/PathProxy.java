@@ -71,6 +71,8 @@ public interface PathProxy {
 	public static final String PATIENT_REGISTER = "/patient";
 
 	public static final String DOCTOR_REGISTER = "/doctor";
+	
+	public static final String EXISTING_DOCTOR_BY_EMAIL_ADDRESS = "/existing_doctor/{emailAddress}";
 
 	public static final String EXISTING_PATIENTS_BY_PHONE_NUM = "/existing_patients/{mobileNumber}/{locationId}/{hospitalId}";
 
@@ -82,9 +84,7 @@ public interface PathProxy {
 
 	public static final String DELETE_REFERRENCE = "/referrence/{referrenceId}/delete";
 
-	public static final String GET_REFERRENCES = "/getReferences/{doctorId}/{locationId}/{hospitalId}";
-
-	public static final String GET_CUSTOM_REFERENCES = "/getCustomReferences/{doctorId}/{locationId}/{hospitalId}";
+	public static final String GET_REFERRENCES = "/reference/{range}";
 
 	public static final String PATIENT_ID_GENERATOR = "/generatePatientId/{doctorId}/{locationId}/{hospitalId}";
 

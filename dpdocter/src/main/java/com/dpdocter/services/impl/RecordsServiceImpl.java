@@ -50,7 +50,6 @@ import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.RecordsService;
-import common.util.web.DPDoctorUtils;
 
 @Service
 public class RecordsServiceImpl implements RecordsService {
@@ -231,8 +230,12 @@ public class RecordsServiceImpl implements RecordsService {
     public List<Records> searchRecords(RecordsSearchRequest request) {
 	List<Records> records = null;
 	List<RecordsCollection> recordsCollections = null;
+	boolean[] discards = new boolean[2];
+	discards[0] = false;
 	try {
-	    if (request.getTagId() != null) {
+		if (request.getDiscarded()) discards[1] = true;
+		long createdTimeStamp = Long.parseLong(request.getUpdatedTime());
+    if (request.getTagId() != null) {
 		List<RecordsTagsCollection> recordsTagsCollections = recordsTagsRepository.findByTagsId(request.getTagId());
 		@SuppressWarnings("unchecked")
 		Collection<String> recordIds = CollectionUtils.collect(recordsTagsCollections, new BeanToPropertyValueTransformer("recordsId"));
@@ -242,27 +245,9 @@ public class RecordsServiceImpl implements RecordsService {
 		BeanUtil.map(recordCollections, records);
 	    } else {
 
-		if (request.getDiscarded() == null)
-		    request.setDiscarded(true);
-		if (request.getUpdatedTime() != null) {
-		    long createdTimeStamp = Long.parseLong(request.getUpdatedTime());
-
-		    if (request.getDiscarded()) {
-			recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
-				request.getHospitalId(), new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
-		    } else {
-			recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
-				request.getHospitalId(), new Date(createdTimeStamp), request.getDiscarded(), new Sort(Sort.Direction.DESC, "createdTime"));
-		    }
-		} else {
-		    if (request.getDiscarded()) {
-			recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
-				request.getHospitalId(), new Sort(Sort.Direction.DESC, "createdTime"));
-		    } else {
-			recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
-				request.getHospitalId(), request.getDiscarded(), new Sort(Sort.Direction.DESC, "createdTime"));
-		    }
-		}
+		recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
+		
 		records = new ArrayList<Records>();
 		for (RecordsCollection recordCollection : recordsCollections) {
 		    Records record = new Records();
@@ -431,50 +416,6 @@ public class RecordsServiceImpl implements RecordsService {
 		    }
 		    records.add(record);
 		}
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-	}
-	return records;
-    }
-
-    @Override
-    public List<Records> searchRecords(String doctorId, String locationId, String hospitalId, String createdTime) {
-	List<Records> records = null;
-	List<RecordsCollection> recordsCollections = null;
-	try {
-	    if (DPDoctorUtils.anyStringEmpty(createdTime)) {
-		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
-		    recordsCollections = recordsRepository.findAll(doctorId, false, new Sort(Sort.Direction.DESC, "createdTime"));
-		} else {
-		    recordsCollections = recordsRepository.findAll(doctorId, locationId, hospitalId, false, new Sort(Sort.Direction.DESC, "createdTime"));
-		}
-	    } else {
-		long createdTimeStamp = Long.parseLong(createdTime);
-		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
-		    recordsCollections = recordsRepository.findAll(doctorId, new Date(createdTimeStamp), false, new Sort(Sort.Direction.DESC, "createdTime"));
-		} else {
-		    recordsCollections = recordsRepository.findAll(doctorId, locationId, hospitalId, new Date(createdTimeStamp), false, new Sort(
-			    Sort.Direction.DESC, "createdTime"));
-		}
-	    }
-
-	    if (recordsCollections != null && !recordsCollections.isEmpty()) {
-		records = new ArrayList<Records>();
-		for (RecordsCollection recordCollection : recordsCollections) {
-		    Records record = new Records();
-		    BeanUtil.map(recordCollection, record);
-		    UserCollection userCollection = userRepository.findOne(record.getDoctorId());
-		    if (userCollection != null) {
-			record.setDoctorName(userCollection.getFirstName());
-		    }
-		    records.add(record);
-		}
-	    } else {
-		logger.warn("No Records Found");
-		throw new BusinessException(ServiceError.Unknown, "No Records Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();

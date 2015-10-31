@@ -212,8 +212,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     public DoctorContactsResponse recentlyVisited(String doctorId, String locationId, String hospitalId, int page, int size) {
 	DoctorContactsResponse response = null;
 	try {
-	    List<PatientVisitCollection> patientTrackCollections = patientTrackRepository.findAll(doctorId, locationId, hospitalId, size > 0 ? new PageRequest(
-		    page, size, Direction.DESC, "visitedTime") : null);
+	    List<PatientVisitCollection> patientTrackCollections = null;
+	    
+	    if(size > 0)patientTrackCollections = patientTrackRepository.findAll(doctorId, locationId, hospitalId, new PageRequest(page, size, Direction.DESC, "visitedTime"));
+	    else patientTrackCollections = patientTrackRepository.findAll(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "visitedTime"));
+	    
 	    if (patientTrackCollections != null && !patientTrackCollections.isEmpty()) {
 		@SuppressWarnings("unchecked")
 		List<String> patientIds = (List<String>) CollectionUtils.collect(patientTrackCollections, new BeanToPropertyValueTransformer("patientId"));
@@ -350,25 +353,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	List<PatientVisitResponse> response = null;
 	List<PatientVisitCollection> patientVisitCollections = null;
 	try {
-		if (StringUtils.isEmpty(updatedTime)) {
-			if (!isOTPVerified) {
-			    if (locationId == null && hospitalId == null) {
-			    	 if (size > 0) patientVisitCollections = patientTrackRepository.find(doctorId, patientId, new PageRequest(page, size, Direction.DESC,"updatedTime"));
-			    	 else patientVisitCollections = patientTrackRepository.find(doctorId, patientId, new Sort(Sort.Direction.DESC, "updatedTime"));
-			    }
-			    else{
-			    	 if (size > 0)patientVisitCollections = patientTrackRepository.find(doctorId, locationId, hospitalId, patientId, new PageRequest(page, size, Direction.DESC,"updatedTime"));
-	    		    else patientVisitCollections = patientTrackRepository.find(doctorId, locationId, hospitalId, patientId, new Sort(Sort.Direction.DESC, "updatedTime"));
-			    }
-			}
-			else{
-				 if (size > 0) patientVisitCollections = patientTrackRepository.find(patientId, new PageRequest(page, size, Direction.DESC,"updatedTime"));
-		    	 else patientVisitCollections = patientTrackRepository.find(patientId, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
-		}
-		else{
-			long createdTimestamp = Long.parseLong(updatedTime);
-			if (!isOTPVerified) {
+		long createdTimestamp = Long.parseLong(updatedTime);
+		if (!isOTPVerified) {
 			    if (locationId == null && hospitalId == null) {
 			    	 if (size > 0) patientVisitCollections = patientTrackRepository.find(doctorId, patientId, new Date(createdTimestamp), new PageRequest(page, size, Direction.DESC,"updatedTime"));
 			    	 else patientVisitCollections = patientTrackRepository.find(doctorId, patientId, new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
@@ -382,7 +368,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				 if (size > 0) patientVisitCollections = patientTrackRepository.find(patientId, new Date(createdTimestamp), new PageRequest(page, size, Direction.DESC,"updatedTime"));
 		    	 else patientVisitCollections = patientTrackRepository.find(patientId, new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
 			}
-		}
 	    if (patientVisitCollections != null) {
 		response = new ArrayList<PatientVisitResponse>();
 

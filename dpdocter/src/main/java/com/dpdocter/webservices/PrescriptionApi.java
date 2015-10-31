@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -303,7 +304,7 @@ public class PrescriptionApi {
     @GET
     public Response<TemplateAddEditResponseDetails> getAllTemplates(@QueryParam("page") int page, @QueryParam("size") int size,
 	    @QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-	    @QueryParam("updatedTime") String updatedTime, @QueryParam("discarded") Boolean discarded) {
+	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 
 	return getTemplates(page, size, doctorId, hospitalId, locationId, updatedTime, discarded != null ? discarded : true);
     }
@@ -387,16 +388,12 @@ public class PrescriptionApi {
     @GET
     public Response<Prescription> getPrescription(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
 	    @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId, @QueryParam("patientId") String patientId,
-	    @QueryParam("isOTPVarified") Boolean isOTPVarified, @QueryParam("updatedTime") String updatedTime, @QueryParam("discarded") Boolean discarded) {
+	    @DefaultValue("false") @QueryParam("isOTPVarified") Boolean isOTPVarified, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
 
 	List<Prescription> prescriptions = null;
 
-	if (isOTPVarified != null)
-	    prescriptions = prescriptionServices.getPrescriptions(page, size, doctorId, hospitalId, locationId, patientId, updatedTime, isOTPVarified,
-		    discarded != null ? discarded : true);
-	else
-	    prescriptions = prescriptionServices.getPrescriptions(page, size, doctorId, hospitalId, locationId, patientId, updatedTime, false,
-		    discarded != null ? discarded : true);
+    prescriptions = prescriptionServices.getPrescriptions(page, size, doctorId, hospitalId, locationId, patientId, updatedTime, isOTPVarified,
+		    discarded);
 
 	Response<Prescription> response = new Response<Prescription>();
 	response.setDataList(prescriptions);
@@ -634,15 +631,15 @@ public class PrescriptionApi {
     @GET
     public Response<Object> getPrescriptionItems(@PathParam("type") String type, @PathParam("range") String range, @QueryParam("page") int page,
 	    @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
-	    @QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "updatedTime") String updatedTime,
-	    @QueryParam(value = "discarded") Boolean discarded) {
+	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+	    @DefaultValue("false") @QueryParam(value = "discarded") Boolean discarded) {
 
 	if (DPDoctorUtils.anyStringEmpty(type, range)) {
 	    logger.warn("Invalid Input. Type or Range Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Type or Range Cannot Be Empty");
 	}
 	List<Object> clinicalItems = prescriptionServices.getPrescriptionItems(type, range, page, size, doctorId, locationId, hospitalId, updatedTime,
-		discarded != null ? discarded : true);
+		discarded);
 
 	Response<Object> response = new Response<Object>();
 	response.setDataList(clinicalItems);

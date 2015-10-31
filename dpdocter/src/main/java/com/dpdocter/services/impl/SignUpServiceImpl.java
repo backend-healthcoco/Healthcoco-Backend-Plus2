@@ -119,21 +119,21 @@ public class SignUpServiceImpl implements SignUpService {
 	try {
 	    TokenCollection tokenCollection = tokenRepository.findOne(tokenId);
 	    if (tokenCollection == null || tokenCollection.getIsUsed()) {
-		// throw new
-		// BusinessException(ServiceError.Unknown,"Link is already Used");
 		return "Link is already Used";
 	    } else {
-		UserCollection userCollection = userRepository.findOne(tokenCollection.getUserId());
-		if (userCollection == null) {
-		    // throw new
-		    // BusinessException(ServiceError.Unknown,"Invalid Url.");
+		UserLocationCollection userLocationCollection = userLocationRepository.findOne(tokenCollection.getUserLocationId());
+		if (userLocationCollection == null) {
 		    return "Invalid Url.";
 		}
+		UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
 		userCollection.setIsActive(true);
 		userRepository.save(userCollection);
+		
+		userLocationCollection.setIsActive(true);
+		userLocationRepository.save(userLocationCollection);
 		tokenCollection.setIsUsed(true);
 		tokenRepository.save(tokenCollection);
-		return "Account is Activaed";
+		return "Account is Activated";
 	    }
 
 	} catch (BusinessException be) {
@@ -226,7 +226,7 @@ public class SignUpServiceImpl implements SignUpService {
 
 	    // save token
 	    TokenCollection tokenCollection = new TokenCollection();
-	    tokenCollection.setUserId(userCollection.getId());
+	    tokenCollection.setUserLocationId(userLocationCollection.getId());
 	    tokenCollection.setCreatedTime(new Date());
 	    tokenCollection = tokenRepository.save(tokenCollection);
 
@@ -250,28 +250,28 @@ public class SignUpServiceImpl implements SignUpService {
 	    response.setHospital(hospital);
 	    // user.setPassword(null);
 
-	    if (userCollection.getMobileNumber() != null) {
-		SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-		smsTrackDetail.setDoctorId(doctorCollection.getUserId());
-		smsTrackDetail.setHospitalId(hospitalCollection.getId());
-		smsTrackDetail.setLocationId(locationCollection.getId());
-
-		SMSDetail smsDetail = new SMSDetail();
-		smsDetail.setPatientId(doctorCollection.getUserId());
-
-		SMS sms = new SMS();
-		sms.setSmsText("OTP Verification");
-
-		SMSAddress smsAddress = new SMSAddress();
-		smsAddress.setRecipient(userCollection.getMobileNumber());
-		sms.setSmsAddress(smsAddress);
-
-		smsDetail.setSms(sms);
-		List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-		smsDetails.add(smsDetail);
-		smsTrackDetail.setSmsDetails(smsDetails);
-		sMSServices.sendSMS(smsTrackDetail, false);
-	    }
+//	    if (userCollection.getMobileNumber() != null) {
+//		SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+//		smsTrackDetail.setDoctorId(doctorCollection.getUserId());
+//		smsTrackDetail.setHospitalId(hospitalCollection.getId());
+//		smsTrackDetail.setLocationId(locationCollection.getId());
+//
+//		SMSDetail smsDetail = new SMSDetail();
+//		smsDetail.setPatientId(doctorCollection.getUserId());
+//
+//		SMS sms = new SMS();
+//		sms.setSmsText("OTP Verification");
+//
+//		SMSAddress smsAddress = new SMSAddress();
+//		smsAddress.setRecipient(userCollection.getMobileNumber());
+//		sms.setSmsAddress(smsAddress);
+//
+//		smsDetail.setSms(sms);
+//		List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+//		smsDetails.add(smsDetail);
+//		smsTrackDetail.setSmsDetails(smsDetails);
+//		sMSServices.sendSMS(smsTrackDetail, false);
+//	    }
 	} catch (BusinessException be) {
 	    logger.error(be);
 	    throw be;
@@ -310,6 +310,7 @@ public class SignUpServiceImpl implements SignUpService {
 		String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(),path);
 	    userCollection.setThumbnailUrl(thumbnailUrl);
 	    }
+	    userCollection.setIsActive(true);
 	    userCollection.setCreatedTime(new Date());
 	    userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
 	    userCollection = userRepository.save(userCollection);
@@ -339,15 +340,15 @@ public class SignUpServiceImpl implements SignUpService {
 	    patientCollection = patientRepository.save(patientCollection);
 
 	    // save token
-	    TokenCollection tokenCollection = new TokenCollection();
-	    tokenCollection.setUserId(userCollection.getId());
-	    tokenCollection.setCreatedTime(new Date());
-	    tokenCollection = tokenRepository.save(tokenCollection);
-
-	    // send activation email
-	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
-		    userCollection.getMiddleName(), userCollection.getLastName(), tokenCollection.getId());
-	    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
+//	    TokenCollection tokenCollection = new TokenCollection();
+//	    tokenCollection.setUserLocationId(userCollection.getId());
+//	    tokenCollection.setCreatedTime(new Date());
+//	    tokenCollection = tokenRepository.save(tokenCollection);
+//
+//	    // send activation email
+//	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
+//		    userCollection.getMiddleName(), userCollection.getLastName(), tokenCollection.getId());
+//	    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
 	    user = new User();
 	    BeanUtil.map(userCollection, user);
 	    // user.setPassword(null);
