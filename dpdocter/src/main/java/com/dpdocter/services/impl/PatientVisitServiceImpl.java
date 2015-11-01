@@ -38,6 +38,7 @@ import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.RecordsCollection;
+import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -376,15 +377,21 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    BeanUtil.map(patientVisitCollection, patientVisitResponse);
 
 		    if (patientVisitCollection.getPrescriptionId() != null) {
-			List<Prescription> prescriptions = getPrescriptions(patientVisitCollection.getPrescriptionId());
+			List<Prescription> prescriptions = prescriptionServices.getPrescriptionsByIds(patientVisitCollection.getPrescriptionId());
 			patientVisitResponse.setPrescriptions(prescriptions);
 		    }
+		   
 		    if (patientVisitCollection.getClinicalNotesId() != null) {
-			List<ClinicalNotes> clinicalNotes = getClinicalNotes(patientVisitCollection.getClinicalNotesId());
+			List<ClinicalNotes> clinicalNotes = new ArrayList<ClinicalNotes>();
+			for (String clinicalNotesId : patientVisitCollection.getClinicalNotesId()) {
+			 ClinicalNotes clinicalNote = clinicalNotesService.getNotesById(clinicalNotesId);
+			if (clinicalNotes != null) clinicalNotes.add(clinicalNote);						
+			}
 			patientVisitResponse.setClinicalNotes(clinicalNotes);
 		    }
+		    
 		    if (patientVisitCollection.getRecordId() != null) {
-			List<Records> records = getRecords(patientVisitCollection.getRecordId());
+			List<Records> records = recordsService.getRecordsByIds(patientVisitCollection.getRecordId());
 			patientVisitResponse.setRecords(records);
 		    }
 		    response.add(patientVisitResponse);
@@ -394,48 +401,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    e.printStackTrace();
 	    logger.error(e + " Error while geting patient Visit : " + e.getCause().getMessage());
 	    throw new BusinessException(ServiceError.Unknown, "Error while geting patient Visit : " + e.getCause().getMessage());
-	}
-	return response;
-    }
-
-    private List<Records> getRecords(Collection<String> recordIds) {
-	List<Records> response = null;
-	Query query = new Query();
-
-	query.addCriteria(Criteria.where("id").in(recordIds));
-
-	List<RecordsCollection> recordCollection = mongoTemplate.find(query, RecordsCollection.class);
-	if (recordCollection != null) {
-	    response = new ArrayList<Records>();
-	    BeanUtil.map(recordCollection, response);
-	}
-	return response;
-    }
-
-    private List<ClinicalNotes> getClinicalNotes(Collection<String> clinicalNotesIds) {
-	List<ClinicalNotes> response = null;
-	Query query = new Query();
-
-	query.addCriteria(Criteria.where("id").in(clinicalNotesIds));
-
-	List<ClinicalNotesCollection> clinicalNotesCollection = mongoTemplate.find(query, ClinicalNotesCollection.class);
-	if (clinicalNotesCollection != null) {
-	    response = new ArrayList<ClinicalNotes>();
-	    BeanUtil.map(clinicalNotesCollection, response);
-	}
-	return response;
-    }
-
-    private List<Prescription> getPrescriptions(Collection<String> prescriptionIds) {
-	List<Prescription> response = null;
-	Query query = new Query();
-
-	query.addCriteria(Criteria.where("id").in(prescriptionIds));
-
-	List<PrescriptionCollection> prescriptionCollection = mongoTemplate.find(query, PrescriptionCollection.class);
-	if (prescriptionCollection != null) {
-	    response = new ArrayList<Prescription>();
-	    BeanUtil.map(prescriptionCollection, response);
 	}
 	return response;
     }

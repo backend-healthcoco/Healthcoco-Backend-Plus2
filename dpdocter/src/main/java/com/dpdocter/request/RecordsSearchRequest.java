@@ -11,9 +11,9 @@ public class RecordsSearchRequest {
 
     private String hospitalId;
 
-    private String updatedTime;
+    private String updatedTime= "0";
 
-    private Boolean discarded;
+    private Boolean discarded = true;
 
     public String getLocationId() {
 	return locationId;

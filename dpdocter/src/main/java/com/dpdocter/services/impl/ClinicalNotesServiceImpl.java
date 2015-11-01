@@ -257,19 +257,22 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	    clinicalNotesCollection.setCreatedTime(createdTime);
 	    clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
-	    if (clinicalNotesCollection != null) {
-		if (request.getId() == null) {
-		    // map the clinical notes with patient
-		    PatientClinicalNotesCollection patientClinicalNotesCollection = new PatientClinicalNotesCollection();
-		    patientClinicalNotesCollection.setClinicalNotesId(clinicalNotesCollection.getId());
-		    patientClinicalNotesCollection.setPatientId(request.getPatientId());
-		    patientClinicalNotesCollection.setCreatedTime(createdTime);
-		    patientClinicalNotesRepository.save(patientClinicalNotesCollection);
-		}
-
-	    }
+	     
 	    clinicalNotes = new ClinicalNotes();
 	    BeanUtil.map(clinicalNotesCollection, clinicalNotes);
+
+	    if (clinicalNotesCollection != null) {
+			if (request.getId() == null) {
+			    // map the clinical notes with patient
+			    PatientClinicalNotesCollection patientClinicalNotesCollection = new PatientClinicalNotesCollection();
+			    patientClinicalNotesCollection.setClinicalNotesId(clinicalNotesCollection.getId());
+			    patientClinicalNotesCollection.setPatientId(request.getPatientId());
+			    patientClinicalNotesCollection.setCreatedTime(createdTime);
+			    patientClinicalNotesRepository.save(patientClinicalNotesCollection);
+			    clinicalNotes.setPatientId(patientClinicalNotesCollection.getPatientId());
+			}
+
+	    }
 
 	    // Setting detail of complaints, investigations, observations,
 	    // diagnoses, notes and diagrams into response.
@@ -284,7 +287,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    } else {
 	    diagrams = new ArrayList<Diagram>();
 	    }*/
-
+	    
 	    clinicalNotes.setComplaints(complaints);
 	    clinicalNotes.setInvestigations(investigations);
 	    clinicalNotes.setObservations(observations);

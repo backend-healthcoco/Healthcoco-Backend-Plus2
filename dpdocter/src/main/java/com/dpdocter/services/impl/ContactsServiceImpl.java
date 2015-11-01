@@ -482,9 +482,9 @@ public class ContactsServiceImpl implements ContactsService {
 		
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
-		    patientCollections = patientRepository.findByDoctorId(doctorId, new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC,"updatedTime"));
+		    patientCollections = patientRepository.findByDoctorId(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,"updatedTime"));
 		} else {
-		    patientCollections = patientRepository.findByDoctorIdLocationIdAndHospitalId(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
+		    patientCollections = patientRepository.findByDoctorIdLocationIdAndHospitalId(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
 		}
 	    
 	    if (!patientCollections.isEmpty()) {

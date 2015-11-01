@@ -246,7 +246,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    } else {
 
 		recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
-				request.getHospitalId(), new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
+				request.getHospitalId(), new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
 		
 		records = new ArrayList<Records>();
 		for (RecordsCollection recordCollection : recordsCollections) {

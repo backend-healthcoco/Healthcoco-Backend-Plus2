@@ -434,31 +434,35 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    Date createdTime = new Date();
 	    prescriptionCollection.setCreatedTime(createdTime);
 	    prescriptionCollection.setPrescriptionCode(PrescriptionUtils.generatePrescriptionCode());
-	    for (PrescriptionItem item : prescriptionCollection.getItems()) {
-		List<DrugDirection> directions = null;
-		if (item.getDirection() != null) {
-		    for (DrugDirection drugDirection : item.getDirection()) {
-			if (drugDirection != null && drugDirection.getId() != null) {
-			    if (directions == null)
-				directions = new ArrayList<DrugDirection>();
-			    directions.add(drugDirection);
-			}
+	    if(prescriptionCollection.getItems() != null){
+	    	for (PrescriptionItem item : prescriptionCollection.getItems()) {
+	    		List<DrugDirection> directions = null;
+	    		if (item.getDirection() != null) {
+	    		    for (DrugDirection drugDirection : item.getDirection()) {
+	    			if (drugDirection != null && drugDirection.getId() != null) {
+	    			    if (directions == null)
+	    				directions = new ArrayList<DrugDirection>();
+	    			    directions.add(drugDirection);
+	    			}
+	    		    }
+	    		    item.setDirection(directions);
+	    		}
+	    		if (item.getDuration() != null && item.getDuration().getDurationUnit() != null) {
+	    		    if (item.getDuration().getDurationUnit().getId() == null)
+	    			item.getDuration().setDurationUnit(null);
+	    		}
+	    	    }
+	    }
+	    if(prescriptionCollection.getLabTests() != null){
+	    	List<LabTest> labTests = null;
+		    for (LabTest labTest : prescriptionCollection.getLabTests()) {
+			    if (labTest.getId() != null) {
+					if(labTests == null)labTests = new ArrayList<LabTest>();
+					labTests.add(labTest);
+				}
 		    }
-		    item.setDirection(directions);
-		}
-		if (item.getDuration() != null && item.getDuration().getDurationUnit() != null) {
-		    if (item.getDuration().getDurationUnit().getId() == null)
-			item.getDuration().setDurationUnit(null);
-		}
+		    prescriptionCollection.setLabTests(labTests);
 	    }
-	    List<LabTest> labTests = null;
-	    for (LabTest labTest : prescriptionCollection.getLabTests()) {
-		    if (labTest.getId() != null) {
-				if(labTests == null)labTests = new ArrayList<LabTest>();
-				labTests.add(labTest);
-			}
-	    }
-	    prescriptionCollection.setLabTests(labTests);
 	    prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 	    response = new PrescriptionAddEditResponse();
 	    BeanUtil.map(prescriptionCollection, response);
@@ -483,26 +487,36 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    prescriptionCollection.setCreatedTime(oldPrescription.getCreatedTime());
 	    prescriptionCollection.setDiscarded(oldPrescription.getDiscarded());
 	    prescriptionCollection.setInHistory(oldPrescription.isInHistory());
-	    for (PrescriptionItem item : prescriptionCollection.getItems()) {
-		List<DrugDirection> directions = item.getDirection();
-		for (DrugDirection drugDirection : directions) {
-		    if (drugDirection != null && drugDirection.getId() == null)
-			item.getDirection().remove(drugDirection);
-		}
-		if (item.getDuration() != null && item.getDuration().getDurationUnit() != null) {
-		    if (item.getDuration().getDurationUnit().getId() == null)
-			item.getDuration().setDurationUnit(null);
-		}
-	    }
-	    List<LabTest> labTests = null;
-	    for (LabTest labTest : prescriptionCollection.getLabTests()) {
-		    if (labTest.getId() != null) {
-				if(labTests == null)labTests = new ArrayList<LabTest>();
-				labTests.add(labTest);
-			}
-	    }
-	    prescriptionCollection.setLabTests(labTests);
 	    
+	    if(prescriptionCollection.getItems() != null){
+	    	for (PrescriptionItem item : prescriptionCollection.getItems()) {
+	    		List<DrugDirection> directions = null;
+	    		if (item.getDirection() != null) {
+	    		    for (DrugDirection drugDirection : item.getDirection()) {
+	    			if (drugDirection != null && drugDirection.getId() != null) {
+	    			    if (directions == null)
+	    				directions = new ArrayList<DrugDirection>();
+	    			    directions.add(drugDirection);
+	    			}
+	    		    }
+	    		    item.setDirection(directions);
+	    		}
+	    		if (item.getDuration() != null && item.getDuration().getDurationUnit() != null) {
+	    		    if (item.getDuration().getDurationUnit().getId() == null)
+	    			item.getDuration().setDurationUnit(null);
+	    		}
+	    	    }
+	    }
+	    if(prescriptionCollection.getLabTests() != null){
+	    	List<LabTest> labTests = null;
+		    for (LabTest labTest : prescriptionCollection.getLabTests()) {
+			    if (labTest.getId() != null) {
+					if(labTests == null)labTests = new ArrayList<LabTest>();
+					labTests.add(labTest);
+				}
+		    }
+		    prescriptionCollection.setLabTests(labTests);
+	    }
 	    prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 	    prescription = new PrescriptionAddEditResponse();
 	    BeanUtil.map(prescriptionCollection, prescription);
@@ -665,9 +679,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    PrescriptionItemDetail prescriptionItemDetails = new PrescriptionItemDetail();
 			    BeanUtil.map(prescriptionItem, prescriptionItemDetails);
 			    DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
-			    Drug drug = new Drug();
-			    BeanUtil.map(drugCollection, drug);
-			    prescriptionItemDetails.setDrug(drug);
+			    if(drugCollection != null){
+			    	Drug drug = new Drug();
+				    BeanUtil.map(drugCollection, drug);
+				    prescriptionItemDetails.setDrug(drug);
+			    }
 			    prescriptionItemDetailsList.add(prescriptionItemDetails);
 			}
 			prescription.setItems(prescriptionItemDetailsList);
