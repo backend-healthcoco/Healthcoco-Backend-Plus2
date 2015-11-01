@@ -12,10 +12,6 @@ import org.springframework.stereotype.Service;
 import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.Location;
-import com.dpdocter.beans.SMS;
-import com.dpdocter.beans.SMSAddress;
-import com.dpdocter.beans.SMSDetail;
-import com.dpdocter.beans.SMSTrackDetail;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.AddressCollection;
 import com.dpdocter.collections.DoctorCollection;
@@ -128,7 +124,7 @@ public class SignUpServiceImpl implements SignUpService {
 		UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
 		userCollection.setIsActive(true);
 		userRepository.save(userCollection);
-		
+
 		userLocationCollection.setIsActive(true);
 		userLocationRepository.save(userLocationCollection);
 		tokenCollection.setIsUsed(true);
@@ -182,9 +178,9 @@ public class SignUpServiceImpl implements SignUpService {
 		request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
 		String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 		userCollection.setImageUrl(imageurl);
-		
-		String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(),path);
-	    userCollection.setThumbnailUrl(thumbnailUrl);
+
+		String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
+		userCollection.setThumbnailUrl(thumbnailUrl);
 	    }
 	    userCollection.setCreatedTime(new Date());
 	    userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
@@ -250,28 +246,28 @@ public class SignUpServiceImpl implements SignUpService {
 	    response.setHospital(hospital);
 	    // user.setPassword(null);
 
-//	    if (userCollection.getMobileNumber() != null) {
-//		SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-//		smsTrackDetail.setDoctorId(doctorCollection.getUserId());
-//		smsTrackDetail.setHospitalId(hospitalCollection.getId());
-//		smsTrackDetail.setLocationId(locationCollection.getId());
-//
-//		SMSDetail smsDetail = new SMSDetail();
-//		smsDetail.setPatientId(doctorCollection.getUserId());
-//
-//		SMS sms = new SMS();
-//		sms.setSmsText("OTP Verification");
-//
-//		SMSAddress smsAddress = new SMSAddress();
-//		smsAddress.setRecipient(userCollection.getMobileNumber());
-//		sms.setSmsAddress(smsAddress);
-//
-//		smsDetail.setSms(sms);
-//		List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-//		smsDetails.add(smsDetail);
-//		smsTrackDetail.setSmsDetails(smsDetails);
-//		sMSServices.sendSMS(smsTrackDetail, false);
-//	    }
+	    // if (userCollection.getMobileNumber() != null) {
+	    // SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+	    // smsTrackDetail.setDoctorId(doctorCollection.getUserId());
+	    // smsTrackDetail.setHospitalId(hospitalCollection.getId());
+	    // smsTrackDetail.setLocationId(locationCollection.getId());
+	    //
+	    // SMSDetail smsDetail = new SMSDetail();
+	    // smsDetail.setPatientId(doctorCollection.getUserId());
+	    //
+	    // SMS sms = new SMS();
+	    // sms.setSmsText("OTP Verification");
+	    //
+	    // SMSAddress smsAddress = new SMSAddress();
+	    // smsAddress.setRecipient(userCollection.getMobileNumber());
+	    // sms.setSmsAddress(smsAddress);
+	    //
+	    // smsDetail.setSms(sms);
+	    // List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+	    // smsDetails.add(smsDetail);
+	    // smsTrackDetail.setSmsDetails(smsDetails);
+	    // sMSServices.sendSMS(smsTrackDetail, false);
+	    // }
 	} catch (BusinessException be) {
 	    logger.error(be);
 	    throw be;
@@ -306,9 +302,9 @@ public class SignUpServiceImpl implements SignUpService {
 		request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
 		String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 		userCollection.setImageUrl(imageurl);
-		
-		String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(),path);
-	    userCollection.setThumbnailUrl(thumbnailUrl);
+
+		String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
+		userCollection.setThumbnailUrl(thumbnailUrl);
 	    }
 	    userCollection.setIsActive(true);
 	    userCollection.setCreatedTime(new Date());
@@ -340,15 +336,19 @@ public class SignUpServiceImpl implements SignUpService {
 	    patientCollection = patientRepository.save(patientCollection);
 
 	    // save token
-//	    TokenCollection tokenCollection = new TokenCollection();
-//	    tokenCollection.setUserLocationId(userCollection.getId());
-//	    tokenCollection.setCreatedTime(new Date());
-//	    tokenCollection = tokenRepository.save(tokenCollection);
-//
-//	    // send activation email
-//	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
-//		    userCollection.getMiddleName(), userCollection.getLastName(), tokenCollection.getId());
-//	    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
+	    // TokenCollection tokenCollection = new TokenCollection();
+	    // tokenCollection.setUserLocationId(userCollection.getId());
+	    // tokenCollection.setCreatedTime(new Date());
+	    // tokenCollection = tokenRepository.save(tokenCollection);
+	    //
+	    // // send activation email
+	    // String body =
+	    // mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(),
+	    // userCollection.getFirstName(),
+	    // userCollection.getMiddleName(), userCollection.getLastName(),
+	    // tokenCollection.getId());
+	    // mailService.sendEmail(userCollection.getEmailAddress(),
+	    // signupSubject, body, null);
 	    user = new User();
 	    BeanUtil.map(userCollection, user);
 	    // user.setPassword(null);
@@ -432,8 +432,8 @@ public class SignUpServiceImpl implements SignUpService {
 		    request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
 		    String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 		    userCollection.setImageUrl(imageurl);
-		   
-		    String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(),path);
+
+		    String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
 		    userCollection.setThumbnailUrl(thumbnailUrl);
 		    userCollection = userRepository.save(userCollection);
 

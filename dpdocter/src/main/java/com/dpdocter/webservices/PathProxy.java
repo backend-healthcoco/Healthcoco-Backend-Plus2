@@ -71,7 +71,7 @@ public interface PathProxy {
 	public static final String PATIENT_REGISTER = "/patient";
 
 	public static final String DOCTOR_REGISTER = "/doctor";
-	
+
 	public static final String EXISTING_DOCTOR_BY_EMAIL_ADDRESS = "/existing_doctor/{emailAddress}";
 
 	public static final String EXISTING_PATIENTS_BY_PHONE_NUM = "/existing_patients/{mobileNumber}/{locationId}/{hospitalId}";
@@ -291,7 +291,7 @@ public interface PathProxy {
 	public static final String EMAIL_PRESCRIPTION = "/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 
 	public static final String SMS_PRESCRIPTION = "/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{mobileNumber}/sms";
-	
+
 	public static final String IMPORT_DRUG = "/importDrug";
 
     }
@@ -388,14 +388,13 @@ public interface PathProxy {
 	public static final String ADD_EDIT_APPOINTMENT_SLOT = "/clinicProfile/addEditAppointmentSlot";
 
 	public static final String ADD_EDIT_GENERAL_INFO = "/clinicProfile/addEditGeneralInfo";
-	
+
 	public static final String GET_SPECIALITIES = "/getSpecialities";
-	
+
 	public static final String GET_EDUCATION_INSTITUTES = "/getEducationInstitutes";
-	
+
 	public static final String GET_EDUCATION_QUALIFICATIONS = "/getEducationQualifications";
-	
-	
+
     }
 
     public static final String PATIENT_VISIT_BASE_URL = BASE_URL + "/patientVisit";
@@ -479,7 +478,7 @@ public interface PathProxy {
     public interface SolrPrescriptionUrls {
 
 	public static final String SEARCH_DRUG = "searchDrug/{searchTerm}";
-	
+
 	public static final String SEARCH_LAB_TEST = "searchLabTest/{searchTerm}";
     }
 
@@ -541,6 +540,14 @@ public interface PathProxy {
 
     public interface EmailTrackUrls {
 
+    }
+
+    public static final String USER_SERVICES_BASE_URL = BASE_URL + "/userService";
+
+    public interface UserServiceUrls {
+	public static final String GET_USER = "getUser/{username}";
+
+	public static final String GET_USER_BY_ID = "getUserById/{id}";
     }
 
 }

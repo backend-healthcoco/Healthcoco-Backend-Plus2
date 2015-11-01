@@ -256,8 +256,8 @@ public class DoctorProfileApi {
 		doctorProfile.setImageUrl(getFinalImageURL(doctorProfile.getImageUrl()));
 	    }
 	    if (doctorProfile.getThumbnailUrl() != null) {
-			doctorProfile.setThumbnailUrl(getFinalImageURL(doctorProfile.getThumbnailUrl()));
-		    }
+		doctorProfile.setThumbnailUrl(getFinalImageURL(doctorProfile.getThumbnailUrl()));
+	    }
 	}
 	Response<DoctorProfile> response = new Response<DoctorProfile>();
 	response.setData(doctorProfile);
@@ -342,7 +342,7 @@ public class DoctorProfileApi {
 	} else
 	    return null;
     }
-    
+
     @Path(value = PathProxy.DoctorProfileUrls.GET_SPECIALITIES)
     @GET
     public Response<Speciality> getSpeciality() {
@@ -351,7 +351,7 @@ public class DoctorProfileApi {
 	response.setDataList(specialities);
 	return response;
     }
-    
+
     @Path(value = PathProxy.DoctorProfileUrls.GET_EDUCATION_INSTITUTES)
     @GET
     public Response<EducationInstitute> getEducationInstitutes() {
@@ -360,7 +360,7 @@ public class DoctorProfileApi {
 	response.setDataList(educationInstitutes);
 	return response;
     }
-    
+
     @Path(value = PathProxy.DoctorProfileUrls.GET_EDUCATION_QUALIFICATIONS)
     @GET
     public Response<EducationQualification> getEducationQualifications() {

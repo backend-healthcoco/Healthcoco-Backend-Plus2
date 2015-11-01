@@ -151,7 +151,7 @@ public class PrescriptionApi {
 	response.setData(drugAddEditResponse);
 	return response;
     }
-    
+
     @Path(value = PathProxy.PrescriptionUrls.ADD_LAB_TEST)
     @POST
     public Response<LabTest> addLabTest(LabTest request) {
@@ -231,6 +231,7 @@ public class PrescriptionApi {
 	response.setData(labTestResponse);
 	return response;
     }
+
     @Path(value = PathProxy.PrescriptionUrls.ADD_TEMPLATE)
     @POST
     public Response<TemplateAddEditResponse> addTemplate(TemplateAddEditRequest request) {
@@ -388,12 +389,12 @@ public class PrescriptionApi {
     @GET
     public Response<Prescription> getPrescription(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
 	    @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId, @QueryParam("patientId") String patientId,
-	    @DefaultValue("false") @QueryParam("isOTPVarified") Boolean isOTPVarified, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
+	    @DefaultValue("false") @QueryParam("isOTPVarified") Boolean isOTPVarified, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
+	    @DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
 
 	List<Prescription> prescriptions = null;
 
-    prescriptions = prescriptionServices.getPrescriptions(page, size, doctorId, hospitalId, locationId, patientId, updatedTime, isOTPVarified,
-		    discarded);
+	prescriptions = prescriptionServices.getPrescriptions(page, size, doctorId, hospitalId, locationId, patientId, updatedTime, isOTPVarified, discarded);
 
 	Response<Prescription> response = new Response<Prescription>();
 	response.setDataList(prescriptions);
@@ -615,7 +616,8 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DURATION_UNIT)
     @DELETE
-    public Response<Boolean> deleteDrugDurationUnit(@PathParam(value = "drugDurationUnitId") String drugDurationUnitId, @QueryParam("discarded") Boolean discarded) {
+    public Response<Boolean> deleteDrugDurationUnit(@PathParam(value = "drugDurationUnitId") String drugDurationUnitId,
+	    @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(drugDurationUnitId)) {
 	    logger.warn("Drug Duration Unit Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Duration Unit Id Cannot Be Empty");
@@ -681,7 +683,7 @@ public class PrescriptionApi {
 	response.setData(true);
 	return response;
     }
-    
+
     @Path(value = PathProxy.PrescriptionUrls.IMPORT_DRUG)
     @GET
     public Response<Boolean> importDrug() {

@@ -27,7 +27,6 @@ import com.dpdocter.beans.ClinicLogo;
 import com.dpdocter.beans.ClinicProfile;
 import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.ClinicTiming;
-import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.Reference;
@@ -40,14 +39,12 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.ClinicImageAddRequest;
 import com.dpdocter.request.ClinicLogoAddRequest;
 import com.dpdocter.request.DoctorRegisterRequest;
-import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.PatientInitialAndCounter;
 import com.dpdocter.response.RegisterDoctorResponse;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.solr.document.SolrPatientDocument;
 import com.dpdocter.solr.services.SolrRegistrationService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -59,9 +56,9 @@ import common.util.web.Response;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class RegistrationApi {
-	
-	private static Logger logger = Logger.getLogger(RegistrationApi.class.getName());
-	
+
+    private static Logger logger = Logger.getLogger(RegistrationApi.class.getName());
+
     @Autowired
     private RegistrationService registrationService;
 
@@ -187,18 +184,17 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.GET_REFERRENCES)
     @GET
-    public Response<ReferenceDetail> getReferences(@PathParam("range") String range, @QueryParam("page") int page,
-    	    @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
-    	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
-    	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
-	
-    List<ReferenceDetail> references = registrationService.getReferences(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+    public Response<ReferenceDetail> getReferences(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
+	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
+
+	List<ReferenceDetail> references = registrationService.getReferences(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 	Response<ReferenceDetail> response = new Response<ReferenceDetail>();
 	response.setDataList(references);
 	return response;
     }
- 
-    
+
     @Path(value = PathProxy.RegistrationUrls.PATIENT_ID_GENERATOR)
     @GET
     public Response<String> patientIDGenerator(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
@@ -260,11 +256,13 @@ public class RegistrationApi {
 			clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl()));
 		    }
 		    if (clinicImage.getThumbnailUrl() != null) {
-				clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
-			    }
+			clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
+		    }
 		}
-		if(clinicDetails.getLogoUrl() != null)clinicDetails.setLogoUrl(getFinalImageURL(clinicDetails.getLogoUrl()));
-		if(clinicDetails.getLogoThumbnailUrl() != null)clinicDetails.setLogoThumbnailUrl(getFinalImageURL(clinicDetails.getLogoThumbnailUrl()));
+		if (clinicDetails.getLogoUrl() != null)
+		    clinicDetails.setLogoUrl(getFinalImageURL(clinicDetails.getLogoUrl()));
+		if (clinicDetails.getLogoThumbnailUrl() != null)
+		    clinicDetails.setLogoThumbnailUrl(getFinalImageURL(clinicDetails.getLogoThumbnailUrl()));
 	    }
 	}
 	Response<Location> response = new Response<Location>();
@@ -332,8 +330,8 @@ public class RegistrationApi {
 		clinicLogoResponse.setLogoURL(getFinalImageURL(clinicLogoResponse.getLogoURL()));
 	    }
 	    if (clinicLogoResponse.getLogoThumbnailURL() != null) {
-			clinicLogoResponse.setLogoThumbnailURL(getFinalImageURL(clinicLogoResponse.getLogoThumbnailURL()));
-		   }
+		clinicLogoResponse.setLogoThumbnailURL(getFinalImageURL(clinicLogoResponse.getLogoThumbnailURL()));
+	    }
 	}
 	Response<ClinicLogo> response = new Response<ClinicLogo>();
 	response.setData(clinicLogoResponse);
@@ -423,25 +421,25 @@ public class RegistrationApi {
 	response.setDataList(professionResponse);
 	return response;
     }
-    
+
     @Path(value = PathProxy.RegistrationUrls.EXISTING_DOCTOR_BY_EMAIL_ADDRESS)
     @GET
     public Response<User> getExistingDoctor(@PathParam("emailAddress") String emailAddress) {
 	if (emailAddress == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.email Address is null");
 	}
-	
+
 	Response<User> response = new Response<User>();
 
 	User user = registrationService.getDoctorsByEmailAddress(emailAddress);
-	if (DPDoctorUtils.anyStringEmpty(user.getImageUrl()) ) {
+	if (DPDoctorUtils.anyStringEmpty(user.getImageUrl())) {
 	    user.setImageUrl(getFinalImageURL(user.getImageUrl()));
-		user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
-	    }
+	    user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
+	}
 	response.setData(user);
 	return response;
     }
-   
+
     @Path(value = PathProxy.RegistrationUrls.DOCTOR_REGISTER)
     @POST
     public Response<RegisterDoctorResponse> doctorRegister(DoctorRegisterRequest request) {
@@ -449,11 +447,13 @@ public class RegistrationApi {
 	    logger.warn("Request send  is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
 	}
-	
+
 	RegisterDoctorResponse doctorResponse = null;
-	if(request.getUserId() == null)doctorResponse = registrationService.registerNewDoctor(request);
-	else doctorResponse = registrationService.registerExisitingDoctor(request);
-	
+	if (request.getUserId() == null)
+	    doctorResponse = registrationService.registerNewDoctor(request);
+	else
+	    doctorResponse = registrationService.registerExisitingDoctor(request);
+
 	Response<RegisterDoctorResponse> response = new Response<RegisterDoctorResponse>();
 	response.setData(doctorResponse);
 	return response;

@@ -77,7 +77,8 @@ public class PrintSettingsApi {
     @GET
     public Response<PrintSettings> getSettings(@PathParam(value = "printFilter") String printFilter, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId, @QueryParam(value = "page") int page,
-	    @QueryParam(value = "size") int size, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
+	    @QueryParam(value = "size") int size, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 
 	if (DPDoctorUtils.anyStringEmpty(printFilter, doctorId, locationId, hospitalId)) {
 	    logger.warn("PrintFilter, DoctorId or locationId or hospitalId cannot be null");

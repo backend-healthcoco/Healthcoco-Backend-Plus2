@@ -87,9 +87,9 @@ public class SignUpApi {
 		user.setImageUrl(getFinalImageURL(user.getImageUrl()));
 	    }
 	    if (user.getThumbnailUrl() != null) {
-			user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
-	}
+		user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
 	    }
+	}
 	Response<User> response = new Response<User>();
 	response.setData(user);
 	return response;
@@ -109,8 +109,8 @@ public class SignUpApi {
 	    if (user.getImageUrl() != null) {
 		user.setImageUrl(getFinalImageURL(user.getImageUrl()));
 	    }
-	    if(user.getThumbnailUrl() != null){
-	    	user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
+	    if (user.getThumbnailUrl() != null) {
+		user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
 	    }
 	}
 	Response<User> response = new Response<User>();

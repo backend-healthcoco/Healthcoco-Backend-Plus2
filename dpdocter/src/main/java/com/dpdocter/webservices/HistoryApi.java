@@ -96,7 +96,8 @@ public class HistoryApi {
 	    @QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 
-	List<DiseaseListResponse> diseaseListResponse = historyServices.getDiseases(range, page, size, doctorId, hospitalId, locationId, updatedTime, discarded);
+	List<DiseaseListResponse> diseaseListResponse = historyServices
+		.getDiseases(range, page, size, doctorId, hospitalId, locationId, updatedTime, discarded);
 	Response<DiseaseListResponse> response = new Response<DiseaseListResponse>();
 	response.setDataList(diseaseListResponse);
 	return response;

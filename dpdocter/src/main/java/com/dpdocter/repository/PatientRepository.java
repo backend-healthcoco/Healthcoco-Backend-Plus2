@@ -12,8 +12,8 @@ import com.dpdocter.collections.PatientCollection;
 
 @Repository
 public interface PatientRepository extends MongoRepository<PatientCollection, String> {
-	@Query("{'userId': ?0}")
-	PatientCollection findByUserId(String userId);
+    @Query("{'userId': ?0}")
+    PatientCollection findByUserId(String userId);
 
     @Query("{'userId': {'$in': ?0}}")
     List<PatientCollection> findByUserId(List<String> userIds);
@@ -25,7 +25,8 @@ public interface PatientRepository extends MongoRepository<PatientCollection, St
     List<PatientCollection> findByDoctorId(String doctorId, Date date, boolean[] discards, Sort sort);
 
     @Query("{'doctorId': ?0,'locationId': ?1,'hospitalId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded':{$in: ?4}}")
-    List<PatientCollection> findByDoctorIdLocationIdAndHospitalId(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards, Sort sort);
+    List<PatientCollection> findByDoctorIdLocationIdAndHospitalId(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards,
+	    Sort sort);
 
     @Query("{'doctorId':?0,'locationId':?1,'hospitalId':?2,'registrationDate' : {'$gt' : ?3, '$lt' : ?4}}")
     List<PatientCollection> findTodaysRegisteredPatient(String doctorId, String location, String hospitalId, Long startDate, Long endDate);

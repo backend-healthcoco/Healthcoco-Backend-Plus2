@@ -44,7 +44,7 @@ public class LocationCollection extends GenericCollection {
 
     @Field
     private String logoThumbnailUrl;
-    
+
     @Field
     private String hospitalId;
 
@@ -268,24 +268,22 @@ public class LocationCollection extends GenericCollection {
 	this.isTwentyFourSevenOpen = isTwentyFourSevenOpen;
     }
 
-	public String getLogoThumbnailUrl() {
-		return logoThumbnailUrl;
-	}
+    public String getLogoThumbnailUrl() {
+	return logoThumbnailUrl;
+    }
 
-	public void setLogoThumbnailUrl(String logoThumbnailUrl) {
-		this.logoThumbnailUrl = logoThumbnailUrl;
-	}
+    public void setLogoThumbnailUrl(String logoThumbnailUrl) {
+	this.logoThumbnailUrl = logoThumbnailUrl;
+    }
 
-	@Override
-	public String toString() {
-		return "LocationCollection [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state="
-				+ state + ", city=" + city + ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode="
-				+ postalCode + ", websiteUrl=" + websiteUrl + ", images=" + images + ", logoUrl=" + logoUrl
-				+ ", logoThumbnailUrl=" + logoThumbnailUrl + ", hospitalId=" + hospitalId + ", latitude=" + latitude
-				+ ", longitude=" + longitude + ", tagLine=" + tagLine + ", landmarkDetails=" + landmarkDetails
-				+ ", locationEmailAddress=" + locationEmailAddress + ", specialization=" + specialization
-				+ ", streetAddress=" + streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber
-				+ ", alternateNumbers=" + alternateNumbers + ", workingSchedules=" + workingSchedules
-				+ ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + "]";
-	}
+    @Override
+    public String toString() {
+	return "LocationCollection [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city
+		+ ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", images=" + images
+		+ ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude="
+		+ longitude + ", tagLine=" + tagLine + ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress=" + locationEmailAddress
+		+ ", specialization=" + specialization + ", streetAddress=" + streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber
+		+ ", alternateNumbers=" + alternateNumbers + ", workingSchedules=" + workingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen
+		+ "]";
+    }
 }

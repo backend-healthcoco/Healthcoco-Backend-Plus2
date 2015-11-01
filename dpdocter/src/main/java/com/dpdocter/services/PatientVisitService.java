@@ -20,5 +20,6 @@ public interface PatientVisitService {
 
     PatientVisitResponse addMultipleData(AddMultipleDataRequest request);
 
-    List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId, int page, int size, Boolean isOTPVerified, String updatedTime);
+    List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId, int page, int size, Boolean isOTPVerified,
+	    String updatedTime);
 }

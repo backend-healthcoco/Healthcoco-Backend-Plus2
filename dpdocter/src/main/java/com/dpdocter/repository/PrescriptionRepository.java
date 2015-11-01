@@ -3,7 +3,6 @@ package com.dpdocter.repository;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -32,9 +31,9 @@ public interface PrescriptionRepository extends MongoRepository<PrescriptionColl
     Integer getPrescriptionCount(String doctorId, String patientId, String hospitalId, String locationId, boolean discarded);
 
     @Query("{'doctorId' : ?0, 'patientId' : ?1, 'updatedTime' : {'$gte' : ?2}, 'discarded' : {$in: ?3}}")
-	List<PrescriptionCollection> getPrescription(String doctorId, String patientId, Date date, boolean[] discards, Pageable pageable);
+    List<PrescriptionCollection> getPrescription(String doctorId, String patientId, Date date, boolean[] discards, Pageable pageable);
 
     @Query("{'doctorId' : ?0, 'patientId' : ?1, 'updatedTime' : {'$gte' : ?2}, 'discarded' : {$in: ?3}}")
-	List<PrescriptionCollection> getPrescription(String doctorId, String patientId, Date date, boolean[] discards, Sort sort);
+    List<PrescriptionCollection> getPrescription(String doctorId, String patientId, Date date, boolean[] discards, Sort sort);
 
 }

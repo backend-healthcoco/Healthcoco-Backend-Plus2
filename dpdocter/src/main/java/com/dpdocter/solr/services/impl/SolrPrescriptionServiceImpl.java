@@ -80,59 +80,59 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	return response;
     }
 
-	@Override
-	public boolean addLabTest(SolrLabTestDocument request) {
-		boolean response = false;
-		try {
-		    solrLabTestRepository.save(request);
-		    response = true;
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e + " Error Occurred While Saving Lab Test in Solr");
-		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Lab Test in Solr");
-		}
-		return response;		
+    @Override
+    public boolean addLabTest(SolrLabTestDocument request) {
+	boolean response = false;
+	try {
+	    solrLabTestRepository.save(request);
+	    response = true;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e + " Error Occurred While Saving Lab Test in Solr");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Lab Test in Solr");
 	}
+	return response;
+    }
 
-	@Override
-	public boolean editLabTest(SolrLabTestDocument request) {
-		boolean response = false;
-		try {
-			solrLabTestRepository.save(request);
-		    response = true;
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e + " Error Occurred While Editing Lab Test in Solr");
-		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Lab Test");
-		}
-		return response;
+    @Override
+    public boolean editLabTest(SolrLabTestDocument request) {
+	boolean response = false;
+	try {
+	    solrLabTestRepository.save(request);
+	    response = true;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e + " Error Occurred While Editing Lab Test in Solr");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Lab Test");
 	}
+	return response;
+    }
 
-	@Override
-	public boolean deleteLabTest(String labTestId) {
-		boolean response = false;
-		try {
-			solrLabTestRepository.delete(labTestId);
-		    response = true;
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e + " Error Occurred While Deleting Lab Test in Solr");
-		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Lab Test");
-		}
-		return response;
+    @Override
+    public boolean deleteLabTest(String labTestId) {
+	boolean response = false;
+	try {
+	    solrLabTestRepository.delete(labTestId);
+	    response = true;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e + " Error Occurred While Deleting Lab Test in Solr");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Lab Test");
 	}
+	return response;
+    }
 
-	@Override
-	public List<SolrLabTestDocument> searchLabTest(String searchTerm) {
-		List<SolrLabTestDocument> response = null;
-		try {
-		    response = solrLabTestRepository.find(searchTerm);
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e + " Error Occurred While Searching Lab Test in Solr");
-		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Lab Test");
-		}
-		return response;
+    @Override
+    public List<SolrLabTestDocument> searchLabTest(String searchTerm) {
+	List<SolrLabTestDocument> response = null;
+	try {
+	    response = solrLabTestRepository.find(searchTerm);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e + " Error Occurred While Searching Lab Test in Solr");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Lab Test");
 	}
+	return response;
+    }
 
 }

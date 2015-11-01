@@ -107,16 +107,16 @@ public interface PrescriptionServices {
 
     void smsPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String mobileNumber);
 
-	LabTest addLabTest(LabTest request);
+    LabTest addLabTest(LabTest request);
 
-	LabTest editLabTest(LabTest request);
+    LabTest editLabTest(LabTest request);
 
-	Boolean deleteLabTest(String labTestId, String doctorId, String hospitalId, String locationId, Boolean discarded);
+    Boolean deleteLabTest(String labTestId, String doctorId, String hospitalId, String locationId, Boolean discarded);
 
-	Boolean deleteLabTest(String labTestId, Boolean discarded);
+    Boolean deleteLabTest(String labTestId, Boolean discarded);
 
-	LabTest getLabTestById(String labTestId);
+    LabTest getLabTestById(String labTestId);
 
-	void importDrug();
+    void importDrug();
 
 }

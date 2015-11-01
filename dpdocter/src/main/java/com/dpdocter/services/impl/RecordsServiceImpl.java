@@ -233,9 +233,10 @@ public class RecordsServiceImpl implements RecordsService {
 	boolean[] discards = new boolean[2];
 	discards[0] = false;
 	try {
-		if (request.getDiscarded()) discards[1] = true;
-		long createdTimeStamp = Long.parseLong(request.getUpdatedTime());
-    if (request.getTagId() != null) {
+	    if (request.getDiscarded())
+		discards[1] = true;
+	    long createdTimeStamp = Long.parseLong(request.getUpdatedTime());
+	    if (request.getTagId() != null) {
 		List<RecordsTagsCollection> recordsTagsCollections = recordsTagsRepository.findByTagsId(request.getTagId());
 		@SuppressWarnings("unchecked")
 		Collection<String> recordIds = CollectionUtils.collect(recordsTagsCollections, new BeanToPropertyValueTransformer("recordsId"));
@@ -246,8 +247,8 @@ public class RecordsServiceImpl implements RecordsService {
 	    } else {
 
 		recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
-				request.getHospitalId(), new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
-		
+			request.getHospitalId(), new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
+
 		records = new ArrayList<Records>();
 		for (RecordsCollection recordCollection : recordsCollections) {
 		    Records record = new Records();
@@ -371,8 +372,10 @@ public class RecordsServiceImpl implements RecordsService {
 		logger.warn("Record Not found.Check RecordId");
 		throw new BusinessException(ServiceError.Unknown, "Record Not found.Check RecordId");
 	    }
-	    if(discarded == null)recordsCollection.setDiscarded(true);
-	    else recordsCollection.setDiscarded(true);
+	    if (discarded == null)
+		recordsCollection.setDiscarded(true);
+	    else
+		recordsCollection.setDiscarded(true);
 	    recordsCollection.setUpdatedTime(new Date());
 	    recordsRepository.save(recordsCollection);
 	} catch (BusinessException e) {

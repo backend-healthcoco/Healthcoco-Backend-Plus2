@@ -25,7 +25,7 @@ public class User {
     private Boolean isPartOfClinic;
 
     private String imageUrl;
-    
+
     private String thumbnailUrl;
 
     private String colorCode;
@@ -138,21 +138,20 @@ public class User {
 	this.colorCode = colorCode;
     }
 
-	public String getThumbnailUrl() {
-		return thumbnailUrl;
-	}
+    public String getThumbnailUrl() {
+	return thumbnailUrl;
+    }
 
-	public void setThumbnailUrl(String thumbnailUrl) {
-		this.thumbnailUrl = thumbnailUrl;
-	}
+    public void setThumbnailUrl(String thumbnailUrl) {
+	this.thumbnailUrl = thumbnailUrl;
+    }
 
-	@Override
-	public String toString() {
-		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName
-				+ ", userName=" + userName + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
-				+ ", gender=" + gender + ", dob=" + dob + ", secPhoneNumber=" + secPhoneNumber + ", isPartOfClinic="
-				+ isPartOfClinic + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", colorCode="
-				+ colorCode + "]";
-	}
+    @Override
+    public String toString() {
+	return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", userName=" + userName
+		+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob=" + dob + ", secPhoneNumber="
+		+ secPhoneNumber + ", isPartOfClinic=" + isPartOfClinic + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", colorCode="
+		+ colorCode + "]";
+    }
 
 }

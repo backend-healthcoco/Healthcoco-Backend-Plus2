@@ -3,7 +3,6 @@ package com.dpdocter.repository;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -14,7 +13,6 @@ import com.dpdocter.collections.ComplaintCollection;
 
 public interface ComplaintRepository extends MongoRepository<ComplaintCollection, String>, PagingAndSortingRepository<ComplaintCollection, String> {
 
-   
     @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': {$in: ?1}}")
     List<ComplaintCollection> findGlobalComplaints(Date date, boolean[] discards, Pageable pageable);
 

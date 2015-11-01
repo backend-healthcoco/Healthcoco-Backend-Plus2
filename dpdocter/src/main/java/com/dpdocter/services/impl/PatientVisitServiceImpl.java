@@ -10,7 +10,6 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -213,10 +212,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	DoctorContactsResponse response = null;
 	try {
 	    List<PatientVisitCollection> patientTrackCollections = null;
-	    
-	    if(size > 0)patientTrackCollections = patientTrackRepository.findAll(doctorId, locationId, hospitalId, new PageRequest(page, size, Direction.DESC, "visitedTime"));
-	    else patientTrackCollections = patientTrackRepository.findAll(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "visitedTime"));
-	    
+
+	    if (size > 0)
+		patientTrackCollections = patientTrackRepository.findAll(doctorId, locationId, hospitalId, new PageRequest(page, size, Direction.DESC,
+			"visitedTime"));
+	    else
+		patientTrackCollections = patientTrackRepository.findAll(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "visitedTime"));
+
 	    if (patientTrackCollections != null && !patientTrackCollections.isEmpty()) {
 		@SuppressWarnings("unchecked")
 		List<String> patientIds = (List<String>) CollectionUtils.collect(patientTrackCollections, new BeanToPropertyValueTransformer("patientId"));
@@ -349,25 +351,34 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
     @Override
     public List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId, int page, int size,
-    		 Boolean isOTPVerified, String updatedTime) {
+	    Boolean isOTPVerified, String updatedTime) {
 	List<PatientVisitResponse> response = null;
 	List<PatientVisitCollection> patientVisitCollections = null;
 	try {
-		long createdTimestamp = Long.parseLong(updatedTime);
-		if (!isOTPVerified) {
-			    if (locationId == null && hospitalId == null) {
-			    	 if (size > 0) patientVisitCollections = patientTrackRepository.find(doctorId, patientId, new Date(createdTimestamp), new PageRequest(page, size, Direction.DESC,"updatedTime"));
-			    	 else patientVisitCollections = patientTrackRepository.find(doctorId, patientId, new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
-			    }
-			    else{
-			    	 if (size > 0)patientVisitCollections = patientTrackRepository.find(doctorId, locationId, hospitalId, patientId, new Date(createdTimestamp), new PageRequest(page, size, Direction.DESC,"updatedTime"));
-	    		    else patientVisitCollections = patientTrackRepository.find(doctorId, locationId, hospitalId, patientId, new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
-			    }
-			}
-			else{
-				 if (size > 0) patientVisitCollections = patientTrackRepository.find(patientId, new Date(createdTimestamp), new PageRequest(page, size, Direction.DESC,"updatedTime"));
-		    	 else patientVisitCollections = patientTrackRepository.find(patientId, new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
+	    long createdTimestamp = Long.parseLong(updatedTime);
+	    if (!isOTPVerified) {
+		if (locationId == null && hospitalId == null) {
+		    if (size > 0)
+			patientVisitCollections = patientTrackRepository.find(doctorId, patientId, new Date(createdTimestamp), new PageRequest(page, size,
+				Direction.DESC, "updatedTime"));
+		    else
+			patientVisitCollections = patientTrackRepository.find(doctorId, patientId, new Date(createdTimestamp), new Sort(Sort.Direction.DESC,
+				"updatedTime"));
+		} else {
+		    if (size > 0)
+			patientVisitCollections = patientTrackRepository.find(doctorId, locationId, hospitalId, patientId, new Date(createdTimestamp),
+				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+		    else
+			patientVisitCollections = patientTrackRepository.find(doctorId, locationId, hospitalId, patientId, new Date(createdTimestamp),
+				new Sort(Sort.Direction.DESC, "updatedTime"));
+		}
+	    } else {
+		if (size > 0)
+		    patientVisitCollections = patientTrackRepository.find(patientId, new Date(createdTimestamp), new PageRequest(page, size, Direction.DESC,
+			    "updatedTime"));
+		else
+		    patientVisitCollections = patientTrackRepository.find(patientId, new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+	    }
 	    if (patientVisitCollections != null) {
 		response = new ArrayList<PatientVisitResponse>();
 

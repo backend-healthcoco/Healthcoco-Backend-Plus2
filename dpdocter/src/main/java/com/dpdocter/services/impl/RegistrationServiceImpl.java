@@ -95,7 +95,6 @@ import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.sms.services.SMSServices;
-
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -165,7 +164,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Autowired
     private SMSServices sMSServices;
-    
+
     @Autowired
     private TokenRepository tokenRepository;
 
@@ -608,8 +607,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 	try {
 	    ReferencesCollection referrencesCollection = referrenceRepository.findOne(referenceId);
 	    if (referrencesCollection != null) {
-	    	if(discarded == null)referrencesCollection.setDiscarded(true);
-	    	else referrencesCollection.setDiscarded(discarded);
+		if (discarded == null)
+		    referrencesCollection.setDiscarded(true);
+		else
+		    referrencesCollection.setDiscarded(discarded);
 		referrencesCollection.setUpdatedTime(new Date());
 		referrenceRepository.save(referrencesCollection);
 	    } else {
@@ -629,16 +630,17 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     @Override
-    public List<ReferenceDetail> getReferences(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded) {
-    	List<ReferenceDetail> response = null;
-    	boolean[] discards = new boolean[2];
-    	discards[0] = false;
-    	
+    public List<ReferenceDetail> getReferences(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+	    Boolean discarded) {
+	List<ReferenceDetail> response = null;
+	boolean[] discards = new boolean[2];
+	discards[0] = false;
+
 	try {
-		if (discarded) {
-			discards[1] = true;
-		    }
-		switch (Range.valueOf(range.toUpperCase())) {
+	    if (discarded) {
+		discards[1] = true;
+	    }
+	    switch (Range.valueOf(range.toUpperCase())) {
 
 	    case GLOBAL:
 		response = getGlobalReferences(page, size, updatedTime, discards);
@@ -649,7 +651,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    case BOTH:
 		response = getCustomGlobalReferences(page, size, doctorId, locationId, hospitalId, updatedTime, discards);
 		break;
-		}
+	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
@@ -658,87 +660,109 @@ public class RegistrationServiceImpl implements RegistrationService {
 	return response;
     }
 
-  
     private List<ReferenceDetail> getGlobalReferences(int page, int size, String updatedTime, boolean[] discards) {
-    	List<ReferenceDetail> response = null;
-		List<ReferencesCollection> referrencesCollections = null;
+	List<ReferenceDetail> response = null;
+	List<ReferencesCollection> referrencesCollections = null;
 	try {
-		long createdTimeStamp = Long.parseLong(updatedTime);
-		if(size > 0)referrencesCollections = referrenceRepository.findAll(new Date(createdTimeStamp) , discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-		else referrencesCollections = referrenceRepository.findAll(new Date(createdTimeStamp) , discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-	 if (referrencesCollections != null) {
-			response = new ArrayList<ReferenceDetail>();
-			BeanUtil.map(referrencesCollections, response);
-	 }
+	    long createdTimeStamp = Long.parseLong(updatedTime);
+	    if (size > 0)
+		referrencesCollections = referrenceRepository.findAll(new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC,
+			"updatedTime"));
+	    else
+		referrencesCollections = referrenceRepository.findAll(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
+	    if (referrencesCollections != null) {
+		response = new ArrayList<ReferenceDetail>();
+		BeanUtil.map(referrencesCollections, response);
+	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
-	}
+    }
 
-	private List<ReferenceDetail> getCustomReferences(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean[] discards) {
-		List<ReferenceDetail> response = null;
-		List<ReferencesCollection> referrencesCollections = null;
+    private List<ReferenceDetail> getCustomReferences(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+	    boolean[] discards) {
+	List<ReferenceDetail> response = null;
+	List<ReferencesCollection> referrencesCollections = null;
 	try {
-		if(DPDoctorUtils.anyStringEmpty(doctorId));
-		else{
-			long createdTimeStamp = Long.parseLong(updatedTime);
-			if(DPDoctorUtils.anyStringEmpty(locationId,hospitalId)){
-				if(size > 0)referrencesCollections = referrenceRepository.findCustom(doctorId, new Date(createdTimeStamp) , discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else referrencesCollections = referrenceRepository.findCustom(doctorId,new Date(createdTimeStamp) , discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
-			else{
-				if(size > 0)referrencesCollections = referrenceRepository.findCustom(doctorId,locationId, hospitalId, new Date(createdTimeStamp) , discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else referrencesCollections = referrenceRepository.findCustom(doctorId,locationId, hospitalId, new Date(createdTimeStamp) , discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
-		}
-		if (referrencesCollections != null) {
-			response = new ArrayList<ReferenceDetail>();
-			BeanUtil.map(referrencesCollections, response);
-	 }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-	}
-	return response;		
-	}
-
-	private List<ReferenceDetail> getCustomGlobalReferences(int page, int size, String doctorId, String locationId,	String hospitalId, String updatedTime, boolean[] discards) {
-		List<ReferenceDetail> response = null;
-		List<ReferencesCollection> referrencesCollections = null;
-	try {
+	    if (DPDoctorUtils.anyStringEmpty(doctorId))
+		;
+	    else {
 		long createdTimeStamp = Long.parseLong(updatedTime);
-		if(DPDoctorUtils.anyStringEmpty(doctorId)){
-			if(size > 0)referrencesCollections = referrenceRepository.findCustomGlobal(new Date(createdTimeStamp) , discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-			else referrencesCollections = referrenceRepository.findCustomGlobal(new Date(createdTimeStamp) , discards, new Sort(Sort.Direction.DESC, "updatedTime"));
+		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+		    if (size > 0)
+			referrencesCollections = referrenceRepository.findCustom(doctorId, new Date(createdTimeStamp), discards, new PageRequest(page, size,
+				Direction.DESC, "updatedTime"));
+		    else
+			referrencesCollections = referrenceRepository.findCustom(doctorId, new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC,
+				"updatedTime"));
+		} else {
+		    if (size > 0)
+			referrencesCollections = referrenceRepository.findCustom(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
+				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+		    else
+			referrencesCollections = referrenceRepository.findCustom(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
+				new Sort(Sort.Direction.DESC, "updatedTime"));
 		}
-		else{
-			if(DPDoctorUtils.anyStringEmpty(locationId,hospitalId)){
-				if(size > 0)referrencesCollections = referrenceRepository.findCustomGlobal(doctorId, new Date(createdTimeStamp) , discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else referrencesCollections = referrenceRepository.findCustomGlobal(doctorId,new Date(createdTimeStamp) , discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
-			else{
-				if(size > 0)referrencesCollections = referrenceRepository.findCustomGlobal(doctorId,locationId, hospitalId, new Date(createdTimeStamp) , discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else referrencesCollections = referrenceRepository.findCustomGlobal(doctorId,locationId, hospitalId, new Date(createdTimeStamp) , discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
-		}
-		if (referrencesCollections != null) {
-			response = new ArrayList<ReferenceDetail>();
-			BeanUtil.map(referrencesCollections, response);
-	 }
-		
+	    }
+	    if (referrencesCollections != null) {
+		response = new ArrayList<ReferenceDetail>();
+		BeanUtil.map(referrencesCollections, response);
+	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
-	}
+    }
 
-	@Override
+    private List<ReferenceDetail> getCustomGlobalReferences(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+	    boolean[] discards) {
+	List<ReferenceDetail> response = null;
+	List<ReferencesCollection> referrencesCollections = null;
+	try {
+	    long createdTimeStamp = Long.parseLong(updatedTime);
+	    if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+		if (size > 0)
+		    referrencesCollections = referrenceRepository.findCustomGlobal(new Date(createdTimeStamp), discards, new PageRequest(page, size,
+			    Direction.DESC, "updatedTime"));
+		else
+		    referrencesCollections = referrenceRepository.findCustomGlobal(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC,
+			    "updatedTime"));
+	    } else {
+		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+		    if (size > 0)
+			referrencesCollections = referrenceRepository.findCustomGlobal(doctorId, new Date(createdTimeStamp), discards, new PageRequest(page,
+				size, Direction.DESC, "updatedTime"));
+		    else
+			referrencesCollections = referrenceRepository.findCustomGlobal(doctorId, new Date(createdTimeStamp), discards, new Sort(
+				Sort.Direction.DESC, "updatedTime"));
+		} else {
+		    if (size > 0)
+			referrencesCollections = referrenceRepository.findCustomGlobal(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
+				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+		    else
+			referrencesCollections = referrenceRepository.findCustomGlobal(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
+				new Sort(Sort.Direction.DESC, "updatedTime"));
+		}
+	    }
+	    if (referrencesCollections != null) {
+		response = new ArrayList<ReferenceDetail>();
+		BeanUtil.map(referrencesCollections, response);
+	    }
+
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return response;
+    }
+
+    @Override
     public String patientIdGenerator(String doctorId, String locationId, String hospitalId) {
 	String generatedId = null;
 	try {
@@ -1018,8 +1042,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
 		    String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 		    locationCollection.setLogoUrl(imageurl);
-		    
-		    String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(),path);
+
+		    String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
 		    locationCollection.setLogoThumbnailUrl(thumbnailUrl);
 		    locationCollection = locationRepository.save(locationCollection);
 
@@ -1055,7 +1079,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			String path = "clinic" + File.separator + "images";
 			image.setFileName(image.getFileName() + new Date().getTime());
 			String imageurl = fileManager.saveImageAndReturnImageUrl(image, path);
-			String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(image,path);
+			String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(image, path);
 			ClinicImage clinicImage = new ClinicImage();
 			clinicImage.setImageUrl(imageurl);
 			clinicImage.setThumbnailUrl(thumbnailUrl);
@@ -1113,144 +1137,141 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     }
 
-	@Override
-	public User getDoctorsByEmailAddress(String emailAddress) {
-		User user = null;
-		try {
-		    UserCollection userCollections = userRepository.findByUserNameAndEmailAddress(emailAddress, emailAddress);
-		    if (userCollections != null) {
-			user = new User();
-		    BeanUtil.map(userCollections, user);
-		   }
+    @Override
+    public User getDoctorsByEmailAddress(String emailAddress) {
+	User user = null;
+	try {
+	    UserCollection userCollections = userRepository.findByUserNameAndEmailAddress(emailAddress, emailAddress);
+	    if (userCollections != null) {
+		user = new User();
+		BeanUtil.map(userCollections, user);
+	    }
 
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return user;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return user;
+    }
 
-	@Override
-	public RegisterDoctorResponse registerNewDoctor(DoctorRegisterRequest request) {
-		RegisterDoctorResponse response = null;
-		try{
-			RoleCollection doctorRole = roleRepository.findByRole(RoleEnum.DOCTOR.getRole());
-		    if (doctorRole == null) {
-			logger.warn("Role Collection in database is either empty or not defind properly");
-			throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
-		    }
-		    // save user
-		    UserCollection userCollection = new UserCollection();
-		    BeanUtil.map(request, userCollection);
-		    if (userCollection.getDob() != null && userCollection.getDob().getAge() < 0) {
-			logger.warn("Incorrect Date of Birth");
-			throw new BusinessException(ServiceError.NotAcceptable, "Incorrect Date of Birth");
-		    }
-		    userCollection.setUserName(request.getEmailAddress());
-		    if (request.getImage() != null) {
-			String path = "profile-pic";
-			// save image
-			request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
-			String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
-			userCollection.setImageUrl(imageurl);
-			
-			String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(),path);
-		    userCollection.setThumbnailUrl(thumbnailUrl);
-		    }
-		    userCollection.setCreatedTime(new Date());
-		    userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
-		    userCollection = userRepository.save(userCollection);
-		    
-		    // save doctor specific details
-		    DoctorCollection doctorCollection = new DoctorCollection();
-		    BeanUtil.map(request, doctorCollection);
-		    doctorCollection.setUserId(userCollection.getId());
-		    doctorCollection.setCreatedTime(new Date());
-		    doctorCollection = doctorRepository.save(doctorCollection);
-		    
-		    // assign role to doctor
-		    UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), doctorRole.getId());
-		    userRoleCollection.setCreatedTime(new Date());
-		    userRoleRepository.save(userRoleCollection);
-		    
-		    // save user location.
-		    UserLocationCollection userLocationCollection = new UserLocationCollection(userCollection.getId(), request.getLocationId());
-		    userLocationCollection.setCreatedTime(new Date());
-		    userLocationRepository.save(userLocationCollection);
+    @Override
+    public RegisterDoctorResponse registerNewDoctor(DoctorRegisterRequest request) {
+	RegisterDoctorResponse response = null;
+	try {
+	    RoleCollection doctorRole = roleRepository.findByRole(RoleEnum.DOCTOR.getRole());
+	    if (doctorRole == null) {
+		logger.warn("Role Collection in database is either empty or not defind properly");
+		throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
+	    }
+	    // save user
+	    UserCollection userCollection = new UserCollection();
+	    BeanUtil.map(request, userCollection);
+	    if (userCollection.getDob() != null && userCollection.getDob().getAge() < 0) {
+		logger.warn("Incorrect Date of Birth");
+		throw new BusinessException(ServiceError.NotAcceptable, "Incorrect Date of Birth");
+	    }
+	    userCollection.setUserName(request.getEmailAddress());
+	    if (request.getImage() != null) {
+		String path = "profile-pic";
+		// save image
+		request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
+		String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
+		userCollection.setImageUrl(imageurl);
 
-		    // save token
-		    TokenCollection tokenCollection = new TokenCollection();
-		    tokenCollection.setUserLocationId(userLocationCollection.getId());
-		    tokenCollection.setCreatedTime(new Date());
-		    tokenCollection = tokenRepository.save(tokenCollection);
+		String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
+		userCollection.setThumbnailUrl(thumbnailUrl);
+	    }
+	    userCollection.setCreatedTime(new Date());
+	    userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
+	    userCollection = userRepository.save(userCollection);
 
-		    // send activation email
-		    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
-			    userCollection.getMiddleName(), userCollection.getLastName(), tokenCollection.getId());
-		    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
-		    
-		    response = new RegisterDoctorResponse();
-		    userCollection.setPassword(null);
-		    BeanUtil.map(userCollection, response);
-		    response.setHospitalId(request.getHospitalId());
-		    response.setLocationId(request.getLocationId());
-		    
-		    
+	    // save doctor specific details
+	    DoctorCollection doctorCollection = new DoctorCollection();
+	    BeanUtil.map(request, doctorCollection);
+	    doctorCollection.setUserId(userCollection.getId());
+	    doctorCollection.setCreatedTime(new Date());
+	    doctorCollection = doctorRepository.save(doctorCollection);
 
-//		    if (userCollection.getMobileNumber() != null) {
-//			SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-//			smsTrackDetail.setDoctorId(userCollection.getId());
-//			smsTrackDetail.setHospitalId(request.getHospitalId());
-//			smsTrackDetail.setLocationId(request.getLocationId());
-	//
-//			SMSDetail smsDetail = new SMSDetail();
-//			smsDetail.setPatientId(userCollection.getId());
-	//
-//			SMS sms = new SMS();
-//			sms.setSmsText("OTP Verification");
-	//
-//			SMSAddress smsAddress = new SMSAddress();
-//			smsAddress.setRecipient(userCollection.getMobileNumber());
-//			sms.setSmsAddress(smsAddress);
-	//
-//			smsDetail.setSms(sms);
-//			List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-//			smsDetails.add(smsDetail);
-//			smsTrackDetail.setSmsDetails(smsDetails);
-//			sMSServices.sendSMS(smsTrackDetail, false);
-//		    }
+	    // assign role to doctor
+	    UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), doctorRole.getId());
+	    userRoleCollection.setCreatedTime(new Date());
+	    userRoleRepository.save(userRoleCollection);
 
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return response;
+	    // save user location.
+	    UserLocationCollection userLocationCollection = new UserLocationCollection(userCollection.getId(), request.getLocationId());
+	    userLocationCollection.setCreatedTime(new Date());
+	    userLocationRepository.save(userLocationCollection);
+
+	    // save token
+	    TokenCollection tokenCollection = new TokenCollection();
+	    tokenCollection.setUserLocationId(userLocationCollection.getId());
+	    tokenCollection.setCreatedTime(new Date());
+	    tokenCollection = tokenRepository.save(tokenCollection);
+
+	    // send activation email
+	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
+		    userCollection.getMiddleName(), userCollection.getLastName(), tokenCollection.getId());
+	    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
+
+	    response = new RegisterDoctorResponse();
+	    userCollection.setPassword(null);
+	    BeanUtil.map(userCollection, response);
+	    response.setHospitalId(request.getHospitalId());
+	    response.setLocationId(request.getLocationId());
+
+	    // if (userCollection.getMobileNumber() != null) {
+	    // SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+	    // smsTrackDetail.setDoctorId(userCollection.getId());
+	    // smsTrackDetail.setHospitalId(request.getHospitalId());
+	    // smsTrackDetail.setLocationId(request.getLocationId());
+	    //
+	    // SMSDetail smsDetail = new SMSDetail();
+	    // smsDetail.setPatientId(userCollection.getId());
+	    //
+	    // SMS sms = new SMS();
+	    // sms.setSmsText("OTP Verification");
+	    //
+	    // SMSAddress smsAddress = new SMSAddress();
+	    // smsAddress.setRecipient(userCollection.getMobileNumber());
+	    // sms.setSmsAddress(smsAddress);
+	    //
+	    // smsDetail.setSms(sms);
+	    // List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+	    // smsDetails.add(smsDetail);
+	    // smsTrackDetail.setSmsDetails(smsDetails);
+	    // sMSServices.sendSMS(smsTrackDetail, false);
+	    // }
+
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return response;
+    }
 
-	@Override
-	public RegisterDoctorResponse registerExisitingDoctor(DoctorRegisterRequest request) {
-		RegisterDoctorResponse response = null;
-		try{
-			UserCollection userCollection = userRepository.findOne(request.getUserId());
-			
-			UserLocationCollection userLocationCollection = new UserLocationCollection(userCollection.getId(), request.getLocationId());
-		    userLocationCollection.setCreatedTime(new Date());
-		    userLocationRepository.save(userLocationCollection);
-		    
-		    response = new RegisterDoctorResponse();
-		    userCollection.setPassword(null);
-		    BeanUtil.map(userCollection, response);
-		    response.setHospitalId(request.getHospitalId());
-		    response.setLocationId(request.getLocationId());
-		    
+    @Override
+    public RegisterDoctorResponse registerExisitingDoctor(DoctorRegisterRequest request) {
+	RegisterDoctorResponse response = null;
+	try {
+	    UserCollection userCollection = userRepository.findOne(request.getUserId());
 
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return response;
+	    UserLocationCollection userLocationCollection = new UserLocationCollection(userCollection.getId(), request.getLocationId());
+	    userLocationCollection.setCreatedTime(new Date());
+	    userLocationRepository.save(userLocationCollection);
+
+	    response = new RegisterDoctorResponse();
+	    userCollection.setPassword(null);
+	    BeanUtil.map(userCollection, response);
+	    response.setHospitalId(request.getHospitalId());
+	    response.setLocationId(request.getLocationId());
+
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return response;
+    }
 }

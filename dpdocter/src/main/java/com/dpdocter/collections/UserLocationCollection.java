@@ -14,13 +14,12 @@ public class UserLocationCollection extends GenericCollection {
 
     @Field
     private String locationId;
-    
+
     @Field
     private Boolean isActive = false;
 
     @Field
     private Boolean isVerified = false;
-
 
     public UserLocationCollection(String userId, String locationId) {
 	this.userId = userId;
@@ -51,25 +50,25 @@ public class UserLocationCollection extends GenericCollection {
 	this.locationId = locationId;
     }
 
-	public Boolean getIsActive() {
-		return isActive;
-	}
+    public Boolean getIsActive() {
+	return isActive;
+    }
 
-	public void setIsActive(Boolean isActive) {
-		this.isActive = isActive;
-	}
+    public void setIsActive(Boolean isActive) {
+	this.isActive = isActive;
+    }
 
-	public Boolean getIsVerified() {
-		return isVerified;
-	}
+    public Boolean getIsVerified() {
+	return isVerified;
+    }
 
-	public void setIsVerified(Boolean isVerified) {
-		this.isVerified = isVerified;
-	}
+    public void setIsVerified(Boolean isVerified) {
+	this.isVerified = isVerified;
+    }
 
-	@Override
-	public String toString() {
-		return "UserLocationCollection [id=" + id + ", userId=" + userId + ", locationId=" + locationId + ", isActive="
-				+ isActive + ", isVerified=" + isVerified + "]";
-	}
+    @Override
+    public String toString() {
+	return "UserLocationCollection [id=" + id + ", userId=" + userId + ", locationId=" + locationId + ", isActive=" + isActive + ", isVerified="
+		+ isVerified + "]";
+    }
 }

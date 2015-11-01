@@ -37,7 +37,8 @@ public interface RegistrationService {
 
     void deleteReferrence(String referrenceId, Boolean discarded);
 
-    List<ReferenceDetail> getReferences(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded);
+    List<ReferenceDetail> getReferences(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+	    Boolean discarded);
 
     String patientIdGenerator(String doctorId, String locationId, String hospitalId);
 
@@ -69,10 +70,10 @@ public interface RegistrationService {
 
     Boolean deleteClinicImage(String locationId, int counter);
 
-	User getDoctorsByEmailAddress(String emailAddress);
+    User getDoctorsByEmailAddress(String emailAddress);
 
-	RegisterDoctorResponse registerNewDoctor(DoctorRegisterRequest request);
+    RegisterDoctorResponse registerNewDoctor(DoctorRegisterRequest request);
 
-	RegisterDoctorResponse registerExisitingDoctor(DoctorRegisterRequest request);
+    RegisterDoctorResponse registerExisitingDoctor(DoctorRegisterRequest request);
 
 }

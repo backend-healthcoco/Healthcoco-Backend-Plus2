@@ -7,31 +7,31 @@ import org.springframework.data.solr.core.mapping.SolrDocument;
 @SolrDocument(solrCoreName = "labTests")
 public class SolrLabTestDocument {
 
-	@Id
+    @Id
     @Field
     private String id;
-	
-	@Field
-	private String testName;
 
-	public String getId() {
-		return id;
-	}
+    @Field
+    private String testName;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public String getTestName() {
-		return testName;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public void setTestName(String testName) {
-		this.testName = testName;
-	}
+    public String getTestName() {
+	return testName;
+    }
 
-	@Override
-	public String toString() {
-		return "SolrLabTestDocument [id=" + id + ", testName=" + testName + "]";
-	}	
+    public void setTestName(String testName) {
+	this.testName = testName;
+    }
+
+    @Override
+    public String toString() {
+	return "SolrLabTestDocument [id=" + id + ", testName=" + testName + "]";
+    }
 }
