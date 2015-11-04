@@ -13,7 +13,7 @@ public class RegisteredPatientDetails extends GenericCollection {
     private String middleName;
 
     private String imageUrl;
-    
+
     private String thumbnailUrl;
 
     private DOB dob;
@@ -178,22 +178,20 @@ public class RegisteredPatientDetails extends GenericCollection {
 	this.colorCode = colorCode;
     }
 
-	public String getThumbnailUrl() {
-		return thumbnailUrl;
-	}
+    public String getThumbnailUrl() {
+	return thumbnailUrl;
+    }
 
-	public void setThumbnailUrl(String thumbnailUrl) {
-		this.thumbnailUrl = thumbnailUrl;
-	}
+    public void setThumbnailUrl(String thumbnailUrl) {
+	this.thumbnailUrl = thumbnailUrl;
+    }
 
-	@Override
-	public String toString() {
-		return "RegisteredPatientDetails [firstName=" + firstName + ", lastName=" + lastName + ", middleName="
-				+ middleName + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", dob=" + dob
-				+ ", userId=" + userId + ", userName=" + userName + ", mobileNumber=" + mobileNumber + ", gender="
-				+ gender + ", patient=" + patient + ", address=" + address + ", groups=" + groups + ", doctorId="
-				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", PID=" + PID
-				+ ", colorCode=" + colorCode + "]";
-	}
+    @Override
+    public String toString() {
+	return "RegisteredPatientDetails [firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", imageUrl=" + imageUrl
+		+ ", thumbnailUrl=" + thumbnailUrl + ", dob=" + dob + ", userId=" + userId + ", userName=" + userName + ", mobileNumber=" + mobileNumber
+		+ ", gender=" + gender + ", patient=" + patient + ", address=" + address + ", groups=" + groups + ", doctorId=" + doctorId + ", locationId="
+		+ locationId + ", hospitalId=" + hospitalId + ", PID=" + PID + ", colorCode=" + colorCode + "]";
+    }
 
 }

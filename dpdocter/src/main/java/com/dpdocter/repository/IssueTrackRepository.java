@@ -3,8 +3,6 @@ package com.dpdocter.repository;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -44,16 +42,14 @@ public interface IssueTrackRepository extends MongoRepository<IssueTrackCollecti
 
     @Query("{'status': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': {$in: ?2}}")
     List<IssueTrackCollection> findByStatus(String status, Date date, boolean[] discards, Sort sort);
-    
+
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2}")
-	List<IssueTrackCollection> findAll(String doctorId, String locationId, String hospitalId);
+    List<IssueTrackCollection> findAll(String doctorId, String locationId, String hospitalId);
 
     @Query("{'updatedTime': {'$gte': ?0}, 'discarded': {$in: ?1}}")
     List<IssueTrackCollection> findAll(Date date, boolean[] discards, Pageable pageable);
 
     @Query("{'updatedTime': {'$gte': ?0}, 'discarded': {$in: ?1}}")
-	List<IssueTrackCollection> findAll(Date date, boolean[] discards, Sort sort);
-
-	
+    List<IssueTrackCollection> findAll(Date date, boolean[] discards, Sort sort);
 
 }

@@ -16,7 +16,7 @@ public class Drug {
     private List<String> genericNames;
 
     private String drugCode;
-    
+
     private Boolean discarded;
 
     public String getId() {
@@ -75,18 +75,17 @@ public class Drug {
 	this.drugCode = drugCode;
     }
 
-	public Boolean getDiscarded() {
-		return discarded;
-	}
+    public Boolean getDiscarded() {
+	return discarded;
+    }
 
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
 
-	@Override
-	public String toString() {
-		return "Drug [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", description=" + description
-				+ ", strength=" + strength + ", genericNames=" + genericNames + ", drugCode=" + drugCode
-				+ ", discarded=" + discarded + "]";
-	}
+    @Override
+    public String toString() {
+	return "Drug [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", description=" + description + ", strength=" + strength
+		+ ", genericNames=" + genericNames + ", drugCode=" + drugCode + ", discarded=" + discarded + "]";
+    }
 }

@@ -203,30 +203,29 @@ public class UserCollection extends GenericCollection {
 	this.colorCode = colorCode;
     }
 
-	public String getThumbnailUrl() {
-		return thumbnailUrl;
-	}
+    public String getThumbnailUrl() {
+	return thumbnailUrl;
+    }
 
-	public void setThumbnailUrl(String thumbnailUrl) {
-		this.thumbnailUrl = thumbnailUrl;
-	}
+    public void setThumbnailUrl(String thumbnailUrl) {
+	this.thumbnailUrl = thumbnailUrl;
+    }
 
-	public String getCoverThumbnailImageUrl() {
-		return coverThumbnailImageUrl;
-	}
+    public String getCoverThumbnailImageUrl() {
+	return coverThumbnailImageUrl;
+    }
 
-	public void setCoverThumbnailImageUrl(String coverThumbnailImageUrl) {
-		this.coverThumbnailImageUrl = coverThumbnailImageUrl;
-	}
+    public void setCoverThumbnailImageUrl(String coverThumbnailImageUrl) {
+	this.coverThumbnailImageUrl = coverThumbnailImageUrl;
+    }
 
-	@Override
-	public String toString() {
-		return "UserCollection [id=" + id + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName
-				+ ", middleName=" + middleName + ", userName=" + userName + ", password=" + password + ", emailAddress="
-				+ emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl=" + imageUrl
-				+ ", thumbnailUrl=" + thumbnailUrl + ", dob=" + dob + ", isActive=" + isActive + ", isTempPassword="
-				+ isTempPassword + ", isVerified=" + isVerified + ", coverImageUrl=" + coverImageUrl
-				+ ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", colorCode=" + colorCode + "]";
-	}
-	
+    @Override
+    public String toString() {
+	return "UserCollection [id=" + id + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName
+		+ ", userName=" + userName + ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender="
+		+ gender + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", dob=" + dob + ", isActive=" + isActive + ", isTempPassword="
+		+ isTempPassword + ", isVerified=" + isVerified + ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl
+		+ ", colorCode=" + colorCode + "]";
+    }
+
 }

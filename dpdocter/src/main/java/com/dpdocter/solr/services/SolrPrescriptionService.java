@@ -15,12 +15,12 @@ public interface SolrPrescriptionService {
 
     List<SolrDrugDocument> searchDrug(String searchTerm);
 
-	boolean addLabTest(SolrLabTestDocument request);
+    boolean addLabTest(SolrLabTestDocument request);
 
-	boolean editLabTest(SolrLabTestDocument request);
+    boolean editLabTest(SolrLabTestDocument request);
 
-	boolean deleteLabTest(String labTestId);
+    boolean deleteLabTest(String labTestId);
 
-	List<SolrLabTestDocument> searchLabTest(String searchTerm);
+    List<SolrLabTestDocument> searchLabTest(String searchTerm);
 
 }

@@ -3,7 +3,6 @@ package com.dpdocter.repository;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -13,7 +12,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import com.dpdocter.collections.DrugCollection;
 
 public interface DrugRepository extends MongoRepository<DrugCollection, String>, PagingAndSortingRepository<DrugCollection, String> {
-    
+
     @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': {$in: ?4}}")
     List<DrugCollection> getCustomDrugs(String doctorId, String hospitalId, String locationId, Date date, boolean[] discards, Pageable pageable);
 

@@ -32,17 +32,17 @@ public class TokenCollection extends GenericCollection {
 	this.isUsed = isUsed;
     }
 
-	public String getUserLocationId() {
-		return userLocationId;
-	}
+    public String getUserLocationId() {
+	return userLocationId;
+    }
 
-	public void setUserLocationId(String userLocationId) {
-		this.userLocationId = userLocationId;
-	}
+    public void setUserLocationId(String userLocationId) {
+	this.userLocationId = userLocationId;
+    }
 
-	@Override
-	public String toString() {
-		return "TokenCollection [id=" + id + ", isUsed=" + isUsed + ", userLocationId=" + userLocationId + "]";
-	}
+    @Override
+    public String toString() {
+	return "TokenCollection [id=" + id + ", isUsed=" + isUsed + ", userLocationId=" + userLocationId + "]";
+    }
 
 }

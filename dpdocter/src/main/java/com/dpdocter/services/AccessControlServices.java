@@ -6,6 +6,6 @@ public interface AccessControlServices {
 
     AccessControl getAccessControls(String roleOrUserId, String locationId, String hospitalId);
 
-    AccessControl setAccessControls(AccessControl accessControl);
+    boolean setAccessControls(AccessControl accessControl);
 
 }

@@ -11,7 +11,7 @@ public class RecordsSearchRequest {
 
     private String hospitalId;
 
-    private String updatedTime= "0";
+    private String updatedTime = "0";
 
     private Boolean discarded = true;
 

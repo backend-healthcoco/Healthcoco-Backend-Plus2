@@ -3,7 +3,6 @@ package com.dpdocter.repository;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -11,7 +10,6 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.dpdocter.collections.PrintSettingsCollection;
-import com.dpdocter.enums.ComponentType;
 
 public interface PrintSettingsRepository extends MongoRepository<PrintSettingsCollection, String>, PagingAndSortingRepository<PrintSettingsCollection, String> {
 
@@ -29,7 +27,7 @@ public interface PrintSettingsRepository extends MongoRepository<PrintSettingsCo
 
     @Query("{'updatedTime': {'$gte': ?0}, 'discarded': {$in: ?1}}")
     List<PrintSettingsCollection> findAll(Date date, boolean[] discards, Pageable pageable);
-    
+
     @Query("{'updatedTime': {'$gte': ?0}, 'discarded': {$in: ?1}}")
     List<PrintSettingsCollection> findAll(Date date, boolean[] discards, Sort sort);
 
@@ -37,6 +35,6 @@ public interface PrintSettingsRepository extends MongoRepository<PrintSettingsCo
     PrintSettingsCollection getSettings(String doctorId, String locationId, String hospitalId, String type);
 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2}")
-	PrintSettingsCollection getSettings(String doctorId, String locationId, String hospitalId);
+    PrintSettingsCollection getSettings(String doctorId, String locationId, String hospitalId);
 
 }

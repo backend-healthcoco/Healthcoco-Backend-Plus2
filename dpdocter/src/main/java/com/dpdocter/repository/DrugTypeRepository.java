@@ -3,7 +3,6 @@ package com.dpdocter.repository;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -51,6 +50,6 @@ public interface DrugTypeRepository extends MongoRepository<DrugTypeCollection, 
     List<DrugTypeCollection> getCustomGlobalDrugType(Date date, boolean[] discards, Sort sort);
 
     @Query("{'type': ?0, 'doctorId': null, 'locationId': null, 'hospitalId': null}")
-	DrugTypeCollection findByType(String string);
+    DrugTypeCollection findByType(String string);
 
 }

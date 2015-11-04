@@ -9,7 +9,6 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.DoctorClinicProfile;
@@ -65,7 +64,7 @@ import com.dpdocter.services.FileManager;
 @Service
 public class DoctorProfileServiceImpl implements DoctorProfileService {
 
-	private static Logger logger = Logger.getLogger(DoctorProfileServiceImpl.class.getName());
+    private static Logger logger = Logger.getLogger(DoctorProfileServiceImpl.class.getName());
 
     @Autowired
     private UserRepository userRepository;
@@ -90,13 +89,12 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
     @Autowired
     private FileManager fileManager;
-    
+
     @Autowired
     private EducationQualificationRepository educationQualificationRepository;
 
-	@Autowired
+    @Autowired
     private EducationInstituteRepository educationInstituteRepository;
-
 
     @Override
     public Boolean addEditName(DoctorNameAddEditRequest request) {
@@ -337,8 +335,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
 		String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 		userCollection.setImageUrl(imageurl);
-		String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(),path);
-	    userCollection.setThumbnailUrl(thumbnailUrl);
+		String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
+		userCollection.setThumbnailUrl(thumbnailUrl);
 
 		userCollection = userRepository.save(userCollection);
 		response = userCollection.getImageUrl();
@@ -363,8 +361,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
 		String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 		userCollection.setCoverImageUrl(imageurl);
-		String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(),path);
-	    userCollection.setCoverThumbnailImageUrl(thumbnailUrl);
+		String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
+		userCollection.setCoverThumbnailImageUrl(thumbnailUrl);
 		userCollection = userRepository.save(userCollection);
 		response = userCollection.getCoverImageUrl();
 	    }
@@ -631,52 +629,52 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	return response;
     }
 
-	@Override
-	public List<Speciality> getSpecialities() {
-		List<Speciality> specialities = null;
-		List<SpecialityCollection> specialitiesCollections = null;
-		try {
-			specialitiesCollections = specialityRepository.findAll();
-			specialities = new ArrayList<Speciality>();
-		    BeanUtil.map(specialitiesCollections, specialities);
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e + " Error Getting Specialities");
-		    throw new BusinessException(ServiceError.Unknown, "Error Getting Specialities");
-		}
-		return specialities;
+    @Override
+    public List<Speciality> getSpecialities() {
+	List<Speciality> specialities = null;
+	List<SpecialityCollection> specialitiesCollections = null;
+	try {
+	    specialitiesCollections = specialityRepository.findAll();
+	    specialities = new ArrayList<Speciality>();
+	    BeanUtil.map(specialitiesCollections, specialities);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e + " Error Getting Specialities");
+	    throw new BusinessException(ServiceError.Unknown, "Error Getting Specialities");
 	}
+	return specialities;
+    }
 
-	@Override
-	public List<EducationInstitute> getEducationInstitutes() {
-		List<EducationInstitute> educationInstitutes = null;
-		List<EducationInstituteCollection> educationInstituteCollections = null;
-		try {
-			educationInstituteCollections = educationInstituteRepository.findAll();
-		    educationInstitutes = new ArrayList<EducationInstitute>();
-		    BeanUtil.map(educationInstituteCollections, educationInstitutes);
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e + " Error Getting Education Institutes");
-		    throw new BusinessException(ServiceError.Unknown, "Error Getting Education Institutes");
-		}
-		return educationInstitutes;
+    @Override
+    public List<EducationInstitute> getEducationInstitutes() {
+	List<EducationInstitute> educationInstitutes = null;
+	List<EducationInstituteCollection> educationInstituteCollections = null;
+	try {
+	    educationInstituteCollections = educationInstituteRepository.findAll();
+	    educationInstitutes = new ArrayList<EducationInstitute>();
+	    BeanUtil.map(educationInstituteCollections, educationInstitutes);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e + " Error Getting Education Institutes");
+	    throw new BusinessException(ServiceError.Unknown, "Error Getting Education Institutes");
 	}
+	return educationInstitutes;
+    }
 
-	@Override
-	public List<EducationQualification> getEducationQualifications() {
-		List<EducationQualification> qualifications = null;
-		List<EducationQualificationCollection> qualificationCollections = null;
-		try {
-			qualificationCollections = educationQualificationRepository.findAll();
-		    qualifications = new ArrayList<EducationQualification>();
-		    BeanUtil.map(qualificationCollections, qualifications);
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e + " Error Getting Professional Memberships");
-		    throw new BusinessException(ServiceError.Unknown, "Error Getting Professional Memberships");
-		}
-		return qualifications;
+    @Override
+    public List<EducationQualification> getEducationQualifications() {
+	List<EducationQualification> qualifications = null;
+	List<EducationQualificationCollection> qualificationCollections = null;
+	try {
+	    qualificationCollections = educationQualificationRepository.findAll();
+	    qualifications = new ArrayList<EducationQualification>();
+	    BeanUtil.map(qualificationCollections, qualifications);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e + " Error Getting Professional Memberships");
+	    throw new BusinessException(ServiceError.Unknown, "Error Getting Professional Memberships");
 	}
+	return qualifications;
+    }
 
 }

@@ -7,7 +7,6 @@ import com.dpdocter.beans.ReferenceDetail;
 public class ReferenceResponse {
     private List<ReferenceDetail> referenceDetails;
 
-    
     public List<ReferenceDetail> getReferenceDetails() {
 	return referenceDetails;
     }
@@ -16,8 +15,8 @@ public class ReferenceResponse {
 	this.referenceDetails = referenceDetails;
     }
 
-	@Override
-	public String toString() {
-		return "ReferenceResponse [referenceDetails=" + referenceDetails + "]";
-	}
+    @Override
+    public String toString() {
+	return "ReferenceResponse [referenceDetails=" + referenceDetails + "]";
+    }
 }

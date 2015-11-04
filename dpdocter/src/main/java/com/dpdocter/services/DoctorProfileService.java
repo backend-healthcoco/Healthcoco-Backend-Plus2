@@ -71,10 +71,10 @@ public interface DoctorProfileService {
 
     Boolean addEditGeneralInfo(DoctorGeneralInfo request);
 
-	List<Speciality> getSpecialities();
+    List<Speciality> getSpecialities();
 
-	List<EducationInstitute> getEducationInstitutes();
+    List<EducationInstitute> getEducationInstitutes();
 
-	List<EducationQualification> getEducationQualifications();
+    List<EducationQualification> getEducationQualifications();
 
 }

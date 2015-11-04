@@ -5,7 +5,7 @@ public class ClinicLogo {
     private String id;
 
     private String logoURL;
-    
+
     private String logoThumbnailURL;
 
     public String getId() {
@@ -24,16 +24,16 @@ public class ClinicLogo {
 	this.logoURL = logoURL;
     }
 
-	public String getLogoThumbnailURL() {
-		return logoThumbnailURL;
-	}
+    public String getLogoThumbnailURL() {
+	return logoThumbnailURL;
+    }
 
-	public void setLogoThumbnailURL(String logoThumbnailURL) {
-		this.logoThumbnailURL = logoThumbnailURL;
-	}
+    public void setLogoThumbnailURL(String logoThumbnailURL) {
+	this.logoThumbnailURL = logoThumbnailURL;
+    }
 
-	@Override
-	public String toString() {
-		return "ClinicLogo [id=" + id + ", logoURL=" + logoURL + ", logoThumbnailURL=" + logoThumbnailURL + "]";
-	}
+    @Override
+    public String toString() {
+	return "ClinicLogo [id=" + id + ", logoURL=" + logoURL + ", logoThumbnailURL=" + logoThumbnailURL + "]";
+    }
 }

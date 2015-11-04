@@ -303,32 +303,29 @@ public class SolrPatientDocument {
 	this.colorCode = colorCode;
     }
 
-	public Long getRegistrationDate() {
-		return registrationDate;
-	}
+    public Long getRegistrationDate() {
+	return registrationDate;
+    }
 
-	public void setRegistrationDate(Long registrationDate) {
-		this.registrationDate = registrationDate;
-	}
+    public void setRegistrationDate(Long registrationDate) {
+	this.registrationDate = registrationDate;
+    }
 
-	public String getThumbnailUrl() {
-		return thumbnailUrl;
-	}
+    public String getThumbnailUrl() {
+	return thumbnailUrl;
+    }
 
-	public void setThumbnailUrl(String thumbnailUrl) {
-		this.thumbnailUrl = thumbnailUrl;
-	}
+    public void setThumbnailUrl(String thumbnailUrl) {
+	this.thumbnailUrl = thumbnailUrl;
+    }
 
-	@Override
-	public String toString() {
-		return "SolrPatientDocument [id=" + id + ", userId=" + userId + ", PID=" + PID + ", userName=" + userName
-				+ ", firstName=" + firstName + ", middleName=" + middleName + ", lastName=" + lastName + ", gender="
-				+ gender + ", bloodGroup=" + bloodGroup + ", emailAddress=" + emailAddress + ", days=" + days
-				+ ", months=" + months + ", years=" + years + ", dob=" + dob + ", city=" + city + ", locality="
-				+ locality + ", postalCode=" + postalCode + ", mobileNumber=" + mobileNumber + ", profession="
-				+ profession + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", referredBy=" + referredBy + ", createdTime=" + createdTime + ", imageUrl=" + imageUrl
-				+ ", thumbnailUrl=" + thumbnailUrl + ", colorCode=" + colorCode + ", registrationDate="
-				+ registrationDate + "]";
-	}
+    @Override
+    public String toString() {
+	return "SolrPatientDocument [id=" + id + ", userId=" + userId + ", PID=" + PID + ", userName=" + userName + ", firstName=" + firstName
+		+ ", middleName=" + middleName + ", lastName=" + lastName + ", gender=" + gender + ", bloodGroup=" + bloodGroup + ", emailAddress="
+		+ emailAddress + ", days=" + days + ", months=" + months + ", years=" + years + ", dob=" + dob + ", city=" + city + ", locality=" + locality
+		+ ", postalCode=" + postalCode + ", mobileNumber=" + mobileNumber + ", profession=" + profession + ", doctorId=" + doctorId + ", locationId="
+		+ locationId + ", hospitalId=" + hospitalId + ", referredBy=" + referredBy + ", createdTime=" + createdTime + ", imageUrl=" + imageUrl
+		+ ", thumbnailUrl=" + thumbnailUrl + ", colorCode=" + colorCode + ", registrationDate=" + registrationDate + "]";
+    }
 }

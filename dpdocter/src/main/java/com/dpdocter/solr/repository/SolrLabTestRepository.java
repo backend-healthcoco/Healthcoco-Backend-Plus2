@@ -9,7 +9,7 @@ import com.dpdocter.solr.document.SolrLabTestDocument;
 
 public interface SolrLabTestRepository extends SolrCrudRepository<SolrLabTestDocument, String> {
 
-	@Query("testName:*?0*")
-	List<SolrLabTestDocument> find(String searchTerm);
+    @Query("testName:*?0*")
+    List<SolrLabTestDocument> find(String searchTerm);
 
 }

@@ -286,7 +286,7 @@ public class ClinicalNotesApi {
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId, @QueryParam("discarded") Boolean discarded) {
 	clinicalNotesService.deleteComplaint(id, doctorId, locationId, hospitalId, discarded);
 	// Delete complaint in solr index.
-//	solrClinicalNotesService.deleteComplaints(id);
+	// solrClinicalNotesService.deleteComplaints(id);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -297,7 +297,7 @@ public class ClinicalNotesApi {
     public Response<Boolean> deleteObservation(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId, @QueryParam("discarded") Boolean discarded) {
 	clinicalNotesService.deleteObservation(id, doctorId, locationId, hospitalId, discarded);
-//	solrClinicalNotesService.deleteObservations(id);
+	// solrClinicalNotesService.deleteObservations(id);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -309,7 +309,7 @@ public class ClinicalNotesApi {
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId, @QueryParam("discarded") Boolean discarded) {
 	clinicalNotesService.deleteInvestigation(id, doctorId, locationId, hospitalId, discarded);
 
-//	solrClinicalNotesService.deleteInvestigations(id);
+	// solrClinicalNotesService.deleteInvestigations(id);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -322,7 +322,7 @@ public class ClinicalNotesApi {
 	clinicalNotesService.deleteDiagnosis(id, doctorId, locationId, hospitalId, discarded);
 
 	// delete diagnosis in solr index.
-//	solrClinicalNotesService.deleteDiagnoses(id);
+	// solrClinicalNotesService.deleteDiagnoses(id);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -335,7 +335,7 @@ public class ClinicalNotesApi {
 	clinicalNotesService.deleteNotes(id, doctorId, locationId, hospitalId, discarded);
 
 	// delete notes in solr index.
-//	solrClinicalNotesService.deleteNotes(id);
+	// solrClinicalNotesService.deleteNotes(id);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -347,7 +347,7 @@ public class ClinicalNotesApi {
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId, @QueryParam("discarded") Boolean discarded) {
 	clinicalNotesService.deleteDiagram(id, doctorId, locationId, hospitalId, discarded);
 
-//	solrClinicalNotesService.deleteDiagrams(id);
+	// solrClinicalNotesService.deleteDiagrams(id);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -368,7 +368,7 @@ public class ClinicalNotesApi {
 		discarded != null ? discarded : true);
 	if (clinicalItems != null && !clinicalItems.isEmpty() && ClinicalItems.DIAGRAMS.getType().equalsIgnoreCase(type)) {
 	    for (Object clinicalItem : clinicalItems) {
-		    ((DiagramsCollection) clinicalItem).setDiagramUrl(getFinalImageURL(((DiagramsCollection) clinicalItem).getDiagramUrl()));
+		((DiagramsCollection) clinicalItem).setDiagramUrl(getFinalImageURL(((DiagramsCollection) clinicalItem).getDiagramUrl()));
 	    }
 	}
 	Response<Object> response = new Response<Object>();

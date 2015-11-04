@@ -4,6 +4,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.enums.Type;
+
 @Document(collection = "aros_cl")
 public class ArosCollection {
     @Id
@@ -19,7 +21,7 @@ public class ArosCollection {
     private String locationId;
 
     @Field
-    private String roleType;
+    private Type type;
 
     public String getId() {
 	return id;
@@ -53,18 +55,17 @@ public class ArosCollection {
 	this.locationId = locationId;
     }
 
-    public String getRoleType() {
-	return roleType;
+    public Type getType() {
+	return type;
     }
 
-    public void setRoleType(String roleType) {
-	this.roleType = roleType;
+    public void setType(Type type) {
+	this.type = type;
     }
 
     @Override
     public String toString() {
-	return "ArosCollection [id=" + id + ", roleOrUserId=" + roleOrUserId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", roleType="
-		+ roleType + "]";
+	return "ArosCollection [id=" + id + ", roleOrUserId=" + roleOrUserId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + "]";
     }
 
 }

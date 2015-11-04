@@ -29,7 +29,7 @@ public class PrescriptionAddEditRequest {
     private List<LabTest> labTests;
 
     private String advice;
-    
+
     public String getId() {
 	return id;
     }
@@ -110,27 +110,26 @@ public class PrescriptionAddEditRequest {
 	this.visitId = visitId;
     }
 
-	public List<LabTest> getLabTests() {
-		return labTests;
-	}
+    public List<LabTest> getLabTests() {
+	return labTests;
+    }
 
-	public void setLabTests(List<LabTest> labTests) {
-		this.labTests = labTests;
-	}
+    public void setLabTests(List<LabTest> labTests) {
+	this.labTests = labTests;
+    }
 
-	public String getAdvice() {
-		return advice;
-	}
+    public String getAdvice() {
+	return advice;
+    }
 
-	public void setAdvice(String advice) {
-		this.advice = advice;
-	}
+    public void setAdvice(String advice) {
+	this.advice = advice;
+    }
 
-	@Override
-	public String toString() {
-		return "PrescriptionAddEditRequest [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", items=" + items + ", patientId=" + patientId
-				+ ", prescriptionCode=" + prescriptionCode + ", createdBy=" + createdBy + ", visitId=" + visitId
-				+ ", labTests=" + labTests + ", advice=" + advice + "]";
-	}
+    @Override
+    public String toString() {
+	return "PrescriptionAddEditRequest [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+		+ hospitalId + ", items=" + items + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + ", createdBy=" + createdBy
+		+ ", visitId=" + visitId + ", labTests=" + labTests + ", advice=" + advice + "]";
+    }
 }

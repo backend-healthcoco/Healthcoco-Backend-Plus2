@@ -74,7 +74,7 @@ public class SolrPrescriptionApi {
 	response.setDataList(complaints);
 	return response;
     }
-    
+
     @Path(value = PathProxy.SolrPrescriptionUrls.SEARCH_LAB_TEST)
     @GET
     public Response<SolrLabTestDocument> searchLabTest(@PathParam(value = "searchTerm") String searchTerm) {

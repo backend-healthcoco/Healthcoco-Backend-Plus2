@@ -1,11 +1,9 @@
 package com.dpdocter.beans;
 
-import java.util.List;
-
 public class PrescriptionJasperDetails {
 
-	private int no;
-	
+    private int no;
+
     private String drug;
 
     private String dosage;
@@ -17,7 +15,7 @@ public class PrescriptionJasperDetails {
     private String instruction;
 
     public PrescriptionJasperDetails(int no, String drug, String dosage, String duration, String direction, String instruction) {
-    	this.no = no;
+	this.no = no;
 	this.drug = drug;
 	this.dosage = dosage;
 	this.duration = duration;
@@ -26,14 +24,14 @@ public class PrescriptionJasperDetails {
     }
 
     public int getNo() {
-		return no;
-	}
+	return no;
+    }
 
-	public void setNo(int no) {
-		this.no = no;
-	}
+    public void setNo(int no) {
+	this.no = no;
+    }
 
-	public String getDrug() {
+    public String getDrug() {
 	return drug;
     }
 
@@ -74,9 +72,9 @@ public class PrescriptionJasperDetails {
     }
 
     @Override
-	public String toString() {
-		return "PrescriptionJasperDetails [no=" + no + ", drug=" + drug + ", dosage=" + dosage + ", duration="
-				+ duration + ", direction=" + direction + ", instruction=" + instruction + "]";
-	}
+    public String toString() {
+	return "PrescriptionJasperDetails [no=" + no + ", drug=" + drug + ", dosage=" + dosage + ", duration=" + duration + ", direction=" + direction
+		+ ", instruction=" + instruction + "]";
+    }
 
 }

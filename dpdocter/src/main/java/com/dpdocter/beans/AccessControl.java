@@ -2,6 +2,8 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import com.dpdocter.enums.Type;
+
 public class AccessControl {
     private String id;
 
@@ -11,7 +13,7 @@ public class AccessControl {
 
     private String locationId;
 
-    private String roleType;
+    private Type type;
 
     private List<AccessModule> accessModules;
 
@@ -47,12 +49,12 @@ public class AccessControl {
 	this.locationId = locationId;
     }
 
-    public String getRoleType() {
-	return roleType;
+    public Type getType() {
+	return type;
     }
 
-    public void setRoleType(String roleType) {
-	this.roleType = roleType;
+    public void setType(Type type) {
+	this.type = type;
     }
 
     public List<AccessModule> getAccessModules() {
@@ -65,8 +67,8 @@ public class AccessControl {
 
     @Override
     public String toString() {
-	return "AccessControl [id=" + id + ", roleOrUserId=" + roleOrUserId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", roleType="
-		+ roleType + ", accessModules=" + accessModules + "]";
+	return "AccessControl [id=" + id + ", roleOrUserId=" + roleOrUserId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", type=" + type
+		+ ", accessModules=" + accessModules + "]";
     }
 
 }

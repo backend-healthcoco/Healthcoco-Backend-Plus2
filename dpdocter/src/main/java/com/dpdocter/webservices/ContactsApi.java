@@ -142,7 +142,7 @@ public class ContactsApi {
 	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 
-	    return doctorContactsHandheld(doctorId, locationId, hospitalId, updatedTime, discarded);
+	return doctorContactsHandheld(doctorId, locationId, hospitalId, updatedTime, discarded);
     }
 
     private Response<RegisteredPatientDetails> doctorContactsHandheld(String doctorId, String locationId, String hospitalId, String updatedTime,
@@ -242,8 +242,8 @@ public class ContactsApi {
 	    @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 
-	    return getGroups(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
-	}
+	return getGroups(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+    }
 
     private Response<Group> getGroups(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
 	List<Group> groups = contactsService.getAllGroups(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);

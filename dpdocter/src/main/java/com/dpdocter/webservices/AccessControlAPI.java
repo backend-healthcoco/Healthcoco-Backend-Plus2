@@ -43,14 +43,14 @@ public class AccessControlAPI {
 
     @Path(value = PathProxy.AccessControlUrls.SET_ACCESS_CONTROLS)
     @POST
-    public Response<AccessControl> setAccessControls(AccessControl accessControl) {
+    public Response<Boolean> setAccessControls(AccessControl accessControl) {
 	if (accessControl == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Access Control Request Cannot Be Empty!");
 	}
 
-	AccessControl setAccessControlResponse = accessControlServices.setAccessControls(accessControl);
+	boolean setAccessControlResponse = accessControlServices.setAccessControls(accessControl);
 
-	Response<AccessControl> response = new Response<AccessControl>();
+	Response<Boolean> response = new Response<Boolean>();
 	response.setData(setAccessControlResponse);
 	return response;
     }

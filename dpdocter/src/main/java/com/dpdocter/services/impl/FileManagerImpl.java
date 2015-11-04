@@ -24,8 +24,8 @@ public class FileManagerImpl implements FileManager {
     @Value(value = "${IMAGE_RESOURCE}")
     private String imageResource;
 
-//    @Value(value = "${IMAGE_URL}")
-//    private String imageUrl;
+    // @Value(value = "${IMAGE_URL}")
+    // private String imageUrl;
 
     @Context
     private UriInfo uriInfo;
@@ -51,24 +51,26 @@ public class FileManagerImpl implements FileManager {
 	return imageUrl;
     }
 
-	@Override
-	public String saveThumbnailAndReturnThumbNailUrl(FileDetails fileDetails, String path) {
-		String thumbnailUrl = "";
-		BufferedImage img = new BufferedImage(120, 120, BufferedImage.TYPE_INT_RGB);
-		try {
-			img.createGraphics().drawImage(ImageIO.read(
-					new File(imageResource + File.separator + path + File.separator + fileDetails.getFileName()+"."+fileDetails.getFileExtension()))
-					.getScaledInstance(120, 120, Image.SCALE_SMOOTH),0,0,null);
-			
-			String fileName = fileDetails.getFileName() + "_thumb." + fileDetails.getFileExtension();
-			createDirIfNotExist(imageResource + File.separator + path);
-			String filePath = imageResource + File.separator + path + File.separator + fileName;			
-			ImageIO.write(img, fileDetails.getFileExtension(), new File(filePath));
-			
-			thumbnailUrl = path + "/" + fileName;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return thumbnailUrl;			    
+    @Override
+    public String saveThumbnailAndReturnThumbNailUrl(FileDetails fileDetails, String path) {
+	String thumbnailUrl = "";
+	BufferedImage img = new BufferedImage(120, 120, BufferedImage.TYPE_INT_RGB);
+	try {
+	    img.createGraphics()
+		    .drawImage(
+			    ImageIO.read(
+				    new File(imageResource + File.separator + path + File.separator + fileDetails.getFileName() + "."
+					    + fileDetails.getFileExtension())).getScaledInstance(120, 120, Image.SCALE_SMOOTH), 0, 0, null);
+
+	    String fileName = fileDetails.getFileName() + "_thumb." + fileDetails.getFileExtension();
+	    createDirIfNotExist(imageResource + File.separator + path);
+	    String filePath = imageResource + File.separator + path + File.separator + fileName;
+	    ImageIO.write(img, fileDetails.getFileExtension(), new File(filePath));
+
+	    thumbnailUrl = path + "/" + fileName;
+	} catch (IOException e) {
+	    e.printStackTrace();
 	}
+	return thumbnailUrl;
+    }
 }
