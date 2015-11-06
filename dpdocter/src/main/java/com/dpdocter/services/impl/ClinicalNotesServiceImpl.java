@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.mail.MessagingException;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -81,6 +83,7 @@ import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -141,6 +144,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
     @Autowired
     private PatientAdmissionRepository patientAdmissionRepository;
+    
+    @Context
+    private UriInfo uriInfo;
+
+    @Value(value = "${IMAGE_URL_ROOT_PATH}")
+    private String imageUrlRootPath;
 
     @Value(value = "${IMAGE_RESOURCE}")
     private String imageResource;
@@ -2016,11 +2025,20 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 			parameters.put("complaintIds", complaints);
 
-			DBObject diagramIds = new BasicDBObject();
+			List<DBObject> diagramIds = new ArrayList<DBObject>();
 			for (String diagramId : clinicalNotesCollection.getDiagrams()) {
-			    diagramIds.put("$oid", diagramId);
+				DBObject diagram = new BasicDBObject();
+				DiagramsCollection diagramsCollection = diagramsRepository.findOne(diagramId);
+				if(diagramsCollection != null){
+					if (diagramsCollection.getDiagramUrl() != null) {
+					    diagram.put("url", getFinalImageURL(diagramsCollection.getDiagramUrl()));
+					}
+					diagram.put("tags", diagramsCollection.getTags());
+					diagramIds.add(diagram);
+				}
 			}
-			parameters.put("diagramIds", Arrays.asList(diagramIds));
+		
+			parameters.put("diagramIds", diagramIds);
 		    }
 		    List<PatientClinicalNotesCollection> patientClinicalNotesCollection = patientClinicalNotesRepository.findByClinicalNotesId(clinicalNotesId);
 		    if (patientClinicalNotesCollection != null && !patientClinicalNotesCollection.isEmpty()) {
@@ -2086,7 +2104,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 		    }
 		}
-		parameters.put("patientLeftText", patientName + "Patient Id: " + patient.getPID() + "<br>" + dob + gender);
+		parameters.put("patientLeftText", patientName +  (patient!=null? "Patient Id: " +patient.getPID()+ "<br>":"")  + dob + gender);
 		parameters.put("patientRightText", mobileNumber + (patientAdmission != null ? "Reffered By:" + patientAdmission.getReferredBy() + "<br>" : "")
 			+ "Date:" + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
 		parameters.put("headerLeftText", headerLeftText);
@@ -2095,7 +2113,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 		LocationCollection location = locationRepository.findOne(locationId);
 		if (location != null)
-		    parameters.put("logoURL", location.getLogoUrl());
+		    parameters.put("logoURL", getFinalImageURL(location.getLogoUrl()));
 
 		String layout = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 			: "PORTRAIT";
@@ -2126,4 +2144,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return mailAttachment;
     }
 
+    private String getFinalImageURL(String imageURL) {
+    	if (imageURL != null && uriInfo != null) {
+    	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+    	    return finalImageURL + imageURL;
+    	} else
+    	    return null;
+}
 }

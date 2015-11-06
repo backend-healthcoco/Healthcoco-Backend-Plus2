@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.Location;
@@ -26,6 +27,8 @@ import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.enums.ColorCode;
 import com.dpdocter.enums.ColorCode.RandomEnum;
 import com.dpdocter.enums.RoleEnum;
+import com.dpdocter.enums.Type;
+import com.dpdocter.enums.UserState;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -40,9 +43,12 @@ import com.dpdocter.repository.TokenRepository;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserRoleRepository;
+import com.dpdocter.request.DoctorSignupHandheldContinueRequest;
+import com.dpdocter.request.DoctorSignupHandheldRequest;
 import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.PatientProfilePicChangeRequest;
 import com.dpdocter.request.PatientSignUpRequest;
+import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
@@ -101,6 +107,9 @@ public class SignUpServiceImpl implements SignUpService {
 
     @Autowired
     private SMSServices sMSServices;
+    
+    @Autowired
+    private AccessControlServices accessControlServices;
 
     @Value(value = "${mail.signup.subject.activation}")
     private String signupSubject;
@@ -184,6 +193,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    }
 	    userCollection.setCreatedTime(new Date());
 	    userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
+	    userCollection.setUserState(UserState.USERSTATECOMPLETE);
 	    userCollection = userRepository.save(userCollection);
 	    // save doctor specific details
 	    DoctorCollection doctorCollection = new DoctorCollection();
@@ -268,6 +278,15 @@ public class SignUpServiceImpl implements SignUpService {
 	    // smsTrackDetail.setSmsDetails(smsDetails);
 	    // sMSServices.sendSMS(smsTrackDetail, false);
 	    // }
+	    
+	    if(request.getAccessModules() != null && !request.getAccessModules().isEmpty()){
+	    	AccessControl accessControl = new AccessControl();
+	    	BeanUtil.map(request, accessControl);
+	    	accessControl.setType(Type.DOCTOR);
+	    	accessControl.setRoleOrUserId(userCollection.getId());
+	    	accessControl = accessControlServices.setAccessControls(accessControl);
+	    	response.setAccessControl(accessControl);	    	
+	    }
 	} catch (BusinessException be) {
 	    logger.error(be);
 	    throw be;
@@ -278,6 +297,174 @@ public class SignUpServiceImpl implements SignUpService {
 	}
 	return response;
     }
+
+	@Override
+	public DoctorSignUp doctorHandheld(DoctorSignupHandheldRequest request) {
+		DoctorSignUp response = null;
+		try {
+
+	    // get role of specified type
+	    RoleCollection hospitalAdmin = roleRepository.findByRole(RoleEnum.HOSPITAL_ADMIN.getRole());
+	    if (hospitalAdmin == null) {
+		logger.warn("Role Collection in database is either empty or not defind properly");
+		throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
+	    }
+	    RoleCollection locationAdmin = roleRepository.findByRole(RoleEnum.LOCATION_ADMIN.getRole());
+	    if (locationAdmin == null) {
+		logger.warn("Role Collection in database is either empty or not defind properly");
+		throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
+	    }
+	    RoleCollection doctorRole = roleRepository.findByRole(RoleEnum.DOCTOR.getRole());
+	    if (doctorRole == null) {
+		logger.warn("Role Collection in database is either empty or not defind properly");
+		throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
+	    }
+	    // save user
+	    UserCollection userCollection = new UserCollection();
+	    BeanUtil.map(request, userCollection);
+	    if (userCollection.getDob() != null && userCollection.getDob().getAge() < 0) {
+		logger.warn("Incorrect Date of Birth");
+		throw new BusinessException(ServiceError.NotAcceptable, "Incorrect Date of Birth");
+	    }
+	    userCollection.setUserName(request.getEmailAddress());
+	    
+	    userCollection.setCreatedTime(new Date());
+	    userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
+	    userCollection.setUserState(UserState.USERSTATEINCOMPLETE);
+	    userCollection = userRepository.save(userCollection);
+	    // save doctor specific details
+	    DoctorCollection doctorCollection = new DoctorCollection();
+	    BeanUtil.map(request, doctorCollection);
+	    doctorCollection.setUserId(userCollection.getId());
+	    doctorCollection.setCreatedTime(new Date());
+	    doctorCollection = doctorRepository.save(doctorCollection);
+	    // assign role to doctor
+	    UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), hospitalAdmin.getId());
+	    userRoleCollection.setCreatedTime(new Date());
+	    userRoleRepository.save(userRoleCollection);
+	    userRoleCollection = new UserRoleCollection(userCollection.getId(), locationAdmin.getId());
+	    userRoleCollection.setCreatedTime(new Date());
+	    userRoleRepository.save(userRoleCollection);
+	    userRoleCollection = new UserRoleCollection(userCollection.getId(), doctorRole.getId());
+	    userRoleCollection.setCreatedTime(new Date());
+	    userRoleRepository.save(userRoleCollection);
+	    
+	    
+	    response = new DoctorSignUp();
+	    User user = new User();
+	    userCollection.setPassword(null);
+	    BeanUtil.map(userCollection, user);
+	    user.setEmailAddress(userCollection.getEmailAddress());
+	    response.setUser(user);
+	    
+		} catch (BusinessException be) {
+	    logger.error(be);
+	    throw be;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e + " Error occured while creating doctor");
+	    throw new BusinessException(ServiceError.Unknown, "Error occured while creating doctor");
+	}
+	return response;
+	}
+
+	@Override
+	public DoctorSignUp doctorHandheldContinue(DoctorSignupHandheldContinueRequest request) {
+		DoctorSignUp response = null;
+
+		try {
+		
+	    // save user
+	    UserCollection userCollection = userRepository.findOne(request.getUserId());
+	    
+	    userCollection.setUserState(UserState.USERSTATECOMPLETE);
+	    userCollection = userRepository.save(userCollection);
+	    
+	    HospitalCollection hospitalCollection = new HospitalCollection();
+	    BeanUtil.map(request, hospitalCollection);
+	    hospitalCollection.setCreatedTime(new Date());
+	    hospitalCollection = hospitalRepository.save(hospitalCollection);
+
+	    // save location for hospital
+	    LocationCollection locationCollection = new LocationCollection();
+	    BeanUtil.map(request, locationCollection);
+	    if (locationCollection.getId() == null) {
+		locationCollection.setCreatedTime(new Date());
+	    }
+	    locationCollection.setHospitalId(hospitalCollection.getId());
+	    locationCollection = locationRepository.save(locationCollection);
+	    // save user location.
+	    UserLocationCollection userLocationCollection = new UserLocationCollection(userCollection.getId(), locationCollection.getId());
+	    userLocationCollection.setCreatedTime(new Date());
+	    userLocationRepository.save(userLocationCollection);
+
+	    // save token
+	    TokenCollection tokenCollection = new TokenCollection();
+	    tokenCollection.setUserLocationId(userLocationCollection.getId());
+	    tokenCollection.setCreatedTime(new Date());
+	    tokenCollection = tokenRepository.save(tokenCollection);
+
+	    // send activation email
+	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
+		    userCollection.getMiddleName(), userCollection.getLastName(), tokenCollection.getId());
+	    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
+	    response = new DoctorSignUp();
+	    User user = new User();
+	    userCollection.setPassword(null);
+	    BeanUtil.map(userCollection, user);
+	    user.setEmailAddress(userCollection.getEmailAddress());
+	    response.setUser(user);
+	    Hospital hospital = new Hospital();
+	    BeanUtil.map(hospitalCollection, hospital);
+	    List<Location> locations = new ArrayList<Location>();
+	    Location location = new Location();
+	    BeanUtil.map(locationCollection, location);
+	    locations.add(location);
+	    hospital.setLocations(locations);
+	    response.setHospital(hospital);
+	    // user.setPassword(null);
+
+	    // if (userCollection.getMobileNumber() != null) {
+	    // SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+	    // smsTrackDetail.setDoctorId(doctorCollection.getUserId());
+	    // smsTrackDetail.setHospitalId(hospitalCollection.getId());
+	    // smsTrackDetail.setLocationId(locationCollection.getId());
+	    //
+	    // SMSDetail smsDetail = new SMSDetail();
+	    // smsDetail.setPatientId(doctorCollection.getUserId());
+	    //
+	    // SMS sms = new SMS();
+	    // sms.setSmsText("OTP Verification");
+	    //
+	    // SMSAddress smsAddress = new SMSAddress();
+	    // smsAddress.setRecipient(userCollection.getMobileNumber());
+	    // sms.setSmsAddress(smsAddress);
+	    //
+	    // smsDetail.setSms(sms);
+	    // List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+	    // smsDetails.add(smsDetail);
+	    // smsTrackDetail.setSmsDetails(smsDetails);
+	    // sMSServices.sendSMS(smsTrackDetail, false);
+	    // }
+	    
+	    if(request.getAccessModules() != null && !request.getAccessModules().isEmpty()){
+	    	AccessControl accessControl = new AccessControl();
+	    	BeanUtil.map(request, accessControl);
+	    	accessControl.setType(Type.DOCTOR);
+	    	accessControl.setRoleOrUserId(userCollection.getId());
+	    	accessControl = accessControlServices.setAccessControls(accessControl);
+	    	response.setAccessControl(accessControl);	    	
+	    }
+	} catch (BusinessException be) {
+	    logger.error(be);
+	    throw be;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e + " Error occured while creating doctor");
+	    throw new BusinessException(ServiceError.Unknown, "Error occured while creating doctor");
+	}
+	return response;
+	}
 
     @Override
     public User patientSignUp(PatientSignUpRequest request) {

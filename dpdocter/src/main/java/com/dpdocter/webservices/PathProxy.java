@@ -12,7 +12,12 @@ public interface PathProxy {
     public static final String SIGNUP_BASE_URL = BASE_URL + "/signup";
 
     public interface SignUpUrls {
-	public static final String DOCTOR_SIGNUP = "/doctor";
+	
+    public static final String DOCTOR_SIGNUP = "/doctor";
+    
+    public static final String DOCTOR_SIGNUP_HANDHELD = "/doctorHandheld";
+    
+    public static final String DOCTOR_SIGNUP_HANDHELD_CONTINUE = "/doctorHandheldContinue";
 
 	public static final String PATIENT_SIGNUP = "/patient";
 

@@ -3,6 +3,8 @@ package com.dpdocter.beans;
 public class DoctorSignUp {
 
     private User user;
+    
+    private AccessControl accessControl;
 
     private Hospital hospital;
 
@@ -22,9 +24,17 @@ public class DoctorSignUp {
 	this.hospital = hospital;
     }
 
-    @Override
-    public String toString() {
-	return "DoctorSignUp [user=" + user + ", hospital=" + hospital + "]";
-    }
+	public AccessControl getAccessControl() {
+		return accessControl;
+	}
+
+	public void setAccessControl(AccessControl accessControl) {
+		this.accessControl = accessControl;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorSignUp [user=" + user + ", accessControl=" + accessControl + ", hospital=" + hospital + "]";
+	}
 
 }

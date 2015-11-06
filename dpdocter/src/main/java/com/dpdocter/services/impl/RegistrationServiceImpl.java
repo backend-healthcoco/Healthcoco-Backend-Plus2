@@ -14,6 +14,7 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.log4j.Logger;
+import org.bouncycastle.mail.smime.handlers.pkcs7_mime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +22,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.AccessControl;
+import com.dpdocter.beans.AccessModule;
 import com.dpdocter.beans.Address;
 import com.dpdocter.beans.BloodGroup;
 import com.dpdocter.beans.ClinicAddress;
@@ -42,7 +45,10 @@ import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.SMSTrackDetail;
 import com.dpdocter.beans.User;
+import com.dpdocter.collections.AcosCollection;
 import com.dpdocter.collections.AddressCollection;
+import com.dpdocter.collections.ArosAcosCollection;
+import com.dpdocter.collections.ArosCollection;
 import com.dpdocter.collections.BloodGroupCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
@@ -63,10 +69,14 @@ import com.dpdocter.enums.ColorCode;
 import com.dpdocter.enums.ColorCode.RandomEnum;
 import com.dpdocter.enums.Range;
 import com.dpdocter.enums.RoleEnum;
+import com.dpdocter.enums.Type;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.AcosRepository;
 import com.dpdocter.repository.AddressRepository;
+import com.dpdocter.repository.ArosAcosRepository;
+import com.dpdocter.repository.ArosRepository;
 import com.dpdocter.repository.BloodGroupRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorContactsRepository;
@@ -89,6 +99,7 @@ import com.dpdocter.request.DoctorRegisterRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.PatientInitialAndCounter;
 import com.dpdocter.response.RegisterDoctorResponse;
+import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.GenerateUniqueUserNameService;
 import com.dpdocter.services.MailBodyGenerator;
@@ -167,7 +178,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Autowired
     private TokenRepository tokenRepository;
-
+    
+    @Autowired
+    private AccessControlServices accessControlServices;
+  
+    
     @Value(value = "${mail.signup.subject.activation}")
     private String signupSubject;
 
@@ -1219,6 +1234,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    BeanUtil.map(userCollection, response);
 	    response.setHospitalId(request.getHospitalId());
 	    response.setLocationId(request.getLocationId());
+	    response.setUserId(userCollection.getId());
 
 	    // if (userCollection.getMobileNumber() != null) {
 	    // SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
@@ -1243,6 +1259,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    // sMSServices.sendSMS(smsTrackDetail, false);
 	    // }
 
+	    //save Access Modules
+	    if(request.getAccessModules() != null && !request.getAccessModules().isEmpty()){
+	    	AccessControl accessControl = new AccessControl();
+	    	BeanUtil.map(request, accessControl);
+	    	accessControl.setType(Type.DOCTOR);
+	    	accessControl.setRoleOrUserId(userCollection.getId());
+	    	accessControl = accessControlServices.setAccessControls(accessControl);
+	    	response.setAccessControl(accessControl);	    	
+	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
@@ -1266,6 +1291,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    BeanUtil.map(userCollection, response);
 	    response.setHospitalId(request.getHospitalId());
 	    response.setLocationId(request.getLocationId());
+	    
+	    if(request.getAccessModules() != null && !request.getAccessModules().isEmpty()){
+	    	AccessControl accessControl = new AccessControl();
+	    	BeanUtil.map(request, accessControl);
+	    	accessControl.setType(Type.DOCTOR);
+	    	accessControl.setRoleOrUserId(userCollection.getId());
+	    	accessControl = accessControlServices.setAccessControls(accessControl);
+	    	response.setAccessControl(accessControl);	    	
+	    }
 
 	} catch (Exception e) {
 	    e.printStackTrace();

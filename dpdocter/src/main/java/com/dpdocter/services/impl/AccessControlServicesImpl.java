@@ -80,8 +80,8 @@ public class AccessControlServicesImpl implements AccessControlServices {
 
     @SuppressWarnings("unchecked")
     @Override
-    public boolean setAccessControls(AccessControl accessControl) {
-	boolean response = false;
+    public AccessControl setAccessControls(AccessControl accessControl) {
+    	AccessControl response = null;
 	try {
 	    ArosCollection arosCollection = arosRepository.findOne(accessControl.getRoleOrUserId(), accessControl.getLocationId(),
 		    accessControl.getHospitalId());
@@ -141,12 +141,18 @@ public class AccessControlServicesImpl implements AccessControlServices {
 	    arosAcosCollection.setArosId(arosCollection.getId());
 	    List<String> acosIds = new ArrayList<String>(CollectionUtils.collect(acosCollections, new BeanToPropertyValueTransformer("id")));
 	    List<String> finalAcosIds = arosAcosCollection.getAcosIds();
+	    if(finalAcosIds == null) finalAcosIds = new ArrayList<String>();
 	    finalAcosIds.addAll(acosIds);
 	    finalAcosIds = new ArrayList<String>(new LinkedHashSet<String>(finalAcosIds));
 	    arosAcosCollection.setAcosIds(finalAcosIds);
 	    arosAcosCollection = arosAcosRepository.save(arosAcosCollection);
-
-	} catch (Exception e) {
+	   
+	    response = new AccessControl();
+	    BeanUtil.map(arosCollection, response);
+	    List<AccessModule> accessModules = new ArrayList<AccessModule>();
+    	BeanUtil.map(acosCollections, accessModules);
+    	response.setAccessModules(accessModules);
+  	} catch (Exception e) {
 	    throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 	}
 	return response;

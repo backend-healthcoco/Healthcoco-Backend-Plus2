@@ -14,10 +14,13 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.mail.MessagingException;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -162,6 +165,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
     @Autowired
     private LabTestRepository labTestRepository;
+
+    @Context
+    private UriInfo uriInfo;
+
+    @Value(value = "${IMAGE_URL_ROOT_PATH}")
+    private String imageUrlRootPath;
 
     @Override
     public DrugAddEditResponse addDrug(DrugAddEditRequest request) {
@@ -2331,10 +2340,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				    String drugType = drug.getDrugType() != null ? (drug.getDrugType().getType() != null ? drug.getDrugType().getType() + " -"
 					    : "") : "";
 				    String drugName = drug.getDrugName() != null ? drug.getDrugName() : "-";
-				    String strengthValue = drug.getStrength() != null ? (drug.getStrength().getValue() != null ? drug.getStrength().getValue()
-					    : "") : "";
-				    String strengthUnit = drug.getStrength() != null ? (drug.getStrength().getStrengthUnit() != null ? drug.getStrength()
-					    .getStrengthUnit().getUnit() : "") : "";
 
 				    String durationValue = prescriptionItem.getDuration() != null ? (prescriptionItem.getDuration().getValue() != null ? prescriptionItem
 					    .getDuration().getValue() : "")
@@ -2345,6 +2350,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					    : "";
 
 				    String directions = "";
+				    if(prescriptionItem.getDirection() != null)
 				    for (DrugDirection drugDirection : prescriptionItem.getDirection()) {
 					if (drugDirection.getDirection() != null)
 					    if (directions == "")
@@ -2427,7 +2433,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 		    }
 		}
-		parameters.put("patientLeftText", patientName + "Patient Id: " + patient.getPID() + "<br>" + dob + gender);
+		parameters.put("patientLeftText", patientName + (patient!=null? "Patient Id: " +patient.getPID()+ "<br>":"")  + dob + gender);
 		parameters.put("patientRightText", mobileNumber + (patientAdmission != null ? "Reffered By:" + patientAdmission.getReferredBy() + "<br>" : "")
 			+ "Date:" + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
 		parameters.put("headerLeftText", headerLeftText);
@@ -2436,7 +2442,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 		LocationCollection location = locationRepository.findOne(locationId);
 		if (location != null)
-		    parameters.put("logoURL", location.getLogoUrl());
+		    parameters.put("logoURL", getFinalImageURL(location.getLogoUrl()));
 
 		String layout = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 			: "PORTRAIT";
@@ -2745,4 +2751,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	System.out.println("Done");
 
     }
+    private String getFinalImageURL(String imageURL) {
+    	if (imageURL != null && uriInfo != null) {
+    	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+    	    return finalImageURL + imageURL;
+    	} else
+    	    return null;
+}
 }

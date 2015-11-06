@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.DOB;
+import com.dpdocter.enums.UserState;
 
 @Document(collection = "user_cl")
 public class UserCollection extends GenericCollection {
@@ -66,6 +67,9 @@ public class UserCollection extends GenericCollection {
 
     @Field
     private String colorCode;
+    
+    @Field
+    private UserState userState;
 
     public String getId() {
 	return id;
@@ -219,13 +223,22 @@ public class UserCollection extends GenericCollection {
 	this.coverThumbnailImageUrl = coverThumbnailImageUrl;
     }
 
-    @Override
-    public String toString() {
-	return "UserCollection [id=" + id + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName
-		+ ", userName=" + userName + ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender="
-		+ gender + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", dob=" + dob + ", isActive=" + isActive + ", isTempPassword="
-		+ isTempPassword + ", isVerified=" + isVerified + ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl
-		+ ", colorCode=" + colorCode + "]";
-    }
+	public UserState getUserState() {
+		return userState;
+	}
 
+	public void setUserState(UserState userState) {
+		this.userState = userState;
+	}
+
+	@Override
+	public String toString() {
+		return "UserCollection [id=" + id + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName
+				+ ", middleName=" + middleName + ", userName=" + userName + ", password=" + password + ", emailAddress="
+				+ emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl=" + imageUrl
+				+ ", thumbnailUrl=" + thumbnailUrl + ", dob=" + dob + ", isActive=" + isActive + ", isTempPassword="
+				+ isTempPassword + ", isVerified=" + isVerified + ", coverImageUrl=" + coverImageUrl
+				+ ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", colorCode=" + colorCode + ", userState="
+				+ userState + "]";
+	}
 }

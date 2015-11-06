@@ -24,6 +24,7 @@ import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
 import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.enums.RoleEnum;
+import com.dpdocter.enums.UserState;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -107,6 +108,10 @@ public class LoginServiceImpl implements LoginService {
 		    response.setIsTempPassword(userCollection.getIsTempPassword());
 		    return response;
 		} else {
+			if(userCollection.getUserState() != null && userCollection.getUserState().equals(UserState.USERSTATEINCOMPLETE)){
+				logger.warn("User Profile state is not completed.");
+				throw new BusinessException(ServiceError.NotAuthorized, "User Profile state is not completed");
+			}
 		    List<UserLocationCollection> userLocationCollections = userLocationRepository.findByUserId(userCollection.getId());
 		    if (userLocationCollections != null) {
 			@SuppressWarnings("unchecked")

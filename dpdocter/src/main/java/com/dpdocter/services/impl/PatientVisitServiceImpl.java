@@ -522,7 +522,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 					LocationCollection location = locationRepository.findOne(patientVisitCollection.getLocationId());
 					if (location != null)
-					    parameters.put("logoURL", location.getLogoUrl());
+					    parameters.put("logoURL", getFinalImageURL(location.getLogoUrl()));
 
 					String layout = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 						: "PORTRAIT";
@@ -533,8 +533,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					if(patientVisitCollection.getPrescriptionId() != null){
 						for(String prescriptionId : patientVisitCollection.getPrescriptionId()){
 							DBObject prescriptionItems = new BasicDBObject();
-							List<PrescriptionJasperDetails> prescriptionJasperDetails = getPrescriptionJasperDetails(prescriptionId);
+							List<PrescriptionJasperDetails> prescriptionJasperDetails = getPrescriptionJasperDetails(prescriptionId, prescriptionItems);
 							prescriptionItems.put("items", prescriptionJasperDetails);
+							
 							prescriptions.add(prescriptionItems);
 						}
 					}
@@ -592,7 +593,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    logger.error(e);
 		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
-		return null;
+		return true;
 	}
 
 	private ClinicalNotesJasperDetails getClinicalNotesJasperDetails(String clinicalNotesId) {
@@ -684,12 +685,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		return clinicalNotesJasperDetails;
 	}
 
-	private List<PrescriptionJasperDetails> getPrescriptionJasperDetails(String prescriptionId) {
+	private List<PrescriptionJasperDetails> getPrescriptionJasperDetails(String prescriptionId, DBObject prescriptionItemsObj) {
 		PrescriptionCollection prescriptionCollection = null;
 		List<PrescriptionJasperDetails> prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
 		try {
 		    prescriptionCollection = prescriptionRepository.findOne(prescriptionId);
 		    if (prescriptionCollection != null) {
+		    	prescriptionItemsObj.put("advice", prescriptionCollection.getAdvice());
 			if (prescriptionCollection.getDoctorId() != null && prescriptionCollection.getHospitalId() != null
 				&& prescriptionCollection.getLocationId() != null) {
 			    	int no = 0;

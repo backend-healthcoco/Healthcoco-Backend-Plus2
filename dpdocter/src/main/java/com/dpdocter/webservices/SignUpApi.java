@@ -19,6 +19,8 @@ import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.User;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.request.DoctorSignupHandheldContinueRequest;
+import com.dpdocter.request.DoctorSignupHandheldRequest;
 import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.PatientProfilePicChangeRequest;
 import com.dpdocter.request.PatientSignUpRequest;
@@ -54,6 +56,62 @@ public class SignUpApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
 	}
 	DoctorSignUp doctorSignUp = signUpService.doctorSignUp(request);
+	if (doctorSignUp != null) {
+	    if (doctorSignUp.getUser() != null) {
+		if (doctorSignUp.getUser().getImageUrl() != null) {
+		    doctorSignUp.getUser().setImageUrl(getFinalImageURL(doctorSignUp.getUser().getImageUrl()));
+		}
+		if (doctorSignUp.getUser().getThumbnailUrl() != null) {
+		    doctorSignUp.getUser().setThumbnailUrl(getFinalImageURL(doctorSignUp.getUser().getThumbnailUrl()));
+		}
+	    }
+	    if (doctorSignUp.getHospital() != null) {
+		if (doctorSignUp.getHospital().getHospitalImageUrl() != null) {
+		    doctorSignUp.getHospital().setHospitalImageUrl(getFinalImageURL(doctorSignUp.getHospital().getHospitalImageUrl()));
+		}
+	    }
+	}
+	Response<DoctorSignUp> response = new Response<DoctorSignUp>();
+	response.setData(doctorSignUp);
+	return response;
+    }
+
+    @Path(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP_HANDHELD)
+    @POST
+    public Response<DoctorSignUp> doctorHandheld(DoctorSignupHandheldRequest request) {
+	if (request == null) {
+	    logger.warn("Request send  is NULL");
+	    throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
+	}
+	DoctorSignUp doctorSignUp = signUpService.doctorHandheld(request);
+	if (doctorSignUp != null) {
+	    if (doctorSignUp.getUser() != null) {
+		if (doctorSignUp.getUser().getImageUrl() != null) {
+		    doctorSignUp.getUser().setImageUrl(getFinalImageURL(doctorSignUp.getUser().getImageUrl()));
+		}
+		if (doctorSignUp.getUser().getThumbnailUrl() != null) {
+		    doctorSignUp.getUser().setThumbnailUrl(getFinalImageURL(doctorSignUp.getUser().getThumbnailUrl()));
+		}
+	    }
+	    if (doctorSignUp.getHospital() != null) {
+		if (doctorSignUp.getHospital().getHospitalImageUrl() != null) {
+		    doctorSignUp.getHospital().setHospitalImageUrl(getFinalImageURL(doctorSignUp.getHospital().getHospitalImageUrl()));
+		}
+	    }
+	}
+	Response<DoctorSignUp> response = new Response<DoctorSignUp>();
+	response.setData(doctorSignUp);
+	return response;
+    }
+
+    @Path(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP_HANDHELD_CONTINUE)
+    @POST
+    public Response<DoctorSignUp> doctorHandheldContinue(DoctorSignupHandheldContinueRequest request) {
+	if (request == null) {
+	    logger.warn("Request send  is NULL");
+	    throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
+	}
+	DoctorSignUp doctorSignUp = signUpService.doctorHandheldContinue(request);
 	if (doctorSignUp != null) {
 	    if (doctorSignUp.getUser() != null) {
 		if (doctorSignUp.getUser().getImageUrl() != null) {

@@ -2,6 +2,7 @@ package com.dpdocter.request;
 
 import java.util.List;
 
+import com.dpdocter.beans.AccessModule;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.FileDetails;
 
@@ -39,6 +40,8 @@ public class DoctorRegisterRequest {
 
     private String hospitalId;
 
+    private List<AccessModule> accessModules;
+    
     public String getUserId() {
 	return userId;
     }
@@ -167,11 +170,21 @@ public class DoctorRegisterRequest {
 	this.hospitalId = hospitalId;
     }
 
-    @Override
-    public String toString() {
-	return "DoctorRegisterRequest [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", userName="
-		+ userName + ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", image=" + image + ", gender="
-		+ gender + ", dob=" + dob + ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl + ", specialization=" + specialization + ", locationId="
-		+ locationId + ", hospitalId=" + hospitalId + "]";
-    }
+	public List<AccessModule> getAccessModules() {
+		return accessModules;
+	}
+
+	public void setAccessModules(List<AccessModule> accessModules) {
+		this.accessModules = accessModules;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorRegisterRequest [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName
+				+ ", middleName=" + middleName + ", userName=" + userName + ", password=" + password + ", emailAddress="
+				+ emailAddress + ", mobileNumber=" + mobileNumber + ", image=" + image + ", gender=" + gender + ", dob="
+				+ dob + ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl + ", specialization=" + specialization
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", accessModules=" + accessModules
+				+ "]";
+	}
 }
