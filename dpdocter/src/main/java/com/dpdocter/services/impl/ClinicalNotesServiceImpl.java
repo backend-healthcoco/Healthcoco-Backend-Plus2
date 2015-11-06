@@ -2062,24 +2062,19 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    printId.put("$oid", printSettings.getId());
 
 		parameters.put("printSettingsId", Arrays.asList(printId));
-		String headerLeftText = "", headerRightText = "", footerBottomText = "";
-		String patientName = "", dob = "", gender = "", mobileNumber = "";
-		if (printSettings != null) {
-		    if (printSettings.getHeaderSetup() != null) {
-			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText())
-			    headerLeftText = headerLeftText + "<br/>" + str.getText();
-			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText())
-			    headerRightText = headerRightText + "<br/>" + str.getText();
-			if (printSettings.getHeaderSetup().getPatientDetails() != null && user != null) {
-			    patientName = printSettings.getHeaderSetup().getPatientDetails().getShowName() ? "Patient Name: " + user.getFirstName() + "<br>"
-				    : "";
-			    dob = printSettings.getHeaderSetup().getPatientDetails().getShowDOB() ? "Patient Age: "
-				    + (user.getDob() != null ? (user.getDob().getAge()) + "<br>" : "") : "";
-			    gender = printSettings.getHeaderSetup().getPatientDetails().getShowGender() ? "Patient Gender: " + user.getGender() + "<br>" : "";
-			    mobileNumber = printSettings.getHeaderSetup().getPatientDetails().getShowGender() ? "Patient Mobile Number: "
-				    + user.getMobileNumber() + "<br>" : "";
+		String headerLeftText="",headerRightText="",footerBottomText ="";
+		String patientName="", dob="", gender="", mobileNumber="";
+		if(printSettings!=null){
+			if(printSettings.getHeaderSetup() != null){
+				for(PrintSettingsText str: printSettings.getHeaderSetup().getTopLeftText())headerLeftText=headerLeftText+"<br/>"+str.getText();
+				for(PrintSettingsText str: printSettings.getHeaderSetup().getTopRightText())headerRightText=headerRightText+"<br/>"+str.getText();
+				if(printSettings.getHeaderSetup().getPatientDetails() !=null && user!=null){
+					patientName=printSettings.getHeaderSetup().getPatientDetails().getShowName()?"Patient Name: "+user.getFirstName()+"<br>":"";
+					dob = printSettings.getHeaderSetup().getPatientDetails().getShowDOB()?"Patient Age: "+(user.getDob() != null ? (user.getDob().getAge())+"<br>":""):"";
+					gender = printSettings.getHeaderSetup().getPatientDetails().getShowGender()?"Patient Gender: "+user.getGender()+"<br>":"";
+					mobileNumber = printSettings.getHeaderSetup().getPatientDetails().getShowGender()?"Mobile Number: "+user.getMobileNumber()+"<br>":"";
+				}
 			}
-		    }
 		    if (printSettings.getFooterSetup() != null) {
 			if (printSettings.getFooterSetup().getCustomFooter())
 			    for (PrintSettingsText str : printSettings.getFooterSetup().getBottomText())

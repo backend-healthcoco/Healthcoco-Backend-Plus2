@@ -403,7 +403,8 @@ public interface PathProxy {
 
 	public static final String ADD_MULTIPLE_DATA = "/add";
 
-	//
+	public static final String EMAIL = "/email/{visitId}/{emailAddress}";
+	
 	public static final String GET_VISITS = "/{doctorId}/{locationId}/{hospitalId}/{patientId}";
 
     }

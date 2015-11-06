@@ -1,10 +1,12 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 public class PrintSettingsText {
 
     private String text;
 
-    private String fontStyle;
+    private List<String> fontStyle;
 
     private String fontColor;
 
@@ -18,11 +20,11 @@ public class PrintSettingsText {
 	this.text = text;
     }
 
-    public String getFontStyle() {
+    public List<String> getFontStyle() {
 	return fontStyle;
     }
 
-    public void setFontStyle(String fontStyle) {
+    public void setFontStyle(List<String> fontStyle) {
 	this.fontStyle = fontStyle;
     }
 

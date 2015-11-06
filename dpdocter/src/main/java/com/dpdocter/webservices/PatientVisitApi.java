@@ -22,6 +22,8 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.AddMultipleDataRequest;
 import com.dpdocter.response.PatientVisitResponse;
 import com.dpdocter.services.PatientVisitService;
+
+import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
 @Component
@@ -48,7 +50,21 @@ public class PatientVisitApi {
 	response.setData(patienVisitResponse);
 	return response;
     }
+    
+    @Path(value = PathProxy.PatientVisitUrls.EMAIL)
+    @GET
+    public Response<Boolean> email(@PathParam(value = "visitId") String visitId, @PathParam(value = "emailAddress") String emailAddress) {
 
+	if (DPDoctorUtils.anyStringEmpty(visitId, emailAddress)) {
+	    logger.warn("Visit Id Or Email AddressIs NULL");
+	    throw new BusinessException(ServiceError.InvalidInput, "Visit Id Or Email Address Is NULL");
+	}
+	Boolean isSend = patientVisitService.email(visitId, emailAddress);
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(isSend);
+	return response;
+    }
+    
     @Path(value = PathProxy.PatientVisitUrls.GET_VISITS)
     @GET
     public Response<PatientVisitResponse> getVisit(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
