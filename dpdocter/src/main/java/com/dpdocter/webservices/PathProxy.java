@@ -372,7 +372,7 @@ public interface PathProxy {
 
 	public static final String ADD_EDIT_PROFESSIONAL_MEMBERSHIP = "/addEditProfessionalMembership";
 
-	public static final String GET_DOCTOR_PROFILE = "/{doctorId}/{locationId}/{hospitalId}/view";
+	public static final String GET_DOCTOR_PROFILE = "/{doctorId}/view";
 
 	public static final String ADD_EDIT_MEDICAL_COUNCILS = "/addEditMedicalCouncils";
 
