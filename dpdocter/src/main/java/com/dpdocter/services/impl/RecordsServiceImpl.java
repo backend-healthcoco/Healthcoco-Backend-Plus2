@@ -15,7 +15,9 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.Count;
@@ -233,11 +235,14 @@ public class RecordsServiceImpl implements RecordsService {
 	boolean[] discards = new boolean[2];
 	discards[0] = false;
 	try {
-	    if (request.getDiscarded())
-		discards[1] = true;
+	    if (request.getDiscarded())	discards[1] = true;
 	    long createdTimeStamp = Long.parseLong(request.getUpdatedTime());
+	    
 	    if (request.getTagId() != null) {
-		List<RecordsTagsCollection> recordsTagsCollections = recordsTagsRepository.findByTagsId(request.getTagId());
+		List<RecordsTagsCollection> recordsTagsCollections = null;
+		
+		if(request.getSize() > 0)recordsTagsCollections = recordsTagsRepository.findByTagsId(request.getTagId(), new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "updatedTime"));
+		else recordsTagsCollections = recordsTagsRepository.findByTagsId(request.getTagId(), new Sort(Sort.Direction.DESC, "updatedTime"));
 		@SuppressWarnings("unchecked")
 		Collection<String> recordIds = CollectionUtils.collect(recordsTagsCollections, new BeanToPropertyValueTransformer("recordsId"));
 		@SuppressWarnings("unchecked")
@@ -246,9 +251,15 @@ public class RecordsServiceImpl implements RecordsService {
 		BeanUtil.map(recordCollections, records);
 	    } else {
 
-		recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
-			request.getHospitalId(), new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-
+	    if(request.getSize() > 0){
+	    	recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
+	    			request.getHospitalId(), new Date(createdTimeStamp), discards, new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "updatedTime"));
+	    }
+	    else{
+	    	recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
+	    			request.getHospitalId(), new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
+	    }
+		
 		records = new ArrayList<Records>();
 		for (RecordsCollection recordCollection : recordsCollections) {
 		    Records record = new Records();
