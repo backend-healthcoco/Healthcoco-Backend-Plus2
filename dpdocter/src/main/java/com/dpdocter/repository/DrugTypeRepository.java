@@ -31,7 +31,7 @@ public interface DrugTypeRepository extends MongoRepository<DrugTypeCollection, 
     @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': {$in: ?2}},{'doctorId': null, 'updatedTime': {'$gte': ?1},'discarded': {$in: ?2}}]}")
     List<DrugTypeCollection> getCustomGlobalDrugType(String doctorId, Date date, boolean[] discards, Sort sort);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': {$in: ?2}}")
+    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': {$in: ?1}}")
     List<DrugTypeCollection> getGlobalDrugType(Date date, boolean[] discards, Pageable pageable);
 
     @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3},'discarded': {$in: ?4}}")

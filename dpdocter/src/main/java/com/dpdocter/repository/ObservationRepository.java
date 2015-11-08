@@ -35,7 +35,7 @@ public interface ObservationRepository extends MongoRepository<ObservationCollec
     @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': {$in: ?4}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?3},'discarded': {$in: ?4}}]}")
     List<ObservationCollection> findCustomGlobalObservations(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards, Sort sort);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': {$in: ?2}}")
+    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': {$in: ?1}}")
     List<ObservationCollection> findGlobalObservations(Date date, boolean[] discards, Sort sort);
 
     @Query("{'updatedTime': {'$gte': ?0}, 'discarded': {$in: ?1}}")

@@ -18,8 +18,6 @@ public interface RecordsService {
 
     void tagRecord(TagRecordRequest request);
 
-    void changeReportLabel(String recordId, String label);
-
     List<Records> searchRecords(RecordsSearchRequest request);
 
     List<Records> getRecordsByIds(List<String> recordIds);
@@ -44,10 +42,10 @@ public interface RecordsService {
 
     Integer getRecordCount(String doctorId, String patientId, String locationId, String hospitalId);
 
-    boolean editDescription(RecordsDescription recordsDescription);
-
     FlexibleCounts getFlexibleCounts(FlexibleCounts flexibleCounts);
 
     Records editRecord(RecordsEditRequest request);
+
+	void changeLabelAndDescription(String recordId, String label, String description);
 
 }

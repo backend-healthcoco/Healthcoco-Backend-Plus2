@@ -387,48 +387,17 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	DoctorProfile doctorProfile = null;
 	UserCollection userCollection = null;
 	DoctorCollection doctorCollection = null;
-	List<DoctorClinicProfileCollection> clinicProfileCollection = new ArrayList<DoctorClinicProfileCollection>();
+	DoctorClinicProfileCollection clinicProfileCollection = null;
 	LocationCollection locationCollection = null;
 	List<String> specialities = null;
 	List<DoctorRegistrationDetail> registrationDetails = null;
 	List<String> professionalMemberships = null;
-	List<DoctorClinicProfile> clinicProfile = new ArrayList<DoctorClinicProfile>();
-	DoctorClinicProfile doctorClinic = new DoctorClinicProfile();
+	DoctorClinicProfile clinicProfile = null;
 	try {
 	    userCollection = userRepository.findOne(doctorId);
 	    doctorCollection = doctorRepository.findByUserId(doctorId);
-	    if (locationId == null) {
-		List<UserLocationCollection> userLocationCollections = userLocationRepository.findByUserId(userCollection.getId());
-		for (Iterator<UserLocationCollection> iterator = userLocationCollections.iterator(); iterator.hasNext();) {
-		    UserLocationCollection userLocationCollection = iterator.next();
-		    DoctorClinicProfileCollection doctorClinicCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection
-			    .getLocationId());
-		    if (doctorClinicCollection != null) {
-			clinicProfileCollection.add(doctorClinicCollection);
-			BeanUtil.map(doctorClinicCollection, doctorClinic);
-			locationCollection = locationRepository.findOne(doctorClinic.getLocationId());
-			String address = locationCollection.getLocationName() + ", " + locationCollection.getStreetAddress() + ", "
-				+ locationCollection.getCity() + ", " + locationCollection.getState() + " - " + locationCollection.getPostalCode() + ", "
-				+ locationCollection.getCountry();
-			doctorClinic.setClinicAddress(address);
-			clinicProfile.add(doctorClinic);
-		    }
-		}
-	    } else {
-
-		DoctorClinicProfileCollection doctorClinicCollection = doctorClinicProfileRepository.findByLocationId(locationId);
-
-		if (doctorClinicCollection != null) {
-		    clinicProfileCollection.add(doctorClinicCollection);
-		    BeanUtil.map(doctorClinicCollection, doctorClinic);
-		    locationCollection = locationRepository.findOne(locationId);
-		    String address = locationCollection.getLocationName() + ", " + locationCollection.getStreetAddress() + ", " + locationCollection.getCity()
-			    + ", " + locationCollection.getState() + " - " + locationCollection.getPostalCode() + ", " + locationCollection.getCountry();
-		    doctorClinic.setClinicAddress(address);
-		    clinicProfile.add(doctorClinic);
-		}
-
-	    }
+	    clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(locationId);
+	    locationCollection = locationRepository.findOne(locationId);
 	    doctorProfile = new DoctorProfile();
 	    BeanUtil.map(userCollection, doctorProfile);
 	    BeanUtil.map(doctorCollection, doctorProfile);
@@ -462,6 +431,13 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    doctorProfile.setProfessionalMemberships(professionalMemberships);
 
 	    // set clinic profile details
+	    clinicProfile = new DoctorClinicProfile();
+	    if (clinicProfileCollection != null) {
+		BeanUtil.map(clinicProfileCollection, clinicProfile);
+	    }
+	    String address = locationCollection.getLocationName() + ", " + locationCollection.getStreetAddress() + ", " + locationCollection.getCity() + ", "
+		    + locationCollection.getState() + " - " + locationCollection.getPostalCode() + ", " + locationCollection.getCountry();
+	    clinicProfile.setClinicAddress(address);
 	    doctorProfile.setClinicProfile(clinicProfile);
 	} catch (Exception e) {
 	    e.printStackTrace();

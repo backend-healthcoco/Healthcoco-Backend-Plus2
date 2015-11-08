@@ -31,7 +31,7 @@ public interface DiagramsRepository extends MongoRepository<DiagramsCollection, 
     @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': {$in: ?1}}")
     List<DiagramsCollection> findGlobalDiagrams(Date date, boolean[] discards, Sort sort);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': {$in: ?2}}")
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': {$in: ?4}}")
     List<DiagramsCollection> findCustomDiagrams(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards, Sort sort);
 
     @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': {$in: ?2}}")

@@ -188,8 +188,6 @@ public interface PathProxy {
 
 	public static final String TAG_RECORD = "/tagrecord";
 
-	public static final String CHANGE_LABEL_RECORD = "/changelabel";
-
 	public static final String SEARCH_RECORD = "/search";
 
 	public static final String GET_RECORD_COUNT = "/getRecordCount/{doctorId}/{patientId}/{locationId}/{hospitalId}";
@@ -208,11 +206,11 @@ public interface PathProxy {
 
 	public static final String DELETE_TAG = "/tagrecord/{tagid}/delete";
 
-	public static final String EDIT_DESCRIPTION = "/editDescription";
-
 	public static final String GET_FLEXIBLE_COUNTS = "/getFlexibleCounts";
 
 	public static final String EDIT_RECORD = "/{recordId}/update";
+	
+	public static final String CHANGE_LABEL_AND_DESCRIPTION_RECORD = "/changeLabelAndDescription";
 
     }
 
@@ -372,7 +370,7 @@ public interface PathProxy {
 
 	public static final String ADD_EDIT_PROFESSIONAL_MEMBERSHIP = "/addEditProfessionalMembership";
 
-	public static final String GET_DOCTOR_PROFILE = "/{doctorId}/view";
+	public static final String GET_DOCTOR_PROFILE = "/{doctorId}/{locationId}/{hospitalId}/view";
 
 	public static final String ADD_EDIT_MEDICAL_COUNCILS = "/addEditMedicalCouncils";
 

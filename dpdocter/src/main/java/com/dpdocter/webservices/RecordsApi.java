@@ -29,6 +29,7 @@ import com.dpdocter.beans.Tags;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.request.ChangeRecordLabelDescriptionRequest;
 import com.dpdocter.request.ChangeRecordLabelRequest;
 import com.dpdocter.request.RecordsAddRequest;
 import com.dpdocter.request.RecordsEditRequest;
@@ -116,18 +117,6 @@ public class RecordsApi {
 	return response;
     }
 
-    @Path(value = PathProxy.RecordsUrls.CHANGE_LABEL_RECORD)
-    @POST
-    public Response<Boolean> changeLabel(ChangeRecordLabelRequest request) {
-	if (request == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-	}
-	recordsService.changeReportLabel(request.getRecordId(), request.getLabel());
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
-	return response;
-    }
-
     @Path(value = PathProxy.RecordsUrls.GET_ALL_TAGS)
     @GET
     public Response<Tags> getAllTags(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
@@ -199,18 +188,6 @@ public class RecordsApi {
 	return response.build();
     }
 
-    @Path(value = PathProxy.RecordsUrls.EDIT_DESCRIPTION)
-    @POST
-    public Response<Boolean> editDescription(RecordsDescription recordsDescription) {
-	if (DPDoctorUtils.anyStringEmpty(recordsDescription.getId(), recordsDescription.getDescription())) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Record Id, and Description Cannot Be Empty");
-	}
-	boolean editDescriptionResponse = recordsService.editDescription(recordsDescription);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(editDescriptionResponse);
-	return response;
-    }
-
     @Path(value = PathProxy.RecordsUrls.GET_FLEXIBLE_COUNTS)
     @POST
     public Response<FlexibleCounts> getCounts(FlexibleCounts flexibleCounts) {
@@ -249,5 +226,17 @@ public class RecordsApi {
 	} else
 	    return null;
 
+    }
+    
+    @Path(value = PathProxy.RecordsUrls.CHANGE_LABEL_AND_DESCRIPTION_RECORD)
+    @POST
+    public Response<Boolean> changeLabelAndDescription(ChangeRecordLabelDescriptionRequest request) {
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	}
+	recordsService.changeLabelAndDescription(request.getRecordId(), request.getLabel(), request.getDescription());
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(true);
+	return response;
     }
 }

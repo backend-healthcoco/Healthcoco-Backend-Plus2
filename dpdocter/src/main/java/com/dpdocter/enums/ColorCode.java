@@ -3,7 +3,7 @@ package com.dpdocter.enums;
 import java.util.Random;
 
 public enum ColorCode {
-    A("#099688"), B("#3F51B5"), C("#2196F3"), D("#4CAF50"), E("#9E9E9E"), F("#9C27B0");
+    A("#1ABC9C"), B("#2ECC71"), C("#3498DB"), D("#9B59B6"), E("#34495E"), F("#F39C12"),G("#D35400"),H("#E74C3C");
 
     private String color;
 

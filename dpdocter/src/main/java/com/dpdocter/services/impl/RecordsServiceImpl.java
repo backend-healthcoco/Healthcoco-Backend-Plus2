@@ -24,9 +24,9 @@ import com.dpdocter.beans.Count;
 import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Records;
-import com.dpdocter.beans.RecordsDescription;
 import com.dpdocter.beans.Tags;
 import com.dpdocter.collections.EmailTrackCollection;
+import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.RecordsCollection;
 import com.dpdocter.collections.RecordsTagsCollection;
@@ -36,6 +36,7 @@ import com.dpdocter.enums.ComponentType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.RecordsRepository;
 import com.dpdocter.repository.RecordsTagsRepository;
@@ -90,6 +91,9 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Autowired
     private EmailTackService emailTackService;
+    
+    @Autowired
+    private LocationRepository locationRepository;
 
     @Value(value = "${IMAGE_RESOURCE}")
     private String imageResource;
@@ -180,12 +184,6 @@ public class RecordsServiceImpl implements RecordsService {
 
     }
 
-    private String getFileNameFromImageURL(String url) {
-	String arr[] = url.split("/");
-	String imageName = arr[arr.length - 1];
-	imageName = imageName.substring(0, imageName.lastIndexOf("."));
-	return imageName;
-    }
 
     @Override
     public void tagRecord(TagRecordRequest request) {
@@ -199,27 +197,6 @@ public class RecordsServiceImpl implements RecordsService {
 		recordsTagsCollections.add(recordsTagsCollection);
 	    }
 	    recordsTagsRepository.save(recordsTagsCollections);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-	}
-
-    }
-
-    @Override
-    public void changeReportLabel(String recordId, String label) {
-	try {
-	    RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
-	    if (recordsCollection == null) {
-		logger.warn("Record not found.Check RecordId !");
-		throw new BusinessException(ServiceError.Unknown, "Record not found.Check RecordId !");
-	    }
-	    recordsCollection.setRecordsLable(label);
-	    recordsRepository.save(recordsCollection);
-	} catch (BusinessException e) {
-	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
@@ -267,6 +244,10 @@ public class RecordsServiceImpl implements RecordsService {
 		    UserCollection userCollection = userRepository.findOne(record.getDoctorId());
 		    if (userCollection != null) {
 			record.setDoctorName(userCollection.getFirstName());
+		    }
+		    if(request.getLocationId() != null){
+		    	LocationCollection locationCollection = locationRepository.findOne(request.getLocationId());
+		    	if(locationCollection != null)record.setClinicName(locationCollection.getLocationName());
 		    }
 		    records.add(record);
 		}
@@ -453,29 +434,6 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public boolean editDescription(RecordsDescription recordsDescription) {
-	RecordsCollection record = null;
-	boolean response = false;
-	try {
-	    record = recordsRepository.findOne(recordsDescription.getId());
-	    if (record != null) {
-		record.setDescription(recordsDescription.getDescription());
-		recordsRepository.save(record);
-		response = true;
-	    } else {
-		logger.warn("No record found for the given record id");
-		throw new BusinessException(ServiceError.NotFound, "No record found for the given record id");
-	    }
-
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error while editing description");
-	    throw new BusinessException(ServiceError.Unknown, "Error while editing description");
-	}
-	return response;
-    }
-
-    @Override
     public FlexibleCounts getFlexibleCounts(FlexibleCounts flexibleCounts) {
 	String doctorId = flexibleCounts.getDoctorId();
 	String locationId = flexibleCounts.getLocationId();
@@ -578,4 +536,26 @@ public class RecordsServiceImpl implements RecordsService {
 
 	return mailAttachment;
     }
+
+	@Override
+	public void changeLabelAndDescription(String recordId, String label, String description) {
+		try {
+		    RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
+		    if (recordsCollection == null) {
+			logger.warn("Record not found.Check RecordId !");
+			throw new BusinessException(ServiceError.Unknown, "Record not found.Check RecordId !");
+		    }
+		    recordsCollection.setRecordsLable(label);
+		    recordsCollection.setDescription(description);
+		    recordsCollection.setUpdatedTime(new Date());
+		    recordsRepository.save(recordsCollection);
+		} catch (BusinessException e) {
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+	}
 }
