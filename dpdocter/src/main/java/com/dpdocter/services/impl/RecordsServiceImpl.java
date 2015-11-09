@@ -28,6 +28,7 @@ import com.dpdocter.beans.Tags;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.RecordsCollection;
 import com.dpdocter.collections.RecordsTagsCollection;
 import com.dpdocter.collections.TagsCollection;
@@ -38,6 +39,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.RecordsRepository;
 import com.dpdocter.repository.RecordsTagsRepository;
 import com.dpdocter.repository.TagsRepository;
@@ -51,6 +53,7 @@ import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.MailService;
+import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.RecordsService;
 
@@ -91,12 +94,18 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Autowired
     private EmailTackService emailTackService;
-    
+
     @Autowired
     private LocationRepository locationRepository;
 
     @Value(value = "${IMAGE_RESOURCE}")
     private String imageResource;
+
+    @Autowired
+    private PatientVisitService patientTrackService;
+
+    @Autowired
+    private PatientVisitRepository patientVisitRepository;
 
     @Override
     public Records addRecord(RecordsAddRequest request) {
@@ -184,7 +193,6 @@ public class RecordsServiceImpl implements RecordsService {
 
     }
 
-
     @Override
     public void tagRecord(TagRecordRequest request) {
 	try {
@@ -212,14 +220,18 @@ public class RecordsServiceImpl implements RecordsService {
 	boolean[] discards = new boolean[2];
 	discards[0] = false;
 	try {
-	    if (request.getDiscarded())	discards[1] = true;
+	    if (request.getDiscarded())
+		discards[1] = true;
 	    long createdTimeStamp = Long.parseLong(request.getUpdatedTime());
-	    
+
 	    if (request.getTagId() != null) {
 		List<RecordsTagsCollection> recordsTagsCollections = null;
-		
-		if(request.getSize() > 0)recordsTagsCollections = recordsTagsRepository.findByTagsId(request.getTagId(), new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "updatedTime"));
-		else recordsTagsCollections = recordsTagsRepository.findByTagsId(request.getTagId(), new Sort(Sort.Direction.DESC, "updatedTime"));
+
+		if (request.getSize() > 0)
+		    recordsTagsCollections = recordsTagsRepository.findByTagsId(request.getTagId(), new PageRequest(request.getPage(), request.getSize(),
+			    Direction.DESC, "updatedTime"));
+		else
+		    recordsTagsCollections = recordsTagsRepository.findByTagsId(request.getTagId(), new Sort(Sort.Direction.DESC, "updatedTime"));
 		@SuppressWarnings("unchecked")
 		Collection<String> recordIds = CollectionUtils.collect(recordsTagsCollections, new BeanToPropertyValueTransformer("recordsId"));
 		@SuppressWarnings("unchecked")
@@ -228,15 +240,15 @@ public class RecordsServiceImpl implements RecordsService {
 		BeanUtil.map(recordCollections, records);
 	    } else {
 
-	    if(request.getSize() > 0){
-	    	recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
-	    			request.getHospitalId(), new Date(createdTimeStamp), discards, new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "updatedTime"));
-	    }
-	    else{
-	    	recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
-	    			request.getHospitalId(), new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-	    }
-		
+		if (request.getSize() > 0) {
+		    recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(), request
+			    .getHospitalId(), new Date(createdTimeStamp), discards, new PageRequest(request.getPage(), request.getSize(), Direction.DESC,
+			    "updatedTime"));
+		} else {
+		    recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
+			    request.getHospitalId(), new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
+		}
+
 		records = new ArrayList<Records>();
 		for (RecordsCollection recordCollection : recordsCollections) {
 		    Records record = new Records();
@@ -245,11 +257,19 @@ public class RecordsServiceImpl implements RecordsService {
 		    if (userCollection != null) {
 			record.setDoctorName(userCollection.getFirstName());
 		    }
-		    if(request.getLocationId() != null){
-		    	LocationCollection locationCollection = locationRepository.findOne(request.getLocationId());
-		    	if(locationCollection != null)record.setClinicName(locationCollection.getLocationName());
+		    if (request.getLocationId() != null) {
+			LocationCollection locationCollection = locationRepository.findOne(request.getLocationId());
+			if (locationCollection != null)
+			    record.setClinicName(locationCollection.getLocationName());
 		    }
 		    records.add(record);
+		}
+	    }
+
+	    for (Records record : records) {
+		PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(record.getId());
+		if (patientVisitCollection != null) {
+		    record.setVisitId(patientVisitCollection.getId());
 		}
 	    }
 
@@ -537,25 +557,25 @@ public class RecordsServiceImpl implements RecordsService {
 	return mailAttachment;
     }
 
-	@Override
-	public void changeLabelAndDescription(String recordId, String label, String description) {
-		try {
-		    RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
-		    if (recordsCollection == null) {
-			logger.warn("Record not found.Check RecordId !");
-			throw new BusinessException(ServiceError.Unknown, "Record not found.Check RecordId !");
-		    }
-		    recordsCollection.setRecordsLable(label);
-		    recordsCollection.setDescription(description);
-		    recordsCollection.setUpdatedTime(new Date());
-		    recordsRepository.save(recordsCollection);
-		} catch (BusinessException e) {
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
+    @Override
+    public void changeLabelAndDescription(String recordId, String label, String description) {
+	try {
+	    RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
+	    if (recordsCollection == null) {
+		logger.warn("Record not found.Check RecordId !");
+		throw new BusinessException(ServiceError.Unknown, "Record not found.Check RecordId !");
+	    }
+	    recordsCollection.setRecordsLable(label);
+	    recordsCollection.setDescription(description);
+	    recordsCollection.setUpdatedTime(new Date());
+	    recordsRepository.save(recordsCollection);
+	} catch (BusinessException e) {
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+    }
 }

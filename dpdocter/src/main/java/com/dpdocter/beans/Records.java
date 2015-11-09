@@ -26,7 +26,7 @@ public class Records extends GenericCollection {
     private Boolean discarded = false;
 
     private String doctorName;
-    
+
     private String clinicName;
 
     private String visitId;
@@ -135,20 +135,19 @@ public class Records extends GenericCollection {
 	this.patientId = patientId;
     }
 
-	public String getClinicName() {
-		return clinicName;
-	}
+    public String getClinicName() {
+	return clinicName;
+    }
 
-	public void setClinicName(String clinicName) {
-		this.clinicName = clinicName;
-	}
+    public void setClinicName(String clinicName) {
+	this.clinicName = clinicName;
+    }
 
-	@Override
-	public String toString() {
-		return "Records [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + ", patientId=" + patientId + ", recordsUrl=" + recordsUrl + ", recordsLable="
-				+ recordsLable + ", recordsType=" + recordsType + ", description=" + description + ", inHistory="
-				+ inHistory + ", discarded=" + discarded + ", doctorName=" + doctorName + ", clinicName=" + clinicName
-				+ ", visitId=" + visitId + "]";
-	}
+    @Override
+    public String toString() {
+	return "Records [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId
+		+ ", recordsUrl=" + recordsUrl + ", recordsLable=" + recordsLable + ", recordsType=" + recordsType + ", description=" + description
+		+ ", inHistory=" + inHistory + ", discarded=" + discarded + ", doctorName=" + doctorName + ", clinicName=" + clinicName + ", visitId="
+		+ visitId + "]";
+    }
 }

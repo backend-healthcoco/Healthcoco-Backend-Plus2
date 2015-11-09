@@ -12,13 +12,13 @@ import com.dpdocter.collections.RecordsTagsCollection;
 
 @Repository
 public interface RecordsTagsRepository extends MongoRepository<RecordsTagsCollection, String> {
-	@Query("{'tagsId': ?0}")
-	List<RecordsTagsCollection> findByTagsId(String tagsId, Pageable pageRequest);
+    @Query("{'tagsId': ?0}")
+    List<RecordsTagsCollection> findByTagsId(String tagsId, Pageable pageRequest);
 
     @Query("{'doctorId': ?0}")
     List<RecordsTagsCollection> findAll(String doctorId, Sort sort);
 
     @Query("{'tagsId': ?0}")
-	List<RecordsTagsCollection> findByTagsId(String tagId, Sort sort);
+    List<RecordsTagsCollection> findByTagsId(String tagId, Sort sort);
 
 }

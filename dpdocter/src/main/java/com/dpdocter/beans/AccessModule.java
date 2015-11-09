@@ -3,9 +3,9 @@ package com.dpdocter.beans;
 import java.util.List;
 
 public class AccessModule {
-	
-	private String id;
-	
+
+    private String id;
+
     private String module;
 
     private String url;
@@ -13,14 +13,14 @@ public class AccessModule {
     private List<AccessPermission> accessPermissions;
 
     public String getId() {
-		return id;
-	}
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getModule() {
+    public String getModule() {
 	return module;
     }
 
@@ -44,10 +44,9 @@ public class AccessModule {
 	this.accessPermissions = accessPermissions;
     }
 
-	@Override
-	public String toString() {
-		return "AccessModule [id=" + id + ", module=" + module + ", url=" + url + ", accessPermissions="
-				+ accessPermissions + "]";
-	}
+    @Override
+    public String toString() {
+	return "AccessModule [id=" + id + ", module=" + module + ", url=" + url + ", accessPermissions=" + accessPermissions + "]";
+    }
 
 }

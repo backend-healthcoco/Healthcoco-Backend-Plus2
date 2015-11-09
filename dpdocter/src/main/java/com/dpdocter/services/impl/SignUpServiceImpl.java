@@ -107,7 +107,7 @@ public class SignUpServiceImpl implements SignUpService {
 
     @Autowired
     private SMSServices sMSServices;
-    
+
     @Autowired
     private AccessControlServices accessControlServices;
 
@@ -278,14 +278,14 @@ public class SignUpServiceImpl implements SignUpService {
 	    // smsTrackDetail.setSmsDetails(smsDetails);
 	    // sMSServices.sendSMS(smsTrackDetail, false);
 	    // }
-	    
-	    if(request.getAccessModules() != null && !request.getAccessModules().isEmpty()){
-	    	AccessControl accessControl = new AccessControl();
-	    	BeanUtil.map(request, accessControl);
-	    	accessControl.setType(Type.DOCTOR);
-	    	accessControl.setRoleOrUserId(userCollection.getId());
-	    	accessControl = accessControlServices.setAccessControls(accessControl);
-	    	response.setAccessControl(accessControl);	    	
+
+	    if (request.getAccessModules() != null && !request.getAccessModules().isEmpty()) {
+		AccessControl accessControl = new AccessControl();
+		BeanUtil.map(request, accessControl);
+		accessControl.setType(Type.DOCTOR);
+		accessControl.setRoleOrUserId(userCollection.getId());
+		accessControl = accessControlServices.setAccessControls(accessControl);
+		response.setAccessControl(accessControl);
 	    }
 	} catch (BusinessException be) {
 	    logger.error(be);
@@ -298,10 +298,10 @@ public class SignUpServiceImpl implements SignUpService {
 	return response;
     }
 
-	@Override
-	public DoctorSignUp doctorHandheld(DoctorSignupHandheldRequest request) {
-		DoctorSignUp response = null;
-		try {
+    @Override
+    public DoctorSignUp doctorHandheld(DoctorSignupHandheldRequest request) {
+	DoctorSignUp response = null;
+	try {
 
 	    // get role of specified type
 	    RoleCollection hospitalAdmin = roleRepository.findByRole(RoleEnum.HOSPITAL_ADMIN.getRole());
@@ -327,7 +327,7 @@ public class SignUpServiceImpl implements SignUpService {
 		throw new BusinessException(ServiceError.NotAcceptable, "Incorrect Date of Birth");
 	    }
 	    userCollection.setUserName(request.getEmailAddress());
-	    
+
 	    userCollection.setCreatedTime(new Date());
 	    userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
 	    userCollection.setUserState(UserState.USERSTATEINCOMPLETE);
@@ -348,16 +348,15 @@ public class SignUpServiceImpl implements SignUpService {
 	    userRoleCollection = new UserRoleCollection(userCollection.getId(), doctorRole.getId());
 	    userRoleCollection.setCreatedTime(new Date());
 	    userRoleRepository.save(userRoleCollection);
-	    
-	    
+
 	    response = new DoctorSignUp();
 	    User user = new User();
 	    userCollection.setPassword(null);
 	    BeanUtil.map(userCollection, user);
 	    user.setEmailAddress(userCollection.getEmailAddress());
 	    response.setUser(user);
-	    
-		} catch (BusinessException be) {
+
+	} catch (BusinessException be) {
 	    logger.error(be);
 	    throw be;
 	} catch (Exception e) {
@@ -366,20 +365,20 @@ public class SignUpServiceImpl implements SignUpService {
 	    throw new BusinessException(ServiceError.Unknown, "Error occured while creating doctor");
 	}
 	return response;
-	}
+    }
 
-	@Override
-	public DoctorSignUp doctorHandheldContinue(DoctorSignupHandheldContinueRequest request) {
-		DoctorSignUp response = null;
+    @Override
+    public DoctorSignUp doctorHandheldContinue(DoctorSignupHandheldContinueRequest request) {
+	DoctorSignUp response = null;
 
-		try {
-		
+	try {
+
 	    // save user
 	    UserCollection userCollection = userRepository.findOne(request.getUserId());
-	    
+
 	    userCollection.setUserState(UserState.USERSTATECOMPLETE);
 	    userCollection = userRepository.save(userCollection);
-	    
+
 	    HospitalCollection hospitalCollection = new HospitalCollection();
 	    BeanUtil.map(request, hospitalCollection);
 	    hospitalCollection.setCreatedTime(new Date());
@@ -446,14 +445,14 @@ public class SignUpServiceImpl implements SignUpService {
 	    // smsTrackDetail.setSmsDetails(smsDetails);
 	    // sMSServices.sendSMS(smsTrackDetail, false);
 	    // }
-	    
-	    if(request.getAccessModules() != null && !request.getAccessModules().isEmpty()){
-	    	AccessControl accessControl = new AccessControl();
-	    	BeanUtil.map(request, accessControl);
-	    	accessControl.setType(Type.DOCTOR);
-	    	accessControl.setRoleOrUserId(userCollection.getId());
-	    	accessControl = accessControlServices.setAccessControls(accessControl);
-	    	response.setAccessControl(accessControl);	    	
+
+	    if (request.getAccessModules() != null && !request.getAccessModules().isEmpty()) {
+		AccessControl accessControl = new AccessControl();
+		BeanUtil.map(request, accessControl);
+		accessControl.setType(Type.DOCTOR);
+		accessControl.setRoleOrUserId(userCollection.getId());
+		accessControl = accessControlServices.setAccessControls(accessControl);
+		response.setAccessControl(accessControl);
 	    }
 	} catch (BusinessException be) {
 	    logger.error(be);
@@ -464,7 +463,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    throw new BusinessException(ServiceError.Unknown, "Error occured while creating doctor");
 	}
 	return response;
-	}
+    }
 
     @Override
     public User patientSignUp(PatientSignUpRequest request) {

@@ -83,7 +83,6 @@ import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -144,7 +143,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
     @Autowired
     private PatientAdmissionRepository patientAdmissionRepository;
-    
+
     @Context
     private UriInfo uriInfo;
 
@@ -2027,17 +2026,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			List<DBObject> diagramIds = new ArrayList<DBObject>();
 			for (String diagramId : clinicalNotesCollection.getDiagrams()) {
-				DBObject diagram = new BasicDBObject();
-				DiagramsCollection diagramsCollection = diagramsRepository.findOne(diagramId);
-				if(diagramsCollection != null){
-					if (diagramsCollection.getDiagramUrl() != null) {
-					    diagram.put("url", getFinalImageURL(diagramsCollection.getDiagramUrl()));
-					}
-					diagram.put("tags", diagramsCollection.getTags());
-					diagramIds.add(diagram);
+			    DBObject diagram = new BasicDBObject();
+			    DiagramsCollection diagramsCollection = diagramsRepository.findOne(diagramId);
+			    if (diagramsCollection != null) {
+				if (diagramsCollection.getDiagramUrl() != null) {
+				    diagram.put("url", getFinalImageURL(diagramsCollection.getDiagramUrl()));
 				}
+				diagram.put("tags", diagramsCollection.getTags());
+				diagramIds.add(diagram);
+			    }
 			}
-		
+
 			parameters.put("diagramIds", diagramIds);
 		    }
 		    List<PatientClinicalNotesCollection> patientClinicalNotesCollection = patientClinicalNotesRepository.findByClinicalNotesId(clinicalNotesId);
@@ -2080,19 +2079,24 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    printId.put("$oid", printSettings.getId());
 
 		parameters.put("printSettingsId", Arrays.asList(printId));
-		String headerLeftText="",headerRightText="",footerBottomText ="";
-		String patientName="", dob="", gender="", mobileNumber="";
-		if(printSettings!=null){
-			if(printSettings.getHeaderSetup() != null){
-				for(PrintSettingsText str: printSettings.getHeaderSetup().getTopLeftText())headerLeftText=headerLeftText+"<br/>"+str.getText();
-				for(PrintSettingsText str: printSettings.getHeaderSetup().getTopRightText())headerRightText=headerRightText+"<br/>"+str.getText();
-				if(printSettings.getHeaderSetup().getPatientDetails() !=null && user!=null){
-					patientName=printSettings.getHeaderSetup().getPatientDetails().getShowName()?"Patient Name: "+user.getFirstName()+"<br>":"";
-					dob = printSettings.getHeaderSetup().getPatientDetails().getShowDOB()?"Patient Age: "+(user.getDob() != null ? (user.getDob().getAge())+"<br>":""):"";
-					gender = printSettings.getHeaderSetup().getPatientDetails().getShowGender()?"Patient Gender: "+user.getGender()+"<br>":"";
-					mobileNumber = printSettings.getHeaderSetup().getPatientDetails().getShowGender()?"Mobile Number: "+user.getMobileNumber()+"<br>":"";
-				}
+		String headerLeftText = "", headerRightText = "", footerBottomText = "";
+		String patientName = "", dob = "", gender = "", mobileNumber = "";
+		if (printSettings != null) {
+		    if (printSettings.getHeaderSetup() != null) {
+			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText())
+			    headerLeftText = headerLeftText + "<br/>" + str.getText();
+			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText())
+			    headerRightText = headerRightText + "<br/>" + str.getText();
+			if (printSettings.getHeaderSetup().getPatientDetails() != null && user != null) {
+			    patientName = printSettings.getHeaderSetup().getPatientDetails().getShowName() ? "Patient Name: " + user.getFirstName() + "<br>"
+				    : "";
+			    dob = printSettings.getHeaderSetup().getPatientDetails().getShowDOB() ? "Patient Age: "
+				    + (user.getDob() != null ? (user.getDob().getAge()) + "<br>" : "") : "";
+			    gender = printSettings.getHeaderSetup().getPatientDetails().getShowGender() ? "Patient Gender: " + user.getGender() + "<br>" : "";
+			    mobileNumber = printSettings.getHeaderSetup().getPatientDetails().getShowGender() ? "Mobile Number: " + user.getMobileNumber()
+				    + "<br>" : "";
 			}
+		    }
 		    if (printSettings.getFooterSetup() != null) {
 			if (printSettings.getFooterSetup().getCustomFooter())
 			    for (PrintSettingsText str : printSettings.getFooterSetup().getBottomText())
@@ -2104,7 +2108,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 		    }
 		}
-		parameters.put("patientLeftText", patientName +  (patient!=null? "Patient Id: " +patient.getPID()+ "<br>":"")  + dob + gender);
+		parameters.put("patientLeftText", patientName + (patient != null ? "Patient Id: " + patient.getPID() + "<br>" : "") + dob + gender);
 		parameters.put("patientRightText", mobileNumber + (patientAdmission != null ? "Reffered By:" + patientAdmission.getReferredBy() + "<br>" : "")
 			+ "Date:" + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
 		parameters.put("headerLeftText", headerLeftText);
@@ -2145,10 +2149,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     private String getFinalImageURL(String imageURL) {
-    	if (imageURL != null && uriInfo != null) {
-    	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-    	    return finalImageURL + imageURL;
-    	} else
-    	    return null;
-}
+	if (imageURL != null && uriInfo != null) {
+	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+	    return finalImageURL + imageURL;
+	} else
+	    return null;
+    }
 }

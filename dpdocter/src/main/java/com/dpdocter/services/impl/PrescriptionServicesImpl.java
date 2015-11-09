@@ -2350,14 +2350,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					    : "";
 
 				    String directions = "";
-				    if(prescriptionItem.getDirection() != null)
-				    for (DrugDirection drugDirection : prescriptionItem.getDirection()) {
-					if (drugDirection.getDirection() != null)
-					    if (directions == "")
-						directions = directions + (drugDirection.getDirection());
-					    else
-						directions = directions + "," + (drugDirection.getDirection());
-				    }
+				    if (prescriptionItem.getDirection() != null)
+					for (DrugDirection drugDirection : prescriptionItem.getDirection()) {
+					    if (drugDirection.getDirection() != null)
+						if (directions == "")
+						    directions = directions + (drugDirection.getDirection());
+						else
+						    directions = directions + "," + (drugDirection.getDirection());
+					}
 				    String duration = "";
 				    if (durationValue == "" && durationValue == "")
 					duration = "-";
@@ -2409,18 +2409,23 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    printId.put("$oid", printSettings.getId());
 
 		parameters.put("printSettingsId", Arrays.asList(printId));
-		String headerLeftText="",headerRightText="",footerBottomText ="";
-		String patientName="", dob="", gender="", mobileNumber="";
-		if(printSettings!=null){
-			if(printSettings.getHeaderSetup() != null){
-				for(PrintSettingsText str: printSettings.getHeaderSetup().getTopLeftText())headerLeftText=headerLeftText+"<br/>"+str.getText();
-				for(PrintSettingsText str: printSettings.getHeaderSetup().getTopRightText())headerRightText=headerRightText+"<br/>"+str.getText();
-				if(printSettings.getHeaderSetup().getPatientDetails() !=null && user!=null){
-					patientName=printSettings.getHeaderSetup().getPatientDetails().getShowName()?"Patient Name: "+user.getFirstName()+"<br>":"";
-					dob = printSettings.getHeaderSetup().getPatientDetails().getShowDOB()?"Patient Age: "+(user.getDob() != null ? (user.getDob().getAge())+"<br>":""):"";
-					gender = printSettings.getHeaderSetup().getPatientDetails().getShowGender()?"Patient Gender: "+user.getGender()+"<br>":"";
-					mobileNumber = printSettings.getHeaderSetup().getPatientDetails().getShowGender()?"Mobile Number: "+user.getMobileNumber()+"<br>":"";
-				}
+		String headerLeftText = "", headerRightText = "", footerBottomText = "";
+		String patientName = "", dob = "", gender = "", mobileNumber = "";
+		if (printSettings != null) {
+		    if (printSettings.getHeaderSetup() != null) {
+			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText())
+			    headerLeftText = headerLeftText + "<br/>" + str.getText();
+			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText())
+			    headerRightText = headerRightText + "<br/>" + str.getText();
+			if (printSettings.getHeaderSetup().getPatientDetails() != null && user != null) {
+			    patientName = printSettings.getHeaderSetup().getPatientDetails().getShowName() ? "Patient Name: " + user.getFirstName() + "<br>"
+				    : "";
+			    dob = printSettings.getHeaderSetup().getPatientDetails().getShowDOB() ? "Patient Age: "
+				    + (user.getDob() != null ? (user.getDob().getAge()) + "<br>" : "") : "";
+			    gender = printSettings.getHeaderSetup().getPatientDetails().getShowGender() ? "Patient Gender: " + user.getGender() + "<br>" : "";
+			    mobileNumber = printSettings.getHeaderSetup().getPatientDetails().getShowGender() ? "Mobile Number: " + user.getMobileNumber()
+				    + "<br>" : "";
+			}
 		    }
 		    if (printSettings.getFooterSetup() != null) {
 			if (printSettings.getFooterSetup().getCustomFooter())
@@ -2433,7 +2438,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 		    }
 		}
-		parameters.put("patientLeftText", patientName + (patient!=null? "Patient Id: " +patient.getPID()+ "<br>":"")  + dob + gender);
+		parameters.put("patientLeftText", patientName + (patient != null ? "Patient Id: " + patient.getPID() + "<br>" : "") + dob + gender);
 		parameters.put("patientRightText", mobileNumber + (patientAdmission != null ? "Reffered By:" + patientAdmission.getReferredBy() + "<br>" : "")
 			+ "Date:" + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
 		parameters.put("headerLeftText", headerLeftText);
@@ -2751,11 +2756,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	System.out.println("Done");
 
     }
+
     private String getFinalImageURL(String imageURL) {
-    	if (imageURL != null && uriInfo != null) {
-    	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-    	    return finalImageURL + imageURL;
-    	} else
-    	    return null;
-}
+	if (imageURL != null && uriInfo != null) {
+	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+	    return finalImageURL + imageURL;
+	} else
+	    return null;
+    }
 }

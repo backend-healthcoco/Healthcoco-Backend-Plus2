@@ -3,7 +3,6 @@ package com.dpdocter.response;
 import java.util.List;
 
 import com.dpdocter.beans.AccessControl;
-import com.dpdocter.beans.AccessModule;
 import com.dpdocter.beans.DOB;
 
 public class RegisterDoctorResponse {
@@ -37,7 +36,7 @@ public class RegisterDoctorResponse {
     private String locationId;
 
     private String hospitalId;
-    
+
     private AccessControl accessControl;
 
     public String getUserId() {
@@ -160,21 +159,19 @@ public class RegisterDoctorResponse {
 	this.hospitalId = hospitalId;
     }
 
-	public AccessControl getAccessControl() {
-		return accessControl;
-	}
+    public AccessControl getAccessControl() {
+	return accessControl;
+    }
 
-	public void setAccessControl(AccessControl accessControl) {
-		this.accessControl = accessControl;
-	}
+    public void setAccessControl(AccessControl accessControl) {
+	this.accessControl = accessControl;
+    }
 
-	@Override
-	public String toString() {
-		return "RegisterDoctorResponse [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName
-				+ ", middleName=" + middleName + ", userName=" + userName + ", password=" + password + ", emailAddress="
-				+ emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob=" + dob
-				+ ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl + ", specialization=" + specialization
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", accessControl=" + accessControl
-				+ "]";
-	}
+    @Override
+    public String toString() {
+	return "RegisterDoctorResponse [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName
+		+ ", userName=" + userName + ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender="
+		+ gender + ", dob=" + dob + ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl + ", specialization=" + specialization + ", locationId="
+		+ locationId + ", hospitalId=" + hospitalId + ", accessControl=" + accessControl + "]";
+    }
 }

@@ -25,6 +25,7 @@ public interface RecordsRepository extends MongoRepository<RecordsCollection, St
     Integer getRecordCount(String doctorId, String patientId, String hospitalId, String locationId, boolean discarded);
 
     @Query("{'patientId': ?0, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3, 'updatedTime': {'$gte': ?4}, 'discarded': {$in: ?5}}")
-	List<RecordsCollection> findRecords(String patientId, String doctorId, String locationId, String hospitalId, Date date, boolean[] discards, Pageable pageRequest);
+    List<RecordsCollection> findRecords(String patientId, String doctorId, String locationId, String hospitalId, Date date, boolean[] discards,
+	    Pageable pageRequest);
 
 }

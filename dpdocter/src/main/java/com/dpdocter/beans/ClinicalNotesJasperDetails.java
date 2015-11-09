@@ -6,70 +6,69 @@ import com.mongodb.DBObject;
 
 public class ClinicalNotesJasperDetails {
 
-	private String complaints;
-	
-	private String observations;
-	
-	private String investigations;
-	
-	private String diagnosis;
-	
-	private String notes;
-	
-	private List<DBObject> diagrams;
+    private String complaints;
 
-	public String getComplaints() {
-		return complaints;
-	}
+    private String observations;
 
-	public void setComplaints(String complaints) {
-		this.complaints = complaints;
-	}
+    private String investigations;
 
-	public String getObservations() {
-		return observations;
-	}
+    private String diagnosis;
 
-	public void setObservations(String observations) {
-		this.observations = observations;
-	}
+    private String notes;
 
-	public String getInvestigations() {
-		return investigations;
-	}
+    private List<DBObject> diagrams;
 
-	public void setInvestigations(String investigations) {
-		this.investigations = investigations;
-	}
+    public String getComplaints() {
+	return complaints;
+    }
 
-	public String getDiagnosis() {
-		return diagnosis;
-	}
+    public void setComplaints(String complaints) {
+	this.complaints = complaints;
+    }
 
-	public void setDiagnosis(String diagnosis) {
-		this.diagnosis = diagnosis;
-	}
+    public String getObservations() {
+	return observations;
+    }
 
-	public List<DBObject> getDiagrams() {
-		return diagrams;
-	}
+    public void setObservations(String observations) {
+	this.observations = observations;
+    }
 
-	public void setDiagrams(List<DBObject> list) {
-		this.diagrams = list;
-	}
+    public String getInvestigations() {
+	return investigations;
+    }
 
-	public String getNotes() {
-		return notes;
-	}
+    public void setInvestigations(String investigations) {
+	this.investigations = investigations;
+    }
 
-	public void setNotes(String notes) {
-		this.notes = notes;
-	}
+    public String getDiagnosis() {
+	return diagnosis;
+    }
 
-	@Override
-	public String toString() {
-		return "ClinicalNotesJasperDetails [complaints=" + complaints + ", observations=" + observations
-				+ ", investigations=" + investigations + ", diagnosis=" + diagnosis + ", notes=" + notes + ", diagrams="
-				+ diagrams + "]";
-	}
+    public void setDiagnosis(String diagnosis) {
+	this.diagnosis = diagnosis;
+    }
+
+    public List<DBObject> getDiagrams() {
+	return diagrams;
+    }
+
+    public void setDiagrams(List<DBObject> list) {
+	this.diagrams = list;
+    }
+
+    public String getNotes() {
+	return notes;
+    }
+
+    public void setNotes(String notes) {
+	this.notes = notes;
+    }
+
+    @Override
+    public String toString() {
+	return "ClinicalNotesJasperDetails [complaints=" + complaints + ", observations=" + observations + ", investigations=" + investigations
+		+ ", diagnosis=" + diagnosis + ", notes=" + notes + ", diagrams=" + diagrams + "]";
+    }
 }

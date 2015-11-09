@@ -122,7 +122,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
     @Autowired
     private DrugRepository drugRepository;
-    
+
     @Autowired
     private JasperReportService jasperReportService;
 
@@ -143,7 +143,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
     @Autowired
     private PatientAdmissionRepository patientAdmissionRepository;
-    
+
     @Autowired
     private ComplaintRepository complaintRepository;
 
@@ -175,10 +175,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	    BeanUtil.map(details, patientTrackCollection);
 	    String id = patientTrackCollection.getId();
-	    
-	    if (visitId != null) patientTrackCollection = patientVisitRepository.findOne(visitId);
-	    else patientTrackCollection.setId(null);
-	    
+
+	    if (visitId != null)
+		patientTrackCollection = patientVisitRepository.findOne(visitId);
+	    else
+		patientTrackCollection.setId(null);
+
 	    if (patientTrackCollection.getCreatedTime() == null) {
 		patientTrackCollection.setCreatedTime(new Date());
 	    }
@@ -267,9 +269,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	DoctorContactsResponse response = null;
 	try {
 	    List<PatientVisitCollection> patientTrackCollections = null;
-	    if(size > 0)patientTrackCollections = patientVisitRepository.findAll(doctorId, locationId, hospitalId, new PageRequest(page, size, Direction.DESC, "visitedTime"));
-	    else patientTrackCollections = patientVisitRepository.findAll(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "visitedTime"));
-	    
+	    if (size > 0)
+		patientTrackCollections = patientVisitRepository.findAll(doctorId, locationId, hospitalId, new PageRequest(page, size, Direction.DESC,
+			"visitedTime"));
+	    else
+		patientTrackCollections = patientVisitRepository.findAll(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "visitedTime"));
+
 	    if (patientTrackCollections != null && !patientTrackCollections.isEmpty()) {
 		@SuppressWarnings("unchecked")
 		List<String> patientIds = (List<String>) CollectionUtils.collect(patientTrackCollections, new BeanToPropertyValueTransformer("patientId"));
@@ -407,21 +412,30 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	List<PatientVisitCollection> patientVisitCollections = null;
 	try {
 
-		long createdTimestamp = Long.parseLong(updatedTime);
-		if (!isOTPVerified) {
-			    if (locationId == null && hospitalId == null) {
-			    	 if (size > 0) patientVisitCollections = patientVisitRepository.find(doctorId, patientId, new Date(createdTimestamp), new PageRequest(page, size, Direction.DESC,"updatedTime"));
-			    	 else patientVisitCollections = patientVisitRepository.find(doctorId, patientId, new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
-			    }
-			    else{
-			    	 if (size > 0)patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, new Date(createdTimestamp), new PageRequest(page, size, Direction.DESC,"updatedTime"));
-	    		    else patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
-			    }
-			}
-			else{
-				 if (size > 0) patientVisitCollections = patientVisitRepository.find(patientId, new Date(createdTimestamp), new PageRequest(page, size, Direction.DESC,"updatedTime"));
-		    	 else patientVisitCollections = patientVisitRepository.find(patientId, new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
+	    long createdTimestamp = Long.parseLong(updatedTime);
+	    if (!isOTPVerified) {
+		if (locationId == null && hospitalId == null) {
+		    if (size > 0)
+			patientVisitCollections = patientVisitRepository.find(doctorId, patientId, new Date(createdTimestamp), new PageRequest(page, size,
+				Direction.DESC, "updatedTime"));
+		    else
+			patientVisitCollections = patientVisitRepository.find(doctorId, patientId, new Date(createdTimestamp), new Sort(Sort.Direction.DESC,
+				"updatedTime"));
+		} else {
+		    if (size > 0)
+			patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, new Date(createdTimestamp),
+				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+		    else
+			patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, new Date(createdTimestamp),
+				new Sort(Sort.Direction.DESC, "updatedTime"));
+		}
+	    } else {
+		if (size > 0)
+		    patientVisitCollections = patientVisitRepository.find(patientId, new Date(createdTimestamp), new PageRequest(page, size, Direction.DESC,
+			    "updatedTime"));
+		else
+		    patientVisitCollections = patientVisitRepository.find(patientId, new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+	    }
 	    if (patientVisitCollections != null) {
 		response = new ArrayList<PatientVisitResponse>();
 
@@ -468,280 +482,303 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
     }
 
-	@Override
-	public Boolean email(String visitId, String emailAddress) {
-		PatientVisitCollection patientVisitCollection = null;
-		Map<String, Object> parameters = new HashMap<String, Object>();
-		MailAttachment mailAttachment = null;
-		EmailTrackCollection emailTrackCollection = new EmailTrackCollection(); 
-		
-		try{
-			patientVisitCollection = patientVisitRepository.findOne(visitId);
-			
-			if(patientVisitCollection != null){
-				PrintSettingsCollection printSettings = printSettingsRepository.getSettings(patientVisitCollection.getDoctorId(), patientVisitCollection.getLocationId(), patientVisitCollection.getHospitalId(), ComponentType.ALL.getType());
-				if(printSettings != null){
-					DBObject printId = new BasicDBObject();
-					printId.put("$oid", printSettings.getId());
+    @Override
+    public Boolean email(String visitId, String emailAddress) {
+	PatientVisitCollection patientVisitCollection = null;
+	Map<String, Object> parameters = new HashMap<String, Object>();
+	MailAttachment mailAttachment = null;
+	EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 
-					parameters.put("printSettingsId", Arrays.asList(printId));
-					
-					PatientAdmissionCollection patientAdmission = patientAdmissionRepository.findByPatientIdAndDoctorId(patientVisitCollection.getPatientId(), patientVisitCollection.getDoctorId());
-					PatientCollection patient = patientRepository.findByUserId(patientVisitCollection.getPatientId());
-					UserCollection user = userRepository.findOne(patientVisitCollection.getPatientId());
-					
-					String headerLeftText="",headerRightText="",footerBottomText ="";
-					String patientName="", dob="", gender="", mobileNumber="";
-					if(printSettings!=null){
-						if(printSettings.getHeaderSetup() != null){
-							for(PrintSettingsText str: printSettings.getHeaderSetup().getTopLeftText())headerLeftText=headerLeftText+"<br/>"+str.getText();
-							for(PrintSettingsText str: printSettings.getHeaderSetup().getTopRightText())headerRightText=headerRightText+"<br/>"+str.getText();
-							if(printSettings.getHeaderSetup().getPatientDetails() !=null && user!=null){
-								patientName=printSettings.getHeaderSetup().getPatientDetails().getShowName()?"Patient Name: "+user.getFirstName()+"<br>":"";
-								dob = printSettings.getHeaderSetup().getPatientDetails().getShowDOB()?"Patient Age: "+(user.getDob() != null ? (user.getDob().getAge())+"<br>":""):"";
-								gender = printSettings.getHeaderSetup().getPatientDetails().getShowGender()?"Patient Gender: "+user.getGender()+"<br>":"";
-								mobileNumber = printSettings.getHeaderSetup().getPatientDetails().getShowGender()?"Mobile Number: "+user.getMobileNumber()+"<br>":"";
-							}
-						}
-						if(printSettings.getFooterSetup() != null){
-							if(printSettings.getFooterSetup().getCustomFooter())
-								for(PrintSettingsText str: printSettings.getFooterSetup().getBottomText())footerBottomText=footerBottomText+"<br/>"+str.getText();
-							if(printSettings.getFooterSetup().getShowSignature()){
-								UserCollection doctorUser = userRepository.findOne(patientVisitCollection.getDoctorId());
-								if(doctorUser != null)parameters.put("footerSignature","Dr."+doctorUser.getFirstName());
-								else parameters.put("footerSignature","Signature");
-							}
-					}
-					}
-					parameters.put("patientLeftText", patientName + "Patient Id: " + (patient !=null ? patient.getPID():"") + "<br>" + dob + gender);
-					parameters.put("patientRightText", mobileNumber + (patientAdmission != null ? "Reffered By:" + patientAdmission.getReferredBy() + "<br>" : "")
-						+ "Date:" + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
-					parameters.put("headerLeftText", headerLeftText);
-					parameters.put("headerRightText", headerRightText);
-					parameters.put("footerBottomText", footerBottomText);
+	try {
+	    patientVisitCollection = patientVisitRepository.findOne(visitId);
 
-					LocationCollection location = locationRepository.findOne(patientVisitCollection.getLocationId());
-					if (location != null)
-					    parameters.put("logoURL", getFinalImageURL(location.getLogoUrl()));
+	    if (patientVisitCollection != null) {
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(patientVisitCollection.getDoctorId(),
+			patientVisitCollection.getLocationId(), patientVisitCollection.getHospitalId(), ComponentType.ALL.getType());
+		if (printSettings != null) {
+		    DBObject printId = new BasicDBObject();
+		    printId.put("$oid", printSettings.getId());
 
-					String layout = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
-						: "PORTRAIT";
-					String pageSize = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
-					String margins = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getMargins() : null) : null;
+		    parameters.put("printSettingsId", Arrays.asList(printId));
 
-					List<DBObject> prescriptions = new ArrayList<DBObject>();
-					if(patientVisitCollection.getPrescriptionId() != null){
-						for(String prescriptionId : patientVisitCollection.getPrescriptionId()){
-							DBObject prescriptionItems = new BasicDBObject();
-							List<PrescriptionJasperDetails> prescriptionJasperDetails = getPrescriptionJasperDetails(prescriptionId, prescriptionItems);
-							prescriptionItems.put("items", prescriptionJasperDetails);
-							
-							prescriptions.add(prescriptionItems);
-						}
-					}
-					List<ClinicalNotesJasperDetails> clinicalNotes = new ArrayList<ClinicalNotesJasperDetails>();
-					if(patientVisitCollection.getPrescriptionId() != null){
-						for(String clinicalNotesId : patientVisitCollection.getClinicalNotesId()){
-							ClinicalNotesJasperDetails clinicalJasperDetails = getClinicalNotesJasperDetails(clinicalNotesId);
-							clinicalNotes.add(clinicalJasperDetails);
-						}
-					}
-					parameters.put("prescriptions", prescriptions);
-					parameters.put("clinicalNotes", clinicalNotes);
-					
-					String path = jasperReportService.createPDF(parameters, "mongo-multiple-data", layout, pageSize, margins);
-					if (user != null) {
-					    emailTrackCollection.setPatientName(user.getFirstName());
-					    emailTrackCollection.setPatientId(user.getId());
-					}
-					List<MailAttachment> mailAttachments = new ArrayList<MailAttachment>();
-					
-					FileSystemResource file = new FileSystemResource(path);
-					mailAttachment = new MailAttachment();
-					mailAttachment.setAttachmentName(file.getFilename());
-					mailAttachment.setFileSystemResource(file);
-					
-					mailAttachments.add(mailAttachment);
-					if(patientVisitCollection.getRecordId() != null){
-						for(String recordId : patientVisitCollection.getRecordId()){
-							mailAttachment = recordsService.getRecordMailData(recordId);
-							if(mailAttachment != null)mailAttachments.add(mailAttachment);
-						}
-					}
-					mailService.sendEmailMultiAttach(emailAddress, "Clinical Notes", "PFA.", mailAttachments);
-					
-					emailTrackCollection.setDoctorId(patientVisitCollection.getDoctorId());
-					emailTrackCollection.setHospitalId(patientVisitCollection.getHospitalId());
-					emailTrackCollection.setLocationId(patientVisitCollection.getLocationId());
-					emailTrackCollection.setType(ComponentType.ALL.getType());
-					emailTrackCollection.setSubject("Patient Visit");
-					emailTackService.saveEmailTrack(emailTrackCollection);
+		    PatientAdmissionCollection patientAdmission = patientAdmissionRepository.findByPatientIdAndDoctorId(patientVisitCollection.getPatientId(),
+			    patientVisitCollection.getDoctorId());
+		    PatientCollection patient = patientRepository.findByUserId(patientVisitCollection.getPatientId());
+		    UserCollection user = userRepository.findOne(patientVisitCollection.getPatientId());
 
-				}
-				else{
-					logger.warn("PrintSettings not found");
-					throw new BusinessException(ServiceError.NotFound, "PrintSettings not found");
-				}
-			}
-			else{
-				logger.warn("Patient Visit Id does not exist");
-				throw new BusinessException(ServiceError.NotFound, "Patient Visit Id does not exist");
-			}
-		}
-		catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return true;
-	}
-
-	private ClinicalNotesJasperDetails getClinicalNotesJasperDetails(String clinicalNotesId) {
-		ClinicalNotesCollection clinicalNotesCollection = null;
-		ClinicalNotesJasperDetails clinicalNotesJasperDetails = null;
-		try {
-		    clinicalNotesCollection = clinicalNotesRepository.findOne(clinicalNotesId);
-		    if (clinicalNotesCollection != null) {
-			if (clinicalNotesCollection.getDoctorId() != null && clinicalNotesCollection.getHospitalId() != null
-				&& clinicalNotesCollection.getLocationId() != null) {
-			    
-				clinicalNotesJasperDetails = new ClinicalNotesJasperDetails();
-				String observations = "";
-				for (String observationId : clinicalNotesCollection.getObservations()) {
-					ObservationCollection observationCollection = observationRepository.findOne(observationId);
-				    if(observationCollection!= null){
-				    	if(observations == "")observations = observationCollection.getObservation();
-				    	else observations = observations +", "+observationCollection.getObservation();
-				    }
-				}
-				clinicalNotesJasperDetails.setObservations(observations);
-
-				String notes = "";
-				for (String noteId : clinicalNotesCollection.getNotes()) {
-					NotesCollection note = notesRepository.findOne(noteId);
-				    if(note!= null){
-				    	if(notes == "")notes = note.getNote();
-				    	else notes = notes +", "+note.getNote();
-				    }
-				}
-				clinicalNotesJasperDetails.setNotes(notes);
-
-				String investigations = "";
-				for (String investigationId : clinicalNotesCollection.getInvestigations()) {
-					InvestigationCollection investigation = investigationRepository.findOne(investigationId);
-				    if(investigation!= null){
-				    	if(investigations == "")investigations = investigation.getInvestigation();
-				    	else investigations = investigations +", "+investigation.getInvestigation();
-				    }
-				}
-				clinicalNotesJasperDetails.setInvestigations(investigations);
-
-				String diagnosis = "";
-				for (String diagnosisId : clinicalNotesCollection.getDiagnoses()) {
-					DiagnosisCollection diagnosisCollection = diagnosisRepository.findOne(diagnosisId);
-				    if(diagnosisCollection!= null){
-				    	if(diagnosis == "")diagnosis= diagnosisCollection.getDiagnosis();
-				    	else diagnosis = diagnosis +", "+diagnosisCollection.getDiagnosis();
-				    }
-				}
-				clinicalNotesJasperDetails.setDiagnosis(diagnosis);
-
-			    String complaints = "";
-				for (String complaintId : clinicalNotesCollection.getComplaints()) {
-				    ComplaintCollection complaint = complaintRepository.findOne(complaintId);
-				    if(complaint!= null){
-				    	if(complaints == "")complaints = complaint.getComplaint();
-				    	else complaints = complaints +", "+complaint.getComplaint();
-				    }
-				}
-				clinicalNotesJasperDetails.setComplaints(complaints);
-
-				List<DBObject> diagramIds = new ArrayList<DBObject>();
-				for (String diagramId : clinicalNotesCollection.getDiagrams()) {
-					DBObject diagram = new BasicDBObject();
-					DiagramsCollection diagramsCollection = diagramsRepository.findOne(diagramId);
-					if(diagramsCollection != null){
-						if (diagramsCollection.getDiagramUrl() != null) {
-						    diagram.put("url", getFinalImageURL(diagramsCollection.getDiagramUrl()));
-						}
-						diagram.put("tags", diagramsCollection.getTags());
-						diagramIds.add(diagram);
-					}
-				}
-				clinicalNotesJasperDetails.setDiagrams(diagramIds);
-			}
-			}else {
-				logger.warn("Clinical Notes not found. Please check clinicalNotesId.");
-				throw new BusinessException(ServiceError.NotFound, "Clinical Notes not found. Please check clinicalNotesId.");
+		    String headerLeftText = "", headerRightText = "", footerBottomText = "";
+		    String patientName = "", dob = "", gender = "", mobileNumber = "";
+		    if (printSettings != null) {
+			if (printSettings.getHeaderSetup() != null) {
+			    for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText())
+				headerLeftText = headerLeftText + "<br/>" + str.getText();
+			    for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText())
+				headerRightText = headerRightText + "<br/>" + str.getText();
+			    if (printSettings.getHeaderSetup().getPatientDetails() != null && user != null) {
+				patientName = printSettings.getHeaderSetup().getPatientDetails().getShowName() ? "Patient Name: " + user.getFirstName()
+					+ "<br>" : "";
+				dob = printSettings.getHeaderSetup().getPatientDetails().getShowDOB() ? "Patient Age: "
+					+ (user.getDob() != null ? (user.getDob().getAge()) + "<br>" : "") : "";
+				gender = printSettings.getHeaderSetup().getPatientDetails().getShowGender() ? "Patient Gender: " + user.getGender() + "<br>"
+					: "";
+				mobileNumber = printSettings.getHeaderSetup().getPatientDetails().getShowGender() ? "Mobile Number: " + user.getMobileNumber()
+					+ "<br>" : "";
 			    }
-			} catch (BusinessException e) {
-			    logger.error(e);
-			    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-			} catch (Exception e) {
-			    e.printStackTrace();
-			    logger.error(e);
-			    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 			}
-		return clinicalNotesJasperDetails;
-	}
-
-	private List<PrescriptionJasperDetails> getPrescriptionJasperDetails(String prescriptionId, DBObject prescriptionItemsObj) {
-		PrescriptionCollection prescriptionCollection = null;
-		List<PrescriptionJasperDetails> prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
-		try {
-		    prescriptionCollection = prescriptionRepository.findOne(prescriptionId);
-		    if (prescriptionCollection != null) {
-		    	prescriptionItemsObj.put("advice", prescriptionCollection.getAdvice());
-			if (prescriptionCollection.getDoctorId() != null && prescriptionCollection.getHospitalId() != null
-				&& prescriptionCollection.getLocationId() != null) {
-			    	int no = 0;
-				for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
-				    if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
-					DrugCollection drug = drugRepository.findOne(prescriptionItem.getDrugId());
-					if (drug != null) {
-					    String drugType = drug.getDrugType() != null ? (drug.getDrugType().getType() != null ? drug.getDrugType().getType()+" -" : "")
-						    : "";
-					    String drugName = drug.getDrugName() != null ? drug.getDrugName() : "-";
-					   
-					    String durationValue = prescriptionItem.getDuration() != null ? (prescriptionItem.getDuration().getValue() != null ? prescriptionItem
-						    .getDuration().getValue() : "")
-						    : "";
-					    String durationUnit = prescriptionItem.getDuration() != null ? (prescriptionItem.getDuration().getDurationUnit() != null ? prescriptionItem
-						    .getDuration().getDurationUnit().getUnit()
-						    : "")
-						    : "";
-
-					    String directions = "";
-					    if(prescriptionItem.getDirection() != null)
-					    for (DrugDirection drugDirection : prescriptionItem.getDirection()) {
-						if (drugDirection.getDirection() != null)
-							if(directions=="")directions=directions+(drugDirection.getDirection());
-							else directions=directions+","+(drugDirection.getDirection());
-					    }
-					    String duration ="";
-					    if(durationValue == "" && durationValue == "")duration = "-";
-					    else duration = durationValue+" "+durationUnit;
-					    PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(++no,drugType + " " + drugName, 
-					    		prescriptionItem.getDosage(), duration, directions,
-						        prescriptionItem.getInstructions());
-					    		prescriptionItems.add(prescriptionJasperDetails);
-					}
-				    }
-				}
+			if (printSettings.getFooterSetup() != null) {
+			    if (printSettings.getFooterSetup().getCustomFooter())
+				for (PrintSettingsText str : printSettings.getFooterSetup().getBottomText())
+				    footerBottomText = footerBottomText + "<br/>" + str.getText();
+			    if (printSettings.getFooterSetup().getShowSignature()) {
+				UserCollection doctorUser = userRepository.findOne(patientVisitCollection.getDoctorId());
+				if (doctorUser != null)
+				    parameters.put("footerSignature", "Dr." + doctorUser.getFirstName());
+				else
+				    parameters.put("footerSignature", "Signature");
+			    }
 			}
-		    } else {
-			logger.warn("Prescription not found.Please check prescriptionId.");
-			throw new BusinessException(ServiceError.Unknown, "Prescription not found.Please check prescriptionId.");
 		    }
-		} catch (BusinessException e) {
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
+		    parameters.put("patientLeftText", patientName + "Patient Id: " + (patient != null ? patient.getPID() : "") + "<br>" + dob + gender);
+		    parameters.put("patientRightText", mobileNumber
+			    + (patientAdmission != null ? "Reffered By:" + patientAdmission.getReferredBy() + "<br>" : "") + "Date:"
+			    + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
+		    parameters.put("headerLeftText", headerLeftText);
+		    parameters.put("headerRightText", headerRightText);
+		    parameters.put("footerBottomText", footerBottomText);
 
-		return prescriptionItems;
+		    LocationCollection location = locationRepository.findOne(patientVisitCollection.getLocationId());
+		    if (location != null)
+			parameters.put("logoURL", getFinalImageURL(location.getLogoUrl()));
+
+		    String layout = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
+			    : "PORTRAIT";
+		    String pageSize = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
+		    String margins = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getMargins() : null) : null;
+
+		    List<DBObject> prescriptions = new ArrayList<DBObject>();
+		    if (patientVisitCollection.getPrescriptionId() != null) {
+			for (String prescriptionId : patientVisitCollection.getPrescriptionId()) {
+			    DBObject prescriptionItems = new BasicDBObject();
+			    List<PrescriptionJasperDetails> prescriptionJasperDetails = getPrescriptionJasperDetails(prescriptionId, prescriptionItems);
+			    prescriptionItems.put("items", prescriptionJasperDetails);
+
+			    prescriptions.add(prescriptionItems);
+			}
+		    }
+		    List<ClinicalNotesJasperDetails> clinicalNotes = new ArrayList<ClinicalNotesJasperDetails>();
+		    if (patientVisitCollection.getPrescriptionId() != null) {
+			for (String clinicalNotesId : patientVisitCollection.getClinicalNotesId()) {
+			    ClinicalNotesJasperDetails clinicalJasperDetails = getClinicalNotesJasperDetails(clinicalNotesId);
+			    clinicalNotes.add(clinicalJasperDetails);
+			}
+		    }
+		    parameters.put("prescriptions", prescriptions);
+		    parameters.put("clinicalNotes", clinicalNotes);
+
+		    String path = jasperReportService.createPDF(parameters, "mongo-multiple-data", layout, pageSize, margins);
+		    if (user != null) {
+			emailTrackCollection.setPatientName(user.getFirstName());
+			emailTrackCollection.setPatientId(user.getId());
+		    }
+		    List<MailAttachment> mailAttachments = new ArrayList<MailAttachment>();
+
+		    FileSystemResource file = new FileSystemResource(path);
+		    mailAttachment = new MailAttachment();
+		    mailAttachment.setAttachmentName(file.getFilename());
+		    mailAttachment.setFileSystemResource(file);
+
+		    mailAttachments.add(mailAttachment);
+		    if (patientVisitCollection.getRecordId() != null) {
+			for (String recordId : patientVisitCollection.getRecordId()) {
+			    mailAttachment = recordsService.getRecordMailData(recordId);
+			    if (mailAttachment != null)
+				mailAttachments.add(mailAttachment);
+			}
+		    }
+		    mailService.sendEmailMultiAttach(emailAddress, "Clinical Notes", "PFA.", mailAttachments);
+
+		    emailTrackCollection.setDoctorId(patientVisitCollection.getDoctorId());
+		    emailTrackCollection.setHospitalId(patientVisitCollection.getHospitalId());
+		    emailTrackCollection.setLocationId(patientVisitCollection.getLocationId());
+		    emailTrackCollection.setType(ComponentType.ALL.getType());
+		    emailTrackCollection.setSubject("Patient Visit");
+		    emailTackService.saveEmailTrack(emailTrackCollection);
+
+		} else {
+		    logger.warn("PrintSettings not found");
+		    throw new BusinessException(ServiceError.NotFound, "PrintSettings not found");
+		}
+	    } else {
+		logger.warn("Patient Visit Id does not exist");
+		throw new BusinessException(ServiceError.NotFound, "Patient Visit Id does not exist");
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return true;
+    }
+
+    private ClinicalNotesJasperDetails getClinicalNotesJasperDetails(String clinicalNotesId) {
+	ClinicalNotesCollection clinicalNotesCollection = null;
+	ClinicalNotesJasperDetails clinicalNotesJasperDetails = null;
+	try {
+	    clinicalNotesCollection = clinicalNotesRepository.findOne(clinicalNotesId);
+	    if (clinicalNotesCollection != null) {
+		if (clinicalNotesCollection.getDoctorId() != null && clinicalNotesCollection.getHospitalId() != null
+			&& clinicalNotesCollection.getLocationId() != null) {
+
+		    clinicalNotesJasperDetails = new ClinicalNotesJasperDetails();
+		    String observations = "";
+		    for (String observationId : clinicalNotesCollection.getObservations()) {
+			ObservationCollection observationCollection = observationRepository.findOne(observationId);
+			if (observationCollection != null) {
+			    if (observations == "")
+				observations = observationCollection.getObservation();
+			    else
+				observations = observations + ", " + observationCollection.getObservation();
+			}
+		    }
+		    clinicalNotesJasperDetails.setObservations(observations);
+
+		    String notes = "";
+		    for (String noteId : clinicalNotesCollection.getNotes()) {
+			NotesCollection note = notesRepository.findOne(noteId);
+			if (note != null) {
+			    if (notes == "")
+				notes = note.getNote();
+			    else
+				notes = notes + ", " + note.getNote();
+			}
+		    }
+		    clinicalNotesJasperDetails.setNotes(notes);
+
+		    String investigations = "";
+		    for (String investigationId : clinicalNotesCollection.getInvestigations()) {
+			InvestigationCollection investigation = investigationRepository.findOne(investigationId);
+			if (investigation != null) {
+			    if (investigations == "")
+				investigations = investigation.getInvestigation();
+			    else
+				investigations = investigations + ", " + investigation.getInvestigation();
+			}
+		    }
+		    clinicalNotesJasperDetails.setInvestigations(investigations);
+
+		    String diagnosis = "";
+		    for (String diagnosisId : clinicalNotesCollection.getDiagnoses()) {
+			DiagnosisCollection diagnosisCollection = diagnosisRepository.findOne(diagnosisId);
+			if (diagnosisCollection != null) {
+			    if (diagnosis == "")
+				diagnosis = diagnosisCollection.getDiagnosis();
+			    else
+				diagnosis = diagnosis + ", " + diagnosisCollection.getDiagnosis();
+			}
+		    }
+		    clinicalNotesJasperDetails.setDiagnosis(diagnosis);
+
+		    String complaints = "";
+		    for (String complaintId : clinicalNotesCollection.getComplaints()) {
+			ComplaintCollection complaint = complaintRepository.findOne(complaintId);
+			if (complaint != null) {
+			    if (complaints == "")
+				complaints = complaint.getComplaint();
+			    else
+				complaints = complaints + ", " + complaint.getComplaint();
+			}
+		    }
+		    clinicalNotesJasperDetails.setComplaints(complaints);
+
+		    List<DBObject> diagramIds = new ArrayList<DBObject>();
+		    for (String diagramId : clinicalNotesCollection.getDiagrams()) {
+			DBObject diagram = new BasicDBObject();
+			DiagramsCollection diagramsCollection = diagramsRepository.findOne(diagramId);
+			if (diagramsCollection != null) {
+			    if (diagramsCollection.getDiagramUrl() != null) {
+				diagram.put("url", getFinalImageURL(diagramsCollection.getDiagramUrl()));
+			    }
+			    diagram.put("tags", diagramsCollection.getTags());
+			    diagramIds.add(diagram);
+			}
+		    }
+		    clinicalNotesJasperDetails.setDiagrams(diagramIds);
+		}
+	    } else {
+		logger.warn("Clinical Notes not found. Please check clinicalNotesId.");
+		throw new BusinessException(ServiceError.NotFound, "Clinical Notes not found. Please check clinicalNotesId.");
+	    }
+	} catch (BusinessException e) {
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return clinicalNotesJasperDetails;
+    }
+
+    private List<PrescriptionJasperDetails> getPrescriptionJasperDetails(String prescriptionId, DBObject prescriptionItemsObj) {
+	PrescriptionCollection prescriptionCollection = null;
+	List<PrescriptionJasperDetails> prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
+	try {
+	    prescriptionCollection = prescriptionRepository.findOne(prescriptionId);
+	    if (prescriptionCollection != null) {
+		prescriptionItemsObj.put("advice", prescriptionCollection.getAdvice());
+		if (prescriptionCollection.getDoctorId() != null && prescriptionCollection.getHospitalId() != null
+			&& prescriptionCollection.getLocationId() != null) {
+		    int no = 0;
+		    for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
+			if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
+			    DrugCollection drug = drugRepository.findOne(prescriptionItem.getDrugId());
+			    if (drug != null) {
+				String drugType = drug.getDrugType() != null ? (drug.getDrugType().getType() != null ? drug.getDrugType().getType() + " -" : "")
+					: "";
+				String drugName = drug.getDrugName() != null ? drug.getDrugName() : "-";
+
+				String durationValue = prescriptionItem.getDuration() != null ? (prescriptionItem.getDuration().getValue() != null ? prescriptionItem
+					.getDuration().getValue() : "")
+					: "";
+				String durationUnit = prescriptionItem.getDuration() != null ? (prescriptionItem.getDuration().getDurationUnit() != null ? prescriptionItem
+					.getDuration().getDurationUnit().getUnit()
+					: "")
+					: "";
+
+				String directions = "";
+				if (prescriptionItem.getDirection() != null)
+				    for (DrugDirection drugDirection : prescriptionItem.getDirection()) {
+					if (drugDirection.getDirection() != null)
+					    if (directions == "")
+						directions = directions + (drugDirection.getDirection());
+					    else
+						directions = directions + "," + (drugDirection.getDirection());
+				    }
+				String duration = "";
+				if (durationValue == "" && durationValue == "")
+				    duration = "-";
+				else
+				    duration = durationValue + " " + durationUnit;
+				PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugType + " " + drugName,
+					prescriptionItem.getDosage(), duration, directions, prescriptionItem.getInstructions());
+				prescriptionItems.add(prescriptionJasperDetails);
+			    }
+			}
+		    }
+		}
+	    } else {
+		logger.warn("Prescription not found.Please check prescriptionId.");
+		throw new BusinessException(ServiceError.Unknown, "Prescription not found.Please check prescriptionId.");
+	    }
+	} catch (BusinessException e) {
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+
+	return prescriptionItems;
+    }
 }

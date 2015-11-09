@@ -24,13 +24,11 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.Records;
-import com.dpdocter.beans.RecordsDescription;
 import com.dpdocter.beans.Tags;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.ChangeRecordLabelDescriptionRequest;
-import com.dpdocter.request.ChangeRecordLabelRequest;
 import com.dpdocter.request.RecordsAddRequest;
 import com.dpdocter.request.RecordsEditRequest;
 import com.dpdocter.request.RecordsSearchRequest;
@@ -227,7 +225,7 @@ public class RecordsApi {
 	    return null;
 
     }
-    
+
     @Path(value = PathProxy.RecordsUrls.CHANGE_LABEL_AND_DESCRIPTION_RECORD)
     @POST
     public Response<Boolean> changeLabelAndDescription(ChangeRecordLabelDescriptionRequest request) {

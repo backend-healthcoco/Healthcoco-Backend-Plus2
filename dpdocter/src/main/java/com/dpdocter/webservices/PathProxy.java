@@ -12,12 +12,12 @@ public interface PathProxy {
     public static final String SIGNUP_BASE_URL = BASE_URL + "/signup";
 
     public interface SignUpUrls {
-	
-    public static final String DOCTOR_SIGNUP = "/doctor";
-    
-    public static final String DOCTOR_SIGNUP_HANDHELD = "/doctorHandheld";
-    
-    public static final String DOCTOR_SIGNUP_HANDHELD_CONTINUE = "/doctorHandheldContinue";
+
+	public static final String DOCTOR_SIGNUP = "/doctor";
+
+	public static final String DOCTOR_SIGNUP_HANDHELD = "/doctorHandheld";
+
+	public static final String DOCTOR_SIGNUP_HANDHELD_CONTINUE = "/doctorHandheldContinue";
 
 	public static final String PATIENT_SIGNUP = "/patient";
 
@@ -209,7 +209,7 @@ public interface PathProxy {
 	public static final String GET_FLEXIBLE_COUNTS = "/getFlexibleCounts";
 
 	public static final String EDIT_RECORD = "/{recordId}/update";
-	
+
 	public static final String CHANGE_LABEL_AND_DESCRIPTION_RECORD = "/changeLabelAndDescription";
 
     }
@@ -407,7 +407,7 @@ public interface PathProxy {
 	public static final String ADD_MULTIPLE_DATA = "/add";
 
 	public static final String EMAIL = "/email/{visitId}/{emailAddress}";
-	
+
 	public static final String GET_VISITS = "/{doctorId}/{locationId}/{hospitalId}/{patientId}";
 
     }

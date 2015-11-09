@@ -6,7 +6,6 @@ import java.util.List;
 import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Records;
-import com.dpdocter.beans.RecordsDescription;
 import com.dpdocter.beans.Tags;
 import com.dpdocter.request.RecordsAddRequest;
 import com.dpdocter.request.RecordsEditRequest;
@@ -46,6 +45,6 @@ public interface RecordsService {
 
     Records editRecord(RecordsEditRequest request);
 
-	void changeLabelAndDescription(String recordId, String label, String description);
+    void changeLabelAndDescription(String recordId, String label, String description);
 
 }

@@ -3,7 +3,6 @@ package com.dpdocter.services.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
@@ -31,7 +30,6 @@ import com.dpdocter.collections.MedicalCouncilCollection;
 import com.dpdocter.collections.ProfessionalMembershipCollection;
 import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.UserCollection;
-import com.dpdocter.collections.UserLocationCollection;
 import com.dpdocter.enums.DoctorExperienceUnit;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -98,10 +96,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
     @Autowired
     private EducationInstituteRepository educationInstituteRepository;
-    
+
     @Autowired
     private UserLocationRepository userLocationRepository;
-
 
     @Override
     public Boolean addEditName(DoctorNameAddEditRequest request) {

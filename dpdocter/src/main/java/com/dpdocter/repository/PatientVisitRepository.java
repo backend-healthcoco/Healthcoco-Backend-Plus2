@@ -41,4 +41,7 @@ public interface PatientVisitRepository extends MongoRepository<PatientVisitColl
     @Query("{'patientId' : ?0, 'updatedTime' : {'$gte' : ?1}}")
     List<PatientVisitCollection> find(String patientId, Date date, Sort sort);
 
+    @Query("{'recordId' : ?0}")
+    PatientVisitCollection findByRecordId(String recordId);
+
 }

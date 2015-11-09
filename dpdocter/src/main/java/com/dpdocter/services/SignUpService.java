@@ -23,7 +23,7 @@ public interface SignUpService {
 
     User patientProfilePicChange(PatientProfilePicChangeRequest request);
 
-	DoctorSignUp doctorHandheld(DoctorSignupHandheldRequest request);
+    DoctorSignUp doctorHandheld(DoctorSignupHandheldRequest request);
 
-	DoctorSignUp doctorHandheldContinue(DoctorSignupHandheldContinueRequest request);
+    DoctorSignUp doctorHandheldContinue(DoctorSignupHandheldContinueRequest request);
 }

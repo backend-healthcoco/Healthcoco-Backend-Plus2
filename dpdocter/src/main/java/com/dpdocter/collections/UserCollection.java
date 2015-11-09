@@ -67,7 +67,7 @@ public class UserCollection extends GenericCollection {
 
     @Field
     private String colorCode;
-    
+
     @Field
     private UserState userState;
 
@@ -223,22 +223,20 @@ public class UserCollection extends GenericCollection {
 	this.coverThumbnailImageUrl = coverThumbnailImageUrl;
     }
 
-	public UserState getUserState() {
-		return userState;
-	}
+    public UserState getUserState() {
+	return userState;
+    }
 
-	public void setUserState(UserState userState) {
-		this.userState = userState;
-	}
+    public void setUserState(UserState userState) {
+	this.userState = userState;
+    }
 
-	@Override
-	public String toString() {
-		return "UserCollection [id=" + id + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName
-				+ ", middleName=" + middleName + ", userName=" + userName + ", password=" + password + ", emailAddress="
-				+ emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl=" + imageUrl
-				+ ", thumbnailUrl=" + thumbnailUrl + ", dob=" + dob + ", isActive=" + isActive + ", isTempPassword="
-				+ isTempPassword + ", isVerified=" + isVerified + ", coverImageUrl=" + coverImageUrl
-				+ ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", colorCode=" + colorCode + ", userState="
-				+ userState + "]";
-	}
+    @Override
+    public String toString() {
+	return "UserCollection [id=" + id + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName
+		+ ", userName=" + userName + ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender="
+		+ gender + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", dob=" + dob + ", isActive=" + isActive + ", isTempPassword="
+		+ isTempPassword + ", isVerified=" + isVerified + ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl
+		+ ", colorCode=" + colorCode + ", userState=" + userState + "]";
+    }
 }

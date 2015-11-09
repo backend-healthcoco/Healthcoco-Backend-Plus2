@@ -542,11 +542,11 @@ public class ContactsServiceImpl implements ContactsService {
     @Override
     public PatientGroupAddEditRequest addGroupToPatient(PatientGroupAddEditRequest request) {
 	PatientGroupAddEditRequest response = new PatientGroupAddEditRequest();
-	PatientCollection patientCollection = patientRepository.findOne(request.getPatientId());
+	PatientCollection patientCollection = patientRepository.findByUserId(request.getPatientId());
 	try {
-	    if (request.getGroupIds() != null) {
+	    if (request.getGroupIds() != null && !request.getGroupIds().isEmpty()) {
 		List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(request.getPatientId());
-		if (patientGroupCollections != null) {
+		if (patientGroupCollections != null && !patientGroupCollections.isEmpty()) {
 		    for (PatientGroupCollection patientGroupCollection : patientGroupCollections) {
 			patientGroupRepository.delete(patientGroupCollection);
 		    }
@@ -560,6 +560,8 @@ public class ContactsServiceImpl implements ContactsService {
 		}
 		BeanUtil.map(request, response);
 	    }
+	    patientCollection.setUpdatedTime(new Date());
+	    patientRepository.save(patientCollection);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);

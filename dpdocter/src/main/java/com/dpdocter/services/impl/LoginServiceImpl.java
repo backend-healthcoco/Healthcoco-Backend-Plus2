@@ -108,10 +108,10 @@ public class LoginServiceImpl implements LoginService {
 		    response.setIsTempPassword(userCollection.getIsTempPassword());
 		    return response;
 		} else {
-			if(userCollection.getUserState() != null && userCollection.getUserState().equals(UserState.USERSTATEINCOMPLETE)){
-				logger.warn("User Profile state is not completed.");
-				throw new BusinessException(ServiceError.NotAuthorized, "User Profile state is not completed");
-			}
+		    if (userCollection.getUserState() != null && userCollection.getUserState().equals(UserState.USERSTATEINCOMPLETE)) {
+			logger.warn("User Profile state is not completed.");
+			throw new BusinessException(ServiceError.NotAuthorized, "User Profile state is not completed");
+		    }
 		    List<UserLocationCollection> userLocationCollections = userLocationRepository.findByUserId(userCollection.getId());
 		    if (userLocationCollections != null) {
 			@SuppressWarnings("unchecked")

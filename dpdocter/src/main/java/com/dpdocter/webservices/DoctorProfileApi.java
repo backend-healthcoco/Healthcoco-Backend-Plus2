@@ -8,7 +8,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
@@ -246,7 +245,7 @@ public class DoctorProfileApi {
     @Path(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE)
     @GET
     public Response<DoctorProfile> getDoctorProfile(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
-    		@PathParam("hospitalId") String hospitalId) {
+	    @PathParam("hospitalId") String hospitalId) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 	    logger.warn("Doctor Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
