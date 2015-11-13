@@ -412,6 +412,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    }
 		}
 
+		List<PatientClinicalNotesCollection> patientClinicalNotesCollections = patientClinicalNotesRepository.findByClinicalNotesId(id);
+		String patientId = "";
+		if (patientClinicalNotesCollections != null && !patientClinicalNotesCollections.isEmpty()) {
+		    for (PatientClinicalNotesCollection patientClinicalNotesCollection : patientClinicalNotesCollections) {
+			patientId += patientClinicalNotesCollection.getPatientId() + ",";
+		    }
+		}
+		clinicalNote.setPatientId(patientId);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -570,6 +578,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    clinicalNotes.setDiagnoses(diagnoses);
 	    clinicalNotes.setNotes(notes);
 	    clinicalNotes.setDiagrams(diagrams);
+	    clinicalNotes.setPatientId(request.getPatientId());
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
@@ -636,10 +645,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		for (String clinicalNotesId : clinicalNotesIds) {
 		    ClinicalNotes clinicalNotes = getNotesById(clinicalNotesId);
 		    if (clinicalNotes != null) {
-			UserCollection userCollection = userRepository.findOne(clinicalNotes.getDoctorId());
+			clinicalNotes.setPatientId(patientId);
+			/*UserCollection userCollection = userRepository.findOne(clinicalNotes.getDoctorId());
 			if (userCollection != null) {
 			    clinicalNotes.setDoctorName(userCollection.getFirstName());
-			}
+			}*/
 			clinicalNotesList.add(clinicalNotes);
 		    }
 		}
@@ -677,27 +687,29 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    for (String clinicalNotesId : clinicalNotesIds) {
 			ClinicalNotes clinicalNotes = getNotesById(clinicalNotesId);
 			if (clinicalNotes != null) {
-			    if (clinicalNotes.getDoctorId().equals(doctorId)) {
-				UserCollection userCollection = userRepository.findOne(clinicalNotes.getDoctorId());
-				if (userCollection != null) {
-				    clinicalNotes.setDoctorName(userCollection.getFirstName() + userCollection.getLastName());
-				}
-				clinicalNotesList.add(clinicalNotes);
+			    clinicalNotes.setPatientId(patientId);
+			    /*if (clinicalNotes.getDoctorId().equals(doctorId)) {
+			    UserCollection userCollection = userRepository.findOne(clinicalNotes.getDoctorId());
+			    if (userCollection != null) {
+			        clinicalNotes.setDoctorName(userCollection.getFirstName() + userCollection.getLastName());
 			    }
+			    clinicalNotesList.add(clinicalNotes);
+			    }*/
 			}
 		    }
 		} else {
 		    for (String clinicalNotesId : clinicalNotesIds) {
 			ClinicalNotes clinicalNotes = getNotesById(clinicalNotesId);
 			if (clinicalNotes != null) {
-			    if (clinicalNotes.getDoctorId().equals(doctorId) && clinicalNotes.getLocationId().equals(locationId)
-				    && clinicalNotes.getHospitalId().equals(hospitalId)) {
-				UserCollection userCollection = userRepository.findOne(clinicalNotes.getDoctorId());
-				if (userCollection != null) {
-				    clinicalNotes.setDoctorName(userCollection.getFirstName() + userCollection.getLastName());
-				}
-				clinicalNotesList.add(clinicalNotes);
+			    clinicalNotes.setPatientId(patientId);
+			    /*if (clinicalNotes.getDoctorId().equals(doctorId) && clinicalNotes.getLocationId().equals(locationId)
+			        && clinicalNotes.getHospitalId().equals(hospitalId)) {
+			    UserCollection userCollection = userRepository.findOne(clinicalNotes.getDoctorId());
+			    if (userCollection != null) {
+			        clinicalNotes.setDoctorName(userCollection.getFirstName() + userCollection.getLastName());
 			    }
+			    clinicalNotesList.add(clinicalNotes);
+			    }*/
 			}
 		    }
 		}

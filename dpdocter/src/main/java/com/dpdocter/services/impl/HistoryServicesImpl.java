@@ -33,7 +33,6 @@ import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.NotesCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.RecordsCollection;
-import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.HistoryFilter;
 import com.dpdocter.enums.Range;
 import com.dpdocter.exceptions.BusinessException;
@@ -918,9 +917,9 @@ public class HistoryServicesImpl implements HistoryServices {
 		case CLINICAL_NOTES:
 		    ClinicalNotes clinicalNote = clinicalNotesService.getNotesById(id.getData().toString());
 		    if (clinicalNote != null) {
-			UserCollection userCollection = userRepository.findOne(clinicalNote.getDoctorId());
+			/*UserCollection userCollection = userRepository.findOne(clinicalNote.getDoctorId());
 			if (userCollection != null)
-			    clinicalNote.setDoctorName(userCollection.getFirstName());
+			    clinicalNote.setDoctorName(userCollection.getFirstName());*/
 			generalData.setData(clinicalNote);
 			generalData.setDataType(HistoryFilter.CLINICAL_NOTES);
 		    }
@@ -928,9 +927,9 @@ public class HistoryServicesImpl implements HistoryServices {
 		case PRESCRIPTIONS:
 		    Prescription prescription = prescriptionServices.getPrescriptionById(id.getData().toString());
 		    if (prescription != null) {
-			UserCollection userCollection = userRepository.findOne(prescription.getDoctorId());
+			/*UserCollection userCollection = userRepository.findOne(prescription.getDoctorId());
 			if (userCollection != null)
-			    prescription.setDoctorName(userCollection.getFirstName());
+			    prescription.setDoctorName(userCollection.getFirstName());*/
 			generalData.setData(prescription);
 			generalData.setDataType(HistoryFilter.PRESCRIPTIONS);
 		    }
@@ -938,9 +937,9 @@ public class HistoryServicesImpl implements HistoryServices {
 		case REPORTS:
 		    Records record = recordsService.getRecordById(id.getData().toString());
 		    if (record != null) {
-			UserCollection userCollection = userRepository.findOne(record.getDoctorId());
+			/*UserCollection userCollection = userRepository.findOne(record.getDoctorId());
 			if (userCollection != null)
-			    record.setDoctorName(userCollection.getFirstName());
+			    record.setDoctorName(userCollection.getFirstName());*/
 			generalData.setData(record);
 			generalData.setDataType(HistoryFilter.REPORTS);
 		    }

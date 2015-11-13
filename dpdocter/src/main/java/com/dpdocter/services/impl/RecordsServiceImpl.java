@@ -253,10 +253,10 @@ public class RecordsServiceImpl implements RecordsService {
 		for (RecordsCollection recordCollection : recordsCollections) {
 		    Records record = new Records();
 		    BeanUtil.map(recordCollection, record);
-		    UserCollection userCollection = userRepository.findOne(record.getDoctorId());
+		    /*UserCollection userCollection = userRepository.findOne(record.getDoctorId());
 		    if (userCollection != null) {
-			record.setDoctorName(userCollection.getFirstName());
-		    }
+		    record.setDoctorName(userCollection.getFirstName());
+		    }*/
 		    if (request.getLocationId() != null) {
 			LocationCollection locationCollection = locationRepository.findOne(request.getLocationId());
 			if (locationCollection != null)
@@ -425,10 +425,10 @@ public class RecordsServiceImpl implements RecordsService {
 		for (RecordsCollection recordCollection : recordsCollections) {
 		    Records record = new Records();
 		    BeanUtil.map(recordCollection, record);
-		    UserCollection userCollection = userRepository.findOne(record.getDoctorId());
+		    /*UserCollection userCollection = userRepository.findOne(record.getDoctorId());
 		    if (userCollection != null) {
-			record.setDoctorName(userCollection.getFirstName());
-		    }
+		    record.setDoctorName(userCollection.getFirstName());
+		    }*/
 		    records.add(record);
 		}
 	    }
@@ -499,10 +499,10 @@ public class RecordsServiceImpl implements RecordsService {
 	    if (recordCollection != null) {
 		record = new Records();
 		BeanUtil.map(recordCollection, record);
-		UserCollection userCollection = userRepository.findOne(record.getDoctorId());
+		/*UserCollection userCollection = userRepository.findOne(record.getDoctorId());
 		if (userCollection != null) {
 		    record.setDoctorName(userCollection.getFirstName());
-		}
+		}*/
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();

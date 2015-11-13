@@ -204,13 +204,6 @@ public class RecordsApi {
 	request.setId(recordId);
 	Records records = recordsService.editRecord(request);
 
-	// patient track
-	// if (records != null) {
-	// records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
-	// patientTrackService.addRecord(request, VisitedFor.REPORTS,
-	// request.getVisitId());
-	// }
-
 	Response<Records> response = new Response<Records>();
 	response.setData(records);
 	return response;
