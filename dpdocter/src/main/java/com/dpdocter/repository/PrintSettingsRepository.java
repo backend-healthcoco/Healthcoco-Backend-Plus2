@@ -37,4 +37,7 @@ public interface PrintSettingsRepository extends MongoRepository<PrintSettingsCo
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2}")
     PrintSettingsCollection getSettings(String doctorId, String locationId, String hospitalId);
 
+    @Query("{'locationId': ?0}")
+	List<PrintSettingsCollection> findByLocationId(String locationId);
+
 }

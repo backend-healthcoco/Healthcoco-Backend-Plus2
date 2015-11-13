@@ -198,7 +198,7 @@ public interface PathProxy {
 
 	public static final String GET_PATIENT_EMAIL_ADD = "/getpatientemailaddr/{patientId}";
 
-	public static final String EMAIL_RECORD = "/emailrecord/{recordId}/{emailAddress}";
+	public static final String EMAIL_RECORD = "/emailrecord/{recordId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}";
 
 	public static final String DELETE_RECORD = "/{recordId}/delete";
 
@@ -462,28 +462,64 @@ public interface PathProxy {
     public static final String SOLR_CLINICAL_NOTES_BASEURL = BASE_URL + "/solr/clinicalNotes";
 
     public interface SolrClinicalNotesUrls {
-	public static final String SEARCH_COMPLAINTS = "searchComplaints/{searchTerm}";
+	public static final String SEARCH_COMPLAINTS = "searchComplaints/{range}";
 
-	public static final String SEARCH_DIAGNOSES = "searchDiagnoses/{searchTerm}";
+	public static final String SEARCH_DIAGNOSES = "searchDiagnoses/{range}";
 
-	public static final String SEARCH_NOTES = "searchNotes/{searchTerm}";
+	public static final String SEARCH_NOTES = "searchNotes/{range}";
 
-	public static final String SEARCH_DIAGRAMS = "searchDiagrams/{searchTerm}";
+	public static final String SEARCH_DIAGRAMS = "searchDiagrams/{range}";
 
 	public static final String SEARCH_DIAGRAMS_BY_SPECIALITY = "searchDiagramsBySpeciality/{searchTerm}";
 
-	public static final String SEARCH_INVESTIGATIONS = "searchInvestigations/{searchTerm}";
+	public static final String SEARCH_INVESTIGATIONS = "searchInvestigations/{range}";
 
-	public static final String SEARCH_OBSERVATIONS = "searchObservations/{searchTerm}";
+	public static final String SEARCH_OBSERVATIONS = "searchObservations/{range}";
+
+//	public static final String ADD_COMPLAINTS = "addComplaints/";
+//
+//	public static final String EDIT_COMPLAINTS = "editComplaints/";
+//
+//	public static final String DELETE_COMPLAINTS = "deleteComplaints/";
+//
+//	public static final String ADD_DIAGNOSES = "addDiagnoses/";
+//
+//	public static final String EDIT_DIAGNOSES = "editDiagnoses/";
+//
+//	public static final String DELETE_DIAGNOSES = "deleteDiagnoses/";
+//
+//	public static final String ADD_NOTES = "addNotes/";
+//
+//	public static final String EDIT_NOTES = "editNotes/";
+//
+//	public static final String DELETE_NOTES = "deleteNotes/";
+//
+//	public static final String ADD_DIAGRAMS = "addDiagrams/";
+//
+//	public static final String EDIT_DIAGRAMS = "editDiagrams/";
+//
+//	public static final String DELETE_DIAGRAMS = "deleteDiagrams/";
+//
+//	public static final String ADD_INVESTIGATIONS = "addInvestigations/";
+//
+//	public static final String EDIT_INVESTIGATIONS = "editInvestigations/";
+//
+//	public static final String DELETE_INVESTIGATIONS = "deleteInvestigations/";
+//
+//	public static final String ADD_OBSERVATIONS = "addObservations/";
+//	
+//	public static final String EDIT_OBSERVATIONS = "editObservations/";
+//
+//	public static final String DELETE_OBSERVATIONS = "deleteObservations/";
     }
 
     public static final String SOLR_PRESCRIPTION_BASEURL = BASE_URL + "/solr/prescription";
 
     public interface SolrPrescriptionUrls {
 
-	public static final String SEARCH_DRUG = "searchDrug/{searchTerm}";
+	public static final String SEARCH_DRUG = "searchDrug/{range}";
 
-	public static final String SEARCH_LAB_TEST = "searchLabTest/{searchTerm}";
+	public static final String SEARCH_LAB_TEST = "searchLabTest/{range}";
     }
 
     public static final String SOLR_REGISTRATION_BASEURL = BASE_URL + "/solr/registration";

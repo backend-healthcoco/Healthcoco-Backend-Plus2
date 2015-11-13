@@ -17,15 +17,11 @@ public interface SolrClinicalNotesService {
 
     boolean deleteComplaints(String id);
 
-    List<SolrComplaintsDocument> searchComplaints(String searchTerm);
-
     boolean addDiagnoses(SolrDiagnosesDocument request);
 
     boolean editDiagnoses(SolrDiagnosesDocument request);
 
     boolean deleteDiagnoses(String id);
-
-    List<SolrDiagnosesDocument> searchDiagnoses(String searchTerm);
 
     boolean addNotes(SolrNotesDocument request);
 
@@ -33,15 +29,11 @@ public interface SolrClinicalNotesService {
 
     boolean deleteNotes(String id);
 
-    List<SolrNotesDocument> searchNotes(String searchTerm);
-
     boolean addDiagrams(SolrDiagramsDocument request);
 
     boolean editDiagrams(SolrDiagramsDocument request);
 
     boolean deleteDiagrams(String id);
-
-    List<SolrDiagramsDocument> searchDiagrams(String searchTerm);
 
     List<SolrDiagramsDocument> searchDiagramsBySpeciality(String searchTerm);
 
@@ -51,14 +43,29 @@ public interface SolrClinicalNotesService {
 
     boolean deleteInvestigations(String id);
 
-    List<SolrInvestigationsDocument> searchInvestigations(String searchTerm);
-
     boolean addObservations(SolrObservationsDocument request);
 
     boolean editObservations(SolrObservationsDocument request);
 
     boolean deleteObservations(String id);
 
-    List<SolrObservationsDocument> searchObservations(String searchTerm);
+
+	List<SolrObservationsDocument> searchObservations(String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
+
+	List<SolrInvestigationsDocument> searchInvestigations(String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
+
+	List<SolrDiagramsDocument> searchDiagrams(String range, int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
+
+	List<SolrNotesDocument> searchNotes(String range, int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
+
+	List<SolrDiagnosesDocument> searchDiagnoses(String range, int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
+
+	List<SolrComplaintsDocument> searchComplaints(String range, int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
 }

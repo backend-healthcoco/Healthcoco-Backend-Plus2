@@ -1,5 +1,7 @@
 package com.dpdocter.solr.document;
 
+import java.util.Date;
+
 import org.apache.solr.client.solrj.beans.Field;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.solr.core.mapping.SolrDocument;
@@ -12,6 +14,21 @@ public class SolrInvestigationsDocument {
 
     @Field
     private String investigation;
+    
+    @Field
+    private String doctorId;
+
+    @Field
+    private String locationId;
+
+    @Field
+    private String hospitalId;
+
+    @Field
+    private Boolean discarded = false;
+
+    @Field
+    private Date updatedTime = new Date();
 
     public String getId() {
 	return id;
@@ -29,9 +46,51 @@ public class SolrInvestigationsDocument {
 	this.investigation = investigation;
     }
 
-    @Override
-    public String toString() {
-	return "SolrInvestigations [id=" + id + ", investigation=" + investigation + "]";
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	public Date getUpdatedTime() {
+		return updatedTime;
+	}
+
+	public void setUpdatedTime(Date updatedTime) {
+		this.updatedTime = updatedTime;
+	}
+
+	@Override
+	public String toString() {
+		return "SolrInvestigationsDocument [id=" + id + ", investigation=" + investigation + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ ", updatedTime=" + updatedTime + "]";
+	}
 
 }

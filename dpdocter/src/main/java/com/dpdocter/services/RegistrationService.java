@@ -62,7 +62,7 @@ public interface RegistrationService {
 
     Profession addProfession(Profession request);
 
-    List<Profession> getProfession();
+    List<Profession> getProfession(int page, int size);
 
     ClinicLogo changeClinicLogo(ClinicLogoAddRequest request);
 

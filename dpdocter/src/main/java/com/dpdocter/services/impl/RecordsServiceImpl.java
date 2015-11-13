@@ -182,9 +182,9 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public void emailRecordToPatient(String recordId, String emailAddress) {
+    public void emailRecordToPatient(String recordId, String doctorId, String locationId, String hospitalId, String emailAddress) {
 	try {
-	    MailAttachment mailAttachment = createMailData(recordId);
+	    MailAttachment mailAttachment = createMailData(recordId, doctorId, locationId, hospitalId);
 	    mailService.sendEmail(emailAddress, "Records", "PFA.", mailAttachment);
 	} catch (MessagingException e) {
 	    logger.error(e);
@@ -513,11 +513,11 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public MailAttachment getRecordMailData(String recordId) {
-	return createMailData(recordId);
+    public MailAttachment getRecordMailData(String recordId, String doctorId, String locationId, String hospitalId) {
+	return createMailData(recordId, doctorId, locationId, hospitalId);
     }
 
-    private MailAttachment createMailData(String recordId) {
+    private MailAttachment createMailData(String recordId, String doctorId, String locationId, String hospitalId) {
 	MailAttachment mailAttachment = null;
 	try {
 	    RecordsCollection recordsCollection = recordsRepository.findOne(recordId);

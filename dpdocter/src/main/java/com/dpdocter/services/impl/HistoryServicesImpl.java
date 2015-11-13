@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.GeneralData;
 import com.dpdocter.beans.MailAttachment;
+import com.dpdocter.beans.MailData;
 import com.dpdocter.beans.MedicalData;
 import com.dpdocter.beans.MedicalHistoryHandler;
 import com.dpdocter.beans.Prescription;
@@ -30,9 +31,11 @@ import com.dpdocter.beans.Records;
 import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.DiseasesCollection;
 import com.dpdocter.collections.HistoryCollection;
+import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.NotesCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.RecordsCollection;
+import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.HistoryFilter;
 import com.dpdocter.enums.Range;
 import com.dpdocter.exceptions.BusinessException;
@@ -41,6 +44,7 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.DiseasesRepository;
 import com.dpdocter.repository.HistoryRepository;
+import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.NotesRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.RecordsRepository;
@@ -98,6 +102,9 @@ public class HistoryServicesImpl implements HistoryServices {
 
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private LocationRepository locationRepository;
 
     @Override
     public List<DiseaseAddEditResponse> addDiseases(List<DiseaseAddEditRequest> request) {
@@ -937,9 +944,12 @@ public class HistoryServicesImpl implements HistoryServices {
 		case REPORTS:
 		    Records record = recordsService.getRecordById(id.getData().toString());
 		    if (record != null) {
-			/*UserCollection userCollection = userRepository.findOne(record.getDoctorId());
-			if (userCollection != null)
-			    record.setDoctorName(userCollection.getFirstName());*/
+			UserCollection userCollection = userRepository.findOne(record.getDoctorId());
+			if (userCollection != null)record.setDoctorName(userCollection.getFirstName());
+			if(record.getLocationId() != null){
+				LocationCollection locationCollection = locationRepository.findOne(record.getLocationId());
+				if(locationCollection != null)record.setClinicName(locationCollection.getLocationName());
+			}
 			generalData.setData(record);
 			generalData.setDataType(HistoryFilter.REPORTS);
 		    }
@@ -1189,7 +1199,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    String hospitalId = medicalData.getHospitalId();
 	    String emailAddress = medicalData.getEmailAddress();
 	    mailAttachments = new ArrayList<MailAttachment>();
-	    /*=====CODE COMMENTED BECAUSE PDF CREATION IS NOT WORKING - UNCOMMENT WHEN FIXED
+	    /*=====CODE COMMENTED BECAUSE PDF CREATION IS NOT WORKING - UNCOMMENT WHEN FIXED=====*/
 	    for (MailData mailData : medicalData.getMailDataList()) {
 	    switch (mailData.getMailType()) {
 	    case CLINICAL_NOTE:
@@ -1199,10 +1209,10 @@ public class HistoryServicesImpl implements HistoryServices {
 	        mailAttachments.add(prescriptionServices.getPrescriptionMailData(mailData.getId(), doctorId, locationId, hospitalId));
 	        break;
 	    case REPORT:
-	        mailAttachments.add(recordsService.getRecordMailData(mailData.getId()));
+	        mailAttachments.add(recordsService.getRecordMailData(mailData.getId(), doctorId, locationId, hospitalId));
 	        break;
 	    }
-	    }=====*/
+	    }
 	    mailService.sendEmailMultiAttach(emailAddress, "Medical Data", "PFA.", mailAttachments);
 	    response = true;
 	} catch (Exception e) {

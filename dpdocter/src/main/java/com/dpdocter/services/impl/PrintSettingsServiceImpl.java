@@ -13,12 +13,14 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.PrintSettings;
 import com.dpdocter.beans.PrintSettingsDefaultData;
+import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.PrintSettingsDefaultDataCollection;
 import com.dpdocter.enums.PrintFilter;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PrintSettingsDefaultDataRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.services.PrintSettingsService;
@@ -33,6 +35,9 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 
     @Autowired
     private PrintSettingsDefaultDataRepository printSettingsDefaultDataRepository;
+
+    @Autowired
+    private LocationRepository locationRepository;
 
     @Override
     public PrintSettingsDefaultData saveDefaultSettings(PrintSettingsDefaultData request) {
@@ -98,6 +103,11 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			printSettingsCollection.setFooterSetup(oldPrintSettingsCollection.getFooterSetup());
 		}
 
+	    }
+	    
+	    LocationCollection locationCollection = locationRepository.findOne(request.getLocationId());
+	    if(locationCollection != null){
+	    	printSettingsCollection.setClinicLogoUrl(locationCollection.getLogoUrl());
 	    }
 	    printSettingsCollection = printSettingsRepository.save(printSettingsCollection);
 	    BeanUtil.map(printSettingsCollection, response);

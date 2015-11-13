@@ -102,8 +102,10 @@ import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.sms.services.SMSServices;
+import com.dpdocter.solr.document.SolrDrugDocument;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.PrescriptionUtils;
 
@@ -2488,7 +2490,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			UserCollection userCollection = userRepository.findOne(prescriptionCollection.getPatientId());
 			PatientCollection patientCollection = patientRepository.findByUserId(prescriptionCollection.getPatientId());
-			LocationCollection location = locationRepository.findOne(locationId);
+//			LocationCollection location = locationRepository.findOne(locationId);
 			if (patientCollection != null) {
 			    String prescriptionDetails = "";
 			    int i = 0;
@@ -2694,7 +2696,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
     @Override
     public void importDrug() {
-	String csvFile = "/home/suresh/drug.csv";
+	String csvFile = "/home/suresh/drug_solr.csv";
 	BufferedReader br = null;
 	String line = "";
 	String cvsSplitBy = ",";
@@ -2707,37 +2709,46 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		System.out.println(i++);
 		String[] obj = line.split(cvsSplitBy);
 		String drugType = obj[1];
-		DrugTypeCollection drugTypeCollection = null;
-		if (drugType.equals("TAB")) {
-		    drugTypeCollection = drugTypeRepository.findByType("TABLET");
-		} else if (drugType.equals("CAP")) {
-		    drugTypeCollection = drugTypeRepository.findByType("CAPSULE");
-		} else if (drugType.equals("OINT")) {
-		    drugTypeCollection = drugTypeRepository.findByType("OINTMENT");
-		} else if (drugType.equals("SYP")) {
-		    drugTypeCollection = drugTypeRepository.findByType("SYRUP");
-		}
+//		DrugTypeCollection drugTypeCollection = null;
+//		if (drugType.equals("TAB")) {
+//		    drugTypeCollection = drugTypeRepository.findByType("TABLET");
+//		} else if (drugType.equals("CAP")) {
+//		    drugTypeCollection = drugTypeRepository.findByType("CAPSULE");
+//		} else if (drugType.equals("OINT")) {
+//		    drugTypeCollection = drugTypeRepository.findByType("OINTMENT");
+//		} else if (drugType.equals("SYP")) {
+//		    drugTypeCollection = drugTypeRepository.findByType("SYRUP");
+//		}
+//
+//		DrugType type = null;
+//		if (drugTypeCollection != null) {
+//		    type = new DrugType();
+//		    drugTypeCollection.setType(drugType);
+//		    BeanUtil.map(drugTypeCollection, type);
+//
+//		}
+//
+//		DrugCollection drugCollection = new DrugCollection();
+//		drugCollection.setCreatedBy("ADMIN");
+//		drugCollection.setCreatedTime(new Date());
+//		drugCollection.setDiscarded(false);
+//		drugCollection.setDrugName(obj[0]);
+//		drugCollection.setDrugType(type);
+//		drugCollection.setDoctorId(null);
+//		drugCollection.setHospitalId(null);
+//		drugCollection.setLocationId(null);
+//
+//		drugRepository.save(drugCollection);
 
-		DrugType type = null;
-		if (drugTypeCollection != null) {
-		    type = new DrugType();
-		    drugTypeCollection.setType(drugType);
-		    BeanUtil.map(drugTypeCollection, type);
-
-		}
-
-		DrugCollection drugCollection = new DrugCollection();
-		drugCollection.setCreatedBy("ADMIN");
-		drugCollection.setCreatedTime(new Date());
-		drugCollection.setDiscarded(false);
-		drugCollection.setDrugName(obj[0]);
-		drugCollection.setDrugType(type);
-		drugCollection.setDoctorId(null);
-		drugCollection.setHospitalId(null);
-		drugCollection.setLocationId(null);
-
-		drugRepository.save(drugCollection);
-
+		SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
+		solrDrugDocument.setDrugName(obj[1]);
+		solrDrugDocument.setId(obj[0]);
+		solrDrugDocument.setDescription(null);
+		solrDrugDocument.setDoctorId(null);
+		solrDrugDocument.setHospitalId(null);
+		solrDrugDocument.setLocationId(null);
+		solrDrugDocument.setDrugCode(null);
+		
 	    }
 	} catch (FileNotFoundException e) {
 	    e.printStackTrace();

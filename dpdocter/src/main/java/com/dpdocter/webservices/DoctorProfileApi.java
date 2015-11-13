@@ -8,6 +8,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
@@ -42,6 +43,7 @@ import com.dpdocter.request.DoctorRegistrationAddEditRequest;
 import com.dpdocter.request.DoctorSpecialityAddEditRequest;
 import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
 import com.dpdocter.services.DoctorProfileService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -354,8 +356,8 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.GET_EDUCATION_INSTITUTES)
     @GET
-    public Response<EducationInstitute> getEducationInstitutes() {
-	List<EducationInstitute> educationInstitutes = doctorProfileService.getEducationInstitutes();
+    public Response<EducationInstitute> getEducationInstitutes(@QueryParam("page") int page, @QueryParam("size") int size) {
+	List<EducationInstitute> educationInstitutes = doctorProfileService.getEducationInstitutes(page, size);
 	Response<EducationInstitute> response = new Response<EducationInstitute>();
 	response.setDataList(educationInstitutes);
 	return response;
@@ -363,8 +365,8 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.GET_EDUCATION_QUALIFICATIONS)
     @GET
-    public Response<EducationQualification> getEducationQualifications() {
-	List<EducationQualification> qualifications = doctorProfileService.getEducationQualifications();
+    public Response<EducationQualification> getEducationQualifications(@QueryParam("page") int page, @QueryParam("size") int size) {
+	List<EducationQualification> qualifications = doctorProfileService.getEducationQualifications(page, size);
 	Response<EducationQualification> response = new Response<EducationQualification>();
 	response.setDataList(qualifications);
 	return response;

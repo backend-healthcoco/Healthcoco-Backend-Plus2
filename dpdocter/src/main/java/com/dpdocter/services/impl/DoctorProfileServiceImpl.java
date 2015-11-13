@@ -9,6 +9,7 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.DoctorClinicProfile;
@@ -650,11 +651,12 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
-    public List<EducationInstitute> getEducationInstitutes() {
+    public List<EducationInstitute> getEducationInstitutes(int page, int size) {
 	List<EducationInstitute> educationInstitutes = null;
 	List<EducationInstituteCollection> educationInstituteCollections = null;
 	try {
-	    educationInstituteCollections = educationInstituteRepository.findAll();
+	    if(size>0)educationInstituteCollections = educationInstituteRepository.findAll(new PageRequest(page, size)).getContent();
+	    else educationInstituteCollections = educationInstituteRepository.findAll();
 	    educationInstitutes = new ArrayList<EducationInstitute>();
 	    BeanUtil.map(educationInstituteCollections, educationInstitutes);
 	} catch (Exception e) {
@@ -666,11 +668,12 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
-    public List<EducationQualification> getEducationQualifications() {
+    public List<EducationQualification> getEducationQualifications(int page, int size) {
 	List<EducationQualification> qualifications = null;
 	List<EducationQualificationCollection> qualificationCollections = null;
 	try {
-	    qualificationCollections = educationQualificationRepository.findAll();
+	    if(size > 0)qualificationCollections = educationQualificationRepository.findAll(new PageRequest(page, size)).getContent();
+	    else qualificationCollections = educationQualificationRepository.findAll();
 	    qualifications = new ArrayList<EducationQualification>();
 	    BeanUtil.map(qualificationCollections, qualifications);
 	} catch (Exception e) {

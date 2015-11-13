@@ -73,8 +73,8 @@ public interface DoctorProfileService {
 
     List<Speciality> getSpecialities();
 
-    List<EducationInstitute> getEducationInstitutes();
+    List<EducationInstitute> getEducationInstitutes(int page, int size);
 
-    List<EducationQualification> getEducationQualifications();
+    List<EducationQualification> getEducationQualifications(int page, int size);
 
 }

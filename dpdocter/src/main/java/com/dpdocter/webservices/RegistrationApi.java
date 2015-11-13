@@ -414,9 +414,9 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.GET_PROFESSION)
     @GET
-    public Response<Profession> getProfession() {
+    public Response<Profession> getProfession(@QueryParam("page") int page, @QueryParam("size") int size) {
 
-	List<Profession> professionResponse = registrationService.getProfession();
+	List<Profession> professionResponse = registrationService.getProfession(page, size);
 	Response<Profession> response = new Response<Profession>();
 	response.setDataList(professionResponse);
 	return response;

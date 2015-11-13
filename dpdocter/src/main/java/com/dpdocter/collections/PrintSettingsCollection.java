@@ -38,6 +38,9 @@ public class PrintSettingsCollection extends GenericCollection {
 
     @Field
     private Boolean discarded = false;
+    
+    @Field
+    private String clinicLogoUrl;
 
     public String getId() {
 	return id;
@@ -111,10 +114,19 @@ public class PrintSettingsCollection extends GenericCollection {
 	this.discarded = discarded;
     }
 
-    @Override
-    public String toString() {
-	return "PrintSettingsCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ ", componentType=" + componentType + ", pageSetup=" + pageSetup + ", headerSetup=" + headerSetup + ", footerSetup=" + footerSetup
-		+ ", discarded=" + discarded + "]";
-    }
+	public String getClinicLogoUrl() {
+		return clinicLogoUrl;
+	}
+
+	public void setClinicLogoUrl(String clinicLogoUrl) {
+		this.clinicLogoUrl = clinicLogoUrl;
+	}
+
+	@Override
+	public String toString() {
+		return "PrintSettingsCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", componentType=" + componentType + ", pageSetup=" + pageSetup
+				+ ", headerSetup=" + headerSetup + ", footerSetup=" + footerSetup + ", discarded=" + discarded
+				+ ", clinicLogoUrl=" + clinicLogoUrl + "]";
+	}
 }

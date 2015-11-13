@@ -1,13 +1,25 @@
 package com.dpdocter.solr.services.impl;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.collections.DiagnosisCollection;
+import com.dpdocter.collections.DiagramsCollection;
+import com.dpdocter.collections.InvestigationCollection;
+import com.dpdocter.collections.NotesCollection;
+import com.dpdocter.collections.ObservationCollection;
+import com.dpdocter.enums.Range;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.solr.document.SolrComplaintsDocument;
 import com.dpdocter.solr.document.SolrDiagnosesDocument;
 import com.dpdocter.solr.document.SolrDiagramsDocument;
@@ -21,6 +33,8 @@ import com.dpdocter.solr.repository.SolrInvestigationsRepository;
 import com.dpdocter.solr.repository.SolrNotesRepository;
 import com.dpdocter.solr.repository.SolrObservationsRepository;
 import com.dpdocter.solr.services.SolrClinicalNotesService;
+
+import common.util.web.DPDoctorUtils;
 
 @Service
 public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
@@ -88,19 +102,6 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
     }
 
     @Override
-    public List<SolrComplaintsDocument> searchComplaints(String searchTerm) {
-	List<SolrComplaintsDocument> response = null;
-	try {
-	    response = solrComplaintsRepository.findByQueryAnnotation(searchTerm);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error Occurred While Searching Complaints");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Complaints");
-	}
-	return response;
-    }
-
-    @Override
     public boolean addDiagnoses(SolrDiagnosesDocument request) {
 	boolean response = false;
 	try {
@@ -138,19 +139,6 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Diagnosis");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Diagnoses");
-	}
-	return response;
-    }
-
-    @Override
-    public List<SolrDiagnosesDocument> searchDiagnoses(String searchTerm) {
-	List<SolrDiagnosesDocument> response = null;
-	try {
-	    response = solrDiagnosesRepository.find(searchTerm);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error Occurred While Searching Diagnosis");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Diagnoses");
 	}
 	return response;
     }
@@ -198,19 +186,6 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
     }
 
     @Override
-    public List<SolrNotesDocument> searchNotes(String searchTerm) {
-	List<SolrNotesDocument> response = null;
-	try {
-	    response = solrNotesRepository.find(searchTerm);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error Occurred While Searching Notes");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Notes");
-	}
-	return response;
-    }
-
-    @Override
     public boolean addDiagrams(SolrDiagramsDocument request) {
 	boolean response = false;
 	try {
@@ -248,19 +223,6 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Diagrams");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Diagrams");
-	}
-	return response;
-    }
-
-    @Override
-    public List<SolrDiagramsDocument> searchDiagrams(String searchTerm) {
-	List<SolrDiagramsDocument> response = null;
-	try {
-	    response = solrDiagramsRepository.find(searchTerm);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error Occurred While Searching Diagrams");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Diagrams");
 	}
 	return response;
     }
@@ -321,19 +283,6 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
     }
 
     @Override
-    public List<SolrInvestigationsDocument> searchInvestigations(String searchTerm) {
-	List<SolrInvestigationsDocument> response = null;
-	try {
-	    response = solrInvestigationsRepository.find(searchTerm);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error Occurred While Searching Investigations");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Investigations");
-	}
-	return response;
-    }
-
-    @Override
     public boolean addObservations(SolrObservationsDocument request) {
 	boolean response = false;
 	try {
@@ -375,17 +324,1081 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	return response;
     }
 
-    @Override
-    public List<SolrObservationsDocument> searchObservations(String searchTerm) {
-	List<SolrObservationsDocument> response = null;
-	try {
-	    response = solrObservationsRepository.find(searchTerm);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error Occurred While Searching Observations");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Observations");
+  	@Override
+	public List<SolrObservationsDocument> searchObservations(String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+  		List<SolrObservationsDocument> response = null;
+  		switch (Range.valueOf(range.toUpperCase())) {
+
+	    case GLOBAL:
+		response = getGlobalObservations(page, size, updatedTime, discarded, searchTerm);
+		break;
+	    case CUSTOM:
+		response = getCustomObservations(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+		break;
+	    case BOTH:
+		response = getCustomGlobalObservations(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+		break;
+	    }
+
+		return response;
 	}
-	return response;
-    }
+
+	@Override
+	public List<SolrInvestigationsDocument> searchInvestigations(String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<SolrInvestigationsDocument> response = null;
+		switch (Range.valueOf(range.toUpperCase())) {
+
+	    case GLOBAL:
+		response = getGlobalInvestigations(page, size, updatedTime, discarded, searchTerm);
+		break;
+	    case CUSTOM:
+		response = getCustomInvestigations(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+		break;
+	    case BOTH:
+		response = getCustomGlobalInvestigations(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+		break;
+	    }
+
+		return response;
+	}
+
+	@Override
+	public List<SolrDiagramsDocument> searchDiagrams(String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<SolrDiagramsDocument> response = null;
+		switch (Range.valueOf(range.toUpperCase())) {
+			case GLOBAL:
+				response = getGlobalDiagrams(page, size, updatedTime, discarded, searchTerm);
+				break;
+			    case CUSTOM:
+				response = getCustomDiagrams(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+				break;
+			    case BOTH:
+				response = getCustomGlobalDiagrams(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+				break;
+			    }
+		return response;
+	}
+
+	@Override
+	public List<SolrNotesDocument> searchNotes(String range, int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<SolrNotesDocument> response = null;
+		switch (Range.valueOf(range.toUpperCase())) {
+			case GLOBAL:
+				response = getGlobalNotes(page, size, updatedTime, discarded, searchTerm);
+				break;
+			    case CUSTOM:
+				response = getCustomNotes(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+				break;
+			    case BOTH:
+				response = getCustomGlobalNotes(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+				break;
+			    }
+		return response;
+	}
+
+	@Override
+	public List<SolrDiagnosesDocument> searchDiagnoses(String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<SolrDiagnosesDocument> response = null;
+		switch (Range.valueOf(range.toUpperCase())) {
+			case GLOBAL:
+				response = getGlobalDiagnosis(page, size, updatedTime, discarded, searchTerm);
+				break;
+			    case CUSTOM:
+				response = getCustomDiagnosis(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+				break;
+			    case BOTH:
+				response = getCustomGlobalDiagnosis(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+				break;
+			    }
+		return response;
+	}
+
+	@Override
+	public List<SolrComplaintsDocument> searchComplaints(String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<SolrComplaintsDocument> response = null;
+		   switch (Range.valueOf(range.toUpperCase())) {
+
+		    case GLOBAL:
+			response = getGlobalComplaints(page, size, updatedTime, discarded, searchTerm);
+			break;
+		    case CUSTOM:
+			response = getCustomComplaints(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			break;
+		    case BOTH:
+			response = getCustomGlobalComplaints(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			break;
+		    }
+		   return response;
+	}
+	
+	private List<SolrComplaintsDocument> getCustomGlobalComplaints(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<SolrComplaintsDocument> complaintCollections = null;
+		try {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			if (doctorId == null) {
+				if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
+					if (size > 0)
+						complaintCollections = solrComplaintsRepository.findCustomGlobalComplaints(
+								new Date(createdTimeStamp), discarded,
+								new PageRequest(page, size, Direction.DESC, "updatedTime"));
+					else
+						complaintCollections = solrComplaintsRepository.findCustomGlobalComplaints(
+								new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+				} else {
+					if (size > 0)
+						complaintCollections = solrComplaintsRepository.findCustomGlobalComplaints(
+								new Date(createdTimeStamp), discarded, searchTerm,
+								new PageRequest(page, size, Direction.DESC, "updatedTime"));
+					else
+						complaintCollections = solrComplaintsRepository.findCustomGlobalComplaints(
+								new Date(createdTimeStamp), discarded, searchTerm,
+								new Sort(Sort.Direction.DESC, "updatedTime"));
+				}
+			} else {
+				if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+					if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
+						if (size > 0)
+							complaintCollections = solrComplaintsRepository.findCustomGlobalComplaints(doctorId,
+									new Date(createdTimeStamp), discarded,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							complaintCollections = solrComplaintsRepository.findCustomGlobalComplaints(doctorId,
+									new Date(createdTimeStamp), discarded,
+									new Sort(Sort.Direction.DESC, "updatedTime"));
+					} else {
+						if (size > 0)
+							complaintCollections = solrComplaintsRepository.findCustomGlobalComplaints(doctorId,
+									new Date(createdTimeStamp), discarded, searchTerm,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							complaintCollections = solrComplaintsRepository.findCustomGlobalComplaints(doctorId,
+									new Date(createdTimeStamp), discarded, searchTerm,
+									new Sort(Sort.Direction.DESC, "updatedTime"));
+					}
+				} else {
+					if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
+						if (size > 0)
+							complaintCollections = solrComplaintsRepository.findCustomGlobalComplaints(doctorId,
+									locationId, hospitalId, new Date(createdTimeStamp), discarded,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							complaintCollections = solrComplaintsRepository.findCustomGlobalComplaints(doctorId,
+									locationId, hospitalId, new Date(createdTimeStamp), discarded,
+									new Sort(Sort.Direction.DESC, "updatedTime"));
+					} else {
+						if (size > 0)
+							complaintCollections = solrComplaintsRepository.findCustomGlobalComplaints(doctorId,
+									locationId, hospitalId, new Date(createdTimeStamp), discarded, searchTerm,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							complaintCollections = solrComplaintsRepository.findCustomGlobalComplaints(doctorId,
+									locationId, hospitalId, new Date(createdTimeStamp), discarded, searchTerm,
+									new Sort(Sort.Direction.DESC, "updatedTime"));
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
+		}
+		return complaintCollections;
+
+	}
+
+	private List<SolrComplaintsDocument> getGlobalComplaints(int page, int size, String updatedTime, Boolean discarded,
+			String searchTerm) {
+		List<SolrComplaintsDocument> complaintCollections = null;
+		try {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				if (size > 0)
+					complaintCollections = solrComplaintsRepository.findGlobalComplaints(new Date(createdTimeStamp),
+							discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else
+					complaintCollections = solrComplaintsRepository.findGlobalComplaints(new Date(createdTimeStamp),
+							discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+			} else {
+				if (size > 0)
+					complaintCollections = solrComplaintsRepository.findGlobalComplaints(new Date(createdTimeStamp),
+							discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else
+					complaintCollections = solrComplaintsRepository.findGlobalComplaints(new Date(createdTimeStamp),
+							discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
+		}
+		return complaintCollections;
+	}
+
+	private List<SolrComplaintsDocument> getCustomComplaints(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<SolrComplaintsDocument> complaintCollections = null;
+
+		try {
+
+			if (doctorId == null)
+				complaintCollections = new ArrayList<SolrComplaintsDocument>();
+
+			else {
+				long createdTimeStamp = Long.parseLong(updatedTime);
+				if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+					if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
+						if (size > 0)
+							complaintCollections = solrComplaintsRepository.findCustomComplaints(doctorId,
+									new Date(createdTimeStamp), discarded,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							complaintCollections = solrComplaintsRepository.findCustomComplaints(doctorId,
+									new Date(createdTimeStamp), discarded,
+									new Sort(Sort.Direction.DESC, "updatedTime"));
+					} else {
+						if (size > 0)
+							complaintCollections = solrComplaintsRepository.findCustomComplaints(doctorId,
+									new Date(createdTimeStamp), discarded, searchTerm,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							complaintCollections = solrComplaintsRepository.findCustomComplaints(doctorId,
+									new Date(createdTimeStamp), discarded, searchTerm,
+									new Sort(Sort.Direction.DESC, "updatedTime"));
+					}
+				} else {
+					if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
+						if (size > 0)
+							complaintCollections = solrComplaintsRepository.findCustomComplaints(doctorId, locationId,
+									hospitalId, new Date(createdTimeStamp), discarded,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							complaintCollections = solrComplaintsRepository.findCustomComplaints(doctorId, locationId,
+									hospitalId, new Date(createdTimeStamp), discarded,
+									new Sort(Sort.Direction.DESC, "updatedTime"));
+					} else {
+						if (size > 0)
+							complaintCollections = solrComplaintsRepository.findCustomComplaints(doctorId, locationId,
+									hospitalId, new Date(createdTimeStamp), discarded, searchTerm,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							complaintCollections = solrComplaintsRepository.findCustomComplaints(doctorId, locationId,
+									hospitalId, new Date(createdTimeStamp), discarded, searchTerm,
+									new Sort(Sort.Direction.DESC, "updatedTime"));
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
+		}
+		return complaintCollections;
+	}
+
+	private List<SolrDiagramsDocument> getCustomGlobalDiagrams(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<SolrDiagramsDocument> diagramCollections = null;
+		
+		try {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			if (doctorId == null) {
+				if(DPDoctorUtils.anyStringEmpty(searchTerm)){
+					if (size > 0)
+					    diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(new Date(createdTimeStamp), discarded, new PageRequest(page, size,
+						    Direction.DESC, "updatedTime"));
+					else
+					    diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC,
+						    "updatedTime"));
+				}
+				else{
+					if (size > 0)
+					    diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(new Date(createdTimeStamp), discarded, searchTerm, new PageRequest(page, size,
+						    Direction.DESC, "updatedTime"));
+					else
+					    diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(new Date(createdTimeStamp), discarded, searchTerm,  new Sort(Sort.Direction.DESC,
+						    "updatedTime"));
+				}
+			} else {
+				if(DPDoctorUtils.anyStringEmpty(searchTerm)){
+					if (locationId == null && hospitalId == null) {
+						if (size > 0)
+							diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(doctorId,
+									new Date(createdTimeStamp), discarded,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(doctorId,
+									new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+				} else {
+					if (size > 0)
+						diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(doctorId, locationId,
+								hospitalId, new Date(createdTimeStamp), discarded,
+								new PageRequest(page, size, Direction.DESC, "updatedTime"));
+					else
+						diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(doctorId, locationId,
+								hospitalId, new Date(createdTimeStamp), discarded,
+								new Sort(Sort.Direction.DESC, "updatedTime"));
+				}
+			}
+			else{
+				if (locationId == null && hospitalId == null) {
+					if (size > 0)
+						diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(doctorId,
+								new Date(createdTimeStamp), discarded, searchTerm,
+								new PageRequest(page, size, Direction.DESC, "updatedTime"));
+					else
+						diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(doctorId,
+								new Date(createdTimeStamp), discarded, searchTerm,new Sort(Sort.Direction.DESC, "updatedTime"));
+			} else {
+				if (size > 0)
+					diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(doctorId, locationId,
+							hospitalId, new Date(createdTimeStamp), discarded,searchTerm,
+							new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else
+					diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(doctorId, locationId,
+							hospitalId, new Date(createdTimeStamp), discarded,searchTerm,
+							new Sort(Sort.Direction.DESC, "updatedTime"));
+			}	
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagrams");
+		}
+		return diagramCollections;
+	}
+
+	private List<SolrDiagramsDocument> getGlobalDiagrams(int page, int size, String updatedTime, Boolean discarded, String searchTerm) {
+		List<SolrDiagramsDocument> diagramCollections = null;
+		try{
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			if(DPDoctorUtils.anyStringEmpty(searchTerm)){
+				if (size > 0)
+					diagramCollections = solrDiagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discarded,
+							new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else
+					diagramCollections = solrDiagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discarded,
+							new Sort(Sort.Direction.DESC, "updatedTime"));
+			}
+			else{
+				if (size > 0)
+					diagramCollections = solrDiagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discarded, searchTerm, 
+							new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else
+					diagramCollections = solrDiagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discarded,searchTerm, 
+							new Sort(Sort.Direction.DESC, "updatedTime"));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagrams");
+		}
+		return diagramCollections;
+	}
+
+	private List<SolrDiagramsDocument> getCustomDiagrams(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<SolrDiagramsDocument> diagramCollections = null;
+		try{
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			if (doctorId == null)diagramCollections = new ArrayList<SolrDiagramsDocument>();
+			else {
+				if(DPDoctorUtils.anyStringEmpty(searchTerm)){
+					if (locationId == null && hospitalId == null) {
+						if (size > 0)
+							diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId,
+									new Date(createdTimeStamp), discarded,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId,
+									new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+					} else {
+						if (size > 0)
+							diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId,
+									new Date(createdTimeStamp), discarded,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId,
+									new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+					}
+				}
+				else{
+					if (locationId == null && hospitalId == null) {
+						if (size > 0)
+							diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId,
+									new Date(createdTimeStamp), discarded,searchTerm,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId,
+									new Date(createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
+					} else {
+						if (size > 0)
+							diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId,
+									new Date(createdTimeStamp), discarded,searchTerm,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId,
+									new Date(createdTimeStamp), discarded, searchTerm,new Sort(Sort.Direction.DESC, "updatedTime"));
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagrams");
+		}
+		return diagramCollections;
+	}
+
+	private List<SolrInvestigationsDocument> getCustomGlobalInvestigations(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<SolrInvestigationsDocument> investigationsCollections = null;
+		try{
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			if (doctorId == null) {
+				if(DPDoctorUtils.anyStringEmpty(searchTerm)){
+					if (size > 0)
+						investigationsCollections = solrInvestigationsRepository.findCustomGlobalInvestigations(
+								new Date(createdTimeStamp), discarded,
+								new PageRequest(page, size, Direction.DESC, "updatedTime"));
+					else
+						investigationsCollections = solrInvestigationsRepository.findCustomGlobalInvestigations(
+								new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+				}
+				else{
+					if (size > 0)
+						investigationsCollections = solrInvestigationsRepository.findCustomGlobalInvestigations(
+								new Date(createdTimeStamp), discarded, searchTerm, 
+								new PageRequest(page, size, Direction.DESC, "updatedTime"));
+					else
+						investigationsCollections = solrInvestigationsRepository.findCustomGlobalInvestigations(
+								new Date(createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
+				}
+
+			} else {
+				if(DPDoctorUtils.anyStringEmpty(searchTerm)){
+					if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+						if (size > 0)
+							investigationsCollections = solrInvestigationsRepository.findCustomGlobalInvestigations(doctorId,
+									new Date(createdTimeStamp), discarded,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							investigationsCollections = solrInvestigationsRepository.findCustomGlobalInvestigations(doctorId,
+									new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+					} else {
+						if (size > 0)
+							investigationsCollections = solrInvestigationsRepository.findCustomGlobalInvestigations(doctorId,
+									locationId, hospitalId, new Date(createdTimeStamp), discarded,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							investigationsCollections = solrInvestigationsRepository.findCustomGlobalInvestigations(doctorId,
+									locationId, hospitalId, new Date(createdTimeStamp), discarded,
+									new Sort(Sort.Direction.DESC, "updatedTime"));
+					}
+				}
+				else{
+					if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+						if (size > 0)
+							investigationsCollections = solrInvestigationsRepository.findCustomGlobalInvestigations(doctorId,
+									new Date(createdTimeStamp), discarded, searchTerm,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							investigationsCollections = solrInvestigationsRepository.findCustomGlobalInvestigations(doctorId,
+									new Date(createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
+					} else {
+						if (size > 0)
+							investigationsCollections = solrInvestigationsRepository.findCustomGlobalInvestigations(doctorId,
+									locationId, hospitalId, new Date(createdTimeStamp), discarded, searchTerm,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							investigationsCollections = solrInvestigationsRepository.findCustomGlobalInvestigations(doctorId,
+									locationId, hospitalId, new Date(createdTimeStamp), discarded, searchTerm,
+									new Sort(Sort.Direction.DESC, "updatedTime"));
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Investigations");
+		}
+		return investigationsCollections;
+	}
+
+	private List<SolrInvestigationsDocument> getGlobalInvestigations(int page, int size, String updatedTime, Boolean discarded, String searchTerm) {
+		List<SolrInvestigationsDocument> investigationsCollections = null;
+		try{
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			if(DPDoctorUtils.anyStringEmpty(searchTerm)){
+				if (size > 0)
+					investigationsCollections = solrInvestigationsRepository.findGlobalInvestigations(new Date(createdTimeStamp),
+							discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else
+					investigationsCollections = solrInvestigationsRepository.findGlobalInvestigations(new Date(createdTimeStamp),
+							discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+			}
+			else{
+				if (size > 0)
+					investigationsCollections = solrInvestigationsRepository.findGlobalInvestigations(new Date(createdTimeStamp),
+							discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else
+					investigationsCollections = solrInvestigationsRepository.findGlobalInvestigations(new Date(createdTimeStamp),
+							discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
+
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Investigations");
+		}
+		return investigationsCollections;
+	}
+
+	private List<SolrInvestigationsDocument> getCustomInvestigations(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<SolrInvestigationsDocument> investigationsCollections = null;
+		try{
+			long createdTimeStamp = Long.parseLong(updatedTime);
+
+			if (doctorId == null)
+				investigationsCollections = new ArrayList<SolrInvestigationsDocument>();
+			else {
+				if(DPDoctorUtils.anyStringEmpty(searchTerm)){
+					if (locationId == null && hospitalId == null) {
+						if (size > 0)
+							investigationsCollections = solrInvestigationsRepository.findCustomInvestigations(doctorId,
+									new Date(createdTimeStamp), discarded,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							investigationsCollections = solrInvestigationsRepository.findCustomInvestigations(doctorId,
+									new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+					} else {
+						if (size > 0)
+							investigationsCollections = solrInvestigationsRepository.findCustomInvestigations(doctorId,
+									locationId, hospitalId, new Date(createdTimeStamp), discarded,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							investigationsCollections = solrInvestigationsRepository.findCustomInvestigations(doctorId,
+									locationId, hospitalId, new Date(createdTimeStamp), discarded,
+									new Sort(Sort.Direction.DESC, "updatedTime"));
+					}
+ }
+				else{
+					if (locationId == null && hospitalId == null) {
+						if (size > 0)
+							investigationsCollections = solrInvestigationsRepository.findCustomInvestigations(doctorId,
+									new Date(createdTimeStamp), discarded, searchTerm,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							investigationsCollections = solrInvestigationsRepository.findCustomInvestigations(doctorId,
+									new Date(createdTimeStamp), discarded,  searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
+					} else {
+						if (size > 0)
+							investigationsCollections = solrInvestigationsRepository.findCustomInvestigations(doctorId,
+									locationId, hospitalId, new Date(createdTimeStamp), discarded, searchTerm,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							investigationsCollections = solrInvestigationsRepository.findCustomInvestigations(doctorId,
+									locationId, hospitalId, new Date(createdTimeStamp), discarded, searchTerm,
+									new Sort(Sort.Direction.DESC, "updatedTime"));
+					}
+				}
+				}
+					} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Investigations");
+		}
+		return investigationsCollections;
+	}
+
+	private List<SolrObservationsDocument> getCustomGlobalObservations(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<SolrObservationsDocument> observationCollections = null;
+		try {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			if (doctorId == null) {
+				if(DPDoctorUtils.anyStringEmpty(searchTerm)){
+					if (size > 0)
+						observationCollections = solrObservationsRepository.findCustomGlobalObservations(
+								new Date(createdTimeStamp), discarded,
+								new PageRequest(page, size, Direction.DESC, "updatedTime"));
+					else
+						observationCollections = solrObservationsRepository.findCustomGlobalObservations(
+								new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+				}
+				else{
+					if (size > 0)
+						observationCollections = solrObservationsRepository.findCustomGlobalObservations(
+								new Date(createdTimeStamp), discarded,searchTerm, 
+								new PageRequest(page, size, Direction.DESC, "updatedTime"));
+					else
+						observationCollections = solrObservationsRepository.findCustomGlobalObservations(
+								new Date(createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
+				}
+			} else {
+				if(DPDoctorUtils.anyStringEmpty(searchTerm)){
+					if (locationId == null && hospitalId == null) {
+						if (size > 0)
+							observationCollections = solrObservationsRepository.findCustomGlobalObservations(doctorId,
+									new Date(createdTimeStamp), discarded,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							observationCollections = solrObservationsRepository.findCustomGlobalObservations(doctorId,
+									new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "createdTime"));
+					} else {
+						if (size > 0)
+							observationCollections = solrObservationsRepository.findCustomGlobalObservations(doctorId,
+									locationId, hospitalId, new Date(createdTimeStamp), discarded,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							observationCollections = solrObservationsRepository.findCustomGlobalObservations(doctorId,
+									locationId, hospitalId, new Date(createdTimeStamp), discarded,
+									new Sort(Sort.Direction.DESC, "createdTime"));
+
+					}
+				}
+				else{
+					if (locationId == null && hospitalId == null) {
+						if (size > 0)
+							observationCollections = solrObservationsRepository.findCustomGlobalObservations(doctorId,
+									new Date(createdTimeStamp), discarded, searchTerm, 
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							observationCollections = solrObservationsRepository.findCustomGlobalObservations(doctorId,
+									new Date(createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "createdTime"));
+					} else {
+						if (size > 0)
+							observationCollections = solrObservationsRepository.findCustomGlobalObservations(doctorId,
+									locationId, hospitalId, new Date(createdTimeStamp), discarded,searchTerm, 
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							observationCollections = solrObservationsRepository.findCustomGlobalObservations(doctorId,
+									locationId, hospitalId, new Date(createdTimeStamp), discarded,searchTerm, 
+									new Sort(Sort.Direction.DESC, "createdTime"));
+
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Observations");
+		}
+		return observationCollections;
+
+	}
+
+	private List<SolrObservationsDocument> getGlobalObservations(int page, int size, String updatedTime, Boolean discarded, String searchTerm) {
+		List<SolrObservationsDocument> observationCollections = null;
+		try {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			if(DPDoctorUtils.anyStringEmpty(searchTerm)){
+				if (size > 0)
+					observationCollections = solrObservationsRepository.findGlobalObservations(new Date(createdTimeStamp),
+							discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else
+					observationCollections = solrObservationsRepository.findGlobalObservations(new Date(createdTimeStamp),
+							discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+			}
+			else{
+				if (size > 0)
+					observationCollections = solrObservationsRepository.findGlobalObservations(new Date(createdTimeStamp),
+							discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else
+					observationCollections = solrObservationsRepository.findGlobalObservations(new Date(createdTimeStamp),
+							discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
+
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Observations");
+		}
+		return observationCollections;
+	}
+
+	private List<SolrObservationsDocument> getCustomObservations(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<SolrObservationsDocument> observationCollections = null;
+		try{
+			long createdTimeStamp = Long.parseLong(updatedTime);
+
+			if (doctorId == null)
+				observationCollections = new ArrayList<SolrObservationsDocument>();
+			else{
+				if(DPDoctorUtils.anyStringEmpty(searchTerm)){
+					if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+						if (size > 0)
+							observationCollections = solrObservationsRepository.findCustomObservations(doctorId,
+									new Date(createdTimeStamp), discarded,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							observationCollections = solrObservationsRepository.findCustomObservations(doctorId,
+									new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+					} else {
+						if (size > 0)
+							observationCollections = solrObservationsRepository.findCustomObservations(doctorId, locationId,
+									hospitalId, new Date(createdTimeStamp), discarded,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							observationCollections = solrObservationsRepository.findCustomObservations(doctorId, locationId,
+									hospitalId, new Date(createdTimeStamp), discarded,
+									new Sort(Sort.Direction.DESC, "updatedTime"));
+					}
+				}
+				else{
+					if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+						if (size > 0)
+							observationCollections = solrObservationsRepository.findCustomObservations(doctorId,
+									new Date(createdTimeStamp), discarded, searchTerm,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							observationCollections = solrObservationsRepository.findCustomObservations(doctorId,
+									new Date(createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
+					} else {
+						if (size > 0)
+							observationCollections = solrObservationsRepository.findCustomObservations(doctorId, locationId,
+									hospitalId, new Date(createdTimeStamp), searchTerm, discarded,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							observationCollections = solrObservationsRepository.findCustomObservations(doctorId, locationId,
+									hospitalId, new Date(createdTimeStamp), searchTerm, discarded,
+									new Sort(Sort.Direction.DESC, "updatedTime"));
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Observations");
+		}
+		return observationCollections;
+	}
+
+	private List<SolrDiagnosesDocument> getCustomGlobalDiagnosis(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<SolrDiagnosesDocument> diagnosisCollections = null;
+		try{
+			long createdTimeStamp = Long.parseLong(updatedTime);
+
+			if (doctorId == null) {
+				if(DPDoctorUtils.anyStringEmpty(searchTerm)){
+					if (size > 0)
+						diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(new Date(createdTimeStamp),
+								discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+					else
+						diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(new Date(createdTimeStamp),
+								discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+				}
+				else{
+					if (size > 0)
+						diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(new Date(createdTimeStamp),
+								discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+					else
+						diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(new Date(createdTimeStamp),
+								discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
+
+				}
+			} else {
+				if(DPDoctorUtils.anyStringEmpty(searchTerm)){
+					if (locationId == null && hospitalId == null) {
+						if (size > 0)
+							diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(doctorId,
+									new Date(createdTimeStamp), discarded,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(doctorId,
+									new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "createdTime"));
+
+					} else {
+						if (size > 0)
+							diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(doctorId, locationId,
+									hospitalId, new Date(createdTimeStamp), discarded,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(doctorId, locationId,
+									hospitalId, new Date(createdTimeStamp), discarded,
+									new Sort(Sort.Direction.DESC, "updatedTime"));
+					}
+				}
+				else{
+					if (locationId == null && hospitalId == null) {
+						if (size > 0)
+							diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(doctorId,
+									new Date(createdTimeStamp), discarded, searchTerm,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(doctorId,
+									new Date(createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "createdTime"));
+
+					} else {
+						if (size > 0)
+							diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(doctorId, locationId,
+									hospitalId, new Date(createdTimeStamp), discarded, searchTerm,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(doctorId, locationId,
+									hospitalId, new Date(createdTimeStamp), discarded, searchTerm,
+									new Sort(Sort.Direction.DESC, "updatedTime"));
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnosis");
+		}
+		return diagnosisCollections;
+	}
+
+	private List<SolrDiagnosesDocument> getGlobalDiagnosis(int page, int size, String updatedTime, Boolean discarded, String searchTerm) {
+		List<SolrDiagnosesDocument> diagnosisCollections = null;
+		try{
+		long createdTimeStamp = Long.parseLong(updatedTime);
+		if(DPDoctorUtils.anyStringEmpty(searchTerm)){
+			if (size > 0)
+				diagnosisCollections = solrDiagnosesRepository.findGlobalDiagnosis(new Date(createdTimeStamp), discarded,
+						new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			else
+				diagnosisCollections = solrDiagnosesRepository.findGlobalDiagnosis(new Date(createdTimeStamp), discarded,
+						new Sort(Sort.Direction.DESC, "updatedTime"));
+		}
+		else{
+			if (size > 0)
+				diagnosisCollections = solrDiagnosesRepository.findGlobalDiagnosis(new Date(createdTimeStamp), discarded, searchTerm, 
+						new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			else
+				diagnosisCollections = solrDiagnosesRepository.findGlobalDiagnosis(new Date(createdTimeStamp), discarded, searchTerm, 
+						new Sort(Sort.Direction.DESC, "updatedTime"));
+		}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnosis");
+		}
+		return diagnosisCollections;
+	}
+
+	private List<SolrDiagnosesDocument> getCustomDiagnosis(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded, String searchTerm) {
+		List<SolrDiagnosesDocument> diagnosisCollections = null;
+		try{
+			long createdTimeStamp = Long.parseLong(updatedTime);
+
+			if (doctorId == null)
+				diagnosisCollections = new ArrayList<SolrDiagnosesDocument>();
+			else{
+				if(DPDoctorUtils.anyStringEmpty(searchTerm)){
+					if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+						if (size > 0)
+							diagnosisCollections = solrDiagnosesRepository.findCustomDiagnosis(doctorId, new Date(createdTimeStamp),
+									discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							diagnosisCollections = solrDiagnosesRepository.findCustomDiagnosis(doctorId, new Date(createdTimeStamp),
+									discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+					} else {
+						if (size > 0)
+							diagnosisCollections = solrDiagnosesRepository.findCustomDiagnosis(doctorId, locationId, hospitalId,
+									new Date(createdTimeStamp), discarded,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							diagnosisCollections = solrDiagnosesRepository.findCustomDiagnosis(doctorId, locationId, hospitalId,
+									new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+					}
+				}
+				else{
+					if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+						if (size > 0)
+							diagnosisCollections = solrDiagnosesRepository.findCustomDiagnosis(doctorId, new Date(createdTimeStamp),
+									discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							diagnosisCollections = solrDiagnosesRepository.findCustomDiagnosis(doctorId, new Date(createdTimeStamp),
+									discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
+					} else {
+						if (size > 0)
+							diagnosisCollections = solrDiagnosesRepository.findCustomDiagnosis(doctorId, locationId, hospitalId,
+									new Date(createdTimeStamp), discarded,searchTerm, 
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							diagnosisCollections = solrDiagnosesRepository.findCustomDiagnosis(doctorId, locationId, hospitalId,
+									new Date(createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnosis");
+		}
+		return diagnosisCollections;
+	}
+
+	private List<SolrNotesDocument> getCustomGlobalNotes(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded, String searchTerm) {
+		
+		List<SolrNotesDocument> notesCollections = null;
+		try{
+			long createdTimeStamp = Long.parseLong(updatedTime);
+
+			if (doctorId == null) {
+				if(DPDoctorUtils.anyStringEmpty(searchTerm)){
+					if (size > 0)
+						notesCollections = solrNotesRepository.findCustomGlobalNotes(new Date(createdTimeStamp), discarded,
+								new PageRequest(page, size, Direction.DESC, "updatedTime"));
+					else
+						notesCollections = solrNotesRepository.findCustomGlobalNotes(new Date(createdTimeStamp), discarded,
+								new Sort(Sort.Direction.DESC, "updatedTime"));
+				}
+				else{
+					if (size > 0)
+						notesCollections = solrNotesRepository.findCustomGlobalNotes(new Date(createdTimeStamp), discarded, searchTerm, 
+								new PageRequest(page, size, Direction.DESC, "updatedTime"));
+					else
+						notesCollections = solrNotesRepository.findCustomGlobalNotes(new Date(createdTimeStamp), discarded, searchTerm, 
+								new Sort(Sort.Direction.DESC, "updatedTime"));
+				}
+			} else {
+				if(DPDoctorUtils.anyStringEmpty(searchTerm)){
+					if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+						if (size > 0)
+							notesCollections = solrNotesRepository.findCustomGlobalNotes(doctorId, new Date(createdTimeStamp),
+									discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							notesCollections = solrNotesRepository.findCustomGlobalNotes(doctorId, new Date(createdTimeStamp),
+									discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+					} else {
+						if (size > 0)
+							notesCollections = solrNotesRepository.findCustomGlobalNotes(doctorId, locationId, hospitalId,
+									new Date(createdTimeStamp), discarded,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							notesCollections = solrNotesRepository.findCustomGlobalNotes(doctorId, locationId, hospitalId,
+									new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "createdTime"));
+					}
+				}
+				else{
+					if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+						if (size > 0)
+							notesCollections = solrNotesRepository.findCustomGlobalNotes(doctorId, new Date(createdTimeStamp),
+									discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							notesCollections = solrNotesRepository.findCustomGlobalNotes(doctorId, new Date(createdTimeStamp),
+									discarded, searchTerm,  new Sort(Sort.Direction.DESC, "updatedTime"));
+					} else {
+						if (size > 0)
+							notesCollections = solrNotesRepository.findCustomGlobalNotes(doctorId, locationId, hospitalId,
+									new Date(createdTimeStamp), discarded,searchTerm, 
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							notesCollections = solrNotesRepository.findCustomGlobalNotes(doctorId, locationId, hospitalId,
+									new Date(createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "createdTime"));
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Notes");
+		}
+		return notesCollections;
+
+	}
+
+	private List<SolrNotesDocument> getGlobalNotes(int page, int size, String updatedTime, Boolean discarded, String searchTerm) {
+		List<SolrNotesDocument> notesCollections = null;
+	try{
+		long createdTimeStamp = Long.parseLong(updatedTime);
+		if(DPDoctorUtils.anyStringEmpty(searchTerm)){
+			if (size > 0)
+				notesCollections = solrNotesRepository.findGlobalNotes(new Date(createdTimeStamp), discarded,
+						new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			else
+				notesCollections = solrNotesRepository.findGlobalNotes(new Date(createdTimeStamp), discarded,
+						new Sort(Sort.Direction.DESC, "updatedTime"));
+		}
+		else{
+			if (size > 0)
+				notesCollections = solrNotesRepository.findGlobalNotes(new Date(createdTimeStamp), discarded, searchTerm,
+						new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			else
+				notesCollections = solrNotesRepository.findGlobalNotes(new Date(createdTimeStamp), discarded, searchTerm,
+						new Sort(Sort.Direction.DESC, "updatedTime"));
+
+		}
+	} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Notes");
+		}
+		return notesCollections;
+	}
+
+	private List<SolrNotesDocument> getCustomNotes(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded, String searchTerm) {
+		List<SolrNotesDocument> notesCollections = null;
+		try{
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			if (doctorId == null)
+				notesCollections = new ArrayList<SolrNotesDocument>();
+
+			else {
+				if(DPDoctorUtils.anyStringEmpty(searchTerm)){
+					if (locationId == null && hospitalId == null) {
+						if (size > 0)
+							notesCollections = solrNotesRepository.findCustomNotes(doctorId, new Date(createdTimeStamp),
+									discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							notesCollections = solrNotesRepository.findCustomNotes(doctorId, new Date(createdTimeStamp),
+									discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+					} else {
+						if (size > 0)
+							notesCollections = solrNotesRepository.findCustomNotes(doctorId, locationId, hospitalId,
+									new Date(createdTimeStamp), discarded,
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							notesCollections = solrNotesRepository.findCustomNotes(doctorId, locationId, hospitalId,
+									new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+					}
+				
+				}
+				else{
+					if (locationId == null && hospitalId == null) {
+						if (size > 0)
+							notesCollections = solrNotesRepository.findCustomNotes(doctorId, new Date(createdTimeStamp),
+									discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							notesCollections = solrNotesRepository.findCustomNotes(doctorId, new Date(createdTimeStamp),
+									discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
+					} else {
+						if (size > 0)
+							notesCollections = solrNotesRepository.findCustomNotes(doctorId, locationId, hospitalId,
+									new Date(createdTimeStamp), discarded, searchTerm, 
+									new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else
+							notesCollections = solrNotesRepository.findCustomNotes(doctorId, locationId, hospitalId,
+									new Date(createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
+					}
+				
+				}
+				}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Notes");
+		}
+		return notesCollections;
+	}
 
 }

@@ -3,10 +3,12 @@ package com.dpdocter.solr.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
@@ -64,12 +66,12 @@ public class SolrPrescriptionApi {
 
     @Path(value = PathProxy.SolrPrescriptionUrls.SEARCH_DRUG)
     @GET
-    public Response<SolrDrugDocument> searchDrug(@PathParam(value = "searchTerm") String searchTerm) {
-	if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
-	    logger.warn("Invalid Input");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-	}
-	List<SolrDrugDocument> complaints = solrPrescriptionService.searchDrug(searchTerm);
+    public Response<SolrDrugDocument> searchDrug(@PathParam("range") String range, @QueryParam("page") int page,
+    	    @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+    	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+    	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
+	
+	List<SolrDrugDocument> complaints = solrPrescriptionService.searchDrug(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 	Response<SolrDrugDocument> response = new Response<SolrDrugDocument>();
 	response.setDataList(complaints);
 	return response;
@@ -77,12 +79,13 @@ public class SolrPrescriptionApi {
 
     @Path(value = PathProxy.SolrPrescriptionUrls.SEARCH_LAB_TEST)
     @GET
-    public Response<SolrLabTestDocument> searchLabTest(@PathParam(value = "searchTerm") String searchTerm) {
-	if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
-	    logger.warn("Invalid Input");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-	}
-	List<SolrLabTestDocument> labTests = solrPrescriptionService.searchLabTest(searchTerm);
+    public Response<SolrLabTestDocument> searchLabTest(@PathParam("range") String range, @QueryParam("page") int page,
+    	    @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+    	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+    	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
+	
+	
+	List<SolrLabTestDocument> labTests = solrPrescriptionService.searchLabTest(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 	Response<SolrLabTestDocument> response = new Response<SolrLabTestDocument>();
 	response.setDataList(labTests);
 	return response;

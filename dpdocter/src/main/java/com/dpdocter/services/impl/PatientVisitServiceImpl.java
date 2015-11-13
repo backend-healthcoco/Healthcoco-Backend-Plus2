@@ -590,12 +590,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    mailAttachments.add(mailAttachment);
 		    if (patientVisitCollection.getRecordId() != null) {
 			for (String recordId : patientVisitCollection.getRecordId()) {
-			    mailAttachment = recordsService.getRecordMailData(recordId);
+				Records record = recordsService.getRecordById(recordId);
+			    mailAttachment = recordsService.getRecordMailData(recordId, record.getDoctorId(), record.getLocationId(), record.getHospitalId());
 			    if (mailAttachment != null)
 				mailAttachments.add(mailAttachment);
 			}
 		    }
-		    mailService.sendEmailMultiAttach(emailAddress, "Clinical Notes", "PFA.", mailAttachments);
+		    mailService.sendEmailMultiAttach(emailAddress, "Patient Visit", "PFA.", mailAttachments);
 
 		    emailTrackCollection.setDoctorId(patientVisitCollection.getDoctorId());
 		    emailTrackCollection.setHospitalId(patientVisitCollection.getHospitalId());

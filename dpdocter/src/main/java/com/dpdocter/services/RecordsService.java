@@ -23,9 +23,9 @@ public interface RecordsService {
 
     Records getRecordById(String recordId);
 
-    void emailRecordToPatient(String recordId, String emailAddress);
+    void emailRecordToPatient(String recordId, String doctorId, String locationId, String hospitalId, String emailAddress);
 
-    MailAttachment getRecordMailData(String recordId);
+    MailAttachment getRecordMailData(String recordId, String doctorId, String locationId, String hospitalId);
 
     Tags addEditTag(Tags tags);
 

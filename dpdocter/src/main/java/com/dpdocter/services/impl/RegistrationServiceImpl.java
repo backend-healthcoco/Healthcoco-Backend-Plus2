@@ -53,6 +53,7 @@ import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientAdmissionCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
+import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.ProfessionCollection;
 import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.RoleCollection;
@@ -78,6 +79,7 @@ import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientGroupRepository;
 import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.ProfessionRepository;
 import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.RoleRepository;
@@ -98,6 +100,7 @@ import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.sms.services.SMSServices;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -173,6 +176,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Autowired
     private AccessControlServices accessControlServices;
+    
+    @Autowired
+    private PrintSettingsRepository printSettingsRepository;
 
     @Value(value = "${mail.signup.subject.activation}")
     private String signupSubject;
@@ -1016,10 +1022,12 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     @Override
-    public List<Profession> getProfession() {
+    public List<Profession> getProfession(int page, int size) {
 	List<Profession> professions = null;
+	List<ProfessionCollection> professionCollections = null;
 	try {
-	    List<ProfessionCollection> professionCollections = professionRepository.findAll();
+	    if(size>0)professionCollections = professionRepository.findAll(new PageRequest(page, size)).getContent();
+	    else professionCollections = professionRepository.findAll();
 	    if (professionCollections != null) {
 		professions = new ArrayList<Profession>();
 		BeanUtil.map(professionCollections, professions);
@@ -1053,6 +1061,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    locationCollection.setLogoThumbnailUrl(thumbnailUrl);
 		    locationCollection = locationRepository.save(locationCollection);
 
+		    List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository.findByLocationId(request.getId());
+		    if(printSettingsCollections != null){
+		    	for(PrintSettingsCollection printSettingsCollection : printSettingsCollections){
+		    		printSettingsCollection.setClinicLogoUrl(imageurl);
+		    		printSettingsRepository.save(printSettingsCollection);
+		    	}
+		    }
 		    response = new ClinicLogo();
 		    BeanUtil.map(locationCollection, response);
 		}
