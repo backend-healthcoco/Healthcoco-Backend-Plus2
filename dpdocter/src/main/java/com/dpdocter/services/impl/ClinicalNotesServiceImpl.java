@@ -2101,7 +2101,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    List<PatientClinicalNotesCollection> patientClinicalNotesCollection = patientClinicalNotesRepository.findByClinicalNotesId(clinicalNotesId);
 		    if (patientClinicalNotesCollection != null && !patientClinicalNotesCollection.isEmpty()) {
 			patientId = patientClinicalNotesCollection.get(0).getPatientId();
-			patientAdmission = patientAdmissionRepository.findByPatientIdAndDoctorId(patientId, doctorId);
+			patientAdmission = patientAdmissionRepository.findByUserIdAndDoctorId(patientId, doctorId);
 		    } else {
 			logger.warn("No patient found");
 			throw new BusinessException(ServiceError.NotFound, "No patient found");
@@ -2113,7 +2113,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    emailTrackCollection.setHospitalId(hospitalId);
 		    emailTrackCollection.setLocationId(locationId);
 		    emailTrackCollection.setType(ComponentType.CLINICAL_NOTES.getType());
-		    emailTrackCollection.setSubject("Prescription");
+		    emailTrackCollection.setSubject("Clinical Notes");
 		    if (user != null) {
 			emailTrackCollection.setPatientName(user.getFirstName());
 			emailTrackCollection.setPatientId(user.getId());

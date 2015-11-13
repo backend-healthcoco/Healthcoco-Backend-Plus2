@@ -389,12 +389,12 @@ public class PrescriptionApi {
     @GET
     public Response<Prescription> getPrescription(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
 	    @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId, @QueryParam("patientId") String patientId,
-	    @DefaultValue("false") @QueryParam("isOTPVarified") Boolean isOTPVarified, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
-	    @DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
+	    @DefaultValue("false") @QueryParam("isOTPVerified") Boolean isOTPVerified, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
+	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 
 	List<Prescription> prescriptions = null;
 
-	prescriptions = prescriptionServices.getPrescriptions(page, size, doctorId, hospitalId, locationId, patientId, updatedTime, isOTPVarified, discarded);
+	prescriptions = prescriptionServices.getPrescriptions(page, size, doctorId, hospitalId, locationId, patientId, updatedTime, isOTPVerified, discarded);
 
 	Response<Prescription> response = new Response<Prescription>();
 	response.setDataList(prescriptions);

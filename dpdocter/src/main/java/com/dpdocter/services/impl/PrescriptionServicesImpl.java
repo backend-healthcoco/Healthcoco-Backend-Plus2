@@ -2373,15 +2373,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    }
 			    parameters.put("prescriptionItems", prescriptionItems);
 			}
-			patient = patientRepository.findOne(prescriptionCollection.getPatientId());
-			patientAdmission = patientAdmissionRepository.findByPatientIdAndDoctorId(prescriptionCollection.getPatientId(), doctorId);
-
-			if (patient != null) {
-			    user = userRepository.findOne(patient.getUserId());
-			} else {
-			    user = userRepository.findOne(prescriptionCollection.getPatientId());
-			    patient = patientRepository.findByUserId(prescriptionCollection.getPatientId());
-			}
+			
+			patientAdmission = patientAdmissionRepository.findByUserIdAndDoctorId(prescriptionCollection.getPatientId(), doctorId);
+			user = userRepository.findOne(prescriptionCollection.getPatientId());
+			patient = patientRepository.findByUserId(prescriptionCollection.getPatientId());
+			
 			emailTrackCollection.setDoctorId(doctorId);
 			emailTrackCollection.setHospitalId(hospitalId);
 			emailTrackCollection.setLocationId(locationId);

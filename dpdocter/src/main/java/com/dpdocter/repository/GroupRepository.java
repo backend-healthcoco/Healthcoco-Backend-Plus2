@@ -56,16 +56,16 @@ public interface GroupRepository extends MongoRepository<GroupCollection, String
     @Query("{'name': ?0}")
     public List<GroupCollection> findByName(String name);
 
-    @Query("{'doctorId': ?0, 'discarded': {$in: ?1}}")
-    public List<GroupCollection> findAll(String doctorId, boolean[] discarded, Pageable pageRequest);
+    @Query("{'doctorId': ?0, 'discarded': {$in: ?1}, 'updatedTime': {'$gte': ?2}}")
+    public List<GroupCollection> findAll(String doctorId, boolean[] discarded, Date date, Pageable pageRequest);
 
-    @Query("{'doctorId': ?0, 'discarded': {$in: ?1}}")
-    public List<GroupCollection> findAll(String doctorId, boolean[] discarded, Sort sort);
+    @Query("{'doctorId': ?0, 'discarded': {$in: ?1}, 'updatedTime': {'$gte': ?2}}")
+    public List<GroupCollection> findAll(String doctorId, boolean[] discarded, Date date, Sort sort);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': {$in: ?3}}")
-    public List<GroupCollection> findAll(String doctorId, String locationId, String hospitalId, boolean[] discarded, Pageable pageRequest);
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': {$in: ?3}, 'updatedTime': {'$gte': ?4}}")
+    public List<GroupCollection> findAll(String doctorId, String locationId, String hospitalId, boolean[] discarded, Date date, Pageable pageRequest);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': {$in: ?3}}")
-    public List<GroupCollection> findAll(String doctorId, String locationId, String hospitalId, boolean[] discarded, Sort sort);
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': {$in: ?3}, 'updatedTime': {'$gte': ?4}}")
+    public List<GroupCollection> findAll(String doctorId, String locationId, String hospitalId, boolean[] discarded, Date date, Sort sort);
 
 }

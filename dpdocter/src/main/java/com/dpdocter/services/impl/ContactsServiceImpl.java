@@ -167,12 +167,12 @@ public class ContactsServiceImpl implements ContactsService {
 	Query queryForGettingPatientsFromPatientIds = new Query();
 	if (!DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId) && patientIds != null && !patientIds.isEmpty()) {
 	    queryForGettingPatientsFromPatientIds.addCriteria(Criteria
-		    .where("id")
+		    .where("userId")
 		    .in(patientIds)
 		    .andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
 			    Criteria.where("hospitalId").is(hospitalId)));
 	} else if (patientIds != null && !patientIds.isEmpty() && !DPDoctorUtils.anyStringEmpty(doctorId)) {
-	    queryForGettingPatientsFromPatientIds.addCriteria(Criteria.where("id").in(patientIds).andOperator(Criteria.where("doctorId").is(doctorId)));
+	    queryForGettingPatientsFromPatientIds.addCriteria(Criteria.where("userId").in(patientIds).andOperator(Criteria.where("doctorId").is(doctorId)));
 	} else {
 	    return new ArrayList<PatientCard>(0);
 	}
@@ -181,7 +181,7 @@ public class ContactsServiceImpl implements ContactsService {
 	for (PatientCollection patientCollection : patientCollections) {
 	    UserCollection userCollection = userRepository.findOne(patientCollection.getUserId());
 	    if (userCollection != null) {
-		List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getId());
+		List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getUserId());
 		@SuppressWarnings("unchecked")
 		Collection<String> groupIds = CollectionUtils.collect(patientGroupCollections, new BeanToPropertyValueTransformer("groupId"));
 		List<Group> groups = new ArrayList<Group>();
@@ -192,7 +192,8 @@ public class ContactsServiceImpl implements ContactsService {
 		BeanUtil.map(userCollection, patientCard);
 		patientCard.setGroups(groups);
 		patientCard.setDob(userCollection.getDob());
-		patientCard.setDoctorSepecificPatientId(patientCollection.getId());
+		patientCard.setDoctorSepecificPatientId(patientCollection.getUserId()
+				);
 		patientCards.add(patientCard);
 	    }
 	}
@@ -398,18 +399,19 @@ public class ContactsServiceImpl implements ContactsService {
 	    if (discarded) {
 		discards[1] = true;
 	    }
+	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
-		    groupCollections = groupRepository.findAll(doctorId, discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+		    groupCollections = groupRepository.findAll(doctorId, discards, new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		} else {
-		    groupCollections = groupRepository.findAll(doctorId, locationId, hospitalId, discards, new PageRequest(page, size, Direction.DESC,
+		    groupCollections = groupRepository.findAll(doctorId, locationId, hospitalId, discards, new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC,
 			    "updatedTime"));
 		}
 	    } else {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
-		    groupCollections = groupRepository.findAll(doctorId, discards, new Sort(Sort.Direction.DESC, "updatedTime"));
+		    groupCollections = groupRepository.findAll(doctorId, discards, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
-		    groupCollections = groupRepository.findAll(doctorId, locationId, hospitalId, discards, new Sort(Sort.Direction.DESC, "updatedTime"));
+		    groupCollections = groupRepository.findAll(doctorId, locationId, hospitalId, discards, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
 		}
 	    }
 
@@ -499,7 +501,7 @@ public class ContactsServiceImpl implements ContactsService {
 		    if (patientCollection.getAddressId() != null) {
 			addressCollection = addressRepository.findOne(patientCollection.getAddressId());
 		    }
-		    List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getId());
+		    List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getUserId());
 		    @SuppressWarnings("unchecked")
 		    Collection<String> groupIds = CollectionUtils.collect(patientGroupCollections, new BeanToPropertyValueTransformer("groupId"));
 		    RegisteredPatientDetails registeredPatientDetail = new RegisteredPatientDetails();

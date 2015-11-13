@@ -14,11 +14,16 @@ import com.dpdocter.collections.PatientAdmissionCollection;
 public interface PatientAdmissionRepository extends MongoRepository<PatientAdmissionCollection, String>,
 	PagingAndSortingRepository<PatientAdmissionCollection, String> {
 
+	@Query("{'userId':?0}")
     PatientAdmissionCollection findByUserId(String userId);
 
+    @Query("{'doctorId':?0}")
     List<PatientAdmissionCollection> findDistinctPatientByDoctorId(String doctorId, Pageable pageable);
 
     @Query("{'patientId':?0,'doctorId':?1}")
     PatientAdmissionCollection findByPatientIdAndDoctorId(String patientId, String doctorId);
+
+    @Query("{'userId':?0,'doctorId':?1}")
+    PatientAdmissionCollection findByUserIdAndDoctorId(String userId, String doctorId);
 
 }

@@ -237,7 +237,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    PatientVisitCollection patientTrackCollection = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId);
 	    PatientCollection patientCollection = patientRepository.findByUserId(patientId);
 	    if (patientCollection != null) {
-		patientTrackCollection.setPatientId(patientCollection.getId());
+		patientTrackCollection.setPatientId(patientCollection.getUserId());
 	    }
 	    if (patientTrackCollection == null) {
 		patientTrackCollection = new PatientVisitCollection();

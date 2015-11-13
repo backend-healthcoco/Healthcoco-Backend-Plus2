@@ -52,7 +52,7 @@ public interface PrescriptionServices {
     Boolean deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId, String patientId, Boolean discarded);
 
     List<Prescription> getPrescriptions(int page, int size, String doctorId, String hospitalId, String locationId, String patientId, String updatedTime,
-	    boolean isOTPVarified, boolean discarded);
+	    boolean isOTPVerified, boolean discarded);
 
     List<Prescription> getPrescriptionsByIds(List<String> prescriptionIds);
 

@@ -293,7 +293,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		for (String group : request.getGroups()) {
 		    PatientGroupCollection patientGroupCollection = new PatientGroupCollection();
 		    patientGroupCollection.setGroupId(group);
-		    patientGroupCollection.setPatientId(patientCollection.getId());
+		    patientGroupCollection.setPatientId(patientCollection.getUserId());
 		    patientGroupCollection.setCreatedTime(new Date());
 		    patientGroupRepository.save(patientGroupCollection);
 		}
@@ -303,7 +303,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		DoctorContactCollection doctorContactCollection = new DoctorContactCollection();
 		doctorContactCollection.setCreatedTime(createdTime);
 		doctorContactCollection.setDoctorId(request.getDoctorId());
-		doctorContactCollection.setContactId(patientCollection.getId());
+		doctorContactCollection.setContactId(patientCollection.getUserId());
 		doctorContactsRepository.save(doctorContactCollection);
 	    }
 	    /*
@@ -431,7 +431,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    }
 	    // assign groups
 	    if (request.getGroups() != null) {
-		List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getId());
+		List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getUserId());
 		if (patientGroupCollections != null) {
 		    for (PatientGroupCollection patientGroupCollection : patientGroupCollections) {
 			patientGroupRepository.delete(patientGroupCollection);
@@ -440,7 +440,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		for (String group : request.getGroups()) {
 		    PatientGroupCollection patientGroupCollection = new PatientGroupCollection();
 		    patientGroupCollection.setGroupId(group);
-		    patientGroupCollection.setPatientId(patientCollection.getId());
+		    patientGroupCollection.setPatientId(patientCollection.getUserId());
 		    patientGroupCollection.setCreatedTime(new Date());
 		    patientGroupRepository.save(patientGroupCollection);
 		}
@@ -449,12 +449,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    // add into doctor contact
 	    if (request.getDoctorId() != null) {
 		DoctorContactCollection doctorContactCollection = null;
-		doctorContactCollection = doctorContactsRepository.findByDoctorIdAndContactId(request.getDoctorId(), patientCollection.getId());
+		doctorContactCollection = doctorContactsRepository.findByDoctorIdAndContactId(request.getDoctorId(), patientCollection.getUserId());
 		if (doctorContactCollection == null) {
 		    doctorContactCollection = new DoctorContactCollection();
 		    doctorContactCollection.setCreatedTime(new Date());
 		    doctorContactCollection.setDoctorId(request.getDoctorId());
-		    doctorContactCollection.setContactId(patientCollection.getId());
+		    doctorContactCollection.setContactId(patientCollection.getUserId());
 		    doctorContactsRepository.save(doctorContactCollection);
 		}
 
@@ -564,7 +564,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    if (patientCollection.getAddressId() != null) {
 			addressCollection = addressRepository.findOne(patientCollection.getAddressId());
 		    }
-		    List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getId());
+		    List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getUserId());
 		    @SuppressWarnings("unchecked")
 		    Collection<String> groupIds = CollectionUtils.collect(patientGroupCollections, new BeanToPropertyValueTransformer("groupId"));
 		    registeredPatientDetails = new RegisteredPatientDetails();
