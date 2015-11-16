@@ -26,10 +26,10 @@ public interface SolrComplaintsRepository extends SolrCrudRepository<SolrComplai
     @Query("updatedTime: {?0 TO *} AND ( discarded: ?1 OR discarded:false)")
     public List<SolrComplaintsDocument> findCustomGlobalComplaints(Date date, Boolean discarded, Sort sort);
 
-    @Query("( doctorId:*?0* AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)) OR (doctorId:\"\" AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false))")
+    @Query("( doctorId:*?0* AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)) OR (doctorId:null AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false))")
     public List<SolrComplaintsDocument> findCustomGlobalComplaints(String doctorId, Date date, Boolean discarded, Pageable pageRequest);
 
-    @Query("( doctorId:*?0* AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)) OR (doctorId:\"\" AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false))")
+    @Query("( doctorId:*?0* AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)) OR (doctorId:null AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false))")
     public List<SolrComplaintsDocument> findCustomGlobalComplaints(String doctorId, Date date, Boolean discarded, Sort sort);
 
     @Query("(doctorId:*?0* AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false) AND complaint:*?3*) OR (doctorId:\"\" AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false) AND complaint:*?3*)")
