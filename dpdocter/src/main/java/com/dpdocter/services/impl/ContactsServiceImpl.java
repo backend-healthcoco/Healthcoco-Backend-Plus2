@@ -192,8 +192,7 @@ public class ContactsServiceImpl implements ContactsService {
 		BeanUtil.map(userCollection, patientCard);
 		patientCard.setGroups(groups);
 		patientCard.setDob(userCollection.getDob());
-		patientCard.setDoctorSepecificPatientId(patientCollection.getUserId()
-				);
+		patientCard.setDoctorSepecificPatientId(patientCollection.getUserId());
 		patientCards.add(patientCard);
 	    }
 	}
@@ -402,16 +401,18 @@ public class ContactsServiceImpl implements ContactsService {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
-		    groupCollections = groupRepository.findAll(doctorId, discards, new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC, "updatedTime"));
-		} else {
-		    groupCollections = groupRepository.findAll(doctorId, locationId, hospitalId, discards, new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC,
+		    groupCollections = groupRepository.findAll(doctorId, discards, new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC,
 			    "updatedTime"));
+		} else {
+		    groupCollections = groupRepository.findAll(doctorId, locationId, hospitalId, discards, new Date(createdTimeStamp), new PageRequest(page,
+			    size, Direction.DESC, "updatedTime"));
 		}
 	    } else {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 		    groupCollections = groupRepository.findAll(doctorId, discards, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
-		    groupCollections = groupRepository.findAll(doctorId, locationId, hospitalId, discards, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+		    groupCollections = groupRepository.findAll(doctorId, locationId, hospitalId, discards, new Date(createdTimeStamp), new Sort(
+			    Sort.Direction.DESC, "updatedTime"));
 		}
 	    }
 

@@ -104,10 +104,10 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 		}
 
 	    }
-	    
+
 	    LocationCollection locationCollection = locationRepository.findOne(request.getLocationId());
-	    if(locationCollection != null){
-	    	printSettingsCollection.setClinicLogoUrl(locationCollection.getLogoUrl());
+	    if (locationCollection != null) {
+		printSettingsCollection.setClinicLogoUrl(locationCollection.getLogoUrl());
 	    }
 	    printSettingsCollection = printSettingsRepository.save(printSettingsCollection);
 	    BeanUtil.map(printSettingsCollection, response);

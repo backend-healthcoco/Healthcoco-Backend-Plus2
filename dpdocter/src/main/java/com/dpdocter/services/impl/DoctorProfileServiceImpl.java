@@ -681,8 +681,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	List<EducationInstitute> educationInstitutes = null;
 	List<EducationInstituteCollection> educationInstituteCollections = null;
 	try {
-	    if(size>0)educationInstituteCollections = educationInstituteRepository.findAll(new PageRequest(page, size)).getContent();
-	    else educationInstituteCollections = educationInstituteRepository.findAll();
+	    if (size > 0)
+		educationInstituteCollections = educationInstituteRepository.findAll(new PageRequest(page, size)).getContent();
+	    else
+		educationInstituteCollections = educationInstituteRepository.findAll();
 	    educationInstitutes = new ArrayList<EducationInstitute>();
 	    BeanUtil.map(educationInstituteCollections, educationInstitutes);
 	} catch (Exception e) {
@@ -698,8 +700,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	List<EducationQualification> qualifications = null;
 	List<EducationQualificationCollection> qualificationCollections = null;
 	try {
-	    if(size > 0)qualificationCollections = educationQualificationRepository.findAll(new PageRequest(page, size)).getContent();
-	    else qualificationCollections = educationQualificationRepository.findAll();
+	    if (size > 0)
+		qualificationCollections = educationQualificationRepository.findAll(new PageRequest(page, size)).getContent();
+	    else
+		qualificationCollections = educationQualificationRepository.findAll();
 	    qualifications = new ArrayList<EducationQualification>();
 	    BeanUtil.map(qualificationCollections, qualifications);
 	} catch (Exception e) {

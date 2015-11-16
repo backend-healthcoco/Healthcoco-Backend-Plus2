@@ -476,41 +476,44 @@ public interface PathProxy {
 
 	public static final String SEARCH_OBSERVATIONS = "searchObservations/{range}";
 
-//	public static final String ADD_COMPLAINTS = "addComplaints/";
-//
-//	public static final String EDIT_COMPLAINTS = "editComplaints/";
-//
-//	public static final String DELETE_COMPLAINTS = "deleteComplaints/";
-//
-//	public static final String ADD_DIAGNOSES = "addDiagnoses/";
-//
-//	public static final String EDIT_DIAGNOSES = "editDiagnoses/";
-//
-//	public static final String DELETE_DIAGNOSES = "deleteDiagnoses/";
-//
-//	public static final String ADD_NOTES = "addNotes/";
-//
-//	public static final String EDIT_NOTES = "editNotes/";
-//
-//	public static final String DELETE_NOTES = "deleteNotes/";
-//
-//	public static final String ADD_DIAGRAMS = "addDiagrams/";
-//
-//	public static final String EDIT_DIAGRAMS = "editDiagrams/";
-//
-//	public static final String DELETE_DIAGRAMS = "deleteDiagrams/";
-//
-//	public static final String ADD_INVESTIGATIONS = "addInvestigations/";
-//
-//	public static final String EDIT_INVESTIGATIONS = "editInvestigations/";
-//
-//	public static final String DELETE_INVESTIGATIONS = "deleteInvestigations/";
-//
-//	public static final String ADD_OBSERVATIONS = "addObservations/";
-//	
-//	public static final String EDIT_OBSERVATIONS = "editObservations/";
-//
-//	public static final String DELETE_OBSERVATIONS = "deleteObservations/";
+	// public static final String ADD_COMPLAINTS = "addComplaints/";
+	//
+	// public static final String EDIT_COMPLAINTS = "editComplaints/";
+	//
+	// public static final String DELETE_COMPLAINTS = "deleteComplaints/";
+	//
+	// public static final String ADD_DIAGNOSES = "addDiagnoses/";
+	//
+	// public static final String EDIT_DIAGNOSES = "editDiagnoses/";
+	//
+	// public static final String DELETE_DIAGNOSES = "deleteDiagnoses/";
+	//
+	// public static final String ADD_NOTES = "addNotes/";
+	//
+	// public static final String EDIT_NOTES = "editNotes/";
+	//
+	// public static final String DELETE_NOTES = "deleteNotes/";
+	//
+	// public static final String ADD_DIAGRAMS = "addDiagrams/";
+	//
+	// public static final String EDIT_DIAGRAMS = "editDiagrams/";
+	//
+	// public static final String DELETE_DIAGRAMS = "deleteDiagrams/";
+	//
+	// public static final String ADD_INVESTIGATIONS = "addInvestigations/";
+	//
+	// public static final String EDIT_INVESTIGATIONS =
+	// "editInvestigations/";
+	//
+	// public static final String DELETE_INVESTIGATIONS =
+	// "deleteInvestigations/";
+	//
+	// public static final String ADD_OBSERVATIONS = "addObservations/";
+	//
+	// public static final String EDIT_OBSERVATIONS = "editObservations/";
+	//
+	// public static final String DELETE_OBSERVATIONS =
+	// "deleteObservations/";
     }
 
     public static final String SOLR_PRESCRIPTION_BASEURL = BASE_URL + "/solr/prescription";

@@ -11,8 +11,8 @@ import com.dpdocter.collections.RoleCollection;
  */
 @Repository
 public interface RoleRepository extends MongoRepository<RoleCollection, String> {
-	
-	@Query("{'role':?0}")
+
+    @Query("{'role':?0}")
     public RoleCollection findByRole(String role);
 
 }

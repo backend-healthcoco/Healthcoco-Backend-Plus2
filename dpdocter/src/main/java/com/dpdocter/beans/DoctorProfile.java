@@ -217,31 +217,29 @@ public class DoctorProfile {
 	this.professionalMemberships = professionalMemberships;
     }
 
-	public String getThumbnailUrl() {
-		return thumbnailUrl;
-	}
+    public String getThumbnailUrl() {
+	return thumbnailUrl;
+    }
 
-	public void setThumbnailUrl(String thumbnailUrl) {
-		this.thumbnailUrl = thumbnailUrl;
-	}
+    public void setThumbnailUrl(String thumbnailUrl) {
+	this.thumbnailUrl = thumbnailUrl;
+    }
 
-	public List<DoctorClinicProfile> getClinicProfile() {
-		return clinicProfile;
-	}
+    public List<DoctorClinicProfile> getClinicProfile() {
+	return clinicProfile;
+    }
 
-	public void setClinicProfile(List<DoctorClinicProfile> clinicProfile) {
-		this.clinicProfile = clinicProfile;
-	}
+    public void setClinicProfile(List<DoctorClinicProfile> clinicProfile) {
+	this.clinicProfile = clinicProfile;
+    }
 
-	@Override
-	public String toString() {
-		return "DoctorProfile [id=" + id + ", userId=" + userId + ", title=" + title + ", firstName=" + firstName
-				+ ", lastName=" + lastName + ", middleName=" + middleName + ", emailAddress=" + emailAddress
-				+ ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl=" + imageUrl + ", thumbnailUrl="
-				+ thumbnailUrl + ", dob=" + dob + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses="
-				+ otherEmailAddresses + ", experience=" + experience + ", education=" + education + ", specialities="
-				+ specialities + ", achievements=" + achievements + ", professionalStatement=" + professionalStatement
-				+ ", registrationDetails=" + registrationDetails + ", experienceDetails=" + experienceDetails
-				+ ", professionalMemberships=" + professionalMemberships + ", clinicProfile=" + clinicProfile + "]";
-	}
+    @Override
+    public String toString() {
+	return "DoctorProfile [id=" + id + ", userId=" + userId + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName="
+		+ middleName + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl=" + imageUrl
+		+ ", thumbnailUrl=" + thumbnailUrl + ", dob=" + dob + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses="
+		+ otherEmailAddresses + ", experience=" + experience + ", education=" + education + ", specialities=" + specialities + ", achievements="
+		+ achievements + ", professionalStatement=" + professionalStatement + ", registrationDetails=" + registrationDetails + ", experienceDetails="
+		+ experienceDetails + ", professionalMemberships=" + professionalMemberships + ", clinicProfile=" + clinicProfile + "]";
+    }
 }

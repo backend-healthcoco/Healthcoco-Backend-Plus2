@@ -77,7 +77,8 @@ public class PrintSettingsApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request cannot be null");
 	}
 	PrintSettings printSettings = printSettingsService.saveSettings(request);
-	if(printSettings != null)printSettings.setClinicLogoUrl(getFinalImageURL(printSettings.getClinicLogoUrl()));
+	if (printSettings != null)
+	    printSettings.setClinicLogoUrl(getFinalImageURL(printSettings.getClinicLogoUrl()));
 	Response<PrintSettings> response = new Response<PrintSettings>();
 	response.setData(printSettings);
 	return response;
@@ -95,10 +96,10 @@ public class PrintSettingsApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "PrintFilter, DoctorId or locationId or hospitalId cannot be null");
 	}
 	List<PrintSettings> printSettings = printSettingsService.getSettings(printFilter, doctorId, locationId, hospitalId, page, size, updatedTime, discarded);
-	if(printSettings != null){
-		for(PrintSettings pSettings : printSettings){
-			pSettings.setClinicLogoUrl(getFinalImageURL(pSettings.getClinicLogoUrl()));
-		}
+	if (printSettings != null) {
+	    for (PrintSettings pSettings : printSettings) {
+		pSettings.setClinicLogoUrl(getFinalImageURL(pSettings.getClinicLogoUrl()));
+	    }
 	}
 	Response<PrintSettings> response = new Response<PrintSettings>();
 	response.setDataList(printSettings);
@@ -119,7 +120,7 @@ public class PrintSettingsApi {
 	response.setData(printSettings);
 	return response;
     }
-   
+
     private String getFinalImageURL(String imageURL) {
 	if (imageURL != null) {
 	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
@@ -127,6 +128,6 @@ public class PrintSettingsApi {
 	} else
 	    return null;
 
-}
+    }
 
 }

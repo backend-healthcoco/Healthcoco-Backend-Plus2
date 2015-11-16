@@ -1,5 +1,10 @@
 package common.util.web;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
@@ -50,6 +55,13 @@ public class DPDoctorUtils {
 	String imageUrlRootPath = dpDoctorUtils.imageUrlRootPath;
 	String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
 	return finalImageURL;
+    }
+
+    public static String formatAsSolrDate(Date date) {
+	DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+	df.setTimeZone(TimeZone.getTimeZone("UTC"));
+	String solrDate = df.format(date);
+	return solrDate;
     }
 
     private static DPDoctorUtils getInstance() {

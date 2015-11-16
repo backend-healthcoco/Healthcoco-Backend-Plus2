@@ -29,7 +29,6 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.DrugDirection;
-import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Prescription;
@@ -105,7 +104,6 @@ import com.dpdocter.sms.services.SMSServices;
 import com.dpdocter.solr.document.SolrDrugDocument;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.PrescriptionUtils;
 
@@ -2373,11 +2371,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    }
 			    parameters.put("prescriptionItems", prescriptionItems);
 			}
-			
+
 			patientAdmission = patientAdmissionRepository.findByUserIdAndDoctorId(prescriptionCollection.getPatientId(), doctorId);
 			user = userRepository.findOne(prescriptionCollection.getPatientId());
 			patient = patientRepository.findByUserId(prescriptionCollection.getPatientId());
-			
+
 			emailTrackCollection.setDoctorId(doctorId);
 			emailTrackCollection.setHospitalId(hospitalId);
 			emailTrackCollection.setLocationId(locationId);
@@ -2486,7 +2484,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			UserCollection userCollection = userRepository.findOne(prescriptionCollection.getPatientId());
 			PatientCollection patientCollection = patientRepository.findByUserId(prescriptionCollection.getPatientId());
-//			LocationCollection location = locationRepository.findOne(locationId);
+			// LocationCollection location =
+			// locationRepository.findOne(locationId);
 			if (patientCollection != null) {
 			    String prescriptionDetails = "";
 			    int i = 0;
@@ -2705,36 +2704,38 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		System.out.println(i++);
 		String[] obj = line.split(cvsSplitBy);
 		String drugType = obj[1];
-//		DrugTypeCollection drugTypeCollection = null;
-//		if (drugType.equals("TAB")) {
-//		    drugTypeCollection = drugTypeRepository.findByType("TABLET");
-//		} else if (drugType.equals("CAP")) {
-//		    drugTypeCollection = drugTypeRepository.findByType("CAPSULE");
-//		} else if (drugType.equals("OINT")) {
-//		    drugTypeCollection = drugTypeRepository.findByType("OINTMENT");
-//		} else if (drugType.equals("SYP")) {
-//		    drugTypeCollection = drugTypeRepository.findByType("SYRUP");
-//		}
-//
-//		DrugType type = null;
-//		if (drugTypeCollection != null) {
-//		    type = new DrugType();
-//		    drugTypeCollection.setType(drugType);
-//		    BeanUtil.map(drugTypeCollection, type);
-//
-//		}
-//
-//		DrugCollection drugCollection = new DrugCollection();
-//		drugCollection.setCreatedBy("ADMIN");
-//		drugCollection.setCreatedTime(new Date());
-//		drugCollection.setDiscarded(false);
-//		drugCollection.setDrugName(obj[0]);
-//		drugCollection.setDrugType(type);
-//		drugCollection.setDoctorId(null);
-//		drugCollection.setHospitalId(null);
-//		drugCollection.setLocationId(null);
-//
-//		drugRepository.save(drugCollection);
+		// DrugTypeCollection drugTypeCollection = null;
+		// if (drugType.equals("TAB")) {
+		// drugTypeCollection = drugTypeRepository.findByType("TABLET");
+		// } else if (drugType.equals("CAP")) {
+		// drugTypeCollection =
+		// drugTypeRepository.findByType("CAPSULE");
+		// } else if (drugType.equals("OINT")) {
+		// drugTypeCollection =
+		// drugTypeRepository.findByType("OINTMENT");
+		// } else if (drugType.equals("SYP")) {
+		// drugTypeCollection = drugTypeRepository.findByType("SYRUP");
+		// }
+		//
+		// DrugType type = null;
+		// if (drugTypeCollection != null) {
+		// type = new DrugType();
+		// drugTypeCollection.setType(drugType);
+		// BeanUtil.map(drugTypeCollection, type);
+		//
+		// }
+		//
+		// DrugCollection drugCollection = new DrugCollection();
+		// drugCollection.setCreatedBy("ADMIN");
+		// drugCollection.setCreatedTime(new Date());
+		// drugCollection.setDiscarded(false);
+		// drugCollection.setDrugName(obj[0]);
+		// drugCollection.setDrugType(type);
+		// drugCollection.setDoctorId(null);
+		// drugCollection.setHospitalId(null);
+		// drugCollection.setLocationId(null);
+		//
+		// drugRepository.save(drugCollection);
 
 		SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
 		solrDrugDocument.setDrugName(obj[1]);
@@ -2744,7 +2745,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		solrDrugDocument.setHospitalId(null);
 		solrDrugDocument.setLocationId(null);
 		solrDrugDocument.setDrugCode(null);
-		
+
 	    }
 	} catch (FileNotFoundException e) {
 	    e.printStackTrace();

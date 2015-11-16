@@ -43,7 +43,6 @@ import com.dpdocter.request.DoctorRegistrationAddEditRequest;
 import com.dpdocter.request.DoctorSpecialityAddEditRequest;
 import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
 import com.dpdocter.services.DoctorProfileService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -247,7 +246,7 @@ public class DoctorProfileApi {
     @Path(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE)
     @GET
     public Response<DoctorProfile> getDoctorProfile(@PathParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
-    	    @QueryParam("hospitalId") String hospitalId) {
+	    @QueryParam("hospitalId") String hospitalId) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 	    logger.warn("Doctor Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");

@@ -100,7 +100,6 @@ import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.sms.services.SMSServices;
-
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -176,7 +175,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Autowired
     private AccessControlServices accessControlServices;
-    
+
     @Autowired
     private PrintSettingsRepository printSettingsRepository;
 
@@ -1026,8 +1025,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 	List<Profession> professions = null;
 	List<ProfessionCollection> professionCollections = null;
 	try {
-	    if(size>0)professionCollections = professionRepository.findAll(new PageRequest(page, size)).getContent();
-	    else professionCollections = professionRepository.findAll();
+	    if (size > 0)
+		professionCollections = professionRepository.findAll(new PageRequest(page, size)).getContent();
+	    else
+		professionCollections = professionRepository.findAll();
 	    if (professionCollections != null) {
 		professions = new ArrayList<Profession>();
 		BeanUtil.map(professionCollections, professions);
@@ -1062,11 +1063,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    locationCollection = locationRepository.save(locationCollection);
 
 		    List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository.findByLocationId(request.getId());
-		    if(printSettingsCollections != null){
-		    	for(PrintSettingsCollection printSettingsCollection : printSettingsCollections){
-		    		printSettingsCollection.setClinicLogoUrl(imageurl);
-		    		printSettingsRepository.save(printSettingsCollection);
-		    	}
+		    if (printSettingsCollections != null) {
+			for (PrintSettingsCollection printSettingsCollection : printSettingsCollections) {
+			    printSettingsCollection.setClinicLogoUrl(imageurl);
+			    printSettingsRepository.save(printSettingsCollection);
+			}
 		    }
 		    response = new ClinicLogo();
 		    BeanUtil.map(locationCollection, response);

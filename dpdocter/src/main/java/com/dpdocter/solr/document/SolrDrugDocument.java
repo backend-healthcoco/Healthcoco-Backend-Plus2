@@ -2,7 +2,10 @@ package com.dpdocter.solr.document;
 
 import java.util.Date;
 
+import javax.ws.rs.DefaultValue;
+
 import org.apache.solr.client.solrj.beans.Field;
+import org.apache.solr.common.util.DateUtil;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.solr.core.mapping.SolrDocument;
 
@@ -22,12 +25,14 @@ public class SolrDrugDocument {
     private String drugCode;
 
     @Field
-    private String doctorId;
+    
+    private String doctorId = "";
 
     @Field
-    private String locationId;
+    private String locationId = "";
 
     @Field
+    @DefaultValue(value = "")
     private String hospitalId;
 
     @Field
@@ -68,51 +73,71 @@ public class SolrDrugDocument {
 	this.drugCode = drugCode;
     }
 
-	public String getDoctorId() {
-		return doctorId;
+    public String getDoctorId() {
+	if (doctorId == null) {
+	    return "";
 	}
+	return doctorId;
+    }
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
+    public void setDoctorId(String doctorId) {
+	if (doctorId == null) {
+	    this.doctorId = "";
+	} else {
+	    this.doctorId = doctorId;
 	}
+    }
 
-	public String getLocationId() {
-		return locationId;
+    public String getLocationId() {
+	if (locationId == null) {
+	    return "";
 	}
+	return locationId;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
+    public void setLocationId(String locationId) {
+	if (locationId == null) {
+	    this.locationId = "";
+	} else {
+	    this.locationId = locationId;
 	}
+    }
 
-	public String getHospitalId() {
-		return hospitalId;
+    public String getHospitalId() {
+	if (hospitalId == null) {
+	    return "";
 	}
+	return hospitalId;
+    }
 
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
+    public void setHospitalId(String hospitalId) {
+	if (hospitalId == null) {
+	    this.hospitalId = "";
+	} else {
+	    this.hospitalId = hospitalId;
 	}
+    }
 
-	public Boolean getDiscarded() {
-		return discarded;
-	}
+    public Boolean getDiscarded() {
+	return discarded;
+    }
 
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
 
-	public Date getUpdatedTime() {
-		return updatedTime;
-	}
+    public Date getUpdatedTime() {
+	return updatedTime;
+    }
 
-	public void setUpdatedTime(Date updatedTime) {
-		this.updatedTime = updatedTime;
-	}
+    public void setUpdatedTime(Date updatedTime) {
+	this.updatedTime = updatedTime;
+    }
 
-	@Override
-	public String toString() {
-		return "SolrDrugDocument [id=" + id + ", drugName=" + drugName + ", description=" + description + ", drugCode="
-				+ drugCode + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", discarded=" + discarded + ", updatedTime=" + updatedTime + "]";
-	}
+    @Override
+    public String toString() {
+	return "SolrDrugDocument [id=" + id + ", drugName=" + drugName + ", description=" + description + ", drugCode=" + drugCode + ", doctorId=" + doctorId
+		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", updatedTime=" + updatedTime + "]";
+    }
 
 }

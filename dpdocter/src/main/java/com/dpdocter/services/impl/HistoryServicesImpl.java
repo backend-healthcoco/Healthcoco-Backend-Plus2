@@ -102,7 +102,7 @@ public class HistoryServicesImpl implements HistoryServices {
 
     @Autowired
     private UserRepository userRepository;
-    
+
     @Autowired
     private LocationRepository locationRepository;
 
@@ -945,10 +945,12 @@ public class HistoryServicesImpl implements HistoryServices {
 		    Records record = recordsService.getRecordById(id.getData().toString());
 		    if (record != null) {
 			UserCollection userCollection = userRepository.findOne(record.getDoctorId());
-			if (userCollection != null)record.setDoctorName(userCollection.getFirstName());
-			if(record.getLocationId() != null){
-				LocationCollection locationCollection = locationRepository.findOne(record.getLocationId());
-				if(locationCollection != null)record.setClinicName(locationCollection.getLocationName());
+			if (userCollection != null)
+			    record.setDoctorName(userCollection.getFirstName());
+			if (record.getLocationId() != null) {
+			    LocationCollection locationCollection = locationRepository.findOne(record.getLocationId());
+			    if (locationCollection != null)
+				record.setClinicName(locationCollection.getLocationName());
 			}
 			generalData.setData(record);
 			generalData.setDataType(HistoryFilter.REPORTS);
@@ -1201,17 +1203,17 @@ public class HistoryServicesImpl implements HistoryServices {
 	    mailAttachments = new ArrayList<MailAttachment>();
 	    /*=====CODE COMMENTED BECAUSE PDF CREATION IS NOT WORKING - UNCOMMENT WHEN FIXED=====*/
 	    for (MailData mailData : medicalData.getMailDataList()) {
-	    switch (mailData.getMailType()) {
-	    case CLINICAL_NOTE:
-	        mailAttachments.add(clinicalNotesService.getClinicalNotesMailData(mailData.getId(), doctorId, locationId, hospitalId));
-	        break;
-	    case PRESCRIPTION:
-	        mailAttachments.add(prescriptionServices.getPrescriptionMailData(mailData.getId(), doctorId, locationId, hospitalId));
-	        break;
-	    case REPORT:
-	        mailAttachments.add(recordsService.getRecordMailData(mailData.getId(), doctorId, locationId, hospitalId));
-	        break;
-	    }
+		switch (mailData.getMailType()) {
+		case CLINICAL_NOTE:
+		    mailAttachments.add(clinicalNotesService.getClinicalNotesMailData(mailData.getId(), doctorId, locationId, hospitalId));
+		    break;
+		case PRESCRIPTION:
+		    mailAttachments.add(prescriptionServices.getPrescriptionMailData(mailData.getId(), doctorId, locationId, hospitalId));
+		    break;
+		case REPORT:
+		    mailAttachments.add(recordsService.getRecordMailData(mailData.getId(), doctorId, locationId, hospitalId));
+		    break;
+		}
 	    }
 	    mailService.sendEmailMultiAttach(emailAddress, "Medical Data", "PFA.", mailAttachments);
 	    response = true;

@@ -24,7 +24,6 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.ClinicalNotes;
@@ -146,10 +145,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
     @Autowired
     private PatientAdmissionRepository patientAdmissionRepository;
-    
+
     @Autowired
     private SolrClinicalNotesService solrClinicalNotesService;
-    
+
     @Context
     private UriInfo uriInfo;
 
@@ -204,11 +203,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			BeanUtil.map(request, observationCollection);
 			observationCollection.setCreatedTime(createdTime);
 			observationCollection = observationRepository.save(observationCollection);
-			
+
 			SolrObservationsDocument solrDocument = new SolrObservationsDocument();
 			BeanUtil.map(observationCollection, solrDocument);
 			solrClinicalNotesService.addObservations(solrDocument);
-			
+
 			observationIds.add(observationCollection.getId());
 		    } else {
 			observationIds.add(observation.getId());
@@ -225,11 +224,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			BeanUtil.map(request, investigationCollection);
 			investigationCollection.setCreatedTime(createdTime);
 			investigationCollection = investigationRepository.save(investigationCollection);
-			
+
 			SolrInvestigationsDocument solrDocument = new SolrInvestigationsDocument();
 			BeanUtil.map(investigationCollection, solrDocument);
 			solrClinicalNotesService.addInvestigations(solrDocument);
-			
+
 			investigationIds.add(investigationCollection.getId());
 		    } else {
 			investigationIds.add(investigation.getId());
@@ -249,7 +248,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			SolrNotesDocument solrDocument = new SolrNotesDocument();
 			BeanUtil.map(notesCollection, solrDocument);
 			solrClinicalNotesService.addNotes(solrDocument);
-			
+
 			noteIds.add(notesCollection.getId());
 		    } else {
 			noteIds.add(note.getId());
@@ -269,7 +268,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			SolrDiagnosesDocument solrDocument = new SolrDiagnosesDocument();
 			BeanUtil.map(diagnosisCollection, solrDocument);
 			solrClinicalNotesService.addDiagnoses(solrDocument);
-			
+
 			diagnosisIds.add(diagnosisCollection.getId());
 		    } else {
 			diagnosisIds.add(diagnosis.getId());
@@ -504,7 +503,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			SolrObservationsDocument solrDocument = new SolrObservationsDocument();
 			BeanUtil.map(observationCollection, solrDocument);
 			solrClinicalNotesService.addObservations(solrDocument);
-			
+
 			observationIds.add(observationCollection.getId());
 		    } else {
 			observationIds.add(observation.getId());
@@ -521,11 +520,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			BeanUtil.map(request, investigationCollection);
 			investigationCollection.setCreatedTime(createdTime);
 			investigationCollection = investigationRepository.save(investigationCollection);
-			
+
 			SolrInvestigationsDocument solrDocument = new SolrInvestigationsDocument();
 			BeanUtil.map(investigationCollection, solrDocument);
 			solrClinicalNotesService.addInvestigations(solrDocument);
-			
+
 			investigationIds.add(investigationCollection.getId());
 		    } else {
 			investigationIds.add(investigation.getId());
@@ -545,7 +544,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			SolrNotesDocument solrDocument = new SolrNotesDocument();
 			BeanUtil.map(notesCollection, solrDocument);
 			solrClinicalNotesService.addNotes(solrDocument);
-			
+
 			noteIds.add(notesCollection.getId());
 		    } else {
 			noteIds.add(note.getId());
@@ -565,7 +564,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			SolrDiagnosesDocument solrDocument = new SolrDiagnosesDocument();
 			BeanUtil.map(diagnosisCollection, solrDocument);
 			solrClinicalNotesService.addDiagnoses(solrDocument);
-			
+
 			diagnosisIds.add(diagnosisCollection.getId());
 		    } else {
 			diagnosisIds.add(diagnosis.getId());

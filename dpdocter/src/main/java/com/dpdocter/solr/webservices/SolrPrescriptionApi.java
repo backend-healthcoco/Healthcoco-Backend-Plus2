@@ -15,13 +15,10 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.exceptions.BusinessException;
-import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.solr.document.SolrDrugDocument;
 import com.dpdocter.solr.document.SolrLabTestDocument;
 import com.dpdocter.solr.services.SolrPrescriptionService;
 import com.dpdocter.webservices.PathProxy;
-import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
 @Component
@@ -66,12 +63,13 @@ public class SolrPrescriptionApi {
 
     @Path(value = PathProxy.SolrPrescriptionUrls.SEARCH_DRUG)
     @GET
-    public Response<SolrDrugDocument> searchDrug(@PathParam("range") String range, @QueryParam("page") int page,
-    	    @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
-    	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
-    	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
-	
-	List<SolrDrugDocument> complaints = solrPrescriptionService.searchDrug(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+    public Response<SolrDrugDocument> searchDrug(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
+	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
+
+	List<SolrDrugDocument> complaints = solrPrescriptionService.searchDrug(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
+		searchTerm);
 	Response<SolrDrugDocument> response = new Response<SolrDrugDocument>();
 	response.setDataList(complaints);
 	return response;
@@ -79,13 +77,13 @@ public class SolrPrescriptionApi {
 
     @Path(value = PathProxy.SolrPrescriptionUrls.SEARCH_LAB_TEST)
     @GET
-    public Response<SolrLabTestDocument> searchLabTest(@PathParam("range") String range, @QueryParam("page") int page,
-    	    @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
-    	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
-    	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
-	
-	
-	List<SolrLabTestDocument> labTests = solrPrescriptionService.searchLabTest(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+    public Response<SolrLabTestDocument> searchLabTest(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
+	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
+
+	List<SolrLabTestDocument> labTests = solrPrescriptionService.searchLabTest(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
+		searchTerm);
 	Response<SolrLabTestDocument> response = new Response<SolrLabTestDocument>();
 	response.setDataList(labTests);
 	return response;

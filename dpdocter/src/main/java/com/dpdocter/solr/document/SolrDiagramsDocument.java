@@ -20,7 +20,7 @@ public class SolrDiagramsDocument {
 
     @Field
     private String speciality;
-    
+
     @Field
     private String doctorId;
 
@@ -35,7 +35,6 @@ public class SolrDiagramsDocument {
 
     @Field
     private Date updatedTime = new Date();
-
 
     public String getId() {
 	return id;
@@ -61,59 +60,58 @@ public class SolrDiagramsDocument {
 	this.tags = tags;
     }
 
-	public String getSpeciality() {
-		return speciality;
-	}
+    public String getSpeciality() {
+	return speciality;
+    }
 
-	public void setSpeciality(String speciality) {
-		this.speciality = speciality;
-	}
+    public void setSpeciality(String speciality) {
+	this.speciality = speciality;
+    }
 
-	public String getDoctorId() {
-		return doctorId;
-	}
+    public String getDoctorId() {
+	return doctorId;
+    }
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
+    }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
 
-	public String getHospitalId() {
-		return hospitalId;
-	}
+    public String getHospitalId() {
+	return hospitalId;
+    }
 
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
 
-	public Boolean getDiscarded() {
-		return discarded;
-	}
+    public Boolean getDiscarded() {
+	return discarded;
+    }
 
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
 
-	public Date getUpdatedTime() {
-		return updatedTime;
-	}
+    public Date getUpdatedTime() {
+	return updatedTime;
+    }
 
-	public void setUpdatedTime(Date updatedTime) {
-		this.updatedTime = updatedTime;
-	}
+    public void setUpdatedTime(Date updatedTime) {
+	this.updatedTime = updatedTime;
+    }
 
-	@Override
-	public String toString() {
-		return "SolrDiagramsDocument [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + ", speciality="
-				+ speciality + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", discarded=" + discarded + ", updatedTime=" + updatedTime + "]";
-	}
+    @Override
+    public String toString() {
+	return "SolrDiagramsDocument [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + ", speciality=" + speciality + ", doctorId=" + doctorId
+		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", updatedTime=" + updatedTime + "]";
+    }
 
 }

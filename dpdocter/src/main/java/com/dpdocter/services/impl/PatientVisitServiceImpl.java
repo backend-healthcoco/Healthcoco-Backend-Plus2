@@ -590,7 +590,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    mailAttachments.add(mailAttachment);
 		    if (patientVisitCollection.getRecordId() != null) {
 			for (String recordId : patientVisitCollection.getRecordId()) {
-				Records record = recordsService.getRecordById(recordId);
+			    Records record = recordsService.getRecordById(recordId);
 			    mailAttachment = recordsService.getRecordMailData(recordId, record.getDoctorId(), record.getLocationId(), record.getHospitalId());
 			    if (mailAttachment != null)
 				mailAttachments.add(mailAttachment);

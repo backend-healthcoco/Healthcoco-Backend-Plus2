@@ -14,7 +14,7 @@ import com.dpdocter.collections.PatientAdmissionCollection;
 public interface PatientAdmissionRepository extends MongoRepository<PatientAdmissionCollection, String>,
 	PagingAndSortingRepository<PatientAdmissionCollection, String> {
 
-	@Query("{'userId':?0}")
+    @Query("{'userId':?0}")
     PatientAdmissionCollection findByUserId(String userId);
 
     @Query("{'doctorId':?0}")
