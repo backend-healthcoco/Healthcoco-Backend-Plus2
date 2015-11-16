@@ -26,43 +26,43 @@ public interface SolrNotesRepository extends SolrCrudRepository<SolrNotesDocumen
     @Query("updatedTime: {?0 TO *} AND ( discarded: ?1 OR discarded:false) AND notes:*?2*")
     public List<SolrNotesDocument> findCustomGlobalNotes(Date date, Boolean discarded, String searchTerm, Sort sort);
 
-    @Query("( doctorId:*?0* AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)) OR (doctorId:null AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false))")
+    @Query("( doctorId:*?0* AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)) OR (doctorId:\"\" AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false))")
     public List<SolrNotesDocument> findCustomGlobalNotes(String doctorId, Date date, Boolean discarded, Pageable pageRequest);
 
-    @Query("( doctorId:*?0* AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)) OR (doctorId:null AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false))")
+    @Query("( doctorId:*?0* AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)) OR (doctorId:\"\" AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false))")
     public List<SolrNotesDocument> findCustomGlobalNotes(String doctorId, Date date, Boolean discarded, Sort sort);
 
-    @Query("(doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false)) OR (doctorId:null AND locationId:null AND hospitalId:null AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false))")
+    @Query("(doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false)) OR (doctorId:\"\" AND locationId:\"\" AND hospitalId:\"\" AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false))")
     public List<SolrNotesDocument> findCustomGlobalNotes(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded,
 	    Pageable pageRequest);
 
-    @Query("(doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false)) OR (doctorId:null AND locationId:null AND hospitalId:null AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false))")
+    @Query("(doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false)) OR (doctorId:\"\" AND locationId:\"\" AND hospitalId:\"\" AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false))")
     public List<SolrNotesDocument> findCustomGlobalNotes(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded, Sort sort);
 
-    @Query("(doctorId:*?0* AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)  AND notes:*?3*) OR (doctorId:null AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)  AND notes:*?3*)")
+    @Query("(doctorId:*?0* AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)  AND notes:*?3*) OR (doctorId:\"\" AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)  AND notes:*?3*)")
     public List<SolrNotesDocument> findCustomGlobalNotes(String doctorId, Date date, Boolean discarded, String searchTerm, Pageable pageRequest);
 
-    @Query("(doctorId:*?0* AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)  AND notes:*?3*) OR (doctorId:null AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)  AND notes:*?3*)")
+    @Query("(doctorId:*?0* AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)  AND notes:*?3*) OR (doctorId:\"\" AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)  AND notes:*?3*)")
     public List<SolrNotesDocument> findCustomGlobalNotes(String doctorId, Date date, Boolean discarded, String searchTerm, Sort sort);
 
-    @Query("(doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false) AND notes:*?5*) OR (doctorId:null AND locationId:null AND hospitalId: null AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false) AND notes:*?5*)")
+    @Query("(doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false) AND notes:*?5*) OR (doctorId:\"\" AND locationId:\"\" AND hospitalId: \"\" AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false) AND notes:*?5*)")
     public List<SolrNotesDocument> findCustomGlobalNotes(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded,
 	    String searchTerm, Pageable pageRequest);
 
-    @Query("(doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false) AND notes:*?5*) OR (doctorId:null AND locationId:null AND hospitalId: null AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false) AND notes:*?5*)")
+    @Query("(doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false) AND notes:*?5*) OR (doctorId:\"\" AND locationId:\"\" AND hospitalId: \"\" AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false) AND notes:*?5*)")
     public List<SolrNotesDocument> findCustomGlobalNotes(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded,
 	    String searchTerm, Sort sort);
 
-    @Query("doctorId: null AND updatedTime: {?0 TO *} AND ( discarded: ?1 OR discarded:false)")
+    @Query("doctorId: \"\" AND updatedTime: {?0 TO *} AND ( discarded: ?1 OR discarded:false)")
     public List<SolrNotesDocument> findGlobalNotes(Date date, Boolean discarded, Pageable pageRequest);
 
-    @Query("doctorId: null AND updatedTime: {?0 TO *} AND ( discarded: ?1 OR discarded:false)")
+    @Query("doctorId: \"\" AND updatedTime: {?0 TO *} AND ( discarded: ?1 OR discarded:false)")
     public List<SolrNotesDocument> findGlobalNotes(Date date, Boolean discarded, Sort sort);
 
-    @Query("doctorId: null AND updatedTime: {?0 TO *} AND ( discarded: ?1 OR discarded:false) AND notes:*?2*")
+    @Query("doctorId: \"\" AND updatedTime: {?0 TO *} AND ( discarded: ?1 OR discarded:false) AND notes:*?2*")
     public List<SolrNotesDocument> findGlobalNotes(Date date, Boolean discarded, String searchTerm, Pageable pageRequest);
 
-    @Query("doctorId: null AND updatedTime: {?0 TO *} AND ( discarded: ?1 OR discarded:false) AND notes:*?2*")
+    @Query("doctorId: \"\" AND updatedTime: {?0 TO *} AND ( discarded: ?1 OR discarded:false) AND notes:*?2*")
     public List<SolrNotesDocument> findGlobalNotes(Date date, Boolean discarded, String searchTerm, Sort sort);
 
     @Query("doctorId:*?0* AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)")

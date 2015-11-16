@@ -127,7 +127,7 @@ public class ClinicalNotesApi {
     public Response<ClinicalNotes> getNotes(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 	    @QueryParam(value = "patientId") String patientId, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
-	    @QueryParam(value = "isOTPVerified") Boolean isOTPVerified, @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
+	    @DefaultValue("false") @QueryParam(value = "isOTPVerified") Boolean isOTPVerified, @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 	return getAllNotes(page, size, doctorId, locationId, hospitalId, patientId, updatedTime, isOTPVerified, discarded);
     }
 
@@ -135,18 +135,12 @@ public class ClinicalNotesApi {
 	    String updatedTime, Boolean isOTPVerified, Boolean discarded) {
 	List<ClinicalNotes> clinicalNotes = null;
 
-	if (isOTPVerified != null) {
 	    if (isOTPVerified) {
 		clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithVerifiedOTP(page, size, patientId, updatedTime, discarded);
 	    } else {
 		clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(page, size, patientId, doctorId, locationId, hospitalId,
 			updatedTime, discarded);
 	    }
-	} else {
-	    clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(page, size, patientId, doctorId, locationId, hospitalId,
-		    updatedTime, discarded);
-	}
-
 	if (clinicalNotes != null && !clinicalNotes.isEmpty()) {
 	    for (ClinicalNotes clinicalNote : clinicalNotes) {
 		if (clinicalNote.getDiagrams() != null && !clinicalNote.getDiagrams().isEmpty()) {

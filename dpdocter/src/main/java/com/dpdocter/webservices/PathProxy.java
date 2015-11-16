@@ -304,7 +304,7 @@ public interface PathProxy {
     public interface HistoryUrls {
 	public static final String ADD_DISEASE = "/disease/add";
 
-	public static final String EDIT_DISEASE = "/disease{diseaseId}//update";
+	public static final String EDIT_DISEASE = "/disease/{diseaseId}/update";
 
 	public static final String DELETE_DISEASE = "/disease/{diseaseId}/{doctorId}/{locationId}/{hospitalId}/delete";
 

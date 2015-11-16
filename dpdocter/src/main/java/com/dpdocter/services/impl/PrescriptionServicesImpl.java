@@ -655,10 +655,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    prescriptionItemDetailsList.add(prescriptionItemDetails);
 			}
 			prescription.setItems(prescriptionItemDetailsList);
-			/*UserCollection userCollection = userRepository.findOne(prescription.getDoctorId());
+			UserCollection userCollection = userRepository.findOne(prescription.getDoctorId());
 			if (userCollection != null) {
 			    prescription.setDoctorName(userCollection.getFirstName());
-			}*/
+			}
 			prescriptions.add(prescription);
 		    }
 
@@ -705,10 +705,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    prescriptionItemDetailsList.add(prescriptionItemDetails);
 			}
 			prescription.setItems(prescriptionItemDetailsList);
-			/*UserCollection userCollection = userRepository.findOne(prescription.getDoctorId());
+			UserCollection userCollection = userRepository.findOne(prescription.getDoctorId());
 			if (userCollection != null) {
 			    prescription.setDoctorName(userCollection.getFirstName());
-			}*/
+			}
 
 			prescriptions.add(prescription);
 		    }

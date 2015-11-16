@@ -11,7 +11,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +18,7 @@ import com.dpdocter.solr.document.SolrDrugDocument;
 import com.dpdocter.solr.document.SolrLabTestDocument;
 import com.dpdocter.solr.services.SolrPrescriptionService;
 import com.dpdocter.webservices.PathProxy;
+
 import common.util.web.Response;
 
 @Component
@@ -27,7 +27,7 @@ import common.util.web.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class SolrPrescriptionApi {
 
-    private static Logger logger = Logger.getLogger(SolrPrescriptionApi.class.getName());
+//    private static Logger logger = Logger.getLogger(SolrPrescriptionApi.class.getName());
 
     @Autowired
     private SolrPrescriptionService solrPrescriptionService;

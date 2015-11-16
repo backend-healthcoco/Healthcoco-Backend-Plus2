@@ -28,6 +28,8 @@ public class ClinicalNotes extends GenericCollection {
 
     private String hospitalId;
 
+    private String doctorName;
+
     private boolean inHistory = false;
 
     private Boolean discarded = false;
@@ -140,6 +142,14 @@ public class ClinicalNotes extends GenericCollection {
 	this.discarded = discarded;
     }
 
+    public String getDoctorName() {
+	return doctorName;
+    }
+
+    public void setDoctorName(String doctorName) {
+	this.doctorName = doctorName;
+    }
+
     public String getVisitId() {
 	return visitId;
     }
@@ -160,8 +170,8 @@ public class ClinicalNotes extends GenericCollection {
     public String toString() {
 	return "ClinicalNotes [id=" + id + ", complaints=" + complaints + ", observations=" + observations + ", investigations=" + investigations
 		+ ", diagnoses=" + diagnoses + ", createdDate=" + createdDate + ", diagrams=" + diagrams + ", notes=" + notes + ", doctorId=" + doctorId
-		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", inHistory=" + inHistory + ", discarded=" + discarded + ", visitId="
-		+ visitId + ", patientId=" + patientId + "]";
+		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorName=" + doctorName + ", inHistory=" + inHistory + ", discarded="
+		+ discarded + ", visitId=" + visitId + ", patientId=" + patientId + "]";
     }
 
 }

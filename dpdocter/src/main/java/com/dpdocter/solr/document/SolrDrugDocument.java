@@ -25,7 +25,6 @@ public class SolrDrugDocument {
     private String drugCode;
 
     @Field
-    
     private String doctorId = "";
 
     @Field
