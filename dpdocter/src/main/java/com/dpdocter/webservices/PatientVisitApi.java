@@ -83,4 +83,38 @@ public class PatientVisitApi {
 	return response;
     }
 
+    @Path(value = PathProxy.PatientVisitUrls.DELETE_VISITS)
+    @GET
+    public Response<Boolean> getVisit(@PathParam(value = "visitId") String visitId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+
+	if (StringUtils.isEmpty(visitId)) {
+	    logger.warn("Visit Id Cannot Be Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Visit Id Cannot Be Empty");
+	}
+	Boolean patienVisitResponse = patientVisitService.deleteVisit(visitId, discarded);
+
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(patienVisitResponse);
+	return response;
+    }
+    
+    @Path(value = PathProxy.PatientVisitUrls.SMS_VISITS)
+    @GET
+    public Response<Boolean> smsPrescription(@PathParam(value = "visitId") String visitId, @PathParam(value = "doctorId") String doctorId,
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+	    @PathParam(value = "mobileNumber") String mobileNumber) {
+
+	if (DPDoctorUtils.anyStringEmpty(visitId, doctorId, locationId, hospitalId, mobileNumber)) {
+	    logger.warn("Invalid Input. Visit Id, Doctor Id, Location Id, Hospital Id, Mobile Number Cannot Be Empty");
+	    throw new BusinessException(ServiceError.InvalidInput,
+		    "Invalid Input. Visit Id, Doctor Id, Location Id, Hospital Id, Mobile Number Cannot Be Empty");
+	}
+	patientVisitService.smsVisit(visitId, doctorId, locationId, hospitalId, mobileNumber);
+
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(true);
+	return response;
+    }
+
+
 }

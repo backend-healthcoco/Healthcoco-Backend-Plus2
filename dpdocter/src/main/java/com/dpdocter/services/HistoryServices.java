@@ -60,4 +60,8 @@ public interface HistoryServices {
 
     boolean mailMedicalData(MedicalData medicalData);
 
+	boolean addVisitsToHistory(String visitId, String patientId, String doctorId, String hospitalId, String locationId);
+
+	boolean removeVisits(String visitId, String patientId, String doctorId, String hospitalId, String locationId);
+
 }

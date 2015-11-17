@@ -782,4 +782,63 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	return prescriptionItems;
     }
+
+	@Override
+	public Boolean deleteVisit(String visitId, Boolean discarded) {
+		try {
+		    PatientVisitCollection patientVisitCollection = patientVisitRepository.findOne(visitId);
+		    if (patientVisitCollection != null) {
+				
+		    	patientVisitCollection.setDiscarded(discarded);
+		    	patientVisitCollection.setUpdatedTime(new Date());
+		    	patientVisitRepository.save(patientVisitCollection);
+		    	
+		    	if(patientVisitCollection.getClinicalNotesId() != null){
+					for(String clinicalNotesId : patientVisitCollection.getClinicalNotesId()){
+						clinicalNotesService.deleteNote(clinicalNotesId, discarded);
+					}
+				}
+				if(patientVisitCollection.getPrescriptionId() != null){
+					for(String prescriptionId : patientVisitCollection.getPrescriptionId()){
+						prescriptionServices.deletePrescription(prescriptionId, patientVisitCollection.getDoctorId(), patientVisitCollection.getHospitalId(), patientVisitCollection.getLocationId(), patientVisitCollection.getPatientId(), discarded);
+					}
+				}
+				if(patientVisitCollection.getRecordId() != null){
+					for(String recordId : patientVisitCollection.getRecordId()){
+						recordsService.deleteRecord(recordId, discarded);
+					}
+				}
+			   
+		    } else {
+			logger.warn("Visit not found!");
+			throw new BusinessException(ServiceError.Unknown, "Visit not found!");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return true;
+	}
+
+	@Override
+	public void smsVisit(String visitId, String doctorId, String locationId, String hospitalId, String mobileNumber) {
+		try {
+		    PatientVisitCollection patientVisitCollection = patientVisitRepository.findOne(visitId);
+		    if (patientVisitCollection != null) {
+				if(patientVisitCollection.getPrescriptionId() != null){
+					for(String prescriptionId : patientVisitCollection.getPrescriptionId()){
+						prescriptionServices.smsPrescription(prescriptionId, doctorId, locationId, hospitalId, mobileNumber);
+					}
+				}
+		    } else {
+			logger.warn("Visit not found!");
+			throw new BusinessException(ServiceError.Unknown, "Visit not found!");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+	}
 }

@@ -1,9 +1,12 @@
 package com.dpdocter.webservices;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
@@ -15,6 +18,8 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.ForgotUsernamePasswordRequest;
 import com.dpdocter.request.ResetPasswordRequest;
 import com.dpdocter.services.ForgotPasswordService;
+
+import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
 @Component
@@ -66,6 +71,17 @@ public class ForgotPasswordApi {
 	return "<html><body>" + response + "</body></html>";
     }
 
+    @Produces(MediaType.TEXT_HTML)
+    @Path(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_GET)
+    @GET
+    public String resetPassword(@PathParam(value = "userId") String userId, @PathParam(value = "password") String password) {
+	if (DPDoctorUtils.anyStringEmpty(userId, password)) {
+	    logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	}
+	String response = forgotPasswordService.resetPassword(userId, password);
+	return "<html><body>" + response + "</body></html>";
+    }
     @Path(value = PathProxy.ForgotPasswordUrls.FORGOT_USERNAME)
     @POST
     public Response<Boolean> forgotUsername(ForgotUsernamePasswordRequest request) {

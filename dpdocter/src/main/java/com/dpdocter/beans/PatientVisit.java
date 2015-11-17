@@ -3,6 +3,8 @@ package com.dpdocter.beans;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import com.dpdocter.enums.VisitedFor;
 
 public class PatientVisit {
@@ -25,6 +27,8 @@ public class PatientVisit {
     private List<String> clinicalNotesId;
 
     private List<String> recordId;
+    
+    private Boolean discarded = false;
 
     public String getId() {
 	return id;
@@ -106,11 +110,19 @@ public class PatientVisit {
 	this.recordId = recordId;
     }
 
-    @Override
-    public String toString() {
-	return "PatientVisit [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ ", visitedTime=" + visitedTime + ", visitedFor=" + visitedFor + ", prescriptionId=" + prescriptionId + ", clinicalNotesId=" + clinicalNotesId
-		+ ", recordId=" + recordId + "]";
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientVisit [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", visitedTime=" + visitedTime + ", visitedFor="
+				+ visitedFor + ", prescriptionId=" + prescriptionId + ", clinicalNotesId=" + clinicalNotesId
+				+ ", recordId=" + recordId + ", discarded=" + discarded + "]";
+	}
 }

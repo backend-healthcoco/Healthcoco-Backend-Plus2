@@ -177,6 +177,8 @@ public interface PathProxy {
 	public static final String FORGOT_PASSWORD_PATIENT = "/forgotPasswordPatient";
 
 	public static final String RESET_PASSWORD = "/reset-password";
+	
+	public static final String RESET_PASSWORD_GET = "/resetPassword/{userId}/{password}";
 
 	public static final String FORGOT_USERNAME = "/forgot-username";
     }
@@ -341,6 +343,10 @@ public interface PathProxy {
 	public static final String GET_PATIENT_HISTORY_OTP_VERIFIED = "/getPatientHistory/{patientId}/{doctorId}/{locationId}/{hospitalId}/{historyFilter}/{otpVerified}";
 
 	public static final String MAIL_MEDICAL_DATA = "mailMedicalData";
+	
+//	public static final String ADD_VISITS_TO_HISTORY = "/visits/{visitId}/{patientId}/{doctorId}/{locationId}/{hospitalId}/add";
+//
+//	public static final String REMOVE_VISITS = "/removeVisits/{visitId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
     }
 
     public static final String DOCTOR_PROFILE_URL = BASE_URL + "/doctorProfile";
@@ -409,7 +415,11 @@ public interface PathProxy {
 	public static final String EMAIL = "/email/{visitId}/{emailAddress}";
 
 	public static final String GET_VISITS = "/{doctorId}/{locationId}/{hospitalId}/{patientId}";
-
+	
+	public static final String DELETE_VISITS = "/{visitId}/delete";
+	
+	public static final String SMS_VISITS = "/{visitId}/{doctorId}/{locationId}/{hospitalId}/{mobileNumber}/sms";
+	
     }
 
     /*

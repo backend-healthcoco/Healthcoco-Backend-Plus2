@@ -365,4 +365,36 @@ public class HistoryApi {
 	return response;
     }
 
+//    @Path(value = PathProxy.HistoryUrls.ADD_VISITS_TO_HISTORY)
+//    @GET
+//    public Response<Boolean> addVisitsToHistory(@PathParam(value = "visitId") String visitId,
+//	    @PathParam(value = "patientId") String patientId, @PathParam(value = "doctorId") String doctorId,
+//	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
+//	
+//    if (DPDoctorUtils.anyStringEmpty(visitId, patientId, doctorId, hospitalId, locationId)) {
+//	    logger.warn("Visits Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+//	    throw new BusinessException(ServiceError.InvalidInput, "Visits Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+//	}
+//	boolean addClinicalNotesToHistoryResponse = historyServices.addVisitsToHistory(visitId, patientId, doctorId, hospitalId, locationId);
+//	Response<Boolean> response = new Response<Boolean>();
+//	response.setData(addClinicalNotesToHistoryResponse);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.HistoryUrls.REMOVE_VISITS)
+//    @GET
+//    public Response<Boolean> removeVisits(@PathParam(value = "visitId") String visitId,
+//	    @PathParam(value = "patientId") String patientId, @PathParam(value = "doctorId") String doctorId,
+//	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
+//	
+//    if (DPDoctorUtils.anyStringEmpty(visitId, patientId, doctorId, hospitalId, locationId)) {
+//	    logger.warn("Visits Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+//	    throw new BusinessException(ServiceError.InvalidInput, "Visits Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+//	}
+//	boolean addClinicalNotesToHistoryResponse = historyServices.removeVisits(visitId, patientId, doctorId, hospitalId, locationId);
+//	Response<Boolean> response = new Response<Boolean>();
+//	response.setData(addClinicalNotesToHistoryResponse);
+//	return response;
+//    }
+
 }

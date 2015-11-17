@@ -1,5 +1,7 @@
 package common.util.web;
 
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -9,6 +11,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang3.StringUtils;
+import org.bouncycastle.jcajce.provider.digest.SHA3.DigestSHA3;
 import org.springframework.beans.factory.annotation.Value;
 
 public class DPDoctorUtils {
@@ -66,5 +69,14 @@ public class DPDoctorUtils {
 
     private static DPDoctorUtils getInstance() {
 	return new DPDoctorUtils();
+    }
+    
+    public static String getSHA3SecurePassword(String password) throws UnsupportedEncodingException{
+        DigestSHA3 md = new DigestSHA3(256); 
+		  md.update(password.getBytes("UTF-8"));
+       	  byte[] digest = md.digest();
+       	  
+       	BigInteger bigInt = new BigInteger(1, digest);
+        return bigInt.toString(16);
     }
 }

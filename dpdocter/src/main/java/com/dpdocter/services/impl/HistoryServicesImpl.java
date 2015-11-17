@@ -33,6 +33,7 @@ import com.dpdocter.collections.DiseasesCollection;
 import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.NotesCollection;
+import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.RecordsCollection;
 import com.dpdocter.collections.UserCollection;
@@ -46,6 +47,7 @@ import com.dpdocter.repository.DiseasesRepository;
 import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.NotesRepository;
+import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.RecordsRepository;
 import com.dpdocter.repository.UserRepository;
@@ -56,6 +58,7 @@ import com.dpdocter.response.HistoryDetailsResponse;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.MailService;
+import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.RecordsService;
 
@@ -105,6 +108,9 @@ public class HistoryServicesImpl implements HistoryServices {
 
     @Autowired
     private LocationRepository locationRepository;
+    
+    @Autowired
+    private PatientVisitRepository patientVisitRepository;
 
     @Override
     public List<DiseaseAddEditResponse> addDiseases(List<DiseaseAddEditRequest> request) {
@@ -1223,4 +1229,68 @@ public class HistoryServicesImpl implements HistoryServices {
 	}
 	return response;
     }
+
+	@Override
+	public boolean addVisitsToHistory(String visitId, String patientId, String doctorId, String hospitalId,	String locationId) {
+	
+	PatientVisitCollection patientVisitCollection = null;
+	try{
+		patientVisitCollection = patientVisitRepository.findOne(visitId);
+		if(patientVisitCollection != null){
+			if(patientVisitCollection.getClinicalNotesId() != null){
+				for(String clinicalNotesId : patientVisitCollection.getClinicalNotesId()){
+					addClinicalNotesToHistory(clinicalNotesId, patientId, doctorId, hospitalId, locationId);
+				}
+			}
+			if(patientVisitCollection.getPrescriptionId() != null){
+				for(String prescriptionId : patientVisitCollection.getPrescriptionId()){
+					addPrescriptionToHistory(prescriptionId, patientId, doctorId, hospitalId, locationId);
+				}
+			}
+			if(patientVisitCollection.getRecordId() != null){
+				for(String recordId : patientVisitCollection.getRecordId()){
+					addReportToHistory(recordId, patientId, doctorId, hospitalId, locationId);
+				}
+			}
+		}
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+
+	}
+	return true;
+
+	}
+
+	@Override
+	public boolean removeVisits(String visitId, String patientId, String doctorId, String hospitalId, String locationId) {
+		PatientVisitCollection patientVisitCollection = null;
+		try{
+			patientVisitCollection = patientVisitRepository.findOne(visitId);
+			if(patientVisitCollection != null){
+				if(patientVisitCollection.getClinicalNotesId() != null){
+					for(String clinicalNotesId : patientVisitCollection.getClinicalNotesId()){
+						removeClinicalNotes(clinicalNotesId, patientId, doctorId, hospitalId, locationId);
+					}
+				}
+				if(patientVisitCollection.getPrescriptionId() != null){
+					for(String prescriptionId : patientVisitCollection.getPrescriptionId()){
+						removePrescription(prescriptionId, patientId, doctorId, hospitalId, locationId);
+					}
+				}
+				if(patientVisitCollection.getRecordId() != null){
+					for(String recordId : patientVisitCollection.getRecordId()){
+						removeReports(recordId, patientId, doctorId, hospitalId, locationId);
+					}
+				}
+			}
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+
+		}
+		return true;
+	}
 }

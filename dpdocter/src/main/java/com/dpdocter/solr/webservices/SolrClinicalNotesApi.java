@@ -130,10 +130,7 @@ public class SolrClinicalNotesApi {
 	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
-	if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
-	    logger.warn("Invalid Input");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-	}
+	
 	List<SolrDiagnosesDocument> diagnoses = solrClinicalNotesService.searchDiagnoses(range, page, size, doctorId, locationId, hospitalId, updatedTime,
 		discarded, searchTerm);
 	Response<SolrDiagnosesDocument> response = new Response<SolrDiagnosesDocument>();
@@ -176,10 +173,7 @@ public class SolrClinicalNotesApi {
 	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
-	if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
-	    logger.warn("Invalid Input");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-	}
+	
 	List<SolrNotesDocument> notes = solrClinicalNotesService.searchNotes(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
 		searchTerm);
 	Response<SolrNotesDocument> response = new Response<SolrNotesDocument>();
@@ -222,10 +216,7 @@ public class SolrClinicalNotesApi {
 	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
-	if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
-	    logger.warn("Invalid Input");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-	}
+	
 	List<SolrDiagramsDocument> diagrams = solrClinicalNotesService.searchDiagrams(range, page, size, doctorId, locationId, hospitalId, updatedTime,
 		discarded, searchTerm);
 	diagrams = getFinalDiagrams(diagrams);
@@ -237,10 +228,7 @@ public class SolrClinicalNotesApi {
     @Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_DIAGRAMS_BY_SPECIALITY)
     @GET
     public Response<SolrDiagramsDocument> searchDiagramsBySpeciality(@PathParam(value = "searchTerm") String searchTerm) {
-	if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
-	    logger.warn("Invalid Input");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-	}
+	
 	List<SolrDiagramsDocument> diagrams = solrClinicalNotesService.searchDiagramsBySpeciality(searchTerm);
 	diagrams = getFinalDiagrams(diagrams);
 	Response<SolrDiagramsDocument> response = new Response<SolrDiagramsDocument>();
@@ -287,10 +275,7 @@ public class SolrClinicalNotesApi {
 	    @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
-	if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
-	    logger.warn("Invalid Input");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-	}
+	
 	List<SolrInvestigationsDocument> investigations = solrClinicalNotesService.searchInvestigations(range, page, size, doctorId, locationId, hospitalId,
 		updatedTime, discarded, searchTerm);
 	Response<SolrInvestigationsDocument> response = new Response<SolrInvestigationsDocument>();
@@ -336,10 +321,7 @@ public class SolrClinicalNotesApi {
 	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
-	if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
-	    logger.warn("Invalid Input");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-	}
+	
 	List<SolrObservationsDocument> observations = solrClinicalNotesService.searchObservations(range, page, size, doctorId, locationId, hospitalId,
 		updatedTime, discarded, searchTerm);
 	Response<SolrObservationsDocument> response = new Response<SolrObservationsDocument>();
