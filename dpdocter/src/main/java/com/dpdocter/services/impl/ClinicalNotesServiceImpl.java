@@ -645,20 +645,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    List<PatientClinicalNotesCollection> patientClinicalNotesCollections = patientClinicalNotesRepository.findByClinicalNotesId(id);
 	    if (patientClinicalNotesCollections != null) {
 		for (PatientClinicalNotesCollection patientClinicalNotesCollection : patientClinicalNotesCollections) {
-		    if (discarded == null)
-			patientClinicalNotesCollection.setDiscarded(true);
-		    else
-			patientClinicalNotesCollection.setDiscarded(discarded);
+		    patientClinicalNotesCollection.setDiscarded(discarded);
 		    patientClinicalNotesCollection.setUpdatedTime(new Date());
 		    patientClinicalNotesRepository.save(patientClinicalNotesCollection);
 		}
 
 	    }
 	    ClinicalNotesCollection clinicalNotes = clinicalNotesRepository.findOne(id);
-	    if (discarded == null)
-		clinicalNotes.setDiscarded(true);
-	    else
-		clinicalNotes.setDiscarded(discarded);
+	    clinicalNotes.setDiscarded(discarded);
 	    clinicalNotesRepository.save(clinicalNotes);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -932,10 +926,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		if (complaintCollection.getDoctorId() != null && complaintCollection.getHospitalId() != null && complaintCollection.getLocationId() != null) {
 		    if (complaintCollection.getDoctorId().equals(doctorId) && complaintCollection.getHospitalId().equals(hospitalId)
 			    && complaintCollection.getLocationId().equals(locationId)) {
-			if (discarded == null)
-			    complaintCollection.setDiscarded(true);
-			else
-			    complaintCollection.setDiscarded(discarded);
+			
+		    complaintCollection.setDiscarded(discarded);
 			complaintCollection.setUpdatedTime(new Date());
 			complaintRepository.save(complaintCollection);
 		    } else {
@@ -968,10 +960,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			&& observationCollection.getLocationId() != null) {
 		    if (observationCollection.getDoctorId().equals(doctorId) && observationCollection.getHospitalId().equals(hospitalId)
 			    && observationCollection.getLocationId().equals(locationId)) {
-			if (discarded == null)
-			    observationCollection.setDiscarded(true);
-			else
-			    observationCollection.setDiscarded(discarded);
+			observationCollection.setDiscarded(discarded);
 			observationCollection.setUpdatedTime(new Date());
 			observationRepository.save(observationCollection);
 		    } else {
@@ -1002,10 +991,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			&& investigationCollection.getLocationId() != null) {
 		    if (investigationCollection.getDoctorId().equals(doctorId) && investigationCollection.getHospitalId().equals(hospitalId)
 			    && investigationCollection.getLocationId().equals(locationId)) {
-			if (discarded == null)
-			    investigationCollection.setDiscarded(true);
-			else
-			    investigationCollection.setDiscarded(discarded);
+			investigationCollection.setDiscarded(discarded);
 			investigationCollection.setUpdatedTime(new Date());
 			investigationRepository.save(investigationCollection);
 		    } else {
@@ -1035,10 +1021,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		if (diagnosisCollection.getDoctorId() != null && diagnosisCollection.getHospitalId() != null && diagnosisCollection.getLocationId() != null) {
 		    if (diagnosisCollection.getDoctorId().equals(doctorId) && diagnosisCollection.getHospitalId().equals(hospitalId)
 			    && diagnosisCollection.getLocationId().equals(locationId)) {
-			if (discarded == null)
-			    diagnosisCollection.setDiscarded(true);
-			else
-			    diagnosisCollection.setDiscarded(discarded);
+			diagnosisCollection.setDiscarded(discarded);
 			diagnosisCollection.setUpdatedTime(new Date());
 			diagnosisRepository.save(diagnosisCollection);
 		    } else {
@@ -1068,10 +1051,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		if (notesCollection.getDoctorId() != null && notesCollection.getHospitalId() != null && notesCollection.getLocationId() != null) {
 		    if (notesCollection.getDoctorId().equals(doctorId) && notesCollection.getHospitalId().equals(hospitalId)
 			    && notesCollection.getLocationId().equals(locationId)) {
-			if (discarded == null)
-			    notesCollection.setDiscarded(true);
-			else
-			    notesCollection.setDiscarded(discarded);
+			notesCollection.setDiscarded(discarded);
 			notesCollection.setUpdatedTime(new Date());
 			notesRepository.save(notesCollection);
 		    } else {
@@ -1102,10 +1082,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		if (diagramsCollection.getDoctorId() != null && diagramsCollection.getHospitalId() != null && diagramsCollection.getLocationId() != null) {
 		    if (diagramsCollection.getDoctorId().equals(doctorId) && diagramsCollection.getHospitalId().equals(hospitalId)
 			    && diagramsCollection.getLocationId().equals(locationId)) {
-			if (discarded == null)
-			    diagramsCollection.setDiscarded(true);
-			else
-			    diagramsCollection.setDiscarded(discarded);
+			diagramsCollection.setDiscarded(discarded);
 			diagramsCollection.setUpdatedTime(new Date());
 			diagramsRepository.save(diagramsCollection);
 		    } else {

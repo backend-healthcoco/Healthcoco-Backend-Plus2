@@ -190,7 +190,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
     }
 
     @Override
-    public Boolean deletePrintSettings(String id, String doctorId, String locationId, String hospitalId) {
+    public Boolean deletePrintSettings(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
 	try {
 	    PrintSettingsCollection printSettingsCollection = printSettingsRepository.findOne(id);
 	    if (printSettingsCollection != null) {
@@ -198,7 +198,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			&& printSettingsCollection.getLocationId() != null) {
 		    if (printSettingsCollection.getDoctorId().equals(doctorId) && printSettingsCollection.getHospitalId().equals(hospitalId)
 			    && printSettingsCollection.getLocationId().equals(locationId)) {
-			printSettingsCollection.setDiscarded(true);
+			printSettingsCollection.setDiscarded(discarded);
 			printSettingsCollection.setUpdatedTime(new Date());
 			printSettingsRepository.save(printSettingsCollection);
 			return true;

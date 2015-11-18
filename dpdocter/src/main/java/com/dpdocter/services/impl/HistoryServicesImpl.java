@@ -163,10 +163,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    if (disease != null) {
 		if (disease.getDoctorId() != null && disease.getHospitalId() != null && disease.getLocationId() != null) {
 		    if (disease.getDoctorId().equals(doctorId) && disease.getHospitalId().equals(hospitalId) && disease.getLocationId().equals(locationId)) {
-			if (discarded == null)
-			    disease.setDiscarded(true);
-			else
-			    disease.setDiscarded(discarded);
+			disease.setDiscarded(discarded);
 			disease.setUpdatedTime(new Date());
 			disease = diseasesRepository.save(disease);
 			response = true;

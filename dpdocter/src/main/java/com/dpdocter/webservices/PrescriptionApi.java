@@ -109,7 +109,7 @@ public class PrescriptionApi {
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG)
     @DELETE
     public Response<Boolean> deleteDrug(@PathParam(value = "drugId") String drugId, @PathParam(value = "doctorId") String doctorId,
-	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId, @QueryParam("discarded") Boolean discarded) {
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(drugId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
 	    logger.warn("Drug Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
@@ -125,7 +125,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_GLOBAL_DRUG)
     @DELETE
-    public Response<Boolean> deleteDrug(@PathParam(value = "drugId") String drugId, @QueryParam("discarded") Boolean discarded) {
+    public Response<Boolean> deleteDrug(@PathParam(value = "drugId") String drugId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(drugId)) {
 	    logger.warn("Drug Id, Doctor Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Id, Doctor Id Cannot Be Empty");
@@ -191,7 +191,7 @@ public class PrescriptionApi {
     @Path(value = PathProxy.PrescriptionUrls.DELETE_LAB_TEST)
     @DELETE
     public Response<Boolean> deleteLabTest(@PathParam(value = "labTestId") String labTestId, @PathParam(value = "doctorId") String doctorId,
-	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId, @QueryParam("discarded") Boolean discarded) {
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(labTestId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
 	    logger.warn("Lab Test Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Lab Test Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
@@ -206,7 +206,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_GLOBAL_LAB_TEST)
     @DELETE
-    public Response<Boolean> deleteLabTest(@PathParam(value = "labTestId") String labTestId, @QueryParam("discarded") Boolean discarded) {
+    public Response<Boolean> deleteLabTest(@PathParam(value = "labTestId") String labTestId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(labTestId)) {
 	    logger.warn("Lab Test Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Lab Test Id Cannot Be Empty");
@@ -275,7 +275,7 @@ public class PrescriptionApi {
     @Path(value = PathProxy.PrescriptionUrls.DELETE_TEMPLATE)
     @DELETE
     public Response<Boolean> deleteTemplate(@PathParam(value = "templateId") String templateId, @PathParam(value = "doctorId") String doctorId,
-	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId, @QueryParam("discarded") Boolean discarded) {
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(templateId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
 	    logger.warn("Template Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Template Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
@@ -375,7 +375,7 @@ public class PrescriptionApi {
     @DELETE
     public Response<Boolean> deletePrescription(@PathParam(value = "prescriptionId") String prescriptionId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
-	    @PathParam(value = "patientId") String patientId, @QueryParam("discarded") Boolean discarded) {
+	    @PathParam(value = "patientId") String patientId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(prescriptionId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
 	    logger.warn("Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
@@ -442,7 +442,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_TYPE)
     @DELETE
-    public Response<Boolean> deleteDrugType(@PathParam(value = "drugTypeId") String drugTypeId, @QueryParam("discarded") Boolean discarded) {
+    public Response<Boolean> deleteDrugType(@PathParam(value = "drugTypeId") String drugTypeId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(drugTypeId)) {
 	    logger.warn("Drug Type Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Type Id Cannot Be Empty");
@@ -485,7 +485,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_STRENGTH)
     @DELETE
-    public Response<Boolean> deleteDrugStrength(@PathParam(value = "drugStrengthId") String drugStrengthId, @QueryParam("discarded") Boolean discarded) {
+    public Response<Boolean> deleteDrugStrength(@PathParam(value = "drugStrengthId") String drugStrengthId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(drugStrengthId)) {
 	    logger.warn("Drug Strength Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Strength Id Cannot Be Empty");
@@ -528,7 +528,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DOSAGE)
     @DELETE
-    public Response<Boolean> deleteDrugDosage(@PathParam(value = "drugDosageId") String drugDosageId, @QueryParam("discarded") Boolean discarded) {
+    public Response<Boolean> deleteDrugDosage(@PathParam(value = "drugDosageId") String drugDosageId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(drugDosageId)) {
 	    logger.warn("Drug Dosage Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Dosage Id Cannot Be Empty");
@@ -572,7 +572,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DIRECTION)
     @DELETE
-    public Response<Boolean> deleteDrugDirection(@PathParam(value = "drugDirectionId") String drugDirectionId, @QueryParam("discarded") Boolean discarded) {
+    public Response<Boolean> deleteDrugDirection(@PathParam(value = "drugDirectionId") String drugDirectionId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(drugDirectionId)) {
 	    logger.warn("Drug Direction Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Direction Id Cannot Be Empty");
@@ -617,7 +617,7 @@ public class PrescriptionApi {
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DURATION_UNIT)
     @DELETE
     public Response<Boolean> deleteDrugDurationUnit(@PathParam(value = "drugDurationUnitId") String drugDurationUnitId,
-	    @QueryParam("discarded") Boolean discarded) {
+    		@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(drugDurationUnitId)) {
 	    logger.warn("Drug Duration Unit Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Duration Unit Id Cannot Be Empty");

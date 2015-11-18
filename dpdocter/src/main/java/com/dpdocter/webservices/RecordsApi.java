@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -159,7 +160,7 @@ public class RecordsApi {
 
     @Path(value = PathProxy.RecordsUrls.DELETE_RECORD)
     @DELETE
-    public Response<Boolean> deleteRecords(@PathParam("recordId") String recordId, @QueryParam("discarded") Boolean discarded) {
+    public Response<Boolean> deleteRecords(@PathParam("recordId") String recordId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	recordsService.deleteRecord(recordId, discarded);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);

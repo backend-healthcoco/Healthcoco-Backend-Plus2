@@ -384,10 +384,7 @@ public class RecordsServiceImpl implements RecordsService {
 		logger.warn("Record Not found.Check RecordId");
 		throw new BusinessException(ServiceError.Unknown, "Record Not found.Check RecordId");
 	    }
-	    if (discarded == null)
-		recordsCollection.setDiscarded(true);
-	    else
-		recordsCollection.setDiscarded(true);
+	    recordsCollection.setDiscarded(discarded);
 	    recordsCollection.setUpdatedTime(new Date());
 	    recordsRepository.save(recordsCollection);
 	} catch (BusinessException e) {

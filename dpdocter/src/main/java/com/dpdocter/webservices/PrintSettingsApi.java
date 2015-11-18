@@ -22,6 +22,8 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.PrintSettings;
 import com.dpdocter.beans.PrintSettingsDefaultData;
+import com.dpdocter.collections.DiagramsCollection;
+import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.services.PrintSettingsService;
@@ -97,9 +99,9 @@ public class PrintSettingsApi {
 	}
 	List<PrintSettings> printSettings = printSettingsService.getSettings(printFilter, doctorId, locationId, hospitalId, page, size, updatedTime, discarded);
 	if (printSettings != null) {
-	    for (PrintSettings pSettings : printSettings) {
-		pSettings.setClinicLogoUrl(getFinalImageURL(pSettings.getClinicLogoUrl()));
-	    }
+	    for (Object pSettings : printSettings) {
+	    ((PrintSettingsCollection) pSettings).setClinicLogoUrl(getFinalImageURL(((PrintSettingsCollection) pSettings).getClinicLogoUrl()));
+		}
 	}
 	Response<PrintSettings> response = new Response<PrintSettings>();
 	response.setDataList(printSettings);
@@ -109,13 +111,13 @@ public class PrintSettingsApi {
     @Path(value = PathProxy.PrintSettingsUrls.DELETE_PRINT_SETTINGS)
     @DELETE
     public Response<Boolean> deletePrintSettings(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
-	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 
 	if (DPDoctorUtils.anyStringEmpty(id, doctorId, locationId, hospitalId)) {
 	    logger.warn("Id, DoctorId or locationId or hospitalId cannot be null");
 	    throw new BusinessException(ServiceError.InvalidInput, "Id, DoctorId or locationId or hospitalId cannot be null");
 	}
-	Boolean printSettings = printSettingsService.deletePrintSettings(id, doctorId, locationId, hospitalId);
+	Boolean printSettings = printSettingsService.deletePrintSettings(id, doctorId, locationId, hospitalId, discarded);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(printSettings);
 	return response;

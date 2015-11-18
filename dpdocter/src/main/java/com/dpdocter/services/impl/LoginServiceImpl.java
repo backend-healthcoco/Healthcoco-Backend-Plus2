@@ -13,8 +13,10 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.Location;
+import com.dpdocter.beans.LocationAndAccessControl;
 import com.dpdocter.beans.LoginResponse;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.HospitalCollection;
@@ -35,6 +37,7 @@ import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.request.LoginRequest;
+import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.LoginService;
 import common.util.web.LoginUtils;
 
@@ -63,6 +66,9 @@ public class LoginServiceImpl implements LoginService {
 
     @Autowired
     private UserLocationRepository userLocationRepository;
+    
+    @Autowired
+    private AccessControlServices accessControlServices;
 
     /**
      * This method is used for login purpose.
@@ -124,16 +130,22 @@ public class LoginServiceImpl implements LoginService {
 			    HospitalCollection hospitalCollection = null;
 			    Location location = new Location();
 			    BeanUtil.map(locationCollection, location);
+			    
+			    AccessControl  accessControl = accessControlServices.getAccessControls(userCollection.getId(), locationCollection.getId(), locationCollection.getHospitalId());
+				LocationAndAccessControl locationAndAccessControl =  new LocationAndAccessControl();
+				locationAndAccessControl.setAccessControl(accessControl);
+				locationAndAccessControl.setLocation(location);
+				
 			    if (!checkHospitalId.containsKey(locationCollection.getHospitalId())) {
 				hospitalCollection = hospitalRepository.findOne(locationCollection.getHospitalId());
 				Hospital hospital = new Hospital();
 				BeanUtil.map(hospitalCollection, hospital);
-				hospital.getLocations().add(location);
+				hospital.getLocationsAndAccessControl().add(locationAndAccessControl);
 				checkHospitalId.put(locationCollection.getHospitalId(), hospital);
 				hospitals.add(hospital);
 			    } else {
 				Hospital hospital = checkHospitalId.get(locationCollection.getHospitalId());
-				hospital.getLocations().add(location);
+				hospital.getLocationsAndAccessControl().add(locationAndAccessControl);
 				hospitals.add(hospital);
 			    }
 			}

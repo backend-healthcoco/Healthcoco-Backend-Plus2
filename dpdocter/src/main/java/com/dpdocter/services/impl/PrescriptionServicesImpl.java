@@ -241,10 +241,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		if (drugCollection.getDoctorId() != null && drugCollection.getHospitalId() != null && drugCollection.getLocationId() != null) {
 		    if (drugCollection.getDoctorId().equals(doctorId) && drugCollection.getHospitalId().equals(hospitalId)
 			    && drugCollection.getLocationId().equals(locationId)) {
-			if (discarded == null)
-			    drugCollection.setDiscarded(true);
-			else
-			    drugCollection.setDiscarded(discarded);
+			drugCollection.setDiscarded(discarded);
 			drugCollection.setUpdatedTime(new Date());
 			drugCollection = drugRepository.save(drugCollection);
 			response = true;
@@ -276,10 +273,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    drugCollection = drugRepository.findOne(drugId);
 	    if (drugCollection != null) {
 		drugCollection.setUpdatedTime(new Date());
-		if (discarded == null)
-		    drugCollection.setDiscarded(true);
-		else
-		    drugCollection.setDiscarded(discarded);
+		drugCollection.setDiscarded(discarded);
 		drugCollection = drugRepository.save(drugCollection);
 		response = true;
 	    } else {
@@ -383,10 +377,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    if (templateCollection.getDoctorId().equals(doctorId) && templateCollection.getHospitalId().equals(hospitalId)
 			    && templateCollection.getLocationId().equals(locationId)) {
 			templateCollection.setUpdatedTime(new Date());
-			if (discarded == null)
-			    templateCollection.setDiscarded(true);
-			else
-			    templateCollection.setDiscarded(discarded);
+			templateCollection.setDiscarded(discarded);
 			templateCollection = templateRepository.save(templateCollection);
 			response = true;
 		    } else {
@@ -572,10 +563,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			&& prescriptionCollection.getLocationId() != null && prescriptionCollection.getPatientId() != null) {
 		    if (prescriptionCollection.getDoctorId().equals(doctorId) && prescriptionCollection.getHospitalId().equals(hospitalId)
 			    && prescriptionCollection.getLocationId().equals(locationId) && prescriptionCollection.getPatientId().equals(patientId)) {
-			if (discarded == null)
-			    prescriptionCollection.setDiscarded(true);
-			else
-			    prescriptionCollection.setDiscarded(discarded);
+			prescriptionCollection.setDiscarded(discarded);
 			prescriptionCollection.setUpdatedTime(new Date());
 			prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 			response = true;
@@ -894,10 +882,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	try {
 	    drugTypeCollection = drugTypeRepository.findOne(drugTypeId);
 	    if (drugTypeCollection != null) {
-		if (discarded == null)
-		    drugTypeCollection.setDiscarded(true);
-		else
-		    drugTypeCollection.setDiscarded(discarded);
+		drugTypeCollection.setDiscarded(discarded);
 		drugTypeCollection.setUpdatedTime(new Date());
 		drugTypeCollection = drugTypeRepository.save(drugTypeCollection);
 		response = true;
@@ -965,10 +950,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    drugStrengthCollection = drugStrengthRepository.findOne(drugStrengthId);
 	    if (drugStrengthCollection != null) {
 		drugStrengthCollection.setUpdatedTime(new Date());
-		if (discarded == null)
-		    drugStrengthCollection.setDiscarded(true);
-		else
-		    drugStrengthCollection.setDiscarded(discarded);
+		drugStrengthCollection.setDiscarded(discarded);
 		drugStrengthCollection = drugStrengthRepository.save(drugStrengthCollection);
 		response = true;
 	    } else {
@@ -1033,10 +1015,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	try {
 	    drugDosageCollection = drugDosageRepository.findOne(drugDosageId);
 	    if (drugDosageCollection != null) {
-		if (discarded == null)
-		    drugDosageCollection.setDiscarded(true);
-		else
-		    drugDosageCollection.setDiscarded(discarded);
+		drugDosageCollection.setDiscarded(discarded);
 		drugDosageCollection.setUpdatedTime(new Date());
 		drugDosageCollection = drugDosageRepository.save(drugDosageCollection);
 		response = true;
@@ -1103,10 +1082,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	try {
 	    drugDirectionCollection = drugDirectionRepository.findOne(drugDirectionId);
 	    if (drugDirectionCollection != null) {
-		if (discarded == null)
-		    drugDirectionCollection.setDiscarded(true);
-		else
-		    drugDirectionCollection.setDiscarded(discarded);
+		drugDirectionCollection.setDiscarded(discarded);
 		drugDirectionCollection.setUpdatedTime(new Date());
 		drugDirectionCollection = drugDirectionRepository.save(drugDirectionCollection);
 		response = true;
@@ -1173,10 +1149,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	try {
 	    drugDurationUnitCollection = drugDurationUnitRepository.findOne(drugDurationUnitId);
 	    if (drugDurationUnitCollection != null) {
-		if (discarded == null)
-		    drugDurationUnitCollection.setDiscarded(true);
-		else
-		    drugDurationUnitCollection.setDiscarded(discarded);
+		drugDurationUnitCollection.setDiscarded(discarded);
 		drugDurationUnitCollection.setUpdatedTime(new Date());
 		drugDurationUnitCollection = drugDurationUnitRepository.save(drugDurationUnitCollection);
 		response = true;
@@ -2614,11 +2587,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		if (labTestCollection.getDoctorId() != null && labTestCollection.getHospitalId() != null && labTestCollection.getLocationId() != null) {
 		    if (labTestCollection.getDoctorId().equals(doctorId) && labTestCollection.getHospitalId().equals(hospitalId)
 			    && labTestCollection.getLocationId().equals(locationId)) {
-			if (discarded == null)
-			    labTestCollection.setDiscarded(true);
-			else
-			    labTestCollection.setDiscarded(discarded);
-
+			labTestCollection.setDiscarded(discarded);
 			labTestCollection.setUpdatedTime(new Date());
 			labTestCollection = labTestRepository.save(labTestCollection);
 			response = true;
@@ -2651,10 +2620,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    labTestCollection = labTestRepository.findOne(labTestId);
 	    if (labTestCollection != null) {
 		labTestCollection.setUpdatedTime(new Date());
-		if (discarded == null)
-		    labTestCollection.setDiscarded(true);
-		else
-		    labTestCollection.setDiscarded(discarded);
+		labTestCollection.setDiscarded(discarded);
 		labTestCollection = labTestRepository.save(labTestCollection);
 		response = true;
 	    } else {

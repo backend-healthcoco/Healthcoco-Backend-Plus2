@@ -17,7 +17,7 @@ public class Hospital {
 
     private String hospitalDescription;
 
-    private List<Location> locations = new ArrayList<Location>();
+    private List<LocationAndAccessControl> locationsAndAccessControl = new ArrayList<LocationAndAccessControl>();
 
     public String getId() {
 	return id;
@@ -59,18 +59,18 @@ public class Hospital {
 	this.hospitalDescription = hospitalDescription;
     }
 
-    public List<Location> getLocations() {
-	return locations;
-    }
+	public List<LocationAndAccessControl> getLocationsAndAccessControl() {
+		return locationsAndAccessControl;
+	}
 
-    public void setLocations(List<Location> locations) {
-	this.locations = locations;
-    }
+	public void setLocationsAndAccessControl(List<LocationAndAccessControl> locationsAndAccessControl) {
+		this.locationsAndAccessControl = locationsAndAccessControl;
+	}
 
-    @Override
-    public String toString() {
-	return "Hospital [id=" + id + ", hospitalName=" + hospitalName + ", hospitalPhoneNumber=" + hospitalPhoneNumber + ", hospitalImageUrl="
-		+ hospitalImageUrl + ", hospitalDescription=" + hospitalDescription + ", locations=" + locations + "]";
-    }
-
+	@Override
+	public String toString() {
+		return "Hospital [id=" + id + ", hospitalName=" + hospitalName + ", hospitalPhoneNumber=" + hospitalPhoneNumber
+				+ ", hospitalImageUrl=" + hospitalImageUrl + ", hospitalDescription=" + hospitalDescription
+				+ ", locationsAndAccessControl=" + locationsAndAccessControl + "]";
+	}
 }

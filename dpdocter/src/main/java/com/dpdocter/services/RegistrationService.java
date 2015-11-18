@@ -14,6 +14,7 @@ import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.ReferenceDetail;
 import com.dpdocter.beans.RegisteredPatientDetails;
+import com.dpdocter.beans.Role;
 import com.dpdocter.beans.User;
 import com.dpdocter.request.ClinicImageAddRequest;
 import com.dpdocter.request.ClinicLogoAddRequest;
@@ -75,5 +76,9 @@ public interface RegistrationService {
     RegisterDoctorResponse registerNewDoctor(DoctorRegisterRequest request);
 
     RegisterDoctorResponse registerExisitingDoctor(DoctorRegisterRequest request);
+
+	Role addRole(Role request);
+
+	List<Role> getRole(String range, int page, int size, String doctorId, String locationId, String hospitalId,	String updatedTime);
 
 }

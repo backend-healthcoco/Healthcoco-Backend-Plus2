@@ -255,10 +255,7 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 		if (issueTrackCollection.getDoctorId() != null && issueTrackCollection.getHospitalId() != null && issueTrackCollection.getLocationId() != null) {
 		    if (issueTrackCollection.getDoctorId().equals(doctorId) && issueTrackCollection.getHospitalId().equals(hospitalId)
 			    && issueTrackCollection.getLocationId().equals(locationId)) {
-			if (discarded == null)
-			    issueTrackCollection.setDiscarded(true);
-			else
-			    issueTrackCollection.setDiscarded(discarded);
+			issueTrackCollection.setDiscarded(discarded);
 			issueTrackCollection.setUpdatedTime(new Date());
 			issueTrackRepository.save(issueTrackCollection);
 			return true;

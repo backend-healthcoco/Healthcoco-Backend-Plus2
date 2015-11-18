@@ -13,6 +13,7 @@ import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.Location;
+import com.dpdocter.beans.LocationAndAccessControl;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.AddressCollection;
 import com.dpdocter.collections.DoctorCollection;
@@ -240,20 +241,8 @@ public class SignUpServiceImpl implements SignUpService {
 	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
 		    userCollection.getMiddleName(), userCollection.getLastName(), tokenCollection.getId());
 	    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
-	    response = new DoctorSignUp();
-	    User user = new User();
-	    userCollection.setPassword(null);
-	    BeanUtil.map(userCollection, user);
-	    user.setEmailAddress(userCollection.getEmailAddress());
-	    response.setUser(user);
-	    Hospital hospital = new Hospital();
-	    BeanUtil.map(hospitalCollection, hospital);
-	    List<Location> locations = new ArrayList<Location>();
-	    Location location = new Location();
-	    BeanUtil.map(locationCollection, location);
-	    locations.add(location);
-	    hospital.setLocations(locations);
-	    response.setHospital(hospital);
+	    
+	    
 	    // user.setPassword(null);
 
 	    // if (userCollection.getMobileNumber() != null) {
@@ -279,6 +268,8 @@ public class SignUpServiceImpl implements SignUpService {
 	    // sMSServices.sendSMS(smsTrackDetail, false);
 	    // }
 
+	    response = new DoctorSignUp();
+
 	    if (request.getAccessModules() != null && !request.getAccessModules().isEmpty()) {
 		AccessControl accessControl = new AccessControl();
 		BeanUtil.map(request, accessControl);
@@ -287,6 +278,26 @@ public class SignUpServiceImpl implements SignUpService {
 		accessControl = accessControlServices.setAccessControls(accessControl);
 		response.setAccessControl(accessControl);
 	    }
+	    
+	    User user = new User();
+	    userCollection.setPassword(null);
+	    BeanUtil.map(userCollection, user);
+	    user.setEmailAddress(userCollection.getEmailAddress());
+	    response.setUser(user);
+	    Hospital hospital = new Hospital();
+	    BeanUtil.map(hospitalCollection, hospital);
+	    List<LocationAndAccessControl> locations = new ArrayList<LocationAndAccessControl>();
+	    Location location = new Location();
+	    BeanUtil.map(locationCollection, location);
+	    
+	    LocationAndAccessControl locationAndAccessControl =  new LocationAndAccessControl();
+		locationAndAccessControl.setAccessControl(response.getAccessControl());
+		locationAndAccessControl.setLocation(location);
+		
+	    locations.add(locationAndAccessControl);
+	    hospital.setLocationsAndAccessControl(locations);
+	    response.setHospital(hospital);
+
 	} catch (BusinessException be) {
 	    logger.error(be);
 	    throw be;
@@ -407,20 +418,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
 		    userCollection.getMiddleName(), userCollection.getLastName(), tokenCollection.getId());
 	    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
-	    response = new DoctorSignUp();
-	    User user = new User();
-	    userCollection.setPassword(null);
-	    BeanUtil.map(userCollection, user);
-	    user.setEmailAddress(userCollection.getEmailAddress());
-	    response.setUser(user);
-	    Hospital hospital = new Hospital();
-	    BeanUtil.map(hospitalCollection, hospital);
-	    List<Location> locations = new ArrayList<Location>();
-	    Location location = new Location();
-	    BeanUtil.map(locationCollection, location);
-	    locations.add(location);
-	    hospital.setLocations(locations);
-	    response.setHospital(hospital);
+
 	    // user.setPassword(null);
 
 	    // if (userCollection.getMobileNumber() != null) {
@@ -446,6 +444,8 @@ public class SignUpServiceImpl implements SignUpService {
 	    // sMSServices.sendSMS(smsTrackDetail, false);
 	    // }
 
+	    response = new DoctorSignUp();
+
 	    if (request.getAccessModules() != null && !request.getAccessModules().isEmpty()) {
 		AccessControl accessControl = new AccessControl();
 		BeanUtil.map(request, accessControl);
@@ -454,6 +454,26 @@ public class SignUpServiceImpl implements SignUpService {
 		accessControl = accessControlServices.setAccessControls(accessControl);
 		response.setAccessControl(accessControl);
 	    }
+	    
+	    User user = new User();
+	    userCollection.setPassword(null);
+	    BeanUtil.map(userCollection, user);
+	    user.setEmailAddress(userCollection.getEmailAddress());
+	    response.setUser(user);
+	    Hospital hospital = new Hospital();
+	    BeanUtil.map(hospitalCollection, hospital);
+	    List<LocationAndAccessControl> locations = new ArrayList<LocationAndAccessControl>();
+	    Location location = new Location();
+	    BeanUtil.map(locationCollection, location);
+	    
+	    LocationAndAccessControl locationAndAccessControl =  new LocationAndAccessControl();
+		locationAndAccessControl.setAccessControl(response.getAccessControl());
+		locationAndAccessControl.setLocation(location);
+		
+	    locations.add(locationAndAccessControl);
+	    hospital.setLocationsAndAccessControl(locations);
+	    response.setHospital(hospital);
+
 	} catch (BusinessException be) {
 	    logger.error(be);
 	    throw be;

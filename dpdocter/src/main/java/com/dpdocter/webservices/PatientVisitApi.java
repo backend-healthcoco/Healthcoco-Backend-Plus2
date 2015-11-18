@@ -85,7 +85,7 @@ public class PatientVisitApi {
 
     @Path(value = PathProxy.PatientVisitUrls.DELETE_VISITS)
     @GET
-    public Response<Boolean> getVisit(@PathParam(value = "visitId") String visitId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    public Response<Boolean> deleteVisit(@PathParam(value = "visitId") String visitId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 
 	if (StringUtils.isEmpty(visitId)) {
 	    logger.warn("Visit Id Cannot Be Empty");

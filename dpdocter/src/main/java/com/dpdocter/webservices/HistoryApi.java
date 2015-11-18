@@ -79,7 +79,7 @@ public class HistoryApi {
     @Path(value = PathProxy.HistoryUrls.DELETE_DISEASE)
     @DELETE
     public Response<Boolean> deleteDisease(@PathParam(value = "diseaseId") String diseaseId, @PathParam(value = "doctorId") String doctorId,
-	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId, @QueryParam("discarded") Boolean discarded) {
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,@DefaultValue("true")  @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(diseaseId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
 	    logger.warn("Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");

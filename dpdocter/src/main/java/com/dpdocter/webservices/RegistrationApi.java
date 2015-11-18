@@ -32,6 +32,7 @@ import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.ReferenceDetail;
 import com.dpdocter.beans.RegisteredPatientDetails;
+import com.dpdocter.beans.Role;
 import com.dpdocter.beans.User;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -172,7 +173,7 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.DELETE_REFERRENCE)
     @DELETE
-    public Response<Boolean> deleteReferrence(@PathParam("referrenceId") String referrenceId, @QueryParam("discarded") Boolean discarded) {
+    public Response<Boolean> deleteReferrence(@PathParam("referrenceId") String referrenceId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (referrenceId == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.referrenceId is null");
 	}
@@ -489,4 +490,29 @@ public class RegistrationApi {
 	} else
 	    return null;
     }
+    
+    @Path(value = PathProxy.RegistrationUrls.ADD_ROLE)
+    @POST
+    public Response<Role> addRole(Role request) {
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
+	}
+	Role professionResponse = registrationService.addRole(request);
+	Response<Role> response = new Response<Role>();
+	response.setData(professionResponse);
+	return response;
+    }
+
+    @Path(value = PathProxy.RegistrationUrls.GET_ROLE)
+    @GET
+    public Response<Role> getRole(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
+    	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+    	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+
+	List<Role> professionResponse = registrationService.getRole(range, page, size, doctorId, locationId, hospitalId, updatedTime);
+	Response<Role> response = new Response<Role>();
+	response.setDataList(professionResponse);
+	return response;
+    }
+
 }

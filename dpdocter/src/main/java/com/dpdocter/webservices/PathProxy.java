@@ -121,6 +121,10 @@ public interface PathProxy {
 
 	public static final String GET_PROFESSION = "/settings/profession";
 
+	public static final String ADD_ROLE = "/role/add";
+
+	public static final String GET_ROLE = "/role/{range}";
+
     }
 
     public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";

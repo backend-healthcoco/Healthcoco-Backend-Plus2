@@ -15,6 +15,15 @@ public class RoleCollection extends GenericCollection {
 
     @Field
     private String description;
+    
+    @Field
+    private String doctorId;
+
+    @Field
+    private String locationId;
+
+    @Field
+    private String hospitalId;
 
     public String getId() {
 	return id;
@@ -40,9 +49,33 @@ public class RoleCollection extends GenericCollection {
 	this.description = description;
     }
 
-    @Override
-    public String toString() {
-	return "RoleCollection [id=" + id + ", role=" + role + ", description=" + description + "]";
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	@Override
+	public String toString() {
+		return "RoleCollection [id=" + id + ", role=" + role + ", description=" + description + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
+	}
 }
