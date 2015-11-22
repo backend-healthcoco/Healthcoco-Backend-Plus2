@@ -55,6 +55,7 @@ import com.dpdocter.request.DoctorContactAddEditRequest;
 import com.dpdocter.request.DoctorEducationAddEditRequest;
 import com.dpdocter.request.DoctorExperienceAddEditRequest;
 import com.dpdocter.request.DoctorExperienceDetailAddEditRequest;
+import com.dpdocter.request.DoctorMultipleDataAddEditRequest;
 import com.dpdocter.request.DoctorNameAddEditRequest;
 import com.dpdocter.request.DoctorProfessionalAddEditRequest;
 import com.dpdocter.request.DoctorProfessionalStatementAddEditRequest;
@@ -62,6 +63,7 @@ import com.dpdocter.request.DoctorProfilePictureAddEditRequest;
 import com.dpdocter.request.DoctorRegistrationAddEditRequest;
 import com.dpdocter.request.DoctorSpecialityAddEditRequest;
 import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
+import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.services.DoctorProfileService;
 import com.dpdocter.services.FileManager;
 
@@ -713,5 +715,83 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	}
 	return qualifications;
     }
+
+	@Override
+	public DoctorMultipleDataAddEditResponse addEditMultipleData(DoctorMultipleDataAddEditRequest request) {
+		UserCollection userCollection = null;
+		DoctorCollection doctorCollection = null;
+		List<SpecialityCollection> specialityCollections = null;
+		List<String> specialities = null;
+		DoctorMultipleDataAddEditResponse response = null;
+		try {
+		    userCollection = userRepository.findOne(request.getDoctorId());
+		    doctorCollection = doctorRepository.findByUserId(request.getDoctorId());
+		    if(userCollection != null && doctorCollection!= null){
+		    	BeanUtil.map(request, userCollection);
+			    BeanUtil.map(request, doctorCollection);
+			    
+			    response = new DoctorMultipleDataAddEditResponse();
+			    
+			    DoctorExperience doctorExperience = new DoctorExperience();
+			    doctorExperience.setExperience(Float.parseFloat(request.getExperience()));
+			    doctorExperience.setPeriod(DoctorExperienceUnit.YEAR);
+			    doctorCollection.setExperience(doctorExperience);
+			    
+			    specialityCollections = specialityRepository.findAll();
+			    specialities = new ArrayList<String>();
+			    for (String speciality : request.getSpeciality()) {
+				Boolean specialityFound = false;
+				for (SpecialityCollection specialityCollection : specialityCollections) {
+				    if (speciality.trim().equalsIgnoreCase(specialityCollection.getSpeciality())) {
+					specialities.add(specialityCollection.getId());
+					specialityFound = true;
+					break;
+				    }
+				}
+				if (!specialityFound) {
+				    SpecialityCollection specialityCollection = new SpecialityCollection();
+				    specialityCollection.setSpeciality(speciality);
+				    specialityCollection.setCreatedTime(new Date());
+				    specialityCollection = specialityRepository.save(specialityCollection);
+				    specialities.add(specialityCollection.getId());
+				}
+			    }
+			    doctorCollection.setSpecialities(specialities);
+			    
+			    if (request.getProfileImage() != null) {
+					String path = "profile-image";
+					// save image
+					request.getProfileImage().setFileName(request.getProfileImage().getFileName() + new Date().getTime());
+					String imageurl = fileManager.saveImageAndReturnImageUrl(request.getProfileImage(), path);
+					userCollection.setImageUrl(imageurl);
+					String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getProfileImage(), path);
+					userCollection.setThumbnailUrl(thumbnailUrl);
+					response.setProfileImageUrl(imageurl);
+			    }
+			    
+			    if (request.getCoverImage() != null) {
+					String path = "cover-image";
+					// save image
+					request.getCoverImage().setFileName(request.getCoverImage().getFileName() + new Date().getTime());
+					String imageurl = fileManager.saveImageAndReturnImageUrl(request.getCoverImage(), path);
+					userCollection.setCoverImageUrl(imageurl);
+					String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getCoverImage(), path);
+					userCollection.setCoverThumbnailImageUrl(thumbnailUrl);
+					response.setCoverImageUrl(imageurl);
+			    }
+			    userRepository.save(userCollection);
+			    doctorRepository.save(doctorCollection);
+			    
+			    BeanUtil.map(userCollection, response);
+			    BeanUtil.map(doctorCollection, response);
+			    
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error Editing Doctor Profile");
+		    throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
+		}
+		return response;
+	}
 
 }

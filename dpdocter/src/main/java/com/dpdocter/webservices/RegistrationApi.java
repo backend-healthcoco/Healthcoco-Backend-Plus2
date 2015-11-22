@@ -34,6 +34,7 @@ import com.dpdocter.beans.ReferenceDetail;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Role;
 import com.dpdocter.beans.User;
+import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -44,6 +45,7 @@ import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.PatientInitialAndCounter;
 import com.dpdocter.response.RegisterDoctorResponse;
 import com.dpdocter.services.RegistrationService;
+import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrPatientDocument;
 import com.dpdocter.solr.services.SolrRegistrationService;
 import common.util.web.DPDoctorUtils;
@@ -66,6 +68,9 @@ public class RegistrationApi {
     @Autowired
     private SolrRegistrationService solrRegistrationService;
 
+    @Autowired
+    private TransactionalManagementService transnationalService;
+
     @Context
     private UriInfo uriInfo;
 
@@ -81,11 +86,15 @@ public class RegistrationApi {
 	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 	RegisteredPatientDetails registeredPatientDetails = null;
 	// User user = registrationService.checkIfPatientExist(request);
+	registrationService.checkPatientCount(request.getMobileNumber());
 	if (request.getUserId() == null) {
 	    registeredPatientDetails = registrationService.registerNewPatient(request);
+	    transnationalService.addResource(registeredPatientDetails.getUserId(), Resource.PATIENT, false);
 	    solrRegistrationService.addPatient(getSolrPatientDocument(registeredPatientDetails));
+	    
 	} else {
 	    registeredPatientDetails = registrationService.registerExistingPatient(request);
+	    transnationalService.addResource(registeredPatientDetails.getUserId(), Resource.COMPLAINT, false);
 	    solrRegistrationService.editPatient(getSolrPatientDocument(registeredPatientDetails));
 	}
 	registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));
@@ -93,6 +102,21 @@ public class RegistrationApi {
 	return response;
     }
 
+    @Path(value = PathProxy.RegistrationUrls.EDIT_PATIENT_PROFILE)
+    @POST
+    public Response<RegisteredPatientDetails> editPatientRegister(PatientRegistrationRequest request) {
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	}
+	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
+	RegisteredPatientDetails registeredPatientDetails = registrationService.registerExistingPatient(request);
+	transnationalService.addResource(registeredPatientDetails.getUserId(), Resource.COMPLAINT, false);
+	solrRegistrationService.editPatient(getSolrPatientDocument(registeredPatientDetails));
+	
+	registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));
+	response.setData(registeredPatientDetails);
+	return response;
+    }
     @Path(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM)
     @GET
     public Response<User> getExistingPatients(@PathParam("mobileNumber") String mobileNumber, @PathParam("locationId") String locationId,

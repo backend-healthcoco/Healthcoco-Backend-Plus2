@@ -81,4 +81,6 @@ public interface RegistrationService {
 
 	List<Role> getRole(String range, int page, int size, String doctorId, String locationId, String hospitalId,	String updatedTime);
 
+	void checkPatientCount(String mobileNumber);
+
 }

@@ -14,6 +14,9 @@ public class PatientGroupCollection extends GenericCollection {
 
     @Field
     private String patientId;
+    
+    @Field
+    private Boolean discarded = false;
 
     public String getId() {
 	return id;
@@ -39,4 +42,17 @@ public class PatientGroupCollection extends GenericCollection {
 	this.patientId = patientId;
     }
 
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientGroupCollection [id=" + id + ", groupId=" + groupId + ", patientId=" + patientId + ", discarded="
+				+ discarded + "]";
+	}
 }

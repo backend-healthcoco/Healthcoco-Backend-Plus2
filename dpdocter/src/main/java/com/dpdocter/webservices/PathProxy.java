@@ -77,6 +77,8 @@ public interface PathProxy {
 
 	public static final String DOCTOR_REGISTER = "/doctor";
 
+	public static final String EDIT_PATIENT_PROFILE = "/editPatient";
+
 	public static final String EXISTING_DOCTOR_BY_EMAIL_ADDRESS = "/existing_doctor/{emailAddress}";
 
 	public static final String EXISTING_PATIENTS_BY_PHONE_NUM = "/existing_patients/{mobileNumber}/{locationId}/{hospitalId}";
@@ -204,7 +206,7 @@ public interface PathProxy {
 
 	public static final String GET_PATIENT_EMAIL_ADD = "/getpatientemailaddr/{patientId}";
 
-	public static final String EMAIL_RECORD = "/emailrecord/{recordId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}";
+	public static final String EMAIL_RECORD = "/{recordId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 
 	public static final String DELETE_RECORD = "/{recordId}/delete";
 
@@ -344,7 +346,7 @@ public interface PathProxy {
 
 	public static final String REMOVE_FAMILY_HISTORY = "/removeFamilyHistory/{diseaseId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
 
-	public static final String GET_PATIENT_HISTORY_OTP_VERIFIED = "/getPatientHistory/{patientId}/{doctorId}/{locationId}/{hospitalId}/{historyFilter}/{otpVerified}";
+	public static final String GET_PATIENT_HISTORY_OTP_VERIFIED = "/getPatientHistory/{patientId}/{doctorId}/{locationId}/{hospitalId}/{otpVerified}";
 
 	public static final String MAIL_MEDICAL_DATA = "mailMedicalData";
 	
@@ -408,6 +410,7 @@ public interface PathProxy {
 
 	public static final String GET_EDUCATION_QUALIFICATIONS = "/getEducationQualifications";
 
+	public static final String ADD_EDIT_MULTIPLE_DATA = "/addEditMultipleData";
     }
 
     public static final String PATIENT_VISIT_BASE_URL = BASE_URL + "/patientVisit";

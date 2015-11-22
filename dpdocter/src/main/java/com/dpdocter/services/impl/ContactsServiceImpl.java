@@ -319,16 +319,19 @@ public class ContactsServiceImpl implements ContactsService {
 		patientGroupCollection = patientGroupRepository.findByGroupId(groupCollection.getId());
 		if (patientGroupCollection != null) {
 		    for (PatientGroupCollection patientGroup : patientGroupCollection) {
-			PatientCollection patientCollection = patientRepository.findOne(patientGroup.getPatientId());
-			patientCollection.setUpdatedTime(new Date());
-			patientCollection = patientRepository.save(patientCollection);
-			patientGroupRepository.delete(patientGroup);
+			PatientCollection patientCollection = patientRepository.findByUserId(patientGroup.getPatientId());
+			if(patientCollection != null){
+				patientCollection.setUpdatedTime(new Date());
+				patientCollection = patientRepository.save(patientCollection);
+			}
+			patientGroup.setDiscarded(discarded);
+			patientGroupRepository.save(patientGroup);
 		    }
 		}
 		response = true;
 	    } else {
-		logger.error("Drug Not Found");
-		throw new BusinessException(ServiceError.NotFound, "Drug Not Found");
+		logger.error("Group Not Found");
+		throw new BusinessException(ServiceError.NotFound, "Group Not Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();

@@ -469,6 +469,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		prescriptionCollection.setLabTests(labTests);
 	    }
+	    UserCollection userCollection = userRepository.findOne(prescriptionCollection.getDoctorId());
+	    if (userCollection != null) {
+	    	prescriptionCollection.setCreatedBy(userCollection.getFirstName());
+	    }
 	    prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 	    response = new PrescriptionAddEditResponse();
 	    BeanUtil.map(prescriptionCollection, response);

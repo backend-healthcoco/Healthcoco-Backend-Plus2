@@ -1,27 +1,35 @@
 package com.dpdocter.webservices;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.ClinicalNotes;
+import com.dpdocter.beans.Diagram;
+import com.dpdocter.beans.GeneralData;
 import com.dpdocter.beans.MedicalData;
 import com.dpdocter.beans.MedicalHistoryHandler;
+import com.dpdocter.beans.Records;
+import com.dpdocter.enums.HistoryFilter;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -32,6 +40,7 @@ import com.dpdocter.response.DiseaseListResponse;
 import com.dpdocter.response.HistoryDetailsResponse;
 import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.PatientVisitService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -48,6 +57,12 @@ public class HistoryApi {
 
     @Autowired
     private PatientVisitService patientTrackService;
+    
+    @Context
+    private UriInfo uriInfo;
+
+    @Value(value = "${IMAGE_URL_ROOT_PATH}")
+    private String imageUrlRootPath;
 
     @Path(value = PathProxy.HistoryUrls.ADD_DISEASE)
     @POST
@@ -281,18 +296,30 @@ public class HistoryApi {
     @GET
     public Response<HistoryDetailsResponse> getPatientHistoryDetailsOTP(@PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "historyFilter") String historyFilter,
-	    @PathParam(value = "otpVerified") boolean otpVerified) {
-	if (DPDoctorUtils.anyStringEmpty(patientId, doctorId, hospitalId, locationId, historyFilter)) {
+	    @PathParam(value = "hospitalId") String hospitalId, @MatrixParam("historyFilter") List<String> historyFilter,
+	    @PathParam(value = "otpVerified") boolean otpVerified, @QueryParam("page") int page, @QueryParam("size") int size) {
+	if (DPDoctorUtils.anyStringEmpty(patientId, doctorId, hospitalId, locationId)) {
 	    logger.warn("Patient Id, Doctor Id, Hospital Id, Location Id, History Filter Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Patient Id, Doctor Id, Hospital Id, Location Id, History Filter Cannot Be Empty");
 	}
 	List<HistoryDetailsResponse> historyDetailsResponses = null;
 	if (otpVerified) {
-	    historyDetailsResponses = historyServices.getPatientHistoryDetailsWithVerifiedOTP(patientId, doctorId, hospitalId, locationId, historyFilter);
+	    historyDetailsResponses = historyServices.getPatientHistoryDetailsWithVerifiedOTP(patientId, doctorId, hospitalId, locationId, historyFilter, page,size);
 	} else {
-	    historyDetailsResponses = new ArrayList<HistoryDetailsResponse>();
-	    historyDetailsResponses.add(historyServices.getPatientHistoryDetailsWithoutVerifiedOTP(patientId, doctorId, hospitalId, locationId, historyFilter));
+	    historyDetailsResponses = historyServices.getPatientHistoryDetailsWithoutVerifiedOTP(patientId, doctorId, hospitalId, locationId, historyFilter, page,size);
+	}
+	if(historyDetailsResponses != null && !historyDetailsResponses.isEmpty())
+	for(HistoryDetailsResponse historyDetailsResponse: historyDetailsResponses){
+		if(historyDetailsResponse.getGeneralRecords() != null){
+			for(GeneralData generalData : historyDetailsResponse.getGeneralRecords()){
+				if(generalData.getDataType().equals(HistoryFilter.CLINICAL_NOTES)){
+					((ClinicalNotes)generalData.getData()).setDiagrams(getFinalDiagrams(((ClinicalNotes)generalData.getData()).getDiagrams()));
+				}
+				else if(generalData.getDataType().equals(HistoryFilter.REPORTS)){
+					((Records)generalData.getData()).setRecordsUrl(getFinalImageURL(((Records)generalData.getData()).getRecordsUrl()));
+				}
+			}
+		}
 	}
 	Response<HistoryDetailsResponse> response = new Response<HistoryDetailsResponse>();
 	response.setDataList(historyDetailsResponses);
@@ -397,4 +424,21 @@ public class HistoryApi {
 //	return response;
 //    }
 
+    private List<Diagram> getFinalDiagrams(List<Diagram> diagrams) {
+    	for (Diagram diagram : diagrams) {
+    	    if (diagram.getDiagramUrl() != null) {
+    		diagram.setDiagramUrl(getFinalImageURL(diagram.getDiagramUrl()));
+    	    }
+    	}
+    	return diagrams;
+        }
+
+        private String getFinalImageURL(String imageURL) {
+    	if (imageURL != null) {
+    	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+    	    return finalImageURL + imageURL;
+    	} else
+    	    return null;
+
+        }
 }

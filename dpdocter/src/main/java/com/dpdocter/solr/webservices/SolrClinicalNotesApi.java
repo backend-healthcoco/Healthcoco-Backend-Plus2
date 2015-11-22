@@ -13,13 +13,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.exceptions.BusinessException;
-import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.solr.document.SolrComplaintsDocument;
 import com.dpdocter.solr.document.SolrDiagnosesDocument;
 import com.dpdocter.solr.document.SolrDiagramsDocument;
@@ -28,7 +25,7 @@ import com.dpdocter.solr.document.SolrNotesDocument;
 import com.dpdocter.solr.document.SolrObservationsDocument;
 import com.dpdocter.solr.services.SolrClinicalNotesService;
 import com.dpdocter.webservices.PathProxy;
-import common.util.web.DPDoctorUtils;
+
 import common.util.web.Response;
 
 @Component
@@ -37,7 +34,7 @@ import common.util.web.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class SolrClinicalNotesApi {
 
-    private static Logger logger = Logger.getLogger(SolrClinicalNotesApi.class.getName());
+//    private static Logger logger = Logger.getLogger(SolrClinicalNotesApi.class.getName());
 
     @Context
     private UriInfo uriInfo;

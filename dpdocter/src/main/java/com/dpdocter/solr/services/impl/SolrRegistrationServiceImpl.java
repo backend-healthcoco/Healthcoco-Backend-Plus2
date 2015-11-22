@@ -13,9 +13,11 @@ import org.springframework.data.solr.core.query.Criteria;
 import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.beans.AdvancedSearch;
 import com.dpdocter.solr.beans.AdvancedSearchParameter;
 import com.dpdocter.solr.document.SolrPatientDocument;
@@ -34,6 +36,9 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 
     @Autowired
     private SolrTemplate solrTemplate;
+    
+    @Autowired
+    private TransactionalManagementService transnationalService;
 
     @Override
     public boolean addPatient(SolrPatientDocument request) {
@@ -41,10 +46,11 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	try {
 	    solrPatientRepository.save(request);
 	    response = true;
+	    transnationalService.addResource(request.getUserId(), Resource.PATIENT, true);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Patient");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Patient");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Patient");
 	}
 	return response;
     }
@@ -55,10 +61,11 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	try {
 	    solrPatientRepository.save(request);
 	    response = true;
+	    transnationalService.addResource(request.getUserId(), Resource.PATIENT, true);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Patient");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Patient");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Patient");
 	}
 	return response;
     }
@@ -399,12 +406,13 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	    if (document != null) {
 		document.setImageUrl(imageUrl);
 		solrPatientRepository.save(document);
+		transnationalService.addResource(document.getId(), Resource.PATIENT, true);
 	    }
-
+	    
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Searching Patients");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
 	}
 
     }

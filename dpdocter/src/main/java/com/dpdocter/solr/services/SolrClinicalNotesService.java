@@ -15,25 +15,25 @@ public interface SolrClinicalNotesService {
 
     boolean editComplaints(SolrComplaintsDocument request);
 
-    boolean deleteComplaints(String id);
+    boolean deleteComplaints(String id, Boolean discarded);
 
     boolean addDiagnoses(SolrDiagnosesDocument request);
 
     boolean editDiagnoses(SolrDiagnosesDocument request);
 
-    boolean deleteDiagnoses(String id);
+    boolean deleteDiagnoses(String id, Boolean discarded);
 
     boolean addNotes(SolrNotesDocument request);
 
     boolean editNotes(SolrNotesDocument request);
 
-    boolean deleteNotes(String id);
+    boolean deleteNotes(String id, Boolean discarded);
 
     boolean addDiagrams(SolrDiagramsDocument request);
 
     boolean editDiagrams(SolrDiagramsDocument request);
 
-    boolean deleteDiagrams(String id);
+    boolean deleteDiagrams(String id, Boolean discarded);
 
     List<SolrDiagramsDocument> searchDiagramsBySpeciality(String searchTerm);
 
@@ -41,13 +41,13 @@ public interface SolrClinicalNotesService {
 
     boolean editInvestigations(SolrInvestigationsDocument request);
 
-    boolean deleteInvestigations(String id);
+    boolean deleteInvestigations(String id, Boolean discarded);
 
     boolean addObservations(SolrObservationsDocument request);
 
     boolean editObservations(SolrObservationsDocument request);
 
-    boolean deleteObservations(String id);
+    boolean deleteObservations(String id, Boolean discarded);
 
     List<SolrObservationsDocument> searchObservations(String range, int page, int size, String doctorId, String locationId, String hospitalId,
 	    String updatedTime, Boolean discarded, String searchTerm);

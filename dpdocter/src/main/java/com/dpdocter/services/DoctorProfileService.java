@@ -17,6 +17,7 @@ import com.dpdocter.request.DoctorContactAddEditRequest;
 import com.dpdocter.request.DoctorEducationAddEditRequest;
 import com.dpdocter.request.DoctorExperienceAddEditRequest;
 import com.dpdocter.request.DoctorExperienceDetailAddEditRequest;
+import com.dpdocter.request.DoctorMultipleDataAddEditRequest;
 import com.dpdocter.request.DoctorNameAddEditRequest;
 import com.dpdocter.request.DoctorProfessionalAddEditRequest;
 import com.dpdocter.request.DoctorProfessionalStatementAddEditRequest;
@@ -24,6 +25,7 @@ import com.dpdocter.request.DoctorProfilePictureAddEditRequest;
 import com.dpdocter.request.DoctorRegistrationAddEditRequest;
 import com.dpdocter.request.DoctorSpecialityAddEditRequest;
 import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
+import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 
 public interface DoctorProfileService {
 
@@ -76,5 +78,7 @@ public interface DoctorProfileService {
     List<EducationInstitute> getEducationInstitutes(int page, int size);
 
     List<EducationQualification> getEducationQualifications(int page, int size);
+
+    DoctorMultipleDataAddEditResponse addEditMultipleData(DoctorMultipleDataAddEditRequest request);
 
 }

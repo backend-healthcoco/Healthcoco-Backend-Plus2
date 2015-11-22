@@ -289,6 +289,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    }
 
 	    clinicalNotesCollection.setCreatedTime(createdTime);
+	    UserCollection userCollection = userRepository.findOne(clinicalNotesCollection.getDoctorId());
+	    if (userCollection != null) {
+	    	clinicalNotesCollection.setCreatedBy(userCollection.getFirstName());
+	    }
 	    clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
 
 	    clinicalNotes = new ClinicalNotes();

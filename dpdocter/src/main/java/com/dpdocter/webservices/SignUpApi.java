@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.User;
+import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.DoctorSignupHandheldContinueRequest;
@@ -25,6 +26,7 @@ import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.PatientProfilePicChangeRequest;
 import com.dpdocter.request.PatientSignUpRequest;
 import com.dpdocter.services.SignUpService;
+import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.services.SolrRegistrationService;
 import common.util.web.Response;
 
@@ -41,6 +43,9 @@ public class SignUpApi {
 
     @Autowired
     private SolrRegistrationService solrRegistrationService;
+
+    @Autowired
+    private TransactionalManagementService transnationalService;
 
     @Context
     private UriInfo uriInfo;
@@ -161,7 +166,7 @@ public class SignUpApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request sent is NULL");
 	}
 	User user = signUpService.patientProfilePicChange(request);
-
+	transnationalService.addResource(user.getId(), Resource.PATIENT, false);
 	solrRegistrationService.patientProfilePicChange(request.getUsername(), user.getImageUrl());
 	if (user != null) {
 	    if (user.getImageUrl() != null) {

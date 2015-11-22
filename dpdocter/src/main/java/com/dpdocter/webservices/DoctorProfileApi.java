@@ -35,6 +35,7 @@ import com.dpdocter.request.DoctorContactAddEditRequest;
 import com.dpdocter.request.DoctorEducationAddEditRequest;
 import com.dpdocter.request.DoctorExperienceAddEditRequest;
 import com.dpdocter.request.DoctorExperienceDetailAddEditRequest;
+import com.dpdocter.request.DoctorMultipleDataAddEditRequest;
 import com.dpdocter.request.DoctorNameAddEditRequest;
 import com.dpdocter.request.DoctorProfessionalAddEditRequest;
 import com.dpdocter.request.DoctorProfessionalStatementAddEditRequest;
@@ -42,6 +43,7 @@ import com.dpdocter.request.DoctorProfilePictureAddEditRequest;
 import com.dpdocter.request.DoctorRegistrationAddEditRequest;
 import com.dpdocter.request.DoctorSpecialityAddEditRequest;
 import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
+import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.services.DoctorProfileService;
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -370,4 +372,21 @@ public class DoctorProfileApi {
 	response.setDataList(qualifications);
 	return response;
     }
+    
+    @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_MULTIPLE_DATA)
+    @POST
+    public Response<DoctorMultipleDataAddEditResponse> addEditMultipleData(DoctorMultipleDataAddEditRequest request) {
+	if (request == null) {
+	    logger.warn("Request Cannot Be null");
+	    throw new BusinessException(ServiceError.InvalidInput, "Request Cannot Be null");
+	}
+	DoctorMultipleDataAddEditResponse addEditNameResponse = doctorProfileService.addEditMultipleData(request);
+	addEditNameResponse.setCoverImageUrl(getFinalImageURL(addEditNameResponse.getCoverImageUrl()));
+	addEditNameResponse.setProfileImageUrl(getFinalImageURL(addEditNameResponse.getProfileImageUrl()));
+	
+	Response<DoctorMultipleDataAddEditResponse> response = new Response<DoctorMultipleDataAddEditResponse>();
+	response.setData(addEditNameResponse);
+	return response;
+    }
+
 }

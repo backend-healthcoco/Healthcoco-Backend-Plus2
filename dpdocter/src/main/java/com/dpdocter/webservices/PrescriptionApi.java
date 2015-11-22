@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.Prescription;
+import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -45,6 +46,7 @@ import com.dpdocter.response.TemplateAddEditResponse;
 import com.dpdocter.response.TemplateAddEditResponseDetails;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
+import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrDrugDocument;
 import com.dpdocter.solr.document.SolrLabTestDocument;
 import com.dpdocter.solr.services.SolrPrescriptionService;
@@ -67,6 +69,10 @@ public class PrescriptionApi {
 
     @Autowired
     private PatientVisitService patientTrackService;
+    
+    @Autowired
+    private TransactionalManagementService transnationalService;
+
 
     @Path(value = PathProxy.PrescriptionUrls.ADD_DRUG)
     @POST
@@ -77,10 +83,13 @@ public class PrescriptionApi {
 	}
 	DrugAddEditResponse drugAddEditResponse = prescriptionServices.addDrug(request);
 
+	transnationalService.addResource(drugAddEditResponse.getId(), Resource.DRUG, false);
+	
 	// Below service call will add the drug in solr index.
 	SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
 	BeanUtil.map(drugAddEditResponse, solrDrugDocument);
 	solrPrescriptionService.addDrug(solrDrugDocument);
+	
 	Response<DrugAddEditResponse> response = new Response<DrugAddEditResponse>();
 	response.setData(drugAddEditResponse);
 	return response;
@@ -96,6 +105,7 @@ public class PrescriptionApi {
 	request.setId(drugId);
 	DrugAddEditResponse drugAddEditResponse = prescriptionServices.editDrug(request);
 
+	transnationalService.addResource(drugAddEditResponse.getId(), Resource.DRUG, false);
 	// Below service call will add the drug in solr index.
 	SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
 	BeanUtil.map(drugAddEditResponse, solrDrugDocument);
@@ -116,8 +126,9 @@ public class PrescriptionApi {
 	}
 	Boolean drugDeleteResponse = prescriptionServices.deleteDrug(drugId, doctorId, hospitalId, locationId, discarded);
 
+	transnationalService.addResource(drugId, Resource.DRUG, false);
 	// Below service call will delete the drug in solr index.
-	solrPrescriptionService.deleteDrug(drugId);
+	solrPrescriptionService.deleteDrug(drugId, discarded);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(drugDeleteResponse);
 	return response;
@@ -131,9 +142,9 @@ public class PrescriptionApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Id, Doctor Id Cannot Be Empty");
 	}
 	Boolean drugDeleteResponse = prescriptionServices.deleteDrug(drugId, discarded);
-
+	transnationalService.addResource(drugId, Resource.DRUG, false);
 	// Below service call will delete the drug in solr index.
-	solrPrescriptionService.deleteDrug(drugId);
+	solrPrescriptionService.deleteDrug(drugId, discarded);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(drugDeleteResponse);
 	return response;
@@ -160,7 +171,7 @@ public class PrescriptionApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
 	LabTest labTestResponse = prescriptionServices.addLabTest(request);
-
+	transnationalService.addResource(labTestResponse.getId(), Resource.LABTEST, false);
 	SolrLabTestDocument solrLabTestDocument = new SolrLabTestDocument();
 	BeanUtil.map(labTestResponse, solrLabTestDocument);
 	solrPrescriptionService.addLabTest(solrLabTestDocument);
@@ -178,11 +189,11 @@ public class PrescriptionApi {
 	}
 	request.setId(labTestId);
 	LabTest labTestResponse = prescriptionServices.editLabTest(request);
-
+	transnationalService.addResource(labTestId, Resource.LABTEST, false);
 	SolrLabTestDocument solrLabTestDocument = new SolrLabTestDocument();
 	BeanUtil.map(labTestResponse, solrLabTestDocument);
 	solrPrescriptionService.editLabTest(solrLabTestDocument);
-
+	
 	Response<LabTest> response = new Response<LabTest>();
 	response.setData(labTestResponse);
 	return response;
@@ -197,8 +208,8 @@ public class PrescriptionApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Lab Test Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	}
 	Boolean labTestDeleteResponse = prescriptionServices.deleteLabTest(labTestId, doctorId, hospitalId, locationId, discarded);
-
-	solrPrescriptionService.deleteLabTest(labTestId);
+	transnationalService.addResource(labTestId, Resource.LABTEST, false);
+	solrPrescriptionService.deleteLabTest(labTestId, discarded);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(labTestDeleteResponse);
 	return response;
@@ -212,8 +223,9 @@ public class PrescriptionApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Lab Test Id Cannot Be Empty");
 	}
 	Boolean labTestDeleteResponse = prescriptionServices.deleteLabTest(labTestId, discarded);
-
-	solrPrescriptionService.deleteDrug(labTestId);
+	transnationalService.addResource(labTestId, Resource.LABTEST, false);
+	solrPrescriptionService.deleteLabTest(labTestId, discarded);
+	
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(labTestDeleteResponse);
 	return response;

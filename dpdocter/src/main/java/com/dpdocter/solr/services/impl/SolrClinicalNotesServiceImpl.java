@@ -12,8 +12,10 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.enums.Range;
+import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrComplaintsDocument;
 import com.dpdocter.solr.document.SolrDiagnosesDocument;
 import com.dpdocter.solr.document.SolrDiagramsDocument;
@@ -51,6 +53,9 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 
     @Autowired
     private SolrObservationsRepository solrObservationsRepository;
+    
+    @Autowired
+    private TransactionalManagementService transnationalService;
 
     @Override
     public boolean addComplaints(SolrComplaintsDocument request) {
@@ -58,10 +63,12 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	try {
 	    solrComplaintsRepository.save(request);
 	    response = true;
+	    transnationalService.addResource(request.getId(), Resource.COMPLAINT, true);
+		
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Complaints");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Complaints");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Complaints");
 	}
 	return response;
     }
@@ -72,24 +79,31 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	try {
 	    solrComplaintsRepository.save(request);
 	    response = true;
+	    transnationalService.addResource(request.getId(), Resource.COMPLAINT, true);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Complaints");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Complaints");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Complaints");
 	}
 	return response;
     }
 
     @Override
-    public boolean deleteComplaints(String id) {
+    public boolean deleteComplaints(String id, Boolean discarded) {
 	boolean response = false;
 	try {
-	    solrComplaintsRepository.delete(id);
+		SolrComplaintsDocument complaintsDocument = solrComplaintsRepository.findOne(id);
+		if(complaintsDocument != null){
+			complaintsDocument.setDiscarded(discarded);
+			complaintsDocument.setUpdatedTime(new Date());
+			solrComplaintsRepository.save(complaintsDocument);
+		}
 	    response = true;
+	    transnationalService.addResource(id, Resource.COMPLAINT, true);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Complaints");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Complaints");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Complaints");
 	}
 	return response;
     }
@@ -100,10 +114,12 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	try {
 	    solrDiagnosesRepository.save(request);
 	    response = true;
+	    transnationalService.addResource(request.getId(), Resource.DIAGNOSIS, true);
+		
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Diagnosis");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Diagnoses");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Diagnoses");
 	}
 	return response;
     }
@@ -114,24 +130,32 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	try {
 	    solrDiagnosesRepository.save(request);
 	    response = true;
+	    transnationalService.addResource(request.getId(), Resource.DIAGNOSIS, true);
+		
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Diagnosis");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Diagnoses");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Diagnoses");
 	}
 	return response;
     }
 
     @Override
-    public boolean deleteDiagnoses(String id) {
+    public boolean deleteDiagnoses(String id, Boolean discarded) {
 	boolean response = false;
 	try {
-	    solrDiagnosesRepository.delete(id);
+	    SolrDiagnosesDocument diagnosesDocument = solrDiagnosesRepository.findOne(id);
+	    if(diagnosesDocument != null){
+	    	diagnosesDocument.setDiscarded(discarded);
+		    diagnosesDocument.setUpdatedTime(new Date());
+		    solrDiagnosesRepository.save(diagnosesDocument);
+	    }
 	    response = true;
+	    transnationalService.addResource(id, Resource.DIAGNOSIS, true);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Diagnosis");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Diagnoses");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Diagnoses");
 	}
 	return response;
     }
@@ -142,10 +166,12 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	try {
 	    solrNotesRepository.save(request);
 	    response = true;
+		transnationalService.addResource(request.getId(), Resource.NOTES, true);
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Notes");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Notes");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Notes");
 	}
 	return response;
     }
@@ -156,24 +182,33 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	try {
 	    solrNotesRepository.save(request);
 	    response = true;
+		transnationalService.addResource(request.getId(), Resource.NOTES, true);
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Notes");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Notes");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Notes");
 	}
 	return response;
     }
 
     @Override
-    public boolean deleteNotes(String id) {
+    public boolean deleteNotes(String id, Boolean discarded) {
 	boolean response = false;
 	try {
-	    solrNotesRepository.delete(id);
+	    SolrNotesDocument notesDocument = solrNotesRepository.findOne(id);
+	    if(notesDocument != null){
+	    	notesDocument.setDiscarded(discarded);
+		    notesDocument.setUpdatedTime(new Date());
+		    solrNotesRepository.save(notesDocument);
+	    }
 	    response = true;
+		transnationalService.addResource(id, Resource.NOTES, true);
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Notes");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Notes");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Notes");
 	}
 	return response;
     }
@@ -184,10 +219,11 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	try {
 	    solrDiagramsRepository.save(request);
 	    response = true;
+	    transnationalService.addResource(request.getId(), Resource.DIAGRAM, true);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Diagrams");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Diagrams");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Diagrams");
 	}
 	return response;
     }
@@ -198,24 +234,31 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	try {
 	    solrDiagramsRepository.save(request);
 	    response = true;
+	    transnationalService.addResource(request.getId(), Resource.DIAGRAM, true);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Diagrams");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Diagrams");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Diagrams");
 	}
 	return response;
     }
 
     @Override
-    public boolean deleteDiagrams(String id) {
+    public boolean deleteDiagrams(String id, Boolean discarded) {
 	boolean response = false;
 	try {
-	    solrDiagramsRepository.delete(id);
+	    SolrDiagramsDocument diagramsDocument = solrDiagramsRepository.findOne(id);
+	    if(diagramsDocument != null){
+	    	diagramsDocument.setDiscarded(discarded);
+		    diagramsDocument.setUpdatedTime(new Date());
+		    solrDiagramsRepository.save(diagramsDocument);
+	    }
 	    response = true;
+	    transnationalService.addResource(id, Resource.DIAGRAM, true);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Diagrams");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Diagrams");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Diagrams");
 	}
 	return response;
     }
@@ -239,10 +282,11 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	try {
 	    solrInvestigationsRepository.save(request);
 	    response = true;
+	    transnationalService.addResource(request.getId(), Resource.INVESTIGATION, true);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Investigations");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Investigations");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Investigations");
 	}
 	return response;
     }
@@ -253,24 +297,31 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	try {
 	    solrInvestigationsRepository.save(request);
 	    response = true;
+	    transnationalService.addResource(request.getId(), Resource.INVESTIGATION, true);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Investigations");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Investigations");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Investigations");
 	}
 	return response;
     }
 
     @Override
-    public boolean deleteInvestigations(String id) {
+    public boolean deleteInvestigations(String id, Boolean discarded) {
 	boolean response = false;
 	try {
-	    solrInvestigationsRepository.delete(id);
+	    SolrInvestigationsDocument  investigationsDocument = solrInvestigationsRepository.findOne(id);
+	    if(investigationsDocument != null){
+	    	investigationsDocument.setDiscarded(discarded);
+		    investigationsDocument.setUpdatedTime(new Date());
+		    solrInvestigationsRepository.save(investigationsDocument);
+	    }
 	    response = true;
+	    transnationalService.addResource(id, Resource.INVESTIGATION, true);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Investigations");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Investigations");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Investigations");
 	}
 	return response;
     }
@@ -281,10 +332,11 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	try {
 	    solrObservationsRepository.save(request);
 	    response = true;
+	    transnationalService.addResource(request.getId(), Resource.OBSERVATION, true);		
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Observations");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Observations");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Observations");
 	}
 	return response;
     }
@@ -295,24 +347,32 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	try {
 	    solrObservationsRepository.save(request);
 	    response = true;
+	    transnationalService.addResource(request.getId(), Resource.OBSERVATION, true);
+		
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Observations");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Observations");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Observations");
 	}
 	return response;
     }
 
     @Override
-    public boolean deleteObservations(String id) {
+    public boolean deleteObservations(String id, Boolean discarded) {
 	boolean response = false;
 	try {
-	    solrObservationsRepository.delete(id);
+		SolrObservationsDocument observationsDocument = solrObservationsRepository.findOne(id);
+		if(observationsDocument != null){
+			observationsDocument.setDiscarded(discarded);
+			observationsDocument.setUpdatedTime(new Date());
+			solrObservationsRepository.save(observationsDocument);
+		}
 	    response = true;
+	    transnationalService.addResource(id, Resource.OBSERVATION, true);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Observations");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Observations");
+//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Observations");
 	}
 	return response;
     }

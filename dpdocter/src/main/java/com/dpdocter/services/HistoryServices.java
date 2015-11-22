@@ -44,11 +44,11 @@ public interface HistoryServices {
 
     boolean removeFamilyHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId);
 
-    HistoryDetailsResponse getPatientHistoryDetailsWithoutVerifiedOTP(String patientId, String doctorId, String hospitalId, String locationId,
-	    String historyFilter);
+    List<HistoryDetailsResponse> getPatientHistoryDetailsWithoutVerifiedOTP(String patientId, String doctorId, String hospitalId, String locationId,
+	    List<String> historyFilter, int page, int size);
 
     List<HistoryDetailsResponse> getPatientHistoryDetailsWithVerifiedOTP(String patientId, String doctorId, String hospitalId, String locationId,
-	    String historyFilter);
+	    List<String> historyFilter, int page, int size);
 
     Integer getHistoryCount(String doctorId, String patientId, String locationId, String hospitalId);
 
