@@ -18,7 +18,6 @@ import com.dpdocter.solr.document.SolrDrugDocument;
 import com.dpdocter.solr.document.SolrLabTestDocument;
 import com.dpdocter.solr.services.SolrPrescriptionService;
 import com.dpdocter.webservices.PathProxy;
-
 import common.util.web.Response;
 
 @Component
@@ -27,7 +26,8 @@ import common.util.web.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class SolrPrescriptionApi {
 
-//    private static Logger logger = Logger.getLogger(SolrPrescriptionApi.class.getName());
+    // private static Logger logger =
+    // Logger.getLogger(SolrPrescriptionApi.class.getName());
 
     @Autowired
     private SolrPrescriptionService solrPrescriptionService;

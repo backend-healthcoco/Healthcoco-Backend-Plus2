@@ -25,7 +25,7 @@ public interface PatientVisitService {
 
     Boolean email(String visitId, String emailAddress);
 
-	Boolean deleteVisit(String visitId, Boolean discarded);
+    Boolean deleteVisit(String visitId, Boolean discarded);
 
-	void smsVisit(String visitId, String doctorId, String locationId, String hospitalId, String mobileNumber);
+    void smsVisit(String visitId, String doctorId, String locationId, String hospitalId, String mobileNumber);
 }

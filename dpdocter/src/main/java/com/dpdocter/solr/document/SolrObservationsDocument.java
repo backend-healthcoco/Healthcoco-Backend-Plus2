@@ -93,6 +93,7 @@ public class SolrObservationsDocument {
 	    this.hospitalId = hospitalId;
 	}
     }
+
     public Boolean getDiscarded() {
 	return discarded;
     }

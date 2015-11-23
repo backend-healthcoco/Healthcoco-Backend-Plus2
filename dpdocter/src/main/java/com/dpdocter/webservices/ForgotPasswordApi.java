@@ -6,7 +6,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
@@ -18,7 +17,6 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.ForgotUsernamePasswordRequest;
 import com.dpdocter.request.ResetPasswordRequest;
 import com.dpdocter.services.ForgotPasswordService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -82,6 +80,7 @@ public class ForgotPasswordApi {
 	String response = forgotPasswordService.resetPassword(userId, password);
 	return "<html><body>" + response + "</body></html>";
     }
+
     @Path(value = PathProxy.ForgotPasswordUrls.FORGOT_USERNAME)
     @POST
     public Response<Boolean> forgotUsername(ForgotUsernamePasswordRequest request) {

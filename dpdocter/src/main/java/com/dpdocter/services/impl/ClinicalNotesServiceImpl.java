@@ -291,7 +291,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    clinicalNotesCollection.setCreatedTime(createdTime);
 	    UserCollection userCollection = userRepository.findOne(clinicalNotesCollection.getDoctorId());
 	    if (userCollection != null) {
-	    	clinicalNotesCollection.setCreatedBy(userCollection.getFirstName());
+		clinicalNotesCollection.setCreatedBy(userCollection.getFirstName());
 	    }
 	    clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
 
@@ -737,10 +737,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (clinicalNotes != null) {
 			    clinicalNotes.setPatientId(patientId);
 			    if (clinicalNotes.getDoctorId().equals(doctorId)) {
-			    UserCollection userCollection = userRepository.findOne(clinicalNotes.getDoctorId());
-			    if (userCollection != null) {
-			        clinicalNotes.setDoctorName(userCollection.getFirstName() + userCollection.getLastName());
-			    }
+				UserCollection userCollection = userRepository.findOne(clinicalNotes.getDoctorId());
+				if (userCollection != null) {
+				    clinicalNotes.setDoctorName(userCollection.getFirstName() + userCollection.getLastName());
+				}
 			    }
 			    clinicalNotesList.add(clinicalNotes);
 			}
@@ -751,16 +751,16 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (clinicalNotes != null) {
 			    clinicalNotes.setPatientId(patientId);
 			    if (clinicalNotes.getDoctorId().equals(doctorId) && clinicalNotes.getLocationId().equals(locationId)
-			        && clinicalNotes.getHospitalId().equals(hospitalId)) {
-			    UserCollection userCollection = userRepository.findOne(clinicalNotes.getDoctorId());
-			    if (userCollection != null) {
-			        clinicalNotes.setDoctorName(userCollection.getFirstName() + userCollection.getLastName());
-			    }
-			    
+				    && clinicalNotes.getHospitalId().equals(hospitalId)) {
+				UserCollection userCollection = userRepository.findOne(clinicalNotes.getDoctorId());
+				if (userCollection != null) {
+				    clinicalNotes.setDoctorName(userCollection.getFirstName() + userCollection.getLastName());
+				}
+
 			    }
 			    clinicalNotesList.add(clinicalNotes);
 			}
-			
+
 		    }
 		}
 	    } else {
@@ -930,8 +930,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		if (complaintCollection.getDoctorId() != null && complaintCollection.getHospitalId() != null && complaintCollection.getLocationId() != null) {
 		    if (complaintCollection.getDoctorId().equals(doctorId) && complaintCollection.getHospitalId().equals(hospitalId)
 			    && complaintCollection.getLocationId().equals(locationId)) {
-			
-		    complaintCollection.setDiscarded(discarded);
+
+			complaintCollection.setDiscarded(discarded);
 			complaintCollection.setUpdatedTime(new Date());
 			complaintRepository.save(complaintCollection);
 		    } else {

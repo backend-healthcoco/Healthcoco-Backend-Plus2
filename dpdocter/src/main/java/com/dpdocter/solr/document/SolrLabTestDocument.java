@@ -51,49 +51,49 @@ public class SolrLabTestDocument {
     }
 
     public String getDoctorId() {
-    	if (doctorId == null) {
-    	    return "";
-    	}
-    	return doctorId;
-        }
+	if (doctorId == null) {
+	    return "";
+	}
+	return doctorId;
+    }
 
-        public void setDoctorId(String doctorId) {
-    	if (doctorId == null) {
-    	    this.doctorId = "";
-    	} else {
-    	    this.doctorId = doctorId;
-    	}
-        }
+    public void setDoctorId(String doctorId) {
+	if (doctorId == null) {
+	    this.doctorId = "";
+	} else {
+	    this.doctorId = doctorId;
+	}
+    }
 
-        public String getLocationId() {
-    	if (locationId == null) {
-    	    return "";
-    	}
-    	return locationId;
-        }
+    public String getLocationId() {
+	if (locationId == null) {
+	    return "";
+	}
+	return locationId;
+    }
 
-        public void setLocationId(String locationId) {
-    	if (locationId == null) {
-    	    this.locationId = "";
-    	} else {
-    	    this.locationId = locationId;
-    	}
-        }
+    public void setLocationId(String locationId) {
+	if (locationId == null) {
+	    this.locationId = "";
+	} else {
+	    this.locationId = locationId;
+	}
+    }
 
-        public String getHospitalId() {
-    	if (hospitalId == null) {
-    	    return "";
-    	}
-    	return hospitalId;
-        }
+    public String getHospitalId() {
+	if (hospitalId == null) {
+	    return "";
+	}
+	return hospitalId;
+    }
 
-        public void setHospitalId(String hospitalId) {
-    	if (hospitalId == null) {
-    	    this.hospitalId = "";
-    	} else {
-    	    this.hospitalId = hospitalId;
-    	}
-        }
+    public void setHospitalId(String hospitalId) {
+	if (hospitalId == null) {
+	    this.hospitalId = "";
+	} else {
+	    this.hospitalId = hospitalId;
+	}
+    }
 
     public Boolean getDiscarded() {
 	return discarded;

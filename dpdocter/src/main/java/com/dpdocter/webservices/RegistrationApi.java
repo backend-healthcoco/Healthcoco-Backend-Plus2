@@ -91,7 +91,7 @@ public class RegistrationApi {
 	    registeredPatientDetails = registrationService.registerNewPatient(request);
 	    transnationalService.addResource(registeredPatientDetails.getUserId(), Resource.PATIENT, false);
 	    solrRegistrationService.addPatient(getSolrPatientDocument(registeredPatientDetails));
-	    
+
 	} else {
 	    registeredPatientDetails = registrationService.registerExistingPatient(request);
 	    transnationalService.addResource(registeredPatientDetails.getUserId(), Resource.COMPLAINT, false);
@@ -112,11 +112,12 @@ public class RegistrationApi {
 	RegisteredPatientDetails registeredPatientDetails = registrationService.registerExistingPatient(request);
 	transnationalService.addResource(registeredPatientDetails.getUserId(), Resource.COMPLAINT, false);
 	solrRegistrationService.editPatient(getSolrPatientDocument(registeredPatientDetails));
-	
+
 	registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));
 	response.setData(registeredPatientDetails);
 	return response;
     }
+
     @Path(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM)
     @GET
     public Response<User> getExistingPatients(@PathParam("mobileNumber") String mobileNumber, @PathParam("locationId") String locationId,
@@ -514,7 +515,7 @@ public class RegistrationApi {
 	} else
 	    return null;
     }
-    
+
     @Path(value = PathProxy.RegistrationUrls.ADD_ROLE)
     @POST
     public Response<Role> addRole(Role request) {
@@ -530,8 +531,8 @@ public class RegistrationApi {
     @Path(value = PathProxy.RegistrationUrls.GET_ROLE)
     @GET
     public Response<Role> getRole(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
-    	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
-    	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
 
 	List<Role> professionResponse = registrationService.getRole(range, page, size, doctorId, locationId, hospitalId, updatedTime);
 	Response<Role> response = new Response<Role>();

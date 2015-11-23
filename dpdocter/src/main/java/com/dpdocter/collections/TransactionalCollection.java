@@ -9,7 +9,7 @@ import com.dpdocter.enums.Resource;
 @Document(collection = "transnational_cl")
 public class TransactionalCollection {
 
-	@Id
+    @Id
     private String id;
 
     @Field
@@ -21,37 +21,40 @@ public class TransactionalCollection {
     @Field
     private Boolean isCached = false;
 
-
     public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
-	public String getResourceId() {
-		return resourceId;
-	}
-	public void setResourceId(String resourceId) {
-		this.resourceId = resourceId;
-	}
-	public Resource getResource() {
-		return resource;
-	}
-	public void setResource(Resource resource) {
-		this.resource = resource;
-	}
+	return id;
+    }
 
-	public Boolean getIsCached() {
-		return isCached;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
+    public String getResourceId() {
+	return resourceId;
+    }
 
-	public void setIsCached(Boolean isCached) {
-		this.isCached = isCached;
-	}
-	@Override
-	public String toString() {
-		return "TransactionalCollection [id=" + id + ", resourceId=" + resourceId + ", resource=" + resource
-				+ ", isCached=" + isCached + "]";
-	}
+    public void setResourceId(String resourceId) {
+	this.resourceId = resourceId;
+    }
+
+    public Resource getResource() {
+	return resource;
+    }
+
+    public void setResource(Resource resource) {
+	this.resource = resource;
+    }
+
+    public Boolean getIsCached() {
+	return isCached;
+    }
+
+    public void setIsCached(Boolean isCached) {
+	this.isCached = isCached;
+    }
+
+    @Override
+    public String toString() {
+	return "TransactionalCollection [id=" + id + ", resourceId=" + resourceId + ", resource=" + resource + ", isCached=" + isCached + "]";
+    }
 }

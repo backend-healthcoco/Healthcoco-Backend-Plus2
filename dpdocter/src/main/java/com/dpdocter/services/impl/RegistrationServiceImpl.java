@@ -374,8 +374,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 	List<GroupCollection> groupCollections = null;
 	List<Group> groups = null;
 	try {
-	    
-		// save address
+
+	    // save address
 	    AddressCollection addressCollection = null;
 	    if (request.getAddress() != null) {
 		addressCollection = new AddressCollection();
@@ -492,15 +492,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     public void checkPatientCount(String mobileNumber) {
-    	
+
 	List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
 	if (userCollections != null && !userCollections.isEmpty()) {
-		if (userCollections.size() >= Integer.parseInt(patientCount)) {
-    		logger.warn("Only Nine patients can register with same mobile number");
-    		throw new BusinessException(ServiceError.NoRecord, "Only Nine patients can register with same mobile number");
-    	    }
+	    if (userCollections.size() >= Integer.parseInt(patientCount)) {
+		logger.warn("Only Nine patients can register with same mobile number");
+		throw new BusinessException(ServiceError.NoRecord, "Only Nine patients can register with same mobile number");
+	    }
 	}
-}
+    }
 
     @Override
     public List<User> getUsersByPhoneNumber(String phoneNumber, String locationId, String hospitalId) {
@@ -1310,144 +1310,142 @@ public class RegistrationServiceImpl implements RegistrationService {
 	return response;
     }
 
-	@Override
-	public Role addRole(Role request) {
-		Role role = new Role();
-		try {
-		    RoleCollection roleCollection = new RoleCollection();
-		    BeanUtil.map(request, roleCollection);
-		    roleCollection.setCreatedTime(new Date());
-		    roleCollection = roleRepository.save(roleCollection);
-		    BeanUtil.map(roleCollection, role);
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return role;
+    @Override
+    public Role addRole(Role request) {
+	Role role = new Role();
+	try {
+	    RoleCollection roleCollection = new RoleCollection();
+	    BeanUtil.map(request, roleCollection);
+	    roleCollection.setCreatedTime(new Date());
+	    roleCollection = roleRepository.save(roleCollection);
+	    BeanUtil.map(roleCollection, role);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return role;
+    }
 
-	@Override
-	public List<Role> getRole(String range, int page, int size, String doctorId, String locationId, String hospitalId,	String updatedTime) {
-		List<Role> response = null;
-		
-		try {
-		    switch (Range.valueOf(range.toUpperCase())) {
+    @Override
+    public List<Role> getRole(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime) {
+	List<Role> response = null;
 
-		    case GLOBAL:
-			response = getGlobalRole(page, size, updatedTime);
-			break;
-		    case CUSTOM:
-			response = getCustomRole(page, size, doctorId, locationId, hospitalId, updatedTime);
-			break;
-		    case BOTH:
-			response = getCustomGlobalRole(page, size, doctorId, locationId, hospitalId, updatedTime);
-			break;
-		    }
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return response;
+	try {
+	    switch (Range.valueOf(range.toUpperCase())) {
 
+	    case GLOBAL:
+		response = getGlobalRole(page, size, updatedTime);
+		break;
+	    case CUSTOM:
+		response = getCustomRole(page, size, doctorId, locationId, hospitalId, updatedTime);
+		break;
+	    case BOTH:
+		response = getCustomGlobalRole(page, size, doctorId, locationId, hospitalId, updatedTime);
+		break;
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return response;
 
-	private List<Role> getCustomGlobalRole(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime) {
-		List<Role> response = null;
-		List<RoleCollection> roleCollections = null;
-		try {
-		    long createdTimeStamp = Long.parseLong(updatedTime);
-		    if (DPDoctorUtils.anyStringEmpty(doctorId)) {
-			if (size > 0)
-			    roleCollections = roleRepository.findCustomGlobal(new Date(createdTimeStamp), new PageRequest(page, size,
-				    Direction.DESC, "updatedTime"));
-			else
-			    roleCollections = roleRepository.findCustomGlobal(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
-				    "updatedTime"));
-		    } else {
-			if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
-			    if (size > 0)
-				roleCollections = roleRepository.findCustomGlobal(doctorId, new Date(createdTimeStamp), new PageRequest(page,
-					size, Direction.DESC, "updatedTime"));
-			    else
-				roleCollections = roleRepository.findCustomGlobal(doctorId, new Date(createdTimeStamp), new Sort(
-					Sort.Direction.DESC, "updatedTime"));
-			} else {
-			    if (size > 0)
-				roleCollections = roleRepository.findCustomGlobal(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC, "updatedTime"));
-			    else
-				roleCollections = roleRepository.findCustomGlobal(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
-		    }
-		    if (roleCollections != null) {
-			response = new ArrayList<Role>();
-			BeanUtil.map(roleCollections, response);
-		    }
+    }
 
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return response;
-	}
-
-	private List<Role> getCustomRole(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime) {
-		List<Role> response = null;
-		List<RoleCollection> roleCollections = null;
-		try {
-		    if (DPDoctorUtils.anyStringEmpty(doctorId))
-			;
-		    else {
-			long createdTimeStamp = Long.parseLong(updatedTime);
-			if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
-			    if (size > 0)
-				roleCollections = roleRepository.findCustom(doctorId, new Date(createdTimeStamp), new PageRequest(page, size,
-					Direction.DESC, "updatedTime"));
-			    else
-				roleCollections = roleRepository.findCustom(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
-					"updatedTime"));
-			} else {
-			    if (size > 0)
-				roleCollections = roleRepository.findCustom(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC, "updatedTime"));
-			    else
-				roleCollections = roleRepository.findCustom(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
-		    }
-		    if (roleCollections != null) {
-			response = new ArrayList<Role>();
-			BeanUtil.map(roleCollections, response);
-		    }
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return response;
-	}
-
-	private List<Role> getGlobalRole(int page, int size, String updatedTime) {
-		List<Role> response = null;
-		List<RoleCollection> roleCollections = null;
-		try {
-		    long createdTimeStamp = Long.parseLong(updatedTime);
+    private List<Role> getCustomGlobalRole(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime) {
+	List<Role> response = null;
+	List<RoleCollection> roleCollections = null;
+	try {
+	    long createdTimeStamp = Long.parseLong(updatedTime);
+	    if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+		if (size > 0)
+		    roleCollections = roleRepository.findCustomGlobal(new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC, "updatedTime"));
+		else
+		    roleCollections = roleRepository.findCustomGlobal(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+	    } else {
+		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 		    if (size > 0)
-		    	roleCollections = roleRepository.findGlobal(new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC,
+			roleCollections = roleRepository.findCustomGlobal(doctorId, new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC,
 				"updatedTime"));
 		    else
-		    	roleCollections = roleRepository.findGlobal(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
-		    if (roleCollections != null) {
-			response = new ArrayList<Role>();
-			BeanUtil.map(roleCollections, response);
-		    }
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+			roleCollections = roleRepository.findCustomGlobal(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+		} else {
+		    if (size > 0)
+			roleCollections = roleRepository.findCustomGlobal(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new PageRequest(page,
+				size, Direction.DESC, "updatedTime"));
+		    else
+			roleCollections = roleRepository.findCustomGlobal(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(
+				Sort.Direction.DESC, "updatedTime"));
 		}
-		return response;
-	    
+	    }
+	    if (roleCollections != null) {
+		response = new ArrayList<Role>();
+		BeanUtil.map(roleCollections, response);
+	    }
+
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return response;
+    }
+
+    private List<Role> getCustomRole(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime) {
+	List<Role> response = null;
+	List<RoleCollection> roleCollections = null;
+	try {
+	    if (DPDoctorUtils.anyStringEmpty(doctorId))
+		;
+	    else {
+		long createdTimeStamp = Long.parseLong(updatedTime);
+		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+		    if (size > 0)
+			roleCollections = roleRepository.findCustom(doctorId, new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC,
+				"updatedTime"));
+		    else
+			roleCollections = roleRepository.findCustom(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+		} else {
+		    if (size > 0)
+			roleCollections = roleRepository.findCustom(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new PageRequest(page, size,
+				Direction.DESC, "updatedTime"));
+		    else
+			roleCollections = roleRepository.findCustom(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
+				"updatedTime"));
+		}
+	    }
+	    if (roleCollections != null) {
+		response = new ArrayList<Role>();
+		BeanUtil.map(roleCollections, response);
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return response;
+    }
+
+    private List<Role> getGlobalRole(int page, int size, String updatedTime) {
+	List<Role> response = null;
+	List<RoleCollection> roleCollections = null;
+	try {
+	    long createdTimeStamp = Long.parseLong(updatedTime);
+	    if (size > 0)
+		roleCollections = roleRepository.findGlobal(new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC, "updatedTime"));
+	    else
+		roleCollections = roleRepository.findGlobal(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+	    if (roleCollections != null) {
+		response = new ArrayList<Role>();
+		BeanUtil.map(roleCollections, response);
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return response;
+
+    }
 }

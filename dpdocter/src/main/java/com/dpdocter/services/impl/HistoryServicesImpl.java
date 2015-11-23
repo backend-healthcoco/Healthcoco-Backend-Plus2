@@ -112,7 +112,7 @@ public class HistoryServicesImpl implements HistoryServices {
 
     @Autowired
     private LocationRepository locationRepository;
-    
+
     @Autowired
     private PatientVisitRepository patientVisitRepository;
 
@@ -869,60 +869,63 @@ public class HistoryServicesImpl implements HistoryServices {
 
     @Override
     public List<HistoryDetailsResponse> getPatientHistoryDetailsWithoutVerifiedOTP(String patientId, String doctorId, String hospitalId, String locationId,
-    		List<String> historyFilter, int page,int size) {
-    	List<HistoryDetailsResponse> response = null;
-    	try {
-    	    for(int i =0; i< historyFilter.size();i++ ){historyFilter.set(i, historyFilter.get(i).toUpperCase());}
-    	   
-        	AggregationOperation matchForFilter = null ;
-        	if(!historyFilter.contains(HistoryFilter.ALL.getFilter()))	 
-        		matchForFilter= Aggregation.match(Criteria.where("generalRecords.dataType").in(historyFilter));
-        
-        	Aggregation aggregation = Aggregation.newAggregation(
-        			Aggregation.match(Criteria.where("patientId").is(patientId).andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),Criteria.where("hospitalId").is(hospitalId))), 
-        			Aggregation.unwind("generalRecords"), 
-        			matchForFilter,
-        			Aggregation.skip((page-1)*size), 
-        			Aggregation.limit(size));
-        	
-        	AggregationResults<History> groupResults = mongoTemplate.aggregate(aggregation, HistoryCollection.class, History.class);
-        	List<History> general = groupResults.getMappedResults();
-        	if(general != null){
-        	
-        		response = new ArrayList<HistoryDetailsResponse>();
-    		for (History historyCollection : general) {
-    		    HistoryDetailsResponse historyDetailsResponse = new HistoryDetailsResponse();
-    		    BeanUtil.map(historyCollection, historyDetailsResponse);
+	    List<String> historyFilter, int page, int size) {
+	List<HistoryDetailsResponse> response = null;
+	try {
+	    for (int i = 0; i < historyFilter.size(); i++) {
+		historyFilter.set(i, historyFilter.get(i).toUpperCase());
+	    }
 
-    		    if (historyCollection.getGeneralRecords() != null) {
-    		    	List<GeneralData> generalRecords = new ArrayList<GeneralData>();
-    		    	generalRecords.add(getGeneralData(historyCollection.getGeneralRecords()));
-    		    	historyDetailsResponse.setGeneralRecords(generalRecords);
-    		    }
+	    AggregationOperation matchForFilter = null;
+	    if (!historyFilter.contains(HistoryFilter.ALL.getFilter()))
+		matchForFilter = Aggregation.match(Criteria.where("generalRecords.dataType").in(historyFilter));
 
-    		    List<String> medicalHistoryIds = historyCollection.getMedicalhistory();
-    		    if (medicalHistoryIds != null) {
-    			List<DiseaseListResponse> medicalHistory = getDiseasesByIds(medicalHistoryIds);
-    			historyDetailsResponse.setMedicalhistory(medicalHistory);
-    		    }
+	    Aggregation aggregation = Aggregation.newAggregation(
+		    Aggregation.match(Criteria
+			    .where("patientId")
+			    .is(patientId)
+			    .andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
+				    Criteria.where("hospitalId").is(hospitalId))), Aggregation.unwind("generalRecords"), matchForFilter,
+		    Aggregation.skip((page - 1) * size), Aggregation.limit(size));
 
-    		    List<String> familyHistoryIds = historyCollection.getFamilyhistory();
-    		    if (familyHistoryIds != null) {
-    			List<DiseaseListResponse> familyHistory = getDiseasesByIds(medicalHistoryIds);
-    			historyDetailsResponse.setFamilyhistory(familyHistory);
-    		    }
+	    AggregationResults<History> groupResults = mongoTemplate.aggregate(aggregation, HistoryCollection.class, History.class);
+	    List<History> general = groupResults.getMappedResults();
+	    if (general != null) {
 
-    		    historyDetailsResponse.setSpecialNotes(historyCollection.getSpecialNotes());
+		response = new ArrayList<HistoryDetailsResponse>();
+		for (History historyCollection : general) {
+		    HistoryDetailsResponse historyDetailsResponse = new HistoryDetailsResponse();
+		    BeanUtil.map(historyCollection, historyDetailsResponse);
 
-    		    response.add(historyDetailsResponse);
-    		}
-    	    }
-    	} catch (Exception e) {
-    	    e.printStackTrace();
-    	    logger.error(e);
-    	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-    	}
-    	return response;
+		    if (historyCollection.getGeneralRecords() != null) {
+			List<GeneralData> generalRecords = new ArrayList<GeneralData>();
+			generalRecords.add(getGeneralData(historyCollection.getGeneralRecords()));
+			historyDetailsResponse.setGeneralRecords(generalRecords);
+		    }
+
+		    List<String> medicalHistoryIds = historyCollection.getMedicalhistory();
+		    if (medicalHistoryIds != null) {
+			List<DiseaseListResponse> medicalHistory = getDiseasesByIds(medicalHistoryIds);
+			historyDetailsResponse.setMedicalhistory(medicalHistory);
+		    }
+
+		    List<String> familyHistoryIds = historyCollection.getFamilyhistory();
+		    if (familyHistoryIds != null) {
+			List<DiseaseListResponse> familyHistory = getDiseasesByIds(medicalHistoryIds);
+			historyDetailsResponse.setFamilyhistory(familyHistory);
+		    }
+
+		    historyDetailsResponse.setSpecialNotes(historyCollection.getSpecialNotes());
+
+		    response.add(historyDetailsResponse);
+		}
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return response;
     }
 
     private List<GeneralData> fetchGeneralData(List<GeneralData> ids) {
@@ -984,35 +987,33 @@ public class HistoryServicesImpl implements HistoryServices {
 
     @Override
     public List<HistoryDetailsResponse> getPatientHistoryDetailsWithVerifiedOTP(String patientId, String doctorId, String hospitalId, String locationId,
-    		List<String> historyFilter, int page,int size) {
+	    List<String> historyFilter, int page, int size) {
 	List<HistoryDetailsResponse> response = null;
 	try {
-	    for(int i =0; i< historyFilter.size();i++ ){historyFilter.set(i, historyFilter.get(i).toUpperCase());}
-	   
-	    AggregationOperation matchForFilter = null ;
-    	if(!historyFilter.contains(HistoryFilter.ALL.getFilter()))	 
-    		matchForFilter= Aggregation.match(Criteria.where("generalRecords.dataType").in(historyFilter));
-    
-    	Aggregation aggregation = Aggregation.newAggregation(
-    			Aggregation.match(Criteria.where("patientId").is(patientId)), 
-    			Aggregation.unwind("generalRecords"), 
-    			matchForFilter,
-    			Aggregation.skip((page-1)*size), 
-    			Aggregation.limit(size));
-    	
-    	AggregationResults<History> groupResults = mongoTemplate.aggregate(aggregation,HistoryCollection.class, History.class);
-    	List<History> general = groupResults.getMappedResults();
-    	if(general != null){
-    	
-    		response = new ArrayList<HistoryDetailsResponse>();
+	    for (int i = 0; i < historyFilter.size(); i++) {
+		historyFilter.set(i, historyFilter.get(i).toUpperCase());
+	    }
+
+	    AggregationOperation matchForFilter = null;
+	    if (!historyFilter.contains(HistoryFilter.ALL.getFilter()))
+		matchForFilter = Aggregation.match(Criteria.where("generalRecords.dataType").in(historyFilter));
+
+	    Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("patientId").is(patientId)),
+		    Aggregation.unwind("generalRecords"), matchForFilter, Aggregation.skip((page - 1) * size), Aggregation.limit(size));
+
+	    AggregationResults<History> groupResults = mongoTemplate.aggregate(aggregation, HistoryCollection.class, History.class);
+	    List<History> general = groupResults.getMappedResults();
+	    if (general != null) {
+
+		response = new ArrayList<HistoryDetailsResponse>();
 		for (History historyCollection : general) {
 		    HistoryDetailsResponse historyDetailsResponse = new HistoryDetailsResponse();
 		    BeanUtil.map(historyCollection, historyDetailsResponse);
 
 		    if (historyCollection.getGeneralRecords() != null) {
-		    	List<GeneralData> generalRecords = new ArrayList<GeneralData>();
-		    	generalRecords.add(getGeneralData(historyCollection.getGeneralRecords()));
-		    	historyDetailsResponse.setGeneralRecords(generalRecords);
+			List<GeneralData> generalRecords = new ArrayList<GeneralData>();
+			generalRecords.add(getGeneralData(historyCollection.getGeneralRecords()));
+			historyDetailsResponse.setGeneralRecords(generalRecords);
 		    }
 
 		    List<String> medicalHistoryIds = historyCollection.getMedicalhistory();
@@ -1041,60 +1042,60 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     private GeneralData getGeneralData(GeneralData generalRecords) {
-    	GeneralData generalData = null;
-    	try{
-		switch (generalRecords.getDataType()) {
-		case CLINICAL_NOTES:
-		    ClinicalNotes clinicalNote = clinicalNotesService.getNotesById(generalRecords.getData().toString());
-		    if (clinicalNote != null) {
-			/*UserCollection userCollection = userRepository.findOne(clinicalNote.getDoctorId());
-			if (userCollection != null)
-			    clinicalNote.setDoctorName(userCollection.getFirstName());*/
+	GeneralData generalData = null;
+	try {
+	    switch (generalRecords.getDataType()) {
+	    case CLINICAL_NOTES:
+		ClinicalNotes clinicalNote = clinicalNotesService.getNotesById(generalRecords.getData().toString());
+		if (clinicalNote != null) {
+		    /*UserCollection userCollection = userRepository.findOne(clinicalNote.getDoctorId());
+		    if (userCollection != null)
+		        clinicalNote.setDoctorName(userCollection.getFirstName());*/
 		    generalData = new GeneralData();
-			generalData.setData(clinicalNote);
-			generalData.setDataType(HistoryFilter.CLINICAL_NOTES);
-		    }
-		    break;
-		case PRESCRIPTIONS:
-		    Prescription prescription = prescriptionServices.getPrescriptionById(generalRecords.getData().toString());
-		    if (prescription != null) {
-			/*UserCollection userCollection = userRepository.findOne(prescription.getDoctorId());
-			if (userCollection != null)
-			    prescription.setDoctorName(userCollection.getFirstName());*/
-		    	generalData = new GeneralData();
-			generalData.setData(prescription);
-			generalData.setDataType(HistoryFilter.PRESCRIPTIONS);
-		    }
-		    break;
-		case REPORTS:
-		    Records record = recordsService.getRecordById(generalRecords.getData().toString());
-		    if (record != null) {
-			UserCollection userCollection = userRepository.findOne(record.getDoctorId());
-			if (userCollection != null)
-			    record.setDoctorName(userCollection.getFirstName());
-			if (record.getLocationId() != null) {
-			    LocationCollection locationCollection = locationRepository.findOne(record.getLocationId());
-			    if (locationCollection != null)
-				record.setClinicName(locationCollection.getLocationName());
-			}
-			generalData = new GeneralData();
-			generalData.setData(record);
-			generalData.setDataType(HistoryFilter.REPORTS);
-		    }
-		    break;
-		default:
-		    break;
+		    generalData.setData(clinicalNote);
+		    generalData.setDataType(HistoryFilter.CLINICAL_NOTES);
 		}
-	
+		break;
+	    case PRESCRIPTIONS:
+		Prescription prescription = prescriptionServices.getPrescriptionById(generalRecords.getData().toString());
+		if (prescription != null) {
+		    /*UserCollection userCollection = userRepository.findOne(prescription.getDoctorId());
+		    if (userCollection != null)
+		        prescription.setDoctorName(userCollection.getFirstName());*/
+		    generalData = new GeneralData();
+		    generalData.setData(prescription);
+		    generalData.setDataType(HistoryFilter.PRESCRIPTIONS);
+		}
+		break;
+	    case REPORTS:
+		Records record = recordsService.getRecordById(generalRecords.getData().toString());
+		if (record != null) {
+		    UserCollection userCollection = userRepository.findOne(record.getDoctorId());
+		    if (userCollection != null)
+			record.setDoctorName(userCollection.getFirstName());
+		    if (record.getLocationId() != null) {
+			LocationCollection locationCollection = locationRepository.findOne(record.getLocationId());
+			if (locationCollection != null)
+			    record.setClinicName(locationCollection.getLocationName());
+		    }
+		    generalData = new GeneralData();
+		    generalData.setData(record);
+		    generalData.setDataType(HistoryFilter.REPORTS);
+		}
+		break;
+	    default:
+		break;
+	    }
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return generalData;
-	}
+    }
 
-	@Override
+    @Override
     public List<DiseaseListResponse> getDiseasesByIds(List<String> diseasesIds) {
 	List<DiseaseListResponse> diseaseListResponses = null;
 	try {
@@ -1285,29 +1286,29 @@ public class HistoryServicesImpl implements HistoryServices {
 	return response;
     }
 
-	@Override
-	public boolean addVisitsToHistory(String visitId, String patientId, String doctorId, String hospitalId,	String locationId) {
-	
+    @Override
+    public boolean addVisitsToHistory(String visitId, String patientId, String doctorId, String hospitalId, String locationId) {
+
 	PatientVisitCollection patientVisitCollection = null;
-	try{
-		patientVisitCollection = patientVisitRepository.findOne(visitId);
-		if(patientVisitCollection != null){
-			if(patientVisitCollection.getClinicalNotesId() != null){
-				for(String clinicalNotesId : patientVisitCollection.getClinicalNotesId()){
-					addClinicalNotesToHistory(clinicalNotesId, patientId, doctorId, hospitalId, locationId);
-				}
-			}
-			if(patientVisitCollection.getPrescriptionId() != null){
-				for(String prescriptionId : patientVisitCollection.getPrescriptionId()){
-					addPrescriptionToHistory(prescriptionId, patientId, doctorId, hospitalId, locationId);
-				}
-			}
-			if(patientVisitCollection.getRecordId() != null){
-				for(String recordId : patientVisitCollection.getRecordId()){
-					addReportToHistory(recordId, patientId, doctorId, hospitalId, locationId);
-				}
-			}
+	try {
+	    patientVisitCollection = patientVisitRepository.findOne(visitId);
+	    if (patientVisitCollection != null) {
+		if (patientVisitCollection.getClinicalNotesId() != null) {
+		    for (String clinicalNotesId : patientVisitCollection.getClinicalNotesId()) {
+			addClinicalNotesToHistory(clinicalNotesId, patientId, doctorId, hospitalId, locationId);
+		    }
 		}
+		if (patientVisitCollection.getPrescriptionId() != null) {
+		    for (String prescriptionId : patientVisitCollection.getPrescriptionId()) {
+			addPrescriptionToHistory(prescriptionId, patientId, doctorId, hospitalId, locationId);
+		    }
+		}
+		if (patientVisitCollection.getRecordId() != null) {
+		    for (String recordId : patientVisitCollection.getRecordId()) {
+			addReportToHistory(recordId, patientId, doctorId, hospitalId, locationId);
+		    }
+		}
+	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
@@ -1316,36 +1317,36 @@ public class HistoryServicesImpl implements HistoryServices {
 	}
 	return true;
 
-	}
+    }
 
-	@Override
-	public boolean removeVisits(String visitId, String patientId, String doctorId, String hospitalId, String locationId) {
-		PatientVisitCollection patientVisitCollection = null;
-		try{
-			patientVisitCollection = patientVisitRepository.findOne(visitId);
-			if(patientVisitCollection != null){
-				if(patientVisitCollection.getClinicalNotesId() != null){
-					for(String clinicalNotesId : patientVisitCollection.getClinicalNotesId()){
-						removeClinicalNotes(clinicalNotesId, patientId, doctorId, hospitalId, locationId);
-					}
-				}
-				if(patientVisitCollection.getPrescriptionId() != null){
-					for(String prescriptionId : patientVisitCollection.getPrescriptionId()){
-						removePrescription(prescriptionId, patientId, doctorId, hospitalId, locationId);
-					}
-				}
-				if(patientVisitCollection.getRecordId() != null){
-					for(String recordId : patientVisitCollection.getRecordId()){
-						removeReports(recordId, patientId, doctorId, hospitalId, locationId);
-					}
-				}
-			}
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-
+    @Override
+    public boolean removeVisits(String visitId, String patientId, String doctorId, String hospitalId, String locationId) {
+	PatientVisitCollection patientVisitCollection = null;
+	try {
+	    patientVisitCollection = patientVisitRepository.findOne(visitId);
+	    if (patientVisitCollection != null) {
+		if (patientVisitCollection.getClinicalNotesId() != null) {
+		    for (String clinicalNotesId : patientVisitCollection.getClinicalNotesId()) {
+			removeClinicalNotes(clinicalNotesId, patientId, doctorId, hospitalId, locationId);
+		    }
 		}
-		return true;
+		if (patientVisitCollection.getPrescriptionId() != null) {
+		    for (String prescriptionId : patientVisitCollection.getPrescriptionId()) {
+			removePrescription(prescriptionId, patientId, doctorId, hospitalId, locationId);
+		    }
+		}
+		if (patientVisitCollection.getRecordId() != null) {
+		    for (String recordId : patientVisitCollection.getRecordId()) {
+			removeReports(recordId, patientId, doctorId, hospitalId, locationId);
+		    }
+		}
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+
 	}
+	return true;
+    }
 }

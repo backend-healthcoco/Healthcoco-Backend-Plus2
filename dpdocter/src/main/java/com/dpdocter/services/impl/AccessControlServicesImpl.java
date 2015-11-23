@@ -49,9 +49,9 @@ public class AccessControlServicesImpl implements AccessControlServices {
     public AccessControl getAccessControls(String roleOrUserId, String locationId, String hospitalId) {
 	AccessControl response = null;
 	try {
+	    response = new AccessControl();
 	    ArosCollection arosCollection = arosRepository.findOne(roleOrUserId, locationId, hospitalId);
 	    if (arosCollection != null) {
-		response = new AccessControl();
 		ArosAcosCollection arosAcosCollection = arosAcosRepository.findByArosId(arosCollection.getId());
 		if (arosAcosCollection != null && !arosAcosCollection.getAcosIds().isEmpty()) {
 		    Iterator<AcosCollection> acosCollectionIterator = acosRepository.findAll(arosAcosCollection.getAcosIds()).iterator();

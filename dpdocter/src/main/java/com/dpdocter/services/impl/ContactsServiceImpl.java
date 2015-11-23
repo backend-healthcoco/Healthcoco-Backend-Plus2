@@ -320,9 +320,9 @@ public class ContactsServiceImpl implements ContactsService {
 		if (patientGroupCollection != null) {
 		    for (PatientGroupCollection patientGroup : patientGroupCollection) {
 			PatientCollection patientCollection = patientRepository.findByUserId(patientGroup.getPatientId());
-			if(patientCollection != null){
-				patientCollection.setUpdatedTime(new Date());
-				patientCollection = patientRepository.save(patientCollection);
+			if (patientCollection != null) {
+			    patientCollection.setUpdatedTime(new Date());
+			    patientCollection = patientRepository.save(patientCollection);
 			}
 			patientGroup.setDiscarded(discarded);
 			patientGroupRepository.save(patientGroup);

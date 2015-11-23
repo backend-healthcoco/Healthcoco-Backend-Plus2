@@ -40,7 +40,6 @@ import com.dpdocter.response.DiseaseListResponse;
 import com.dpdocter.response.HistoryDetailsResponse;
 import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.PatientVisitService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -57,7 +56,7 @@ public class HistoryApi {
 
     @Autowired
     private PatientVisitService patientTrackService;
-    
+
     @Context
     private UriInfo uriInfo;
 
@@ -94,7 +93,8 @@ public class HistoryApi {
     @Path(value = PathProxy.HistoryUrls.DELETE_DISEASE)
     @DELETE
     public Response<Boolean> deleteDisease(@PathParam(value = "diseaseId") String diseaseId, @PathParam(value = "doctorId") String doctorId,
-	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,@DefaultValue("true")  @QueryParam("discarded") Boolean discarded) {
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(diseaseId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
 	    logger.warn("Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
@@ -304,23 +304,24 @@ public class HistoryApi {
 	}
 	List<HistoryDetailsResponse> historyDetailsResponses = null;
 	if (otpVerified) {
-	    historyDetailsResponses = historyServices.getPatientHistoryDetailsWithVerifiedOTP(patientId, doctorId, hospitalId, locationId, historyFilter, page,size);
+	    historyDetailsResponses = historyServices.getPatientHistoryDetailsWithVerifiedOTP(patientId, doctorId, hospitalId, locationId, historyFilter, page,
+		    size);
 	} else {
-	    historyDetailsResponses = historyServices.getPatientHistoryDetailsWithoutVerifiedOTP(patientId, doctorId, hospitalId, locationId, historyFilter, page,size);
+	    historyDetailsResponses = historyServices.getPatientHistoryDetailsWithoutVerifiedOTP(patientId, doctorId, hospitalId, locationId, historyFilter,
+		    page, size);
 	}
-	if(historyDetailsResponses != null && !historyDetailsResponses.isEmpty())
-	for(HistoryDetailsResponse historyDetailsResponse: historyDetailsResponses){
-		if(historyDetailsResponse.getGeneralRecords() != null){
-			for(GeneralData generalData : historyDetailsResponse.getGeneralRecords()){
-				if(generalData.getDataType().equals(HistoryFilter.CLINICAL_NOTES)){
-					((ClinicalNotes)generalData.getData()).setDiagrams(getFinalDiagrams(((ClinicalNotes)generalData.getData()).getDiagrams()));
-				}
-				else if(generalData.getDataType().equals(HistoryFilter.REPORTS)){
-					((Records)generalData.getData()).setRecordsUrl(getFinalImageURL(((Records)generalData.getData()).getRecordsUrl()));
-				}
+	if (historyDetailsResponses != null && !historyDetailsResponses.isEmpty())
+	    for (HistoryDetailsResponse historyDetailsResponse : historyDetailsResponses) {
+		if (historyDetailsResponse.getGeneralRecords() != null) {
+		    for (GeneralData generalData : historyDetailsResponse.getGeneralRecords()) {
+			if (generalData.getDataType().equals(HistoryFilter.CLINICAL_NOTES)) {
+			    ((ClinicalNotes) generalData.getData()).setDiagrams(getFinalDiagrams(((ClinicalNotes) generalData.getData()).getDiagrams()));
+			} else if (generalData.getDataType().equals(HistoryFilter.REPORTS)) {
+			    ((Records) generalData.getData()).setRecordsUrl(getFinalImageURL(((Records) generalData.getData()).getRecordsUrl()));
 			}
+		    }
 		}
-	}
+	    }
 	Response<HistoryDetailsResponse> response = new Response<HistoryDetailsResponse>();
 	response.setDataList(historyDetailsResponses);
 	return response;
@@ -392,53 +393,67 @@ public class HistoryApi {
 	return response;
     }
 
-//    @Path(value = PathProxy.HistoryUrls.ADD_VISITS_TO_HISTORY)
-//    @GET
-//    public Response<Boolean> addVisitsToHistory(@PathParam(value = "visitId") String visitId,
-//	    @PathParam(value = "patientId") String patientId, @PathParam(value = "doctorId") String doctorId,
-//	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
-//	
-//    if (DPDoctorUtils.anyStringEmpty(visitId, patientId, doctorId, hospitalId, locationId)) {
-//	    logger.warn("Visits Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
-//	    throw new BusinessException(ServiceError.InvalidInput, "Visits Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
-//	}
-//	boolean addClinicalNotesToHistoryResponse = historyServices.addVisitsToHistory(visitId, patientId, doctorId, hospitalId, locationId);
-//	Response<Boolean> response = new Response<Boolean>();
-//	response.setData(addClinicalNotesToHistoryResponse);
-//	return response;
-//    }
-//
-//    @Path(value = PathProxy.HistoryUrls.REMOVE_VISITS)
-//    @GET
-//    public Response<Boolean> removeVisits(@PathParam(value = "visitId") String visitId,
-//	    @PathParam(value = "patientId") String patientId, @PathParam(value = "doctorId") String doctorId,
-//	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
-//	
-//    if (DPDoctorUtils.anyStringEmpty(visitId, patientId, doctorId, hospitalId, locationId)) {
-//	    logger.warn("Visits Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
-//	    throw new BusinessException(ServiceError.InvalidInput, "Visits Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
-//	}
-//	boolean addClinicalNotesToHistoryResponse = historyServices.removeVisits(visitId, patientId, doctorId, hospitalId, locationId);
-//	Response<Boolean> response = new Response<Boolean>();
-//	response.setData(addClinicalNotesToHistoryResponse);
-//	return response;
-//    }
+    // @Path(value = PathProxy.HistoryUrls.ADD_VISITS_TO_HISTORY)
+    // @GET
+    // public Response<Boolean> addVisitsToHistory(@PathParam(value = "visitId")
+    // String visitId,
+    // @PathParam(value = "patientId") String patientId, @PathParam(value =
+    // "doctorId") String doctorId,
+    // @PathParam(value = "locationId") String locationId, @PathParam(value =
+    // "hospitalId") String hospitalId) {
+    //
+    // if (DPDoctorUtils.anyStringEmpty(visitId, patientId, doctorId,
+    // hospitalId, locationId)) {
+    // logger.warn("Visits Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+    // throw new BusinessException(ServiceError.InvalidInput,
+    // "Visits Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+    // }
+    // boolean addClinicalNotesToHistoryResponse =
+    // historyServices.addVisitsToHistory(visitId, patientId, doctorId,
+    // hospitalId, locationId);
+    // Response<Boolean> response = new Response<Boolean>();
+    // response.setData(addClinicalNotesToHistoryResponse);
+    // return response;
+    // }
+    //
+    // @Path(value = PathProxy.HistoryUrls.REMOVE_VISITS)
+    // @GET
+    // public Response<Boolean> removeVisits(@PathParam(value = "visitId")
+    // String visitId,
+    // @PathParam(value = "patientId") String patientId, @PathParam(value =
+    // "doctorId") String doctorId,
+    // @PathParam(value = "locationId") String locationId, @PathParam(value =
+    // "hospitalId") String hospitalId) {
+    //
+    // if (DPDoctorUtils.anyStringEmpty(visitId, patientId, doctorId,
+    // hospitalId, locationId)) {
+    // logger.warn("Visits Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+    // throw new BusinessException(ServiceError.InvalidInput,
+    // "Visits Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+    // }
+    // boolean addClinicalNotesToHistoryResponse =
+    // historyServices.removeVisits(visitId, patientId, doctorId, hospitalId,
+    // locationId);
+    // Response<Boolean> response = new Response<Boolean>();
+    // response.setData(addClinicalNotesToHistoryResponse);
+    // return response;
+    // }
 
     private List<Diagram> getFinalDiagrams(List<Diagram> diagrams) {
-    	for (Diagram diagram : diagrams) {
-    	    if (diagram.getDiagramUrl() != null) {
-    		diagram.setDiagramUrl(getFinalImageURL(diagram.getDiagramUrl()));
-    	    }
-    	}
-    	return diagrams;
-        }
+	for (Diagram diagram : diagrams) {
+	    if (diagram.getDiagramUrl() != null) {
+		diagram.setDiagramUrl(getFinalImageURL(diagram.getDiagramUrl()));
+	    }
+	}
+	return diagrams;
+    }
 
-        private String getFinalImageURL(String imageURL) {
-    	if (imageURL != null) {
-    	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-    	    return finalImageURL + imageURL;
-    	} else
-    	    return null;
+    private String getFinalImageURL(String imageURL) {
+	if (imageURL != null) {
+	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+	    return finalImageURL + imageURL;
+	} else
+	    return null;
 
-        }
+    }
 }

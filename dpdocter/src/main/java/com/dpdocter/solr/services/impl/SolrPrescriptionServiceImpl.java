@@ -21,8 +21,6 @@ import com.dpdocter.solr.document.SolrLabTestDocument;
 import com.dpdocter.solr.repository.SolrDrugRepository;
 import com.dpdocter.solr.repository.SolrLabTestRepository;
 import com.dpdocter.solr.services.SolrPrescriptionService;
-import com.dpdocter.webservices.PrescriptionApi;
-
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -35,7 +33,7 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 
     @Autowired
     private SolrLabTestRepository solrLabTestRepository;
-    
+
     @Autowired
     private TransactionalManagementService transnationalService;
 
@@ -49,7 +47,8 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Drug in Solr");
-//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug in Solr");
+	    // throw new BusinessException(ServiceError.Unknown,
+	    // "Error Occurred While Saving Drug in Solr");
 	}
 	return response;
     }
@@ -64,7 +63,8 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Drug in Solr");
-//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Drug");
+	    // throw new BusinessException(ServiceError.Unknown,
+	    // "Error Occurred While Editing Drug");
 	}
 	return response;
     }
@@ -74,18 +74,19 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	boolean response = false;
 	try {
 	    SolrDrugDocument drugDocument = solrDrugRepository.findOne(id);
-	    if(drugDocument != null){
-	    	drugDocument.setDiscarded(discarded);
-	    	drugDocument.setUpdatedTime(new Date());
-	    	solrDrugRepository.save(drugDocument);
+	    if (drugDocument != null) {
+		drugDocument.setDiscarded(discarded);
+		drugDocument.setUpdatedTime(new Date());
+		solrDrugRepository.save(drugDocument);
 	    }
 	    response = true;
 	    transnationalService.addResource(id, Resource.DRUG, true);
-		
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Drug in Solr");
-//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug");
+	    // throw new BusinessException(ServiceError.Unknown,
+	    // "Error Occurred While Deleting Drug");
 	}
 	return response;
     }
@@ -97,11 +98,12 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	    solrLabTestRepository.save(request);
 	    response = true;
 	    transnationalService.addResource(request.getId(), Resource.LABTEST, true);
-		
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Lab Test in Solr");
-//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Lab Test in Solr");
+	    // throw new BusinessException(ServiceError.Unknown,
+	    // "Error Occurred While Saving Lab Test in Solr");
 	}
 	return response;
     }
@@ -113,11 +115,12 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	    solrLabTestRepository.save(request);
 	    response = true;
 	    transnationalService.addResource(request.getId(), Resource.LABTEST, true);
-		
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Lab Test in Solr");
-//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Lab Test");
+	    // throw new BusinessException(ServiceError.Unknown,
+	    // "Error Occurred While Editing Lab Test");
 	}
 	return response;
     }
@@ -126,19 +129,20 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
     public boolean deleteLabTest(String labTestId, Boolean discarded) {
 	boolean response = false;
 	try {
-		SolrLabTestDocument  labTestDocument = solrLabTestRepository.findOne(labTestId);
-		if(labTestDocument != null){
-			labTestDocument.setDiscarded(discarded);
-			labTestDocument.setUpdatedTime(new Date());
-		    solrLabTestRepository.save(labTestDocument);
-		}
+	    SolrLabTestDocument labTestDocument = solrLabTestRepository.findOne(labTestId);
+	    if (labTestDocument != null) {
+		labTestDocument.setDiscarded(discarded);
+		labTestDocument.setUpdatedTime(new Date());
+		solrLabTestRepository.save(labTestDocument);
+	    }
 	    response = true;
 	    transnationalService.addResource(labTestId, Resource.LABTEST, true);
-		
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Lab Test in Solr");
-//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Lab Test");
+	    // throw new BusinessException(ServiceError.Unknown,
+	    // "Error Occurred While Deleting Lab Test");
 	}
 	return response;
     }

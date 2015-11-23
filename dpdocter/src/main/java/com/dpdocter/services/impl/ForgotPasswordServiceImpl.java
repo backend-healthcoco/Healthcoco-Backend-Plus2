@@ -18,7 +18,6 @@ import com.dpdocter.response.ForgotPasswordResponse;
 import com.dpdocter.services.ForgotPasswordService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
-
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -139,7 +138,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     public String resetPassword(ResetPasswordRequest request) {
 	try {
 	    UserCollection userCollection = userRepository.findOne(request.getUserId());
-	    userCollection.setPassword(request.getPassword());
+	    userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(request.getPassword()));
 	    userCollection.setIsTempPassword(false);
 	    userRepository.save(userCollection);
 	    return "Password Changed Successfully";
@@ -181,18 +180,18 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	return flag;
     }
 
-	@Override
-	public String resetPassword(String userId, String password) {
-		try {
-		    UserCollection userCollection = userRepository.findOne(userId);
-		    userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(password));
-		    userCollection.setIsTempPassword(false);
-		    userRepository.save(userCollection);
-		    return "Password Changed Successfully";
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
+    @Override
+    public String resetPassword(String userId, String password) {
+	try {
+	    UserCollection userCollection = userRepository.findOne(userId);
+	    userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(password));
+	    userCollection.setIsTempPassword(false);
+	    userRepository.save(userCollection);
+	    return "Password Changed Successfully";
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+    }
 }

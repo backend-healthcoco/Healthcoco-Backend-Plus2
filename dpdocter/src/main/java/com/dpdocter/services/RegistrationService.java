@@ -77,10 +77,10 @@ public interface RegistrationService {
 
     RegisterDoctorResponse registerExisitingDoctor(DoctorRegisterRequest request);
 
-	Role addRole(Role request);
+    Role addRole(Role request);
 
-	List<Role> getRole(String range, int page, int size, String doctorId, String locationId, String hospitalId,	String updatedTime);
+    List<Role> getRole(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime);
 
-	void checkPatientCount(String mobileNumber);
+    void checkPatientCount(String mobileNumber);
 
 }

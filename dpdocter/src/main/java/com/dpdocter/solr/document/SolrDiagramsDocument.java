@@ -115,6 +115,7 @@ public class SolrDiagramsDocument {
 	    this.hospitalId = hospitalId;
 	}
     }
+
     public Boolean getDiscarded() {
 	return discarded;
     }

@@ -131,8 +131,8 @@ public class RecordsServiceImpl implements RecordsService {
 	    recordsCollection.setCreatedTime(createdTime);
 	    UserCollection userCollection = userRepository.findOne(recordsCollection.getDoctorId());
 	    if (userCollection != null) {
-	    	recordsCollection.setCreatedBy(userCollection.getFirstName());
-	    } 
+		recordsCollection.setCreatedBy(userCollection.getFirstName());
+	    }
 	    recordsCollection = recordsRepository.save(recordsCollection);
 	    Records records = new Records();
 	    BeanUtil.map(recordsCollection, records);
@@ -259,7 +259,7 @@ public class RecordsServiceImpl implements RecordsService {
 		    BeanUtil.map(recordCollection, record);
 		    UserCollection userCollection = userRepository.findOne(record.getDoctorId());
 		    if (userCollection != null) {
-		    record.setDoctorName(userCollection.getFirstName());
+			record.setDoctorName(userCollection.getFirstName());
 		    }
 		    if (request.getLocationId() != null) {
 			LocationCollection locationCollection = locationRepository.findOne(request.getLocationId());
@@ -428,7 +428,7 @@ public class RecordsServiceImpl implements RecordsService {
 		    BeanUtil.map(recordCollection, record);
 		    UserCollection userCollection = userRepository.findOne(record.getDoctorId());
 		    if (userCollection != null) {
-		    record.setDoctorName(userCollection.getFirstName());
+			record.setDoctorName(userCollection.getFirstName());
 		    }
 		    records.add(record);
 		}

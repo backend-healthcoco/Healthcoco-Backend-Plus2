@@ -2,28 +2,28 @@ package com.dpdocter.beans;
 
 public class LocationAndAccessControl {
 
-	private Location location;
-	
-	private AccessControl accessControl;
+    private Location location;
 
-	public Location getLocation() {
-		return location;
-	}
+    private AccessControl accessControl;
 
-	public void setLocation(Location location) {
-		this.location = location;
-	}
+    public Location getLocation() {
+	return location;
+    }
 
-	public AccessControl getAccessControl() {
-		return accessControl;
-	}
+    public void setLocation(Location location) {
+	this.location = location;
+    }
 
-	public void setAccessControl(AccessControl accessControl) {
-		this.accessControl = accessControl;
-	}
+    public AccessControl getAccessControl() {
+	return accessControl;
+    }
 
-	@Override
-	public String toString() {
-		return "LocationAndAccessControl [location=" + location + ", accessControl=" + accessControl + "]";
-	}
+    public void setAccessControl(AccessControl accessControl) {
+	this.accessControl = accessControl;
+    }
+
+    @Override
+    public String toString() {
+	return "LocationAndAccessControl [location=" + location + ", accessControl=" + accessControl + "]";
+    }
 }

@@ -372,7 +372,7 @@ public class DoctorProfileApi {
 	response.setDataList(qualifications);
 	return response;
     }
-    
+
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_MULTIPLE_DATA)
     @POST
     public Response<DoctorMultipleDataAddEditResponse> addEditMultipleData(DoctorMultipleDataAddEditRequest request) {
@@ -383,7 +383,7 @@ public class DoctorProfileApi {
 	DoctorMultipleDataAddEditResponse addEditNameResponse = doctorProfileService.addEditMultipleData(request);
 	addEditNameResponse.setCoverImageUrl(getFinalImageURL(addEditNameResponse.getCoverImageUrl()));
 	addEditNameResponse.setProfileImageUrl(getFinalImageURL(addEditNameResponse.getProfileImageUrl()));
-	
+
 	Response<DoctorMultipleDataAddEditResponse> response = new Response<DoctorMultipleDataAddEditResponse>();
 	response.setData(addEditNameResponse);
 	return response;

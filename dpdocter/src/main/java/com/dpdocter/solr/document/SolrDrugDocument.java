@@ -5,7 +5,6 @@ import java.util.Date;
 import javax.ws.rs.DefaultValue;
 
 import org.apache.solr.client.solrj.beans.Field;
-import org.apache.solr.common.util.DateUtil;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.solr.core.mapping.SolrDocument;
 

@@ -54,7 +54,8 @@ public class IssueTrackApi {
     @Path(value = PathProxy.IssueTrackUrls.DELETE_ISSUE)
     @DELETE
     public Response<Boolean> deleteIssue(@PathParam(value = "issueId") String issueId, @PathParam(value = "doctorId") String doctorId,
-	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 
 	if (DPDoctorUtils.anyStringEmpty(issueId, doctorId, locationId, hospitalId)) {
 	    logger.warn("IssueId or DoctorId or LocationId or HospitalId cannot be null");

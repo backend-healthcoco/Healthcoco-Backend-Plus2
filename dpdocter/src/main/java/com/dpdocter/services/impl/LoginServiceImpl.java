@@ -39,6 +39,7 @@ import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.request.LoginRequest;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.LoginService;
+import common.util.web.DPDoctorUtils;
 import common.util.web.LoginUtils;
 
 /**
@@ -66,7 +67,7 @@ public class LoginServiceImpl implements LoginService {
 
     @Autowired
     private UserLocationRepository userLocationRepository;
-    
+
     @Autowired
     private AccessControlServices accessControlServices;
 
@@ -82,12 +83,19 @@ public class LoginServiceImpl implements LoginService {
 	     */
 	    UserCollection userCollection = userRepository.findByPasswordAndUserNameIgnoreCase(request.getPassword(), request.getUsername());
 	    if (userCollection == null) {
-		userCollection = userRepository.findByPasswordAndEmailAddressIgnoreCase(request.getPassword(), request.getUsername());
+		userCollection = userRepository.findByPasswordAndUserNameIgnoreCase(DPDoctorUtils.getSHA3SecurePassword(request.getPassword().trim()),
+			request.getUsername());
 		if (userCollection == null) {
-		    logger.warn("Invalid username and Password");
-		    throw new BusinessException(ServiceError.Unknown, "Invalid username and Password");
+		    userCollection = userRepository.findByPasswordAndEmailAddressIgnoreCase(request.getPassword(), request.getUsername());
 		}
-
+		if (userCollection == null) {
+		    userCollection = userRepository.findByPasswordAndEmailAddressIgnoreCase(DPDoctorUtils.getSHA3SecurePassword(request.getPassword().trim()),
+			    request.getUsername());
+		}
+	    }
+	    if (userCollection == null) {
+		logger.warn("Invalid username and Password");
+		throw new BusinessException(ServiceError.Unknown, "Invalid username and Password");
 	    }
 	    if (!userCollection.getIsVerified()) {
 		logger.warn("This user is not verified");
@@ -130,12 +138,13 @@ public class LoginServiceImpl implements LoginService {
 			    HospitalCollection hospitalCollection = null;
 			    Location location = new Location();
 			    BeanUtil.map(locationCollection, location);
-			    
-			    AccessControl  accessControl = accessControlServices.getAccessControls(userCollection.getId(), locationCollection.getId(), locationCollection.getHospitalId());
-				LocationAndAccessControl locationAndAccessControl =  new LocationAndAccessControl();
-				locationAndAccessControl.setAccessControl(accessControl);
-				locationAndAccessControl.setLocation(location);
-				
+
+			    AccessControl accessControl = accessControlServices.getAccessControls(userCollection.getId(), locationCollection.getId(),
+				    locationCollection.getHospitalId());
+			    LocationAndAccessControl locationAndAccessControl = new LocationAndAccessControl();
+			    locationAndAccessControl.setAccessControl(accessControl);
+			    locationAndAccessControl.setLocation(location);
+
 			    if (!checkHospitalId.containsKey(locationCollection.getHospitalId())) {
 				hospitalCollection = hospitalRepository.findOne(locationCollection.getHospitalId());
 				Hospital hospital = new Hospital();

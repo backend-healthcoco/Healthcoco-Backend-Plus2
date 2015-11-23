@@ -1,7 +1,8 @@
 package com.dpdocter.enums;
 
 public enum Resource {
-	COMPLAINT("COMPLAINT"), OBSERVATION("OBSERVATION"), INVESTIGATION("INVESTIGATION"), DIAGNOSIS("DIAGNOSIS"), NOTES("NOTES"), DIAGRAM("DIAGRAM"), PATIENT("PATIENT"), DRUG("DRUG"), LABTEST("LABTEST");
+    COMPLAINT("COMPLAINT"), OBSERVATION("OBSERVATION"), INVESTIGATION("INVESTIGATION"), DIAGNOSIS("DIAGNOSIS"), NOTES("NOTES"), DIAGRAM("DIAGRAM"), PATIENT(
+	    "PATIENT"), DRUG("DRUG"), LABTEST("LABTEST");
 
     private String type;
 
@@ -9,8 +10,8 @@ public enum Resource {
 	this.type = type;
     }
 
-	public String getType() {
-		return type;
-	}
+    public String getType() {
+	return type;
+    }
 
 }

@@ -241,8 +241,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
 		    userCollection.getMiddleName(), userCollection.getLastName(), tokenCollection.getId());
 	    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
-	    
-	    
+
 	    // user.setPassword(null);
 
 	    // if (userCollection.getMobileNumber() != null) {
@@ -278,7 +277,7 @@ public class SignUpServiceImpl implements SignUpService {
 		accessControl = accessControlServices.setAccessControls(accessControl);
 		response.setAccessControl(accessControl);
 	    }
-	    
+
 	    User user = new User();
 	    userCollection.setPassword(null);
 	    BeanUtil.map(userCollection, user);
@@ -289,11 +288,11 @@ public class SignUpServiceImpl implements SignUpService {
 	    List<LocationAndAccessControl> locations = new ArrayList<LocationAndAccessControl>();
 	    Location location = new Location();
 	    BeanUtil.map(locationCollection, location);
-	    
-	    LocationAndAccessControl locationAndAccessControl =  new LocationAndAccessControl();
-		locationAndAccessControl.setAccessControl(response.getAccessControl());
-		locationAndAccessControl.setLocation(location);
-		
+
+	    LocationAndAccessControl locationAndAccessControl = new LocationAndAccessControl();
+	    locationAndAccessControl.setAccessControl(response.getAccessControl());
+	    locationAndAccessControl.setLocation(location);
+
 	    locations.add(locationAndAccessControl);
 	    hospital.setLocationsAndAccessControl(locations);
 	    response.setHospital(hospital);
@@ -454,7 +453,7 @@ public class SignUpServiceImpl implements SignUpService {
 		accessControl = accessControlServices.setAccessControls(accessControl);
 		response.setAccessControl(accessControl);
 	    }
-	    
+
 	    User user = new User();
 	    userCollection.setPassword(null);
 	    BeanUtil.map(userCollection, user);
@@ -465,11 +464,11 @@ public class SignUpServiceImpl implements SignUpService {
 	    List<LocationAndAccessControl> locations = new ArrayList<LocationAndAccessControl>();
 	    Location location = new Location();
 	    BeanUtil.map(locationCollection, location);
-	    
-	    LocationAndAccessControl locationAndAccessControl =  new LocationAndAccessControl();
-		locationAndAccessControl.setAccessControl(response.getAccessControl());
-		locationAndAccessControl.setLocation(location);
-		
+
+	    LocationAndAccessControl locationAndAccessControl = new LocationAndAccessControl();
+	    locationAndAccessControl.setAccessControl(response.getAccessControl());
+	    locationAndAccessControl.setLocation(location);
+
 	    locations.add(locationAndAccessControl);
 	    hospital.setLocationsAndAccessControl(locations);
 	    response.setHospital(hospital);

@@ -42,7 +42,7 @@ public class PatientVisitCollection extends GenericCollection {
 
     @Field
     private List<String> recordId;
-    
+
     @Field
     private Boolean discarded = false;
 
@@ -134,19 +134,18 @@ public class PatientVisitCollection extends GenericCollection {
 	this.recordId = recordId;
     }
 
-	public Boolean getDiscarded() {
-		return discarded;
-	}
+    public Boolean getDiscarded() {
+	return discarded;
+    }
 
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
 
-	@Override
-	public String toString() {
-		return "PatientVisitCollection [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", visitedTime=" + visitedTime
-				+ ", visitedFor=" + visitedFor + ", total=" + total + ", prescriptionId=" + prescriptionId
-				+ ", clinicalNotesId=" + clinicalNotesId + ", recordId=" + recordId + ", discarded=" + discarded + "]";
-	}
+    @Override
+    public String toString() {
+	return "PatientVisitCollection [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+		+ hospitalId + ", visitedTime=" + visitedTime + ", visitedFor=" + visitedFor + ", total=" + total + ", prescriptionId=" + prescriptionId
+		+ ", clinicalNotesId=" + clinicalNotesId + ", recordId=" + recordId + ", discarded=" + discarded + "]";
+    }
 }

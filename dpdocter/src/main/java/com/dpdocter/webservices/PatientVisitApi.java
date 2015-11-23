@@ -97,7 +97,7 @@ public class PatientVisitApi {
 	response.setData(patienVisitResponse);
 	return response;
     }
-    
+
     @Path(value = PathProxy.PatientVisitUrls.SMS_VISITS)
     @GET
     public Response<Boolean> smsPrescription(@PathParam(value = "visitId") String visitId, @PathParam(value = "doctorId") String doctorId,
@@ -115,6 +115,5 @@ public class PatientVisitApi {
 	response.setData(true);
 	return response;
     }
-
 
 }

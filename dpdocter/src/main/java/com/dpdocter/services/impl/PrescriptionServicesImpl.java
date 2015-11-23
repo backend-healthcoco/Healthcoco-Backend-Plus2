@@ -104,7 +104,6 @@ import com.dpdocter.sms.services.SMSServices;
 import com.dpdocter.solr.document.SolrDrugDocument;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.PrescriptionUtils;
 
@@ -471,7 +470,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    }
 	    UserCollection userCollection = userRepository.findOne(prescriptionCollection.getDoctorId());
 	    if (userCollection != null) {
-	    	prescriptionCollection.setCreatedBy(userCollection.getFirstName());
+		prescriptionCollection.setCreatedBy(userCollection.getFirstName());
 	    }
 	    prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 	    response = new PrescriptionAddEditResponse();

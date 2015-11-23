@@ -70,13 +70,13 @@ public class DPDoctorUtils {
     private static DPDoctorUtils getInstance() {
 	return new DPDoctorUtils();
     }
-    
-    public static String getSHA3SecurePassword(String password) throws UnsupportedEncodingException{
-        DigestSHA3 md = new DigestSHA3(256); 
-		  md.update(password.getBytes("UTF-8"));
-       	  byte[] digest = md.digest();
-       	  
-       	BigInteger bigInt = new BigInteger(1, digest);
-        return bigInt.toString(16);
+
+    public static String getSHA3SecurePassword(String password) throws UnsupportedEncodingException {
+	DigestSHA3 md = new DigestSHA3(256);
+	md.update(password.getBytes("UTF-8"));
+	byte[] digest = md.digest();
+
+	BigInteger bigInt = new BigInteger(1, digest);
+	return bigInt.toString(16);
     }
 }

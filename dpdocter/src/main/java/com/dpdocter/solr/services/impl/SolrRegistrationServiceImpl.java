@@ -36,7 +36,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 
     @Autowired
     private SolrTemplate solrTemplate;
-    
+
     @Autowired
     private TransactionalManagementService transnationalService;
 
@@ -50,7 +50,8 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Patient");
-//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Patient");
+	    // throw new BusinessException(ServiceError.Unknown,
+	    // "Error Occurred While Saving Patient");
 	}
 	return response;
     }
@@ -65,7 +66,8 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Patient");
-//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Patient");
+	    // throw new BusinessException(ServiceError.Unknown,
+	    // "Error Occurred While Editing Patient");
 	}
 	return response;
     }
@@ -408,11 +410,12 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 		solrPatientRepository.save(document);
 		transnationalService.addResource(document.getId(), Resource.PATIENT, true);
 	    }
-	    
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Searching Patients");
-//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
+	    // throw new BusinessException(ServiceError.Unknown,
+	    // "Error Occurred While Searching Patients");
 	}
 
     }
