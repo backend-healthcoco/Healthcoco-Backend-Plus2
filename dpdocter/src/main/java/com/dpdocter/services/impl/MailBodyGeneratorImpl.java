@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
+
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +24,9 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 
     @Value(value = "${RESET_PASSWORD_LINK}")
     private String RESET_PASSWORD_LINK;
+
+    @Context
+    private UriInfo uriInfo;
 
     @Autowired
     private VelocityEngine velocityEngine;
@@ -40,7 +46,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
     public String generateForgotPasswordEmailBody(String userName, String fName, String mName, String lName, String userId) {
 	StringBuffer body = new StringBuffer();
 	body.append("Dear " + fName + " " + lName + ", \n");
-	body.append("Please click on below link to Reset Password. \n" + RESET_PASSWORD_LINK + "?userId=" + userId);
+	body.append("Please click on below link to Reset Password. \n" + uriInfo.getBaseUri()+RESET_PASSWORD_LINK + "?uid=" + userId);
 	return body.toString();
     }
 

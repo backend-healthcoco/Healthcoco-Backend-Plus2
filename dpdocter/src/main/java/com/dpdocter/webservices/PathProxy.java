@@ -182,7 +182,7 @@ public interface PathProxy {
 
 	public static final String RESET_PASSWORD = "/reset-password";
 
-	public static final String RESET_PASSWORD_GET = "/resetPassword/{userId}/{password}";
+	public static final String RESET_PASSWORD_GET = "/resetPassword";
 
 	public static final String FORGOT_USERNAME = "/forgot-username";
     }
