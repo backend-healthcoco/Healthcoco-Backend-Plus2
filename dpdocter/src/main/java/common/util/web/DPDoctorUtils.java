@@ -12,6 +12,8 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.jcajce.provider.digest.SHA3.DigestSHA3;
+import org.joda.time.DateTime;
+import org.joda.time.Minutes;
 import org.springframework.beans.factory.annotation.Value;
 
 public class DPDoctorUtils {
@@ -21,6 +23,9 @@ public class DPDoctorUtils {
 
     @Value(value = "${IMAGE_URL_ROOT_PATH}")
     private String imageUrlRootPath;
+    
+    @Value(value = "${OTP_VALIDATION_TIME_DIFFERENCE}")
+    private String otpTimeDifference;
 
     public static boolean anyStringEmpty(String... values) {
 	boolean result = false;
@@ -79,4 +84,6 @@ public class DPDoctorUtils {
 	BigInteger bigInt = new BigInteger(1, digest);
 	return bigInt.toString(16);
     }
+    
+    
 }

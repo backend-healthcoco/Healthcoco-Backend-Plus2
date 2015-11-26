@@ -30,8 +30,10 @@ import com.dpdocter.enums.UserState;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DoctorOTPRepository;
 import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.OTPRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
@@ -39,8 +41,9 @@ import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.request.LoginRequest;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.LoginService;
+import com.dpdocter.sms.services.SMSServices;
+
 import common.util.web.DPDoctorUtils;
-import common.util.web.LoginUtils;
 
 /**
  * @author veeraj
@@ -71,6 +74,7 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     private AccessControlServices accessControlServices;
 
+    
     /**
      * This method is used for login purpose.
      */
@@ -197,23 +201,6 @@ public class LoginServiceImpl implements LoginService {
 	    throw new BusinessException(ServiceError.Unknown, "Error While Verifying User");
 	}
 	return response;
-    }
-
-    @Override
-    public String otpGenerator(String mobileNumber) {
-	String OTP = null;
-	try {
-	    OTP = LoginUtils.generateOTP();
-	    // TODO also send OTP SMS to the specified mobile number, after SMS
-	    // Gateway integration.
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error While Generating OTP");
-	    throw new BusinessException(ServiceError.Unknown, "Error While Generating OTP");
-	}
-
-	return OTP;
-
     }
 
 }

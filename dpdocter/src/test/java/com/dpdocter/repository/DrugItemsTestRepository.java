@@ -21,7 +21,7 @@ public class DrugItemsTestRepository {
     public JSONObject add(String drug) throws JSONException {
 	DBObject object = (DBObject) JSON.parse(drug);
 	collection.insert(object);
-	DBObject found = collection.find(object) != null ? collection.find(object).one() : null;
+	DBObject found = null;//collection.find(object) != null ? collection.find(object).one() : null;
 	if (found == null)
 	    return null;
 	else

@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.Message;
 import com.dpdocter.beans.SMS;
+import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDeliveryReports;
 import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.SMSReport;
@@ -359,4 +360,35 @@ public class SMSServicesImpl implements SMSServices {
 	}
 
     }
+
+	@Override
+	public SMSTrackDetail createSMSTrackDetail(String doctorId, String locationId, String hospitalId, String patientId,
+			String message, String mobileNumber) {
+		SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+		try{
+			 smsTrackDetail.setDoctorId(doctorId);
+		     smsTrackDetail.setHospitalId(hospitalId);
+		     smsTrackDetail.setLocationId(locationId);
+		    
+		     SMSDetail smsDetail = new SMSDetail();
+		     smsDetail.setPatientId(patientId);
+		    
+		     SMS sms = new SMS();
+		     sms.setSmsText(message);
+		    
+		     SMSAddress smsAddress = new SMSAddress();
+		     smsAddress.setRecipient(mobileNumber);
+		     sms.setSmsAddress(smsAddress);
+		    
+		     smsDetail.setSms(sms);
+		     List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+		     smsDetails.add(smsDetail);
+		     smsTrackDetail.setSmsDetails(smsDetails);
+		    
+		} catch (BusinessException e) {
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return smsTrackDetail;
+	}
 }

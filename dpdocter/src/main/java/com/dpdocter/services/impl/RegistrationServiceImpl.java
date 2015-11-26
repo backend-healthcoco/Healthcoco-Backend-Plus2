@@ -76,6 +76,7 @@ import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorContactsRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.GroupRepository;
+import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientGroupRepository;
@@ -179,6 +180,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Autowired
     private PrintSettingsRepository printSettingsRepository;
+    
+    @Autowired
+    private HistoryRepository historyRepository;
 
     @Value(value = "${mail.signup.subject.activation}")
     private String signupSubject;
@@ -318,6 +322,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    Patient patient = new Patient();
 	    BeanUtil.map(patientCollection, patient);
 	    patient.setPatientId(patientCollection.getId());
+	    
+	    int historyCount = historyRepository.getByPatientIdAndNotEqualToDoctorLocationHospital(patientCollection.getUserId(), patientCollection.getDoctorId(), patientCollection.getLocationId(), patientCollection.getHospitalId());
+		if(historyCount > 0)patient.setIsHistoryAvailable(true);
+		
 	    registeredPatientDetails.setPatient(patient);
 	    registeredPatientDetails.setPID(patientCollection.getPID());
 	    registeredPatientDetails.setDoctorId(patientCollection.getDoctorId());
@@ -466,6 +474,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    Patient patient = new Patient();
 	    BeanUtil.map(patientCollection, patient);
 	    patient.setPatientId(patientCollection.getId());
+	    
+	    int historyCount = historyRepository.getByPatientIdAndNotEqualToDoctorLocationHospital(patientCollection.getUserId(), patientCollection.getDoctorId(), patientCollection.getLocationId(), patientCollection.getHospitalId());
+		if(historyCount > 0)patient.setIsHistoryAvailable(true);
+		
 	    registeredPatientDetails.setPatient(patient);
 	    registeredPatientDetails.setPID(patientCollection.getPID());
 	    registeredPatientDetails.setDoctorId(patientCollection.getDoctorId());
@@ -569,6 +581,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    Patient patient = new Patient();
 		    BeanUtil.map(patientCollection, patient);
 		    patient.setPatientId(patientCollection.getId());
+		    
+		    int historyCount = historyRepository.getByPatientIdAndNotEqualToDoctorLocationHospital(patientCollection.getUserId(), patientCollection.getDoctorId(), patientCollection.getLocationId(), patientCollection.getHospitalId());
+			if(historyCount > 0)patient.setIsHistoryAvailable(true);
+			
 		    registeredPatientDetails.setPatient(patient);
 		    Address address = new Address();
 		    BeanUtil.map(addressCollection, address);
@@ -1171,10 +1187,26 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     @Override
-    public RegisterDoctorResponse registerNewDoctor(DoctorRegisterRequest request) {
+    public RegisterDoctorResponse registerNewUser(DoctorRegisterRequest request) {
 	RegisterDoctorResponse response = null;
 	try {
-	    RoleCollection doctorRole = roleRepository.findByRole(RoleEnum.DOCTOR.getRole());
+	    RoleCollection doctorRole = null;
+	    if(request.getRole() != null){
+	    	if(request.getRole().getId() != null)doctorRole = roleRepository.findOne(request.getRole().getId());
+	    	else{
+	    		doctorRole = roleRepository.findByRole(request.getRole().getRole(), request.getLocationId(), request.getHospitalId());
+	    		if(doctorRole == null){
+	    			doctorRole = new RoleCollection();
+		    		BeanUtil.map(request, doctorRole);
+		    		BeanUtil.map(request.getRole(), doctorRole);
+		    		doctorRole = roleRepository.save(doctorRole);
+	    		}
+	    	}
+	    }
+	    else{
+	    	doctorRole = roleRepository.findByRole(RoleEnum.DOCTOR.getRole());
+	    }
+	    
 	    if (doctorRole == null) {
 		logger.warn("Role Collection in database is either empty or not defind properly");
 		throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
@@ -1268,6 +1300,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 		accessControl = accessControlServices.setAccessControls(accessControl);
 		response.setAccessControl(accessControl);
 	    }
+	    
+	    if(doctorRole != null){
+	    	Role role = new Role();
+		    BeanUtil.map(doctorRole, role);
+		    response.setRole(role);
+	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
@@ -1277,9 +1315,31 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     @Override
-    public RegisterDoctorResponse registerExisitingDoctor(DoctorRegisterRequest request) {
+    public RegisterDoctorResponse registerExisitingUser(DoctorRegisterRequest request) {
 	RegisterDoctorResponse response = null;
 	try {
+		
+		RoleCollection doctorRole = null;
+	    if(request.getRole() != null){
+	    	if(request.getRole().getId() != null)doctorRole = roleRepository.findOne(request.getRole().getId());
+	    	else{
+	    		doctorRole = roleRepository.findByRole(request.getRole().getRole(), request.getLocationId(), request.getHospitalId());
+	    		if(doctorRole == null){
+	    			doctorRole = new RoleCollection();
+		    		BeanUtil.map(request, doctorRole);
+		    		BeanUtil.map(request.getRole(), doctorRole);
+		    		doctorRole = roleRepository.save(doctorRole);
+	    		}
+	    	}
+	    }
+	    else{
+	    	doctorRole = roleRepository.findByRole(RoleEnum.DOCTOR.getRole());
+	    }
+	    
+	    if (doctorRole == null) {
+		logger.warn("Role Collection in database is either empty or not defind properly");
+		throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
+	    }
 	    UserCollection userCollection = userRepository.findOne(request.getUserId());
 
 	    UserLocationCollection userLocationCollection = new UserLocationCollection(userCollection.getId(), request.getLocationId());
@@ -1300,6 +1360,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 		accessControl.setRoleOrUserId(userCollection.getId());
 		accessControl = accessControlServices.setAccessControls(accessControl);
 		response.setAccessControl(accessControl);
+	    }
+	    if(doctorRole != null){
+	    	Role role = new Role();
+		    BeanUtil.map(doctorRole, role);
+		    response.setRole(role);
 	    }
 
 	} catch (Exception e) {
@@ -1328,7 +1393,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     @Override
-    public List<Role> getRole(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime) {
+    public List<Role> getRole(String range, int page, int size, String locationId, String hospitalId, String updatedTime) {
 	List<Role> response = null;
 
 	try {
@@ -1338,10 +1403,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 		response = getGlobalRole(page, size, updatedTime);
 		break;
 	    case CUSTOM:
-		response = getCustomRole(page, size, doctorId, locationId, hospitalId, updatedTime);
+		response = getCustomRole(page, size, locationId, hospitalId, updatedTime);
 		break;
 	    case BOTH:
-		response = getCustomGlobalRole(page, size, doctorId, locationId, hospitalId, updatedTime);
+		response = getCustomGlobalRole(page, size, locationId, hospitalId, updatedTime);
 		break;
 	    }
 	} catch (Exception e) {
@@ -1353,32 +1418,25 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     }
 
-    private List<Role> getCustomGlobalRole(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime) {
+    private List<Role> getCustomGlobalRole(int page, int size, String locationId, String hospitalId, String updatedTime) {
 	List<Role> response = null;
 	List<RoleCollection> roleCollections = null;
 	try {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
-	    if (DPDoctorUtils.anyStringEmpty(doctorId)) {
-		if (size > 0)
-		    roleCollections = roleRepository.findCustomGlobal(new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC, "updatedTime"));
-		else
-		    roleCollections = roleRepository.findCustomGlobal(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
-	    } else {
-		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+	    if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 		    if (size > 0)
-			roleCollections = roleRepository.findCustomGlobal(doctorId, new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC,
+			roleCollections = roleRepository.findCustomGlobal(new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC,
 				"updatedTime"));
 		    else
-			roleCollections = roleRepository.findCustomGlobal(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+			roleCollections = roleRepository.findCustomGlobal(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
 		    if (size > 0)
-			roleCollections = roleRepository.findCustomGlobal(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new PageRequest(page,
+			roleCollections = roleRepository.findCustomGlobal(locationId, hospitalId, new Date(createdTimeStamp), new PageRequest(page,
 				size, Direction.DESC, "updatedTime"));
 		    else
-			roleCollections = roleRepository.findCustomGlobal(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(
+			roleCollections = roleRepository.findCustomGlobal(locationId, hospitalId, new Date(createdTimeStamp), new Sort(
 				Sort.Direction.DESC, "updatedTime"));
 		}
-	    }
 	    if (roleCollections != null) {
 		response = new ArrayList<Role>();
 		BeanUtil.map(roleCollections, response);
@@ -1392,30 +1450,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 	return response;
     }
 
-    private List<Role> getCustomRole(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime) {
+    private List<Role> getCustomRole(int page, int size, String locationId, String hospitalId, String updatedTime) {
 	List<Role> response = null;
 	List<RoleCollection> roleCollections = null;
 	try {
-	    if (DPDoctorUtils.anyStringEmpty(doctorId))
-		;
-	    else {
-		long createdTimeStamp = Long.parseLong(updatedTime);
-		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+	   long createdTimeStamp = Long.parseLong(updatedTime);
 		    if (size > 0)
-			roleCollections = roleRepository.findCustom(doctorId, new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC,
-				"updatedTime"));
-		    else
-			roleCollections = roleRepository.findCustom(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
-		} else {
-		    if (size > 0)
-			roleCollections = roleRepository.findCustom(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new PageRequest(page, size,
+			roleCollections = roleRepository.findCustom(locationId, hospitalId, new Date(createdTimeStamp), new PageRequest(page, size,
 				Direction.DESC, "updatedTime"));
 		    else
-			roleCollections = roleRepository.findCustom(doctorId, locationId, hospitalId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
+			roleCollections = roleRepository.findCustom(locationId, hospitalId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
 				"updatedTime"));
-		}
-	    }
-	    if (roleCollections != null) {
+		
+		 if (roleCollections != null) {
 		response = new ArrayList<Role>();
 		BeanUtil.map(roleCollections, response);
 	    }

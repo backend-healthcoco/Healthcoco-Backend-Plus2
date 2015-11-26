@@ -28,6 +28,7 @@
 					<value>observations</value>
 					<value>drugs</value>
 					<value>patients</value>
+					<value>labTests</value>
 				</list>
 			</constructor-arg>
 		</bean>

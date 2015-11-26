@@ -60,16 +60,4 @@ public class LoginApi {
 	return response;
     }
 
-    @Path(value = PathProxy.LoginUrls.OTP_GENERATOR)
-    @GET
-    public Response<String> otpGenerator(@PathParam("mobileNumber") String mobileNumber) {
-	if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
-	    logger.warn("Invalid Input. Mobile Number Cannot Be Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Mobile Number Cannot Be Empty");
-	}
-	String OTP = loginService.otpGenerator(mobileNumber);
-	Response<String> response = new Response<String>();
-	response.setData(OTP);
-	return response;
-    }
 }

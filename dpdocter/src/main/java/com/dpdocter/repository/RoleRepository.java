@@ -20,23 +20,20 @@ public interface RoleRepository extends MongoRepository<RoleCollection, String> 
     @Query("{'role':?0}")
     public RoleCollection findByRole(String role);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}}")
+    @Query("{'role':?0, 'locationId': ?1, 'hospitalId': ?2}")
+    public RoleCollection findByRole(String role, String locationId, String hospitalId);
+
+    @Query("{'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?0}}")
     public List<RoleCollection> findGlobal(Date date, Pageable pageRequest);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}}")
+    @Query("{'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?0}}")
     public List<RoleCollection> findGlobal(Date date, Sort sort);
 
-    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}}")
-    public List<RoleCollection> findCustom(String doctorId, Date date, Pageable pageRequest);
+    @Query("{'locationId': ?0, 'hospitalId': ?1,'updatedTime': {'$gte': ?2}}")
+    public List<RoleCollection> findCustom(String locationId, String hospitalId, Date date, Pageable pageRequest);
 
-    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}}")
-    public List<RoleCollection> findCustom(String doctorId, Date date, Sort sort);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2,'updatedTime': {'$gte': ?3}}")
-    public List<RoleCollection> findCustom(String doctorId, String locationId, String hospitalId, Date date, Pageable pageRequest);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2,'updatedTime': {'$gte': ?3}}")
-    public List<RoleCollection> findCustom(String doctorId, String locationId, String hospitalId, Date date, Sort sort);
+    @Query("{'locationId': ?0, 'hospitalId': ?1,'updatedTime': {'$gte': ?2}}")
+    public List<RoleCollection> findCustom(String locationId, String hospitalId, Date date, Sort sort);
 
     @Query("{'updatedTime': {'$gte': ?0}}")
     public List<RoleCollection> findCustomGlobal(Date date, Pageable pageRequest);
@@ -44,16 +41,10 @@ public interface RoleRepository extends MongoRepository<RoleCollection, String> 
     @Query("{'updatedTime': {'$gte': ?0}}")
     public List<RoleCollection> findCustomGlobal(Date date, Sort sort);
 
-    @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}} , {'doctorId': null, 'updatedTime': {'$gte': ?1}}]}")
-    public List<RoleCollection> findCustomGlobal(String doctorId, Date date, Pageable pageRequest);
+    @Query("{'$or': [{'locationId': ?0, 'hospitalId': ?1, 'updatedTime': {'$gte': ?2}} , {'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?2}}]}")
+    public List<RoleCollection> findCustomGlobal(String locationId, String hospitalId, Date date, Pageable pageRequest);
 
-    @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}} , {'doctorId': null, 'updatedTime': {'$gte': ?1}}]}")
-    public List<RoleCollection> findCustomGlobal(String doctorId, Date date, Sort sort);
-
-    @Query("{'$or': [{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}} , {'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?3}}]}")
-    public List<RoleCollection> findCustomGlobal(String doctorId, String locationId, String hospitalId, Date date, Pageable pageRequest);
-
-    @Query("{'$or': [{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}} , {'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?3}}]}")
-    public List<RoleCollection> findCustomGlobal(String doctorId, String locationId, String hospitalId, Date date, Sort sort);
+    @Query("{'$or': [{'locationId': ?0, 'hospitalId': ?1, 'updatedTime': {'$gte': ?2}} , {'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?2}}]}")
+    public List<RoleCollection> findCustomGlobal(String locationId, String hospitalId, Date date, Sort sort);
 
 }

@@ -21,6 +21,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.AddMultipleDataRequest;
 import com.dpdocter.response.PatientVisitResponse;
+import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientVisitService;
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -35,6 +36,9 @@ public class PatientVisitApi {
 
     @Autowired
     private PatientVisitService patientVisitService;
+    
+    @Autowired
+    private OTPService otpService;
 
     @Path(value = PathProxy.PatientVisitUrls.ADD_MULTIPLE_DATA)
     @POST
@@ -68,14 +72,13 @@ public class PatientVisitApi {
     @GET
     public Response<PatientVisitResponse> getVisit(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "patientId") String patientId, @QueryParam(value = "page") int page,
-	    @QueryParam(value = "size") int size, @DefaultValue("false") @QueryParam("isOTPVerified") Boolean isOTPVerified,
-	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+	    @QueryParam(value = "size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
 
 	if (StringUtils.isEmpty(patientId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
 	    logger.warn("Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	}
-	List<PatientVisitResponse> patienVisitResponse = patientVisitService.getVisit(doctorId, locationId, hospitalId, patientId, page, size, isOTPVerified,
+	List<PatientVisitResponse> patienVisitResponse = patientVisitService.getVisit(doctorId, locationId, hospitalId, patientId, page, size, otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId),
 		updatedTime);
 
 	Response<PatientVisitResponse> response = new Response<PatientVisitResponse>();

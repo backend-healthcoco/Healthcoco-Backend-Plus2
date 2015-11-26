@@ -47,6 +47,8 @@ public class PatientCard {
 
     private String colorCode;
 
+    private Boolean isHistoryAvailable =false;
+    
     public String getId() {
 	return id;
     }
@@ -223,13 +225,23 @@ public class PatientCard {
 	this.thumbnailUrl = thumbnailUrl;
     }
 
-    @Override
-    public String toString() {
-	return "PatientCard [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", userName=" + userName
-		+ ", emailAddress=" + emailAddress + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", bloodGroup=" + bloodGroup + ", PID="
-		+ PID + ", gender=" + gender + ", mobileNumber=" + mobileNumber + ", secPhoneNumber=" + secPhoneNumber + ", dob=" + dob + ", count=" + count
-		+ ", dateOfVisit=" + dateOfVisit + ", groups=" + groups + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-		+ hospitalId + ", doctorSepecificPatientId=" + doctorSepecificPatientId + ", colorCode=" + colorCode + "]";
-    }
+	public Boolean getIsHistoryAvailable() {
+		return isHistoryAvailable;
+	}
 
+	public void setIsHistoryAvailable(Boolean isHistoryAvailable) {
+		this.isHistoryAvailable = isHistoryAvailable;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientCard [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName="
+				+ middleName + ", userName=" + userName + ", emailAddress=" + emailAddress + ", imageUrl=" + imageUrl
+				+ ", thumbnailUrl=" + thumbnailUrl + ", bloodGroup=" + bloodGroup + ", PID=" + PID + ", gender="
+				+ gender + ", mobileNumber=" + mobileNumber + ", secPhoneNumber=" + secPhoneNumber + ", dob=" + dob
+				+ ", count=" + count + ", dateOfVisit=" + dateOfVisit + ", groups=" + groups + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorSepecificPatientId="
+				+ doctorSepecificPatientId + ", colorCode=" + colorCode + ", isHistoryAvailable=" + isHistoryAvailable
+				+ "]";
+	}
 }

@@ -39,6 +39,7 @@ import com.dpdocter.response.DiseaseAddEditResponse;
 import com.dpdocter.response.DiseaseListResponse;
 import com.dpdocter.response.HistoryDetailsResponse;
 import com.dpdocter.services.HistoryServices;
+import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientVisitService;
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -56,6 +57,9 @@ public class HistoryApi {
 
     @Autowired
     private PatientVisitService patientTrackService;
+    
+    @Autowired
+    private OTPService otpService;
 
     @Context
     private UriInfo uriInfo;
@@ -303,7 +307,7 @@ public class HistoryApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Patient Id, Doctor Id, Hospital Id, Location Id, History Filter Cannot Be Empty");
 	}
 	List<HistoryDetailsResponse> historyDetailsResponses = null;
-	if (otpVerified) {
+	if (otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId)) {
 	    historyDetailsResponses = historyServices.getPatientHistoryDetailsWithVerifiedOTP(patientId, doctorId, hospitalId, locationId, historyFilter, page,
 		    size);
 	} else {

@@ -24,7 +24,7 @@ public class DiseaseListResponse extends GenericCollection {
     }
 
     public DiseaseListResponse(String id, String disease, String description, String doctorId, String locationId, String hospitalId, Boolean discarded,
-	    Date createdTime, Date updatedTime) {
+	    Date createdTime, Date updatedTime, String createdBy) {
 	this.id = id;
 	this.disease = disease;
 	this.description = description;
@@ -34,6 +34,7 @@ public class DiseaseListResponse extends GenericCollection {
 	this.discarded = discarded;
 	super.setCreatedTime(createdTime);
 	super.setUpdatedTime(updatedTime);
+	super.setCreatedBy(createdBy);
     }
 
     public String getId() {

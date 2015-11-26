@@ -40,6 +40,7 @@ import com.dpdocter.repository.AddressRepository;
 import com.dpdocter.repository.DoctorContactsRepository;
 import com.dpdocter.repository.ExportContactsRequestRepository;
 import com.dpdocter.repository.GroupRepository;
+import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.repository.ImportContactsRequestRepository;
 import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientGroupRepository;
@@ -90,6 +91,9 @@ public class ContactsServiceImpl implements ContactsService {
 
     @Autowired
     private FileManager fileManager;
+    
+    @Autowired
+    private HistoryRepository historyRepository;
 
     /**
      * This method returns all unblocked or blocked patients (based on param
@@ -193,6 +197,10 @@ public class ContactsServiceImpl implements ContactsService {
 		patientCard.setGroups(groups);
 		patientCard.setDob(userCollection.getDob());
 		patientCard.setDoctorSepecificPatientId(patientCollection.getUserId());
+		
+		int historyCount = historyRepository.getByPatientIdAndNotEqualToDoctorLocationHospital(patientCollection.getUserId(), doctorId, locationId, hospitalId);
+		if(historyCount > 0)patientCard.setIsHistoryAvailable(true);
+		
 		patientCards.add(patientCard);
 	    }
 	}
@@ -515,7 +523,11 @@ public class ContactsServiceImpl implements ContactsService {
 		    Patient patient = new Patient();
 		    BeanUtil.map(patientCollection, patient);
 		    patient.setPatientId(patientCollection.getId());
-		    registeredPatientDetail.setPatient(patient);
+		    
+		    int historyCount = historyRepository.getByPatientIdAndNotEqualToDoctorLocationHospital(patientCollection.getUserId(), doctorId, locationId, hospitalId);
+			if(historyCount > 0)patient.setIsHistoryAvailable(true);
+		    
+			registeredPatientDetail.setPatient(patient);
 		    Address address = new Address();
 		    BeanUtil.map(addressCollection, address);
 		    registeredPatientDetail.setAddress(address);

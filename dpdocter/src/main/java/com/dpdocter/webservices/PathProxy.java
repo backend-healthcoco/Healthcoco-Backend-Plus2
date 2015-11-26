@@ -39,8 +39,6 @@ public interface PathProxy {
 
 	public static final String VERIFY_USER = "/user/verifyUser/{userId}";
 
-	public static final String OTP_GENERATOR = "/user/otpGenerator/{mobileNumber}";
-
     }
 
     public static final String CONTACTS_BASE_URL = BASE_URL + "/contacts";
@@ -601,6 +599,16 @@ public interface PathProxy {
     public static final String EMAIL_TRACK_BASE_URL = BASE_URL + "/email";
 
     public interface EmailTrackUrls {
+
+    }
+    
+    public static final String OTP_BASE_URL = BASE_URL + "/otp";
+
+    public interface OTPUrls {
+    	
+	public static final String OTP_GENERATOR = "/{doctorId}/{locationId}/{hospitalId}/{patientId}/{mobileNumber}/generate";
+	
+	public static final String VERIFY_OTP = "/{doctorId}/{locationId}/{hospitalId}/{patientId}/{otpNumber}/verify";
 
     }
 

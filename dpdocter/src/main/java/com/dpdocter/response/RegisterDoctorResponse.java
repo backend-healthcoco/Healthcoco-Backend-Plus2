@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.DOB;
+import com.dpdocter.beans.Role;
 
 public class RegisterDoctorResponse {
 
@@ -38,6 +39,11 @@ public class RegisterDoctorResponse {
     private String hospitalId;
 
     private AccessControl accessControl;
+    
+    private String registerNumber;
+    
+    private Role role;
+    
 
     public String getUserId() {
 	return userId;
@@ -167,11 +173,29 @@ public class RegisterDoctorResponse {
 	this.accessControl = accessControl;
     }
 
-    @Override
-    public String toString() {
-	return "RegisterDoctorResponse [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName
-		+ ", userName=" + userName + ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender="
-		+ gender + ", dob=" + dob + ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl + ", specialization=" + specialization + ", locationId="
-		+ locationId + ", hospitalId=" + hospitalId + ", accessControl=" + accessControl + "]";
-    }
+	public String getRegisterNumber() {
+		return registerNumber;
+	}
+
+	public void setRegisterNumber(String registerNumber) {
+		this.registerNumber = registerNumber;
+	}
+
+	public Role getRole() {
+		return role;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
+	}
+
+	@Override
+	public String toString() {
+		return "RegisterDoctorResponse [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName
+				+ ", middleName=" + middleName + ", userName=" + userName + ", password=" + password + ", emailAddress="
+				+ emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob=" + dob
+				+ ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl + ", specialization=" + specialization
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", accessControl=" + accessControl
+				+ ", registerNumber=" + registerNumber + ", role=" + role + "]";
+	}
 }

@@ -179,8 +179,10 @@ public class RegistrationApi {
 	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 
 	RegisteredPatientDetails registeredPatientDetails = registrationService.getPatientProfileByUserId(userId, doctorId, locationId, hospitalId);
-	registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));
-	registeredPatientDetails.setThumbnailUrl(getFinalImageURL(registeredPatientDetails.getThumbnailUrl()));
+	if(registeredPatientDetails != null){
+		registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));
+		registeredPatientDetails.setThumbnailUrl(getFinalImageURL(registeredPatientDetails.getThumbnailUrl()));
+	}
 	response.setData(registeredPatientDetails);
 	return response;
     }
@@ -468,7 +470,7 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.DOCTOR_REGISTER)
     @POST
-    public Response<RegisterDoctorResponse> doctorRegister(DoctorRegisterRequest request) {
+    public Response<RegisterDoctorResponse> userRegister(DoctorRegisterRequest request) {
 	if (request == null) {
 	    logger.warn("Request send  is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
@@ -476,9 +478,9 @@ public class RegistrationApi {
 
 	RegisterDoctorResponse doctorResponse = null;
 	if (request.getUserId() == null)
-	    doctorResponse = registrationService.registerNewDoctor(request);
+	    doctorResponse = registrationService.registerNewUser(request);
 	else
-	    doctorResponse = registrationService.registerExisitingDoctor(request);
+	    doctorResponse = registrationService.registerExisitingUser(request);
 
 	Response<RegisterDoctorResponse> response = new Response<RegisterDoctorResponse>();
 	response.setData(doctorResponse);
@@ -531,10 +533,10 @@ public class RegistrationApi {
     @Path(value = PathProxy.RegistrationUrls.GET_ROLE)
     @GET
     public Response<Role> getRole(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
-	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+	    @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
 
-	List<Role> professionResponse = registrationService.getRole(range, page, size, doctorId, locationId, hospitalId, updatedTime);
+	List<Role> professionResponse = registrationService.getRole(range, page, size, locationId, hospitalId, updatedTime);
 	Response<Role> response = new Response<Role>();
 	response.setDataList(professionResponse);
 	return response;

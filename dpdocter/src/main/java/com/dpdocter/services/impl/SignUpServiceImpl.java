@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.AccessControl;
+import com.dpdocter.beans.AccessModule;
+import com.dpdocter.beans.AccessPermission;
 import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.Location;
@@ -25,8 +27,10 @@ import com.dpdocter.collections.TokenCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
 import com.dpdocter.collections.UserRoleCollection;
+import com.dpdocter.enums.AccessPermissionType;
 import com.dpdocter.enums.ColorCode;
 import com.dpdocter.enums.ColorCode.RandomEnum;
+import com.dpdocter.enums.Module;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.Type;
 import com.dpdocter.enums.UserState;
@@ -244,39 +248,14 @@ public class SignUpServiceImpl implements SignUpService {
 
 	    // user.setPassword(null);
 
-	    // if (userCollection.getMobileNumber() != null) {
-	    // SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-	    // smsTrackDetail.setDoctorId(doctorCollection.getUserId());
-	    // smsTrackDetail.setHospitalId(hospitalCollection.getId());
-	    // smsTrackDetail.setLocationId(locationCollection.getId());
-	    //
-	    // SMSDetail smsDetail = new SMSDetail();
-	    // smsDetail.setPatientId(doctorCollection.getUserId());
-	    //
-	    // SMS sms = new SMS();
-	    // sms.setSmsText("OTP Verification");
-	    //
-	    // SMSAddress smsAddress = new SMSAddress();
-	    // smsAddress.setRecipient(userCollection.getMobileNumber());
-	    // sms.setSmsAddress(smsAddress);
-	    //
-	    // smsDetail.setSms(sms);
-	    // List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-	    // smsDetails.add(smsDetail);
-	    // smsTrackDetail.setSmsDetails(smsDetails);
-	    // sMSServices.sendSMS(smsTrackDetail, false);
-	    // }
+	     if (userCollection.getMobileNumber() != null) {
+//	     SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(doctorCollection.getUserId(), locationCollection.getId(), 
+//	    		 hospitalCollection.getId(), doctorCollection.getUserId(), "OTP Verification", userCollection.getMobileNumber());
+//	      sMSServices.sendSMS(smsTrackDetail, false);
+	     }
 
 	    response = new DoctorSignUp();
-
-	    if (request.getAccessModules() != null && !request.getAccessModules().isEmpty()) {
-		AccessControl accessControl = new AccessControl();
-		BeanUtil.map(request, accessControl);
-		accessControl.setType(Type.DOCTOR);
-		accessControl.setRoleOrUserId(userCollection.getId());
-		accessControl = accessControlServices.setAccessControls(accessControl);
-		response.setAccessControl(accessControl);
-	    }
+		response.setAccessControl(assignAllAccessControl(userCollection.getId(), locationCollection.getId(), locationCollection.getHospitalId()));
 
 	    User user = new User();
 	    userCollection.setPassword(null);
@@ -308,7 +287,38 @@ public class SignUpServiceImpl implements SignUpService {
 	return response;
     }
 
-    @Override
+    private AccessControl assignAllAccessControl(String doctorId, String locationId, String hospitalId) {
+    	AccessControl accessControl = new AccessControl();
+    	try{
+    		accessControl.setHospitalId(hospitalId);
+    		accessControl.setRoleOrUserId(doctorId);
+    		accessControl.setLocationId(locationId);
+    		accessControl.setType(Type.DOCTOR);
+    		List<AccessModule> accessModules = new ArrayList<AccessModule>();
+    		for (Module module : Module.values()) {
+    			  AccessModule accessModule = new AccessModule();
+    			  accessModule.setModule(module.getModule());
+    			  List<AccessPermission> accessPermissions = new ArrayList<AccessPermission>();
+    			  for(AccessPermissionType accessPermissionType : AccessPermissionType.values()){
+    				  AccessPermission accessPermission = new AccessPermission();
+    				  accessPermission.setAccessPermissionType(accessPermissionType);
+    				  accessPermission.setAccessPermissionValue(true);
+    				  accessPermissions.add(accessPermission);
+    			  }
+    			  accessModule.setAccessPermissions(accessPermissions);
+    			  accessModules.add(accessModule);
+    			}
+    		accessControl.setAccessModules(accessModules);
+    		accessControl = accessControlServices.setAccessControls(accessControl);
+    	}catch (Exception e) {
+    	    e.printStackTrace();
+    	    logger.error(e + " Error occured while assigning access control");
+    	    throw new BusinessException(ServiceError.Unknown, "Error occured while assigning access control");
+    	}
+		return accessControl;
+	}
+
+	@Override
     public DoctorSignUp doctorHandheld(DoctorSignupHandheldRequest request) {
 	DoctorSignUp response = null;
 	try {
@@ -420,39 +430,14 @@ public class SignUpServiceImpl implements SignUpService {
 
 	    // user.setPassword(null);
 
-	    // if (userCollection.getMobileNumber() != null) {
-	    // SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-	    // smsTrackDetail.setDoctorId(doctorCollection.getUserId());
-	    // smsTrackDetail.setHospitalId(hospitalCollection.getId());
-	    // smsTrackDetail.setLocationId(locationCollection.getId());
-	    //
-	    // SMSDetail smsDetail = new SMSDetail();
-	    // smsDetail.setPatientId(doctorCollection.getUserId());
-	    //
-	    // SMS sms = new SMS();
-	    // sms.setSmsText("OTP Verification");
-	    //
-	    // SMSAddress smsAddress = new SMSAddress();
-	    // smsAddress.setRecipient(userCollection.getMobileNumber());
-	    // sms.setSmsAddress(smsAddress);
-	    //
-	    // smsDetail.setSms(sms);
-	    // List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-	    // smsDetails.add(smsDetail);
-	    // smsTrackDetail.setSmsDetails(smsDetails);
-	    // sMSServices.sendSMS(smsTrackDetail, false);
-	    // }
+	     if (userCollection.getMobileNumber() != null) {
+//		     SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(doctorCollection.getUserId(), locationCollection.getId(), 
+//		    		 hospitalCollection.getId(), doctorCollection.getUserId(), "OTP Verification", userCollection.getMobileNumber());
+//		      sMSServices.sendSMS(smsTrackDetail, false);
+	     }
 
 	    response = new DoctorSignUp();
-
-	    if (request.getAccessModules() != null && !request.getAccessModules().isEmpty()) {
-		AccessControl accessControl = new AccessControl();
-		BeanUtil.map(request, accessControl);
-		accessControl.setType(Type.DOCTOR);
-		accessControl.setRoleOrUserId(userCollection.getId());
-		accessControl = accessControlServices.setAccessControls(accessControl);
-		response.setAccessControl(accessControl);
-	    }
+		response.setAccessControl(assignAllAccessControl(userCollection.getId(), locationCollection.getId(), locationCollection.getHospitalId()));
 
 	    User user = new User();
 	    userCollection.setPassword(null);

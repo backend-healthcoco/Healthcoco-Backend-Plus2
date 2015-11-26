@@ -38,6 +38,7 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.ClinicalNotesAddRequest;
 import com.dpdocter.request.ClinicalNotesEditRequest;
 import com.dpdocter.services.ClinicalNotesService;
+import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrComplaintsDocument;
@@ -69,6 +70,9 @@ public class ClinicalNotesApi {
 
     @Autowired
     private TransactionalManagementService transnationalService;
+    
+    @Autowired
+    private OTPService otpService;
 
     @Context
     private UriInfo uriInfo;
@@ -133,15 +137,13 @@ public class ClinicalNotesApi {
     public Response<ClinicalNotes> getNotes(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 	    @QueryParam(value = "patientId") String patientId, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
-	    @DefaultValue("false") @QueryParam(value = "isOTPVerified") Boolean isOTPVerified,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
-	return getAllNotes(page, size, doctorId, locationId, hospitalId, patientId, updatedTime, isOTPVerified, discarded);
+	return getAllNotes(page, size, doctorId, locationId, hospitalId, patientId, updatedTime, otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), discarded);
     }
 
     private Response<ClinicalNotes> getAllNotes(int page, int size, String doctorId, String locationId, String hospitalId, String patientId,
 	    String updatedTime, Boolean isOTPVerified, Boolean discarded) {
 	List<ClinicalNotes> clinicalNotes = null;
-
 	if (isOTPVerified) {
 	    clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithVerifiedOTP(page, size, patientId, updatedTime, discarded);
 	} else {

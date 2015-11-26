@@ -73,13 +73,13 @@ public interface RegistrationService {
 
     User getDoctorsByEmailAddress(String emailAddress);
 
-    RegisterDoctorResponse registerNewDoctor(DoctorRegisterRequest request);
+    RegisterDoctorResponse registerNewUser(DoctorRegisterRequest request);
 
-    RegisterDoctorResponse registerExisitingDoctor(DoctorRegisterRequest request);
+    RegisterDoctorResponse registerExisitingUser(DoctorRegisterRequest request);
 
     Role addRole(Role request);
 
-    List<Role> getRole(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime);
+    List<Role> getRole(String range, int page, int size, String locationId, String hospitalId, String updatedTime);
 
     void checkPatientCount(String mobileNumber);
 

@@ -765,7 +765,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		    DiseaseListResponse diseaseListResponse = new DiseaseListResponse(diseasesCollection.getId(), diseasesCollection.getDisease(),
 			    diseasesCollection.getDescription(), diseasesCollection.getDoctorId(), diseasesCollection.getLocationId(),
 			    diseasesCollection.getHospitalId(), diseasesCollection.getDiscarded(), diseasesCollection.getCreatedTime(),
-			    diseasesCollection.getUpdatedTime());
+			    diseasesCollection.getUpdatedTime(), diseasesCollection.getCreatedBy());
 		    diseaseListResponses.add(diseaseListResponse);
 
 		}
@@ -800,7 +800,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		    DiseaseListResponse diseaseListResponse = new DiseaseListResponse(diseasesCollection.getId(), diseasesCollection.getDisease(),
 			    diseasesCollection.getDescription(), diseasesCollection.getDoctorId(), diseasesCollection.getLocationId(),
 			    diseasesCollection.getHospitalId(), diseasesCollection.getDiscarded(), diseasesCollection.getCreatedTime(),
-			    diseasesCollection.getUpdatedTime());
+			    diseasesCollection.getUpdatedTime(), diseasesCollection.getCreatedBy());
 		    diseaseListResponses.add(diseaseListResponse);
 
 		}
@@ -854,7 +854,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		    DiseaseListResponse diseaseListResponse = new DiseaseListResponse(diseasesCollection.getId(), diseasesCollection.getDisease(),
 			    diseasesCollection.getDescription(), diseasesCollection.getDoctorId(), diseasesCollection.getLocationId(),
 			    diseasesCollection.getHospitalId(), diseasesCollection.getDiscarded(), diseasesCollection.getCreatedTime(),
-			    diseasesCollection.getUpdatedTime());
+			    diseasesCollection.getUpdatedTime(), diseasesCollection.getCreatedBy());
 		    diseaseListResponses.add(diseaseListResponse);
 
 		}
@@ -904,13 +904,13 @@ public class HistoryServicesImpl implements HistoryServices {
 		    }
 
 		    List<String> medicalHistoryIds = historyCollection.getMedicalhistory();
-		    if (medicalHistoryIds != null) {
+		    if (medicalHistoryIds != null && !medicalHistoryIds.isEmpty()) {
 			List<DiseaseListResponse> medicalHistory = getDiseasesByIds(medicalHistoryIds);
 			historyDetailsResponse.setMedicalhistory(medicalHistory);
 		    }
 
 		    List<String> familyHistoryIds = historyCollection.getFamilyhistory();
-		    if (familyHistoryIds != null) {
+		    if (familyHistoryIds != null && !familyHistoryIds.isEmpty()) {
 			List<DiseaseListResponse> familyHistory = getDiseasesByIds(medicalHistoryIds);
 			historyDetailsResponse.setFamilyhistory(familyHistory);
 		    }
@@ -1230,7 +1230,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	try {
 	    historyCollection = historyRepository.findHistory(doctorId, locationId, hospitalId, patientId);
 	    List<String> medicalHistoryIds = historyCollection.getMedicalhistory();
-	    if (medicalHistoryIds != null) {
+	    if (medicalHistoryIds != null && !medicalHistoryIds.isEmpty()) {
 		if (response == null)
 		    response = new HistoryDetailsResponse();
 		List<DiseaseListResponse> medicalHistory = getDiseasesByIds(medicalHistoryIds);
@@ -1238,7 +1238,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    }
 
 	    List<String> familyHistoryIds = historyCollection.getFamilyhistory();
-	    if (familyHistoryIds != null) {
+	    if (familyHistoryIds != null && !familyHistoryIds.isEmpty()) {
 		if (response == null)
 		    response = new HistoryDetailsResponse();
 		List<DiseaseListResponse> familyHistory = getDiseasesByIds(medicalHistoryIds);

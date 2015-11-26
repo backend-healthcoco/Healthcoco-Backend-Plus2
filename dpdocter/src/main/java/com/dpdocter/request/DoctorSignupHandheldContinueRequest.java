@@ -42,8 +42,7 @@ public class DoctorSignupHandheldContinueRequest {
 
     private Double longitude;
 
-    private List<AccessModule> accessModules;
-
+   
     public String getUserId() {
 	return userId;
     }
@@ -180,21 +179,14 @@ public class DoctorSignupHandheldContinueRequest {
 	this.longitude = longitude;
     }
 
-    public List<AccessModule> getAccessModules() {
-	return accessModules;
-    }
-
-    public void setAccessModules(List<AccessModule> accessModules) {
-	this.accessModules = accessModules;
-    }
-
-    @Override
-    public String toString() {
-	return "DoctorSignupHandheldContinueRequest [userId=" + userId + ", specialization=" + specialization + ", hospitalName=" + hospitalName
-		+ ", hospitalPhoneNumber=" + hospitalPhoneNumber + ", hospitalImageUrl=" + hospitalImageUrl + ", hospitalDescription=" + hospitalDescription
-		+ ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city + ", locationPhoneNumber="
-		+ locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", locationImageUrl=" + locationImageUrl
-		+ ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude=" + longitude + ", accessModules=" + accessModules + "]";
-    }
-
+	@Override
+	public String toString() {
+		return "DoctorSignupHandheldContinueRequest [userId=" + userId + ", specialization=" + specialization
+				+ ", hospitalName=" + hospitalName + ", hospitalPhoneNumber=" + hospitalPhoneNumber
+				+ ", hospitalImageUrl=" + hospitalImageUrl + ", hospitalDescription=" + hospitalDescription
+				+ ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city
+				+ ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl="
+				+ websiteUrl + ", locationImageUrl=" + locationImageUrl + ", hospitalId=" + hospitalId + ", latitude="
+				+ latitude + ", longitude=" + longitude + "]";
+	}
 }
