@@ -287,11 +287,11 @@ public class RegistrationApi {
 			clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
 		    }
 		}
-		if (clinicDetails.getLogoUrl() != null)
+	   }
+	    if (clinicDetails.getLogoUrl() != null)
 		    clinicDetails.setLogoUrl(getFinalImageURL(clinicDetails.getLogoUrl()));
 		if (clinicDetails.getLogoThumbnailUrl() != null)
 		    clinicDetails.setLogoThumbnailUrl(getFinalImageURL(clinicDetails.getLogoThumbnailUrl()));
-	    }
 	}
 	Response<Location> response = new Response<Location>();
 	response.setData(clinicDetails);
