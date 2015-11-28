@@ -56,7 +56,9 @@ import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ClinicalItems;
 import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.FONTSTYLE;
 import com.dpdocter.enums.Range;
+import com.dpdocter.enums.VitalSignsUnit;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -2076,6 +2078,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			    if (diagramsCollection != null) {
 				if (diagramsCollection.getDiagramUrl() != null) {
 				    diagram.put("url", getFinalImageURL(diagramsCollection.getDiagramUrl()));
+				    System.out.println(getFinalImageURL(diagramsCollection.getDiagramUrl()));
 				}
 				diagram.put("tags", diagramsCollection.getTags());
 				diagramIds.add(diagram);
@@ -2105,7 +2108,29 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			emailTrackCollection.setPatientId(user.getId());
 		    }
 		    parameters.put("clinicalNotesId", clinicalNotesId);
-
+		    if(clinicalNotesCollection.getVitalSigns() != null){
+		    	String pulse = clinicalNotesCollection.getVitalSigns().getPulse();
+		    	pulse = pulse != null && !pulse.isEmpty() ? "Pulse: " +pulse+VitalSignsUnit.PULSE.getUnit() +"    ":"";
+		    	
+		    	String temp = clinicalNotesCollection.getVitalSigns().getTemperature();
+		    	temp = temp != null && !temp.isEmpty() ? "Temperature: " +temp +"    ":"";
+		    	
+		    	String breathing = clinicalNotesCollection.getVitalSigns().getBreathing();
+		    	breathing = breathing != null && !breathing.isEmpty() ? "Breathing: " +breathing+VitalSignsUnit.BREATHING.getUnit() +"    ":"";
+		    	
+		    	String bloodPressure = "";
+		    	if(clinicalNotesCollection.getVitalSigns().getBloodPressure() != null){
+		    		String systolic = clinicalNotesCollection.getVitalSigns().getBloodPressure().getSystolic(); 
+		    		systolic =	systolic!= null && !systolic.isEmpty() ? systolic :"";
+		    		
+		    		String diastolic = clinicalNotesCollection.getVitalSigns().getBloodPressure().getDiastolic(); 
+		    		diastolic =	diastolic!= null && !diastolic.isEmpty() ? diastolic :"";
+		    		
+		    		bloodPressure="Blood Pressure: "+systolic+"/"+diastolic+VitalSignsUnit.BLOODPRESSURE.getUnit();
+		    	}
+		    	String vitalSigns = pulse+temp+breathing+bloodPressure;
+		    	parameters.put("vitalSigns", vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
+		    }else parameters.put("vitalSigns",null);
 		} else {
 		    logger.warn("Clinical Notes Id, doctorId, location Id, hospital Id does not match");
 		    throw new BusinessException(ServiceError.NotFound, "Clinical Notes Id, doctorId, location Id, hospital Id does not match");
@@ -2128,41 +2153,65 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		String patientName = "", dob = "", gender = "", mobileNumber = "";
 		if (printSettings != null) {
 		    if (printSettings.getHeaderSetup() != null) {
-			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText())
-			    headerLeftText = headerLeftText + "<br/>" + str.getText();
-			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText())
-			    headerRightText = headerRightText + "<br/>" + str.getText();
-			if (printSettings.getHeaderSetup().getPatientDetails() != null && user != null) {
-			    patientName = printSettings.getHeaderSetup().getPatientDetails().getShowName() ? "Patient Name: " + user.getFirstName() + "<br>"
-				    : "";
-			    dob = printSettings.getHeaderSetup().getPatientDetails().getShowDOB() ? "Patient Age: "
-				    + (user.getDob() != null ? (user.getDob().getAge()) + "<br>" : "") : "";
-			    gender = printSettings.getHeaderSetup().getPatientDetails().getShowGender() ? "Patient Gender: " + user.getGender() + "<br>" : "";
-			    mobileNumber = printSettings.getHeaderSetup().getPatientDetails().getShowGender() ? "Mobile Number: " + user.getMobileNumber()
-				    + "<br>" : "";
+			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()){
+				boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
+				boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
+				String text= str.getText();
+				if(isBold && isItalic)text = "<b><i>"+text+"</i></b>";
+				else if(isBold)text = "<b>"+text+"</b>";
+				else if(isItalic)text = "<i>"+text+"</i>";
+				
+				if(headerLeftText.isEmpty())headerLeftText = "<span style='font-size:"+str.getFontSize()+";'>" + text+"</span>";
+				else headerLeftText = headerLeftText + "<br/>"+ "<span style='font-size:"+str.getFontSize()+"'>"+text+"</span>";
 			}
+			    
+			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText()){
+				boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
+				boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
+				String text= str.getText();
+				if(isBold && isItalic)text = "<b><i>"+text+"</i></b>";
+				else if(isBold)text = "<b>"+text+"</b>";
+				else if(isItalic)text = "<i>"+text+"</i>";
+				
+				if(headerRightText.isEmpty())headerRightText = "<span style='font-size:"+str.getFontSize()+"'>" + text+"</span>";
+				else headerRightText = headerRightText + "<br/>"+ "<span style='font-size:"+str.getFontSize()+"'>"+text+"</span>";				
+			}
+				
 		    }
 		    if (printSettings.getFooterSetup() != null) {
 			if (printSettings.getFooterSetup().getCustomFooter())
-			    for (PrintSettingsText str : printSettings.getFooterSetup().getBottomText())
-				footerBottomText = footerBottomText + "<br/>" + str.getText();
-			if (printSettings.getFooterSetup().getShowSignature()) {
+			    for (PrintSettingsText str : printSettings.getFooterSetup().getBottomText()){
+			    	boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
+					boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
+					String text= str.getText();
+					if(isBold && isItalic)text = "<b><i>"+text+"</i></b>";
+					else if(isBold)text = "<b>"+text+"</b>";
+					else if(isItalic)text = "<i>"+text+"</i>";
+					
+			    	if(footerBottomText.isEmpty())footerBottomText = "<span style='font-size:"+str.getFontSize()+"'>" + text+"</span>";
+					else footerBottomText = footerBottomText + ""+ "<span style='font-size:"+str.getFontSize()+"'>"+text+"</span>";
+			    }
 			    UserCollection doctorUser = userRepository.findOne(doctorId);
 			    if (doctorUser != null)
-				parameters.put("footerSignature", "Dr." + doctorUser.getFirstName());
+				parameters.put("footerSignature", doctorUser.getTitle()+ " " + doctorUser.getFirstName());
 			}
-		    }
 		}
-		parameters.put("patientLeftText", patientName + (patient != null ? "Patient Id: " + patient.getPID() + "<br>" : "") + dob + gender);
-		parameters.put("patientRightText", mobileNumber + (patientAdmission != null ? "Reffered By:" + patientAdmission.getReferredBy() + "<br>" : "")
-			+ "Date:" + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
+		    patientName =  "Patient Name: " +(user!=null ? user.getFirstName()  : "--")+ "<br>";
+		    dob =  "Patient Age: " + ((user!=null && user.getDob() != null) ? (user.getDob().getAge()+" yrs"): "--") + "<br>";
+		    gender =  "Patient Gender: " + (user!=null ? user.getGender(): "--")+ "<br>";
+		    mobileNumber = "Mobile Number: " + (user!=null ? user.getMobileNumber() : "--")+ "<br>";
+		
+
+		parameters.put("patientLeftText", patientName + "Patient Id: "+(patient != null ?  patient.getPID() : "--") + "<br>" + dob + gender);
+		parameters.put("patientRightText", mobileNumber + "Reffered By: " + (patientAdmission != null && patientAdmission.getReferredBy() != null && patientAdmission.getReferredBy() != ""? patientAdmission.getReferredBy()  : "--")+ "<br>" + "Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
 		parameters.put("headerLeftText", headerLeftText);
 		parameters.put("headerRightText", headerRightText);
 		parameters.put("footerBottomText", footerBottomText);
 
 		LocationCollection location = locationRepository.findOne(locationId);
 		if (location != null)
-		    parameters.put("logoURL", getFinalImageURL(location.getLogoUrl()));
+		    parameters.put("logoURL", "http://ec2-52-91-243-85.compute-1.amazonaws.com:8082/resource-data/clinic/logos/robert-downey-jr-1a1448532914786.jpg");
+		    		//getFinalImageURL(location.getLogoUrl()));
 
 		String layout = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 			: "PORTRAIT";
@@ -2194,10 +2243,20 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     private String getFinalImageURL(String imageURL) {
-	if (imageURL != null && uriInfo != null) {
-	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-	    return finalImageURL + imageURL;
-	} else
-	    return null;
+    	return "http://ec2-52-91-243-85.compute-1.amazonaws.com:8082/resource-data/" + imageURL;
+//	if (imageURL != null && uriInfo != null) {
+//	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+//	    return "http://ec2-52-91-243-85.compute-1.amazonaws.com:8082/resource-data/" + imageURL;
+//	} else
+//	    return null;
+    }
+    
+    public boolean containsIgnoreCase(String str, List<String> list){
+    	if(list != null && !list.isEmpty())
+        for(String i : list){
+            if(i.equalsIgnoreCase(str))
+                return true;
+        }
+        return false;
     }
 }

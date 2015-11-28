@@ -18,6 +18,8 @@ public class ClinicalNotesJasperDetails {
 
     private List<DBObject> diagrams;
 
+    private String vitalSigns;
+    
     public String getComplaints() {
 	return complaints;
     }
@@ -66,9 +68,18 @@ public class ClinicalNotesJasperDetails {
 	this.notes = notes;
     }
 
-    @Override
-    public String toString() {
-	return "ClinicalNotesJasperDetails [complaints=" + complaints + ", observations=" + observations + ", investigations=" + investigations
-		+ ", diagnosis=" + diagnosis + ", notes=" + notes + ", diagrams=" + diagrams + "]";
-    }
+	public String getVitalSigns() {
+		return vitalSigns;
+	}
+
+	public void setVitalSigns(String vitalSigns) {
+		this.vitalSigns = vitalSigns;
+	}
+
+	@Override
+	public String toString() {
+		return "ClinicalNotesJasperDetails [complaints=" + complaints + ", observations=" + observations
+				+ ", investigations=" + investigations + ", diagnosis=" + diagnosis + ", notes=" + notes + ", diagrams="
+				+ diagrams + ", vitalSigns=" + vitalSigns + "]";
+	}
 }

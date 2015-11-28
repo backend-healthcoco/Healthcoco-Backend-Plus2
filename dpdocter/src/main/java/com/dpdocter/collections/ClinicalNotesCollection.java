@@ -6,6 +6,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.VitalSigns;
+
 @Document(collection = "clinical_notes_cl")
 public class ClinicalNotesCollection extends GenericCollection {
 
@@ -51,6 +53,9 @@ public class ClinicalNotesCollection extends GenericCollection {
     @Field
     private boolean inHistory = false;
 
+    @Field
+    private VitalSigns vitalSigns;
+    
     public String getId() {
 	return id;
     }
@@ -163,12 +168,20 @@ public class ClinicalNotesCollection extends GenericCollection {
 	this.inHistory = inHistory;
     }
 
-    @Override
-    public String toString() {
-	return "ClinicalNotesCollection [id=" + id + ", notes=" + notes + ", observations=" + observations + ", investigations=" + investigations
-		+ ", diagnoses=" + diagnoses + ", complaints=" + complaints + ", diagrams=" + diagrams + ", diagramsPaths=" + diagramsPaths + ", comments="
-		+ comments + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
-		+ ", inHistory=" + inHistory + "]";
-    }
+	public VitalSigns getVitalSigns() {
+		return vitalSigns;
+	}
 
+	public void setVitalSigns(VitalSigns vitalSigns) {
+		this.vitalSigns = vitalSigns;
+	}
+
+	@Override
+	public String toString() {
+		return "ClinicalNotesCollection [id=" + id + ", notes=" + notes + ", observations=" + observations
+				+ ", investigations=" + investigations + ", diagnoses=" + diagnoses + ", complaints=" + complaints
+				+ ", diagrams=" + diagrams + ", diagramsPaths=" + diagramsPaths + ", comments=" + comments
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", discarded=" + discarded + ", inHistory=" + inHistory + ", vitalSigns=" + vitalSigns + "]";
+	}
 }

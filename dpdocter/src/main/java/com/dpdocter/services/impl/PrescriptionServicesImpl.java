@@ -2374,7 +2374,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				}
 				parameters.put("labTest", labTest);
 			}else{
-				parameters.put("labTest", "----");
+				parameters.put("labTest", null);
 			}
 			
 		    } else {
@@ -2444,7 +2444,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 		}
 		    patientName =  "Patient Name: " +(user!=null ? user.getFirstName()  : "--")+ "<br>";
-		    dob =  "Patient Age: " + ((user!=null && user.getDob() != null) ? (user.getDob().getAge()): "--") + "<br>";
+		    dob =  "Patient Age: " + ((user!=null && user.getDob() != null) ? (user.getDob().getAge()+" yrs"): "--") + "<br>";
 		    gender =  "Patient Gender: " + (user!=null ? user.getGender(): "--")+ "<br>";
 		    mobileNumber = "Mobile Number: " + (user!=null ? user.getMobileNumber() : "--")+ "<br>";
 		

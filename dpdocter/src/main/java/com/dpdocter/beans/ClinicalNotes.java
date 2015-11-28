@@ -16,8 +16,6 @@ public class ClinicalNotes extends GenericCollection {
 
     private List<Diagnoses> diagnoses;
 
-    private Long createdDate;
-
     private List<Diagram> diagrams;
 
     private List<Notes> notes;
@@ -37,6 +35,8 @@ public class ClinicalNotes extends GenericCollection {
     private String visitId;
 
     private String patientId;
+    
+    private VitalSigns vitalSigns;
 
     public String getId() {
 	return id;
@@ -76,14 +76,6 @@ public class ClinicalNotes extends GenericCollection {
 
     public void setDiagnoses(List<Diagnoses> diagnoses) {
 	this.diagnoses = diagnoses;
-    }
-
-    public Long getCreatedDate() {
-	return createdDate;
-    }
-
-    public void setCreatedDate(Long createdDate) {
-	this.createdDate = createdDate;
     }
 
     public List<Diagram> getDiagrams() {
@@ -166,12 +158,20 @@ public class ClinicalNotes extends GenericCollection {
 	this.patientId = patientId;
     }
 
-    @Override
-    public String toString() {
-	return "ClinicalNotes [id=" + id + ", complaints=" + complaints + ", observations=" + observations + ", investigations=" + investigations
-		+ ", diagnoses=" + diagnoses + ", createdDate=" + createdDate + ", diagrams=" + diagrams + ", notes=" + notes + ", doctorId=" + doctorId
-		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorName=" + doctorName + ", inHistory=" + inHistory + ", discarded="
-		+ discarded + ", visitId=" + visitId + ", patientId=" + patientId + "]";
-    }
+	public VitalSigns getVitalSigns() {
+		return vitalSigns;
+	}
 
+	public void setVitalSigns(VitalSigns vitalSigns) {
+		this.vitalSigns = vitalSigns;
+	}
+
+	@Override
+	public String toString() {
+		return "ClinicalNotes [id=" + id + ", complaints=" + complaints + ", observations=" + observations
+				+ ", investigations=" + investigations + ", diagnoses=" + diagnoses + ", diagrams=" + diagrams
+				+ ", notes=" + notes + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", doctorName=" + doctorName + ", inHistory=" + inHistory + ", discarded=" + discarded
+				+ ", visitId=" + visitId + ", patientId=" + patientId + ", vitalSigns=" + vitalSigns + "]";
+	}
 }

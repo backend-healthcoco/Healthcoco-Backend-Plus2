@@ -67,6 +67,8 @@ import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.services.DoctorProfileService;
 import com.dpdocter.services.FileManager;
 
+import common.util.web.DPDoctorUtils;
+
 @Service
 public class DoctorProfileServiceImpl implements DoctorProfileService {
 

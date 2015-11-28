@@ -292,6 +292,15 @@ public class DoctorProfileApi {
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_APPOINTMENT_NUMBERS)
     @POST
     public Response<Boolean> addEditAppointmentNumbers(DoctorAppointmentNumbersAddEditRequest request) {
+    if (request == null) {
+    	    logger.warn("Doctor Contact Request Is Empty");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Contact Request Is Empty");
+    	}
+    else if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId())) {
+	    logger.warn("Doctor Id, LocationId Is Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, LocationId Is Empty");
+	}
+
 	Boolean addEditAppointmentNumbersResponse = doctorProfileService.addEditAppointmentNumbers(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditAppointmentNumbersResponse);
@@ -301,6 +310,15 @@ public class DoctorProfileApi {
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_VISITING_TIME)
     @POST
     public Response<Boolean> addEditVisitingTime(DoctorVisitingTimeAddEditRequest request) {
+    	if (request == null) {
+    	    logger.warn("Doctor Contact Request Is Empty");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Contact Request Is Empty");
+    	}
+    else if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId())) {
+	    logger.warn("Doctor Id, LocationId Is Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, LocationId Is Empty");
+	}
+
 	Boolean addEditVisitingTimeResponse = doctorProfileService.addEditVisitingTime(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditVisitingTimeResponse);
@@ -310,6 +328,15 @@ public class DoctorProfileApi {
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_CONSULTATION_FEE)
     @POST
     public Response<Boolean> addEditConsultationFee(DoctorConsultationFeeAddEditRequest request) {
+    	if (request == null) {
+    	    logger.warn("Doctor Contact Request Is Empty");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Contact Request Is Empty");
+    	}
+    else if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId())) {
+	    logger.warn("Doctor Id, LocationId Is Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, LocationId Is Empty");
+	}
+
 	Boolean addEditConsultationFeeResponse = doctorProfileService.addEditConsultationFee(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditConsultationFeeResponse);
@@ -319,6 +346,15 @@ public class DoctorProfileApi {
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_APPOINTMENT_SLOT)
     @POST
     public Response<Boolean> addEditAppointmentSlot(DoctorAppointmentSlotAddEditRequest request) {
+  	if (request == null) {
+    	    logger.warn("Doctor Contact Request Is Empty");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Contact Request Is Empty");
+    	}
+    else if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId())) {
+	    logger.warn("Doctor Id, LocationId Is Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, LocationId Is Empty");
+	}
+	
 	Boolean addEditAppointmentSlotResponse = doctorProfileService.addEditAppointmentSlot(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditAppointmentSlotResponse);
@@ -328,10 +364,15 @@ public class DoctorProfileApi {
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_GENERAL_INFO)
     @POST
     public Response<Boolean> addEditGeneralInfo(DoctorGeneralInfo request) {
-	if (request == null) {
-	    logger.warn("Request Cannot Be Empty!");
-	    throw new BusinessException(ServiceError.InvalidInput, "Request Cannot Be Empty!");
+    if (request == null) {
+    	    logger.warn("Doctor Contact Request Is Empty");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Contact Request Is Empty");
+    	}
+    else if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId())) {
+	    logger.warn("Doctor Id, LocationId Is Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, LocationId Is Empty");
 	}
+
 	Boolean addEditGeneralInfoResponse = doctorProfileService.addEditGeneralInfo(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditGeneralInfoResponse);

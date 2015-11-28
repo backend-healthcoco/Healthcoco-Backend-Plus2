@@ -459,6 +459,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	    }
 	    UserCollection userCollection = userRepository.findOne(request.getUserId());
+	    if(userCollection == null){
+	    	logger.error("Incorrect User Id");
+		    throw new BusinessException(ServiceError.Unknown, "Incorrect User Id");
+	    }
 	    registeredPatientDetails = new RegisteredPatientDetails();
 	    BeanUtil.map(userCollection, registeredPatientDetails);
 	    if (request.getImage() != null) {
