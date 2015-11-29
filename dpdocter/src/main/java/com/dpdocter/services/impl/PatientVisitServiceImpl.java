@@ -184,9 +184,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    else
 		patientTrackCollection.setId(null);
 
-	    if (patientTrackCollection.getCreatedTime() == null) {
+	    if (patientTrackCollection.getId() == null) {
 		patientTrackCollection.setCreatedTime(new Date());
+		UserCollection userCollection = userRepository.findOne(patientTrackCollection.getDoctorId());
+	    if (userCollection != null) {
+	    	patientTrackCollection.setCreatedBy(userCollection.getFirstName());
 	    }
+		}
 
 	    if (patientTrackCollection.getVisitedFor() != null) {
 		patientTrackCollection.getVisitedFor().add(visitedFor);
@@ -400,6 +404,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    response.setRecords(list);
 		}
 	    }
+	    
+	    PatientVisitCollection patientVisitCollection = patientVisitRepository.findOne(request.getVisitId());
+	    if(patientVisitCollection != null){
+	    	response.setId(patientVisitCollection.getId());
+	    	response.setVisitedFor(patientVisitCollection.getVisitedFor());
+	    	response.setVisitedTime(patientVisitCollection.getVisitedTime());
+	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error while adding patient Visit : " + e.getCause().getMessage());
@@ -455,7 +466,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			List<ClinicalNotes> clinicalNotes = new ArrayList<ClinicalNotes>();
 			for (String clinicalNotesId : patientVisitCollection.getClinicalNotesId()) {
 			    ClinicalNotes clinicalNote = clinicalNotesService.getNotesById(clinicalNotesId);
-			    if (clinicalNotes != null)
+			    if (clinicalNote != null)
 				clinicalNotes.add(clinicalNote);
 			}
 			patientVisitResponse.setClinicalNotes(clinicalNotes);
@@ -477,12 +488,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     }
 
     private String getFinalImageURL(String imageURL) {
-    	return "http://ec2-52-91-243-85.compute-1.amazonaws.com:8082/resource-data/" + imageURL;
-//	if (imageURL != null && uriInfo != null) {
-//	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-//	    return finalImageURL + imageURL;
-//	} else
-//	    return null;
+   if (imageURL != null && uriInfo != null) {
+	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+	    return finalImageURL + imageURL;
+	} else
+	    return null;
     }
 
     @Override
@@ -557,7 +567,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				}
 			}
 			    patientName =  "Patient Name: " +(user!=null ? user.getFirstName()  : "--")+ "<br>";
-			    dob =  "Patient Age: " + ((user!=null && user.getDob() != null) ? (user.getDob().getAge()+" yrs"): "--") + "<br>";
+			    dob =  "Patient Age: " + ((user!=null && user.getDob() != null) ? (user.getDob().getAge()+" years"): "--") + "<br>";
 			    gender =  "Patient Gender: " + (user!=null ? user.getGender(): "--")+ "<br>";
 			    mobileNumber = "Mobile Number: " + (user!=null ? user.getMobileNumber() : "--")+ "<br>";
 			
@@ -747,7 +757,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			    diagramIds.add(diagram);
 			}
 		    }
-		    clinicalNotesJasperDetails.setDiagrams(diagramIds);
+		    if(!diagramIds.isEmpty())clinicalNotesJasperDetails.setDiagrams(diagramIds);
+		    else clinicalNotesJasperDetails.setDiagrams(null);
 		}
 	    } else {
 		logger.warn("Clinical Notes not found. Please check clinicalNotesId.");

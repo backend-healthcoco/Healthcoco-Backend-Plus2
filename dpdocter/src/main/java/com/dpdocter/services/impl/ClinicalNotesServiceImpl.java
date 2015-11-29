@@ -2084,8 +2084,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				diagramIds.add(diagram);
 			    }
 			}
-
-			parameters.put("diagramIds", diagramIds);
+			if(!diagramIds.isEmpty())parameters.put("diagramIds", diagramIds);
+		    else parameters.put("diagramIds", null);
 		    }
 		    List<PatientClinicalNotesCollection> patientClinicalNotesCollection = patientClinicalNotesRepository.findByClinicalNotesId(clinicalNotesId);
 		    if (patientClinicalNotesCollection != null && !patientClinicalNotesCollection.isEmpty()) {
@@ -2197,7 +2197,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 		}
 		    patientName =  "Patient Name: " +(user!=null ? user.getFirstName()  : "--")+ "<br>";
-		    dob =  "Patient Age: " + ((user!=null && user.getDob() != null) ? (user.getDob().getAge()+" yrs"): "--") + "<br>";
+		    dob =  "Patient Age: " + ((user!=null && user.getDob() != null) ? (user.getDob().getAge()+" years"): "--") + "<br>";
 		    gender =  "Patient Gender: " + (user!=null ? user.getGender(): "--")+ "<br>";
 		    mobileNumber = "Mobile Number: " + (user!=null ? user.getMobileNumber() : "--")+ "<br>";
 		
@@ -2243,12 +2243,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     private String getFinalImageURL(String imageURL) {
-    	return "http://ec2-52-91-243-85.compute-1.amazonaws.com:8082/resource-data/" + imageURL;
-//	if (imageURL != null && uriInfo != null) {
-//	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-//	    return "http://ec2-52-91-243-85.compute-1.amazonaws.com:8082/resource-data/" + imageURL;
-//	} else
-//	    return null;
+	if (imageURL != null && uriInfo != null) {
+	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+	    return finalImageURL + imageURL;
+	} else
+	    return null;
     }
     
     public boolean containsIgnoreCase(String str, List<String> list){

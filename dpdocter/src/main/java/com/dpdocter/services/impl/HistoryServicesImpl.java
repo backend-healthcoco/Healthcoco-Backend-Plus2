@@ -877,17 +877,28 @@ public class HistoryServicesImpl implements HistoryServices {
 	    }
 
 	    AggregationOperation matchForFilter = null;
+	    Aggregation aggregation = null;
 	    if (!historyFilter.contains(HistoryFilter.ALL.getFilter()))
-		matchForFilter = Aggregation.match(Criteria.where("generalRecords.dataType").in(historyFilter));
+		{
+	    	matchForFilter = Aggregation.match(Criteria.where("generalRecords.dataType").in(historyFilter));
+	    	aggregation = Aggregation.newAggregation(
+	    		    Aggregation.match(Criteria
+	    			    .where("patientId")
+	    			    .is(patientId)
+	    			    .andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
+	    				    Criteria.where("hospitalId").is(hospitalId))), Aggregation.unwind("generalRecords"), matchForFilter,
+	    		    Aggregation.skip((page - 1) * size), Aggregation.limit(size));
 
-	    Aggregation aggregation = Aggregation.newAggregation(
-		    Aggregation.match(Criteria
-			    .where("patientId")
-			    .is(patientId)
-			    .andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
-				    Criteria.where("hospitalId").is(hospitalId))), Aggregation.unwind("generalRecords"), matchForFilter,
-		    Aggregation.skip((page - 1) * size), Aggregation.limit(size));
+		}else{
+			aggregation = Aggregation.newAggregation(
+				    Aggregation.match(Criteria
+					    .where("patientId")
+					    .is(patientId)
+					    .andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
+						    Criteria.where("hospitalId").is(hospitalId))), Aggregation.unwind("generalRecords"),
+				    Aggregation.skip((page - 1) * size), Aggregation.limit(size));
 
+		}
 	    AggregationResults<History> groupResults = mongoTemplate.aggregate(aggregation, HistoryCollection.class, History.class);
 	    List<History> general = groupResults.getMappedResults();
 	    if (general != null) {
@@ -995,11 +1006,17 @@ public class HistoryServicesImpl implements HistoryServices {
 	    }
 
 	    AggregationOperation matchForFilter = null;
+	    Aggregation aggregation = null;
 	    if (!historyFilter.contains(HistoryFilter.ALL.getFilter()))
-		matchForFilter = Aggregation.match(Criteria.where("generalRecords.dataType").in(historyFilter));
+		{
+	    	matchForFilter = Aggregation.match(Criteria.where("generalRecords.dataType").in(historyFilter));
+	    	aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("patientId").is(patientId)),
+	    		    Aggregation.unwind("generalRecords"), matchForFilter, Aggregation.skip((page - 1) * size), Aggregation.limit(size));
+		}else{
+			aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("patientId").is(patientId)),
+				    Aggregation.unwind("generalRecords"), Aggregation.skip((page - 1) * size), Aggregation.limit(size));
+		}
 
-	    Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("patientId").is(patientId)),
-		    Aggregation.unwind("generalRecords"), matchForFilter, Aggregation.skip((page - 1) * size), Aggregation.limit(size));
 
 	    AggregationResults<History> groupResults = mongoTemplate.aggregate(aggregation, HistoryCollection.class, History.class);
 	    List<History> general = groupResults.getMappedResults();
