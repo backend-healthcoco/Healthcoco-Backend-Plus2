@@ -81,7 +81,12 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 	try {
 	    List<SolrSpecialityDocument> solrSpecialityDocuments = solrSpecialityRepository.findAll(keyword);
 	    List<SolrDoctorDocument> solrDoctorDocuments = solrDoctorRepository.findAll(city, keyword);
-	    List<SolrLocationDocument> solrLocationDocuments = solrLocationRepository.findAll(location, city);
+	    List<SolrLocationDocument> solrLocationDocuments;
+	    if (!DPDoctorUtils.anyStringEmpty(location)) {
+		solrLocationDocuments = solrLocationRepository.findAll(location, city);
+	    } else {
+		solrLocationDocuments = solrLocationRepository.findAll(city);
+	    }
 
 	    response = new ArrayList<AppointmentSearchResponse>();
 	    for (SolrSpecialityDocument speciality : solrSpecialityDocuments) {
@@ -117,14 +122,14 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
     public List<SolrDoctorDocument> getDoctors(String city, String location, String keyword) {
 	List<SolrDoctorDocument> response = null;
 	try {
-	    Criteria doctorSearchCriteria = Criteria.where("locations").contains(city);
+	    Criteria doctorSearchCriteria = Criteria.where("city").contains(city);
 
 	    if (!DPDoctorUtils.anyStringEmpty(location)) {
-		doctorSearchCriteria = doctorSearchCriteria.and("locations").contains(location);
+		doctorSearchCriteria = doctorSearchCriteria.and("locationName").contains(location);
 	    }
 
 	    if (!DPDoctorUtils.anyStringEmpty(keyword)) {
-		doctorSearchCriteria = doctorSearchCriteria.and("firstName").contains(keyword).or("middleName").contains(keyword).or("lastName")
+		doctorSearchCriteria = doctorSearchCriteria.or("firstName").contains(keyword).or("middleName").contains(keyword).or("lastName")
 			.contains(keyword).or("emailAddress").contains(keyword).or("specialization").contains(keyword);
 	    }
 

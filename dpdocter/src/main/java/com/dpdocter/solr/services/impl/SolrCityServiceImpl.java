@@ -102,6 +102,7 @@ public class SolrCityServiceImpl implements SolrCityService {
 	return response;
 
     }
+    
 
     @Override
     public List<SolrLocalityLandmarkDocument> searchLandmarkLocality(String cityId, String type, String searchTerm) {
