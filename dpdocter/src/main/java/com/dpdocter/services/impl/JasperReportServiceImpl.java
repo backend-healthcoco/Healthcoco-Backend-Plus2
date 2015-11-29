@@ -64,7 +64,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 	    JasperDesign design = JRXmlLoader.load(new File(REPORT_NAME + fileName + ".jrxml"));
 
-//	    design.setDefaultStyle(style);
+	    // design.setDefaultStyle(style);
 
 	    if (layout.equals("LANDSCAPE")) {
 		if (pageSize.equalsIgnoreCase("LETTER")) {

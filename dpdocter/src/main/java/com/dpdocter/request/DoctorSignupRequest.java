@@ -2,7 +2,6 @@ package com.dpdocter.request;
 
 import java.util.List;
 
-import com.dpdocter.beans.AccessModule;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.FileDetails;
 
@@ -295,17 +294,14 @@ public class DoctorSignupRequest {
 	this.imageUrl = imageUrl;
     }
 
-	@Override
-	public String toString() {
-		return "DoctorSignupRequest [firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName
-				+ ", userName=" + userName + ", password=" + password + ", emailAddress=" + emailAddress
-				+ ", mobileNumber=" + mobileNumber + ", image=" + image + ", gender=" + gender + ", dob=" + dob
-				+ ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl + ", specialization=" + specialization
-				+ ", hospitalName=" + hospitalName + ", hospitalPhoneNumber=" + hospitalPhoneNumber
-				+ ", hospitalImageUrl=" + hospitalImageUrl + ", hospitalDescription=" + hospitalDescription
-				+ ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city
-				+ ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl="
-				+ websiteUrl + ", locationImageUrl=" + locationImageUrl + ", hospitalId=" + hospitalId + ", latitude="
-				+ latitude + ", longitude=" + longitude + "]";
-	}
+    @Override
+    public String toString() {
+	return "DoctorSignupRequest [firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", userName=" + userName
+		+ ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", image=" + image + ", gender=" + gender
+		+ ", dob=" + dob + ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl + ", specialization=" + specialization + ", hospitalName="
+		+ hospitalName + ", hospitalPhoneNumber=" + hospitalPhoneNumber + ", hospitalImageUrl=" + hospitalImageUrl + ", hospitalDescription="
+		+ hospitalDescription + ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city
+		+ ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", locationImageUrl="
+		+ locationImageUrl + ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude=" + longitude + "]";
+    }
 }

@@ -179,9 +179,9 @@ public class RegistrationApi {
 	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 
 	RegisteredPatientDetails registeredPatientDetails = registrationService.getPatientProfileByUserId(userId, doctorId, locationId, hospitalId);
-	if(registeredPatientDetails != null){
-		registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));
-		registeredPatientDetails.setThumbnailUrl(getFinalImageURL(registeredPatientDetails.getThumbnailUrl()));
+	if (registeredPatientDetails != null) {
+	    registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));
+	    registeredPatientDetails.setThumbnailUrl(getFinalImageURL(registeredPatientDetails.getThumbnailUrl()));
 	}
 	response.setData(registeredPatientDetails);
 	return response;
@@ -287,11 +287,11 @@ public class RegistrationApi {
 			clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
 		    }
 		}
-	   }
+	    }
 	    if (clinicDetails.getLogoUrl() != null)
-		    clinicDetails.setLogoUrl(getFinalImageURL(clinicDetails.getLogoUrl()));
-		if (clinicDetails.getLogoThumbnailUrl() != null)
-		    clinicDetails.setLogoThumbnailUrl(getFinalImageURL(clinicDetails.getLogoThumbnailUrl()));
+		clinicDetails.setLogoUrl(getFinalImageURL(clinicDetails.getLogoUrl()));
+	    if (clinicDetails.getLogoThumbnailUrl() != null)
+		clinicDetails.setLogoThumbnailUrl(getFinalImageURL(clinicDetails.getLogoThumbnailUrl()));
 	}
 	Response<Location> response = new Response<Location>();
 	response.setData(clinicDetails);
@@ -533,8 +533,8 @@ public class RegistrationApi {
     @Path(value = PathProxy.RegistrationUrls.GET_ROLE)
     @GET
     public Response<Role> getRole(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
-	    @QueryParam(value = "locationId") String locationId,
-	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
 
 	List<Role> professionResponse = registrationService.getRole(range, page, size, locationId, hospitalId, updatedTime);
 	Response<Role> response = new Response<Role>();

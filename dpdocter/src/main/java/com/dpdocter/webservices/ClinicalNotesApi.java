@@ -70,7 +70,7 @@ public class ClinicalNotesApi {
 
     @Autowired
     private TransactionalManagementService transnationalService;
-    
+
     @Autowired
     private OTPService otpService;
 
@@ -138,7 +138,8 @@ public class ClinicalNotesApi {
 	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 	    @QueryParam(value = "patientId") String patientId, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
-	return getAllNotes(page, size, doctorId, locationId, hospitalId, patientId, updatedTime, otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), discarded);
+	return getAllNotes(page, size, doctorId, locationId, hospitalId, patientId, updatedTime,
+		otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), discarded);
     }
 
     private Response<ClinicalNotes> getAllNotes(int page, int size, String doctorId, String locationId, String hospitalId, String patientId,

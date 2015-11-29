@@ -35,7 +35,7 @@ public class ClinicalNotesAddRequest {
     private String createdBy;
 
     private String visitId;
-    
+
     private VitalSigns vitalSigns;
 
     public String getId() {
@@ -142,20 +142,19 @@ public class ClinicalNotesAddRequest {
 	this.visitId = visitId;
     }
 
-	public VitalSigns getVitalSigns() {
-		return vitalSigns;
-	}
+    public VitalSigns getVitalSigns() {
+	return vitalSigns;
+    }
 
-	public void setVitalSigns(VitalSigns vitalSigns) {
-		this.vitalSigns = vitalSigns;
-	}
+    public void setVitalSigns(VitalSigns vitalSigns) {
+	this.vitalSigns = vitalSigns;
+    }
 
-	@Override
-	public String toString() {
-		return "ClinicalNotesAddRequest [id=" + id + ", patientId=" + patientId + ", complaints=" + complaints
-				+ ", observations=" + observations + ", investigations=" + investigations + ", diagnoses=" + diagnoses
-				+ ", notes=" + notes + ", diagrams=" + diagrams + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", createdBy=" + createdBy + ", visitId=" + visitId
-				+ ", vitalSigns=" + vitalSigns + "]";
-	}
+    @Override
+    public String toString() {
+	return "ClinicalNotesAddRequest [id=" + id + ", patientId=" + patientId + ", complaints=" + complaints + ", observations=" + observations
+		+ ", investigations=" + investigations + ", diagnoses=" + diagnoses + ", notes=" + notes + ", diagrams=" + diagrams + ", doctorId=" + doctorId
+		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", createdBy=" + createdBy + ", visitId=" + visitId + ", vitalSigns="
+		+ vitalSigns + "]";
+    }
 }

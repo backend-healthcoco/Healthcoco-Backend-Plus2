@@ -30,10 +30,8 @@ import com.dpdocter.enums.UserState;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
-import com.dpdocter.repository.DoctorOTPRepository;
 import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocationRepository;
-import com.dpdocter.repository.OTPRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
@@ -41,8 +39,6 @@ import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.request.LoginRequest;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.LoginService;
-import com.dpdocter.sms.services.SMSServices;
-
 import common.util.web.DPDoctorUtils;
 
 /**
@@ -74,7 +70,6 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     private AccessControlServices accessControlServices;
 
-    
     /**
      * This method is used for login purpose.
      */

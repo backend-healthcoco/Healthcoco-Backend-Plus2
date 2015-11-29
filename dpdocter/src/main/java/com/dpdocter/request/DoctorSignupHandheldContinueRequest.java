@@ -2,8 +2,6 @@ package com.dpdocter.request;
 
 import java.util.List;
 
-import com.dpdocter.beans.AccessModule;
-
 public class DoctorSignupHandheldContinueRequest {
 
     private String userId;
@@ -42,7 +40,6 @@ public class DoctorSignupHandheldContinueRequest {
 
     private Double longitude;
 
-   
     public String getUserId() {
 	return userId;
     }
@@ -179,14 +176,12 @@ public class DoctorSignupHandheldContinueRequest {
 	this.longitude = longitude;
     }
 
-	@Override
-	public String toString() {
-		return "DoctorSignupHandheldContinueRequest [userId=" + userId + ", specialization=" + specialization
-				+ ", hospitalName=" + hospitalName + ", hospitalPhoneNumber=" + hospitalPhoneNumber
-				+ ", hospitalImageUrl=" + hospitalImageUrl + ", hospitalDescription=" + hospitalDescription
-				+ ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city
-				+ ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl="
-				+ websiteUrl + ", locationImageUrl=" + locationImageUrl + ", hospitalId=" + hospitalId + ", latitude="
-				+ latitude + ", longitude=" + longitude + "]";
-	}
+    @Override
+    public String toString() {
+	return "DoctorSignupHandheldContinueRequest [userId=" + userId + ", specialization=" + specialization + ", hospitalName=" + hospitalName
+		+ ", hospitalPhoneNumber=" + hospitalPhoneNumber + ", hospitalImageUrl=" + hospitalImageUrl + ", hospitalDescription=" + hospitalDescription
+		+ ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city + ", locationPhoneNumber="
+		+ locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", locationImageUrl=" + locationImageUrl
+		+ ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude=" + longitude + "]";
+    }
 }

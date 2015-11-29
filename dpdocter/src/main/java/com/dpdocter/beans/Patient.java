@@ -31,8 +31,8 @@ public class Patient {
 
     private List<String> notes;
 
-    private Boolean isHistoryAvailable =false;
-    
+    private Boolean isHistoryAvailable = false;
+
     public String getPatientId() {
 	return patientId;
     }
@@ -145,21 +145,19 @@ public class Patient {
 	this.notes = notes;
     }
 
-	public Boolean getIsHistoryAvailable() {
-		return isHistoryAvailable;
-	}
+    public Boolean getIsHistoryAvailable() {
+	return isHistoryAvailable;
+    }
 
-	public void setIsHistoryAvailable(Boolean isHistoryAvailable) {
-		this.isHistoryAvailable = isHistoryAvailable;
-	}
+    public void setIsHistoryAvailable(Boolean isHistoryAvailable) {
+	this.isHistoryAvailable = isHistoryAvailable;
+    }
 
-	@Override
-	public String toString() {
-		return "Patient [patientId=" + patientId + ", bloodGroup=" + bloodGroup + ", profession=" + profession
-				+ ", relations=" + relations + ", emailAddress=" + emailAddress + ", doctorId=" + doctorId
-				+ ", addressId=" + addressId + ", secMobile=" + secMobile + ", adhaarId=" + adhaarId
-				+ ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId + ", insuranceId="
-				+ insuranceId + ", insuranceName=" + insuranceName + ", notes=" + notes + ", isHistoryAvailable="
-				+ isHistoryAvailable + "]";
-	}
+    @Override
+    public String toString() {
+	return "Patient [patientId=" + patientId + ", bloodGroup=" + bloodGroup + ", profession=" + profession + ", relations=" + relations + ", emailAddress="
+		+ emailAddress + ", doctorId=" + doctorId + ", addressId=" + addressId + ", secMobile=" + secMobile + ", adhaarId=" + adhaarId
+		+ ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName="
+		+ insuranceName + ", notes=" + notes + ", isHistoryAvailable=" + isHistoryAvailable + "]";
+    }
 }

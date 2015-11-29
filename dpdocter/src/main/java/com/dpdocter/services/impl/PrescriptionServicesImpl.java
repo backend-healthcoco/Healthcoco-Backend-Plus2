@@ -105,7 +105,6 @@ import com.dpdocter.sms.services.SMSServices;
 import com.dpdocter.solr.document.SolrDrugDocument;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.PrescriptionUtils;
 
@@ -2319,7 +2318,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				    String drugType = drug.getDrugType() != null ? (drug.getDrugType().getType() != null ? drug.getDrugType().getType() + " "
 					    : "") : "";
 				    String drugName = drug.getDrugName() != null ? drug.getDrugName() : "";
-				     drugName = (drugType + drugName) == "" ? "----" :drugType + " "+drugName; 
+				    drugName = (drugType + drugName) == "" ? "----" : drugType + " " + drugName;
 				    String durationValue = prescriptionItem.getDuration() != null ? (prescriptionItem.getDuration().getValue() != null ? prescriptionItem
 					    .getDuration().getValue() : "")
 					    : "";
@@ -2343,7 +2342,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				    else
 					duration = durationValue + " " + durationUnit;
 				    PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
-					    prescriptionItem.getDosage() != null?prescriptionItem.getDosage():"----", duration, directions.isEmpty()?"----":directions, 
+					    prescriptionItem.getDosage() != null ? prescriptionItem.getDosage() : "----", duration,
+					    directions.isEmpty() ? "----" : directions,
 					    prescriptionItem.getInstructions() != null ? prescriptionItem.getInstructions() : "----");
 
 				    prescriptionItems.add(prescriptionJasperDetails);
@@ -2366,17 +2366,19 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    emailTrackCollection.setPatientId(user.getId());
 			}
 			parameters.put("prescriptionId", prescriptionId);
-			parameters.put("advice", prescriptionCollection.getAdvice()!= null ? prescriptionCollection.getAdvice() : "----");
-			if(prescriptionCollection.getLabTests() != null && !prescriptionCollection.getLabTests().isEmpty()){
-				String labTest = "";int i =1;
-				for(LabTest labTests : prescriptionCollection.getLabTests()){
-					labTest = labTest+i+") "+labTests.getTestName()+"<br>";i++;
-				}
-				parameters.put("labTest", labTest);
-			}else{
-				parameters.put("labTest", null);
+			parameters.put("advice", prescriptionCollection.getAdvice() != null ? prescriptionCollection.getAdvice() : "----");
+			if (prescriptionCollection.getLabTests() != null && !prescriptionCollection.getLabTests().isEmpty()) {
+			    String labTest = "";
+			    int i = 1;
+			    for (LabTest labTests : prescriptionCollection.getLabTests()) {
+				labTest = labTest + i + ") " + labTests.getTestName() + "<br>";
+				i++;
+			    }
+			    parameters.put("labTest", labTest);
+			} else {
+			    parameters.put("labTest", null);
 			}
-			
+
 		    } else {
 			logger.warn("Prescription Id, doctorId, location Id, hospital Id does not match");
 			throw new BusinessException(ServiceError.NotFound, "Prescription Id, doctorId, location Id, hospital Id does not match");
@@ -2400,63 +2402,83 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		String patientName = "", dob = "", gender = "", mobileNumber = "";
 		if (printSettings != null) {
 		    if (printSettings.getHeaderSetup() != null) {
-			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()){
-				boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
-				boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
-				String text= str.getText();
-				if(isBold && isItalic)text = "<b><i>"+text+"</i></b>";
-				else if(isBold)text = "<b>"+text+"</b>";
-				else if(isItalic)text = "<i>"+text+"</i>";
-				
-				if(headerLeftText.isEmpty())headerLeftText = "<span style='font-size:"+str.getFontSize()+";'>" + text+"</span>";
-				else headerLeftText = headerLeftText + "<br/>"+ "<span style='font-size:"+str.getFontSize()+"'>"+text+"</span>";
+			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()) {
+			    boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
+			    boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
+			    String text = str.getText();
+			    if (isBold && isItalic)
+				text = "<b><i>" + text + "</i></b>";
+			    else if (isBold)
+				text = "<b>" + text + "</b>";
+			    else if (isItalic)
+				text = "<i>" + text + "</i>";
+
+			    if (headerLeftText.isEmpty())
+				headerLeftText = "<span style='font-size:" + str.getFontSize() + ";'>" + text + "</span>";
+			    else
+				headerLeftText = headerLeftText + "<br/>" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 			}
-			    
-			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText()){
-				boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
-				boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
-				String text= str.getText();
-				if(isBold && isItalic)text = "<b><i>"+text+"</i></b>";
-				else if(isBold)text = "<b>"+text+"</b>";
-				else if(isItalic)text = "<i>"+text+"</i>";
-				
-				if(headerRightText.isEmpty())headerRightText = "<span style='font-size:"+str.getFontSize()+"'>" + text+"</span>";
-				else headerRightText = headerRightText + "<br/>"+ "<span style='font-size:"+str.getFontSize()+"'>"+text+"</span>";				
+
+			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText()) {
+			    boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
+			    boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
+			    String text = str.getText();
+			    if (isBold && isItalic)
+				text = "<b><i>" + text + "</i></b>";
+			    else if (isBold)
+				text = "<b>" + text + "</b>";
+			    else if (isItalic)
+				text = "<i>" + text + "</i>";
+
+			    if (headerRightText.isEmpty())
+				headerRightText = "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
+			    else
+				headerRightText = headerRightText + "<br/>" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 			}
-				
+
 		    }
 		    if (printSettings.getFooterSetup() != null) {
 			if (printSettings.getFooterSetup().getCustomFooter())
-			    for (PrintSettingsText str : printSettings.getFooterSetup().getBottomText()){
-			    	boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
-					boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
-					String text= str.getText();
-					if(isBold && isItalic)text = "<b><i>"+text+"</i></b>";
-					else if(isBold)text = "<b>"+text+"</b>";
-					else if(isItalic)text = "<i>"+text+"</i>";
-					
-			    	if(footerBottomText.isEmpty())footerBottomText = "<span style='font-size:"+str.getFontSize()+"'>" + text+"</span>";
-					else footerBottomText = footerBottomText + ""+ "<span style='font-size:"+str.getFontSize()+"'>"+text+"</span>";
-			    }
-			    UserCollection doctorUser = userRepository.findOne(doctorId);
-			    if (doctorUser != null)
-				parameters.put("footerSignature", doctorUser.getTitle()+ " " + doctorUser.getFirstName());
-			}
-		}
-		    patientName =  "Patient Name: " +(user!=null ? user.getFirstName()  : "--")+ "<br>";
-		    dob =  "Patient Age: " + ((user!=null && user.getDob() != null) ? (user.getDob().getAge()+"years"): "--") + "<br>";
-		    gender =  "Patient Gender: " + (user!=null ? user.getGender(): "--")+ "<br>";
-		    mobileNumber = "Mobile Number: " + (user!=null ? user.getMobileNumber() : "--")+ "<br>";
-		
+			    for (PrintSettingsText str : printSettings.getFooterSetup().getBottomText()) {
+				boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
+				boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
+				String text = str.getText();
+				if (isBold && isItalic)
+				    text = "<b><i>" + text + "</i></b>";
+				else if (isBold)
+				    text = "<b>" + text + "</b>";
+				else if (isItalic)
+				    text = "<i>" + text + "</i>";
 
-		parameters.put("patientLeftText", patientName + "Patient Id: "+(patient != null ?  patient.getPID() : "--") + "<br>" + dob + gender);
-		parameters.put("patientRightText", mobileNumber + "Reffered By: " + (patientAdmission != null && patientAdmission.getReferredBy() != null && patientAdmission.getReferredBy() != ""? patientAdmission.getReferredBy()  : "--")+ "<br>" + "Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
+				if (footerBottomText.isEmpty())
+				    footerBottomText = "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
+				else
+				    footerBottomText = footerBottomText + "" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
+			    }
+			UserCollection doctorUser = userRepository.findOne(doctorId);
+			if (doctorUser != null)
+			    parameters.put("footerSignature", doctorUser.getTitle() + " " + doctorUser.getFirstName());
+		    }
+		}
+		patientName = "Patient Name: " + (user != null ? user.getFirstName() : "--") + "<br>";
+		dob = "Patient Age: " + ((user != null && user.getDob() != null) ? (user.getDob().getAge() + "years") : "--") + "<br>";
+		gender = "Patient Gender: " + (user != null ? user.getGender() : "--") + "<br>";
+		mobileNumber = "Mobile Number: " + (user != null ? user.getMobileNumber() : "--") + "<br>";
+
+		parameters.put("patientLeftText", patientName + "Patient Id: " + (patient != null ? patient.getPID() : "--") + "<br>" + dob + gender);
+		parameters
+			.put("patientRightText",
+				mobileNumber
+					+ "Reffered By: "
+					+ (patientAdmission != null && patientAdmission.getReferredBy() != null && patientAdmission.getReferredBy() != "" ? patientAdmission
+						.getReferredBy() : "--") + "<br>" + "Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
 		parameters.put("headerLeftText", headerLeftText);
 		parameters.put("headerRightText", headerRightText);
 		parameters.put("footerBottomText", footerBottomText);
 
 		LocationCollection location = locationRepository.findOne(locationId);
-		if (location != null) parameters.put("logoURL", getFinalImageURL(location.getLogoUrl()));
+		if (location != null)
+		    parameters.put("logoURL", getFinalImageURL(location.getLogoUrl()));
 
 		String layout = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 			: "PORTRAIT";
@@ -2525,9 +2547,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						: "";
 
 					List<String> directions = new ArrayList<String>();
-					for (DrugDirection drugDirection : prescriptionItem.getDirection()) {
-					    if (drugDirection.getDirection() != null)
-						directions.add(drugDirection.getDirection());
+					if (prescriptionItem.getDirection() != null && !prescriptionItem.getDirection().isEmpty()) {
+					    for (DrugDirection drugDirection : prescriptionItem.getDirection()) {
+						if (drugDirection.getDirection() != null)
+						    directions.add(drugDirection.getDirection());
+					    }
 					}
 					prescriptionDetails = prescriptionDetails + i + "." + drugType + " " + drugName + strengthValue + strengthUnit + " "
 						+ prescriptionItem.getDosage() + " " + durationValue + " " + durationUnit + " " + directions;
@@ -2778,12 +2802,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} else
 	    return null;
     }
-    public boolean containsIgnoreCase(String str, List<String> list){
-    	if(list != null && !list.isEmpty())
-        for(String i : list){
-            if(i.equalsIgnoreCase(str))
-                return true;
-        }
-        return false;
+
+    public boolean containsIgnoreCase(String str, List<String> list) {
+	if (list != null && !list.isEmpty())
+	    for (String i : list) {
+		if (i.equalsIgnoreCase(str))
+		    return true;
+	    }
+	return false;
     }
 }

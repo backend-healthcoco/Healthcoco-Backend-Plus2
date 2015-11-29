@@ -248,14 +248,17 @@ public class SignUpServiceImpl implements SignUpService {
 
 	    // user.setPassword(null);
 
-	     if (userCollection.getMobileNumber() != null) {
-//	     SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(doctorCollection.getUserId(), locationCollection.getId(), 
-//	    		 hospitalCollection.getId(), doctorCollection.getUserId(), "OTP Verification", userCollection.getMobileNumber());
-//	      sMSServices.sendSMS(smsTrackDetail, false);
-	     }
+	    if (userCollection.getMobileNumber() != null) {
+		// SMSTrackDetail smsTrackDetail =
+		// sMSServices.createSMSTrackDetail(doctorCollection.getUserId(),
+		// locationCollection.getId(),
+		// hospitalCollection.getId(), doctorCollection.getUserId(),
+		// "OTP Verification", userCollection.getMobileNumber());
+		// sMSServices.sendSMS(smsTrackDetail, false);
+	    }
 
 	    response = new DoctorSignUp();
-		response.setAccessControl(assignAllAccessControl(userCollection.getId(), locationCollection.getId(), locationCollection.getHospitalId()));
+	    response.setAccessControl(assignAllAccessControl(userCollection.getId(), locationCollection.getId(), locationCollection.getHospitalId()));
 
 	    User user = new User();
 	    userCollection.setPassword(null);
@@ -288,37 +291,37 @@ public class SignUpServiceImpl implements SignUpService {
     }
 
     private AccessControl assignAllAccessControl(String doctorId, String locationId, String hospitalId) {
-    	AccessControl accessControl = new AccessControl();
-    	try{
-    		accessControl.setHospitalId(hospitalId);
-    		accessControl.setRoleOrUserId(doctorId);
-    		accessControl.setLocationId(locationId);
-    		accessControl.setType(Type.DOCTOR);
-    		List<AccessModule> accessModules = new ArrayList<AccessModule>();
-    		for (Module module : Module.values()) {
-    			  AccessModule accessModule = new AccessModule();
-    			  accessModule.setModule(module.getModule());
-    			  List<AccessPermission> accessPermissions = new ArrayList<AccessPermission>();
-    			  for(AccessPermissionType accessPermissionType : AccessPermissionType.values()){
-    				  AccessPermission accessPermission = new AccessPermission();
-    				  accessPermission.setAccessPermissionType(accessPermissionType);
-    				  accessPermission.setAccessPermissionValue(true);
-    				  accessPermissions.add(accessPermission);
-    			  }
-    			  accessModule.setAccessPermissions(accessPermissions);
-    			  accessModules.add(accessModule);
-    			}
-    		accessControl.setAccessModules(accessModules);
-    		accessControl = accessControlServices.setAccessControls(accessControl);
-    	}catch (Exception e) {
-    	    e.printStackTrace();
-    	    logger.error(e + " Error occured while assigning access control");
-    	    throw new BusinessException(ServiceError.Unknown, "Error occured while assigning access control");
-    	}
-		return accessControl;
+	AccessControl accessControl = new AccessControl();
+	try {
+	    accessControl.setHospitalId(hospitalId);
+	    accessControl.setRoleOrUserId(doctorId);
+	    accessControl.setLocationId(locationId);
+	    accessControl.setType(Type.DOCTOR);
+	    List<AccessModule> accessModules = new ArrayList<AccessModule>();
+	    for (Module module : Module.values()) {
+		AccessModule accessModule = new AccessModule();
+		accessModule.setModule(module.getModule());
+		List<AccessPermission> accessPermissions = new ArrayList<AccessPermission>();
+		for (AccessPermissionType accessPermissionType : AccessPermissionType.values()) {
+		    AccessPermission accessPermission = new AccessPermission();
+		    accessPermission.setAccessPermissionType(accessPermissionType);
+		    accessPermission.setAccessPermissionValue(true);
+		    accessPermissions.add(accessPermission);
+		}
+		accessModule.setAccessPermissions(accessPermissions);
+		accessModules.add(accessModule);
+	    }
+	    accessControl.setAccessModules(accessModules);
+	    accessControl = accessControlServices.setAccessControls(accessControl);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e + " Error occured while assigning access control");
+	    throw new BusinessException(ServiceError.Unknown, "Error occured while assigning access control");
 	}
+	return accessControl;
+    }
 
-	@Override
+    @Override
     public DoctorSignUp doctorHandheld(DoctorSignupHandheldRequest request) {
 	DoctorSignUp response = null;
 	try {
@@ -430,14 +433,17 @@ public class SignUpServiceImpl implements SignUpService {
 
 	    // user.setPassword(null);
 
-	     if (userCollection.getMobileNumber() != null) {
-//		     SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(doctorCollection.getUserId(), locationCollection.getId(), 
-//		    		 hospitalCollection.getId(), doctorCollection.getUserId(), "OTP Verification", userCollection.getMobileNumber());
-//		      sMSServices.sendSMS(smsTrackDetail, false);
-	     }
+	    if (userCollection.getMobileNumber() != null) {
+		// SMSTrackDetail smsTrackDetail =
+		// sMSServices.createSMSTrackDetail(doctorCollection.getUserId(),
+		// locationCollection.getId(),
+		// hospitalCollection.getId(), doctorCollection.getUserId(),
+		// "OTP Verification", userCollection.getMobileNumber());
+		// sMSServices.sendSMS(smsTrackDetail, false);
+	    }
 
 	    response = new DoctorSignUp();
-		response.setAccessControl(assignAllAccessControl(userCollection.getId(), locationCollection.getId(), locationCollection.getHospitalId()));
+	    response.setAccessControl(assignAllAccessControl(userCollection.getId(), locationCollection.getId(), locationCollection.getHospitalId()));
 
 	    User user = new User();
 	    userCollection.setPassword(null);

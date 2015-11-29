@@ -19,7 +19,7 @@ public interface SMSServices {
     void addNumber(String mobileNumber);
 
     void deleteNumber(String mobileNumber);
-    
+
     SMSTrackDetail createSMSTrackDetail(String doctorId, String locationId, String hospitalId, String patientId, String message, String mobileNumber);
-    
+
 }

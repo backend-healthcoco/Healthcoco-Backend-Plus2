@@ -91,7 +91,7 @@ public class ContactsServiceImpl implements ContactsService {
 
     @Autowired
     private FileManager fileManager;
-    
+
     @Autowired
     private HistoryRepository historyRepository;
 
@@ -197,10 +197,12 @@ public class ContactsServiceImpl implements ContactsService {
 		patientCard.setGroups(groups);
 		patientCard.setDob(userCollection.getDob());
 		patientCard.setDoctorSepecificPatientId(patientCollection.getUserId());
-		
-		int historyCount = historyRepository.getByPatientIdAndNotEqualToDoctorLocationHospital(patientCollection.getUserId(), doctorId, locationId, hospitalId);
-		if(historyCount > 0)patientCard.setIsHistoryAvailable(true);
-		
+
+		int historyCount = historyRepository.getByPatientIdAndNotEqualToDoctorLocationHospital(patientCollection.getUserId(), doctorId, locationId,
+			hospitalId);
+		if (historyCount > 0)
+		    patientCard.setIsHistoryAvailable(true);
+
 		patientCards.add(patientCard);
 	    }
 	}
@@ -523,11 +525,13 @@ public class ContactsServiceImpl implements ContactsService {
 		    Patient patient = new Patient();
 		    BeanUtil.map(patientCollection, patient);
 		    patient.setPatientId(patientCollection.getId());
-		    
-		    int historyCount = historyRepository.getByPatientIdAndNotEqualToDoctorLocationHospital(patientCollection.getUserId(), doctorId, locationId, hospitalId);
-			if(historyCount > 0)patient.setIsHistoryAvailable(true);
-		    
-			registeredPatientDetail.setPatient(patient);
+
+		    int historyCount = historyRepository.getByPatientIdAndNotEqualToDoctorLocationHospital(patientCollection.getUserId(), doctorId, locationId,
+			    hospitalId);
+		    if (historyCount > 0)
+			patient.setIsHistoryAvailable(true);
+
+		    registeredPatientDetail.setPatient(patient);
 		    Address address = new Address();
 		    BeanUtil.map(addressCollection, address);
 		    registeredPatientDetail.setAddress(address);

@@ -54,10 +54,9 @@ public class Role extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
-	@Override
-	public String toString() {
-		return "Role [id=" + id + ", role=" + role + ", description=" + description + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + "]";
-	}
+    @Override
+    public String toString() {
+	return "Role [id=" + id + ", role=" + role + ", description=" + description + ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
+    }
 
 }

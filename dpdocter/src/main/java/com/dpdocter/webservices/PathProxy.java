@@ -421,6 +421,8 @@ public interface PathProxy {
 
 	public static final String EMAIL = "/email/{visitId}/{emailAddress}";
 
+	public static final String GET_VISIT = "/{visitId}";
+
 	public static final String GET_VISITS = "/{doctorId}/{locationId}/{hospitalId}/{patientId}";
 
 	public static final String DELETE_VISITS = "/{visitId}/delete";
@@ -601,13 +603,13 @@ public interface PathProxy {
     public interface EmailTrackUrls {
 
     }
-    
+
     public static final String OTP_BASE_URL = BASE_URL + "/otp";
 
     public interface OTPUrls {
-    	
+
 	public static final String OTP_GENERATOR = "/{doctorId}/{locationId}/{hospitalId}/{patientId}/{mobileNumber}/generate";
-	
+
 	public static final String VERIFY_OTP = "/{doctorId}/{locationId}/{hospitalId}/{patientId}/{otpNumber}/verify";
 
     }

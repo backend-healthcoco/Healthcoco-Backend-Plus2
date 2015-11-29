@@ -1,15 +1,15 @@
 package com.dpdocter.enums;
 
 public enum VitalSignsUnit {
-	PULSE("beats/min"),BREATHING("breaths/min"),BLOODPRESSURE("mmHg");
-	
-	private String unit;
+    PULSE("beats/min"), BREATHING("breaths/min"), BLOODPRESSURE("mmHg");
 
-	public String getUnit() {
-		return unit;
-	}
+    private String unit;
 
-	private VitalSignsUnit(String unit) {
-		this.unit = unit;
-	}
+    public String getUnit() {
+	return unit;
+    }
+
+    private VitalSignsUnit(String unit) {
+	this.unit = unit;
+    }
 }

@@ -411,7 +411,8 @@ public class PrescriptionApi {
 
 	List<Prescription> prescriptions = null;
 
-	prescriptions = prescriptionServices.getPrescriptions(page, size, doctorId, hospitalId, locationId, patientId, updatedTime, otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), discarded);
+	prescriptions = prescriptionServices.getPrescriptions(page, size, doctorId, hospitalId, locationId, patientId, updatedTime,
+		otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), discarded);
 
 	Response<Prescription> response = new Response<Prescription>();
 	response.setDataList(prescriptions);

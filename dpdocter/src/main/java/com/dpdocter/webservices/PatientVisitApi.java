@@ -36,7 +36,7 @@ public class PatientVisitApi {
 
     @Autowired
     private PatientVisitService patientVisitService;
-    
+
     @Autowired
     private OTPService otpService;
 
@@ -68,6 +68,20 @@ public class PatientVisitApi {
 	return response;
     }
 
+    @Path(value = PathProxy.PatientVisitUrls.GET_VISIT)
+    @GET
+    public Response<PatientVisitResponse> getVisit(@PathParam("visitId") String visitId) {
+	if (DPDoctorUtils.anyStringEmpty(visitId)) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Patient Visit Id Cannot Be Empty!");
+	}
+
+	PatientVisitResponse patientVisitResponse = patientVisitService.getVisit(visitId);
+
+	Response<PatientVisitResponse> response = new Response<PatientVisitResponse>();
+	response.setData(patientVisitResponse);
+	return response;
+    }
+
     @Path(value = PathProxy.PatientVisitUrls.GET_VISITS)
     @GET
     public Response<PatientVisitResponse> getVisit(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
@@ -78,8 +92,8 @@ public class PatientVisitApi {
 	    logger.warn("Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	}
-	List<PatientVisitResponse> patienVisitResponse = patientVisitService.getVisit(doctorId, locationId, hospitalId, patientId, page, size, otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId),
-		updatedTime);
+	List<PatientVisitResponse> patienVisitResponse = patientVisitService.getVisit(doctorId, locationId, hospitalId, patientId, page, size,
+		otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), updatedTime);
 
 	Response<PatientVisitResponse> response = new Response<PatientVisitResponse>();
 	response.setDataList(patienVisitResponse);

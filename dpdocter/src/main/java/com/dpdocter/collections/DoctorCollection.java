@@ -49,7 +49,7 @@ public class DoctorCollection extends GenericCollection {
 
     @Field
     private List<String> professionalMemberships;
-    
+
     @Field
     private String registerNumber;
 
@@ -149,21 +149,19 @@ public class DoctorCollection extends GenericCollection {
 	this.professionalMemberships = professionalMemberships;
     }
 
-	public String getRegisterNumber() {
-		return registerNumber;
-	}
+    public String getRegisterNumber() {
+	return registerNumber;
+    }
 
-	public void setRegisterNumber(String registerNumber) {
-		this.registerNumber = registerNumber;
-	}
+    public void setRegisterNumber(String registerNumber) {
+	this.registerNumber = registerNumber;
+    }
 
-	@Override
-	public String toString() {
-		return "DoctorCollection [id=" + id + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses="
-				+ otherEmailAddresses + ", userId=" + userId + ", experience=" + experience + ", education=" + education
-				+ ", specialities=" + specialities + ", achievements=" + achievements + ", professionalStatement="
-				+ professionalStatement + ", registrationDetails=" + registrationDetails + ", experienceDetails="
-				+ experienceDetails + ", professionalMemberships=" + professionalMemberships + ", registerNumber="
-				+ registerNumber + "]";
-	}
+    @Override
+    public String toString() {
+	return "DoctorCollection [id=" + id + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses=" + otherEmailAddresses + ", userId="
+		+ userId + ", experience=" + experience + ", education=" + education + ", specialities=" + specialities + ", achievements=" + achievements
+		+ ", professionalStatement=" + professionalStatement + ", registrationDetails=" + registrationDetails + ", experienceDetails="
+		+ experienceDetails + ", professionalMemberships=" + professionalMemberships + ", registerNumber=" + registerNumber + "]";
+    }
 }

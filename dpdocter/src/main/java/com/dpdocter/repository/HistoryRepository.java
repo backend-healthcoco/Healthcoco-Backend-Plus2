@@ -12,7 +12,7 @@ public interface HistoryRepository extends MongoRepository<HistoryCollection, St
     HistoryCollection findHistory(String doctorId, String locationId, String hospitalId, String patientId);
 
     @Query(value = "{'patientId' : ?0, 'doctorId': {$ne : ?1}, 'locationId' : {$ne : ?2}, 'hospitalId' : {$ne : ?3}}", count = true)
-	Integer getByPatientIdAndNotEqualToDoctorLocationHospital(String patientId, String doctorId, String locationId, String hospitalId);
+    Integer getByPatientIdAndNotEqualToDoctorLocationHospital(String patientId, String doctorId, String locationId, String hospitalId);
 
     /*@Query(value = "{'patientId': ?0}", fields = "{ 'prescriptions' : 0, 'clinicalNotes' : 0}")
     List<HistoryCollection> findByPatientIdFilterByReports(String patientId);

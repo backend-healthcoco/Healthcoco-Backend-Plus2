@@ -66,7 +66,6 @@ import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
 import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.services.DoctorProfileService;
 import com.dpdocter.services.FileManager;
-
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -405,7 +404,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		List<UserLocationCollection> userLocationCollections = userLocationRepository.findByUserId(userCollection.getId());
 		for (Iterator<UserLocationCollection> iterator = userLocationCollections.iterator(); iterator.hasNext();) {
 		    UserLocationCollection userLocationCollection = iterator.next();
-		    DoctorClinicProfileCollection doctorClinicCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getLocationId());
+		    DoctorClinicProfileCollection doctorClinicCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection
+			    .getLocationId());
 		    if (doctorClinicCollection != null) {
 			clinicProfileCollection.add(doctorClinicCollection);
 			BeanUtil.map(doctorClinicCollection, doctorClinic);
@@ -554,18 +554,18 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	DoctorClinicProfileCollection doctorClinicProfileCollection = null;
 	Boolean response = false;
 	try {
-		UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
-		if(userLocationCollection != null){
-			doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
-		    if (doctorClinicProfileCollection == null) {
-			doctorClinicProfileCollection = new DoctorClinicProfileCollection();
-			doctorClinicProfileCollection.setLocationId(userLocationCollection.getId());
-			doctorClinicProfileCollection.setCreatedTime(new Date());
-		    }
-	    doctorClinicProfileCollection.setAppointmentBookingNumber(request.getAppointmentBookingNumber());
-	    doctorClinicProfileRepository.save(doctorClinicProfileCollection);
-	    response = true;
+	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
+	    if (userLocationCollection != null) {
+		doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
+		if (doctorClinicProfileCollection == null) {
+		    doctorClinicProfileCollection = new DoctorClinicProfileCollection();
+		    doctorClinicProfileCollection.setLocationId(userLocationCollection.getId());
+		    doctorClinicProfileCollection.setCreatedTime(new Date());
 		}
+		doctorClinicProfileCollection.setAppointmentBookingNumber(request.getAppointmentBookingNumber());
+		doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+		response = true;
+	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Clinic Profile");
@@ -579,18 +579,18 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	DoctorClinicProfileCollection doctorClinicProfileCollection = null;
 	Boolean response = false;
 	try {
-		UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
-		if(userLocationCollection != null){
-			doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
-		    if (doctorClinicProfileCollection == null) {
-			doctorClinicProfileCollection = new DoctorClinicProfileCollection();
-			doctorClinicProfileCollection.setLocationId(userLocationCollection.getId());
-			doctorClinicProfileCollection.setCreatedTime(new Date());
-		    }
-	    doctorClinicProfileCollection.setWorkingSchedules(request.getWorkingSchedules());
-	    doctorClinicProfileRepository.save(doctorClinicProfileCollection);
-	    response = true;
+	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
+	    if (userLocationCollection != null) {
+		doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
+		if (doctorClinicProfileCollection == null) {
+		    doctorClinicProfileCollection = new DoctorClinicProfileCollection();
+		    doctorClinicProfileCollection.setLocationId(userLocationCollection.getId());
+		    doctorClinicProfileCollection.setCreatedTime(new Date());
 		}
+		doctorClinicProfileCollection.setWorkingSchedules(request.getWorkingSchedules());
+		doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+		response = true;
+	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Clinic Profile");
@@ -604,18 +604,18 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	DoctorClinicProfileCollection doctorClinicProfileCollection = null;
 	Boolean response = false;
 	try {
-		UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
-		if(userLocationCollection != null){
-			doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
-		    if (doctorClinicProfileCollection == null) {
-			doctorClinicProfileCollection = new DoctorClinicProfileCollection();
-			doctorClinicProfileCollection.setLocationId(userLocationCollection.getId());
-			doctorClinicProfileCollection.setCreatedTime(new Date());
-		    }
-	    doctorClinicProfileCollection.setConsultationFee(request.getConsultationFee());
-	    doctorClinicProfileRepository.save(doctorClinicProfileCollection);
-	    response = true;
+	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
+	    if (userLocationCollection != null) {
+		doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
+		if (doctorClinicProfileCollection == null) {
+		    doctorClinicProfileCollection = new DoctorClinicProfileCollection();
+		    doctorClinicProfileCollection.setLocationId(userLocationCollection.getId());
+		    doctorClinicProfileCollection.setCreatedTime(new Date());
 		}
+		doctorClinicProfileCollection.setConsultationFee(request.getConsultationFee());
+		doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+		response = true;
+	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Clinic Profile");
@@ -629,18 +629,18 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	DoctorClinicProfileCollection doctorClinicProfileCollection = null;
 	Boolean response = false;
 	try {
-		UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
-		if(userLocationCollection != null){
-			doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
-		    if (doctorClinicProfileCollection == null) {
-			doctorClinicProfileCollection = new DoctorClinicProfileCollection();
-			doctorClinicProfileCollection.setLocationId(userLocationCollection.getId());
-			doctorClinicProfileCollection.setCreatedTime(new Date());
-		    }
-		    doctorClinicProfileCollection.setAppointmentSlot(request.getAppointmentSlot());
-		    doctorClinicProfileRepository.save(doctorClinicProfileCollection);
-		    response = true;
+	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
+	    if (userLocationCollection != null) {
+		doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
+		if (doctorClinicProfileCollection == null) {
+		    doctorClinicProfileCollection = new DoctorClinicProfileCollection();
+		    doctorClinicProfileCollection.setLocationId(userLocationCollection.getId());
+		    doctorClinicProfileCollection.setCreatedTime(new Date());
 		}
+		doctorClinicProfileCollection.setAppointmentSlot(request.getAppointmentSlot());
+		doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+		response = true;
+	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Clinic Profile");
@@ -740,36 +740,49 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    userCollection = userRepository.findOne(request.getDoctorId());
 	    doctorCollection = doctorRepository.findByUserId(request.getDoctorId());
 	    if (userCollection != null && doctorCollection != null) {
-		BeanUtil.map(request, userCollection);
-		BeanUtil.map(request, doctorCollection);
+		/*BeanUtil.map(request, userCollection);
+		BeanUtil.map(request, doctorCollection);*/
+
+		if (!DPDoctorUtils.anyStringEmpty(request.getTitle())) {
+		    userCollection.setTitle(request.getTitle());
+		}
+
+		if (!DPDoctorUtils.anyStringEmpty(request.getFirstName())) {
+		    userCollection.setFirstName(request.getFirstName());
+		}
 
 		response = new DoctorMultipleDataAddEditResponse();
+		response.setDoctorId(request.getDoctorId());
 
-		DoctorExperience doctorExperience = new DoctorExperience();
-		doctorExperience.setExperience(Float.parseFloat(request.getExperience()));
-		doctorExperience.setPeriod(DoctorExperienceUnit.YEAR);
-		doctorCollection.setExperience(doctorExperience);
+		if (request.getExperience() != null) {
+		    DoctorExperience doctorExperience = new DoctorExperience();
+		    doctorExperience.setExperience(Float.parseFloat(request.getExperience()));
+		    doctorExperience.setPeriod(DoctorExperienceUnit.YEAR);
+		    doctorCollection.setExperience(doctorExperience);
+		}
 
-		specialityCollections = specialityRepository.findAll();
-		specialities = new ArrayList<String>();
-		for (String speciality : request.getSpeciality()) {
-		    Boolean specialityFound = false;
-		    for (SpecialityCollection specialityCollection : specialityCollections) {
-			if (speciality.trim().equalsIgnoreCase(specialityCollection.getSpeciality())) {
+		if (!request.getSpeciality().isEmpty()) {
+		    specialityCollections = specialityRepository.findAll();
+		    specialities = new ArrayList<String>();
+		    for (String speciality : request.getSpeciality()) {
+			Boolean specialityFound = false;
+			for (SpecialityCollection specialityCollection : specialityCollections) {
+			    if (speciality.trim().equalsIgnoreCase(specialityCollection.getSpeciality())) {
+				specialities.add(specialityCollection.getId());
+				specialityFound = true;
+				break;
+			    }
+			}
+			if (!specialityFound) {
+			    SpecialityCollection specialityCollection = new SpecialityCollection();
+			    specialityCollection.setSpeciality(speciality);
+			    specialityCollection.setCreatedTime(new Date());
+			    specialityCollection = specialityRepository.save(specialityCollection);
 			    specialities.add(specialityCollection.getId());
-			    specialityFound = true;
-			    break;
 			}
 		    }
-		    if (!specialityFound) {
-			SpecialityCollection specialityCollection = new SpecialityCollection();
-			specialityCollection.setSpeciality(speciality);
-			specialityCollection.setCreatedTime(new Date());
-			specialityCollection = specialityRepository.save(specialityCollection);
-			specialities.add(specialityCollection.getId());
-		    }
+		    doctorCollection.setSpecialities(specialities);
 		}
-		doctorCollection.setSpecialities(specialities);
 
 		if (request.getProfileImage() != null) {
 		    String path = "profile-image";

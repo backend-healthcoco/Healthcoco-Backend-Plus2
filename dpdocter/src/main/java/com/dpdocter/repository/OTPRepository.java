@@ -7,5 +7,4 @@ import com.dpdocter.collections.OTPCollection;
 
 public interface OTPRepository extends MongoRepository<OTPCollection, String>, PagingAndSortingRepository<OTPCollection, String> {
 
-	
 }

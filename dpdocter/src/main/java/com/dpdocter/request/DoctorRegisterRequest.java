@@ -43,9 +43,9 @@ public class DoctorRegisterRequest {
     private List<AccessModule> accessModules;
 
     private String registerNumber;
-    
+
     private RoleRequest role;
-    
+
     public String getUserId() {
 	return userId;
     }
@@ -182,29 +182,28 @@ public class DoctorRegisterRequest {
 	this.accessModules = accessModules;
     }
 
-	public String getRegisterNumber() {
-		return registerNumber;
-	}
+    public String getRegisterNumber() {
+	return registerNumber;
+    }
 
-	public void setRegisterNumber(String registerNumber) {
-		this.registerNumber = registerNumber;
-	}
+    public void setRegisterNumber(String registerNumber) {
+	this.registerNumber = registerNumber;
+    }
 
-	public RoleRequest getRole() {
-		return role;
-	}
+    public RoleRequest getRole() {
+	return role;
+    }
 
-	public void setRole(RoleRequest role) {
-		this.role = role;
-	}
+    public void setRole(RoleRequest role) {
+	this.role = role;
+    }
 
-	@Override
-	public String toString() {
-		return "DoctorRegisterRequest [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName
-				+ ", middleName=" + middleName + ", userName=" + userName + ", password=" + password + ", emailAddress="
-				+ emailAddress + ", mobileNumber=" + mobileNumber + ", image=" + image + ", gender=" + gender + ", dob="
-				+ dob + ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl + ", specialization=" + specialization
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", accessModules=" + accessModules
-				+ ", registerNumber=" + registerNumber + ", role=" + role + "]";
-	}
+    @Override
+    public String toString() {
+	return "DoctorRegisterRequest [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", userName="
+		+ userName + ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", image=" + image + ", gender="
+		+ gender + ", dob=" + dob + ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl + ", specialization=" + specialization + ", locationId="
+		+ locationId + ", hospitalId=" + hospitalId + ", accessModules=" + accessModules + ", registerNumber=" + registerNumber + ", role=" + role
+		+ "]";
+    }
 }

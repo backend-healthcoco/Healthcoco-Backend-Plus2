@@ -57,7 +57,7 @@ public class HistoryApi {
 
     @Autowired
     private PatientVisitService patientTrackService;
-    
+
     @Autowired
     private OTPService otpService;
 

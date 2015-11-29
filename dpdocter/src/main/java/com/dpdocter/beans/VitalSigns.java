@@ -2,49 +2,48 @@ package com.dpdocter.beans;
 
 public class VitalSigns {
 
-	private String pulse;
-	
-	private String temperature;
-	
-	private String breathing;
-	
-	private BloodPressure bloodPressure;
+    private String pulse;
 
-	public String getPulse() {
-		return pulse;
-	}
+    private String temperature;
 
-	public void setPulse(String pulse) {
-		this.pulse = pulse;
-	}
+    private String breathing;
 
-	public String getTemperature() {
-		return temperature;
-	}
+    private BloodPressure bloodPressure;
 
-	public void setTemperature(String temperature) {
-		this.temperature = temperature;
-	}
+    public String getPulse() {
+	return pulse;
+    }
 
-	public String getBreathing() {
-		return breathing;
-	}
+    public void setPulse(String pulse) {
+	this.pulse = pulse;
+    }
 
-	public void setBreathing(String breathing) {
-		this.breathing = breathing;
-	}
+    public String getTemperature() {
+	return temperature;
+    }
 
-	public BloodPressure getBloodPressure() {
-		return bloodPressure;
-	}
+    public void setTemperature(String temperature) {
+	this.temperature = temperature;
+    }
 
-	public void setBloodPressure(BloodPressure bloodPressure) {
-		this.bloodPressure = bloodPressure;
-	}
+    public String getBreathing() {
+	return breathing;
+    }
 
-	@Override
-	public String toString() {
-		return "VitalSigns [pulse=" + pulse + ", temperature=" + temperature + ", breathing=" + breathing
-				+ ", bloodPressure=" + bloodPressure + "]";
-	}
+    public void setBreathing(String breathing) {
+	this.breathing = breathing;
+    }
+
+    public BloodPressure getBloodPressure() {
+	return bloodPressure;
+    }
+
+    public void setBloodPressure(BloodPressure bloodPressure) {
+	this.bloodPressure = bloodPressure;
+    }
+
+    @Override
+    public String toString() {
+	return "VitalSigns [pulse=" + pulse + ", temperature=" + temperature + ", breathing=" + breathing + ", bloodPressure=" + bloodPressure + "]";
+    }
 }

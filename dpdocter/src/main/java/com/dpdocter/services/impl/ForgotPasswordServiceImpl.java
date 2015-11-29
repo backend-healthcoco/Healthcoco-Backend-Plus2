@@ -184,14 +184,13 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     public String resetPassword(String userId, String password) {
 	try {
 	    UserCollection userCollection = userRepository.findOne(userId);
-	    if(userCollection != null){
-	    	userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(password));
-		    userCollection.setIsTempPassword(false);
-		    userRepository.save(userCollection);
-		    return "Password Changed Successfully";
-	    }
-	    else{
-	    	return "Not Valid";
+	    if (userCollection != null) {
+		userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(password));
+		userCollection.setIsTempPassword(false);
+		userRepository.save(userCollection);
+		return "Password Changed Successfully";
+	    } else {
+		return "Not Valid";
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
