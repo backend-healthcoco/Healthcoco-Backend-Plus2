@@ -223,6 +223,8 @@ public interface PathProxy {
     public static final String PRESCRIPTION_BASE_URL = BASE_URL + "/prescription";
 
     public interface PrescriptionUrls {
+	public static final String GET_PRESCRIPTION = "/{prescriptionId}";
+
 	public static final String ADD_DRUG = "/drug/add";
 
 	public static final String EDIT_DRUG = "/drug/{drugId}/update";

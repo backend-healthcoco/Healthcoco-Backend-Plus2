@@ -404,6 +404,20 @@ public class PrescriptionApi {
 	return response;
     }
 
+    @Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION)
+    @GET
+    public Response<Prescription> getPrescription(@PathParam(value = "prescriptionId") String prescriptionId) {
+	if (DPDoctorUtils.anyStringEmpty(prescriptionId)) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Prescription Id Cannot Be Empty");
+	}
+
+	Prescription prescriptionResponse = prescriptionServices.getPrescriptionById(prescriptionId);
+
+	Response<Prescription> response = new Response<Prescription>();
+	response.setData(prescriptionResponse);
+	return response;
+    }
+
     @GET
     public Response<Prescription> getPrescription(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
 	    @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId, @QueryParam("patientId") String patientId,

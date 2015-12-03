@@ -1183,13 +1183,17 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
 			BeanUtil.map(prescriptionItem, prescriptionItemDetail);
 			DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
-			Drug drug = new Drug();
-			BeanUtil.map(drugCollection, drug);
-			prescriptionItemDetail.setDrug(drug);
+			if (drugCollection != null) {
+			    Drug drug = new Drug();
+			    BeanUtil.map(drugCollection, drug);
+			    prescriptionItemDetail.setDrug(drug);
+			}
 			prescriptionItemDetails.add(prescriptionItemDetail);
 		    }
 		    prescription.setItems(prescriptionItemDetails);
 		}
+	    } else {
+		throw new BusinessException(ServiceError.NotFound, "No Prescription Found For the Given Prescription Id");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
