@@ -768,7 +768,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			Boolean specialityFound = false;
 			for (SpecialityCollection specialityCollection : specialityCollections) {
 			    if (speciality.trim().equalsIgnoreCase(specialityCollection.getSpeciality())) {
-				specialities.add(specialityCollection.getId());
+				specialities.add(specialityCollection.getSpeciality());
 				specialityFound = true;
 				break;
 			    }
@@ -778,7 +778,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			    specialityCollection.setSpeciality(speciality);
 			    specialityCollection.setCreatedTime(new Date());
 			    specialityCollection = specialityRepository.save(specialityCollection);
-			    specialities.add(specialityCollection.getId());
+			    specialities.add(specialityCollection.getSpeciality());
 			}
 		    }
 		    doctorCollection.setSpecialities(specialities);
