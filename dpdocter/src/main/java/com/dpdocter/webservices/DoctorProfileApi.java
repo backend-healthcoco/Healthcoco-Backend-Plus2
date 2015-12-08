@@ -25,9 +25,11 @@ import com.dpdocter.beans.EducationQualification;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Speciality;
+import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
+import com.dpdocter.request.DoctorAddEditIBSRequest;
 import com.dpdocter.request.DoctorAppointmentNumbersAddEditRequest;
 import com.dpdocter.request.DoctorAppointmentSlotAddEditRequest;
 import com.dpdocter.request.DoctorConsultationFeeAddEditRequest;
@@ -45,6 +47,7 @@ import com.dpdocter.request.DoctorSpecialityAddEditRequest;
 import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
 import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.services.DoctorProfileService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -54,8 +57,8 @@ import common.util.web.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class DoctorProfileApi {
 
-    private static Logger logger = Logger.getLogger(DoctorProfileApi.class.getName());
-
+	private static Logger logger = Logger.getLogger(DoctorProfileApi.class.getName());
+	
     @Autowired
     private DoctorProfileService doctorProfileService;
 
@@ -421,4 +424,35 @@ public class DoctorProfileApi {
 	return response;
     }
 
+    @Path(value = PathProxy.DoctorProfileUrls.GET_TIME_SLOTS)
+    @GET
+    public Response<WorkingSchedule> getTimeSlots(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+    		@QueryParam("day") String day) {
+	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
+	}
+
+	List<WorkingSchedule> workingSchedules = doctorProfileService.getTimeSlots(doctorId, locationId, day);
+	Response<WorkingSchedule> response = new Response<WorkingSchedule>();
+	response.setDataList(workingSchedules);
+	return response;
+    }
+    
+    @Path(value = PathProxy.DoctorProfileUrls.ON_OFF_IBS)
+    @POST
+    public Response<Boolean> addEditIBS(DoctorAddEditIBSRequest request) {
+    	if (request == null) {
+    	    logger.warn("Doctor IBS Request Is Empty");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Doctor IBS Request Is Empty");
+    	} else if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId())) {
+    	    logger.warn("Doctor Id, LocationId Is Empty");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, LocationId Is Empty");
+    	}
+
+    	Boolean addEditIBSResponse = doctorProfileService.addEditIBS(request);
+    	Response<Boolean> response = new Response<Boolean>();
+    	response.setData(addEditIBSResponse);
+    	return response;
+
+    }
 }

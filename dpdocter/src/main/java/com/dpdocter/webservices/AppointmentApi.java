@@ -3,6 +3,7 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -14,6 +15,7 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.City;
 import com.dpdocter.beans.Clinic;
 import com.dpdocter.beans.Landmark;
@@ -21,10 +23,12 @@ import com.dpdocter.beans.Locality;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.request.AppoinmentRequest;
 import com.dpdocter.services.AppointmentService;
 import com.dpdocter.solr.document.SolrCityDocument;
 import com.dpdocter.solr.document.SolrLocalityLandmarkDocument;
 import com.dpdocter.solr.services.SolrCityService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -40,7 +44,7 @@ public class AppointmentApi {
     @Autowired
     private SolrCityService solrCityService;
 
-    @Path(value = PathProxy.CityUrls.ADD_CITY)
+    @Path(value = PathProxy.AppointmentUrls.ADD_CITY)
     @POST
     public Response<City> addCity(City request) {
 	if (request == null) {
@@ -65,7 +69,7 @@ public class AppointmentApi {
 	return response;
     }
 
-    @Path(value = PathProxy.CityUrls.ACTIVATE_CITY)
+    @Path(value = PathProxy.AppointmentUrls.ACTIVATE_CITY)
     @GET
     public Response<Boolean> activateCity(@PathParam(value = "cityId") String cityId) {
 	if (cityId == null) {
@@ -80,7 +84,7 @@ public class AppointmentApi {
 
     }
 
-    @Path(value = PathProxy.CityUrls.DEACTIVATE_CITY)
+    @Path(value = PathProxy.AppointmentUrls.DEACTIVATE_CITY)
     @GET
     public Response<Boolean> deactivateCity(@PathParam(value = "cityId") String cityId) {
 	if (cityId == null) {
@@ -95,7 +99,7 @@ public class AppointmentApi {
 
     }
 
-    @Path(value = PathProxy.CityUrls.GET_CITY)
+    @Path(value = PathProxy.AppointmentUrls.GET_CITY)
     @GET
     public Response<City> getCities() {
 	List<City> cities = appointmentService.getCities();
@@ -105,7 +109,7 @@ public class AppointmentApi {
 
     }
 
-    @Path(value = PathProxy.CityUrls.GET_CITY_ID)
+    @Path(value = PathProxy.AppointmentUrls.GET_CITY_ID)
     @GET
     public Response<City> getCityById(@PathParam(value = "cityId") String cityId) {
 	if (cityId == null) {
@@ -119,7 +123,7 @@ public class AppointmentApi {
 
     }
 
-    @Path(value = PathProxy.CityUrls.ADD_LOCALITY)
+    @Path(value = PathProxy.AppointmentUrls.ADD_LOCALITY)
     @POST
     public Response<Locality> addLocality(Locality request) {
 	if (request == null) {
@@ -144,7 +148,7 @@ public class AppointmentApi {
 	return response;
     }
 
-    @Path(value = PathProxy.CityUrls.ADD_LANDMARK)
+    @Path(value = PathProxy.AppointmentUrls.ADD_LANDMARK)
     @POST
     public Response<Landmark> addLandmark(Landmark request) {
 	if (request == null) {
@@ -169,7 +173,7 @@ public class AppointmentApi {
 	return response;
     }
 
-    @Path(value = PathProxy.CityUrls.GET_LANDMARK_LOCALITY)
+    @Path(value = PathProxy.AppointmentUrls.GET_LANDMARK_LOCALITY)
     @GET
     public Response<Object> getLandmarkLocality(@PathParam(value = "cityId") String cityId, @QueryParam(value = "type") String type) {
 
@@ -180,7 +184,7 @@ public class AppointmentApi {
 
     }
 
-    @Path(value = PathProxy.CityUrls.GET_CLINIC)
+    @Path(value = PathProxy.AppointmentUrls.GET_CLINIC)
     @GET
     public Response<Clinic> getClinic(@PathParam(value = "locationId") String locationId) {
 
@@ -193,4 +197,55 @@ public class AppointmentApi {
 	return response;
 
     }
+    
+//    @Path(value = PathProxy.AppointmentUrls.APPOINTMENT)
+    @POST
+    public Response<Appointment> BookAppoinment(AppoinmentRequest request) {
+
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "request cannot be null");
+	}
+	Appointment appointment = appointmentService.appointment(request);
+	Response<Appointment> response = new Response<Appointment>();
+	response.setData(appointment);
+	return response;
+
+    }
+    
+    @Path(value = PathProxy.AppointmentUrls.GET_CLINIC_APPOINTMENTS)
+    @GET
+    public Response<Appointment> getClinicAppointments(@QueryParam(value = "locationId") String locationId, @QueryParam(value = "doctorId") String doctorId,
+    		@QueryParam(value = "day") int day, @QueryParam(value = "month") int month, @QueryParam(value = "week") int week,
+    		@QueryParam("page") int page, @QueryParam("size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+
+    List<Appointment> appointment = appointmentService.getClinicAppointments(locationId, doctorId, day, month, week, page, size, updatedTime);
+	Response<Appointment> response = new Response<Appointment>();
+	response.setDataList(appointment);
+	return response;
+    }
+
+    @Path(value = PathProxy.AppointmentUrls.GET_DOCTOR_APPOINTMENTS)
+    @GET
+    public Response<Appointment> getDoctorAppointments(@QueryParam(value = "locationId") String locationId, @QueryParam(value = "doctorId") String doctorId,
+    		@QueryParam(value = "day") int day, @QueryParam(value = "month") int month, @QueryParam(value = "week") int week,
+    		@QueryParam("page") int page, @QueryParam("size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+
+    List<Appointment> appointment = appointmentService.getDoctorAppointments(locationId, doctorId, day, month, week, page, size, updatedTime);
+	Response<Appointment> response = new Response<Appointment>();
+	response.setDataList(appointment);
+	return response;
+    }
+
+    @Path(value = PathProxy.AppointmentUrls.GET_PATIENT_APPOINTMENTS)
+    @GET
+    public Response<Appointment> getPatientAppointments(@QueryParam(value = "locationId") String locationId, @QueryParam(value = "doctorId") String doctorId,
+    		@QueryParam(value = "patientId") String patientId, @QueryParam(value = "day") int day, @QueryParam(value = "month") int month, @QueryParam(value = "week") int week,
+    		@QueryParam("page") int page, @QueryParam("size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+
+    List<Appointment> appointment = appointmentService.getPatientAppointments(locationId, doctorId, patientId, day, month, week, page, size, updatedTime);
+	Response<Appointment> response = new Response<Appointment>();
+	response.setDataList(appointment);
+	return response;
+    }
+
 }

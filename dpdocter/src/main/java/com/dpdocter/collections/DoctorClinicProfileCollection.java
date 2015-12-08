@@ -36,6 +36,9 @@ public class DoctorClinicProfileCollection extends GenericCollection {
     @Field
     private List<WorkingSchedule> workingSchedules;
 
+    @Field
+    private Boolean isIBSOn = false;
+
     public String getId() {
 	return id;
     }
@@ -100,11 +103,19 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	this.workingSchedules = workingSchedules;
     }
 
-    @Override
-    public String toString() {
-	return "DoctorClinicProfileCollection [id=" + id + ", locationId=" + locationId + ", patientInitial=" + patientInitial + ", patientCounter="
-		+ patientCounter + ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee=" + consultationFee + ", appointmentSlot="
-		+ appointmentSlot + ", workingSchedules=" + workingSchedules + "]";
-    }
+	public Boolean getIsIBSOn() {
+		return isIBSOn;
+	}
 
+	public void setIsIBSOn(Boolean isIBSOn) {
+		this.isIBSOn = isIBSOn;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorClinicProfileCollection [id=" + id + ", locationId=" + locationId + ", patientInitial="
+				+ patientInitial + ", patientCounter=" + patientCounter + ", appointmentBookingNumber="
+				+ appointmentBookingNumber + ", consultationFee=" + consultationFee + ", appointmentSlot="
+				+ appointmentSlot + ", workingSchedules=" + workingSchedules + ", isIBSOn=" + isIBSOn + "]";
+	}
 }

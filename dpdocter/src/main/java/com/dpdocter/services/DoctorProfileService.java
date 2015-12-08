@@ -9,7 +9,9 @@ import com.dpdocter.beans.EducationQualification;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Speciality;
+import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
+import com.dpdocter.request.DoctorAddEditIBSRequest;
 import com.dpdocter.request.DoctorAppointmentNumbersAddEditRequest;
 import com.dpdocter.request.DoctorAppointmentSlotAddEditRequest;
 import com.dpdocter.request.DoctorConsultationFeeAddEditRequest;
@@ -80,5 +82,9 @@ public interface DoctorProfileService {
     List<EducationQualification> getEducationQualifications(int page, int size);
 
     DoctorMultipleDataAddEditResponse addEditMultipleData(DoctorMultipleDataAddEditRequest request);
+
+	List<WorkingSchedule> getTimeSlots(String doctorId, String locationId, String day);
+
+	Boolean addEditIBS(DoctorAddEditIBSRequest request);
 
 }

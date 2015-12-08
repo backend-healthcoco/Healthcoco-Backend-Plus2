@@ -57,9 +57,9 @@ import common.util.web.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class ClinicalNotesApi {
 
-    private static Logger logger = Logger.getLogger(ClinicalNotesApi.class.getName());
+	private static Logger logger = Logger.getLogger(ClinicalNotesApi.class.getName());
 
-    @Autowired
+	@Autowired
     private ClinicalNotesService clinicalNotesService;
 
     @Autowired

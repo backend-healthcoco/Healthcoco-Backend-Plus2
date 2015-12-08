@@ -20,6 +20,8 @@ public class DoctorClinicProfile {
     private AppointmentSlot appointmentSlot;
 
     private List<WorkingSchedule> workingSchedules;
+    
+    private Boolean isIBSOn = false;
 
     public String getId() {
 	return id;
@@ -93,11 +95,20 @@ public class DoctorClinicProfile {
 	this.workingSchedules = workingSchedules;
     }
 
-    @Override
-    public String toString() {
-	return "DoctorClinicProfile [id=" + id + ", locationId=" + locationId + ", clinicAddress=" + clinicAddress + ", patientInitial=" + patientInitial
-		+ ", patientCounter=" + patientCounter + ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee=" + consultationFee
-		+ ", appointmentSlot=" + appointmentSlot + ", workingSchedules=" + workingSchedules + "]";
-    }
+	public Boolean getIsIBSOn() {
+		return isIBSOn;
+	}
 
+	public void setIsIBSOn(Boolean isIBSOn) {
+		this.isIBSOn = isIBSOn;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorClinicProfile [id=" + id + ", locationId=" + locationId + ", clinicAddress=" + clinicAddress
+				+ ", patientInitial=" + patientInitial + ", patientCounter=" + patientCounter
+				+ ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee=" + consultationFee
+				+ ", appointmentSlot=" + appointmentSlot + ", workingSchedules=" + workingSchedules + ", isIBSOn="
+				+ isIBSOn + "]";
+	}
 }
