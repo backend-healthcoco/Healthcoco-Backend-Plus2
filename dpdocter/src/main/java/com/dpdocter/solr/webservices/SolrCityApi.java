@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.solr.beans.SolrCityLandmarkLocalityResponse;
 import com.dpdocter.solr.document.SolrCityDocument;
 import com.dpdocter.solr.document.SolrLocalityLandmarkDocument;
 import com.dpdocter.solr.services.SolrCityService;
@@ -31,15 +32,25 @@ public class SolrCityApi {
     @Autowired
     private SolrCityService solrCityService;
 
+    @Path(value = PathProxy.SolrCityUrls.SEARCH)
+    @GET
+    public Response<SolrCityLandmarkLocalityResponse> searchCityLandmarkLocality(@QueryParam(value = "searchTerm") String searchTerm) {
+	
+	List<SolrCityLandmarkLocalityResponse> searchResonse = solrCityService.searchCityLandmarkLocality(searchTerm);
+	Response<SolrCityLandmarkLocalityResponse> response = new Response<SolrCityLandmarkLocalityResponse>();
+	response.setDataList(searchResonse);
+	return response;
+    }
+
     @Path(value = PathProxy.SolrCityUrls.SEARCH_CITY)
     @GET
     public Response<SolrCityDocument> searchCity(@PathParam(value = "searchTerm") String searchTerm) {
 	if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
-	List<SolrCityDocument> complaints = solrCityService.searchCity(searchTerm);
+	List<SolrCityDocument> searchResonse = solrCityService.searchCity(searchTerm);
 	Response<SolrCityDocument> response = new Response<SolrCityDocument>();
-	response.setDataList(complaints);
+	response.setDataList(searchResonse);
 	return response;
     }
 
@@ -50,9 +61,9 @@ public class SolrCityApi {
 	if (DPDoctorUtils.anyStringEmpty(cityId) || DPDoctorUtils.anyStringEmpty(searchTerm)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
-	List<SolrLocalityLandmarkDocument> complaints = solrCityService.searchLandmarkLocality(cityId, type, searchTerm);
+	List<SolrLocalityLandmarkDocument> searchResonse = solrCityService.searchLandmarkLocality(cityId, type, searchTerm);
 	Response<SolrLocalityLandmarkDocument> response = new Response<SolrLocalityLandmarkDocument>();
-	response.setDataList(complaints);
+	response.setDataList(searchResonse);
 	return response;
     }
 }

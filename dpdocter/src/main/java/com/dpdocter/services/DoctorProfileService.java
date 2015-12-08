@@ -6,7 +6,9 @@ import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.DoctorProfile;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
+import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
+import com.dpdocter.request.DoctorAddEditIBSRequest;
 import com.dpdocter.request.DoctorContactAddEditRequest;
 import com.dpdocter.request.DoctorEducationAddEditRequest;
 import com.dpdocter.request.DoctorExperienceAddEditRequest;
@@ -57,5 +59,9 @@ public interface DoctorProfileService {
     Boolean addEditConsultationFee(DoctorClinicProfile request);
 
     Boolean addEditAppointmentSlot(DoctorClinicProfile request);
+
+	List<WorkingSchedule> getTimeSlots(String doctorId, String locationId, String day);
+
+	Boolean addEditIBS(DoctorAddEditIBSRequest request);
 
 }

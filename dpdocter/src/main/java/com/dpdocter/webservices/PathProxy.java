@@ -533,6 +533,10 @@ public interface PathProxy {
 	public static final String ADD_EDIT_CONSULTATION_FEE = "clinicProfile/addEditConsultationFee";
 
 	public static final String ADD_EDIT_APPOINTMENT_SLOT = "clinicProfile/addEditAppointmentSlot";
+	
+	public static final String ON_OFF_IBS = "clinicProfile/editInstantBookingSystem";
+	
+	public static final String GET_TIME_SLOTS = "getTimeSlots/{doctorId}/{locationId}";
     }
 
     public static final String PATIENT_TRACK_BASE_URL = BASE_URL + "/patientTrack";
@@ -545,7 +549,7 @@ public interface PathProxy {
 
     public static final String APPOINTMENT_BASE_URL = BASE_URL + "/appointment";
 
-    public interface CityUrls {
+    public interface AppointmentUrls {
 
 	public static final String ADD_CITY = "/addCity";
 
@@ -564,6 +568,12 @@ public interface PathProxy {
 	public static final String GET_LANDMARK_LOCALITY = "/getLandmarkLocality/{cityId}";
 
 	public static final String GET_CLINIC = "/getClinic/{locationId}";
+	
+	public static final String GET_CLINIC_APPOINTMENTS = "/clinic";
+	
+	public static final String GET_DOCTOR_APPOINTMENTS = "/doctor";
+	
+	public static final String GET_PATIENT_APPOINTMENTS = "/patient";
 
     }
 
@@ -601,6 +611,9 @@ public interface PathProxy {
     public static final String SOLR_CITY_BASE_URL = BASE_URL + "/solr/city";
 
     public interface SolrCityUrls {
+    	
+    public static final String SEARCH = "search";
+    	
 	public static final String SEARCH_CITY = "searchCity/{searchTerm}";
 
 	public static final String SEARCH_LANDMARK_LOCALITY = "searchLandmarkLocality/{cityId}/{searchTerm}";

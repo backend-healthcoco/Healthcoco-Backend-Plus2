@@ -18,4 +18,10 @@ public interface SolrLocalityLandmarkRepository extends SolrCrudRepository<SolrL
     @Query("cityId:*?0* AND locality:*?1*")
     List<SolrLocalityLandmarkDocument> findByCityIdAndLocality(String cityId, String searchTerm);
 
+    @Query("landmark:*?0*")
+	List<SolrLocalityLandmarkDocument> findByLandmark(String searchTerm);
+
+    @Query("locality:*?0*")
+	List<SolrLocalityLandmarkDocument> findByLocality(String searchTerm);
+
 }

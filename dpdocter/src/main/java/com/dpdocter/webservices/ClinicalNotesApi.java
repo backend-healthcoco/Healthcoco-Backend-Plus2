@@ -10,6 +10,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -44,6 +45,8 @@ import common.util.web.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class ClinicalNotesApi {
 
+	private static Logger logger = Logger.getLogger(ClinicalNotesApi.class.getName());
+	
     @Autowired
     private ClinicalNotesService clinicalNotesService;
 

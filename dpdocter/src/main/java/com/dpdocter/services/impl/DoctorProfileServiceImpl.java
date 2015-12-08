@@ -2,11 +2,14 @@ package com.dpdocter.services.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.EnumUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +19,7 @@ import com.dpdocter.beans.DoctorProfile;
 import com.dpdocter.beans.DoctorRegistrationDetail;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
+import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.LocationCollection;
@@ -24,6 +28,7 @@ import com.dpdocter.collections.ProfessionalMembershipCollection;
 import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
+import com.dpdocter.enums.Day;
 import com.dpdocter.enums.DoctorExperienceUnit;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -37,6 +42,7 @@ import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
+import com.dpdocter.request.DoctorAddEditIBSRequest;
 import com.dpdocter.request.DoctorContactAddEditRequest;
 import com.dpdocter.request.DoctorEducationAddEditRequest;
 import com.dpdocter.request.DoctorExperienceAddEditRequest;
@@ -49,10 +55,13 @@ import com.dpdocter.services.DoctorProfileService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.solr.document.SolrDoctorDocument;
 import com.dpdocter.solr.repository.SolrDoctorRepository;
+import com.dpdocter.webservices.DoctorProfileApi;
 
 @Service
 public class DoctorProfileServiceImpl implements DoctorProfileService {
 
+	private static Logger logger = Logger.getLogger(DoctorProfileServiceImpl.class.getName());
+	
     @Autowired
     private UserRepository userRepository;
 
@@ -560,4 +569,58 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	}
 	return response;
     }
+
+	@Override
+	public List<WorkingSchedule> getTimeSlots(String doctorId, String locationId, String day) {
+		DoctorClinicProfileCollection doctorClinicProfileCollection = null;
+		List<WorkingSchedule> response = null;
+		try {
+			UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(doctorId, locationId);
+		    doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
+		    if (doctorClinicProfileCollection != null){
+		    	if(doctorClinicProfileCollection.getWorkingSchedules() != null){
+		    		response = new ArrayList<WorkingSchedule>();
+		    		if(day != null){
+		    			for(WorkingSchedule workingSchedule : doctorClinicProfileCollection.getWorkingSchedules()){
+		    				if(EnumUtils.isValidEnum(Day.class, day.toUpperCase()) && workingSchedule.getWorkingDay().equals(Day.valueOf(day.toUpperCase()))){
+		    					response.add(workingSchedule);
+		    				}
+		    			}
+		    		}else{
+		    			BeanUtil.map(doctorClinicProfileCollection.getWorkingSchedules(), response);
+		    		}
+		    	}
+		    }
+					} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Clinic Profile");
+		}
+		return response;
+}
+
+	@Override
+	public Boolean addEditIBS(DoctorAddEditIBSRequest request) {
+		DoctorClinicProfileCollection doctorClinicProfileCollection = null;
+		Boolean response = false;
+		try {
+		    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
+		    if (userLocationCollection != null) {
+			doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
+			if (doctorClinicProfileCollection == null) {
+			    doctorClinicProfileCollection = new DoctorClinicProfileCollection();
+			    doctorClinicProfileCollection.setUserLocationId(userLocationCollection.getId());
+//			    doctorClinicProfileCollection.setCreatedTime(new Date());
+			}
+			doctorClinicProfileCollection.setIsIBSOn(request.getIsIBSOn());
+			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+			response = true;
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error Editing Doctor Clinic Profile");
+		    throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Clinic Profile");
+		}
+		return response;
+	    
+	}
 }
