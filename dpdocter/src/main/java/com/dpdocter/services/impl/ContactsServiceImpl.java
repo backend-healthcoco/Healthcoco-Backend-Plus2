@@ -563,13 +563,14 @@ public class ContactsServiceImpl implements ContactsService {
 	PatientGroupAddEditRequest response = new PatientGroupAddEditRequest();
 	PatientCollection patientCollection = patientRepository.findByUserId(request.getPatientId());
 	try {
-	    if (request.getGroupIds() != null && !request.getGroupIds().isEmpty()) {
-		List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(request.getPatientId());
+	    List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(request.getPatientId());
 		if (patientGroupCollections != null && !patientGroupCollections.isEmpty()) {
 		    for (PatientGroupCollection patientGroupCollection : patientGroupCollections) {
 			patientGroupRepository.delete(patientGroupCollection);
 		    }
 		}
+		
+		if (request.getGroupIds() != null && !request.getGroupIds().isEmpty()) {
 		for (String group : request.getGroupIds()) {
 		    PatientGroupCollection patientGroupCollection = new PatientGroupCollection();
 		    patientGroupCollection.setGroupId(group);
@@ -577,8 +578,8 @@ public class ContactsServiceImpl implements ContactsService {
 		    patientCollection.setCreatedTime(new Date());
 		    patientGroupRepository.save(patientGroupCollection);
 		}
-		BeanUtil.map(request, response);
 	    }
+		BeanUtil.map(request, response);
 	    patientCollection.setUpdatedTime(new Date());
 	    patientRepository.save(patientCollection);
 	} catch (Exception e) {

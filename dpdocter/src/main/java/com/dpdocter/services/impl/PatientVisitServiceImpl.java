@@ -28,12 +28,14 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.ClinicalNotesJasperDetails;
+import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.PatientCard;
+import com.dpdocter.beans.PatientVisit;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.PrescriptionItemDetail;
@@ -473,14 +475,23 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			List<ClinicalNotes> clinicalNotes = new ArrayList<ClinicalNotes>();
 			for (String clinicalNotesId : patientVisitCollection.getClinicalNotesId()) {
 			    ClinicalNotes clinicalNote = clinicalNotesService.getNotesById(clinicalNotesId);
-			    if (clinicalNote != null)
-				clinicalNotes.add(clinicalNote);
+			    if (clinicalNote != null){
+			    	if (clinicalNote.getDiagrams() != null && !clinicalNote.getDiagrams().isEmpty()) {
+					    clinicalNote.setDiagrams(getFinalDiagrams(clinicalNote.getDiagrams()));
+					}
+			    	clinicalNotes.add(clinicalNote);
+			    }
 			}
 			patientVisitResponse.setClinicalNotes(clinicalNotes);
 		    }
 
 		    if (patientVisitCollection.getRecordId() != null) {
 			List<Records> records = recordsService.getRecordsByIds(patientVisitCollection.getRecordId());
+			if (records != null && !records.isEmpty()) {
+			    for (Records record : records) {
+				record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl()));
+			    }
+			}
 			patientVisitResponse.setRecords(records);
 		    }
 		    response.add(patientVisitResponse);
@@ -963,12 +974,23 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 		if (patientVisitCollection.getClinicalNotesId() != null && !patientVisitCollection.getClinicalNotesId().isEmpty()) {
 		    for (String clinicalNotesId : patientVisitCollection.getClinicalNotesId()) {
-			clinicalNotes.add(clinicalNotesService.getNotesById(clinicalNotesId));
-		    }
+		    	ClinicalNotes clinicalNote = clinicalNotesService.getNotesById(clinicalNotesId);
+		    	if (clinicalNote != null){
+			    	if (clinicalNote.getDiagrams() != null && !clinicalNote.getDiagrams().isEmpty()) {
+					    clinicalNote.setDiagrams(getFinalDiagrams(clinicalNote.getDiagrams()));
+					}
+			    	clinicalNotes.add(clinicalNote);
+			    }
 		}
-
+		}
 		if (patientVisitCollection.getRecordId() != null && !patientVisitCollection.getRecordId().isEmpty()) {
-		    records.addAll(recordsService.getRecordsByIds(patientVisitCollection.getRecordId()));
+		  records = recordsService.getRecordsByIds(patientVisitCollection.getRecordId());
+			if (records != null && !records.isEmpty()) {
+			    for (Records record : records) {
+				record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl()));
+			    }
+			}
+		    records.addAll(records);
 		}
 
 		response = new PatientVisitResponse();
@@ -987,4 +1009,79 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 	return response;
     }
+
+	@Override
+	public List<PatientVisit> getVisitsHandheld(String doctorId, String locationId, String hospitalId, String patientId,
+			int page, int size, Boolean isOTPVerified, String updatedTime) {
+		List<PatientVisit> response = null;
+		List<PatientVisitCollection> patientVisitCollections = null;
+		try {
+		    long createdTimestamp = Long.parseLong(updatedTime);
+		    if (!isOTPVerified) {
+			if (locationId == null && hospitalId == null) {
+			    if (size > 0)
+				patientVisitCollections = patientVisitRepository.find(doctorId, patientId, new Date(createdTimestamp), new PageRequest(page, size,
+					Direction.DESC, "updatedTime"));
+			    else
+				patientVisitCollections = patientVisitRepository.find(doctorId, patientId, new Date(createdTimestamp), new Sort(Sort.Direction.DESC,
+					"updatedTime"));
+			} else {
+			    if (size > 0)
+				patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, new Date(createdTimestamp),
+					new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    else
+				patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, new Date(createdTimestamp),
+					new Sort(Sort.Direction.DESC, "updatedTime"));
+			}
+		    } else {
+			if (size > 0)
+			    patientVisitCollections = patientVisitRepository.find(patientId, new Date(createdTimestamp), new PageRequest(page, size, Direction.DESC,
+				    "updatedTime"));
+			else
+			    patientVisitCollections = patientVisitRepository.find(patientId, new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+		    }
+		    if (patientVisitCollections != null) {
+			response = new ArrayList<PatientVisit>();
+			BeanUtil.map(patientVisitCollections, response);
+
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error while geting patient Visit : " + e.getCause().getMessage());
+		    throw new BusinessException(ServiceError.Unknown, "Error while geting patient Visit : " + e.getCause().getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public String editRecord(String id, VisitedFor visitedFor) {
+		PatientVisitCollection patientTrackCollection = new PatientVisitCollection();
+		try {
+			switch(visitedFor){
+				case PRESCRIPTION : patientTrackCollection = patientVisitRepository.findByPrescriptionId(id);break;
+				case CLINICAL_NOTES : patientTrackCollection = patientVisitRepository.findByClinialNotesId(id);break;
+				case REPORTS : patientTrackCollection = patientVisitRepository.findByRecordId(id);break;
+				default: break;
+			}
+			if(patientTrackCollection != null){
+				patientTrackCollection.setUpdatedTime(new Date());
+			    patientTrackCollection = patientVisitRepository.save(patientTrackCollection);
+			}
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error while editing patient visit record : " + e.getCause().getMessage());
+		    throw new BusinessException(ServiceError.Unknown, "Error while editing patient visit record : " + e.getCause().getMessage());
+		}
+		return patientTrackCollection.getId();
+
+	}
+	
+	private List<Diagram> getFinalDiagrams(List<Diagram> diagrams) {
+		for (Diagram diagram : diagrams) {
+		    if (diagram.getDiagramUrl() != null) {
+			diagram.setDiagramUrl(getFinalImageURL(diagram.getDiagramUrl()));
+		    }
+		}
+		return diagrams;
+	    }
 }

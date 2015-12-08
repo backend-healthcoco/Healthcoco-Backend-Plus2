@@ -52,6 +52,7 @@ import com.dpdocter.collections.ObservationCollection;
 import com.dpdocter.collections.PatientAdmissionCollection;
 import com.dpdocter.collections.PatientClinicalNotesCollection;
 import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ClinicalItems;
@@ -73,6 +74,7 @@ import com.dpdocter.repository.ObservationRepository;
 import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientClinicalNotesRepository;
 import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.ClinicalNotesAddRequest;
@@ -82,6 +84,7 @@ import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailService;
+import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.solr.document.SolrComplaintsDocument;
 import com.dpdocter.solr.document.SolrDiagnosesDocument;
 import com.dpdocter.solr.document.SolrInvestigationsDocument;
@@ -151,6 +154,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     @Autowired
     private SolrClinicalNotesService solrClinicalNotesService;
 
+    @Autowired
+    private PatientVisitRepository patientVisitRepository;
+
     @Context
     private UriInfo uriInfo;
 
@@ -185,6 +191,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			BeanUtil.map(complaint, complaintCollection);
 			BeanUtil.map(request, complaintCollection);
 			complaintCollection.setCreatedTime(createdTime);
+			complaintCollection.setId(null);
 			complaintCollection = complaintRepository.save(complaintCollection);
 			SolrComplaintsDocument solrComplaintsDocument = new SolrComplaintsDocument();
 			BeanUtil.map(complaintCollection, solrComplaintsDocument);
@@ -204,6 +211,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			BeanUtil.map(observation, observationCollection);
 			BeanUtil.map(request, observationCollection);
 			observationCollection.setCreatedTime(createdTime);
+			observationCollection.setId(null);
 			observationCollection = observationRepository.save(observationCollection);
 
 			SolrObservationsDocument solrDocument = new SolrObservationsDocument();
@@ -225,6 +233,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			BeanUtil.map(investigation, investigationCollection);
 			BeanUtil.map(request, investigationCollection);
 			investigationCollection.setCreatedTime(createdTime);
+			investigationCollection.setId(null);
 			investigationCollection = investigationRepository.save(investigationCollection);
 
 			SolrInvestigationsDocument solrDocument = new SolrInvestigationsDocument();
@@ -246,6 +255,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			BeanUtil.map(note, notesCollection);
 			BeanUtil.map(request, notesCollection);
 			notesCollection.setCreatedTime(createdTime);
+			notesCollection.setId(null);
 			notesCollection = notesRepository.save(notesCollection);
 			SolrNotesDocument solrDocument = new SolrNotesDocument();
 			BeanUtil.map(notesCollection, solrDocument);
@@ -266,6 +276,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			BeanUtil.map(diagnosis, diagnosisCollection);
 			BeanUtil.map(request, diagnosisCollection);
 			diagnosisCollection.setCreatedTime(createdTime);
+			diagnosisCollection.setId(null);
 			diagnosisCollection = diagnosisRepository.save(diagnosisCollection);
 			SolrDiagnosesDocument solrDocument = new SolrDiagnosesDocument();
 			BeanUtil.map(diagnosisCollection, solrDocument);
@@ -456,6 +467,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		if (userCollection != null) {
 		    clinicalNote.setDoctorName(userCollection.getFirstName());
 		}
+		PatientVisitCollection patientVisitCollection = patientVisitRepository.findByClinialNotesId(clinicalNote.getId());
+		if(patientVisitCollection != null)clinicalNote.setVisitId(patientVisitCollection.getId());
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -489,6 +502,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			ComplaintCollection complaintCollection = new ComplaintCollection();
 			BeanUtil.map(complaint, complaintCollection);
 			BeanUtil.map(request, complaintCollection);
+			complaintCollection.setId(null);
 			complaintCollection.setCreatedTime(createdTime);
 			complaintCollection = complaintRepository.save(complaintCollection);
 			SolrComplaintsDocument solrComplaintsDocument = new SolrComplaintsDocument();
@@ -509,6 +523,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			BeanUtil.map(observation, observationCollection);
 			BeanUtil.map(request, observationCollection);
 			observationCollection.setCreatedTime(createdTime);
+			observationCollection.setId(null);
 			observationCollection = observationRepository.save(observationCollection);
 			SolrObservationsDocument solrDocument = new SolrObservationsDocument();
 			BeanUtil.map(observationCollection, solrDocument);
@@ -529,8 +544,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			BeanUtil.map(investigation, investigationCollection);
 			BeanUtil.map(request, investigationCollection);
 			investigationCollection.setCreatedTime(createdTime);
+			investigationCollection.setId(null);
 			investigationCollection = investigationRepository.save(investigationCollection);
-
 			SolrInvestigationsDocument solrDocument = new SolrInvestigationsDocument();
 			BeanUtil.map(investigationCollection, solrDocument);
 			solrClinicalNotesService.addInvestigations(solrDocument);
@@ -550,6 +565,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			BeanUtil.map(note, notesCollection);
 			BeanUtil.map(request, notesCollection);
 			notesCollection.setCreatedTime(createdTime);
+			notesCollection.setId(null);
 			notesCollection = notesRepository.save(notesCollection);
 			SolrNotesDocument solrDocument = new SolrNotesDocument();
 			BeanUtil.map(notesCollection, solrDocument);
@@ -570,6 +586,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			BeanUtil.map(diagnosis, diagnosisCollection);
 			BeanUtil.map(request, diagnosisCollection);
 			diagnosisCollection.setCreatedTime(createdTime);
+			diagnosisCollection.setId(null);
 			diagnosisCollection = diagnosisRepository.save(diagnosisCollection);
 			SolrDiagnosesDocument solrDocument = new SolrDiagnosesDocument();
 			BeanUtil.map(diagnosisCollection, solrDocument);
@@ -599,7 +616,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    clinicalNotesCollection.setCreatedBy(oldClinicalNotesCollection.getCreatedBy());
 	    clinicalNotesCollection.setDiscarded(oldClinicalNotesCollection.getDiscarded());
 	    clinicalNotesCollection.setInHistory(oldClinicalNotesCollection.isInHistory());
-
+	    clinicalNotesCollection.setUpdatedTime(new Date());
 	    clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
 	    if (clinicalNotesCollection != null) {
 		if (request.getId() == null) {

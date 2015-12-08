@@ -88,11 +88,16 @@ public class PrescriptionApi {
 
 	transnationalService.addResource(drugAddEditResponse.getId(), Resource.DRUG, false);
 
-	// Below service call will add the drug in solr index.
-	SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
-	BeanUtil.map(drugAddEditResponse, solrDrugDocument);
-	solrPrescriptionService.addDrug(solrDrugDocument);
-
+	if(drugAddEditResponse != null){
+		SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
+		BeanUtil.map(drugAddEditResponse, solrDrugDocument);
+		if(drugAddEditResponse.getDrugType() != null){
+			solrDrugDocument.setDrugTypeId(drugAddEditResponse.getDrugType().getId());
+			solrDrugDocument.setDrugType(drugAddEditResponse.getDrugType().getType());
+		}
+		solrPrescriptionService.addDrug(solrDrugDocument);
+	}
+	
 	Response<DrugAddEditResponse> response = new Response<DrugAddEditResponse>();
 	response.setData(drugAddEditResponse);
 	return response;
@@ -109,11 +114,15 @@ public class PrescriptionApi {
 	DrugAddEditResponse drugAddEditResponse = prescriptionServices.editDrug(request);
 
 	transnationalService.addResource(drugAddEditResponse.getId(), Resource.DRUG, false);
-	// Below service call will add the drug in solr index.
-	SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
-	BeanUtil.map(drugAddEditResponse, solrDrugDocument);
-	solrPrescriptionService.editDrug(solrDrugDocument);
-
+	if(drugAddEditResponse != null){
+		SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
+		BeanUtil.map(drugAddEditResponse, solrDrugDocument);
+		if(drugAddEditResponse.getDrugType() != null){
+			solrDrugDocument.setDrugTypeId(drugAddEditResponse.getDrugType().getId());
+			solrDrugDocument.setDrugType(drugAddEditResponse.getDrugType().getType());
+		}
+		solrPrescriptionService.editDrug(solrDrugDocument);
+	}
 	Response<DrugAddEditResponse> response = new Response<DrugAddEditResponse>();
 	response.setData(drugAddEditResponse);
 	return response;
@@ -366,6 +375,10 @@ public class PrescriptionApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
 	PrescriptionAddEditResponseDetails prescriptionAddEditResponse = prescriptionServices.addPrescriptionHandheld(request);
+	if (prescriptionAddEditResponse != null) {
+	    String visitId = patientTrackService.addRecord(prescriptionAddEditResponse, VisitedFor.PRESCRIPTION, prescriptionAddEditResponse.getVisitId());
+	    prescriptionAddEditResponse.setVisitId(visitId);
+	}
 
 	Response<PrescriptionAddEditResponseDetails> response = new Response<PrescriptionAddEditResponseDetails>();
 	response.setData(prescriptionAddEditResponse);
@@ -383,6 +396,10 @@ public class PrescriptionApi {
 	}
 	request.setId(prescriptionId);
 	PrescriptionAddEditResponseDetails prescriptionAddEditResponse = prescriptionServices.editPrescription(request);
+	if (prescriptionAddEditResponse != null) {
+	    String visitId = patientTrackService.editRecord(prescriptionAddEditResponse.getId(), VisitedFor.PRESCRIPTION);
+	    prescriptionAddEditResponse.setVisitId(visitId);
+	}
 
 	Response<PrescriptionAddEditResponseDetails> response = new Response<PrescriptionAddEditResponseDetails>();
 	response.setData(prescriptionAddEditResponse);

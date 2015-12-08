@@ -44,4 +44,10 @@ public interface PatientVisitRepository extends MongoRepository<PatientVisitColl
     @Query("{'recordId' : ?0}")
     PatientVisitCollection findByRecordId(String recordId);
 
+    @Query("{'prescriptionId' : ?0}")
+	PatientVisitCollection findByPrescriptionId(String id);
+
+    @Query("{'clinicalNotesId' : ?0}")
+	PatientVisitCollection findByClinialNotesId(String id);
+
 }

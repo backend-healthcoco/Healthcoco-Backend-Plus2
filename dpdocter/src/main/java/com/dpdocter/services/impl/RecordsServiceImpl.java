@@ -102,9 +102,6 @@ public class RecordsServiceImpl implements RecordsService {
     private String imageResource;
 
     @Autowired
-    private PatientVisitService patientTrackService;
-
-    @Autowired
     private PatientVisitRepository patientVisitRepository;
 
     @Override
@@ -266,17 +263,11 @@ public class RecordsServiceImpl implements RecordsService {
 			if (locationCollection != null)
 			    record.setClinicName(locationCollection.getLocationName());
 		    }
+		    PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(record.getId());
+			if(patientVisitCollection != null)record.setVisitId(patientVisitCollection.getId());
 		    records.add(record);
 		}
 	    }
-
-	    for (Records record : records) {
-		PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(record.getId());
-		if (patientVisitCollection != null) {
-		    record.setVisitId(patientVisitCollection.getId());
-		}
-	    }
-
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
@@ -430,6 +421,8 @@ public class RecordsServiceImpl implements RecordsService {
 		    if (userCollection != null) {
 			record.setDoctorName(userCollection.getFirstName());
 		    }
+		    PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(record.getId());
+			if(patientVisitCollection != null)record.setVisitId(patientVisitCollection.getId());
 		    records.add(record);
 		}
 	    }
@@ -504,6 +497,8 @@ public class RecordsServiceImpl implements RecordsService {
 		if (userCollection != null) {
 		    record.setDoctorName(userCollection.getFirstName());
 		}
+		PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(record.getId());
+		if(patientVisitCollection != null)record.setVisitId(patientVisitCollection.getId());
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();

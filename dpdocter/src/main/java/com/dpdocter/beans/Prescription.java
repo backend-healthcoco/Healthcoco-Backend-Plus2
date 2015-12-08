@@ -27,6 +27,8 @@ public class Prescription extends GenericCollection {
 
     private String advice;
 
+    private String visitId;
+
     public String getId() {
 	return id;
     }
@@ -115,11 +117,19 @@ public class Prescription extends GenericCollection {
 	this.advice = advice;
     }
 
-    @Override
-    public String toString() {
-	return "Prescription [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ ", items=" + items + ", inHistory=" + inHistory + ", discarded=" + discarded + ", doctorName=" + doctorName + ", labTests=" + labTests
-		+ ", advice=" + advice + "]";
-    }
+	public String getVisitId() {
+		return visitId;
+	}
 
+	public void setVisitId(String visitId) {
+		this.visitId = visitId;
+	}
+
+	@Override
+	public String toString() {
+		return "Prescription [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", items=" + items + ", inHistory=" + inHistory + ", discarded="
+				+ discarded + ", doctorName=" + doctorName + ", labTests=" + labTests + ", advice=" + advice
+				+ ", visitId=" + visitId + "]";
+	}
 }

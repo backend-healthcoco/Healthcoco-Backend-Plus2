@@ -426,6 +426,8 @@ public interface PathProxy {
 	public static final String GET_VISIT = "/{visitId}";
 
 	public static final String GET_VISITS = "/{doctorId}/{locationId}/{hospitalId}/{patientId}";
+	
+	public static final String GET_VISITS_HANDHELD = "/handheld/{doctorId}/{locationId}/{hospitalId}/{patientId}";
 
 	public static final String DELETE_VISITS = "/{visitId}/delete";
 

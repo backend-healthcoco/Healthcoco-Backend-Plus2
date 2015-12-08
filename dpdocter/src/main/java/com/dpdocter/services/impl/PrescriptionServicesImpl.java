@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.DrugDirection;
+import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Prescription;
@@ -53,6 +54,7 @@ import com.dpdocter.collections.LabTestCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientAdmissionCollection;
 import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.TemplateCollection;
@@ -75,6 +77,7 @@ import com.dpdocter.repository.LabTestRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.TemplateRepository;
@@ -105,6 +108,7 @@ import com.dpdocter.sms.services.SMSServices;
 import com.dpdocter.solr.document.SolrDrugDocument;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.PrescriptionUtils;
 
@@ -167,6 +171,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     @Autowired
     private LabTestRepository labTestRepository;
 
+    @Autowired
+    private PatientVisitRepository patientVisitRepository;
+
     @Context
     private UriInfo uriInfo;
 
@@ -186,6 +193,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    if (drugCollection.getDrugType() != null) {
 		if (drugCollection.getDrugType().getId() == null)
 		    drugCollection.setDrugType(null);
+		else{
+			DrugTypeCollection drugTypeCollection = drugTypeRepository.findOne(drugCollection.getDrugType().getId());
+			if(drugTypeCollection != null){
+				DrugType drugType = new DrugType();
+				BeanUtil.map(drugTypeCollection, drugType);
+				drugCollection.setDrugType(drugType);
+			}
+		}
 	    }
 	    if (drugCollection.getStrength() != null && drugCollection.getStrength().getStrengthUnit() != null) {
 		if (drugCollection.getStrength().getStrengthUnit().getId() == null)
@@ -215,6 +230,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    if (drugCollection.getDrugType() != null) {
 		if (drugCollection.getDrugType().getId() == null)
 		    drugCollection.setDrugType(null);
+		else{
+			DrugTypeCollection drugTypeCollection = drugTypeRepository.findOne(drugCollection.getDrugType().getId());
+			if(drugTypeCollection != null){
+				DrugType drugType = new DrugType();
+				BeanUtil.map(drugTypeCollection, drugType);
+				drugCollection.setDrugType(drugType);
+			}
+		}
 	    }
 	    if (drugCollection.getStrength() != null && drugCollection.getStrength().getStrengthUnit() != null) {
 		if (drugCollection.getStrength().getStrengthUnit().getId() == null)
@@ -652,6 +675,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (userCollection != null) {
 			    prescription.setDoctorName(userCollection.getFirstName());
 			}
+			PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(prescription.getId());
+			if(patientVisitCollection != null)prescription.setVisitId(patientVisitCollection.getId());
 			prescriptions.add(prescription);
 		    }
 
@@ -702,7 +727,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (userCollection != null) {
 			    prescription.setDoctorName(userCollection.getFirstName());
 			}
-
+			PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(prescription.getId());
+			if(patientVisitCollection != null)prescription.setVisitId(patientVisitCollection.getId());
 			prescriptions.add(prescription);
 		    }
 
@@ -1190,6 +1216,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 			prescriptionItemDetails.add(prescriptionItemDetail);
 		    }
+		    PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(prescription.getId());
+			if(patientVisitCollection != null)prescription.setVisitId(patientVisitCollection.getId());
 		    prescription.setItems(prescriptionItemDetails);
 		}
 	    } else {

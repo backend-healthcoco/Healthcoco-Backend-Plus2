@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.PatientVisit;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.AddMultipleDataRequest;
@@ -96,6 +97,24 @@ public class PatientVisitApi {
 		otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), updatedTime);
 
 	Response<PatientVisitResponse> response = new Response<PatientVisitResponse>();
+	response.setDataList(patienVisitResponse);
+	return response;
+    }
+
+    @Path(value = PathProxy.PatientVisitUrls.GET_VISITS_HANDHELD)
+    @GET
+    public Response<PatientVisit> getVisitsHandheld(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+	    @PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "patientId") String patientId, @QueryParam(value = "page") int page,
+	    @QueryParam(value = "size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+
+	if (StringUtils.isEmpty(patientId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
+	    logger.warn("Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+	}
+	List<PatientVisit> patienVisitResponse = patientVisitService.getVisitsHandheld(doctorId, locationId, hospitalId, patientId, page, size,
+		otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), updatedTime);
+
+	Response<PatientVisit> response = new Response<PatientVisit>();
 	response.setDataList(patienVisitResponse);
 	return response;
     }

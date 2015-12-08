@@ -1243,22 +1243,22 @@ public class HistoryServicesImpl implements HistoryServices {
 
 	try {
 	    historyCollection = historyRepository.findHistory(doctorId, locationId, hospitalId, patientId);
-	    List<String> medicalHistoryIds = historyCollection.getMedicalhistory();
-	    if (medicalHistoryIds != null && !medicalHistoryIds.isEmpty()) {
-		if (response == null)
-		    response = new HistoryDetailsResponse();
-		List<DiseaseListResponse> medicalHistory = getDiseasesByIds(medicalHistoryIds);
-		response.setMedicalhistory(medicalHistory);
-	    }
+	    if(historyCollection != null){
+	    	 response = new HistoryDetailsResponse();
+	    	BeanUtil.map(historyCollection, response);
+	    	List<String> medicalHistoryIds = historyCollection.getMedicalhistory();
+		    if (medicalHistoryIds != null && !medicalHistoryIds.isEmpty()) {
+			List<DiseaseListResponse> medicalHistory = getDiseasesByIds(medicalHistoryIds);
+			response.setMedicalhistory(medicalHistory);
+		    }
 
-	    List<String> familyHistoryIds = historyCollection.getFamilyhistory();
-	    if (familyHistoryIds != null && !familyHistoryIds.isEmpty()) {
-		if (response == null)
-		    response = new HistoryDetailsResponse();
-		List<DiseaseListResponse> familyHistory = getDiseasesByIds(medicalHistoryIds);
-		response.setFamilyhistory(familyHistory);
+		    List<String> familyHistoryIds = historyCollection.getFamilyhistory();
+		    if (familyHistoryIds != null && !familyHistoryIds.isEmpty()) {
+			List<DiseaseListResponse> familyHistory = getDiseasesByIds(medicalHistoryIds);
+			response.setFamilyhistory(familyHistory);
+		    }
 	    }
-
+	    
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
