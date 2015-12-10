@@ -173,7 +173,7 @@ public class AppointmentApi {
 	return response;
     }
 
-    @Path(value = PathProxy.AppointmentUrls.GET_LANDMARK_LOCALITY)
+   /* @Path(value = PathProxy.AppointmentUrls.GET_LANDMARK_LOCALITY)
     @GET
     public Response<Object> getLandmarkLocality(@PathParam(value = "cityId") String cityId, @QueryParam(value = "type") String type) {
 
@@ -182,7 +182,7 @@ public class AppointmentApi {
 	response.setDataList(landmarksLocalities);
 	return response;
 
-    }
+    }*/
 
     @Path(value = PathProxy.AppointmentUrls.GET_CLINIC)
     @GET
