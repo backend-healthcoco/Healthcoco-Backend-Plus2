@@ -410,63 +410,79 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			clinicProfileCollection.add(doctorClinicCollection);
 			BeanUtil.map(doctorClinicCollection, doctorClinic);
 			locationCollection = locationRepository.findOne(doctorClinic.getLocationId());
-			String address = locationCollection.getLocationName() + ", " + locationCollection.getStreetAddress() + ", "
-				+ locationCollection.getCity() + ", " + locationCollection.getState() + " - " + locationCollection.getPostalCode() + ", "
-				+ locationCollection.getCountry();
-			doctorClinic.setClinicAddress(address);
+			String address = locationCollection.getLocationName()!= null ? locationCollection.getLocationName()+ ", " :""
+   				 + locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() + ", " :""
+   				 + locationCollection.getCity() != null ? locationCollection.getCity()+ ", ":"" 
+   				 + locationCollection.getState() != null ? locationCollection.getState()  :""
+   				 + locationCollection.getState() != null && locationCollection.getPostalCode() != null ? " - " :""
+   				 + locationCollection.getPostalCode() != null ? locationCollection.getPostalCode() + ", ":""
+   				 + locationCollection.getState() != null && locationCollection.getPostalCode() == null ? ", " :""
+   				 + locationCollection.getCountry() != null ? locationCollection.getCountry() :"";
+   			
+   			doctorClinic.setClinicAddress(address);
+			doctorClinic.setImages(locationCollection.getImages());
+			doctorClinic.setLogoUrl(locationCollection.getLogoUrl());
+			doctorClinic.setLogoThumbnailUrl(locationCollection.getLogoThumbnailUrl());
 			clinicProfile.add(doctorClinic);
 		    }
 		}
 	    } else {
+	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(userCollection.getId(), locationId);
+		if(userLocationCollection != null){
+			DoctorClinicProfileCollection doctorClinicCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
 
-		DoctorClinicProfileCollection doctorClinicCollection = doctorClinicProfileRepository.findByLocationId(locationId);
+			if (doctorClinicCollection != null) {
+			    clinicProfileCollection.add(doctorClinicCollection);
+			    BeanUtil.map(doctorClinicCollection, doctorClinic);
+			    locationCollection = locationRepository.findOne(locationId);
+			    String address = locationCollection.getLocationName()!= null ? locationCollection.getLocationName()+ ", " :""
+			    				 + locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() + ", " :""
+			    				 + locationCollection.getCity() != null ? locationCollection.getCity()+ ", ":"" 
+			    				 + locationCollection.getState() != null ? locationCollection.getState()  :""
+			    				 + locationCollection.getState() != null && locationCollection.getPostalCode() != null ? " - " :""
+			    				 + locationCollection.getPostalCode() != null ? locationCollection.getPostalCode() + ", ":""
+			    				 + locationCollection.getState() != null && locationCollection.getPostalCode() == null ? ", " :""
+			    				 + locationCollection.getCountry() != null ? locationCollection.getCountry() :"";
+			    doctorClinic.setClinicAddress(address);
+			    clinicProfile.add(doctorClinic);
+			}
 
-		if (doctorClinicCollection != null) {
-		    clinicProfileCollection.add(doctorClinicCollection);
-		    BeanUtil.map(doctorClinicCollection, doctorClinic);
-		    locationCollection = locationRepository.findOne(locationId);
-		    String address = locationCollection.getLocationName() + ", " + locationCollection.getStreetAddress() + ", " + locationCollection.getCity()
-			    + ", " + locationCollection.getState() + " - " + locationCollection.getPostalCode() + ", " + locationCollection.getCountry();
-		    doctorClinic.setClinicAddress(address);
-		    clinicProfile.add(doctorClinic);
-		}
+		    }}
+		    doctorProfile = new DoctorProfile();
+		    BeanUtil.map(userCollection, doctorProfile);
+		    BeanUtil.map(doctorCollection, doctorProfile);
 
-	    }
-	    doctorProfile = new DoctorProfile();
-	    BeanUtil.map(userCollection, doctorProfile);
-	    BeanUtil.map(doctorCollection, doctorProfile);
+		    // set specialities using speciality ids
+		    if (doctorProfile.getSpecialities() != null) {
+			specialities = (List<String>) CollectionUtils.collect((Collection) specialityRepository.findAll(doctorProfile.getSpecialities()),
+				new BeanToPropertyValueTransformer("speciality"));
+		    }
+		    doctorProfile.setSpecialities(specialities);
 
-	    // set specialities using speciality ids
-	    if (doctorProfile.getSpecialities() != null) {
-		specialities = (List<String>) CollectionUtils.collect((Collection) specialityRepository.findAll(doctorProfile.getSpecialities()),
-			new BeanToPropertyValueTransformer("speciality"));
-	    }
-	    doctorProfile.setSpecialities(specialities);
+		    // set medical councils using medical councils ids
+		    registrationDetails = new ArrayList<DoctorRegistrationDetail>();
+		    if (doctorProfile.getRegistrationDetails() != null) {
+			for (DoctorRegistrationDetail registrationDetail : doctorProfile.getRegistrationDetails()) {
+			    DoctorRegistrationDetail doctorRegistrationDetail = new DoctorRegistrationDetail();
+			    BeanUtil.map(registrationDetail, doctorRegistrationDetail);
+			    MedicalCouncilCollection medicalCouncilCollection = medicalCouncilRepository.findOne(registrationDetail.getMedicalCouncil());
+			    if (medicalCouncilCollection != null)
+				doctorRegistrationDetail.setMedicalCouncil(medicalCouncilCollection.getMedicalCouncil());
+			    registrationDetails.add(doctorRegistrationDetail);
+			}
+		    }
+		    doctorProfile.setRegistrationDetails(registrationDetails);
 
-	    // set medical councils using medical councils ids
-	    registrationDetails = new ArrayList<DoctorRegistrationDetail>();
-	    if (doctorProfile.getRegistrationDetails() != null) {
-		for (DoctorRegistrationDetail registrationDetail : doctorProfile.getRegistrationDetails()) {
-		    DoctorRegistrationDetail doctorRegistrationDetail = new DoctorRegistrationDetail();
-		    BeanUtil.map(registrationDetail, doctorRegistrationDetail);
-		    MedicalCouncilCollection medicalCouncilCollection = medicalCouncilRepository.findOne(registrationDetail.getMedicalCouncil());
-		    if (medicalCouncilCollection != null)
-			doctorRegistrationDetail.setMedicalCouncil(medicalCouncilCollection.getMedicalCouncil());
-		    registrationDetails.add(doctorRegistrationDetail);
-		}
-	    }
-	    doctorProfile.setRegistrationDetails(registrationDetails);
+		    // set professional memberships using professional membership ids
+		    if (doctorProfile.getProfessionalMemberships() != null) {
+			professionalMemberships = (List<String>) CollectionUtils.collect((Collection) professionalMembershipRepository.findAll(doctorProfile
+				.getProfessionalMemberships()), new BeanToPropertyValueTransformer("membership"));
+		    }
+		    doctorProfile.setProfessionalMemberships(professionalMemberships);
 
-	    // set professional memberships using professional membership ids
-	    if (doctorProfile.getProfessionalMemberships() != null) {
-		professionalMemberships = (List<String>) CollectionUtils.collect((Collection) professionalMembershipRepository.findAll(doctorProfile
-			.getProfessionalMemberships()), new BeanToPropertyValueTransformer("membership"));
-	    }
-	    doctorProfile.setProfessionalMemberships(professionalMemberships);
-
-	    // set clinic profile details
-	    doctorProfile.setClinicProfile(clinicProfile);
-	} catch (Exception e) {
+		    // set clinic profile details
+		    doctorProfile.setClinicProfile(clinicProfile);
+	    } catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Getting Doctor Profile");
 	    throw new BusinessException(ServiceError.Unknown, "Error Getting Doctor Profile");
@@ -735,13 +751,12 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	DoctorCollection doctorCollection = null;
 	List<SpecialityCollection> specialityCollections = null;
 	List<String> specialities = null;
+	List<String> specialitiesresponse = null;
 	DoctorMultipleDataAddEditResponse response = null;
 	try {
 	    userCollection = userRepository.findOne(request.getDoctorId());
 	    doctorCollection = doctorRepository.findByUserId(request.getDoctorId());
 	    if (userCollection != null && doctorCollection != null) {
-		/*BeanUtil.map(request, userCollection);
-		BeanUtil.map(request, doctorCollection);*/
 
 		if (!DPDoctorUtils.anyStringEmpty(request.getTitle())) {
 		    userCollection.setTitle(request.getTitle());
@@ -764,11 +779,13 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		if (!request.getSpeciality().isEmpty()) {
 		    specialityCollections = specialityRepository.findAll();
 		    specialities = new ArrayList<String>();
+		    specialitiesresponse = new ArrayList<String>();
 		    for (String speciality : request.getSpeciality()) {
 			Boolean specialityFound = false;
 			for (SpecialityCollection specialityCollection : specialityCollections) {
 			    if (speciality.trim().equalsIgnoreCase(specialityCollection.getSpeciality())) {
-				specialities.add(specialityCollection.getSpeciality());
+				specialities.add(specialityCollection.getId());
+				specialitiesresponse.add(specialityCollection.getSpeciality());
 				specialityFound = true;
 				break;
 			    }
@@ -778,7 +795,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			    specialityCollection.setSpeciality(speciality);
 			    specialityCollection.setCreatedTime(new Date());
 			    specialityCollection = specialityRepository.save(specialityCollection);
-			    specialities.add(specialityCollection.getSpeciality());
+			    specialities.add(specialityCollection.getId());
+			    specialitiesresponse.add(specialityCollection.getSpeciality());
 			}
 		    }
 		    doctorCollection.setSpecialities(specialities);
@@ -793,6 +811,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		    String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getProfileImage(), path);
 		    userCollection.setThumbnailUrl(thumbnailUrl);
 		    response.setProfileImageUrl(imageurl);
+		    response.setThumbnailProfileImageUrl(thumbnailUrl);
 		}
 
 		if (request.getCoverImage() != null) {
@@ -804,13 +823,14 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		    String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getCoverImage(), path);
 		    userCollection.setCoverThumbnailImageUrl(thumbnailUrl);
 		    response.setCoverImageUrl(imageurl);
+		    response.setThumbnailCoverImageUrl(thumbnailUrl);
 		}
-		userRepository.save(userCollection);
-		doctorRepository.save(doctorCollection);
+		userCollection = userRepository.save(userCollection);
+		doctorCollection = doctorRepository.save(doctorCollection);
 
 		BeanUtil.map(userCollection, response);
 		BeanUtil.map(doctorCollection, response);
-
+		response.setSpecialities(specialitiesresponse);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();

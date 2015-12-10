@@ -174,9 +174,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     @Autowired
     private PatientVisitRepository patientVisitRepository;
 
-    @Context
-    private UriInfo uriInfo;
-
     @Value(value = "${IMAGE_URL_ROOT_PATH}")
     private String imageUrlRootPath;
 
@@ -2311,9 +2308,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
-    public void emailPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String emailAddress) {
+    public void emailPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String emailAddress, UriInfo uriInfo) {
 	try {
-	    MailAttachment mailAttachment = createMailDate(prescriptionId, doctorId, locationId, hospitalId);
+	    MailAttachment mailAttachment = createMailDate(prescriptionId, doctorId, locationId, hospitalId, uriInfo);
 	    mailService.sendEmail(emailAddress, "Prescription", "PFA.", mailAttachment);
 	} catch (MessagingException e) {
 	    logger.error(e);
@@ -2322,11 +2319,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
-    public MailAttachment getPrescriptionMailData(String prescriptionId, String doctorId, String locationId, String hospitalId) {
-	return createMailDate(prescriptionId, doctorId, locationId, hospitalId);
+    public MailAttachment getPrescriptionMailData(String prescriptionId, String doctorId, String locationId, String hospitalId, UriInfo uriInfo) {
+	return createMailDate(prescriptionId, doctorId, locationId, hospitalId, uriInfo);
     }
 
-    private MailAttachment createMailDate(String prescriptionId, String doctorId, String locationId, String hospitalId) {
+    private MailAttachment createMailDate(String prescriptionId, String doctorId, String locationId, String hospitalId, UriInfo uriInfo) {
 	PrescriptionCollection prescriptionCollection = null;
 	Map<String, Object> parameters = new HashMap<String, Object>();
 	MailAttachment mailAttachment = null;
@@ -2510,7 +2507,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 		LocationCollection location = locationRepository.findOne(locationId);
 		if (location != null)
-		    parameters.put("logoURL", getFinalImageURL(location.getLogoUrl()));
+		    parameters.put("logoURL", getFinalImageURL(location.getLogoUrl(), uriInfo));
 
 		String layout = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 			: "PORTRAIT";
@@ -2827,7 +2824,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
     }
 
-    private String getFinalImageURL(String imageURL) {
+    private String getFinalImageURL(String imageURL, UriInfo uriInfo) {
 	if (imageURL != null && uriInfo != null) {
 	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
 	    return finalImageURL + imageURL;

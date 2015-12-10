@@ -12,7 +12,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -73,6 +75,9 @@ public class PrescriptionApi {
 
     @Autowired
     private TransactionalManagementService transnationalService;
+
+    @Context
+    private UriInfo uriInfo;
 
     @Autowired
     private OTPService otpService;
@@ -711,7 +716,7 @@ public class PrescriptionApi {
 	    throw new BusinessException(ServiceError.InvalidInput,
 		    "Invalid Input. Prescription Id, Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
 	}
-	prescriptionServices.emailPrescription(prescriptionId, doctorId, locationId, hospitalId, emailAddress);
+	prescriptionServices.emailPrescription(prescriptionId, doctorId, locationId, hospitalId, emailAddress, uriInfo);
 
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);

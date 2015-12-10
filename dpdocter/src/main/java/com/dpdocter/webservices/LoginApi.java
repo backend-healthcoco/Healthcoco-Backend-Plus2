@@ -6,10 +6,13 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.LoginResponse;
@@ -34,6 +37,12 @@ public class LoginApi {
     @Autowired
     private LoginService loginService;
 
+    @Context
+    private UriInfo uriInfo;
+
+    @Value(value = "${IMAGE_URL_ROOT_PATH}")
+    private String imageUrlRootPath;
+
     @Path(value = PathProxy.LoginUrls.LOGIN_USER)
     @POST
     public Response<LoginResponse> login(LoginRequest request) {
@@ -41,8 +50,9 @@ public class LoginApi {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
-	LoginResponse loginResponse = loginService.login(request);
+	LoginResponse loginResponse = loginService.login(request, uriInfo);
 	Response<LoginResponse> response = new Response<LoginResponse>();
+	if(response != null)
 	response.setData(loginResponse);
 	return response;
     }
@@ -60,4 +70,12 @@ public class LoginApi {
 	return response;
     }
 
+    private String getFinalImageURL(String imageURL) {
+	if (imageURL != null) {
+	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+	    return finalImageURL + imageURL;
+	} else
+	    return null;
+
+    }
 }

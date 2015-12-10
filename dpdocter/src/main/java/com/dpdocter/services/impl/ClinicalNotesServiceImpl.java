@@ -157,8 +157,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     @Autowired
     private PatientVisitRepository patientVisitRepository;
 
-    @Context
-    private UriInfo uriInfo;
+//    @Context
+//    private UriInfo uriInfo;
 
     @Value(value = "${IMAGE_URL_ROOT_PATH}")
     private String imageUrlRootPath;
@@ -1995,8 +1995,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
-    public void emailClinicalNotes(String clinicalNotesId, String doctorId, String locationId, String hospitalId, String emailAddress) {
-	MailAttachment mailAttachment = createMailData(clinicalNotesId, doctorId, locationId, hospitalId);
+    public void emailClinicalNotes(String clinicalNotesId, String doctorId, String locationId, String hospitalId, String emailAddress, UriInfo uriInfo) {
+	MailAttachment mailAttachment = createMailData(clinicalNotesId, doctorId, locationId, hospitalId, uriInfo);
 	try {
 	    mailService.sendEmail(emailAddress, "Clinical Notes", "PFA.", mailAttachment);
 	} catch (MessagingException e) {
@@ -2007,11 +2007,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
-    public MailAttachment getClinicalNotesMailData(String clinicalNotesId, String doctorId, String locationId, String hospitalId) {
-	return createMailData(clinicalNotesId, doctorId, locationId, hospitalId);
+    public MailAttachment getClinicalNotesMailData(String clinicalNotesId, String doctorId, String locationId, String hospitalId, UriInfo uriInfo) {
+	return createMailData(clinicalNotesId, doctorId, locationId, hospitalId, uriInfo);
     }
 
-    private MailAttachment createMailData(String clinicalNotesId, String doctorId, String locationId, String hospitalId) {
+    private MailAttachment createMailData(String clinicalNotesId, String doctorId, String locationId, String hospitalId, UriInfo uriInfo) {
 	ClinicalNotesCollection clinicalNotesCollection = null;
 	Map<String, Object> parameters = new HashMap<String, Object>();
 	MailAttachment mailAttachment = null;
@@ -2094,8 +2094,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			    DiagramsCollection diagramsCollection = diagramsRepository.findOne(diagramId);
 			    if (diagramsCollection != null) {
 				if (diagramsCollection.getDiagramUrl() != null) {
-				    diagram.put("url", getFinalImageURL(diagramsCollection.getDiagramUrl()));
-				    System.out.println(getFinalImageURL(diagramsCollection.getDiagramUrl()));
+				    diagram.put("url", getFinalImageURL(diagramsCollection.getDiagramUrl(), uriInfo));
+				    System.out.println(getFinalImageURL(diagramsCollection.getDiagramUrl(), uriInfo));
 				}
 				diagram.put("tags", diagramsCollection.getTags());
 				diagramIds.add(diagram);
@@ -2249,9 +2249,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 		LocationCollection location = locationRepository.findOne(locationId);
 		if (location != null)
-		    parameters.put("logoURL",
-			    "http://ec2-52-91-243-85.compute-1.amazonaws.com:8082/resource-data/clinic/logos/robert-downey-jr-1a1448532914786.jpg");
-		// getFinalImageURL(location.getLogoUrl()));
+		    parameters.put("logoURL", getFinalImageURL(location.getLogoUrl(), uriInfo));
 
 		String layout = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 			: "PORTRAIT";
@@ -2282,7 +2280,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return mailAttachment;
     }
 
-    private String getFinalImageURL(String imageURL) {
+    private String getFinalImageURL(String imageURL, UriInfo uriInfo) {
 	if (imageURL != null && uriInfo != null) {
 	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
 	    return finalImageURL + imageURL;

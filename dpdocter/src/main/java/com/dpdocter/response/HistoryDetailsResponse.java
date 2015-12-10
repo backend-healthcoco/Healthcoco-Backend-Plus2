@@ -31,7 +31,7 @@ public class HistoryDetailsResponse {
     private List<DiseaseListResponse> medicalhistory;
 
     private List<String> specialNotes;
-
+    
     public String getId() {
 	return id;
     }
@@ -112,11 +112,12 @@ public class HistoryDetailsResponse {
 	this.specialNotes = specialNotes;
     }
 
-    @Override
-    public String toString() {
-	return "HistoryDetailsResponse [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId="
-		+ patientId + ", doctorName=" + doctorName + ", generalRecords=" + generalRecords + ", familyhistory=" + familyhistory + ", medicalhistory="
-		+ medicalhistory + ", specialNotes=" + specialNotes + "]";
-    }
+	@Override
+	public String toString() {
+		return "HistoryDetailsResponse [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", doctorName=" + doctorName
+				+ ", generalRecords=" + generalRecords + ", familyhistory=" + familyhistory + ", medicalhistory="
+				+ medicalhistory + ", specialNotes=" + specialNotes + "]";
+	}
 
 }

@@ -2,6 +2,8 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import javax.ws.rs.core.UriInfo;
+
 import com.dpdocter.beans.MedicalData;
 import com.dpdocter.beans.MedicalHistoryHandler;
 import com.dpdocter.request.DiseaseAddEditRequest;
@@ -58,7 +60,7 @@ public interface HistoryServices {
 
     HistoryDetailsResponse getMedicalAndFamilyHistory(String patientId, String doctorId, String hospitalId, String locationId);
 
-    boolean mailMedicalData(MedicalData medicalData);
+    boolean mailMedicalData(MedicalData medicalData, UriInfo uriInfo);
 
     boolean addVisitsToHistory(String visitId, String patientId, String doctorId, String hospitalId, String locationId);
 

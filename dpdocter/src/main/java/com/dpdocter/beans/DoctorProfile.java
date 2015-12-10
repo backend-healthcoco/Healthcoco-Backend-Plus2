@@ -2,6 +2,8 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 public class DoctorProfile {
     private String id;
 
@@ -26,6 +28,10 @@ public class DoctorProfile {
     private String thumbnailUrl;
 
     private DOB dob;
+
+    private String coverImageUrl;
+
+    private String coverThumbnailImageUrl;
 
     private List<String> additionalNumbers;
 
@@ -233,13 +239,32 @@ public class DoctorProfile {
 	this.clinicProfile = clinicProfile;
     }
 
-    @Override
-    public String toString() {
-	return "DoctorProfile [id=" + id + ", userId=" + userId + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName="
-		+ middleName + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl=" + imageUrl
-		+ ", thumbnailUrl=" + thumbnailUrl + ", dob=" + dob + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses="
-		+ otherEmailAddresses + ", experience=" + experience + ", education=" + education + ", specialities=" + specialities + ", achievements="
-		+ achievements + ", professionalStatement=" + professionalStatement + ", registrationDetails=" + registrationDetails + ", experienceDetails="
-		+ experienceDetails + ", professionalMemberships=" + professionalMemberships + ", clinicProfile=" + clinicProfile + "]";
-    }
+	public String getCoverImageUrl() {
+		return coverImageUrl;
+	}
+
+	public void setCoverImageUrl(String coverImageUrl) {
+		this.coverImageUrl = coverImageUrl;
+	}
+
+	public String getCoverThumbnailImageUrl() {
+		return coverThumbnailImageUrl;
+	}
+
+	public void setCoverThumbnailImageUrl(String coverThumbnailImageUrl) {
+		this.coverThumbnailImageUrl = coverThumbnailImageUrl;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorProfile [id=" + id + ", userId=" + userId + ", title=" + title + ", firstName=" + firstName
+				+ ", lastName=" + lastName + ", middleName=" + middleName + ", emailAddress=" + emailAddress
+				+ ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl=" + imageUrl + ", thumbnailUrl="
+				+ thumbnailUrl + ", dob=" + dob + ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl="
+				+ coverThumbnailImageUrl + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses="
+				+ otherEmailAddresses + ", experience=" + experience + ", education=" + education + ", specialities="
+				+ specialities + ", achievements=" + achievements + ", professionalStatement=" + professionalStatement
+				+ ", registrationDetails=" + registrationDetails + ", experienceDetails=" + experienceDetails
+				+ ", professionalMemberships=" + professionalMemberships + ", clinicProfile=" + clinicProfile + "]";
+	}
 }

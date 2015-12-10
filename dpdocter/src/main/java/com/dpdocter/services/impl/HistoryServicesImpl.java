@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import javax.ws.rs.core.UriInfo;
+
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
@@ -880,33 +882,46 @@ public class HistoryServicesImpl implements HistoryServices {
 	    Aggregation aggregation = null;
 	    if (!historyFilter.contains(HistoryFilter.ALL.getFilter())) {
 		matchForFilter = Aggregation.match(Criteria.where("generalRecords.dataType").in(historyFilter));
-		aggregation = Aggregation.newAggregation(
-			Aggregation.match(Criteria
-				.where("patientId")
-				.is(patientId)
-				.andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
-					Criteria.where("hospitalId").is(hospitalId))), Aggregation.unwind("generalRecords"), matchForFilter,
-			Aggregation.skip((page - 1) * size), Aggregation.limit(size));
+		if(size > 0)aggregation = Aggregation.newAggregation(
+				Aggregation.match(Criteria
+						.where("patientId")
+						.is(patientId)
+						.andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
+							Criteria.where("hospitalId").is(hospitalId))), Aggregation.unwind("generalRecords"), matchForFilter,
+					Aggregation.skip((page - 1) * size), Aggregation.limit(size), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+		else aggregation = Aggregation.newAggregation(
+				Aggregation.match(Criteria
+						.where("patientId")
+						.is(patientId)
+						.andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
+							Criteria.where("hospitalId").is(hospitalId))), Aggregation.unwind("generalRecords"), matchForFilter,
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 	    } else {
-		aggregation = Aggregation.newAggregation(
-			Aggregation.match(Criteria
-				.where("patientId")
-				.is(patientId)
-				.andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
-					Criteria.where("hospitalId").is(hospitalId))), Aggregation.unwind("generalRecords"),
-			Aggregation.skip((page - 1) * size), Aggregation.limit(size));
+		if(size > 0)aggregation = Aggregation.newAggregation(
+				Aggregation.match(Criteria
+						.where("patientId")
+						.is(patientId)
+						.andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
+							Criteria.where("hospitalId").is(hospitalId))), Aggregation.unwind("generalRecords"),
+					Aggregation.skip((page - 1) * size), Aggregation.limit(size), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+		else aggregation = Aggregation.newAggregation(
+				Aggregation.match(Criteria
+						.where("patientId")
+						.is(patientId)
+						.andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
+							Criteria.where("hospitalId").is(hospitalId))), Aggregation.unwind("generalRecords"),
+					       Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 	    }
 	    AggregationResults<History> groupResults = mongoTemplate.aggregate(aggregation, HistoryCollection.class, History.class);
 	    List<History> general = groupResults.getMappedResults();
 	    if (general != null) {
-
+	    	
 		response = new ArrayList<HistoryDetailsResponse>();
 		for (History historyCollection : general) {
 		    HistoryDetailsResponse historyDetailsResponse = new HistoryDetailsResponse();
 		    BeanUtil.map(historyCollection, historyDetailsResponse);
-
 		    if (historyCollection.getGeneralRecords() != null) {
 			List<GeneralData> generalRecords = new ArrayList<GeneralData>();
 			generalRecords.add(getGeneralData(historyCollection.getGeneralRecords()));
@@ -1008,11 +1023,14 @@ public class HistoryServicesImpl implements HistoryServices {
 	    Aggregation aggregation = null;
 	    if (!historyFilter.contains(HistoryFilter.ALL.getFilter())) {
 		matchForFilter = Aggregation.match(Criteria.where("generalRecords.dataType").in(historyFilter));
-		aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("patientId").is(patientId)), Aggregation.unwind("generalRecords"),
-			matchForFilter, Aggregation.skip((page - 1) * size), Aggregation.limit(size));
+		if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("patientId").is(patientId)), Aggregation.unwind("generalRecords"),
+				matchForFilter, Aggregation.skip((page - 1) * size), Aggregation.limit(size), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+		else aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("patientId").is(patientId)), Aggregation.unwind("generalRecords"),
+				matchForFilter, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 	    } else {
-		aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("patientId").is(patientId)), Aggregation.unwind("generalRecords"),
-			Aggregation.skip((page - 1) * size), Aggregation.limit(size));
+		if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("patientId").is(patientId)), Aggregation.unwind("generalRecords"),
+				Aggregation.skip((page - 1) * size), Aggregation.limit(size));
+		else aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("patientId").is(patientId)), Aggregation.unwind("generalRecords"));
 	    }
 
 	    AggregationResults<History> groupResults = mongoTemplate.aggregate(aggregation, HistoryCollection.class, History.class);
@@ -1136,8 +1154,8 @@ public class HistoryServicesImpl implements HistoryServices {
 	    HistoryCollection historyCollection = historyRepository.findHistory(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
 		if (historyCollection.getGeneralRecords() != null && !historyCollection.getGeneralRecords().isEmpty()) {
-		    List<GeneralData> generslData = fetchGeneralData(historyCollection.getGeneralRecords());
-		    historyCount = generslData.isEmpty() ? 0 : generslData.size();
+//		    List<GeneralData> generslData = fetchGeneralData(historyCollection.getGeneralRecords());
+		    historyCount = historyCollection.getGeneralRecords().isEmpty() ? 0 : historyCollection.getGeneralRecords().size();
 		}
 	    }
 	} catch (Exception e) {
@@ -1268,7 +1286,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
-    public boolean mailMedicalData(MedicalData medicalData) {
+    public boolean mailMedicalData(MedicalData medicalData, UriInfo uriInfo) {
 	boolean response = false;
 	List<MailAttachment> mailAttachments = null;
 	try {
@@ -1281,13 +1299,13 @@ public class HistoryServicesImpl implements HistoryServices {
 	    for (MailData mailData : medicalData.getMailDataList()) {
 		switch (mailData.getMailType()) {
 		case CLINICAL_NOTE:
-		    mailAttachments.add(clinicalNotesService.getClinicalNotesMailData(mailData.getId(), doctorId, locationId, hospitalId));
+		    mailAttachments.add(clinicalNotesService.getClinicalNotesMailData(mailData.getId(), doctorId, locationId, hospitalId, uriInfo));
 		    break;
 		case PRESCRIPTION:
-		    mailAttachments.add(prescriptionServices.getPrescriptionMailData(mailData.getId(), doctorId, locationId, hospitalId));
+		    mailAttachments.add(prescriptionServices.getPrescriptionMailData(mailData.getId(), doctorId, locationId, hospitalId, uriInfo));
 		    break;
 		case REPORT:
-		    mailAttachments.add(recordsService.getRecordMailData(mailData.getId(), doctorId, locationId, hospitalId));
+		    mailAttachments.add(recordsService.getRecordMailData(mailData.getId(), doctorId, locationId, hospitalId, uriInfo));
 		    break;
 		}
 	    }

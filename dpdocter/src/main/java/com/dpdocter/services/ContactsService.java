@@ -2,6 +2,7 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Group;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.RegisteredPatientDetails;
@@ -28,12 +29,14 @@ public interface ContactsService {
 
     Boolean exportContacts(ExportContactsRequest request);
 
-    List<PatientCard> getDoctorContacts(String doctorId, String updatedTime, boolean discarded, int page, int size);
+    DoctorContactsResponse getDoctorContacts(String doctorId,  String locationId, String hospitalId, String updatedTime, boolean discarded, int page, int size);
 
     List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded);
 
     PatientGroupAddEditRequest addGroupToPatient(PatientGroupAddEditRequest request);
 
     List<Group> getAllGroups(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded);
+
+	DoctorContactsResponse getDoctorContactsSortedByName(String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, int page, int size);
 
 }

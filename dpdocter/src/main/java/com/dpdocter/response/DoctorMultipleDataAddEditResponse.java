@@ -2,6 +2,8 @@ package com.dpdocter.response;
 
 import java.util.List;
 
+import com.dpdocter.beans.DoctorExperience;
+
 public class DoctorMultipleDataAddEditResponse {
 
     private String doctorId;
@@ -10,13 +12,17 @@ public class DoctorMultipleDataAddEditResponse {
 
     private String firstName;
 
-    private String experience;
+    private DoctorExperience experience;
 
     private List<String> specialities;
 
     private String profileImageUrl;
 
+    private String thumbnailProfileImageUrl;
+
     private String coverImageUrl;
+
+    private String thumbnailCoverImageUrl;
 
     public String getDoctorId() {
 	return doctorId;
@@ -42,11 +48,11 @@ public class DoctorMultipleDataAddEditResponse {
 	this.firstName = firstName;
     }
 
-    public String getExperience() {
+    public DoctorExperience getExperience() {
 	return experience;
     }
 
-    public void setExperience(String experience) {
+    public void setExperience(DoctorExperience experience) {
 	this.experience = experience;
     }
 
@@ -74,9 +80,28 @@ public class DoctorMultipleDataAddEditResponse {
 	this.coverImageUrl = coverImageUrl;
     }
 
-    @Override
-    public String toString() {
-	return "DoctorMultipleDataAddEditResponse [doctorId=" + doctorId + ", title=" + title + ", firstName=" + firstName + ", experience=" + experience
-		+ ", specialities=" + specialities + ", profileImageUrl=" + profileImageUrl + ", coverImageUrl=" + coverImageUrl + "]";
-    }
+	public String getThumbnailProfileImageUrl() {
+		return thumbnailProfileImageUrl;
+	}
+
+	public void setThumbnailProfileImageUrl(String thumbnailProfileImageUrl) {
+		this.thumbnailProfileImageUrl = thumbnailProfileImageUrl;
+	}
+
+	public String getThumbnailCoverImageUrl() {
+		return thumbnailCoverImageUrl;
+	}
+
+	public void setThumbnailCoverImageUrl(String thumbnailCoverImageUrl) {
+		this.thumbnailCoverImageUrl = thumbnailCoverImageUrl;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorMultipleDataAddEditResponse [doctorId=" + doctorId + ", title=" + title + ", firstName="
+				+ firstName + ", experience=" + experience + ", specialities=" + specialities + ", profileImageUrl="
+				+ profileImageUrl + ", thumbnailProfileImageUrl=" + thumbnailProfileImageUrl + ", coverImageUrl="
+				+ coverImageUrl + ", thumbnailCoverImageUrl=" + thumbnailCoverImageUrl + "]";
+	}
+
 }

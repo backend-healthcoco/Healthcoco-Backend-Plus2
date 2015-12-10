@@ -15,6 +15,9 @@ public class PatientCollection extends GenericCollection {
     private String id;
 
     @Field
+    private String firstName;
+
+    @Field
     private String bloodGroup;
 
     @Field
@@ -231,12 +234,22 @@ public class PatientCollection extends GenericCollection {
 	this.registrationDate = registrationDate;
     }
 
-    @Override
-    public String toString() {
-	return "PatientCollection [id=" + id + ", bloodGroup=" + bloodGroup + ", profession=" + profession + ", relations=" + relations + ", emailAddress="
-		+ emailAddress + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", addressId=" + addressId
-		+ ", secMobile=" + secMobile + ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId
-		+ ", insuranceId=" + insuranceId + ", insuranceName=" + insuranceName + ", userId=" + userId + ", notes=" + notes + ", PID=" + PID + "]";
-    }
+	public String getFirstName() {
+		return firstName;
+	}
 
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientCollection [id=" + id + ", firstName=" + firstName + ", bloodGroup=" + bloodGroup
+				+ ", profession=" + profession + ", relations=" + relations + ", emailAddress=" + emailAddress
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", addressId=" + addressId + ", secMobile=" + secMobile + ", adhaarId=" + adhaarId
+				+ ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId + ", insuranceId="
+				+ insuranceId + ", insuranceName=" + insuranceName + ", userId=" + userId + ", notes=" + notes
+				+ ", PID=" + PID + ", registrationDate=" + registrationDate + "]";
+	}
 }

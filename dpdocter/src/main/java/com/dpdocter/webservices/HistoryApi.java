@@ -390,7 +390,7 @@ public class HistoryApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Medical Data Cannot Be Empty");
 	}
 
-	boolean mailMedicalDataResponse = historyServices.mailMedicalData(medicalData);
+	boolean mailMedicalDataResponse = historyServices.mailMedicalData(medicalData, uriInfo);
 
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(mailMedicalDataResponse);

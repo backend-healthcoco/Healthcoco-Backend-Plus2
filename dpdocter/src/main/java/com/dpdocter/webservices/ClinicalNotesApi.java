@@ -413,7 +413,7 @@ public class ClinicalNotesApi {
 	    throw new BusinessException(ServiceError.InvalidInput,
 		    "Invalid Input. Clinical Notes Id, Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
 	}
-	clinicalNotesService.emailClinicalNotes(clinicalNotesId, doctorId, locationId, hospitalId, emailAddress);
+	clinicalNotesService.emailClinicalNotes(clinicalNotesId, doctorId, locationId, hospitalId, emailAddress, uriInfo);
 
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);

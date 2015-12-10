@@ -6,14 +6,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.core.UriInfo;
+
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.AccessControl;
+import com.dpdocter.beans.ClinicImage;
+import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.LocationAndAccessControl;
@@ -49,6 +54,9 @@ public class LoginServiceImpl implements LoginService {
 
     private static Logger logger = Logger.getLogger(LoginServiceImpl.class.getName());
 
+    @Value(value = "${IMAGE_URL_ROOT_PATH}")
+    private String imageUrlRootPath;
+
     @Autowired
     private UserRepository userRepository;
 
@@ -74,7 +82,7 @@ public class LoginServiceImpl implements LoginService {
      * This method is used for login purpose.
      */
     @Override
-    public LoginResponse login(LoginRequest request) {
+    public LoginResponse login(LoginRequest request, UriInfo uriInfo) {
 	LoginResponse response = null;
 	try {
 	    /**
@@ -96,14 +104,7 @@ public class LoginServiceImpl implements LoginService {
 		logger.warn("Invalid username and Password");
 		throw new BusinessException(ServiceError.Unknown, "Invalid username and Password");
 	    }
-	    if (!userCollection.getIsVerified()) {
-		logger.warn("This user is not verified");
-		throw new BusinessException(ServiceError.NotAuthorized, "This user is not verified");
-	    }
-	    if (!userCollection.getIsActive()) {
-		logger.warn("This user is not activated");
-		throw new BusinessException(ServiceError.NotAuthorized, "This user is not activated");
-	    }
+	    
 	    User user = new User();
 	    BeanUtil.map(userCollection, user);
 	    /**
@@ -115,6 +116,14 @@ public class LoginServiceImpl implements LoginService {
 		RoleCollection roleCollection = roleRepository.findOne(userRoleCollection.getRoleId());
 		if (roleCollection.getRole().equalsIgnoreCase(RoleEnum.PATIENT.getRole())
 			|| roleCollection.getRole().equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole())) {
+			if (!userCollection.getIsVerified()) {
+				logger.warn("This user is not verified");
+				throw new BusinessException(ServiceError.NotAuthorized, "This user is not verified");
+			    }
+			    if (!userCollection.getIsActive()) {
+				logger.warn("This user is not activated");
+				throw new BusinessException(ServiceError.NotAuthorized, "This user is not activated");
+			 }
 		    response = new LoginResponse();
 		    response.setUser(user);
 		    response.setRole(roleCollection.getRole());
@@ -122,9 +131,21 @@ public class LoginServiceImpl implements LoginService {
 		    return response;
 		} else {
 		    if (userCollection.getUserState() != null && userCollection.getUserState().equals(UserState.USERSTATEINCOMPLETE)) {
-			logger.warn("User Profile state is not completed.");
-			throw new BusinessException(ServiceError.NotAuthorized, "User Profile state is not completed");
+		    	response = new LoginResponse();
+				user.setEmailAddress(user.getUserName());
+				response.setUser(user);
+				response.setRole(roleCollection.getRole());
+				return response;
 		    }
+		    
+		    if (!userCollection.getIsVerified()) {
+				logger.warn("This user is not verified");
+				throw new BusinessException(ServiceError.NotAuthorized, "This user is not verified");
+			    }
+		    if (!userCollection.getIsActive()) {
+				logger.warn("This user is not activated");
+				throw new BusinessException(ServiceError.NotAuthorized, "This user is not activated");
+			 }
 		    List<UserLocationCollection> userLocationCollections = userLocationRepository.findByUserId(userCollection.getId());
 		    if (userLocationCollections != null) {
 			@SuppressWarnings("unchecked")
@@ -137,7 +158,9 @@ public class LoginServiceImpl implements LoginService {
 			    HospitalCollection hospitalCollection = null;
 			    Location location = new Location();
 			    BeanUtil.map(locationCollection, location);
-
+			    location.setLogoUrl(getFinalImageURL(location.getLogoUrl(), uriInfo));
+			    location.setLogoThumbnailUrl(getFinalImageURL(location.getLogoThumbnailUrl(), uriInfo));
+			    location.setImages(getFinalClinicImages(location.getImages(), uriInfo));
 			    AccessControl accessControl = accessControlServices.getAccessControls(userCollection.getId(), locationCollection.getId(),
 				    locationCollection.getHospitalId());
 			    LocationAndAccessControl locationAndAccessControl = new LocationAndAccessControl();
@@ -148,6 +171,7 @@ public class LoginServiceImpl implements LoginService {
 				hospitalCollection = hospitalRepository.findOne(locationCollection.getHospitalId());
 				Hospital hospital = new Hospital();
 				BeanUtil.map(hospitalCollection, hospital);
+				hospital.setHospitalImageUrl(getFinalImageURL(hospital.getHospitalImageUrl(), uriInfo));
 				hospital.getLocationsAndAccessControl().add(locationAndAccessControl);
 				checkHospitalId.put(locationCollection.getHospitalId(), hospital);
 				hospitals.add(hospital);
@@ -198,4 +222,25 @@ public class LoginServiceImpl implements LoginService {
 	return response;
     }
 
+    private String getFinalImageURL(String imageURL, UriInfo uriInfo) {
+    	if (imageURL != null) {
+    	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+    	    return finalImageURL + imageURL;
+    	} else
+    	    return null;
+
+     }
+    
+    private List<ClinicImage> getFinalClinicImages(List<ClinicImage> clinicImages, UriInfo uriInfo) {
+    if(clinicImages != null && !clinicImages.isEmpty())
+	for (ClinicImage clinicImage : clinicImages) {
+	    if (clinicImage.getImageUrl() != null) {
+	    	clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl(), uriInfo));
+	    }
+	    if (clinicImage.getThumbnailUrl() != null) {
+	    	clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl(), uriInfo));
+	    }
+	}
+	return clinicImages;
+    }
 }

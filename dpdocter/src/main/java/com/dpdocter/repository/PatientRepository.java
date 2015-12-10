@@ -1,8 +1,11 @@
 package com.dpdocter.repository;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
@@ -29,5 +32,17 @@ public interface PatientRepository extends MongoRepository<PatientCollection, St
 
     @Query("{'doctorId':?0,'locationId':?1,'hospitalId':?2,'registrationDate' : {'$gt' : ?3, '$lt' : ?4}}")
     List<PatientCollection> findTodaysRegisteredPatient(String doctorId, String location, String hospitalId, Long startDate, Long endDate);
+
+    @Query("{'userId': {'$in': ?0}, 'doctorId':?1}")
+	List<PatientCollection> findByUserIdDoctorId(Collection<String> patientIds, String doctorId, Sort sort);
+
+    @Query("{'userId': {'$in': ?0}, 'doctorId':?1,'locationId': ?2,'hospitalId': ?3}")
+	List<PatientCollection> findByUserIdDoctorIdLocationIdHospitalId(Collection<String> patientIds, String doctorId, String locationId, String hospitalId, Pageable pageRequest);
+
+    @Query("{'userId': {'$in': ?0}, 'doctorId':?1,'locationId': ?2,'hospitalId': ?3}")
+	List<PatientCollection> findByUserIdDoctorIdLocationIdHospitalId(Collection<String> patientIds, String doctorId, String locationId, String hospitalId, Sort sort);
+
+    @Query("{'userId': {'$in': ?0}, 'doctorId':?1}")
+	List<PatientCollection> findByUserIdDoctorId(Collection<String> patientIds, String doctorId, Pageable pageRequest);
 
 }
