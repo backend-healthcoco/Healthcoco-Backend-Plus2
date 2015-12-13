@@ -1,22 +1,22 @@
 package com.dpdocter.tests;
 
 import java.io.IOException;
-import java.util.Arrays;
 
-import com.dpdocter.request.DoctorMultipleDataAddEditRequest;
+import com.google.maps.GeoApiContext;
+import com.google.maps.GeocodingApi;
+import com.google.maps.model.GeocodingResult;
 
 public class GeneralTests {
 
     public static void main(String[] args) throws IOException {
-	DoctorMultipleDataAddEditRequest request = new DoctorMultipleDataAddEditRequest();
-
-	request.setDoctorId("55eabcd0e4b00c1a44ac6feb");
-	request.setFirstName("Gulshan Saluja");
-	request.setSpeciality(Arrays.asList("Urologist", "Orthopaedic Surgeon"));
-
-	String requestJSON = Converter.ObjectToJSON(request);
-
-	System.out.println(requestJSON);
+	GeoApiContext context = new GeoApiContext().setApiKey("AIzaSyCKFWg02TFUWOLsvJt0A6PMI_aAfqfLFwI");
+	GeocodingResult[] results = null;
+	try {
+	    results = GeocodingApi.geocode(context, "1600 Amphitheatre Parkway Mountain View, CA 94043").await();
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+	System.out.println(results[0].formattedAddress);
 
     }
 

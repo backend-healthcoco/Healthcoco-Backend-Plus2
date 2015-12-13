@@ -426,7 +426,7 @@ public interface PathProxy {
 	public static final String GET_VISIT = "/{visitId}";
 
 	public static final String GET_VISITS = "/{doctorId}/{locationId}/{hospitalId}/{patientId}";
-	
+
 	public static final String GET_VISITS_HANDHELD = "/handheld/{doctorId}/{locationId}/{hospitalId}/{patientId}";
 
 	public static final String DELETE_VISITS = "/{visitId}/delete";
@@ -617,5 +617,7 @@ public interface PathProxy {
 	public static final String VERIFY_OTP = "/{doctorId}/{locationId}/{hospitalId}/{patientId}/{otpNumber}/verify";
 
     }
+
+    public static final String GENERAL_TESTS_URL = BASE_URL + "/tests";
 
 }
