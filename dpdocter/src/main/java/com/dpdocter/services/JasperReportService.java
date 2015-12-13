@@ -4,5 +4,5 @@ import java.util.Map;
 
 public interface JasperReportService {
 
-    String createPDF(Map<String, Object> parameters, String fileName, String layout, String pageSize, String margins);
+    String createPDF(Map<String, Object> parameters, String fileName, String layout, String pageSize, String margins, String pdfName);
 }

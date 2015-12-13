@@ -2,14 +2,14 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
 public class DoctorClinicProfile {
     private String id;
 
     private String locationId;
 
     private String clinicAddress;
+    
+    private String locationName;
 
     private String patientInitial = "P";
 
@@ -126,12 +126,20 @@ public class DoctorClinicProfile {
 		this.logoThumbnailUrl = logoThumbnailUrl;
 	}
 
+	public String getLocationName() {
+		return locationName;
+	}
+
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorClinicProfile [id=" + id + ", locationId=" + locationId + ", clinicAddress=" + clinicAddress
-				+ ", patientInitial=" + patientInitial + ", patientCounter=" + patientCounter
-				+ ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee=" + consultationFee
-				+ ", appointmentSlot=" + appointmentSlot + ", workingSchedules=" + workingSchedules + ", images="
-				+ images + ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + "]";
+				+ ", locationName=" + locationName + ", patientInitial=" + patientInitial + ", patientCounter="
+				+ patientCounter + ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee="
+				+ consultationFee + ", appointmentSlot=" + appointmentSlot + ", workingSchedules=" + workingSchedules
+				+ ", images=" + images + ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + "]";
 	}
 }

@@ -1,7 +1,5 @@
 package com.dpdocter.solr.webservices;
 
-import java.util.List;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -18,10 +16,10 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.solr.beans.AdvancedSearch;
-import com.dpdocter.solr.response.SolrPatientResponse;
 import com.dpdocter.solr.response.SolrPatientResponseDetails;
 import com.dpdocter.solr.services.SolrRegistrationService;
 import com.dpdocter.webservices.PathProxy;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 

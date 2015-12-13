@@ -367,7 +367,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
 		smsDetails.add(smsDetail);
 		smsTrackDetail.setSmsDetails(smsDetails);
-		sMSServices.sendSMS(smsTrackDetail, false);
+//		sMSServices.sendSMS(smsTrackDetail, false);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();

@@ -12,6 +12,7 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -529,11 +530,17 @@ public class RecordsServiceImpl implements RecordsService {
 	    RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
 	    if (recordsCollection != null) {
 
-		FileSystemResource file = new FileSystemResource(getFinalImageURL(recordsCollection.getRecordsUrl(), uriInfo));
-		mailAttachment = new MailAttachment();
-		mailAttachment.setAttachmentName(file.getFilename());
-		mailAttachment.setFileSystemResource(file);
-
+	    	FileSystemResource file = new FileSystemResource(getFinalImageURL(recordsCollection.getRecordsUrl(), uriInfo));
+			mailAttachment = new MailAttachment();
+			mailAttachment.setFileSystemResource(file);
+			
+	    UserCollection patientUserCollection = userRepository.findOne(recordsCollection.getPatientId());
+	    if(patientUserCollection != null){
+	    	mailAttachment.setAttachmentName(patientUserCollection.getFirstName()+new Date()+"REPORTS"+FilenameUtils.getExtension(file.getFilename()));
+	    }
+	    else{
+	    	mailAttachment.setAttachmentName(new Date()+"REPORTS"+FilenameUtils.getExtension(file.getFilename()));
+	    }
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 		emailTrackCollection.setDoctorId(recordsCollection.getDoctorId());
 		emailTrackCollection.setHospitalId(recordsCollection.getHospitalId());

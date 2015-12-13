@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
@@ -23,6 +22,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
@@ -243,9 +243,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    PatientVisitCollection patientTrackCollection = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId);
 	    PatientCollection patientCollection = patientRepository.findByUserId(patientId);
 	    UserCollection userCollection = userRepository.findOne(doctorId);
-	    if (patientCollection != null) {
-		patientTrackCollection.setPatientId(patientCollection.getUserId());
-	    }
+	    
 	    if (patientTrackCollection == null) {
 		patientTrackCollection = new PatientVisitCollection();
 		patientTrackCollection.setDoctorId(doctorId);
@@ -253,7 +251,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		patientTrackCollection.setHospitalId(hospitalId);
 		patientTrackCollection.setVisitedTime(new Date());
 		patientTrackCollection.setCreatedTime(new Date());
-		
+		if (patientCollection != null) {
+			patientTrackCollection.setPatientId(patientCollection.getUserId());
+		    }
 		if (userCollection != null) {
 		    if (userCollection.getFirstName() != null) {
 			patientTrackCollection.setCreatedBy(userCollection.getFirstName());
@@ -281,18 +281,36 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     public DoctorContactsResponse recentlyVisited(String doctorId, String locationId, String hospitalId, int page, int size) {
 	DoctorContactsResponse response = null;
 	try {
-	    List<PatientVisitCollection> patientTrackCollections = null;
-	    if (size > 0)
-		patientTrackCollections = patientVisitRepository.findAll(doctorId, locationId, hospitalId, new PageRequest(page, size, Direction.DESC,
-			"visitedTime"));
-	    else
-		patientTrackCollections = patientVisitRepository.findAll(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "visitedTime"));
 
-	    if (patientTrackCollections != null && !patientTrackCollections.isEmpty()) {
+	    Aggregation aggregation = null;
+	   int totalSize = 0;
+	   if(size > 0) aggregation = Aggregation.newAggregation(Aggregation.match((Criteria.where("doctorId").is(doctorId)
+	    		.andOperator(Criteria.where("locationId").is(locationId).andOperator(Criteria.where("hospitalId").is(hospitalId))))),
+			   Aggregation.sort(new Sort(Sort.Direction.DESC, "visitedTime")), 
+			   Aggregation.group("patientId").max("visitedTime").as("visitedTime"), 
+	    		Aggregation.skip((page) * size), Aggregation.limit(size));
+	   
+	   else aggregation = Aggregation.newAggregation(Aggregation.match((Criteria.where("doctorId").is(doctorId)
+	    		.andOperator(Criteria.where("locationId").is(locationId).andOperator(Criteria.where("hospitalId").is(hospitalId))))),
+			   Aggregation.sort(new Sort(Sort.Direction.DESC, "visitedTime")), 
+			   Aggregation.group("patientId").max("visitedTime").as("visitedTime"));
+	    
+	    AggregationResults<PatientVisit> groupResults = mongoTemplate.aggregate(aggregation, PatientVisitCollection.class,  PatientVisit.class);
+	    List<PatientVisit> results = groupResults.getMappedResults();
+	    
+	    if (results != null && !results.isEmpty()) {
 		@SuppressWarnings("unchecked")
-		List<String> patientIds = (List<String>) CollectionUtils.collect(patientTrackCollections, new BeanToPropertyValueTransformer("patientId"));
+		List<String> patientIds = (List<String>) CollectionUtils.collect(results, new BeanToPropertyValueTransformer("id"));
 		List<PatientCard> patientCards = contactsService.getSpecifiedPatientCards(patientIds, doctorId, locationId, hospitalId);
-		int totalSize =  patientVisitRepository.getVisitCount(doctorId, hospitalId, locationId);
+		
+		Aggregation aggregationCount = Aggregation.newAggregation(Aggregation.match((Criteria.where("doctorId").is(doctorId)
+		    		.andOperator(Criteria.where("locationId").is(locationId).andOperator(Criteria.where("hospitalId").is(hospitalId))))),
+					Aggregation.group("patientId"));
+
+		groupResults = mongoTemplate.aggregate(aggregationCount, PatientVisitCollection.class,  PatientVisit.class);
+		results = groupResults.getMappedResults();
+		
+		totalSize = results.size();
 		response = new DoctorContactsResponse();
 		response.setPatientCards(patientCards);
 		response.setTotalSize(totalSize);
@@ -313,9 +331,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    Aggregation aggregation;
 
 	    if (size > 0) {
-		aggregation = Aggregation.newAggregation(Aggregation.match(matchCriteria), Aggregation.group("patientId").count().as("total"), Aggregation
-			.project("total").and("patientId").previousOperation(), Aggregation.sort(Sort.Direction.DESC, "total"), Aggregation.skip(page * size),
-			Aggregation.limit(size));
+		aggregation = Aggregation.newAggregation(Aggregation.match(matchCriteria), Aggregation.group("patientId").count().as("total"), 
+				Aggregation.sort(Sort.Direction.DESC, "total"), Aggregation.skip(page * size),Aggregation.limit(size));
 	    } else {
 		aggregation = Aggregation.newAggregation(Aggregation.match(matchCriteria), Aggregation.group("patientId").count().as("total"), Aggregation
 			.project("total").and("patientId").previousOperation(), Aggregation.sort(Sort.Direction.DESC, "total"));
@@ -331,7 +348,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	    if (patientTrackCollections != null && !patientTrackCollections.isEmpty()) {
 		@SuppressWarnings("unchecked")
-		List<String> patientIds = (List<String>) CollectionUtils.collect(patientTrackCollections, new BeanToPropertyValueTransformer("patientId"));
+		List<String> patientIds = (List<String>) CollectionUtils.collect(patientTrackCollections, new BeanToPropertyValueTransformer("id"));
 		List<PatientCard> patientCards = contactsService.getSpecifiedPatientCards(patientIds, doctorId, locationId, hospitalId);
 		int totalSize = mongoTemplate.aggregate(aggregationCount, PatientVisitCollection.class, PatientVisitCollection.class).getMappedResults().size();
 		response = new DoctorContactsResponse();
@@ -635,7 +652,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    parameters.put("prescriptions", prescriptions);
 		    parameters.put("clinicalNotes", clinicalNotes);
 
-		    String path = jasperReportService.createPDF(parameters, "mongo-multiple-data", layout, pageSize, margins);
+		    String path = jasperReportService.createPDF(parameters, "mongo-multiple-data", layout, pageSize, margins, user.getFirstName()+new Date()+"CLINICALNOTES&PRESCRIPTION");
 		    if (user != null) {
 			emailTrackCollection.setPatientName(user.getFirstName());
 			emailTrackCollection.setPatientId(user.getId());

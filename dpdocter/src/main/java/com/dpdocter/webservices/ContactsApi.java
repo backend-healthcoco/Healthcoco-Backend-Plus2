@@ -110,7 +110,7 @@ public class ContactsApi {
 	    break;
 	}
 
-	if (doctorContactsResponse.getPatientCards() != null && !doctorContactsResponse.getPatientCards().isEmpty()) {
+	if (doctorContactsResponse!= null && doctorContactsResponse.getPatientCards() != null && !doctorContactsResponse.getPatientCards().isEmpty()) {
 	    for (PatientCard patientCard : doctorContactsResponse.getPatientCards()) {
 		patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
 		patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));

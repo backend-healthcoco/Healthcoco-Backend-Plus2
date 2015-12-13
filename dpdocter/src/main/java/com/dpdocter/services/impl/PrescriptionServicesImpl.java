@@ -2514,7 +2514,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		String pageSize = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
 		String margins = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getMargins() : null) : null;
 
-		String path = jasperReportService.createPDF(parameters, "mongo-prescription", layout, pageSize, margins);
+		String path = jasperReportService.createPDF(parameters, "mongo-prescription", layout, pageSize, margins, user.getFirstName()+new Date()+"PRESCRIPTION");
 		FileSystemResource file = new FileSystemResource(path);
 		mailAttachment = new MailAttachment();
 		mailAttachment.setAttachmentName(file.getFilename());

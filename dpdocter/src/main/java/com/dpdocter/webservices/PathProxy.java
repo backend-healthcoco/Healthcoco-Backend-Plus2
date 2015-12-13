@@ -75,7 +75,7 @@ public interface PathProxy {
 
 	public static final String DOCTOR_REGISTER = "/doctor";
 
-	public static final String EDIT_PATIENT_PROFILE = "/editPatient";
+	public static final String EDIT_PATIENT_PROFILE = "/patient";
 
 	public static final String EXISTING_DOCTOR_BY_EMAIL_ADDRESS = "/existing_doctor/{emailAddress}";
 

@@ -43,9 +43,9 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	    UserCollection userCollection = null;
 	    ForgotPasswordResponse response = null;
 
-	    if (request.getUsername() != null) {
-		userCollection = userRepository.findByUserName(request.getUsername());
-	    }
+	    if (request.getUsername() == null)request.setUsername(request.getEmailAddress()); 
+	    
+	    if (request.getUsername() != null) userCollection = userRepository.findByUserName(request.getUsername());
 	    if (userCollection != null) {
 		if (userCollection.getEmailAddress().trim().equals(request.getEmailAddress().trim())) {
 		    String body = mailBodyGenerator.generateForgotPasswordEmailBody(userCollection.getUserName(), userCollection.getFirstName(),

@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.ClinicImage;
-import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.LocationAndAccessControl;
@@ -44,6 +43,7 @@ import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.request.LoginRequest;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.LoginService;
+
 import common.util.web.DPDoctorUtils;
 
 /**
@@ -139,12 +139,18 @@ public class LoginServiceImpl implements LoginService {
 		    }
 		    
 		    if (!userCollection.getIsVerified()) {
-				logger.warn("This user is not verified");
-				throw new BusinessException(ServiceError.NotAuthorized, "This user is not verified");
+		    	response = new LoginResponse();
+				user.setUserState(UserState.NOTVERIFIED);
+				response.setUser(user);
+				response.setRole(roleCollection.getRole());
+				return response;
 			    }
 		    if (!userCollection.getIsActive()) {
-				logger.warn("This user is not activated");
-				throw new BusinessException(ServiceError.NotAuthorized, "This user is not activated");
+		    	response = new LoginResponse();
+				user.setUserState(UserState.NOTACTIVATED);
+				response.setUser(user);
+				response.setRole(roleCollection.getRole());
+				return response;
 			 }
 		    List<UserLocationCollection> userLocationCollections = userLocationRepository.findByUserId(userCollection.getId());
 		    if (userLocationCollections != null) {

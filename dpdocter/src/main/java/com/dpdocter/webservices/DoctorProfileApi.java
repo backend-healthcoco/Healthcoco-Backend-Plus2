@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.ClinicImage;
+import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.DoctorGeneralInfo;
 import com.dpdocter.beans.DoctorProfile;
 import com.dpdocter.beans.EducationInstitute;
@@ -247,8 +249,8 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE)
     @GET
-    public Response<DoctorProfile> getDoctorProfile(@PathParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
-	    @QueryParam("hospitalId") String hospitalId) {
+    public Response<DoctorProfile> getDoctorProfile(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+    		@PathParam("hospitalId") String hospitalId) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 	    logger.warn("Doctor Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
@@ -261,6 +263,24 @@ public class DoctorProfileApi {
 	    if (doctorProfile.getThumbnailUrl() != null) {
 		doctorProfile.setThumbnailUrl(getFinalImageURL(doctorProfile.getThumbnailUrl()));
 	    }
+	    if (doctorProfile.getCoverImageUrl() != null) {
+			doctorProfile.setImageUrl(getFinalImageURL(doctorProfile.getCoverImageUrl()));
+		}
+		if (doctorProfile.getCoverThumbnailImageUrl() != null) {
+			doctorProfile.setThumbnailUrl(getFinalImageURL(doctorProfile.getCoverThumbnailImageUrl()));
+		}
+		if(doctorProfile.getClinicProfile() != null & !doctorProfile.getClinicProfile().isEmpty()){
+			for(DoctorClinicProfile clinicProfile : doctorProfile.getClinicProfile()){
+				if(clinicProfile.getImages() != null){
+					for(ClinicImage clinicImage :clinicProfile.getImages()){
+						if(clinicImage.getImageUrl() != null)
+							clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl()));
+						if(clinicImage.getThumbnailUrl() != null)
+							clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
+					}
+				}
+			}
+		}
 	}
 	Response<DoctorProfile> response = new Response<DoctorProfile>();
 	response.setData(doctorProfile);

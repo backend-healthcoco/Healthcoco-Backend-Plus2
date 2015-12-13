@@ -390,7 +390,6 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	DoctorProfile doctorProfile = null;
 	UserCollection userCollection = null;
 	DoctorCollection doctorCollection = null;
-	List<DoctorClinicProfileCollection> clinicProfileCollection = new ArrayList<DoctorClinicProfileCollection>();
 	LocationCollection locationCollection = null;
 	List<String> specialities = null;
 	List<DoctorRegistrationDetail> registrationDetails = null;
@@ -404,14 +403,11 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		List<UserLocationCollection> userLocationCollections = userLocationRepository.findByUserId(userCollection.getId());
 		for (Iterator<UserLocationCollection> iterator = userLocationCollections.iterator(); iterator.hasNext();) {
 		    UserLocationCollection userLocationCollection = iterator.next();
-		    DoctorClinicProfileCollection doctorClinicCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection
-			    .getLocationId());
+		    DoctorClinicProfileCollection doctorClinicCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
 		    if (doctorClinicCollection != null) {
-			clinicProfileCollection.add(doctorClinicCollection);
 			BeanUtil.map(doctorClinicCollection, doctorClinic);
 			locationCollection = locationRepository.findOne(doctorClinic.getLocationId());
-			String address = locationCollection.getLocationName()!= null ? locationCollection.getLocationName()+ ", " :""
-   				 + locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() + ", " :""
+			String address = locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() + ", " :""
    				 + locationCollection.getCity() != null ? locationCollection.getCity()+ ", ":"" 
    				 + locationCollection.getState() != null ? locationCollection.getState()  :""
    				 + locationCollection.getState() != null && locationCollection.getPostalCode() != null ? " - " :""
@@ -419,6 +415,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
    				 + locationCollection.getState() != null && locationCollection.getPostalCode() == null ? ", " :""
    				 + locationCollection.getCountry() != null ? locationCollection.getCountry() :"";
    			
+   			doctorClinic.setLocationName(locationCollection.getLocationName());
    			doctorClinic.setClinicAddress(address);
 			doctorClinic.setImages(locationCollection.getImages());
 			doctorClinic.setLogoUrl(locationCollection.getLogoUrl());
@@ -432,11 +429,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			DoctorClinicProfileCollection doctorClinicCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
 
 			if (doctorClinicCollection != null) {
-			    clinicProfileCollection.add(doctorClinicCollection);
 			    BeanUtil.map(doctorClinicCollection, doctorClinic);
 			    locationCollection = locationRepository.findOne(locationId);
-			    String address = locationCollection.getLocationName()!= null ? locationCollection.getLocationName()+ ", " :""
-			    				 + locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() + ", " :""
+			    String address =  locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() + ", " :""
 			    				 + locationCollection.getCity() != null ? locationCollection.getCity()+ ", ":"" 
 			    				 + locationCollection.getState() != null ? locationCollection.getState()  :""
 			    				 + locationCollection.getState() != null && locationCollection.getPostalCode() != null ? " - " :""
@@ -444,6 +439,12 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			    				 + locationCollection.getState() != null && locationCollection.getPostalCode() == null ? ", " :""
 			    				 + locationCollection.getCountry() != null ? locationCollection.getCountry() :"";
 			    doctorClinic.setClinicAddress(address);
+			    doctorClinic.setLocationName(locationCollection.getLocationName());
+	   			doctorClinic.setClinicAddress(address);
+				doctorClinic.setImages(locationCollection.getImages());
+				doctorClinic.setLogoUrl(locationCollection.getLogoUrl());
+				doctorClinic.setLogoThumbnailUrl(locationCollection.getLogoThumbnailUrl());
+				
 			    clinicProfile.add(doctorClinic);
 			}
 

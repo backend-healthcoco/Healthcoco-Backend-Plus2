@@ -261,7 +261,7 @@ public class ContactsServiceImpl implements ContactsService {
 		    .where("userId")
 		    .in(patientIds)
 		    .andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
-			    Criteria.where("hospitalId").is(hospitalId))).limit(0).skip(0);
+			    Criteria.where("hospitalId").is(hospitalId)));
 	} else if (patientIds != null && !patientIds.isEmpty() && !DPDoctorUtils.anyStringEmpty(doctorId)) {
 	    queryForGettingPatientsFromPatientIds.addCriteria(Criteria.where("userId").in(patientIds).andOperator(Criteria.where("doctorId").is(doctorId)));
 	} else {
@@ -383,9 +383,17 @@ public class ContactsServiceImpl implements ContactsService {
 	List<GroupCollection> groupCollection = null;
 	try {
 	    if (group.getId() == null) {
-		groupCollection = groupRepository.findByName(group.getName());
+		groupCollection = groupRepository.findByName(group.getName(), group.getDoctorId(), group.getLocationId(), group.getHospitalId());
 	    } else {
-		Query query = new Query().addCriteria(Criteria.where("id").ne(group.getId()).andOperator(Criteria.where("name").is(group.getName())));
+		Query query = new Query();
+		
+		Criteria criteria = Criteria.where("id").ne(group.getId())
+				.and("name").is(group.getName())
+				.and("doctorId").is(group.getDoctorId())
+				.and("locationId").is(group.getLocationId())
+				.and("hospitalId").is(group.getHospitalId());
+		
+		query.addCriteria(criteria);
 		groupCollection = mongoTemplate.find(query, GroupCollection.class);
 	    }
 

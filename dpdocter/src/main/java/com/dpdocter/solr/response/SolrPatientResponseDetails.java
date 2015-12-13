@@ -6,7 +6,7 @@ public class SolrPatientResponseDetails {
 
 	private List<SolrPatientResponse> patients;
 	
-	Long totalSize ;
+	private long totalSize ;
 
 	public List<SolrPatientResponse> getPatients() {
 		return patients;
@@ -16,11 +16,11 @@ public class SolrPatientResponseDetails {
 		this.patients = patients;
 	}
 
-	public Long getTotalSize() {
+	public long getTotalSize() {
 		return totalSize;
 	}
 
-	public void setTotalSize(Long totalSize) {
+	public void setTotalSize(long totalSize) {
 		this.totalSize = totalSize;
 	}
 
