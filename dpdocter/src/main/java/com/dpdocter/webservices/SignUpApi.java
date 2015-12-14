@@ -1,5 +1,6 @@
 package com.dpdocter.webservices;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,23 +20,23 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.DoctorSignUp;
-import com.dpdocter.beans.Location;
 import com.dpdocter.beans.User;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.DoctorSignupHandheldContinueRequest;
 import com.dpdocter.request.DoctorSignupHandheldRequest;
-import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.PatientProfilePicChangeRequest;
 import com.dpdocter.request.PatientSignUpRequest;
 import com.dpdocter.services.SignUpService;
 import com.dpdocter.services.TransactionalManagementService;
-import com.dpdocter.solr.services.SolrRegistrationService;
 import com.dpdocter.solr.document.SolrDoctorDocument;
 import com.dpdocter.solr.document.SolrLocationDocument;
 import com.dpdocter.solr.services.SolrAppointmentService;
+import com.dpdocter.solr.services.SolrRegistrationService;
+
 import common.util.web.Response;
 
 @Component
@@ -144,6 +145,11 @@ public class SignUpApi {
 		}
 	    }
 	}
+	if (doctorSignUp != null) {
+//	    solrAppointmentService.addDoctor(getSolrDoctorDocument(doctorSignUp));
+//	    solrAppointmentService.addLocation(getSolrLocationDocument(doctorSignUp));
+	}
+
 	Response<DoctorSignUp> response = new Response<DoctorSignUp>();
 	response.setData(doctorSignUp);
 	return response;
@@ -257,6 +263,43 @@ public class SignUpApi {
 //	    }
 //	    solrDoctorDocument.setSpecialization(specialiazation);
 //	    solrDoctorDocument.setLocations(doctor.getHospital().getLocations());
+//	} catch (Exception e) {
+//	    e.printStackTrace();
+//	}
+//	return solrDoctorDocument;
+//    }
+//
+//    private List<SolrLocationDocument> getSolrLocationDocument(DoctorSignUp doctor) {
+//	List<SolrLocationDocument> solrLocationDocuments = null;
+//	try {
+//	    solrLocationDocuments = new ArrayList<SolrLocationDocument>();
+//	    for (Location location : doctor.getHospital().getLocations()) {
+//		SolrLocationDocument solrLocationDocument = new SolrLocationDocument();
+//		BeanUtil.map(location, solrLocationDocument);
+//		solrLocationDocuments.add(solrLocationDocument);
+//	    }
+//	} catch (Exception e) {
+//	    e.printStackTrace();
+//	}
+//	return solrLocationDocuments;
+//    }
+//    private SolrDoctorDocument getSolrDoctorDocument(DoctorSignUp doctor) {
+//	SolrDoctorDocument solrDoctorDocument = null;
+//	try {
+//	    solrDoctorDocument = new SolrDoctorDocument();
+//	    BeanUtil.map(doctor.getHospital().getLocations().get(0), solrDoctorDocument);
+//	    BeanUtil.map(doctor.getUser(), solrDoctorDocument);
+//	    /*BeanUtil.map(doctor.getUser(), solrDoctorDocument);
+//	    List<String> specialiazation = new ArrayList<String>();
+//	    SolrLocationDocument solrLocationDocument = new SolrLocationDocument();
+//	    for (Location location : doctor.getHospital().getLocations()) {
+//	    if (location.getSpecialization() != null) {
+//	        specialiazation.addAll(location.getSpecialization());
+//	    }
+//	    BeanUtil.map(location, solrLocationDocument);
+//	    }
+//	    solrDoctorDocument.setSpecialization(specialiazation);
+//	    solrDoctorDocument.setLocation(solrLocationDocument);*/
 //	} catch (Exception e) {
 //	    e.printStackTrace();
 //	}

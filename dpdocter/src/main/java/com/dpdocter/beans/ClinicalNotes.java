@@ -174,5 +174,4 @@ public class ClinicalNotes extends GenericCollection {
 				+ hospitalId + ", doctorName=" + doctorName + ", inHistory=" + inHistory + ", discarded=" + discarded
 				+ ", visitId=" + visitId + ", patientId=" + patientId + ", vitalSigns=" + vitalSigns + "]";
 	}
-
 }

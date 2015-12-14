@@ -132,5 +132,4 @@ public class Prescription extends GenericCollection {
 				+ discarded + ", doctorName=" + doctorName + ", labTests=" + labTests + ", advice=" + advice
 				+ ", visitId=" + visitId + "]";
 	}
-
 }

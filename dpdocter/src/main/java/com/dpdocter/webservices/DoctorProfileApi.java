@@ -9,7 +9,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+<<<<<<< HEAD
 import javax.ws.rs.core.Context;
+=======
+>>>>>>> bc2245e44f5001e5dfef16880307266f0b512a9f
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
@@ -24,15 +27,21 @@ import com.dpdocter.beans.EducationInstitute;
 import com.dpdocter.beans.EducationQualification;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
+<<<<<<< HEAD
 import com.dpdocter.beans.Speciality;
+=======
+>>>>>>> bc2245e44f5001e5dfef16880307266f0b512a9f
 import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
 import com.dpdocter.request.DoctorAddEditIBSRequest;
+<<<<<<< HEAD
 import com.dpdocter.request.DoctorAppointmentNumbersAddEditRequest;
 import com.dpdocter.request.DoctorAppointmentSlotAddEditRequest;
 import com.dpdocter.request.DoctorConsultationFeeAddEditRequest;
+=======
+>>>>>>> bc2245e44f5001e5dfef16880307266f0b512a9f
 import com.dpdocter.request.DoctorContactAddEditRequest;
 import com.dpdocter.request.DoctorEducationAddEditRequest;
 import com.dpdocter.request.DoctorExperienceAddEditRequest;

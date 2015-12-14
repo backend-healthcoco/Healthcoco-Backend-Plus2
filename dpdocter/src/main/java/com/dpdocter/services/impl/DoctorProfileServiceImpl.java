@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.ws.rs.HEAD;
+
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.EnumUtils;
@@ -78,8 +80,8 @@ import common.util.web.DPDoctorUtils;
 @Service
 public class DoctorProfileServiceImpl implements DoctorProfileService {
 
-    private static Logger logger = Logger.getLogger(DoctorProfileServiceImpl.class.getName());
-
+	private static Logger logger = Logger.getLogger(DoctorProfileServiceImpl.class.getName());
+	
     @Autowired
     private UserRepository userRepository;
 
@@ -885,7 +887,11 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
 			if (doctorClinicProfileCollection == null) {
 			    doctorClinicProfileCollection = new DoctorClinicProfileCollection();
+<<<<<<< HEAD
 			    doctorClinicProfileCollection.setLocationId(userLocationCollection.getId());
+=======
+			    doctorClinicProfileCollection.setUserLocationId(userLocationCollection.getId());
+>>>>>>> bc2245e44f5001e5dfef16880307266f0b512a9f
 //			    doctorClinicProfileCollection.setCreatedTime(new Date());
 			}
 			doctorClinicProfileCollection.setIsIBSOn(request.getIsIBSOn());

@@ -562,6 +562,7 @@ public interface PathProxy {
     }
 
     public static final String APPOINTMENT_BASE_URL = BASE_URL + "/appointment";
+
     public interface AppointmentUrls {
     	
     	public static final String ADD_CITY = "/addCity";

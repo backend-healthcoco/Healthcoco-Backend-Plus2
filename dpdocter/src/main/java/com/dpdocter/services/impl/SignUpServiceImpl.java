@@ -257,6 +257,9 @@ public class SignUpServiceImpl implements SignUpService {
 		// sMSServices.sendSMS(smsTrackDetail, false);
 	    }
 
+	    /*String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
+	        userCollection.getMiddleName(), userCollection.getLastName());
+	    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);*/
 	    response = new DoctorSignUp();
 	    response.setAccessControl(assignAllAccessControl(userCollection.getId(), locationCollection.getId(), locationCollection.getHospitalId()));
 
