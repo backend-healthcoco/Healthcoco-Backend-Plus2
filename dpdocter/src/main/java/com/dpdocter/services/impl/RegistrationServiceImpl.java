@@ -367,7 +367,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
 		smsDetails.add(smsDetail);
 		smsTrackDetail.setSmsDetails(smsDetails);
-		sMSServices.sendSMS(smsTrackDetail, false);
+		// sMSServices.sendSMS(smsTrackDetail, false);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -859,7 +859,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    throw new BusinessException(ServiceError.Unknown, "Error While Updating Patient Initial and Counter");
 	}
 	return patientInitialAndCounter;
-}
+    }
 
     @Override
     public Boolean updatePatientInitialAndCounter(String doctorId, String locationId, String patientInitial, int patientCounter) {

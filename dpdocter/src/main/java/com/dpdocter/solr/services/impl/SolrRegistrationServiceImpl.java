@@ -21,8 +21,10 @@ import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.beans.AdvancedSearch;
 import com.dpdocter.solr.beans.AdvancedSearchParameter;
 import com.dpdocter.solr.document.SolrPatientDocument;
+import com.dpdocter.solr.enums.AdvancedSearchType;
 import com.dpdocter.solr.repository.SolrPatientRepository;
 import com.dpdocter.solr.response.SolrPatientResponse;
+import com.dpdocter.solr.response.SolrPatientResponseDetails;
 import com.dpdocter.solr.services.SolrRegistrationService;
 import common.util.web.DPDoctorUtils;
 
@@ -87,27 +89,47 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     }
 
     @Override
-    public List<SolrPatientResponse> searchPatient(String doctorId, String locationId, String hospitalId, String searchTerm, int page, int size) {
-	List<SolrPatientDocument> patients = null;
-	List<SolrPatientResponse> response = new ArrayList<SolrPatientResponse>();
+    public SolrPatientResponseDetails searchPatient(String doctorId, String locationId, String hospitalId, String searchTerm, int page, int size) {
+	List<SolrPatientDocument> patients = new ArrayList<SolrPatientDocument>();
+	List<SolrPatientResponse> response = null;
+	SolrPatientResponseDetails responseDetails = null;
 	try {
+
+	    Criteria advancedCriteria = Criteria.where("doctorId").is(doctorId).and("locationId").is(locationId).and("hospitalId").is(hospitalId);
+
+	    advancedCriteria.or(AdvancedSearchType.FIRST_NAME.getSearchType()).contains(searchTerm);
+	    advancedCriteria.or(AdvancedSearchType.EMAIL_ADDRESS.getSearchType()).contains(searchTerm);
+	    advancedCriteria.or(AdvancedSearchType.MOBILE_NUMBER.getSearchType()).contains(searchTerm);
+	    advancedCriteria.or(AdvancedSearchType.PID.getSearchType()).contains(searchTerm);
+
+	    SimpleQuery query = new SimpleQuery(advancedCriteria);
+
+	    solrTemplate.setSolrCore("patients");
 	    if (size > 0)
-		patients = solrPatientRepository.find(doctorId, locationId, hospitalId, searchTerm, new PageRequest(page, size, Direction.DESC, "createdTime"));
+		patients = solrTemplate.queryForPage(query.setPageRequest(new PageRequest(page, size)), SolrPatientDocument.class).getContent();
 	    else
-		patients = solrPatientRepository.find(doctorId, locationId, hospitalId, searchTerm, new Sort(Sort.Direction.DESC, "createdTime"));
-	    BeanUtil.map(patients, response);
+		patients = solrTemplate.queryForPage(query, SolrPatientDocument.class).getContent();
+
+	    if (patients != null && !patients.isEmpty()) {
+		response = new ArrayList<SolrPatientResponse>();
+		BeanUtil.map(patients, response);
+		responseDetails = new SolrPatientResponseDetails();
+		responseDetails.setPatients(response);
+		responseDetails.setTotalSize(solrTemplate.count(new SimpleQuery(advancedCriteria)));
+	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Searching Patient");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
 	}
-	return response;
+	return responseDetails;
     }
 
     @Override
-    public List<SolrPatientResponse> searchPatient(AdvancedSearch request) {
+    public SolrPatientResponseDetails searchPatient(AdvancedSearch request) {
 	List<SolrPatientDocument> patients = null;
 	List<SolrPatientResponse> response = new ArrayList<SolrPatientResponse>();
+	SolrPatientResponseDetails responseDetails = null;
 	try {
 	    Criteria advancedCriteria = createAdvancedSearchCriteria(request);
 
@@ -116,18 +138,24 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	    solrTemplate.setSolrCore("patients");
 	    if (request.getSize() > 0)
 		patients = solrTemplate.queryForPage(
-			query.setPageRequest(new PageRequest(request.getSize(), request.getPage(), Direction.DESC, "createdTime")), SolrPatientDocument.class)
+			query.setPageRequest(new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "createdTime")), SolrPatientDocument.class)
 			.getContent();
 	    else
 		patients = solrTemplate.queryForPage(query.addSort(new Sort(Sort.Direction.DESC, "createdTime")), SolrPatientDocument.class).getContent();
 
-	    BeanUtil.map(patients, response);
+	    if (patients != null) {
+		BeanUtil.map(patients, response);
+		responseDetails = new SolrPatientResponseDetails();
+		responseDetails.setPatients(response);
+		responseDetails.setTotalSize(solrTemplate.count(new SimpleQuery(advancedCriteria)));
+	    }
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Searching Patients");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
 	}
-	return response;
+	return responseDetails;
     }
 
     private Criteria createAdvancedSearchCriteria(AdvancedSearch request) {

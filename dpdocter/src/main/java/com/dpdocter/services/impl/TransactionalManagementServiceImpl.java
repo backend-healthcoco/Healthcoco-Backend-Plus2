@@ -208,9 +208,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	    if (drugCollection != null) {
 		SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
 		BeanUtil.map(drugCollection, solrDrugDocument);
-		if(drugCollection.getDrugType() != null){
-			solrDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
-			solrDrugDocument.setDrugType(drugCollection.getDrugType().getType());
+		if (drugCollection.getDrugType() != null) {
+		    solrDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
+		    solrDrugDocument.setDrugType(drugCollection.getDrugType().getType());
 		}
 		solrPrescriptionService.addDrug(solrDrugDocument);
 	    }

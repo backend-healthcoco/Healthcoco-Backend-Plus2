@@ -3,6 +3,8 @@ package com.dpdocter.services;
 import java.io.File;
 import java.util.List;
 
+import javax.ws.rs.core.UriInfo;
+
 import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Records;
@@ -23,9 +25,9 @@ public interface RecordsService {
 
     Records getRecordById(String recordId);
 
-    void emailRecordToPatient(String recordId, String doctorId, String locationId, String hospitalId, String emailAddress);
+    void emailRecordToPatient(String recordId, String doctorId, String locationId, String hospitalId, String emailAddress, UriInfo uriInfo);
 
-    MailAttachment getRecordMailData(String recordId, String doctorId, String locationId, String hospitalId);
+    MailAttachment getRecordMailData(String recordId, String doctorId, String locationId, String hospitalId, UriInfo uriInfo);
 
     Tags addEditTag(Tags tags);
 

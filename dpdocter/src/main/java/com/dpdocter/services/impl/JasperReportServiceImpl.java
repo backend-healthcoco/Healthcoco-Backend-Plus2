@@ -1,19 +1,16 @@
 package com.dpdocter.services.impl;
 
 import java.io.File;
-import java.util.Date;
 import java.util.Map;
 
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRPropertiesUtil;
-import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.base.JRBaseStyle;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
@@ -41,9 +38,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 
     @SuppressWarnings("deprecation")
     @Override
-    public String createPDF(Map<String, Object> parameters, String fileName, String layout, String pageSize, String margins) {
+    public String createPDF(Map<String, Object> parameters, String fileName, String layout, String pageSize, String margins, String pdfName) {
 	try {
-	    long createdTime = new Date().getTime();
 	    MongoDbConnection mongoConnection = new MongoDbConnection(MONGO_HOST_URI, null, null);
 
 	    parameters.put("REPORT_CONNECTION", mongoConnection);
@@ -53,18 +49,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 	    context.setValue("net.sf.jasperreports.extension.registry.factory.queryexecuters.mongodb",
 		    "com.jaspersoft.mongodb.query.MongoDbQueryExecuterExtensionsRegistryFactory");
 	    JRPropertiesUtil propertiesUtil = JRPropertiesUtil.getInstance(context);
-	    // propertiesUtil.setProperty(JasperDesign.PROPERTY_DEFAULT_FONT,
-	    // defaultPDFFont);
 
 	    JRProperties.setProperty("net.sf.jasperreports.query.executer.factory.MongoDbQuery", "com.jaspersoft.mongodb.query.MongoDbQueryExecuterFactory");
-	    JRStyle style = new JRBaseStyle();
-	    // style.setFontName("Arial");
-	    // style.setFontSize(15);
-	    // style.setForecolor(new Color(255, 0, 0));
-
 	    JasperDesign design = JRXmlLoader.load(new File(REPORT_NAME + fileName + ".jrxml"));
-
-	    // design.setDefaultStyle(style);
 
 	    if (layout.equals("LANDSCAPE")) {
 		if (pageSize.equalsIgnoreCase("LETTER")) {
@@ -93,9 +80,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 	    JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters);
 
-	    JasperExportManager.exportReportToPdfFile(jasperPrint, REPORT_NAME + fileName + createdTime + ".pdf");
+	    JasperExportManager.exportReportToPdfFile(jasperPrint, REPORT_NAME + pdfName + ".pdf");
 
-	    return REPORT_NAME + fileName + createdTime + ".pdf";
+	    return REPORT_NAME + pdfName + ".pdf";
 
 	} catch (JRException e) {
 	    e.printStackTrace();

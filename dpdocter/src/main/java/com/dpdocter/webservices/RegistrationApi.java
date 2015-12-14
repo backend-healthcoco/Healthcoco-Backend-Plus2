@@ -7,6 +7,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -94,7 +95,7 @@ public class RegistrationApi {
 
 	} else {
 	    registeredPatientDetails = registrationService.registerExistingPatient(request);
-	    transnationalService.addResource(registeredPatientDetails.getUserId(), Resource.COMPLAINT, false);
+	    transnationalService.addResource(registeredPatientDetails.getUserId(), Resource.PATIENT, false);
 	    solrRegistrationService.editPatient(getSolrPatientDocument(registeredPatientDetails));
 	}
 	registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));
@@ -103,14 +104,17 @@ public class RegistrationApi {
     }
 
     @Path(value = PathProxy.RegistrationUrls.EDIT_PATIENT_PROFILE)
-    @POST
+    @PUT
     public Response<RegisteredPatientDetails> editPatientRegister(PatientRegistrationRequest request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	} else {
+	    if (request.getUserId() == null)
+		throw new BusinessException(ServiceError.InvalidInput, "User Id cannot be null");
 	}
 	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 	RegisteredPatientDetails registeredPatientDetails = registrationService.registerExistingPatient(request);
-	transnationalService.addResource(registeredPatientDetails.getUserId(), Resource.COMPLAINT, false);
+	transnationalService.addResource(registeredPatientDetails.getUserId(), Resource.PATIENT, false);
 	solrRegistrationService.editPatient(getSolrPatientDocument(registeredPatientDetails));
 
 	registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));

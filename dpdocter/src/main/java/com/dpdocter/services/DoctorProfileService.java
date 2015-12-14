@@ -11,7 +11,6 @@ import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Speciality;
 import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
-import com.dpdocter.request.DoctorAddEditIBSRequest;
 import com.dpdocter.request.DoctorAppointmentNumbersAddEditRequest;
 import com.dpdocter.request.DoctorAppointmentSlotAddEditRequest;
 import com.dpdocter.request.DoctorConsultationFeeAddEditRequest;
@@ -83,8 +82,8 @@ public interface DoctorProfileService {
 
     DoctorMultipleDataAddEditResponse addEditMultipleData(DoctorMultipleDataAddEditRequest request);
 
-	List<WorkingSchedule> getTimeSlots(String doctorId, String locationId, String day);
+    List<WorkingSchedule> getTimeSlots(String doctorId, String locationId, String day);
 
-	Boolean addEditIBS(DoctorAddEditIBSRequest request);
+    Boolean addEditIBS(DoctorAddEditIBSRequest request);
 
 }

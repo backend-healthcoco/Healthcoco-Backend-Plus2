@@ -30,4 +30,7 @@ public interface DoctorContactsRepository extends MongoRepository<DoctorContactC
     @Query("{'doctorId':?0,'contactId':?1}")
     DoctorContactCollection findByDoctorIdAndContactId(String doctorId, String contactId);
 
+    @Query(value = "{'doctorId':?0, 'isBlocked':?1, 'discarded':{$in: ?2}, 'updatedTime': {'$gte' : ?3}}", count = true)
+    Integer findCountByDoctorIdAndIsBlocked(String doctorId, boolean b, boolean[] discards, Date date);
+
 }

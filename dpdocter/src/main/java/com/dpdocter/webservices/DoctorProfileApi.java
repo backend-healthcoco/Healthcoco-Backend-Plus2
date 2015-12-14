@@ -9,10 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-<<<<<<< HEAD
 import javax.ws.rs.core.Context;
-=======
->>>>>>> bc2245e44f5001e5dfef16880307266f0b512a9f
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
@@ -21,27 +18,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.ClinicImage;
+import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.DoctorGeneralInfo;
 import com.dpdocter.beans.DoctorProfile;
 import com.dpdocter.beans.EducationInstitute;
 import com.dpdocter.beans.EducationQualification;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
-<<<<<<< HEAD
 import com.dpdocter.beans.Speciality;
-=======
->>>>>>> bc2245e44f5001e5dfef16880307266f0b512a9f
 import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
-import com.dpdocter.request.DoctorAddEditIBSRequest;
-<<<<<<< HEAD
 import com.dpdocter.request.DoctorAppointmentNumbersAddEditRequest;
 import com.dpdocter.request.DoctorAppointmentSlotAddEditRequest;
 import com.dpdocter.request.DoctorConsultationFeeAddEditRequest;
-=======
->>>>>>> bc2245e44f5001e5dfef16880307266f0b512a9f
 import com.dpdocter.request.DoctorContactAddEditRequest;
 import com.dpdocter.request.DoctorEducationAddEditRequest;
 import com.dpdocter.request.DoctorExperienceAddEditRequest;
@@ -56,7 +48,6 @@ import com.dpdocter.request.DoctorSpecialityAddEditRequest;
 import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
 import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.services.DoctorProfileService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -66,8 +57,8 @@ import common.util.web.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class DoctorProfileApi {
 
-	private static Logger logger = Logger.getLogger(DoctorProfileApi.class.getName());
-	
+    private static Logger logger = Logger.getLogger(DoctorProfileApi.class.getName());
+
     @Autowired
     private DoctorProfileService doctorProfileService;
 
@@ -259,8 +250,8 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE)
     @GET
-    public Response<DoctorProfile> getDoctorProfile(@PathParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
-	    @QueryParam("hospitalId") String hospitalId) {
+    public Response<DoctorProfile> getDoctorProfile(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+	    @PathParam("hospitalId") String hospitalId) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 	    logger.warn("Doctor Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
@@ -272,6 +263,24 @@ public class DoctorProfileApi {
 	    }
 	    if (doctorProfile.getThumbnailUrl() != null) {
 		doctorProfile.setThumbnailUrl(getFinalImageURL(doctorProfile.getThumbnailUrl()));
+	    }
+	    if (doctorProfile.getCoverImageUrl() != null) {
+		doctorProfile.setImageUrl(getFinalImageURL(doctorProfile.getCoverImageUrl()));
+	    }
+	    if (doctorProfile.getCoverThumbnailImageUrl() != null) {
+		doctorProfile.setThumbnailUrl(getFinalImageURL(doctorProfile.getCoverThumbnailImageUrl()));
+	    }
+	    if (doctorProfile.getClinicProfile() != null & !doctorProfile.getClinicProfile().isEmpty()) {
+		for (DoctorClinicProfile clinicProfile : doctorProfile.getClinicProfile()) {
+		    if (clinicProfile.getImages() != null) {
+			for (ClinicImage clinicImage : clinicProfile.getImages()) {
+			    if (clinicImage.getImageUrl() != null)
+				clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl()));
+			    if (clinicImage.getThumbnailUrl() != null)
+				clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
+			}
+		    }
+		}
 	    }
 	}
 	Response<DoctorProfile> response = new Response<DoctorProfile>();
@@ -436,7 +445,7 @@ public class DoctorProfileApi {
     @Path(value = PathProxy.DoctorProfileUrls.GET_TIME_SLOTS)
     @GET
     public Response<WorkingSchedule> getTimeSlots(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
-    		@QueryParam("day") String day) {
+	    @QueryParam("day") String day) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
 	}
@@ -446,22 +455,22 @@ public class DoctorProfileApi {
 	response.setDataList(workingSchedules);
 	return response;
     }
-    
+
     @Path(value = PathProxy.DoctorProfileUrls.ON_OFF_IBS)
     @POST
     public Response<Boolean> addEditIBS(DoctorAddEditIBSRequest request) {
-    	if (request == null) {
-    	    logger.warn("Doctor IBS Request Is Empty");
-    	    throw new BusinessException(ServiceError.InvalidInput, "Doctor IBS Request Is Empty");
-    	} else if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId())) {
-    	    logger.warn("Doctor Id, LocationId Is Empty");
-    	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, LocationId Is Empty");
-    	}
+	if (request == null) {
+	    logger.warn("Doctor IBS Request Is Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Doctor IBS Request Is Empty");
+	} else if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId())) {
+	    logger.warn("Doctor Id, LocationId Is Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, LocationId Is Empty");
+	}
 
-    	Boolean addEditIBSResponse = doctorProfileService.addEditIBS(request);
-    	Response<Boolean> response = new Response<Boolean>();
-    	response.setData(addEditIBSResponse);
-    	return response;
+	Boolean addEditIBSResponse = doctorProfileService.addEditIBS(request);
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(addEditIBSResponse);
+	return response;
 
     }
 }

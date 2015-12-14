@@ -53,8 +53,8 @@ public interface GroupRepository extends MongoRepository<GroupCollection, String
     public List<GroupCollection> findByDoctorIdPatientIdHospitalId(String doctorId, String locationId, String hospitalId, boolean discarded, Date date,
 	    Sort sort);
 
-    @Query("{'name': ?0}")
-    public List<GroupCollection> findByName(String name);
+    @Query("{'name': ?0, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3}")
+    public List<GroupCollection> findByName(String name, String doctorId, String locationId, String hospitalId);
 
     @Query("{'doctorId': ?0, 'discarded': {$in: ?1}, 'updatedTime': {'$gte': ?2}}")
     public List<GroupCollection> findAll(String doctorId, boolean[] discarded, Date date, Pageable pageRequest);

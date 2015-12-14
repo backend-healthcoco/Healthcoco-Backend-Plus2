@@ -12,7 +12,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -74,6 +76,9 @@ public class PrescriptionApi {
     @Autowired
     private TransactionalManagementService transnationalService;
 
+    @Context
+    private UriInfo uriInfo;
+
     @Autowired
     private OTPService otpService;
 
@@ -88,16 +93,16 @@ public class PrescriptionApi {
 
 	transnationalService.addResource(drugAddEditResponse.getId(), Resource.DRUG, false);
 
-	if(drugAddEditResponse != null){
-		SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
-		BeanUtil.map(drugAddEditResponse, solrDrugDocument);
-		if(drugAddEditResponse.getDrugType() != null){
-			solrDrugDocument.setDrugTypeId(drugAddEditResponse.getDrugType().getId());
-			solrDrugDocument.setDrugType(drugAddEditResponse.getDrugType().getType());
-		}
-		solrPrescriptionService.addDrug(solrDrugDocument);
+	if (drugAddEditResponse != null) {
+	    SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
+	    BeanUtil.map(drugAddEditResponse, solrDrugDocument);
+	    if (drugAddEditResponse.getDrugType() != null) {
+		solrDrugDocument.setDrugTypeId(drugAddEditResponse.getDrugType().getId());
+		solrDrugDocument.setDrugType(drugAddEditResponse.getDrugType().getType());
+	    }
+	    solrPrescriptionService.addDrug(solrDrugDocument);
 	}
-	
+
 	Response<DrugAddEditResponse> response = new Response<DrugAddEditResponse>();
 	response.setData(drugAddEditResponse);
 	return response;
@@ -114,14 +119,14 @@ public class PrescriptionApi {
 	DrugAddEditResponse drugAddEditResponse = prescriptionServices.editDrug(request);
 
 	transnationalService.addResource(drugAddEditResponse.getId(), Resource.DRUG, false);
-	if(drugAddEditResponse != null){
-		SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
-		BeanUtil.map(drugAddEditResponse, solrDrugDocument);
-		if(drugAddEditResponse.getDrugType() != null){
-			solrDrugDocument.setDrugTypeId(drugAddEditResponse.getDrugType().getId());
-			solrDrugDocument.setDrugType(drugAddEditResponse.getDrugType().getType());
-		}
-		solrPrescriptionService.editDrug(solrDrugDocument);
+	if (drugAddEditResponse != null) {
+	    SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
+	    BeanUtil.map(drugAddEditResponse, solrDrugDocument);
+	    if (drugAddEditResponse.getDrugType() != null) {
+		solrDrugDocument.setDrugTypeId(drugAddEditResponse.getDrugType().getId());
+		solrDrugDocument.setDrugType(drugAddEditResponse.getDrugType().getType());
+	    }
+	    solrPrescriptionService.editDrug(solrDrugDocument);
 	}
 	Response<DrugAddEditResponse> response = new Response<DrugAddEditResponse>();
 	response.setData(drugAddEditResponse);
@@ -709,7 +714,7 @@ public class PrescriptionApi {
 	    throw new BusinessException(ServiceError.InvalidInput,
 		    "Invalid Input. Prescription Id, Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
 	}
-	prescriptionServices.emailPrescription(prescriptionId, doctorId, locationId, hospitalId, emailAddress);
+	prescriptionServices.emailPrescription(prescriptionId, doctorId, locationId, hospitalId, emailAddress, uriInfo);
 
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);

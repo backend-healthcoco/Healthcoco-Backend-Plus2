@@ -95,7 +95,10 @@ public class ContactsApi {
 
 	switch (ContactsSearchType.valueOf(type.toUpperCase())) {
 	case DOCTORCONTACTS:
-	    doctorContactsResponse = doctorContacts(page, size, doctorId, updatedTime, discarded);
+	    doctorContactsResponse = contactsService.getDoctorContactsSortedByName(doctorId, locationId, hospitalId, updatedTime, discarded, page, size);
+	    break;
+	case RECENTLYADDED:
+	    doctorContactsResponse = contactsService.getDoctorContacts(doctorId, locationId, hospitalId, updatedTime, discarded, page, size);
 	    break;
 	case RECENTLYVISITED:
 	    doctorContactsResponse = patientTrackService.recentlyVisited(doctorId, locationId, hospitalId, page, size);
@@ -107,7 +110,7 @@ public class ContactsApi {
 	    break;
 	}
 
-	if (doctorContactsResponse.getPatientCards() != null && !doctorContactsResponse.getPatientCards().isEmpty()) {
+	if (doctorContactsResponse != null && doctorContactsResponse.getPatientCards() != null && !doctorContactsResponse.getPatientCards().isEmpty()) {
 	    for (PatientCard patientCard : doctorContactsResponse.getPatientCards()) {
 		patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
 		patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
@@ -119,21 +122,6 @@ public class ContactsApi {
 
 	return response;
 
-    }
-
-    private DoctorContactsResponse doctorContacts(int page, int size, String doctorId, String updatedTime, Boolean discarded) {
-	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
-	    logger.warn("Invalid Input. Doctor Id Cannot Be Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id Cannot Be Empty");
-	}
-	List<PatientCard> patientCards = contactsService.getDoctorContacts(doctorId, updatedTime, discarded, page, size);
-
-	int ttlCount = patientCards != null ? patientCards.size() : 0;
-
-	DoctorContactsResponse doctorContactsResponse = new DoctorContactsResponse();
-	doctorContactsResponse.setPatientCards(patientCards);
-	doctorContactsResponse.setTotalSize(ttlCount);
-	return doctorContactsResponse;
     }
 
     @Path(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_HANDHELD)

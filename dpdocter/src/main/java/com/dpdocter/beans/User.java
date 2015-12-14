@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import com.dpdocter.enums.UserState;
+
 public class User {
     private String id;
 
@@ -29,6 +31,8 @@ public class User {
     private String thumbnailUrl;
 
     private String colorCode;
+
+    private UserState userState;
 
     public String getImageUrl() {
 	return imageUrl;
@@ -146,12 +150,19 @@ public class User {
 	this.thumbnailUrl = thumbnailUrl;
     }
 
+    public UserState getUserState() {
+	return userState;
+    }
+
+    public void setUserState(UserState userState) {
+	this.userState = userState;
+    }
+
     @Override
     public String toString() {
 	return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", userName=" + userName
 		+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob=" + dob + ", secPhoneNumber="
 		+ secPhoneNumber + ", isPartOfClinic=" + isPartOfClinic + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", colorCode="
-		+ colorCode + "]";
+		+ colorCode + ", userState=" + userState + "]";
     }
-
 }

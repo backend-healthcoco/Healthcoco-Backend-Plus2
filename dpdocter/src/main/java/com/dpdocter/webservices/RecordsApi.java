@@ -152,7 +152,7 @@ public class RecordsApi {
     public Response<Boolean> emailRecords(@PathParam("recordId") String recordId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @PathParam("emailAddress") String emailAddress) {
-	recordsService.emailRecordToPatient(recordId, doctorId, locationId, hospitalId, emailAddress);
+	recordsService.emailRecordToPatient(recordId, doctorId, locationId, hospitalId, emailAddress, uriInfo);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -223,7 +223,6 @@ public class RecordsApi {
 	    return finalImageURL + imageURL;
 	} else
 	    return null;
-
     }
 
     @Path(value = PathProxy.RecordsUrls.CHANGE_LABEL_AND_DESCRIPTION_RECORD)

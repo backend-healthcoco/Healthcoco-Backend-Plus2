@@ -2,6 +2,8 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import javax.ws.rs.core.UriInfo;
+
 import org.springframework.data.mongodb.repository.Query;
 
 import com.dpdocter.beans.ClinicalNotes;
@@ -59,8 +61,8 @@ public interface ClinicalNotesService {
     List<Object> getClinicalItems(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded);
 
-    void emailClinicalNotes(String clinicalNotesId, String doctorId, String locationId, String hospitalId, String emailAddress);
+    void emailClinicalNotes(String clinicalNotesId, String doctorId, String locationId, String hospitalId, String emailAddress, UriInfo uriInfo);
 
-    MailAttachment getClinicalNotesMailData(String clinicalNotesId, String doctorId, String locationId, String hospitalId);
+    MailAttachment getClinicalNotesMailData(String clinicalNotesId, String doctorId, String locationId, String hospitalId, UriInfo uriInfo);
 
 }

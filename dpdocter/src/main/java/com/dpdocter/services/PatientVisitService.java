@@ -2,6 +2,8 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import javax.ws.rs.core.UriInfo;
+
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.PatientVisit;
 import com.dpdocter.enums.VisitedFor;
@@ -19,20 +21,23 @@ public interface PatientVisitService {
 
     DoctorContactsResponse mostVisited(String doctorId, String locationId, String hospitalId, int page, int size);
 
-    PatientVisitResponse addMultipleData(AddMultipleDataRequest request);
+    PatientVisitResponse addMultipleData(AddMultipleDataRequest request, UriInfo uriInfo);
 
-    PatientVisitResponse getVisit(String visitId);
+    PatientVisitResponse getVisit(String visitId, UriInfo uriInfo);
 
     List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId, int page, int size, Boolean isOTPVerified,
-	    String updatedTime);
+	    String updatedTime, UriInfo uriInfo);
 
-    Boolean email(String visitId, String emailAddress);
+    Boolean email(String visitId, String emailAddress, UriInfo uriInfo);
 
     Boolean deleteVisit(String visitId, Boolean discarded);
 
     void smsVisit(String visitId, String doctorId, String locationId, String hospitalId, String mobileNumber);
 
-	List<PatientVisit> getVisitsHandheld(String doctorId, String locationId, String hospitalId, String patientId, int page, int size, Boolean isOTPVerified, String updatedTime);
+    List<PatientVisit> getVisitsHandheld(String doctorId, String locationId, String hospitalId, String patientId, int page, int size, Boolean isOTPVerified,
+	    String updatedTime);
 
-	String editRecord(String id, VisitedFor prescription);
+    String editRecord(String id, VisitedFor prescription);
+
+    int getVisitCount(String doctorId, String patientId, String locationId, String hospitalId);
 }

@@ -10,7 +10,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -41,6 +43,9 @@ public class PatientVisitApi {
     @Autowired
     private OTPService otpService;
 
+    @Context
+    private UriInfo uriInfo;
+
     @Path(value = PathProxy.PatientVisitUrls.ADD_MULTIPLE_DATA)
     @POST
     public Response<PatientVisitResponse> addMultipleData(AddMultipleDataRequest request) {
@@ -49,7 +54,7 @@ public class PatientVisitApi {
 	    logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
-	PatientVisitResponse patienVisitResponse = patientVisitService.addMultipleData(request);
+	PatientVisitResponse patienVisitResponse = patientVisitService.addMultipleData(request, uriInfo);
 	Response<PatientVisitResponse> response = new Response<PatientVisitResponse>();
 	response.setData(patienVisitResponse);
 	return response;
@@ -63,7 +68,7 @@ public class PatientVisitApi {
 	    logger.warn("Visit Id Or Email AddressIs NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Visit Id Or Email Address Is NULL");
 	}
-	Boolean isSend = patientVisitService.email(visitId, emailAddress);
+	Boolean isSend = patientVisitService.email(visitId, emailAddress, uriInfo);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(isSend);
 	return response;
@@ -76,7 +81,7 @@ public class PatientVisitApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Patient Visit Id Cannot Be Empty!");
 	}
 
-	PatientVisitResponse patientVisitResponse = patientVisitService.getVisit(visitId);
+	PatientVisitResponse patientVisitResponse = patientVisitService.getVisit(visitId, uriInfo);
 
 	Response<PatientVisitResponse> response = new Response<PatientVisitResponse>();
 	response.setData(patientVisitResponse);
@@ -94,7 +99,7 @@ public class PatientVisitApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	}
 	List<PatientVisitResponse> patienVisitResponse = patientVisitService.getVisit(doctorId, locationId, hospitalId, patientId, page, size,
-		otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), updatedTime);
+		otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), updatedTime, uriInfo);
 
 	Response<PatientVisitResponse> response = new Response<PatientVisitResponse>();
 	response.setDataList(patienVisitResponse);

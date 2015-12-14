@@ -29,15 +29,6 @@ public class HistoryCollection extends GenericCollection {
     @Field
     private List<GeneralData> generalRecords;
 
-    /*@Field
-    private List<String> reports;
-
-    @Field
-    private List<String> prescriptions;
-
-    @Field
-    private List<String> clinicalNotes;*/
-
     @Field
     private List<String> familyhistory;
 

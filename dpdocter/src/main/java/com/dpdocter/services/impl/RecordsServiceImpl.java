@@ -7,10 +7,12 @@ import java.util.Date;
 import java.util.List;
 
 import javax.mail.MessagingException;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -98,8 +100,14 @@ public class RecordsServiceImpl implements RecordsService {
     @Autowired
     private LocationRepository locationRepository;
 
+    @Autowired
+    private PatientVisitService patientVisitServices;
+
     @Value(value = "${IMAGE_RESOURCE}")
     private String imageResource;
+
+    @Value(value = "${IMAGE_URL_ROOT_PATH}")
+    private String imageUrlRootPath;
 
     @Autowired
     private PatientVisitRepository patientVisitRepository;
@@ -183,9 +191,9 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public void emailRecordToPatient(String recordId, String doctorId, String locationId, String hospitalId, String emailAddress) {
+    public void emailRecordToPatient(String recordId, String doctorId, String locationId, String hospitalId, String emailAddress, UriInfo uriInfo) {
 	try {
-	    MailAttachment mailAttachment = createMailData(recordId, doctorId, locationId, hospitalId);
+	    MailAttachment mailAttachment = createMailData(recordId, doctorId, locationId, hospitalId, uriInfo);
 	    mailService.sendEmail(emailAddress, "Records", "PFA.", mailAttachment);
 	} catch (MessagingException e) {
 	    logger.error(e);
@@ -264,7 +272,8 @@ public class RecordsServiceImpl implements RecordsService {
 			    record.setClinicName(locationCollection.getLocationName());
 		    }
 		    PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(record.getId());
-			if(patientVisitCollection != null)record.setVisitId(patientVisitCollection.getId());
+		    if (patientVisitCollection != null)
+			record.setVisitId(patientVisitCollection.getId());
 		    records.add(record);
 		}
 	    }
@@ -422,7 +431,8 @@ public class RecordsServiceImpl implements RecordsService {
 			record.setDoctorName(userCollection.getFirstName());
 		    }
 		    PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(record.getId());
-			if(patientVisitCollection != null)record.setVisitId(patientVisitCollection.getId());
+		    if (patientVisitCollection != null)
+			record.setVisitId(patientVisitCollection.getId());
 		    records.add(record);
 		}
 	    }
@@ -470,6 +480,8 @@ public class RecordsServiceImpl implements RecordsService {
 		case HISTORY:
 		    count.setValue(historyServices.getHistoryCount(doctorId, patientId, locationId, hospitalId));
 		    break;
+		case PATIENTVISITS:
+		    count.setValue(patientVisitServices.getVisitCount(doctorId, patientId, locationId, hospitalId));
 		default:
 		    break;
 		}
@@ -498,7 +510,8 @@ public class RecordsServiceImpl implements RecordsService {
 		    record.setDoctorName(userCollection.getFirstName());
 		}
 		PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(record.getId());
-		if(patientVisitCollection != null)record.setVisitId(patientVisitCollection.getId());
+		if (patientVisitCollection != null)
+		    record.setVisitId(patientVisitCollection.getId());
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -509,21 +522,27 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public MailAttachment getRecordMailData(String recordId, String doctorId, String locationId, String hospitalId) {
-	return createMailData(recordId, doctorId, locationId, hospitalId);
+    public MailAttachment getRecordMailData(String recordId, String doctorId, String locationId, String hospitalId, UriInfo uriInfo) {
+	return createMailData(recordId, doctorId, locationId, hospitalId, uriInfo);
     }
 
-    private MailAttachment createMailData(String recordId, String doctorId, String locationId, String hospitalId) {
+    private MailAttachment createMailData(String recordId, String doctorId, String locationId, String hospitalId, UriInfo uriInfo) {
 	MailAttachment mailAttachment = null;
 	try {
 	    RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
 	    if (recordsCollection != null) {
 
-		FileSystemResource file = new FileSystemResource(recordsCollection.getRecordsPath());
+		FileSystemResource file = new FileSystemResource(getFinalImageURL(recordsCollection.getRecordsUrl(), uriInfo));
 		mailAttachment = new MailAttachment();
-		mailAttachment.setAttachmentName(file.getFilename());
 		mailAttachment.setFileSystemResource(file);
 
+		UserCollection patientUserCollection = userRepository.findOne(recordsCollection.getPatientId());
+		if (patientUserCollection != null) {
+		    mailAttachment.setAttachmentName(patientUserCollection.getFirstName() + new Date() + "REPORTS"
+			    + FilenameUtils.getExtension(file.getFilename()));
+		} else {
+		    mailAttachment.setAttachmentName(new Date() + "REPORTS" + FilenameUtils.getExtension(file.getFilename()));
+		}
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 		emailTrackCollection.setDoctorId(recordsCollection.getDoctorId());
 		emailTrackCollection.setHospitalId(recordsCollection.getHospitalId());
@@ -573,5 +592,13 @@ public class RecordsServiceImpl implements RecordsService {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+    }
+
+    private String getFinalImageURL(String imageURL, UriInfo uriInfo) {
+	if (imageURL != null) {
+	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+	    return finalImageURL + imageURL;
+	} else
+	    return null;
     }
 }

@@ -93,10 +93,9 @@ public class DiseaseListResponse extends GenericCollection {
 	this.discarded = discarded;
     }
 
-	@Override
-	public String toString() {
-		return "DiseaseListResponse [id=" + id + ", disease=" + disease + ", description=" + description + ", doctorId="
-				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
-				+ "]";
-	}
+    @Override
+    public String toString() {
+	return "DiseaseListResponse [id=" + id + ", disease=" + disease + ", description=" + description + ", doctorId=" + doctorId + ", locationId="
+		+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + "]";
+    }
 }

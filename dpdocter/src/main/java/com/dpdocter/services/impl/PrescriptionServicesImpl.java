@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.mail.MessagingException;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.collections.IteratorUtils;
@@ -108,7 +107,6 @@ import com.dpdocter.sms.services.SMSServices;
 import com.dpdocter.solr.document.SolrDrugDocument;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.PrescriptionUtils;
 
@@ -174,9 +172,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     @Autowired
     private PatientVisitRepository patientVisitRepository;
 
-    @Context
-    private UriInfo uriInfo;
-
     @Value(value = "${IMAGE_URL_ROOT_PATH}")
     private String imageUrlRootPath;
 
@@ -193,13 +188,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    if (drugCollection.getDrugType() != null) {
 		if (drugCollection.getDrugType().getId() == null)
 		    drugCollection.setDrugType(null);
-		else{
-			DrugTypeCollection drugTypeCollection = drugTypeRepository.findOne(drugCollection.getDrugType().getId());
-			if(drugTypeCollection != null){
-				DrugType drugType = new DrugType();
-				BeanUtil.map(drugTypeCollection, drugType);
-				drugCollection.setDrugType(drugType);
-			}
+		else {
+		    DrugTypeCollection drugTypeCollection = drugTypeRepository.findOne(drugCollection.getDrugType().getId());
+		    if (drugTypeCollection != null) {
+			DrugType drugType = new DrugType();
+			BeanUtil.map(drugTypeCollection, drugType);
+			drugCollection.setDrugType(drugType);
+		    }
 		}
 	    }
 	    if (drugCollection.getStrength() != null && drugCollection.getStrength().getStrengthUnit() != null) {
@@ -230,13 +225,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    if (drugCollection.getDrugType() != null) {
 		if (drugCollection.getDrugType().getId() == null)
 		    drugCollection.setDrugType(null);
-		else{
-			DrugTypeCollection drugTypeCollection = drugTypeRepository.findOne(drugCollection.getDrugType().getId());
-			if(drugTypeCollection != null){
-				DrugType drugType = new DrugType();
-				BeanUtil.map(drugTypeCollection, drugType);
-				drugCollection.setDrugType(drugType);
-			}
+		else {
+		    DrugTypeCollection drugTypeCollection = drugTypeRepository.findOne(drugCollection.getDrugType().getId());
+		    if (drugTypeCollection != null) {
+			DrugType drugType = new DrugType();
+			BeanUtil.map(drugTypeCollection, drugType);
+			drugCollection.setDrugType(drugType);
+		    }
 		}
 	    }
 	    if (drugCollection.getStrength() != null && drugCollection.getStrength().getStrengthUnit() != null) {
@@ -676,7 +671,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    prescription.setDoctorName(userCollection.getFirstName());
 			}
 			PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(prescription.getId());
-			if(patientVisitCollection != null)prescription.setVisitId(patientVisitCollection.getId());
+			if (patientVisitCollection != null)
+			    prescription.setVisitId(patientVisitCollection.getId());
 			prescriptions.add(prescription);
 		    }
 
@@ -728,7 +724,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    prescription.setDoctorName(userCollection.getFirstName());
 			}
 			PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(prescription.getId());
-			if(patientVisitCollection != null)prescription.setVisitId(patientVisitCollection.getId());
+			if (patientVisitCollection != null)
+			    prescription.setVisitId(patientVisitCollection.getId());
 			prescriptions.add(prescription);
 		    }
 
@@ -1217,7 +1214,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			prescriptionItemDetails.add(prescriptionItemDetail);
 		    }
 		    PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(prescription.getId());
-			if(patientVisitCollection != null)prescription.setVisitId(patientVisitCollection.getId());
+		    if (patientVisitCollection != null)
+			prescription.setVisitId(patientVisitCollection.getId());
 		    prescription.setItems(prescriptionItemDetails);
 		}
 	    } else {
@@ -2311,9 +2309,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
-    public void emailPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String emailAddress) {
+    public void emailPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String emailAddress, UriInfo uriInfo) {
 	try {
-	    MailAttachment mailAttachment = createMailDate(prescriptionId, doctorId, locationId, hospitalId);
+	    MailAttachment mailAttachment = createMailDate(prescriptionId, doctorId, locationId, hospitalId, uriInfo);
 	    mailService.sendEmail(emailAddress, "Prescription", "PFA.", mailAttachment);
 	} catch (MessagingException e) {
 	    logger.error(e);
@@ -2322,11 +2320,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
-    public MailAttachment getPrescriptionMailData(String prescriptionId, String doctorId, String locationId, String hospitalId) {
-	return createMailDate(prescriptionId, doctorId, locationId, hospitalId);
+    public MailAttachment getPrescriptionMailData(String prescriptionId, String doctorId, String locationId, String hospitalId, UriInfo uriInfo) {
+	return createMailDate(prescriptionId, doctorId, locationId, hospitalId, uriInfo);
     }
 
-    private MailAttachment createMailDate(String prescriptionId, String doctorId, String locationId, String hospitalId) {
+    private MailAttachment createMailDate(String prescriptionId, String doctorId, String locationId, String hospitalId, UriInfo uriInfo) {
 	PrescriptionCollection prescriptionCollection = null;
 	Map<String, Object> parameters = new HashMap<String, Object>();
 	MailAttachment mailAttachment = null;
@@ -2510,14 +2508,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 		LocationCollection location = locationRepository.findOne(locationId);
 		if (location != null)
-		    parameters.put("logoURL", getFinalImageURL(location.getLogoUrl()));
+		    parameters.put("logoURL", getFinalImageURL(location.getLogoUrl(), uriInfo));
 
 		String layout = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 			: "PORTRAIT";
 		String pageSize = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
 		String margins = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getMargins() : null) : null;
 
-		String path = jasperReportService.createPDF(parameters, "mongo-prescription", layout, pageSize, margins);
+		String path = jasperReportService.createPDF(parameters, "mongo-prescription", layout, pageSize, margins, user.getFirstName() + new Date()
+			+ "PRESCRIPTION");
 		FileSystemResource file = new FileSystemResource(path);
 		mailAttachment = new MailAttachment();
 		mailAttachment.setAttachmentName(file.getFilename());
@@ -2827,7 +2826,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
     }
 
-    private String getFinalImageURL(String imageURL) {
+    private String getFinalImageURL(String imageURL, UriInfo uriInfo) {
 	if (imageURL != null && uriInfo != null) {
 	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
 	    return finalImageURL + imageURL;

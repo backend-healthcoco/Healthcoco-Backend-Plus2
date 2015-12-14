@@ -1,7 +1,5 @@
 package com.dpdocter.solr.webservices;
 
-import java.util.List;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -18,7 +16,7 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.solr.beans.AdvancedSearch;
-import com.dpdocter.solr.response.SolrPatientResponse;
+import com.dpdocter.solr.response.SolrPatientResponseDetails;
 import com.dpdocter.solr.services.SolrRegistrationService;
 import com.dpdocter.webservices.PathProxy;
 import common.util.web.DPDoctorUtils;
@@ -37,34 +35,33 @@ public class SolrRegistrationApi {
 
     @Path(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT)
     @GET
-    public Response<SolrPatientResponse> searchPatient(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "searchTerm") String searchTerm, @QueryParam("page") int page,
-	    @QueryParam("size") int size) {
+    public Response<SolrPatientResponseDetails> searchPatient(@PathParam(value = "doctorId") String doctorId,
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+	    @PathParam(value = "searchTerm") String searchTerm, @QueryParam("page") int page, @QueryParam("size") int size) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, searchTerm)) {
 	    logger.warn("Doctor Id, Location Id, Hospital Id and Search Term Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Location Id, Hospital Id and Search Term Cannot Be Empty");
 	}
-	List<SolrPatientResponse> patients = solrRegistrationService.searchPatient(doctorId, locationId, hospitalId, searchTerm, page, size);
+	SolrPatientResponseDetails patients = solrRegistrationService.searchPatient(doctorId, locationId, hospitalId, searchTerm, page, size);
 
-	Response<SolrPatientResponse> response = new Response<SolrPatientResponse>();
-	response.setDataList(patients);
+	Response<SolrPatientResponseDetails> response = new Response<SolrPatientResponseDetails>();
+	response.setData(patients);
 	return response;
     }
 
     @Path(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT_ADV)
     @POST
-    public Response<SolrPatientResponse> searchPatient(AdvancedSearch request) {
-	List<SolrPatientResponse> patients = null;
+    public Response<SolrPatientResponseDetails> searchPatient(AdvancedSearch request) {
 
 	if (request == null) {
 	    logger.warn("Search Request Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Search Request Cannot Be Empty");
 	}
 
-	patients = solrRegistrationService.searchPatient(request);
+	SolrPatientResponseDetails patients = solrRegistrationService.searchPatient(request);
 
-	Response<SolrPatientResponse> response = new Response<SolrPatientResponse>();
-	response.setDataList(patients);
+	Response<SolrPatientResponseDetails> response = new Response<SolrPatientResponseDetails>();
+	response.setData(patients);
 	return response;
     }
 
