@@ -1,50 +1,24 @@
 package com.dpdocter.request;
 
-import java.util.List;
-
-import com.dpdocter.beans.AccessModule;
-import com.dpdocter.beans.DOB;
-import com.dpdocter.beans.FileDetails;
-
 public class DoctorRegisterRequest {
 
     private String userId;
 
     private String firstName;
 
-    private String lastName;
-
-    private String middleName;
-
-    private String userName;
-
-    private String password;
-
     private String emailAddress;
 
     private String mobileNumber;
-
-    private FileDetails image;
-
-    private String gender;
-
-    private DOB dob;
-
-    private String phoneNumber;
-
-    private String imageUrl;
-
-    private List<String> specialization;
 
     private String locationId;
 
     private String hospitalId;
 
-    private List<AccessModule> accessModules;
-
     private String registerNumber;
 
-    private RoleRequest role;
+    private String roleId;
+    
+    private Boolean isActivate;
 
     public String getUserId() {
 	return userId;
@@ -60,38 +34,6 @@ public class DoctorRegisterRequest {
 
     public void setFirstName(String firstName) {
 	this.firstName = firstName;
-    }
-
-    public String getLastName() {
-	return lastName;
-    }
-
-    public void setLastName(String lastName) {
-	this.lastName = lastName;
-    }
-
-    public String getMiddleName() {
-	return middleName;
-    }
-
-    public void setMiddleName(String middleName) {
-	this.middleName = middleName;
-    }
-
-    public String getUserName() {
-	return userName;
-    }
-
-    public void setUserName(String userName) {
-	this.userName = userName;
-    }
-
-    public String getPassword() {
-	return password;
-    }
-
-    public void setPassword(String password) {
-	this.password = password;
     }
 
     public String getEmailAddress() {
@@ -110,100 +52,50 @@ public class DoctorRegisterRequest {
 	this.mobileNumber = mobileNumber;
     }
 
-    public FileDetails getImage() {
-	return image;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public void setImage(FileDetails image) {
-	this.image = image;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public String getGender() {
-	return gender;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setGender(String gender) {
-	this.gender = gender;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public DOB getDob() {
-	return dob;
-    }
+	public String getRegisterNumber() {
+		return registerNumber;
+	}
 
-    public void setDob(DOB dob) {
-	this.dob = dob;
-    }
+	public void setRegisterNumber(String registerNumber) {
+		this.registerNumber = registerNumber;
+	}
 
-    public String getPhoneNumber() {
-	return phoneNumber;
-    }
+	public String getRoleId() {
+		return roleId;
+	}
 
-    public void setPhoneNumber(String phoneNumber) {
-	this.phoneNumber = phoneNumber;
-    }
+	public void setRoleId(String roleId) {
+		this.roleId = roleId;
+	}
 
-    public String getImageUrl() {
-	return imageUrl;
-    }
+	public Boolean getIsActivate() {
+		return isActivate;
+	}
 
-    public void setImageUrl(String imageUrl) {
-	this.imageUrl = imageUrl;
-    }
+	public void setIsActivate(Boolean isActivate) {
+		this.isActivate = isActivate;
+	}
 
-    public List<String> getSpecialization() {
-	return specialization;
-    }
-
-    public void setSpecialization(List<String> specialization) {
-	this.specialization = specialization;
-    }
-
-    public String getLocationId() {
-	return locationId;
-    }
-
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
-
-    public String getHospitalId() {
-	return hospitalId;
-    }
-
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
-
-    public List<AccessModule> getAccessModules() {
-	return accessModules;
-    }
-
-    public void setAccessModules(List<AccessModule> accessModules) {
-	this.accessModules = accessModules;
-    }
-
-    public String getRegisterNumber() {
-	return registerNumber;
-    }
-
-    public void setRegisterNumber(String registerNumber) {
-	this.registerNumber = registerNumber;
-    }
-
-    public RoleRequest getRole() {
-	return role;
-    }
-
-    public void setRole(RoleRequest role) {
-	this.role = role;
-    }
-
-    @Override
-    public String toString() {
-	return "DoctorRegisterRequest [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", userName="
-		+ userName + ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", image=" + image + ", gender="
-		+ gender + ", dob=" + dob + ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl + ", specialization=" + specialization + ", locationId="
-		+ locationId + ", hospitalId=" + hospitalId + ", accessModules=" + accessModules + ", registerNumber=" + registerNumber + ", role=" + role
-		+ "]";
-    }
+	@Override
+	public String toString() {
+		return "DoctorRegisterRequest [userId=" + userId + ", firstName=" + firstName + ", emailAddress=" + emailAddress
+				+ ", mobileNumber=" + mobileNumber + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", registerNumber=" + registerNumber + ", roleId=" + roleId + ", isActivate=" + isActivate + "]";
+	}
 }

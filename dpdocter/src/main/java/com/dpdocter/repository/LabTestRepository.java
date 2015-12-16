@@ -13,23 +13,17 @@ import com.dpdocter.collections.LabTestCollection;
 
 public interface LabTestRepository extends MongoRepository<LabTestCollection, String>, PagingAndSortingRepository<LabTestCollection, String> {
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': {$in: ?1}}")
+    @Query("{'updatedTime': {'$gte': ?0}, 'discarded': {$in: ?1}}")
     List<LabTestCollection> getGlobalLabTests(Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': {$in: ?1}}")
+    @Query("{'updatedTime': {'$gte': ?0}, 'discarded': {$in: ?1}}")
     List<LabTestCollection> getGlobalLabTests(Date date, boolean[] discards, Sort sort);
+ 
+    @Query("{'hospitalId': ?0, 'locationId': ?1, 'updatedTime': {'$gte': ?2}, 'discarded': {$in: ?3}}")
+    List<LabTestCollection> getCustomLabTests(String hospitalId, String locationId, Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': {$in: ?2}}")
-    List<LabTestCollection> getCustomLabTests(String doctorId, Date date, boolean[] discards, Pageable pageable);
-
-    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': {$in: ?2}}")
-    List<LabTestCollection> getCustomLabTests(String doctorId, Date date, boolean[] discards, Sort sort);
-
-    @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': {$in: ?4}}")
-    List<LabTestCollection> getCustomLabTests(String doctorId, String hospitalId, String locationId, Date date, boolean[] discards, Pageable pageable);
-
-    @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': {$in: ?4}}")
-    List<LabTestCollection> getCustomLabTests(String doctorId, String hospitalId, String locationId, Date date, boolean[] discards, Sort sort);
+    @Query("{'hospitalId': ?0, 'locationId': ?1, 'updatedTime': {'$gte': ?2}, 'discarded': {$in: ?3}}")
+    List<LabTestCollection> getCustomLabTests(String hospitalId, String locationId, Date date, boolean[] discards, Sort sort);
 
     @Query("{'updatedTime': {'$gte': ?0}, 'discarded': {$in: ?1}}")
     List<LabTestCollection> getCustomGlobalLabTests(Date date, boolean[] discards, Pageable pageable);
@@ -37,16 +31,10 @@ public interface LabTestRepository extends MongoRepository<LabTestCollection, St
     @Query("{'updatedTime': {'$gte': ?0}, 'discarded': {$in: ?1}}")
     List<LabTestCollection> getCustomGlobalLabTests(Date date, boolean[] discards, Sort sort);
 
-    @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': {$in: ?2}},{'doctorId': null, 'updatedTime': {'$gte': ?1},'discarded': {$in: ?2}}]}")
-    List<LabTestCollection> getCustomGlobalLabTests(String doctorId, Date date, boolean[] discards, Pageable pageable);
+    @Query("{'$or': [{'hospitalId': ?0, 'locationId': ?1, 'updatedTime': {'$gte': ?2}, 'discarded': {$in: ?3}},{'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?2},'discarded': {$in: ?3}}]}")
+    List<LabTestCollection> getCustomGlobalLabTests(String hospitalId, String locationId, Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': {$in: ?2}},{'doctorId': null, 'updatedTime': {'$gte': ?1},'discarded': {$in: ?2}}]}")
-    List<LabTestCollection> getCustomGlobalLabTests(String doctorId, Date date, boolean[] discards, Sort sort);
-
-    @Query("{'$or': [{'doctorId': ?0,  'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': {$in: ?4}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?3},'discarded': {$in: ?4}}]}")
-    List<LabTestCollection> getCustomGlobalLabTests(String doctorId, String hospitalId, String locationId, Date date, boolean[] discards, Pageable pageable);
-
-    @Query("{'$or': [{'doctorId': ?0,  'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': {$in: ?4}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?3},'discarded': {$in: ?4}}]}")
-    List<LabTestCollection> getCustomGlobalLabTests(String doctorId, String hospitalId, String locationId, Date date, boolean[] discards, Sort sort);
+    @Query("{'$or': [{'hospitalId': ?0, 'locationId': ?1, 'updatedTime': {'$gte': ?2}, 'discarded': {$in: ?3}},{'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?2},'discarded': {$in: ?3}}]}")
+    List<LabTestCollection> getCustomGlobalLabTests(String hospitalId, String locationId, Date date, boolean[] discards, Sort sort);
 
 }

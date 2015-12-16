@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.mail.MessagingException;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
@@ -84,7 +83,6 @@ import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailService;
-import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.solr.document.SolrComplaintsDocument;
 import com.dpdocter.solr.document.SolrDiagnosesDocument;
 import com.dpdocter.solr.document.SolrInvestigationsDocument;
@@ -93,6 +91,7 @@ import com.dpdocter.solr.document.SolrObservationsDocument;
 import com.dpdocter.solr.services.SolrClinicalNotesService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -686,22 +685,25 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
-    public List<ClinicalNotes> getPatientsClinicalNotesWithVerifiedOTP(int page, int size, String patientId, String updatedTime, boolean discarded) {
+    public List<ClinicalNotes> getPatientsClinicalNotesWithVerifiedOTP(int page, int size, String patientId, String updatedTime, boolean discarded, boolean inHistory) {
 	List<ClinicalNotes> clinicalNotesList = null;
 	List<PatientClinicalNotesCollection> patientClinicalNotesCollections = null;
 	boolean[] discards = new boolean[2];
 	discards[0] = false;
 
-	try {
-	    if (discarded)
-		discards[1] = true;
+	boolean[] inHistorys = new boolean[2];
+	inHistorys[0] = true;
 
+	try {
+	    if (discarded)discards[1] = true;
+	    if (inHistory)inHistorys[1] = false;	    
+	 
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
-		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, discards, new Date(createdTimeStamp),
+		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, discards, inHistorys, new Date(createdTimeStamp),
 			new PageRequest(page, size, Direction.DESC, "updatedTime"));
 	    else
-		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, discards, new Date(createdTimeStamp), new Sort(
+		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, discards, inHistorys, new Date(createdTimeStamp), new Sort(
 			Sort.Direction.DESC, "updatedTime"));
 
 	    if (patientClinicalNotesCollections != null) {
@@ -734,10 +736,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
     @Override
     public List<ClinicalNotes> getPatientsClinicalNotesWithoutVerifiedOTP(int page, int size, String patientId, String doctorId, String locationId,
-	    String hospitalId, String updatedTime, boolean discarded) {
+	    String hospitalId, String updatedTime, boolean discarded, boolean inHistory) {
 	List<ClinicalNotes> clinicalNotesList = null;
 	List<PatientClinicalNotesCollection> patientClinicalNotesCollections = null;
+	boolean[] discards = new boolean[2];
+	discards[0] = false;
+
 	try {
+	    if (discarded)discards[1] = true;
+
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
 		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Date(createdTimeStamp), new PageRequest(page,
@@ -760,8 +767,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				if (userCollection != null) {
 				    clinicalNotes.setDoctorName(userCollection.getFirstName() + userCollection.getLastName());
 				}
+			    if(!inHistory) clinicalNotesList.add(clinicalNotes);
+			    else if(clinicalNotes.isInHistory())clinicalNotesList.add(clinicalNotes);
 			    }
-			    clinicalNotesList.add(clinicalNotes);
 			}
 		    }
 		} else {
@@ -775,9 +783,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				if (userCollection != null) {
 				    clinicalNotes.setDoctorName(userCollection.getFirstName() + userCollection.getLastName());
 				}
-
+				if(!inHistory) clinicalNotesList.add(clinicalNotes);
+			    else if(clinicalNotes.isInHistory())clinicalNotesList.add(clinicalNotes);
 			    }
-			    clinicalNotesList.add(clinicalNotes);
 			}
 
 		    }
@@ -2232,8 +2240,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    }
 		}
 		patientName = "Patient Name: " + (user != null ? user.getFirstName() : "--") + "<br>";
-		dob = "Patient Age: " + ((user != null && user.getDob() != null) ? (user.getDob().getAge() + " years") : "--") + "<br>";
-		gender = "Patient Gender: " + (user != null ? user.getGender() : "--") + "<br>";
+		dob = "Patient Age: " + ((patient != null && patient.getDob() != null) ? (patient.getDob().getAge() + " years") : "--") + "<br>";
+		gender = "Patient Gender: " + (patient != null ? patient.getGender() : "--") + "<br>";
 		mobileNumber = "Mobile Number: " + (user != null ? user.getMobileNumber() : "--") + "<br>";
 
 		parameters.put("patientLeftText", patientName + "Patient Id: " + (patient != null ? patient.getPID() : "--") + "<br>" + dob + gender);

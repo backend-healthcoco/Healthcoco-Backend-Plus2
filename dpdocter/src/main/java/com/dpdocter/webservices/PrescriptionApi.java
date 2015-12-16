@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.Prescription;
+import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
@@ -53,6 +54,7 @@ import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrDrugDocument;
 import com.dpdocter.solr.document.SolrLabTestDocument;
 import com.dpdocter.solr.services.SolrPrescriptionService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -219,14 +221,14 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_LAB_TEST)
     @DELETE
-    public Response<Boolean> deleteLabTest(@PathParam(value = "labTestId") String labTestId, @PathParam(value = "doctorId") String doctorId,
+    public Response<Boolean> deleteLabTest(@PathParam(value = "labTestId") String labTestId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-	if (StringUtils.isEmpty(labTestId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
-	    logger.warn("Lab Test Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Lab Test Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+	if (StringUtils.isEmpty(labTestId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
+	    logger.warn("Lab Test Id, Hospital Id, Location Id Cannot Be Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Lab Test Id, Hospital Id, Location Id Cannot Be Empty");
 	}
-	Boolean labTestDeleteResponse = prescriptionServices.deleteLabTest(labTestId, doctorId, hospitalId, locationId, discarded);
+	Boolean labTestDeleteResponse = prescriptionServices.deleteLabTest(labTestId, hospitalId, locationId, discarded);
 	transnationalService.addResource(labTestId, Resource.LABTEST, false);
 	solrPrescriptionService.deleteLabTest(labTestId, discarded);
 	Response<Boolean> response = new Response<Boolean>();
@@ -260,6 +262,16 @@ public class PrescriptionApi {
 	LabTest labTestResponse = prescriptionServices.getLabTestById(labTestId);
 	Response<LabTest> response = new Response<LabTest>();
 	response.setData(labTestResponse);
+	return response;
+    }
+
+    @Path(value = PathProxy.PrescriptionUrls.GET_DIAGNOSTIC_TEST)
+    @GET
+    public Response<DiagnosticTestCollection> getDiagnosticTest() {
+	
+    List<DiagnosticTestCollection> diagnosticTestCollections = prescriptionServices.getDiagnosticTest();
+	Response<DiagnosticTestCollection> response = new Response<DiagnosticTestCollection>();
+	response.setDataList(diagnosticTestCollections);
 	return response;
     }
 
@@ -448,7 +460,7 @@ public class PrescriptionApi {
 	List<Prescription> prescriptions = null;
 
 	prescriptions = prescriptionServices.getPrescriptions(page, size, doctorId, hospitalId, locationId, patientId, updatedTime,
-		otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), discarded);
+		otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), discarded, false);
 
 	Response<Prescription> response = new Response<Prescription>();
 	response.setDataList(prescriptions);

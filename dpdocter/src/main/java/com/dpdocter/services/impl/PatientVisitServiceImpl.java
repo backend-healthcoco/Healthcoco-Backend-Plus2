@@ -22,7 +22,6 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
@@ -609,8 +608,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			}
 		    }
 		    patientName = "Patient Name: " + (user != null ? user.getFirstName() : "--") + "<br>";
-		    dob = "Patient Age: " + ((user != null && user.getDob() != null) ? (user.getDob().getAge() + " years") : "--") + "<br>";
-		    gender = "Patient Gender: " + (user != null ? user.getGender() : "--") + "<br>";
+		    dob = "Patient Age: " + ((patient != null && patient.getDob() != null) ? (patient.getDob().getAge() + " years") : "--") + "<br>";
+		    gender = "Patient Gender: " + (patient != null ? patient.getGender() : "--") + "<br>";
 		    mobileNumber = "Mobile Number: " + (user != null ? user.getMobileNumber() : "--") + "<br>";
 
 		    parameters.put("patientLeftText", patientName + "Patient Id: " + (patient != null ? patient.getPID() : "--") + "<br>" + dob + gender);

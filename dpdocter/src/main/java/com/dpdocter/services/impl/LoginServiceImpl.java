@@ -2,6 +2,7 @@ package com.dpdocter.services.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,6 +112,7 @@ public class LoginServiceImpl implements LoginService {
 	     * Now fetch hospitals and locations for doctor, location admin and
 	     * hospital admin. For patient send user details.
 	     */
+	    List<String> roles = new ArrayList<String>();
 	    List<UserRoleCollection> userRoleCollections = userRoleRepository.findByUserId(userCollection.getId());
 	    for (UserRoleCollection userRoleCollection : userRoleCollections) {
 		RoleCollection roleCollection = roleRepository.findOne(userRoleCollection.getRoleId());
@@ -124,17 +126,23 @@ public class LoginServiceImpl implements LoginService {
 				logger.warn("This user is not activated");
 				throw new BusinessException(ServiceError.NotAuthorized, "This user is not activated");
 			 }
+			    
+			userCollection.setLastSession(new Date());
+			userCollection = userRepository.save(userCollection);
+			    
 		    response = new LoginResponse();
 		    response.setUser(user);
-		    response.setRole(roleCollection.getRole());
+		    roles.add(roleCollection.getRole());
+		    response.setRole(roles);
 		    response.setIsTempPassword(userCollection.getIsTempPassword());
 		    return response;
 		} else {
+			roles.add(roleCollection.getRole());
 		    if (userCollection.getUserState() != null && userCollection.getUserState().equals(UserState.USERSTATEINCOMPLETE)) {
 		    	response = new LoginResponse();
 				user.setEmailAddress(user.getUserName());
 				response.setUser(user);
-				response.setRole(roleCollection.getRole());
+				response.setRole(roles);
 				return response;
 		    }
 		    
@@ -142,16 +150,19 @@ public class LoginServiceImpl implements LoginService {
 		    	response = new LoginResponse();
 				user.setUserState(UserState.NOTVERIFIED);
 				response.setUser(user);
-				response.setRole(roleCollection.getRole());
+				response.setRole(roles);
 				return response;
 			    }
 		    if (!userCollection.getIsActive()) {
 		    	response = new LoginResponse();
 				user.setUserState(UserState.NOTACTIVATED);
 				response.setUser(user);
-				response.setRole(roleCollection.getRole());
+				response.setRole(roles);
 				return response;
 			 }
+		    
+		    userCollection.setLastSession(new Date());
+		    userCollection = userRepository.save(userCollection);
 		    List<UserLocationCollection> userLocationCollections = userLocationRepository.findByUserId(userCollection.getId());
 		    if (userLocationCollections != null) {
 			@SuppressWarnings("unchecked")
@@ -191,7 +202,7 @@ public class LoginServiceImpl implements LoginService {
 			user.setEmailAddress(user.getUserName());
 			response.setUser(user);
 			response.setHospitals(hospitals);
-			response.setRole(roleCollection.getRole());
+			response.setRole(roles);
 		    }
 		}
 	    }

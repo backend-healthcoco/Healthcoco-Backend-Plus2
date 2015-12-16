@@ -9,19 +9,19 @@ public class LoginResponse {
 
     private List<Hospital> hospitals = null;
 
-    private String role;
+    private List<String> role;
 
     private Boolean isTempPassword = false;
 
-    public String getRole() {
-	return role;
-    }
+    public List<String> getRole() {
+		return role;
+	}
 
-    public void setRole(String role) {
-	this.role = role;
-    }
+	public void setRole(List<String> role) {
+		this.role = role;
+	}
 
-    public User getUser() {
+	public User getUser() {
 	return user;
     }
 

@@ -20,7 +20,10 @@ public class UserRoleCollection extends GenericCollection {
 	this.roleId = roleId;
     }
 
-    public String getId() {
+    public UserRoleCollection() {
+	}
+
+	public String getId() {
 	return id;
     }
 

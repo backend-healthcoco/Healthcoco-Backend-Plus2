@@ -16,10 +16,7 @@ public class SolrLabTestDocument {
     private String id;
 
     @Field
-    private String testName;
-
-    @Field
-    private String doctorId = "";
+    private String testId;
 
     @Field
     private String locationId = "";
@@ -27,6 +24,9 @@ public class SolrLabTestDocument {
     @Field
     @DefaultValue(value = "")
     private String hospitalId;
+
+    @Field
+    private int cost = 0;
 
     @Field
     private Boolean discarded = false;
@@ -40,29 +40,6 @@ public class SolrLabTestDocument {
 
     public void setId(String id) {
 	this.id = id;
-    }
-
-    public String getTestName() {
-	return testName;
-    }
-
-    public void setTestName(String testName) {
-	this.testName = testName;
-    }
-
-    public String getDoctorId() {
-	if (doctorId == null) {
-	    return "";
-	}
-	return doctorId;
-    }
-
-    public void setDoctorId(String doctorId) {
-	if (doctorId == null) {
-	    this.doctorId = "";
-	} else {
-	    this.doctorId = doctorId;
-	}
     }
 
     public String getLocationId() {
@@ -95,25 +72,42 @@ public class SolrLabTestDocument {
 	}
     }
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public String getTestId() {
+		return testId;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public void setTestId(String testId) {
+		this.testId = testId;
+	}
 
-    public Date getUpdatedTime() {
-	return updatedTime;
-    }
+	public int getCost() {
+		return cost;
+	}
 
-    public void setUpdatedTime(Date updatedTime) {
-	this.updatedTime = updatedTime;
-    }
+	public void setCost(int cost) {
+		this.cost = cost;
+	}
 
-    @Override
-    public String toString() {
-	return "SolrLabTestDocument [id=" + id + ", testName=" + testName + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-		+ hospitalId + ", discarded=" + discarded + ", updatedTime=" + updatedTime + "]";
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	public Date getUpdatedTime() {
+		return updatedTime;
+	}
+
+	public void setUpdatedTime(Date updatedTime) {
+		this.updatedTime = updatedTime;
+	}
+
+	@Override
+	public String toString() {
+		return "SolrLabTestDocument [id=" + id + ", testId=" + testId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", cost=" + cost + ", discarded=" + discarded + ", updatedTime=" + updatedTime + "]";
+	}
+
 }

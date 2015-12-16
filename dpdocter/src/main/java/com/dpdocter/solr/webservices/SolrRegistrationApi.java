@@ -7,15 +7,20 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.PatientCard;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.solr.beans.AdvancedSearch;
+import com.dpdocter.solr.response.SolrPatientResponse;
 import com.dpdocter.solr.response.SolrPatientResponseDetails;
 import com.dpdocter.solr.services.SolrRegistrationService;
 import com.dpdocter.webservices.PathProxy;
@@ -34,6 +39,12 @@ public class SolrRegistrationApi {
     @Autowired
     private SolrRegistrationService solrRegistrationService;
 
+    @Context
+    private UriInfo uriInfo;
+
+    @Value(value = "${IMAGE_URL_ROOT_PATH}")
+    private String imageUrlRootPath;
+
     @Path(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT)
     @GET
     public Response<SolrPatientResponseDetails> searchPatient(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
@@ -45,6 +56,12 @@ public class SolrRegistrationApi {
 	}
 	SolrPatientResponseDetails patients = solrRegistrationService.searchPatient(doctorId, locationId, hospitalId, searchTerm, page, size);
 
+	if (patients!= null && patients.getPatients() != null && !patients.getPatients().isEmpty()) {
+	    for (SolrPatientResponse patientCard : patients.getPatients()) {
+		patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
+		patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
+	    }
+	}
 	Response<SolrPatientResponseDetails> response = new Response<SolrPatientResponseDetails>();
 	response.setData(patients);
 	return response;
@@ -60,10 +77,25 @@ public class SolrRegistrationApi {
 	}
 
 	SolrPatientResponseDetails patients = solrRegistrationService.searchPatient(request);
-
+	if (patients!= null && patients.getPatients() != null && !patients.getPatients().isEmpty()) {
+	    for (SolrPatientResponse patientCard : patients.getPatients()) {
+		patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
+		patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
+	    }
+	}
 	Response<SolrPatientResponseDetails> response = new Response<SolrPatientResponseDetails>();
 	response.setData(patients);
 	return response;
     }
+
+    
+    private String getFinalImageURL(String imageURL) {
+	if (imageURL != null) {
+	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+	    return finalImageURL + imageURL;
+	} else
+	    return null;
+    }
+
 
 }

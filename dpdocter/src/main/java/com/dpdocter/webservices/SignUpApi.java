@@ -28,6 +28,7 @@ import com.dpdocter.request.PatientSignUpRequest;
 import com.dpdocter.services.SignUpService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.services.SolrRegistrationService;
+
 import common.util.web.Response;
 
 @Component

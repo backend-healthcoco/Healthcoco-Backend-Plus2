@@ -14,8 +14,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -23,7 +21,6 @@ import org.springframework.stereotype.Service;
 import com.dpdocter.beans.Address;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Group;
-import com.dpdocter.beans.History;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.RegisteredPatientDetails;
@@ -56,6 +53,7 @@ import com.dpdocter.request.ImportContactsRequest;
 import com.dpdocter.request.PatientGroupAddEditRequest;
 import com.dpdocter.services.ContactsService;
 import com.dpdocter.services.FileManager;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -239,7 +237,6 @@ public class ContactsServiceImpl implements ContactsService {
     			BeanUtil.map(patientCollection, patientCard);
     			BeanUtil.map(userCollection, patientCard);
     			patientCard.setGroups(groups);
-    			patientCard.setDob(userCollection.getDob());
     			patientCard.setDoctorSepecificPatientId(patientCollection.getUserId());
 
     			int historyCount = historyRepository.getByPatientIdAndNotEqualToDoctorLocationHospital(patientCollection.getUserId(), doctorId, locationId,
@@ -282,7 +279,6 @@ public class ContactsServiceImpl implements ContactsService {
 		BeanUtil.map(patientCollection, patientCard);
 		BeanUtil.map(userCollection, patientCard);
 		patientCard.setGroups(groups);
-		patientCard.setDob(userCollection.getDob());
 		patientCard.setDoctorSepecificPatientId(patientCollection.getUserId());
 
 		int historyCount = historyRepository.getByPatientIdAndNotEqualToDoctorLocationHospital(patientCollection.getUserId(), doctorId, locationId,

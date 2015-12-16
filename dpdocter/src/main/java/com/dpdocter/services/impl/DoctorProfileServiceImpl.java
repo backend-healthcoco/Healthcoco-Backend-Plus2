@@ -66,6 +66,7 @@ import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
 import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.services.DoctorProfileService;
 import com.dpdocter.services.FileManager;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -404,9 +405,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		for (Iterator<UserLocationCollection> iterator = userLocationCollections.iterator(); iterator.hasNext();) {
 		    UserLocationCollection userLocationCollection = iterator.next();
 		    DoctorClinicProfileCollection doctorClinicCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
-		    if (doctorClinicCollection != null) {
-			BeanUtil.map(doctorClinicCollection, doctorClinic);
-			locationCollection = locationRepository.findOne(doctorClinic.getLocationId());
+		    if (doctorClinicCollection != null) BeanUtil.map(doctorClinicCollection, doctorClinic);
+		    locationCollection = locationRepository.findOne(doctorClinic.getLocationId());
 			String address = locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() + ", " :""
    				 + locationCollection.getCity() != null ? locationCollection.getCity()+ ", ":"" 
    				 + locationCollection.getState() != null ? locationCollection.getState()  :""
@@ -421,17 +421,18 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			doctorClinic.setLogoUrl(locationCollection.getLogoUrl());
 			doctorClinic.setLogoThumbnailUrl(locationCollection.getLogoThumbnailUrl());
 			clinicProfile.add(doctorClinic);
-		    }
+		    
 		}
 	    } else {
 	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(userCollection.getId(), locationId);
 		if(userLocationCollection != null){
 			DoctorClinicProfileCollection doctorClinicCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
 
-			if (doctorClinicCollection != null) {
-			    BeanUtil.map(doctorClinicCollection, doctorClinic);
-			    locationCollection = locationRepository.findOne(locationId);
-			    String address =  locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() + ", " :""
+			if (doctorClinicCollection != null) BeanUtil.map(doctorClinicCollection, doctorClinic);
+			    
+			
+			locationCollection = locationRepository.findOne(locationId);
+			String address =  locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() + ", " :""
 			    				 + locationCollection.getCity() != null ? locationCollection.getCity()+ ", ":"" 
 			    				 + locationCollection.getState() != null ? locationCollection.getState()  :""
 			    				 + locationCollection.getState() != null && locationCollection.getPostalCode() != null ? " - " :""
@@ -446,7 +447,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				doctorClinic.setLogoThumbnailUrl(locationCollection.getLogoThumbnailUrl());
 				
 			    clinicProfile.add(doctorClinic);
-			}
+			
 
 		    }}
 		    doctorProfile = new DoctorProfile();

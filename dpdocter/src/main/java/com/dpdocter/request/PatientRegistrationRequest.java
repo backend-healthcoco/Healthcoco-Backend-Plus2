@@ -5,6 +5,7 @@ import java.util.List;
 import com.dpdocter.beans.Address;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.FileDetails;
+import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.Relations;
 
 public class PatientRegistrationRequest {
@@ -58,7 +59,7 @@ public class PatientRegistrationRequest {
 
     private String patientNumber;
 
-    private String referredBy;
+    private Reference referredBy;
 
     private String locationId;
 
@@ -202,11 +203,11 @@ public class PatientRegistrationRequest {
 	this.patientNumber = patientNumber;
     }
 
-    public String getReferredBy() {
+    public Reference getReferredBy() {
 	return referredBy;
     }
 
-    public void setReferredBy(String referredBy) {
+    public void setReferredBy(Reference referredBy) {
 	this.referredBy = referredBy;
     }
 

@@ -43,6 +43,7 @@ import com.dpdocter.request.ClinicImageAddRequest;
 import com.dpdocter.request.ClinicLogoAddRequest;
 import com.dpdocter.request.DoctorRegisterRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
+import com.dpdocter.response.ClinicDoctorResponse;
 import com.dpdocter.response.PatientInitialAndCounter;
 import com.dpdocter.response.RegisterDoctorResponse;
 import com.dpdocter.services.RegistrationService;
@@ -455,34 +456,16 @@ public class RegistrationApi {
 	return response;
     }
 
-    @Path(value = PathProxy.RegistrationUrls.EXISTING_DOCTOR_BY_EMAIL_ADDRESS)
-    @GET
-    public Response<User> getExistingDoctor(@PathParam("emailAddress") String emailAddress) {
-	if (emailAddress == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.email Address is null");
-	}
 
-	Response<User> response = new Response<User>();
-
-	User user = registrationService.getDoctorsByEmailAddress(emailAddress);
-	if (DPDoctorUtils.anyStringEmpty(user.getImageUrl())) {
-	    user.setImageUrl(getFinalImageURL(user.getImageUrl()));
-	    user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
-	}
-	response.setData(user);
-	return response;
-    }
-
-    @Path(value = PathProxy.RegistrationUrls.DOCTOR_REGISTER)
+    @Path(value = PathProxy.RegistrationUrls.USER_REGISTER)
     @POST
     public Response<RegisterDoctorResponse> userRegister(DoctorRegisterRequest request) {
 	if (request == null) {
 	    logger.warn("Request send  is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
 	}
-
 	RegisterDoctorResponse doctorResponse = null;
-	if (request.getUserId() == null)
+	if (!registrationService.checktDoctorExistByEmailAddress(request.getEmailAddress()))
 	    doctorResponse = registrationService.registerNewUser(request);
 	else
 	    doctorResponse = registrationService.registerExisitingUser(request);
@@ -496,10 +479,11 @@ public class RegistrationApi {
 	SolrPatientDocument solrPatientDocument = null;
 	try {
 	    solrPatientDocument = new SolrPatientDocument();
-	    solrPatientDocument.setDays(patient.getDob().getDays() + "");
-	    solrPatientDocument.setMonths(patient.getDob().getMonths() + "");
-	    solrPatientDocument.setYears(patient.getDob().getYears() + "");
-
+	    if(solrPatientDocument.getDob() != null){
+	    	solrPatientDocument.setDays(patient.getDob().getDays() + "");
+		    solrPatientDocument.setMonths(patient.getDob().getMonths() + "");
+		    solrPatientDocument.setYears(patient.getDob().getYears() + "");
+	    }
 	    if (patient.getAddress() != null) {
 		BeanUtil.map(patient.getAddress(), solrPatientDocument);
 	    }
@@ -543,6 +527,18 @@ public class RegistrationApi {
 
 	List<Role> professionResponse = registrationService.getRole(range, page, size, locationId, hospitalId, updatedTime);
 	Response<Role> response = new Response<Role>();
+	response.setDataList(professionResponse);
+	return response;
+    }
+    
+    @Path(value = PathProxy.RegistrationUrls.GET_DOCTORS)
+    @GET
+    public Response<ClinicDoctorResponse> getDoctors(@QueryParam("page") int page, @QueryParam("size") int size,
+	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+
+	List<ClinicDoctorResponse> professionResponse = registrationService.getDoctors(page, size, locationId, hospitalId, updatedTime);
+	Response<ClinicDoctorResponse> response = new Response<ClinicDoctorResponse>();
 	response.setDataList(professionResponse);
 	return response;
     }

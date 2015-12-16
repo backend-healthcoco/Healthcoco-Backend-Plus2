@@ -1,10 +1,7 @@
 package com.dpdocter.solr.services;
 
-import java.util.List;
-
 import com.dpdocter.solr.beans.AdvancedSearch;
 import com.dpdocter.solr.document.SolrPatientDocument;
-import com.dpdocter.solr.response.SolrPatientResponse;
 import com.dpdocter.solr.response.SolrPatientResponseDetails;
 
 public interface SolrRegistrationService {

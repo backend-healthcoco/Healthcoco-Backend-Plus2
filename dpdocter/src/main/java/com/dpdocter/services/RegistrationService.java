@@ -20,6 +20,7 @@ import com.dpdocter.request.ClinicImageAddRequest;
 import com.dpdocter.request.ClinicLogoAddRequest;
 import com.dpdocter.request.DoctorRegisterRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
+import com.dpdocter.response.ClinicDoctorResponse;
 import com.dpdocter.response.PatientInitialAndCounter;
 import com.dpdocter.response.RegisterDoctorResponse;
 
@@ -71,7 +72,7 @@ public interface RegistrationService {
 
     Boolean deleteClinicImage(String locationId, int counter);
 
-    User getDoctorsByEmailAddress(String emailAddress);
+    Boolean checktDoctorExistByEmailAddress(String emailAddress);
 
     RegisterDoctorResponse registerNewUser(DoctorRegisterRequest request);
 
@@ -82,5 +83,7 @@ public interface RegistrationService {
     List<Role> getRole(String range, int page, int size, String locationId, String hospitalId, String updatedTime);
 
     void checkPatientCount(String mobileNumber);
+
+	List<ClinicDoctorResponse> getDoctors(int page, int size, String locationId, String hospitalId, String updatedTime);
 
 }

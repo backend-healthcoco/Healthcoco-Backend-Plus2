@@ -38,8 +38,6 @@ public class RegisterDoctorResponse {
 
     private String hospitalId;
 
-    private AccessControl accessControl;
-
     private String registerNumber;
 
     private Role role;
@@ -164,14 +162,6 @@ public class RegisterDoctorResponse {
 	this.hospitalId = hospitalId;
     }
 
-    public AccessControl getAccessControl() {
-	return accessControl;
-    }
-
-    public void setAccessControl(AccessControl accessControl) {
-	this.accessControl = accessControl;
-    }
-
     public String getRegisterNumber() {
 	return registerNumber;
     }
@@ -189,11 +179,12 @@ public class RegisterDoctorResponse {
     }
 
     @Override
-    public String toString() {
-	return "RegisterDoctorResponse [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName
-		+ ", userName=" + userName + ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender="
-		+ gender + ", dob=" + dob + ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl + ", specialization=" + specialization + ", locationId="
-		+ locationId + ", hospitalId=" + hospitalId + ", accessControl=" + accessControl + ", registerNumber=" + registerNumber + ", role=" + role
-		+ "]";
-    }
+	public String toString() {
+		return "RegisterDoctorResponse [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName
+				+ ", middleName=" + middleName + ", userName=" + userName + ", password=" + password + ", emailAddress="
+				+ emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob=" + dob
+				+ ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl + ", specialization=" + specialization
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", registerNumber=" + registerNumber
+				+ ", role=" + role + "]";
+	}
 }

@@ -21,6 +21,9 @@ public interface RecordsService {
 
     List<Records> searchRecords(RecordsSearchRequest request);
 
+    List<Records> getRecords(int page, int size, String doctorId, String hospitalId, String locationId, String patientId, String updatedTime,
+    	    boolean isOTPVerified, boolean discarded, boolean inHistory);
+    
     List<Records> getRecordsByIds(List<String> recordIds);
 
     Records getRecordById(String recordId);

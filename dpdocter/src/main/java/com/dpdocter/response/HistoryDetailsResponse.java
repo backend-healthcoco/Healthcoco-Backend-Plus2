@@ -20,12 +20,6 @@ public class HistoryDetailsResponse {
 
     private List<GeneralData> generalRecords;
 
-    /*private List<Records> reports;
-
-    private List<Prescription> prescriptions;
-
-    private List<ClinicalNotes> clinicalNotes;*/
-
     private List<DiseaseListResponse> familyhistory;
 
     private List<DiseaseListResponse> medicalhistory;
@@ -119,5 +113,4 @@ public class HistoryDetailsResponse {
 				+ ", generalRecords=" + generalRecords + ", familyhistory=" + familyhistory + ", medicalhistory="
 				+ medicalhistory + ", specialNotes=" + specialNotes + "]";
 	}
-
 }

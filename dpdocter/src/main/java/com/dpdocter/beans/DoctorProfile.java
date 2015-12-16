@@ -2,8 +2,6 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
 public class DoctorProfile {
     private String id;
 

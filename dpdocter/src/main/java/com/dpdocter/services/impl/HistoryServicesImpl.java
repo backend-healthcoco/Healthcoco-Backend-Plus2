@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
@@ -102,9 +101,6 @@ public class HistoryServicesImpl implements HistoryServices {
 
     @Autowired
     private MongoTemplate mongoTemplate;
-
-    @Autowired
-    private MongoOperations mongoOperations;
 
     @Autowired
     private MailService mailService;
@@ -193,7 +189,8 @@ public class HistoryServicesImpl implements HistoryServices {
 	return response;
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public boolean addReportToHistory(String reportId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	RecordsCollection recordsCollection = null;
@@ -253,7 +250,8 @@ public class HistoryServicesImpl implements HistoryServices {
 	return true;
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public boolean addClinicalNotesToHistory(String clinicalNotesId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	ClinicalNotesCollection clinicalNotesCollection = null;
@@ -312,7 +310,8 @@ public class HistoryServicesImpl implements HistoryServices {
 	return true;
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public boolean addPrescriptionToHistory(String prescriptionId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	PrescriptionCollection prescriptionCollection = null;
@@ -506,6 +505,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	try {
 	    historyCollection = historyRepository.findHistory(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
+		@SuppressWarnings("unchecked")
 		List<String> reports = (List<String>) CollectionUtils
 			.collect(historyCollection.getGeneralRecords(), new BeanToPropertyValueTransformer("data"));
 		if (reports != null) {
@@ -551,6 +551,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	try {
 	    historyCollection = historyRepository.findHistory(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
+		@SuppressWarnings("unchecked")
 		List<String> clinicalNotes = (List<String>) CollectionUtils.collect(historyCollection.getGeneralRecords(), new BeanToPropertyValueTransformer(
 			"data"));
 		if (clinicalNotes != null) {
@@ -597,6 +598,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	try {
 	    historyCollection = historyRepository.findHistory(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
+		@SuppressWarnings("unchecked")
 		List<String> prescriptions = (List<String>) CollectionUtils.collect(historyCollection.getGeneralRecords(), new BeanToPropertyValueTransformer(
 			"data"));
 		if (prescriptions != null) {
@@ -881,13 +883,13 @@ public class HistoryServicesImpl implements HistoryServices {
 
     @Override
     public List<HistoryDetailsResponse> getPatientHistoryDetailsWithoutVerifiedOTP(String patientId, String doctorId, String hospitalId, String locationId,
-	    List<String> historyFilter, int page, int size) {
+	    List<String> historyFilter, int page, int size, String updatedTime) {
 	List<HistoryDetailsResponse> response = null;
 	try {
 	    for (int i = 0; i < historyFilter.size(); i++) {
 		historyFilter.set(i, historyFilter.get(i).toUpperCase());
 	    }
-
+	    long createdTime = Long.parseLong(updatedTime);
 	    AggregationOperation matchForFilter = null;
 	    Aggregation aggregation = null;
 	    if (!historyFilter.contains(HistoryFilter.ALL.getFilter())) {
@@ -897,14 +899,14 @@ public class HistoryServicesImpl implements HistoryServices {
 						.where("patientId")
 						.is(patientId)
 						.andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
-							Criteria.where("hospitalId").is(hospitalId))), Aggregation.unwind("generalRecords"), matchForFilter,
+							Criteria.where("hospitalId").is(hospitalId), Criteria.where("updatedTime").gte(new Date(createdTime)))), Aggregation.unwind("generalRecords"), matchForFilter,
 					Aggregation.skip(page * size), Aggregation.limit(size), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 		else aggregation = Aggregation.newAggregation(
 				Aggregation.match(Criteria
 						.where("patientId")
 						.is(patientId)
 						.andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
-							Criteria.where("hospitalId").is(hospitalId))), Aggregation.unwind("generalRecords"), matchForFilter,
+							Criteria.where("hospitalId").is(hospitalId), Criteria.where("updatedTime").gte(new Date(createdTime)))), Aggregation.unwind("generalRecords"), matchForFilter,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 	    } else {
@@ -913,14 +915,14 @@ public class HistoryServicesImpl implements HistoryServices {
 						.where("patientId")
 						.is(patientId)
 						.andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
-							Criteria.where("hospitalId").is(hospitalId))), Aggregation.unwind("generalRecords"),
+							Criteria.where("hospitalId").is(hospitalId), Criteria.where("updatedTime").gte(new Date(createdTime)))), Aggregation.unwind("generalRecords"),
 					Aggregation.skip(page * size), Aggregation.limit(size), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 		else aggregation = Aggregation.newAggregation(
 				Aggregation.match(Criteria
 						.where("patientId")
 						.is(patientId)
 						.andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
-							Criteria.where("hospitalId").is(hospitalId))), Aggregation.unwind("generalRecords"),
+							Criteria.where("hospitalId").is(hospitalId), Criteria.where("updatedTime").gte(new Date(createdTime)))), Aggregation.unwind("generalRecords"),
 					       Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 	    }
@@ -1022,25 +1024,25 @@ public class HistoryServicesImpl implements HistoryServices {
 
     @Override
     public List<HistoryDetailsResponse> getPatientHistoryDetailsWithVerifiedOTP(String patientId, String doctorId, String hospitalId, String locationId,
-	    List<String> historyFilter, int page, int size) {
+	    List<String> historyFilter, int page, int size, String updatedTime) {
 	List<HistoryDetailsResponse> response = null;
 	try {
 	    for (int i = 0; i < historyFilter.size(); i++) {
 		historyFilter.set(i, historyFilter.get(i).toUpperCase());
 	    }
-
+	    long createdTime = Long.parseLong(updatedTime);
 	    AggregationOperation matchForFilter = null;
 	    Aggregation aggregation = null;
 	    if (!historyFilter.contains(HistoryFilter.ALL.getFilter())) {
 		matchForFilter = Aggregation.match(Criteria.where("generalRecords.dataType").in(historyFilter));
-		if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("patientId").is(patientId)), Aggregation.unwind("generalRecords"),
+		if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("patientId").is(patientId).and("updatedTime").gte(new Date(createdTime))), Aggregation.unwind("generalRecords"),
 				matchForFilter, Aggregation.skip(page * size), Aggregation.limit(size), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-		else aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("patientId").is(patientId)), Aggregation.unwind("generalRecords"),
+		else aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("patientId").is(patientId).and("updatedTime").gte(new Date(createdTime))), Aggregation.unwind("generalRecords"),
 				matchForFilter, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 	    } else {
-		if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("patientId").is(patientId)), Aggregation.unwind("generalRecords"),
+		if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("patientId").is(patientId).and("updatedTime").gte(new Date(createdTime))), Aggregation.unwind("generalRecords"),
 				Aggregation.skip(page * size), Aggregation.limit(size));
-		else aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("patientId").is(patientId)), Aggregation.unwind("generalRecords"));
+		else aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("patientId").is(patientId).and("updatedTime").gte(new Date(createdTime))), Aggregation.unwind("generalRecords"));
 	    }
 
 	    AggregationResults<History> groupResults = mongoTemplate.aggregate(aggregation, HistoryCollection.class, History.class);
@@ -1281,7 +1283,7 @@ public class HistoryServicesImpl implements HistoryServices {
 
 		    List<String> familyHistoryIds = historyCollection.getFamilyhistory();
 		    if (familyHistoryIds != null && !familyHistoryIds.isEmpty()) {
-			List<DiseaseListResponse> familyHistory = getDiseasesByIds(medicalHistoryIds);
+			List<DiseaseListResponse> familyHistory = getDiseasesByIds(familyHistoryIds);
 			response.setFamilyhistory(familyHistory);
 		    }
 	    }
@@ -1390,4 +1392,65 @@ public class HistoryServicesImpl implements HistoryServices {
 	}
 	return true;
     }
+
+	@Override
+	public List<HistoryDetailsResponse> getMultipleData(String patientId, String doctorId, String hospitalId, String locationId, String updatedTime, Boolean inHistory) {
+		List<HistoryDetailsResponse> response = null;
+		try {
+		 
+			long createdTime = Long.parseLong(updatedTime);
+		    List<Prescription> prescriptions = prescriptionServices.getPrescriptions(0, 0, doctorId, hospitalId, locationId, patientId, updatedTime, false, true, inHistory);
+		    List<ClinicalNotes> clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(0, 0, patientId, doctorId, locationId, hospitalId, updatedTime, true, inHistory);
+		    List<Records> records = recordsService.getRecords(0, 0, doctorId, hospitalId, locationId, patientId, updatedTime, false, true, inHistory);
+		    
+		    if (prescriptions!= null || clinicalNotes != null || records != null) {
+		    	
+			response = new ArrayList<HistoryDetailsResponse>();
+			if(prescriptions != null)
+			for (Prescription prescription : prescriptions) {
+			    HistoryDetailsResponse historyDetailsResponse = new HistoryDetailsResponse();
+			    BeanUtil.map(prescription, historyDetailsResponse);
+			    GeneralData generalData = new GeneralData();
+			    generalData.setData(prescription);
+			    generalData.setDataType(HistoryFilter.PRESCRIPTIONS);
+			    List<GeneralData> generalRecords = new ArrayList<GeneralData>();
+				generalRecords.add(generalData);
+				historyDetailsResponse.setGeneralRecords(generalRecords);
+				response.add(historyDetailsResponse);
+			    }
+			
+			if(clinicalNotes != null)
+				for (ClinicalNotes clinicalNote : clinicalNotes) {
+				    HistoryDetailsResponse historyDetailsResponse = new HistoryDetailsResponse();
+				    BeanUtil.map(clinicalNote, historyDetailsResponse);
+				    GeneralData generalData = new GeneralData();
+				    generalData.setData(clinicalNote);
+				    generalData.setDataType(HistoryFilter.CLINICAL_NOTES);
+				    List<GeneralData> generalRecords = new ArrayList<GeneralData>();
+					generalRecords.add(generalData);
+					historyDetailsResponse.setGeneralRecords(generalRecords);
+					response.add(historyDetailsResponse);
+				    }
+			
+			if(records != null)
+				for (Records record : records) {
+				    HistoryDetailsResponse historyDetailsResponse = new HistoryDetailsResponse();
+				    BeanUtil.map(record, historyDetailsResponse);
+				    GeneralData generalData = new GeneralData();
+				    generalData.setData(record);
+				    generalData.setDataType(HistoryFilter.REPORTS);
+				    List<GeneralData> generalRecords = new ArrayList<GeneralData>();
+					generalRecords.add(generalData);
+					historyDetailsResponse.setGeneralRecords(generalRecords);
+					response.add(historyDetailsResponse);
+				    }
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+
+	}
 }

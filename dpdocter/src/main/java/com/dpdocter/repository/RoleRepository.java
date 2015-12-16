@@ -47,4 +47,7 @@ public interface RoleRepository extends MongoRepository<RoleCollection, String> 
     @Query("{'$or': [{'locationId': ?0, 'hospitalId': ?1, 'updatedTime': {'$gte': ?2}} , {'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?2}}]}")
     public List<RoleCollection> findCustomGlobal(String locationId, String hospitalId, Date date, Sort sort);
 
+    @Query("{'locationId': ?0, 'hospitalId': ?1}")
+	public List<RoleCollection> findByLocationIdAndHospitalId(String locationId, String hospitalId);
+
 }

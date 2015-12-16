@@ -29,6 +29,7 @@ import com.dpdocter.solr.repository.SolrInvestigationsRepository;
 import com.dpdocter.solr.repository.SolrNotesRepository;
 import com.dpdocter.solr.repository.SolrObservationsRepository;
 import com.dpdocter.solr.services.SolrClinicalNotesService;
+
 import common.util.web.DPDoctorUtils;
 
 @Service

@@ -4,6 +4,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.DiagnosticTest;
+
 @Document(collection = "lab_test_cl")
 public class LabTestCollection extends GenericCollection {
 
@@ -11,10 +13,7 @@ public class LabTestCollection extends GenericCollection {
     private String id;
 
     @Field
-    private String testName;
-
-    @Field
-    private String doctorId;
+    private DiagnosticTest test;
 
     @Field
     private String locationId;
@@ -23,59 +22,63 @@ public class LabTestCollection extends GenericCollection {
     private String hospitalId;
 
     @Field
+    private int cost = 0;
+
+    @Field
     private Boolean discarded = false;
 
-    public String getId() {
-	return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getTestName() {
-	return testName;
-    }
+	public DiagnosticTest getTest() {
+		return test;
+	}
 
-    public void setTestName(String testName) {
-	this.testName = testName;
-    }
+	public void setTest(DiagnosticTest test) {
+		this.test = test;
+	}
 
-    public String getDoctorId() {
-	return doctorId;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public String getLocationId() {
-	return locationId;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public int getCost() {
+		return cost;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setCost(int cost) {
+		this.cost = cost;
+	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
-    @Override
-    public String toString() {
-	return "LabTestCollection [id=" + id + ", testName=" + testName + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-		+ hospitalId + ", discarded=" + discarded + "]";
-    }
+	@Override
+	public String toString() {
+		return "LabTestCollection [id=" + id + ", test=" + test + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", cost=" + cost + ", discarded=" + discarded + "]";
+	}
+
 }

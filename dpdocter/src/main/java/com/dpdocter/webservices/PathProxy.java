@@ -73,11 +73,9 @@ public interface PathProxy {
     public interface RegistrationUrls {
 	public static final String PATIENT_REGISTER = "/patient";
 
-	public static final String DOCTOR_REGISTER = "/doctor";
+	public static final String USER_REGISTER = "/user";
 
 	public static final String EDIT_PATIENT_PROFILE = "/patient";
-
-	public static final String EXISTING_DOCTOR_BY_EMAIL_ADDRESS = "/existing_doctor/{emailAddress}";
 
 	public static final String EXISTING_PATIENTS_BY_PHONE_NUM = "/existing_patients/{mobileNumber}/{locationId}/{hospitalId}";
 
@@ -124,6 +122,8 @@ public interface PathProxy {
 	public static final String ADD_ROLE = "/role/add";
 
 	public static final String GET_ROLE = "/role/{range}";
+	
+	public static final String GET_DOCTORS = "/doctors";
 
     }
 
@@ -239,12 +239,14 @@ public interface PathProxy {
 
 	public static final String EDIT_LAB_TEST = "/labTest/{labTestId}/update";
 
-	public static final String DELETE_LAB_TEST = "/labTest/{labTestId}/{doctorId}/{locationId}/{hospitalId}/delete";
+	public static final String DELETE_LAB_TEST = "/labTest/{labTestId}/{locationId}/{hospitalId}/delete";
 
 	public static final String GET_LAB_TEST_BY_ID = "/labTest/{labTestId}";
 
 	public static final String DELETE_GLOBAL_LAB_TEST = "/labTest/{labTestId}/delete";
 
+	public static final String GET_DIAGNOSTIC_TEST = "/diagnosticTest";
+	
 	public static final String GET_PRESCRIPTION_ITEMS = "/{type}/{range}";
 
 	public static final String ADD_TEMPLATE = "/template/add";
@@ -355,6 +357,8 @@ public interface PathProxy {
 	//
 	// public static final String REMOVE_VISITS =
 	// "/removeVisits/{visitId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
+	
+	public static final String GET_MULTIPLE_DATA = "getMultipleData";
     }
 
     public static final String DOCTOR_PROFILE_URL = BASE_URL + "/doctorProfile";

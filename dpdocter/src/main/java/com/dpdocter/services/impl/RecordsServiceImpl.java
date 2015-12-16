@@ -55,6 +55,7 @@ import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.MailService;
+import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.RecordsService;
@@ -102,6 +103,9 @@ public class RecordsServiceImpl implements RecordsService {
     
     @Autowired
     private PatientVisitService patientVisitServices;
+
+    @Autowired
+    private OTPService otpService;
 
     @Value(value = "${IMAGE_RESOURCE}")
     private String imageResource;
@@ -230,6 +234,7 @@ public class RecordsServiceImpl implements RecordsService {
 	boolean[] discards = new boolean[2];
 	discards[0] = false;
 	try {
+		boolean isOTPVerified = otpService.checkOTPVerified(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId());
 	    if (request.getDiscarded())
 		discards[1] = true;
 	    long createdTimeStamp = Long.parseLong(request.getUpdatedTime());
@@ -250,13 +255,23 @@ public class RecordsServiceImpl implements RecordsService {
 		BeanUtil.map(recordCollections, records);
 	    } else {
 
-		if (request.getSize() > 0) {
-		    recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(), request
-			    .getHospitalId(), new Date(createdTimeStamp), discards, new PageRequest(request.getPage(), request.getSize(), Direction.DESC,
-			    "updatedTime"));
-		} else {
-		    recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
-			    request.getHospitalId(), new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
+		if(isOTPVerified){
+			if (request.getSize() > 0) {
+			    recordsCollections = recordsRepository.findRecords(request.getPatientId(), new Date(createdTimeStamp), discards, new PageRequest(request.getPage(), request.getSize(), Direction.DESC,
+				    "updatedTime"));
+			} else {
+			    recordsCollections = recordsRepository.findRecords(request.getPatientId(), new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
+			}
+		}
+		else{
+			if (request.getSize() > 0) {
+			    recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(), request
+				    .getHospitalId(), new Date(createdTimeStamp), discards, new PageRequest(request.getPage(), request.getSize(), Direction.DESC,
+				    "updatedTime"));
+			} else {
+			    recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
+				    request.getHospitalId(), new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
+			}
 		}
 
 		records = new ArrayList<Records>();
@@ -599,4 +614,62 @@ public class RecordsServiceImpl implements RecordsService {
     	} else
     	    return null;
         }
+
+	@Override
+	public List<Records> getRecords(int page, int size, String doctorId, String hospitalId, String locationId,
+			String patientId, String updatedTime, boolean isOTPVerified, boolean discarded, boolean inHistory) {
+		List<Records> records = null;
+		List<RecordsCollection> recordsCollections = null;
+		boolean[] discards = new boolean[2];
+		discards[0] = false;
+		
+		boolean[] inHistorys = new boolean[2];
+		inHistorys[0] = true;
+		try {
+		    if (discarded)discards[1] = true;
+		    if (!inHistory)inHistorys[1] = false;
+		    long createdTimeStamp = Long.parseLong(updatedTime);
+		    
+		    if(isOTPVerified){
+		    	if (size > 0) {
+				    recordsCollections = recordsRepository.findRecords(patientId, new Date(createdTimeStamp), discards, inHistorys, new PageRequest(page, size, Direction.DESC,
+					    "updatedTime"));
+				} else {
+				    recordsCollections = recordsRepository.findRecords(patientId, new Date(createdTimeStamp), discards, inHistorys, new Sort(Sort.Direction.DESC, "updatedTime"));
+				}
+		    }
+		    else{
+		    	if (size > 0) {
+				    recordsCollections = recordsRepository.findRecords(patientId, doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards, inHistorys, new PageRequest(page, size, Direction.DESC,
+					    "updatedTime"));
+				} else {
+				    recordsCollections = recordsRepository.findRecords(patientId, doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards, inHistorys, new Sort(Sort.Direction.DESC, "updatedTime"));
+				}
+		    }
+			records = new ArrayList<Records>();
+			for (RecordsCollection recordCollection : recordsCollections) {
+			    Records record = new Records();
+			    BeanUtil.map(recordCollection, record);
+			    UserCollection userCollection = userRepository.findOne(record.getDoctorId());
+			    if (userCollection != null) {
+				record.setDoctorName(userCollection.getFirstName());
+			    }
+			    if (locationId != null) {
+				LocationCollection locationCollection = locationRepository.findOne(locationId);
+				if (locationCollection != null)
+				    record.setClinicName(locationCollection.getLocationName());
+			    }
+			    PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(record.getId());
+				if(patientVisitCollection != null)record.setVisitId(patientVisitCollection.getId());
+			    records.add(record);
+			}
+		    
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+
+		return records;
+	}
 }

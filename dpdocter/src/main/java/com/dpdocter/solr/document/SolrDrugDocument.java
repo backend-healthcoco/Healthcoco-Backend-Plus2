@@ -8,8 +8,6 @@ import org.apache.solr.client.solrj.beans.Field;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.solr.core.mapping.SolrDocument;
 
-import com.dpdocter.beans.DrugType;
-
 @SolrDocument(solrCoreName = "drugs")
 public class SolrDrugDocument {
     @Id

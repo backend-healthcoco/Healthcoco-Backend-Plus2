@@ -48,6 +48,7 @@ import com.dpdocter.solr.document.SolrInvestigationsDocument;
 import com.dpdocter.solr.document.SolrNotesDocument;
 import com.dpdocter.solr.document.SolrObservationsDocument;
 import com.dpdocter.solr.services.SolrClinicalNotesService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -149,10 +150,10 @@ public class ClinicalNotesApi {
 	    String updatedTime, Boolean isOTPVerified, Boolean discarded) {
 	List<ClinicalNotes> clinicalNotes = null;
 	if (isOTPVerified) {
-	    clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithVerifiedOTP(page, size, patientId, updatedTime, discarded);
+	    clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithVerifiedOTP(page, size, patientId, updatedTime, discarded, false);
 	} else {
 	    clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(page, size, patientId, doctorId, locationId, hospitalId,
-		    updatedTime, discarded);
+		    updatedTime, discarded, false);
 	}
 	if (clinicalNotes != null && !clinicalNotes.isEmpty()) {
 	    for (ClinicalNotes clinicalNote : clinicalNotes) {
