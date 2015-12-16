@@ -23,17 +23,18 @@ import com.dpdocter.beans.Clinic;
 import com.dpdocter.beans.Doctor;
 import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.DoctorInfo;
+import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Hospital;
-import com.dpdocter.beans.Landmark;
-import com.dpdocter.beans.Locality;
+import com.dpdocter.beans.LandmarkLocality;
 import com.dpdocter.beans.Location;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.CityCollection;
+import com.dpdocter.collections.CountryCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LandmarkCollection;
-import com.dpdocter.collections.LocalityCollection;
+import com.dpdocter.collections.LandmarkLocalityCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
@@ -43,6 +44,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.AppointmentRepository;
 import com.dpdocter.repository.CityRepository;
+import com.dpdocter.repository.CountryRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.HospitalRepository;
@@ -53,6 +55,8 @@ import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AppoinmentRequest;
 import com.dpdocter.services.AppointmentService;
+import com.dpdocter.services.LocationServices;
+import com.dpdocter.solr.beans.Country;
 
 import common.util.web.DPDoctorUtils;
 
@@ -63,6 +67,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 	
     @Autowired
     private CityRepository cityRepository;
+
+    @Autowired
+    private CountryRepository countryRepository;
 
     @Autowired
     private LocalityRepository localityRepository;
@@ -91,11 +98,37 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Autowired
     private AppointmentRepository appointmentRepository;
 
+    @Autowired
+    private LocationServices locationServices;
+
+	@Override
+	public Country addCountry(Country country) {
+		try {
+		    CountryCollection countryCollection = new CountryCollection();
+		    BeanUtil.map(country, countryCollection);
+		    List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(country.getCountry());
+		    if(geocodedLocations != null && !geocodedLocations.isEmpty())
+		    	BeanUtil.map(geocodedLocations.get(0), countryCollection);
+		    countryCollection = countryRepository.save(countryCollection);
+		    BeanUtil.map(countryCollection, country);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return country;
+	}
+
     @Override
     public City addCity(City city) {
 	try {
 	    CityCollection cityCollection = new CityCollection();
 	    BeanUtil.map(city, cityCollection);
+	    CountryCollection countryCollection = countryRepository.findOne(city.getCountryId());
+	    List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(city.getCity() +" "+(countryCollection!= null ? countryCollection.getCountry() :""));
+	   
+	    if(geocodedLocations != null && !geocodedLocations.isEmpty())
+	    	BeanUtil.map(geocodedLocations.get(0), cityCollection);
+	    
 	    cityCollection = cityRepository.save(cityCollection);
 	    BeanUtil.map(cityCollection, city);
 	} catch (Exception e) {
@@ -114,14 +147,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    }
 	    cityCollection.setIsActivated(activate);
 	    cityRepository.save(cityCollection);
-	    return true;
+	    
 	} catch (BusinessException be) {
 	    throw be;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error occured while Activating Deactivating City");
+//	    throw new BusinessException(ServiceError.Unknown, "Error occured while Activating Deactivating City");
 	}
-
+	return true;
     }
 
     @Override
@@ -155,38 +188,42 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public Locality addLocality(Locality locality) {
+    public LandmarkLocality addLandmaklLocality(LandmarkLocality landmarkLocality) {
+    	CityCollection cityCollection = null;
+    	CountryCollection countryCollection = null;
 	try {
-	    LocalityCollection localityCollection = new LocalityCollection();
-	    BeanUtil.map(locality, localityCollection);
-	    localityCollection = localityRepository.save(localityCollection);
-	    BeanUtil.map(localityCollection, locality);
+	    LandmarkLocalityCollection landmarkLocalityCollection = new LandmarkLocalityCollection();
+	    BeanUtil.map(landmarkLocality, landmarkLocalityCollection);
+	    if(landmarkLocality.getCityId() != null){
+	    	cityCollection = cityRepository.findOne(landmarkLocality.getCityId());
+	    }
+	    if(cityCollection != null){
+	    	countryCollection = countryRepository.findOne(cityCollection.getCountryId());
+	    }
+	    List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(
+	    		landmarkLocality.getLandmark() != null ? landmarkLocality.getLandmark()+" " : ""
+	    		+landmarkLocality.getLocality() != null ? landmarkLocality.getLocality()+" " : ""
+	    		+cityCollection.getCity() != null ? cityCollection.getCity() +" " : ""
+	    		+countryCollection!= null ? countryCollection.getCountry() :"");
+	   
+	    if(geocodedLocations != null && !geocodedLocations.isEmpty())
+	    	BeanUtil.map(geocodedLocations.get(0), landmarkLocalityCollection);
+	    
+	    landmarkLocalityCollection = localityRepository.save(landmarkLocalityCollection);
+	    BeanUtil.map(landmarkLocalityCollection, landmarkLocality);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
-	return locality;
+	return landmarkLocality;
     }
 
-    @Override
-    public Landmark addLandmark(Landmark landmark) {
-	try {
-	    LandmarkCollection landmarkCollection = new LandmarkCollection();
-	    BeanUtil.map(landmark, landmarkCollection);
-	    landmarkCollection = landmarkRepository.save(landmarkCollection);
-	    BeanUtil.map(landmarkCollection, landmark);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-	}
-	return landmark;
-    }
 
     @Override
     public List<Object> getLandmarkLocality(String cityId, String type) {
 	List<Object> response = new ArrayList<Object>();
 	List<LandmarkCollection> landmarkCollection = null;
-	List<LocalityCollection> localityCollection = null;
+	List<LandmarkLocalityCollection> localityCollection = null;
 	try {
 	    if (type == null) {
 		landmarkCollection = landmarkRepository.findByCityId(cityId);

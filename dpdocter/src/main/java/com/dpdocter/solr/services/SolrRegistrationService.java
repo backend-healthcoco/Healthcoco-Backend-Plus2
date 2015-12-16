@@ -1,6 +1,15 @@
 package com.dpdocter.solr.services;
 
+import com.dpdocter.beans.DoctorExperience;
+import com.dpdocter.beans.DoctorGeneralInfo;
+import com.dpdocter.request.DoctorConsultationFeeAddEditRequest;
+import com.dpdocter.request.DoctorNameAddEditRequest;
+import com.dpdocter.request.DoctorProfilePictureAddEditRequest;
+import com.dpdocter.request.DoctorSpecialityAddEditRequest;
+import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
+import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.solr.beans.AdvancedSearch;
+import com.dpdocter.solr.document.SolrDoctorDocument;
 import com.dpdocter.solr.document.SolrPatientDocument;
 import com.dpdocter.solr.response.SolrPatientResponseDetails;
 
@@ -15,6 +24,8 @@ public interface SolrRegistrationService {
 
     SolrPatientResponseDetails searchPatient(AdvancedSearch request);
 
+    boolean addDoctor(SolrDoctorDocument request);
+    
     // List<SolrPatientDocument> searchPatientByFirstName(String doctorId,
     // String locationId, String hospitalId, String searchValue);
     //
@@ -58,5 +69,21 @@ public interface SolrRegistrationService {
     // locationId, String hospitalId, String searchValue);
 
     void patientProfilePicChange(String username, String imageUrl);
+
+	void addEditName(DoctorNameAddEditRequest request);
+
+	void addEditSpeciality(DoctorSpecialityAddEditRequest request);
+
+	void addEditVisitingTime(DoctorVisitingTimeAddEditRequest request);
+
+	void addEditConsultationFee(DoctorConsultationFeeAddEditRequest request);
+
+	void addEditProfilePicture(String doctorId, String addEditProfilePictureResponse);
+
+	void addEditExperience(String doctorId, DoctorExperience experienceResponse);
+
+	void addEditGeneralInfo(DoctorGeneralInfo request);
+
+	void addEditMultipleData(DoctorMultipleDataAddEditResponse addEditNameResponse);
 
 }

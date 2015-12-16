@@ -49,6 +49,7 @@ import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrPatientDocument;
 import com.dpdocter.solr.services.SolrRegistrationService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -71,7 +72,7 @@ public class RegistrationApi {
 
     @Autowired
     private TransactionalManagementService transnationalService;
-
+  
     @Context
     private UriInfo uriInfo;
 
@@ -486,6 +487,8 @@ public class RegistrationApi {
 	else
 	    doctorResponse = registrationService.registerExisitingUser(request);
 
+	transnationalService.addResource(doctorResponse.getUserId(), Resource.DOCTOR, false);
+	if(doctorResponse != null)solrRegistrationService.addDoctor(registrationService.getSolrDoctorDocument(doctorResponse));
 	Response<RegisterDoctorResponse> response = new Response<RegisterDoctorResponse>();
 	response.setData(doctorResponse);
 	return response;

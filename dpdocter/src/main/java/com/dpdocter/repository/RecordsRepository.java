@@ -3,6 +3,7 @@ package com.dpdocter.repository;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -27,5 +28,11 @@ public interface RecordsRepository extends MongoRepository<RecordsCollection, St
     @Query("{'patientId': ?0, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3, 'updatedTime': {'$gte': ?4}, 'discarded': {$in: ?5}}")
     List<RecordsCollection> findRecords(String patientId, String doctorId, String locationId, String hospitalId, Date date, boolean[] discards,
 	    Pageable pageRequest);
+
+    @Query("{'patientId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': {$in: ?2}}")
+	List<RecordsCollection> findRecords(String patientId, Date date, boolean[] discards, Pageable pageRequest);
+
+    @Query("{'patientId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': {$in: ?2}}")
+	List<RecordsCollection> findRecords(String patientId, Date date, boolean[] discards, Sort sort);
 
 }

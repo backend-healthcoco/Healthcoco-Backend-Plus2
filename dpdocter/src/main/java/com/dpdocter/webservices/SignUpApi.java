@@ -1,5 +1,8 @@
 package com.dpdocter.webservices;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -16,10 +19,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.DoctorSignUp;
+import com.dpdocter.beans.LocationAndAccessControl;
 import com.dpdocter.beans.User;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.DoctorSignupHandheldContinueRequest;
 import com.dpdocter.request.DoctorSignupHandheldRequest;
 import com.dpdocter.request.DoctorSignupRequest;
@@ -27,7 +32,10 @@ import com.dpdocter.request.PatientProfilePicChangeRequest;
 import com.dpdocter.request.PatientSignUpRequest;
 import com.dpdocter.services.SignUpService;
 import com.dpdocter.services.TransactionalManagementService;
+import com.dpdocter.solr.document.SolrDoctorDocument;
+import com.dpdocter.solr.services.SolrAppointmentService;
 import com.dpdocter.solr.services.SolrRegistrationService;
+
 import common.util.web.Response;
 
 @Component
@@ -53,9 +61,6 @@ public class SignUpApi {
     @Value(value = "${IMAGE_URL_ROOT_PATH}")
     private String imageUrlRootPath;
 
-    @Autowired
-    private SolrAppointmentService solrAppointmentService;
-
     @Path(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP)
     @POST
     public Response<DoctorSignUp> doctorSignup(DoctorSignupRequest request) {
@@ -79,7 +84,10 @@ public class SignUpApi {
 		    doctorSignUp.getHospital().setHospitalImageUrl(getFinalImageURL(doctorSignUp.getHospital().getHospitalImageUrl()));
 		}
 	    }
+	    transnationalService.addResource(doctorSignUp.getUser().getId(), Resource.DOCTOR, false);
+	    solrRegistrationService.addDoctor(getSolrDoctorDocument(doctorSignUp));
 	}
+
 	Response<DoctorSignUp> response = new Response<DoctorSignUp>();
 	response.setData(doctorSignUp);
 	return response;
@@ -107,6 +115,8 @@ public class SignUpApi {
 		    doctorSignUp.getHospital().setHospitalImageUrl(getFinalImageURL(doctorSignUp.getHospital().getHospitalImageUrl()));
 		}
 	    }
+	    transnationalService.addResource(doctorSignUp.getUser().getId(), Resource.DOCTOR, false);
+	    solrRegistrationService.addDoctor(getSolrDoctorDocument(doctorSignUp));
 	}
 	Response<DoctorSignUp> response = new Response<DoctorSignUp>();
 	response.setData(doctorSignUp);
@@ -135,10 +145,8 @@ public class SignUpApi {
 		    doctorSignUp.getHospital().setHospitalImageUrl(getFinalImageURL(doctorSignUp.getHospital().getHospitalImageUrl()));
 		}
 	    }
-	}
-	if (doctorSignUp != null) {
-	    // solrAppointmentService.addDoctor(getSolrDoctorDocument(doctorSignUp));
-	    // solrAppointmentService.addLocation(getSolrLocationDocument(doctorSignUp));
+	    transnationalService.addResource(doctorSignUp.getUser().getId(), Resource.DOCTOR, false);
+	    solrRegistrationService.addDoctor(getSolrDoctorDocument(doctorSignUp));
 	}
 
 	Response<DoctorSignUp> response = new Response<DoctorSignUp>();
@@ -243,76 +251,42 @@ public class SignUpApi {
 	return finalImageURL + imageURL;
     }
 
-    // private SolrDoctorDocument getSolrDoctorDocument(DoctorSignUp doctor) {
-    // SolrDoctorDocument solrDoctorDocument = null;
-    // try {
-    // solrDoctorDocument = new SolrDoctorDocument();
-    // BeanUtil.map(doctor.getUser(), solrDoctorDocument);
-    // List<String> specialiazation = new ArrayList<String>();
-    // for (Location location : doctor.getHospital().getLocations()) {
-    // specialiazation.addAll(location.getSpecialization());
-    // }
-    // solrDoctorDocument.setSpecialization(specialiazation);
-    // solrDoctorDocument.setLocations(doctor.getHospital().getLocations());
-    // } catch (Exception e) {
-    // e.printStackTrace();
-    // }
-    // return solrDoctorDocument;
-    // }
-    //
-    // private List<SolrLocationDocument> getSolrLocationDocument(DoctorSignUp
-    // doctor) {
-    // List<SolrLocationDocument> solrLocationDocuments = null;
-    // try {
-    // solrLocationDocuments = new ArrayList<SolrLocationDocument>();
-    // for (Location location : doctor.getHospital().getLocations()) {
-    // SolrLocationDocument solrLocationDocument = new SolrLocationDocument();
-    // BeanUtil.map(location, solrLocationDocument);
-    // solrLocationDocuments.add(solrLocationDocument);
-    // }
-    // } catch (Exception e) {
-    // e.printStackTrace();
-    // }
-    // return solrLocationDocuments;
-    // }
-    // private SolrDoctorDocument getSolrDoctorDocument(DoctorSignUp doctor) {
-    // SolrDoctorDocument solrDoctorDocument = null;
-    // try {
-    // solrDoctorDocument = new SolrDoctorDocument();
-    // BeanUtil.map(doctor.getHospital().getLocations().get(0),
-    // solrDoctorDocument);
-    // BeanUtil.map(doctor.getUser(), solrDoctorDocument);
-    // /*BeanUtil.map(doctor.getUser(), solrDoctorDocument);
-    // List<String> specialiazation = new ArrayList<String>();
-    // SolrLocationDocument solrLocationDocument = new SolrLocationDocument();
-    // for (Location location : doctor.getHospital().getLocations()) {
-    // if (location.getSpecialization() != null) {
-    // specialiazation.addAll(location.getSpecialization());
-    // }
-    // BeanUtil.map(location, solrLocationDocument);
-    // }
-    // solrDoctorDocument.setSpecialization(specialiazation);
-    // solrDoctorDocument.setLocation(solrLocationDocument);*/
-    // } catch (Exception e) {
-    // e.printStackTrace();
-    // }
-    // return solrDoctorDocument;
-    // }
-    //
-    // private List<SolrLocationDocument> getSolrLocationDocument(DoctorSignUp
-    // doctor) {
-    // List<SolrLocationDocument> solrLocationDocuments = null;
-    // try {
-    // solrLocationDocuments = new ArrayList<SolrLocationDocument>();
-    // for (Location location : doctor.getHospital().getLocations()) {
-    // SolrLocationDocument solrLocationDocument = new SolrLocationDocument();
-    // BeanUtil.map(location, solrLocationDocument);
-    // solrLocationDocuments.add(solrLocationDocument);
-    // }
-    // } catch (Exception e) {
-    // e.printStackTrace();
-    // }
-    // return solrLocationDocuments;
-    // }
-
+     private SolrDoctorDocument getSolrDoctorDocument(DoctorSignUp doctor) {
+     SolrDoctorDocument solrDoctorDocument = null;
+     try {
+     solrDoctorDocument = new SolrDoctorDocument();
+     BeanUtil.map(doctor.getUser(), solrDoctorDocument);
+     solrDoctorDocument.setUserId(doctor.getUser().getId());
+     List<String> specialiazation = new ArrayList<String>();
+     if(doctor.getHospital() != null){
+    	 for(LocationAndAccessControl locationAndAccessControl : doctor.getHospital().getLocationsAndAccessControl()){
+    		 if(locationAndAccessControl.getLocation() != null){
+    			 specialiazation.addAll(locationAndAccessControl.getLocation().getSpecialization());
+    			 BeanUtil.map(locationAndAccessControl.getLocation(), solrDoctorDocument);
+    			 solrDoctorDocument.setLocationId(locationAndAccessControl.getLocation().getId());
+    		 }
+    	 }
+     }
+     solrDoctorDocument.setSpecialization(specialiazation);
+     } catch (Exception e) {
+     e.printStackTrace();
+     }
+     return solrDoctorDocument;
+     }
+    
+//     private List<SolrLocationDocument> getSolrLocationDocument(DoctorSignUp
+//     doctor) {
+//     List<SolrLocationDocument> solrLocationDocuments = null;
+//     try {
+//     solrLocationDocuments = new ArrayList<SolrLocationDocument>();
+//     for (Location location : doctor.getHospital().getLocations()) {
+//     SolrLocationDocument solrLocationDocument = new SolrLocationDocument();
+//     BeanUtil.map(location, solrLocationDocument);
+//     solrLocationDocuments.add(solrLocationDocument);
+//     }
+//     } catch (Exception e) {
+//     e.printStackTrace();
+//     }
+//     return solrLocationDocuments;
+//     }
 }

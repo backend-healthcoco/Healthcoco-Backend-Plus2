@@ -22,6 +22,7 @@ import com.dpdocter.request.DoctorRegisterRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.PatientInitialAndCounter;
 import com.dpdocter.response.RegisterDoctorResponse;
+import com.dpdocter.solr.document.SolrDoctorDocument;
 
 public interface RegistrationService {
     User checkIfPatientExist(PatientRegistrationRequest request);
@@ -82,5 +83,7 @@ public interface RegistrationService {
     List<Role> getRole(String range, int page, int size, String locationId, String hospitalId, String updatedTime);
 
     void checkPatientCount(String mobileNumber);
+
+	SolrDoctorDocument getSolrDoctorDocument(RegisterDoctorResponse doctorResponse);
 
 }

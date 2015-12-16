@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -28,33 +29,25 @@ import common.util.web.Response;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class SolrAppointmentApi {
-    @Autowired
+    
+	@Autowired
     private SolrAppointmentService solrAppointmentService;
 
-    @Path(value = PathProxy.SolrAppointmentUrls.SEARCH)
-    @GET
-    public Response<AppointmentSearchResponse> search(@QueryParam("city") String city, @QueryParam("location") String location,
-	    @QueryParam("keyword") String keyword) {
-	if (DPDoctorUtils.anyStringEmpty(city)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "City Cannot Be Empty");
-	}
-
-	List<AppointmentSearchResponse> appointmentSearchResponses = solrAppointmentService.search(city, location, keyword);
-
-	Response<AppointmentSearchResponse> response = new Response<AppointmentSearchResponse>();
-	response.setDataList(appointmentSearchResponses);
-	return response;
-    }
 
     @Path(value = PathProxy.SolrAppointmentUrls.GET_DOCTORS)
     @GET
     public Response<SolrDoctorDocument> getDoctors(@QueryParam("city") String city, @QueryParam("location") String location,
-	    @QueryParam("keyword") String keyword) {
+	    @QueryParam("speciality") String speciality, @QueryParam("symptom") String symptom, @QueryParam("booking") Boolean booking,
+	    @QueryParam("calling") Boolean calling, @QueryParam("minFee") String minFee, @QueryParam("maxFee") String maxFee, 
+	    @QueryParam("minTime") String minTime, @QueryParam("maxTime") String maxTime,
+	    @MatrixParam("days") List<String> days, @QueryParam("gender") String gender, @QueryParam("minExperience") String minExperience,
+	    @QueryParam("maxExperience") String maxExperience) {
 	if (DPDoctorUtils.anyStringEmpty(city)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "City Cannot Be Empty");
 	}
 
-	List<SolrDoctorDocument> doctors = solrAppointmentService.getDoctors(city, location, keyword);
+	List<SolrDoctorDocument> doctors = solrAppointmentService.getDoctors(city, location, speciality, symptom, booking, calling, minFee, maxFee,
+			minTime, maxTime, days, gender, minExperience, maxExperience);
 
 	Response<SolrDoctorDocument> response = new Response<SolrDoctorDocument>();
 	response.setDataList(doctors);

@@ -504,44 +504,6 @@ public interface PathProxy {
 
 	public static final String SEARCH_OBSERVATIONS = "searchObservations/{range}";
 
-	// public static final String ADD_COMPLAINTS = "addComplaints/";
-	//
-	// public static final String EDIT_COMPLAINTS = "editComplaints/";
-	//
-	// public static final String DELETE_COMPLAINTS = "deleteComplaints/";
-	//
-	// public static final String ADD_DIAGNOSES = "addDiagnoses/";
-	//
-	// public static final String EDIT_DIAGNOSES = "editDiagnoses/";
-	//
-	// public static final String DELETE_DIAGNOSES = "deleteDiagnoses/";
-	//
-	// public static final String ADD_NOTES = "addNotes/";
-	//
-	// public static final String EDIT_NOTES = "editNotes/";
-	//
-	// public static final String DELETE_NOTES = "deleteNotes/";
-	//
-	// public static final String ADD_DIAGRAMS = "addDiagrams/";
-	//
-	// public static final String EDIT_DIAGRAMS = "editDiagrams/";
-	//
-	// public static final String DELETE_DIAGRAMS = "deleteDiagrams/";
-	//
-	// public static final String ADD_INVESTIGATIONS = "addInvestigations/";
-	//
-	// public static final String EDIT_INVESTIGATIONS =
-	// "editInvestigations/";
-	//
-	// public static final String DELETE_INVESTIGATIONS =
-	// "deleteInvestigations/";
-	//
-	// public static final String ADD_OBSERVATIONS = "addObservations/";
-	//
-	// public static final String EDIT_OBSERVATIONS = "editObservations/";
-	//
-	// public static final String DELETE_OBSERVATIONS =
-	// "deleteObservations/";
     }
 
     public static final String SOLR_PRESCRIPTION_BASEURL = BASE_URL + "/solr/prescription";
@@ -564,45 +526,37 @@ public interface PathProxy {
     public static final String APPOINTMENT_BASE_URL = BASE_URL + "/appointment";
 
     public interface AppointmentUrls {
+    	
+    	public static final String ADD_COUNTRY = "/country/add";
+    	
+    	public static final String ADD_CITY = "/city/add";
+    	
+    	public static final String ACTIVATE_DEACTIVATE_CITY = "/activateCity/{cityId}";
+    		
+    	public static final String GET_CITY = "/cities";
+    	
+    	public static final String GET_CITY_ID = "/getCity/{cityId}";
+    	
+    	public static final String ADD_LANDMARK_LOCALITY = "/landmarkLocality/add";
+    	   	
+    	public static final String GET_CLINIC = "/clinic/{locationId}";
 
-	public static final String ADD_CITY = "/addCity";
-
-	public static final String ACTIVATE_CITY = "/activateCity/{cityId}";
-
-	public static final String DEACTIVATE_CITY = "/deactivateCity/{cityId}";
-
-	public static final String GET_CITY = "/getCities";
-
-	public static final String GET_CITY_ID = "/getCity/{cityId}";
-
-	public static final String ADD_LOCALITY = "/addLocality";
-
-	public static final String ADD_LANDMARK = "/addLandmark";
-
-	public static final String GET_LANDMARK_LOCALITY = "/getLandmarkLocality/{cityId}";
-
-	public static final String GET_CLINIC = "/getClinic/{locationId}";
-
-	public static final String ADD_EDIT_APPOINTMENT_SLOT = "clinicProfile/addEditAppointmentSlot";
-
-	public static final String GET_CLINIC_APPOINTMENTS = "/clinic";
-
-	public static final String GET_DOCTOR_APPOINTMENTS = "/doctor";
-
-	public static final String GET_PATIENT_APPOINTMENTS = "/patient";
+    	public static final String ADD_EDIT_APPOINTMENT_SLOT = "/clinicProfile/addEditAppointmentSlot";
+    		
+   		public static final String GET_CLINIC_APPOINTMENTS = "/clinic";
+    		
+   		public static final String GET_DOCTOR_APPOINTMENTS = "/doctor";
+    		
+    	public static final String GET_PATIENT_APPOINTMENTS = "/patient";
 
     }
 
     public static final String SOLR_CITY_BASE_URL = BASE_URL + "/solr/city";
 
     public interface SolrCityUrls {
-
-	public static final String SEARCH = "search";
-
-	public static final String SEARCH_CITY = "searchCity/{searchTerm}";
-
-	public static final String SEARCH_LANDMARK_LOCALITY = "searchLandmarkLocality/{cityId}/{searchTerm}";
-    }
+    	
+    public static final String SEARCH_LOCATION = "searchLocation";
+	    }
 
     public static final String SMS_BASE_URL = BASE_URL + "/sms";
 
@@ -639,9 +593,8 @@ public interface PathProxy {
     public static final String SOLR_APPOINTMENT_BASE_URL = BASE_URL + "/solr/appointment";
 
     public interface SolrAppointmentUrls {
-	public static final String SEARCH = "search";
 
-	public static final String GET_DOCTORS = "getDoctors";
+	public static final String GET_DOCTORS = "doctors";
 
 	public static final String ADD_SPECIALITY = "addSpecialization";
     }

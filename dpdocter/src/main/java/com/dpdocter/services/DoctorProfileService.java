@@ -2,6 +2,7 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import com.dpdocter.beans.DoctorExperience;
 import com.dpdocter.beans.DoctorGeneralInfo;
 import com.dpdocter.beans.DoctorProfile;
 import com.dpdocter.beans.EducationInstitute;
@@ -11,6 +12,7 @@ import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Speciality;
 import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
+import com.dpdocter.request.DoctorAddEditIBSRequest;
 import com.dpdocter.request.DoctorAppointmentNumbersAddEditRequest;
 import com.dpdocter.request.DoctorAppointmentSlotAddEditRequest;
 import com.dpdocter.request.DoctorConsultationFeeAddEditRequest;
@@ -32,7 +34,7 @@ public interface DoctorProfileService {
 
     Boolean addEditName(DoctorNameAddEditRequest request);
 
-    Boolean addEditExperience(DoctorExperienceAddEditRequest request);
+    DoctorExperience addEditExperience(DoctorExperienceAddEditRequest request);
 
     Boolean addEditContact(DoctorContactAddEditRequest request);
 
@@ -42,7 +44,7 @@ public interface DoctorProfileService {
 
     List<MedicalCouncil> getMedicalCouncils();
 
-    Boolean addEditSpeciality(DoctorSpecialityAddEditRequest request);
+    List<String> addEditSpeciality(DoctorSpecialityAddEditRequest request);
 
     Boolean addEditAchievement(DoctorAchievementAddEditRequest request);
 

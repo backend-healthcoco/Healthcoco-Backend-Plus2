@@ -8,7 +8,6 @@ import com.dpdocter.solr.document.SolrLocationDocument;
 import com.dpdocter.solr.document.SolrSpecialityDocument;
 
 public interface SolrAppointmentService {
-    boolean addDoctor(SolrDoctorDocument request);
 
     boolean addLocation(List<SolrLocationDocument> request);
 
@@ -17,5 +16,9 @@ public interface SolrAppointmentService {
     List<AppointmentSearchResponse> search(String city, String location, String keyword);
 
     List<SolrDoctorDocument> getDoctors(String city, String location, String keyword);
+
+	List<SolrDoctorDocument> getDoctors(String city, String location, String speciality, String symptom,
+			Boolean booking, Boolean calling, String minFee, String maxFee, String minTime, String maxTime, List<String> days, String gender,
+			String minExperience, String maxExperience);
 
 }

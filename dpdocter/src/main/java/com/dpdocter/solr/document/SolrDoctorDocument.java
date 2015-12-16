@@ -7,8 +7,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.solr.core.mapping.SolrDocument;
 
 import com.dpdocter.beans.ConsultationFee;
+import com.dpdocter.beans.DoctorExperience;
 import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.solr.beans.DoctorLocation;
+import com.dpdocter.solr.beans.SolrWorkingSchedule;
 
 @SolrDocument(solrCoreName = "doctors")
 public class SolrDoctorDocument extends DoctorLocation {
@@ -17,13 +19,10 @@ public class SolrDoctorDocument extends DoctorLocation {
     private String id;
 
     @Field
+    private String userId;
+
+    @Field
     private String firstName;
-
-    @Field
-    private String middleName;
-
-    @Field
-    private String lastName;
 
     @Field
     private String gender;
@@ -41,10 +40,13 @@ public class SolrDoctorDocument extends DoctorLocation {
     private ConsultationFee consultationFee;
 
     @Field
-    private List<WorkingSchedule> workingSchedules;
+    private List<SolrWorkingSchedule> workingSchedules;
 
     @Field
-    private List<String> specialization;
+    private List<String> specialities;
+
+    @Field
+    private DoctorExperience experience;
 
     public String getId() {
 	return id;
@@ -60,22 +62,6 @@ public class SolrDoctorDocument extends DoctorLocation {
 
     public void setFirstName(String firstName) {
 	this.firstName = firstName;
-    }
-
-    public String getMiddleName() {
-	return middleName;
-    }
-
-    public void setMiddleName(String middleName) {
-	this.middleName = middleName;
-    }
-
-    public String getLastName() {
-	return lastName;
-    }
-
-    public void setLastName(String lastName) {
-	this.lastName = lastName;
     }
 
     public String getGender() {
@@ -118,27 +104,43 @@ public class SolrDoctorDocument extends DoctorLocation {
 	this.consultationFee = consultationFee;
     }
 
-    public List<WorkingSchedule> getWorkingSchedules() {
+    public List<SolrWorkingSchedule> getWorkingSchedules() {
 	return workingSchedules;
     }
 
-    public void setWorkingSchedules(List<WorkingSchedule> workingSchedules) {
+    public void setWorkingSchedules(List<SolrWorkingSchedule> workingSchedules) {
 	this.workingSchedules = workingSchedules;
     }
 
-    public List<String> getSpecialization() {
-	return specialization;
-    }
+	public String getUserId() {
+		return userId;
+	}
 
-    public void setSpecialization(List<String> specialization) {
-	this.specialization = specialization;
-    }
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 
-    @Override
-    public String toString() {
-	return "SolrDoctorDocument [id=" + id + ", firstName=" + firstName + ", middleName=" + middleName + ", lastName=" + lastName + ", gender=" + gender
-		+ ", emailAddress=" + emailAddress + ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl + ", consultationFee=" + consultationFee
-		+ ", workingSchedules=" + workingSchedules + ", specialization=" + specialization + "]";
-    }
+	public List<String> getSpecialities() {
+		return specialities;
+	}
 
+	public void setSpecialities(List<String> specialities) {
+		this.specialities = specialities;
+	}
+
+	public DoctorExperience getExperience() {
+		return experience;
+	}
+
+	public void setExperience(DoctorExperience experience) {
+		this.experience = experience;
+	}
+
+	@Override
+	public String toString() {
+		return "SolrDoctorDocument [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", gender=" + gender
+				+ ", emailAddress=" + emailAddress + ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl
+				+ ", consultationFee=" + consultationFee + ", workingSchedules=" + workingSchedules + ", specialities="
+				+ specialities + ", experience=" + experience + "]";
+	}
 }

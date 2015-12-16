@@ -5,11 +5,11 @@ import java.util.List;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
-import com.dpdocter.collections.LocalityCollection;
+import com.dpdocter.collections.LandmarkLocalityCollection;
 
-public interface LocalityRepository extends MongoRepository<LocalityCollection, String> {
+public interface LocalityRepository extends MongoRepository<LandmarkLocalityCollection, String> {
 
     @Query("{'cityId': ?0}")
-    List<LocalityCollection> findByCityId(String cityId);
+    List<LandmarkLocalityCollection> findByCityId(String cityId);
 
 }

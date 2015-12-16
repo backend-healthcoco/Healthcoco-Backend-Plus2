@@ -1,9 +1,14 @@
 package com.dpdocter.solr.beans;
 
+import java.util.List;
+
 import org.apache.solr.client.solrj.beans.Field;
 
 public class DoctorLocation {
-    @Field
+	@Field
+    private String locationId;
+	
+	@Field
     private String locationName;
 
     @Field
@@ -48,6 +53,9 @@ public class DoctorLocation {
     @Field
     private String alternateNumber;
 
+    @Field
+    private List<String> specialization;
+    
     public String getLocationName() {
 	return locationName;
     }
@@ -168,12 +176,20 @@ public class DoctorLocation {
 	this.alternateNumber = alternateNumber;
     }
 
-    @Override
-    public String toString() {
-	return "DoctorLocation [locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city + ", locationPhoneNumber="
-		+ locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", latitude=" + latitude + ", longitude=" + longitude
-		+ ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress=" + locationEmailAddress + ", streetAddress=" + streetAddress
-		+ ", locality=" + locality + ", mobileNumber=" + mobileNumber + ", alternateNumber=" + alternateNumber + "]";
-    }
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public List<String> getSpecialization() {
+		return specialization;
+	}
+
+	public void setSpecialization(List<String> specialization) {
+		this.specialization = specialization;
+	}
 
 }

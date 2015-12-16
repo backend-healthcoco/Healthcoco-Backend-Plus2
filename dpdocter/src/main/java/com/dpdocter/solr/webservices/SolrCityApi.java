@@ -5,7 +5,6 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -13,14 +12,10 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.exceptions.BusinessException;
-import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.solr.beans.SolrCityLandmarkLocalityResponse;
-import com.dpdocter.solr.document.SolrCityDocument;
-import com.dpdocter.solr.document.SolrLocalityLandmarkDocument;
 import com.dpdocter.solr.services.SolrCityService;
 import com.dpdocter.webservices.PathProxy;
-import common.util.web.DPDoctorUtils;
+
 import common.util.web.Response;
 
 @Component
@@ -32,38 +27,15 @@ public class SolrCityApi {
     @Autowired
     private SolrCityService solrCityService;
 
-    @Path(value = PathProxy.SolrCityUrls.SEARCH)
+    @Path(value = PathProxy.SolrCityUrls.SEARCH_LOCATION)
     @GET
-    public Response<SolrCityLandmarkLocalityResponse> searchCityLandmarkLocality(@QueryParam(value = "searchTerm") String searchTerm) {
+    public Response<SolrCityLandmarkLocalityResponse> searchLocation(@QueryParam(value = "searchTerm") String searchTerm,
+    		@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude) {
 	
-	List<SolrCityLandmarkLocalityResponse> searchResonse = solrCityService.searchCityLandmarkLocality(searchTerm);
+	List<SolrCityLandmarkLocalityResponse> searchResonse = solrCityService.searchCityLandmarkLocality(searchTerm, latitude, longitude);
 	Response<SolrCityLandmarkLocalityResponse> response = new Response<SolrCityLandmarkLocalityResponse>();
 	response.setDataList(searchResonse);
 	return response;
     }
 
-    @Path(value = PathProxy.SolrCityUrls.SEARCH_CITY)
-    @GET
-    public Response<SolrCityDocument> searchCity(@PathParam(value = "searchTerm") String searchTerm) {
-	if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-	}
-	List<SolrCityDocument> searchResonse = solrCityService.searchCity(searchTerm);
-	Response<SolrCityDocument> response = new Response<SolrCityDocument>();
-	response.setDataList(searchResonse);
-	return response;
-    }
-
-    @Path(value = PathProxy.SolrCityUrls.SEARCH_LANDMARK_LOCALITY)
-    @GET
-    public Response<SolrLocalityLandmarkDocument> searchLandmarkLocality(@PathParam(value = "cityId") String cityId,
-	    @PathParam(value = "searchTerm") String searchTerm, @QueryParam(value = "type") String type) {
-	if (DPDoctorUtils.anyStringEmpty(cityId) || DPDoctorUtils.anyStringEmpty(searchTerm)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-	}
-	List<SolrLocalityLandmarkDocument> searchResonse = solrCityService.searchLandmarkLocality(cityId, type, searchTerm);
-	Response<SolrLocalityLandmarkDocument> response = new Response<SolrLocalityLandmarkDocument>();
-	response.setDataList(searchResonse);
-	return response;
-    }
 }

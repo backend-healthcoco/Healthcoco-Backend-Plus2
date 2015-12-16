@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.DoctorClinicProfile;
+import com.dpdocter.beans.DoctorExperience;
 import com.dpdocter.beans.DoctorGeneralInfo;
 import com.dpdocter.beans.DoctorProfile;
 import com.dpdocter.beans.EducationInstitute;
@@ -28,9 +29,11 @@ import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Speciality;
 import com.dpdocter.beans.WorkingSchedule;
+import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
+import com.dpdocter.request.DoctorAddEditIBSRequest;
 import com.dpdocter.request.DoctorAppointmentNumbersAddEditRequest;
 import com.dpdocter.request.DoctorAppointmentSlotAddEditRequest;
 import com.dpdocter.request.DoctorConsultationFeeAddEditRequest;
@@ -48,6 +51,9 @@ import com.dpdocter.request.DoctorSpecialityAddEditRequest;
 import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
 import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.services.DoctorProfileService;
+import com.dpdocter.services.TransactionalManagementService;
+import com.dpdocter.solr.services.SolrRegistrationService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -60,8 +66,14 @@ public class DoctorProfileApi {
     private static Logger logger = Logger.getLogger(DoctorProfileApi.class.getName());
 
     @Autowired
+    private SolrRegistrationService solrRegistrationService;
+
+    @Autowired
     private DoctorProfileService doctorProfileService;
 
+    @Autowired
+    private TransactionalManagementService transnationalService;
+    
     @Context
     private UriInfo uriInfo;
 
@@ -76,6 +88,7 @@ public class DoctorProfileApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Cannot Be null");
 	}
 	Boolean addEditNameResponse = doctorProfileService.addEditName(request);
+	if(addEditNameResponse) solrRegistrationService.addEditName(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditNameResponse);
 	return response;
@@ -88,9 +101,10 @@ public class DoctorProfileApi {
 	    logger.warn("Doctor Experience Request Is Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Experience Request Is Empty");
 	}
-	Boolean addEditExperienceResponse = doctorProfileService.addEditExperience(request);
+	DoctorExperience experienceResponse = doctorProfileService.addEditExperience(request);
+	if(experienceResponse != null) solrRegistrationService.addEditExperience(request.getDoctorId(), experienceResponse);
 	Response<Boolean> response = new Response<Boolean>();
-	response.setData(addEditExperienceResponse);
+	response.setData(true);
 	return response;
     }
 
@@ -149,9 +163,11 @@ public class DoctorProfileApi {
 	    logger.warn("Doctor Speciality Request Is Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Speciality Request Is Empty");
 	}
-	Boolean addEditSpecialityResponse = doctorProfileService.addEditSpeciality(request);
+	List<String> specialityResponse = doctorProfileService.addEditSpeciality(request);
+	request.setSpeciality(specialityResponse);
+	if(specialityResponse != null) solrRegistrationService.addEditSpeciality(request);
 	Response<Boolean> response = new Response<Boolean>();
-	response.setData(addEditSpecialityResponse);
+	response.setData(true);
 	return response;
     }
 
@@ -215,6 +231,8 @@ public class DoctorProfileApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Profile Picture Request Is Empty");
 	}
 	String addEditProfilePictureResponse = doctorProfileService.addEditProfilePicture(request);
+	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
+	if(addEditProfilePictureResponse != null) solrRegistrationService.addEditProfilePicture(request.getDoctorId(), addEditProfilePictureResponse);
 	addEditProfilePictureResponse = getFinalImageURL(addEditProfilePictureResponse);
 	Response<String> response = new Response<String>();
 	response.setData(addEditProfilePictureResponse);
@@ -337,6 +355,8 @@ public class DoctorProfileApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, LocationId Is Empty");
 	}
 	Boolean addEditVisitingTimeResponse = doctorProfileService.addEditVisitingTime(request);
+	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
+	if(addEditVisitingTimeResponse) solrRegistrationService.addEditVisitingTime(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditVisitingTimeResponse);
 	return response;
@@ -353,6 +373,8 @@ public class DoctorProfileApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, LocationId Is Empty");
 	}
 	Boolean addEditConsultationFeeResponse = doctorProfileService.addEditConsultationFee(request);
+	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
+	if(addEditConsultationFeeResponse) solrRegistrationService.addEditConsultationFee(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditConsultationFeeResponse);
 	return response;
@@ -386,6 +408,8 @@ public class DoctorProfileApi {
 	}
 
 	Boolean addEditGeneralInfoResponse = doctorProfileService.addEditGeneralInfo(request);
+	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
+	if(addEditGeneralInfoResponse) solrRegistrationService.addEditGeneralInfo(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditGeneralInfoResponse);
 	return response;
@@ -434,6 +458,8 @@ public class DoctorProfileApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Cannot Be null");
 	}
 	DoctorMultipleDataAddEditResponse addEditNameResponse = doctorProfileService.addEditMultipleData(request);
+	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
+	if(addEditNameResponse != null) solrRegistrationService.addEditMultipleData(addEditNameResponse);
 	addEditNameResponse.setCoverImageUrl(getFinalImageURL(addEditNameResponse.getCoverImageUrl()));
 	addEditNameResponse.setProfileImageUrl(getFinalImageURL(addEditNameResponse.getProfileImageUrl()));
 

@@ -19,6 +19,8 @@ public class RecordsSearchRequest {
 
     private int size;
 
+    private Boolean isOTPVerified = false;
+    
     public String getLocationId() {
 	return locationId;
     }
@@ -91,10 +93,19 @@ public class RecordsSearchRequest {
 	this.size = size;
     }
 
-    @Override
-    public String toString() {
-	return "RecordsSearchRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", tagId=" + tagId + ", locationId=" + locationId + ", hospitalId="
-		+ hospitalId + ", updatedTime=" + updatedTime + ", discarded=" + discarded + ", page=" + page + ", size=" + size + "]";
-    }
+	public Boolean getIsOTPVerified() {
+		return isOTPVerified;
+	}
 
+	public void setIsOTPVerified(Boolean isOTPVerified) {
+		this.isOTPVerified = isOTPVerified;
+	}
+
+	@Override
+	public String toString() {
+		return "RecordsSearchRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", tagId=" + tagId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", updatedTime=" + updatedTime
+				+ ", discarded=" + discarded + ", page=" + page + ", size=" + size + ", isOTPVerified=" + isOTPVerified
+				+ "]";
+	}
 }

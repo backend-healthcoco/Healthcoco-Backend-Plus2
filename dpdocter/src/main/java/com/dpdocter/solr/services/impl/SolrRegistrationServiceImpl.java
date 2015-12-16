@@ -13,25 +13,39 @@ import org.springframework.data.solr.core.query.Criteria;
 import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.DoctorExperience;
+import com.dpdocter.beans.DoctorGeneralInfo;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.request.DoctorConsultationFeeAddEditRequest;
+import com.dpdocter.request.DoctorNameAddEditRequest;
+import com.dpdocter.request.DoctorSpecialityAddEditRequest;
+import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
+import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.beans.AdvancedSearch;
 import com.dpdocter.solr.beans.AdvancedSearchParameter;
+import com.dpdocter.solr.beans.SolrWorkingSchedule;
+import com.dpdocter.solr.document.SolrDoctorDocument;
 import com.dpdocter.solr.document.SolrPatientDocument;
 import com.dpdocter.solr.enums.AdvancedSearchType;
+import com.dpdocter.solr.repository.SolrDoctorRepository;
 import com.dpdocter.solr.repository.SolrPatientRepository;
 import com.dpdocter.solr.response.SolrPatientResponse;
 import com.dpdocter.solr.response.SolrPatientResponseDetails;
 import com.dpdocter.solr.services.SolrRegistrationService;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
 public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 
     private static Logger logger = Logger.getLogger(SolrRegistrationServiceImpl.class.getName());
+
+    @Autowired
+    private SolrDoctorRepository solrDoctorRepository;
 
     @Autowired
     private SolrPatientRepository solrPatientRepository;
@@ -447,5 +461,134 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	}
 
     }
+
+    @Override
+    public boolean addDoctor(SolrDoctorDocument request) {
+	boolean response = false;
+	try {
+		SolrDoctorDocument doctorDocument = solrDoctorRepository.findByUserIdAndLocationId(request.getUserId(), request.getLocationId());
+		if(doctorDocument != null)request.setId(doctorDocument.getId());
+		else request.setId(request.getUserId()+request.getLocationId());
+		
+	    solrDoctorRepository.save(request);
+	    transnationalService.addResource(request.getUserId(), Resource.DOCTOR, true);
+	    response = true;
+	} catch (Exception e) {
+	    e.printStackTrace();
+//	    throw new BusinessException(ServiceError.Unknown, "Error While Saving Doctor Details to Solr : " + e.getMessage());
+	}
+	return response;
+    }
+
+	@Override
+	public void addEditName(DoctorNameAddEditRequest request) {
+		try {
+			List<SolrDoctorDocument> doctorDocuments = solrDoctorRepository.findByUserId(request.getDoctorId());
+			for(SolrDoctorDocument doctorDocument : doctorDocuments){
+				doctorDocument.setFirstName(request.getFirstName());
+				solrDoctorRepository.save(doctorDocument);
+				transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, true);
+			}
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}	
+	}
+
+	@Override
+	public void addEditSpeciality(DoctorSpecialityAddEditRequest request) {
+		try {
+			List<SolrDoctorDocument> doctorDocuments = solrDoctorRepository.findByUserId(request.getDoctorId());
+			for(SolrDoctorDocument doctorDocument : doctorDocuments){
+				doctorDocument.setSpecialities(request.getSpeciality());
+				solrDoctorRepository.save(doctorDocument);
+				transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, true);
+			}
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}	
+	}
+
+	@Override
+	public void addEditProfilePicture(String doctorId, String addEditProfilePictureResponse) {
+		try {
+			List<SolrDoctorDocument> doctorDocuments = solrDoctorRepository.findByUserId(doctorId);
+			for(SolrDoctorDocument doctorDocument : doctorDocuments){
+				doctorDocument.setImageUrl(addEditProfilePictureResponse);
+				solrDoctorRepository.save(doctorDocument);
+				transnationalService.addResource(doctorId , Resource.DOCTOR, true);
+			}
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}	
+	}
+
+	@Override
+	public void addEditVisitingTime(DoctorVisitingTimeAddEditRequest request) {
+		try {
+			SolrDoctorDocument doctorDocuments = solrDoctorRepository.findByUserIdAndLocationId(request.getDoctorId(),request.getLocationId());
+			List<SolrWorkingSchedule> solrWorkingSchedule = new ArrayList<SolrWorkingSchedule>();
+			BeanUtil.map(request.getWorkingSchedules(), solrWorkingSchedule);
+			doctorDocuments.setWorkingSchedules(solrWorkingSchedule);
+			solrDoctorRepository.save(doctorDocuments);
+			transnationalService.addResource(request.getDoctorId() , Resource.DOCTOR, true);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}	
+	}
+
+	@Override
+	public void addEditConsultationFee(DoctorConsultationFeeAddEditRequest request) {
+		try {
+			SolrDoctorDocument doctorDocuments = solrDoctorRepository.findByUserIdAndLocationId(request.getDoctorId(),request.getLocationId());
+			doctorDocuments.setConsultationFee(request.getConsultationFee());
+			solrDoctorRepository.save(doctorDocuments);
+			transnationalService.addResource(request.getDoctorId() , Resource.DOCTOR, true);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}	
+	}
+
+	@Override
+	public void addEditExperience(String doctorId, DoctorExperience experienceResponse) {
+		try {
+			List<SolrDoctorDocument> doctorDocuments = solrDoctorRepository.findByUserId(doctorId);
+			for(SolrDoctorDocument doctorDocument : doctorDocuments){
+				doctorDocument.setExperience(experienceResponse);
+				solrDoctorRepository.save(doctorDocument);
+				transnationalService.addResource(doctorId , Resource.DOCTOR, true);
+			}
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void addEditGeneralInfo(DoctorGeneralInfo request) {
+		try {
+			SolrDoctorDocument doctorDocuments = solrDoctorRepository.findByUserIdAndLocationId(request.getDoctorId(),request.getLocationId());
+			doctorDocuments.setConsultationFee(request.getConsultationFee());
+			solrDoctorRepository.save(doctorDocuments);
+			transnationalService.addResource(request.getDoctorId() , Resource.DOCTOR, true);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void addEditMultipleData(DoctorMultipleDataAddEditResponse addEditNameResponse) {
+		try {
+			List<SolrDoctorDocument> doctorDocuments = solrDoctorRepository.findByUserId(addEditNameResponse.getDoctorId());
+			for(SolrDoctorDocument doctorDocument : doctorDocuments){
+				doctorDocument.setFirstName(addEditNameResponse.getFirstName());
+				doctorDocument.setImageUrl(addEditNameResponse.getProfileImageUrl());
+				doctorDocument.setExperience(addEditNameResponse.getExperience());
+				doctorDocument.setSpecialities(addEditNameResponse.getSpecialities());
+				solrDoctorRepository.save(doctorDocument);
+				transnationalService.addResource(addEditNameResponse.getDoctorId() , Resource.DOCTOR, true);
+			}
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+	}
 
 }

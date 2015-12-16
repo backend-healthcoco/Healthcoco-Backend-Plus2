@@ -243,21 +243,29 @@ public class RecordsServiceImpl implements RecordsService {
 		    recordsTagsCollections = recordsTagsRepository.findByTagsId(request.getTagId(), new Sort(Sort.Direction.DESC, "updatedTime"));
 		@SuppressWarnings("unchecked")
 		Collection<String> recordIds = CollectionUtils.collect(recordsTagsCollections, new BeanToPropertyValueTransformer("recordsId"));
-		@SuppressWarnings("unchecked")
-		List<RecordsCollection> recordCollections = IteratorUtils.toList(recordsRepository.findAll(recordIds).iterator());
-		records = new ArrayList<Records>();
-		BeanUtil.map(recordCollections, records);
+		
+		recordsCollections = IteratorUtils.toList(recordsRepository.findAll(recordIds).iterator());
+		
 	    } else {
-
-		if (request.getSize() > 0) {
-		    recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(), request
-			    .getHospitalId(), new Date(createdTimeStamp), discards, new PageRequest(request.getPage(), request.getSize(), Direction.DESC,
-			    "updatedTime"));
-		} else {
-		    recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
-			    request.getHospitalId(), new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-		}
-
+	    	if(request.getIsOTPVerified()){
+	    		if (request.getSize() > 0) {
+	    		    recordsCollections = recordsRepository.findRecords(request.getPatientId(), new Date(createdTimeStamp), discards, new PageRequest(request.getPage(), request.getSize(), Direction.DESC,
+	    			    "updatedTime"));
+	    		} else {
+	    		    recordsCollections = recordsRepository.findRecords(request.getPatientId(), new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
+	    		}
+	    	}
+	    	else{
+	    		if (request.getSize() > 0) {
+	    		    recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(), request
+	    			    .getHospitalId(), new Date(createdTimeStamp), discards, new PageRequest(request.getPage(), request.getSize(), Direction.DESC,
+	    			    "updatedTime"));
+	    		} else {
+	    		    recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
+	    			    request.getHospitalId(), new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
+	    		}
+	    	}
+	    }
 		records = new ArrayList<Records>();
 		for (RecordsCollection recordCollection : recordsCollections) {
 		    Records record = new Records();
@@ -276,7 +284,6 @@ public class RecordsServiceImpl implements RecordsService {
 			record.setVisitId(patientVisitCollection.getId());
 		    records.add(record);
 		}
-	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);

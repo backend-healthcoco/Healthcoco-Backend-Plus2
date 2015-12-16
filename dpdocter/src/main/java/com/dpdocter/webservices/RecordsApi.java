@@ -34,6 +34,7 @@ import com.dpdocter.request.RecordsAddRequest;
 import com.dpdocter.request.RecordsEditRequest;
 import com.dpdocter.request.RecordsSearchRequest;
 import com.dpdocter.request.TagRecordRequest;
+import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.RecordsService;
 import common.util.web.DPDoctorUtils;
@@ -55,6 +56,9 @@ public class RecordsApi {
 
     @Value(value = "${IMAGE_URL_ROOT_PATH}")
     private String imageUrlRootPath;
+
+    @Autowired
+    private OTPService otpService;
 
     @POST
     @Path(value = PathProxy.RecordsUrls.ADD_RECORDS)
@@ -95,6 +99,7 @@ public class RecordsApi {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
+	request.setIsOTPVerified(otpService.checkOTPVerified(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId()));
 	List<Records> records = recordsService.searchRecords(request);
 	if (records != null && !records.isEmpty()) {
 	    for (Records record : records) {

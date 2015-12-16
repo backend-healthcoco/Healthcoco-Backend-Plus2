@@ -13,19 +13,23 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.solr.core.geo.GeoLocation;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.City;
 import com.dpdocter.beans.Clinic;
-import com.dpdocter.beans.Landmark;
-import com.dpdocter.beans.Locality;
+import com.dpdocter.beans.LandmarkLocality;
+import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.AppoinmentRequest;
 import com.dpdocter.services.AppointmentService;
+import com.dpdocter.services.TransactionalManagementService;
+import com.dpdocter.solr.beans.Country;
 import com.dpdocter.solr.document.SolrCityDocument;
+import com.dpdocter.solr.document.SolrCountryDocument;
 import com.dpdocter.solr.document.SolrLocalityLandmarkDocument;
 import com.dpdocter.solr.services.SolrCityService;
 
@@ -43,6 +47,30 @@ public class AppointmentApi {
 
     @Autowired
     private SolrCityService solrCityService;
+    
+    @Autowired
+    private TransactionalManagementService transnationalService;
+
+    @Path(value = PathProxy.AppointmentUrls.ADD_COUNTRY)
+    @POST
+    public Response<Country> addCountry(Country request) {
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Request sent is NULL");
+	} else if (request.getCountry() == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Country cannot be NULL");
+	}
+	Country country = appointmentService.addCountry(request);
+
+	transnationalService.addResource(country.getId(), Resource.COUNTRY, false);
+	SolrCountryDocument solrCountry = new SolrCountryDocument();
+	BeanUtil.map(country, solrCountry);
+	solrCountry.setGeoLocation(new GeoLocation(country.getLatitude(), country.getLongitude()));
+	solrCityService.addCountry(solrCountry);
+	
+	Response<Country> response = new Response<Country>();
+	response.setData(country);
+	return response;
+    }
 
     @Path(value = PathProxy.AppointmentUrls.ADD_CITY)
     @POST
@@ -54,47 +82,29 @@ public class AppointmentApi {
 	}
 	City city = appointmentService.addCity(request);
 
+	transnationalService.addResource(city.getId(), Resource.CITY, false);
 	SolrCityDocument solrCities = new SolrCityDocument();
 	BeanUtil.map(city, solrCities);
-	if (request.getId() == null) {
-	    solrCityService.addCities(solrCities);
-	}
-
-	else {
-	    solrCityService.editCities(solrCities);
-	}
-
+	solrCities.setGeoLocation(new GeoLocation(city.getLatitude(), city.getLongitude()));
+   	solrCityService.addCities(solrCities);
+	
 	Response<City> response = new Response<City>();
 	response.setData(city);
 	return response;
     }
 
-    @Path(value = PathProxy.AppointmentUrls.ACTIVATE_CITY)
+    @Path(value = PathProxy.AppointmentUrls.ACTIVATE_DEACTIVATE_CITY)
     @GET
-    public Response<Boolean> activateCity(@PathParam(value = "cityId") String cityId) {
+    public Response<Boolean> activateCity(@PathParam(value = "cityId") String cityId, @DefaultValue("true") @QueryParam("activate") Boolean activate) {
 	if (cityId == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	Boolean isActivated = false;
-	isActivated = appointmentService.activateDeactivateCity(cityId, true);
-	solrCityService.activateDeactivateCity(cityId, true);
+	isActivated = appointmentService.activateDeactivateCity(cityId, activate);
+	transnationalService.addResource(cityId, Resource.CITY, false);
+	solrCityService.activateDeactivateCity(cityId, activate);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(isActivated);
-	return response;
-
-    }
-
-    @Path(value = PathProxy.AppointmentUrls.DEACTIVATE_CITY)
-    @GET
-    public Response<Boolean> deactivateCity(@PathParam(value = "cityId") String cityId) {
-	if (cityId == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-	}
-	Boolean isDeactivated = false;
-	isDeactivated = appointmentService.activateDeactivateCity(cityId, false);
-	solrCityService.activateDeactivateCity(cityId, false);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(isDeactivated);
 	return response;
 
     }
@@ -123,66 +133,24 @@ public class AppointmentApi {
 
     }
 
-    @Path(value = PathProxy.AppointmentUrls.ADD_LOCALITY)
+    @Path(value = PathProxy.AppointmentUrls.ADD_LANDMARK_LOCALITY)
     @POST
-    public Response<Locality> addLocality(Locality request) {
+    public Response<LandmarkLocality> addLandmaklLocality(LandmarkLocality request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request sent is NULL");
-	} else if (request.getCityId() == null || request.getLocality() == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "CityId, Locality cannot be NULL");
-	}
-	Locality locality = appointmentService.addLocality(request);
-
+	} 
+	LandmarkLocality locality = appointmentService.addLandmaklLocality(request);
+	transnationalService.addResource(request.getId(), Resource.LANDMARKLOCALITY, false);
 	SolrLocalityLandmarkDocument solrLocalityLandmark = new SolrLocalityLandmarkDocument();
 	BeanUtil.map(locality, solrLocalityLandmark);
-	if (request.getId() == null) {
-	    solrCityService.addLocalityLandmark(solrLocalityLandmark);
-	}
+	solrLocalityLandmark.setGeoLocation(new GeoLocation(locality.getLatitude(), locality.getLongitude()));
+    solrCityService.addLocalityLandmark(solrLocalityLandmark);
 
-	else {
-	    solrCityService.editLocalityLandmark(solrLocalityLandmark);
-	}
-
-	Response<Locality> response = new Response<Locality>();
+	Response<LandmarkLocality> response = new Response<LandmarkLocality>();
 	response.setData(locality);
 	return response;
     }
 
-    @Path(value = PathProxy.AppointmentUrls.ADD_LANDMARK)
-    @POST
-    public Response<Landmark> addLandmark(Landmark request) {
-	if (request == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Request sent is NULL");
-	} else if (request.getCityId() == null || request.getLandmark() == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "CityId, Landmark cannot be NULL");
-	}
-	Landmark landmark = appointmentService.addLandmark(request);
-
-	SolrLocalityLandmarkDocument solrLocalityLandmark = new SolrLocalityLandmarkDocument();
-	BeanUtil.map(landmark, solrLocalityLandmark);
-	if (request.getId() == null) {
-	    solrCityService.addLocalityLandmark(solrLocalityLandmark);
-	}
-
-	else {
-	    solrCityService.editLocalityLandmark(solrLocalityLandmark);
-	}
-
-	Response<Landmark> response = new Response<Landmark>();
-	response.setData(landmark);
-	return response;
-    }
-
-   /* @Path(value = PathProxy.AppointmentUrls.GET_LANDMARK_LOCALITY)
-    @GET
-    public Response<Object> getLandmarkLocality(@PathParam(value = "cityId") String cityId, @QueryParam(value = "type") String type) {
-
-	List<Object> landmarksLocalities = appointmentService.getLandmarkLocality(cityId, type);
-	Response<Object> response = new Response<Object>();
-	response.setDataList(landmarksLocalities);
-	return response;
-
-    }*/
 
     @Path(value = PathProxy.AppointmentUrls.GET_CLINIC)
     @GET
@@ -198,7 +166,6 @@ public class AppointmentApi {
 
     }
     
-//    @Path(value = PathProxy.AppointmentUrls.APPOINTMENT)
     @POST
     public Response<Appointment> BookAppoinment(AppoinmentRequest request) {
 

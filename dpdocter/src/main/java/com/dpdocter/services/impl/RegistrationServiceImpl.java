@@ -102,6 +102,8 @@ import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.sms.services.SMSServices;
+import com.dpdocter.solr.document.SolrDoctorDocument;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -1503,4 +1505,20 @@ public class RegistrationServiceImpl implements RegistrationService {
 	return response;
 
     }
+
+	@Override
+	public SolrDoctorDocument getSolrDoctorDocument(RegisterDoctorResponse doctorResponse) {
+		SolrDoctorDocument solrDoctorDocument = null;
+	     try {
+	     solrDoctorDocument = new SolrDoctorDocument();
+	     BeanUtil.map(doctorResponse, solrDoctorDocument);
+	     LocationCollection locationCollection = locationRepository.findOne(doctorResponse.getLocationId());
+	     if(locationCollection != null){
+	    	 BeanUtil.map(locationCollection, solrDoctorDocument);
+	     }
+	     } catch (Exception e) {
+	     e.printStackTrace();
+	     }
+	     return solrDoctorDocument;
+	}
 }

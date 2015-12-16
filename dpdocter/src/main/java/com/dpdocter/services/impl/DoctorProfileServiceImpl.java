@@ -71,7 +71,7 @@ import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.services.DoctorProfileService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.solr.document.SolrDoctorDocument;
-import com.dpdocter.solr.repository.SolrDoctorRepository;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -112,9 +112,6 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     @Autowired
     private UserLocationRepository userLocationRepository;
 
-    @Autowired
-    private SolrDoctorRepository solrDoctorRepository;
-
     @Override
     public Boolean addEditName(DoctorNameAddEditRequest request) {
 	UserCollection userCollection = null;
@@ -138,9 +135,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
-    public Boolean addEditExperience(DoctorExperienceAddEditRequest request) {
+    public DoctorExperience addEditExperience(DoctorExperienceAddEditRequest request) {
 	DoctorCollection doctorCollection = null;
-	Boolean response = false;
+	DoctorExperience response = new DoctorExperience();
 	try {
 	    doctorCollection = doctorRepository.findByUserId(request.getDoctorId());
 	    DoctorExperience doctorExperience = new DoctorExperience();
@@ -148,7 +145,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    doctorExperience.setPeriod(DoctorExperienceUnit.YEAR);
 	    doctorCollection.setExperience(doctorExperience);
 	    doctorRepository.save(doctorCollection);
-	    response = true;
+	    BeanUtil.map(doctorExperience, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Profile");
@@ -237,11 +234,11 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
-    public Boolean addEditSpeciality(DoctorSpecialityAddEditRequest request) {
+    public List<String> addEditSpeciality(DoctorSpecialityAddEditRequest request) {
 	DoctorCollection doctorCollection = null;
-	SolrDoctorDocument solrDoctorDocument = null;
 	List<SpecialityCollection> specialityCollections = null;
 	List<String> specialities = null;
+	List<String> specialitiesByName = null;
 	Boolean response = false;
 	try {
 	    specialityCollections = specialityRepository.findAll();
@@ -251,6 +248,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		for (SpecialityCollection specialityCollection : specialityCollections) {
 		    if (speciality.trim().equalsIgnoreCase(specialityCollection.getSpeciality())) {
 			specialities.add(specialityCollection.getId());
+			specialitiesByName.add(specialityCollection.getSpeciality());
 			specialityFound = true;
 			break;
 		    }
@@ -261,24 +259,19 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		    specialityCollection.setCreatedTime(new Date());
 		    specialityCollection = specialityRepository.save(specialityCollection);
 		    specialities.add(specialityCollection.getId());
+		    specialitiesByName.add(specialityCollection.getSpeciality());
 		}
 	    }
 	    doctorCollection = doctorRepository.findByUserId(request.getDoctorId());
 	    doctorCollection.setSpecialities(specialities);
 	    doctorRepository.save(doctorCollection);
-	    response = true;
 
-	    solrDoctorDocument = solrDoctorRepository.findOne(request.getDoctorId());
-	    if (solrDoctorDocument != null) {
-		solrDoctorDocument.getSpecialization().addAll(specialities);
-		solrDoctorRepository.save(solrDoctorDocument);
-	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Profile");
 	    throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
 	}
-	return response;
+	return specialitiesByName;
     }
 
     @Override
@@ -652,13 +645,6 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		doctorClinicProfileCollection.setConsultationFee(request.getConsultationFee());
 		doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 		response = true;
-	    }
-
-	    // updating solr data.
-	    solrDoctorDocument = solrDoctorRepository.findOne(request.getId());
-	    if (solrDoctorDocument != null) {
-		solrDoctorDocument.setConsultationFee(request.getConsultationFee());
-		solrDoctorRepository.save(solrDoctorDocument);
 	    }
 
 	} catch (Exception e) {

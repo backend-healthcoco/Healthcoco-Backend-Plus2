@@ -7,8 +7,9 @@ import com.dpdocter.beans.City;
 import com.dpdocter.beans.Clinic;
 import com.dpdocter.beans.DoctorInfo;
 import com.dpdocter.beans.Landmark;
-import com.dpdocter.beans.Locality;
+import com.dpdocter.beans.LandmarkLocality;
 import com.dpdocter.request.AppoinmentRequest;
+import com.dpdocter.solr.beans.Country;
 
 public interface AppointmentService {
 
@@ -20,9 +21,7 @@ public interface AppointmentService {
 
     City getCity(String cityId);
 
-    Locality addLocality(Locality locality);
-
-    Landmark addLandmark(Landmark landmark);
+    LandmarkLocality addLandmaklLocality(LandmarkLocality locality);
 
     List<Object> getLandmarkLocality(String cityId, String type);
 
@@ -37,5 +36,7 @@ public interface AppointmentService {
 	List<Appointment> getDoctorAppointments(String locationId, String doctorId, int day, int month, int week, int page, int size, String updatedTime);
 
 	List<Appointment> getPatientAppointments(String locationId, String doctorId, String patientId, int day,	int month, int week, int page, int size, String updatedTime);
+
+	Country addCountry(Country request);
 
 }
