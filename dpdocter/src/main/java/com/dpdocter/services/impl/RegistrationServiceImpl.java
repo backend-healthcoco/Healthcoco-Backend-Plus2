@@ -303,9 +303,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    patientAdmissionCollection.setPatientId(patientCollection.getId());
 	    patientAdmissionCollection.setDoctorId(request.getDoctorId());
 	    patientAdmissionCollection.setCreatedTime(new Date());
+	   
 	    if(referencesCollection != null)patientAdmissionCollection.setReferredBy(referencesCollection.getReference());
 	    patientAdmissionCollection = patientAdmissionRepository.save(patientAdmissionCollection);
 	    registeredPatientDetails.setReferredBy(patientAdmissionCollection.getReferredBy());
+	    
 	    // assign groups
 	    if (request.getGroups() != null) {
 		for (String group : request.getGroups()) {
