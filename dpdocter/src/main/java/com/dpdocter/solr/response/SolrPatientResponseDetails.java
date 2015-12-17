@@ -4,28 +4,28 @@ import java.util.List;
 
 public class SolrPatientResponseDetails {
 
-	private List<SolrPatientResponse> patients;
-	
-	private long totalSize ;
+    private List<SolrPatientResponse> patients;
 
-	public List<SolrPatientResponse> getPatients() {
-		return patients;
-	}
+    private long totalSize;
 
-	public void setPatients(List<SolrPatientResponse> patients) {
-		this.patients = patients;
-	}
+    public List<SolrPatientResponse> getPatients() {
+	return patients;
+    }
 
-	public long getTotalSize() {
-		return totalSize;
-	}
+    public void setPatients(List<SolrPatientResponse> patients) {
+	this.patients = patients;
+    }
 
-	public void setTotalSize(long totalSize) {
-		this.totalSize = totalSize;
-	}
+    public long getTotalSize() {
+	return totalSize;
+    }
 
-	@Override
-	public String toString() {
-		return "SolrPatientResponseDetails [patients=" + patients + ", totalSize=" + totalSize + "]";
-	}
+    public void setTotalSize(long totalSize) {
+	this.totalSize = totalSize;
+    }
+
+    @Override
+    public String toString() {
+	return "SolrPatientResponseDetails [patients=" + patients + ", totalSize=" + totalSize + "]";
+    }
 }

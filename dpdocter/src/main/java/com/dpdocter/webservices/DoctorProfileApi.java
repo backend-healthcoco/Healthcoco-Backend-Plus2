@@ -47,7 +47,6 @@ import com.dpdocter.request.DoctorSpecialityAddEditRequest;
 import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
 import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.services.DoctorProfileService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -251,7 +250,7 @@ public class DoctorProfileApi {
     @Path(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE)
     @GET
     public Response<DoctorProfile> getDoctorProfile(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
-    		@PathParam("hospitalId") String hospitalId) {
+	    @PathParam("hospitalId") String hospitalId) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 	    logger.warn("Doctor Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
@@ -265,23 +264,23 @@ public class DoctorProfileApi {
 		doctorProfile.setThumbnailUrl(getFinalImageURL(doctorProfile.getThumbnailUrl()));
 	    }
 	    if (doctorProfile.getCoverImageUrl() != null) {
-			doctorProfile.setImageUrl(getFinalImageURL(doctorProfile.getCoverImageUrl()));
-		}
-		if (doctorProfile.getCoverThumbnailImageUrl() != null) {
-			doctorProfile.setThumbnailUrl(getFinalImageURL(doctorProfile.getCoverThumbnailImageUrl()));
-		}
-		if(doctorProfile.getClinicProfile() != null & !doctorProfile.getClinicProfile().isEmpty()){
-			for(DoctorClinicProfile clinicProfile : doctorProfile.getClinicProfile()){
-				if(clinicProfile.getImages() != null){
-					for(ClinicImage clinicImage :clinicProfile.getImages()){
-						if(clinicImage.getImageUrl() != null)
-							clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl()));
-						if(clinicImage.getThumbnailUrl() != null)
-							clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
-					}
-				}
+		doctorProfile.setCoverImageUrl(getFinalImageURL(doctorProfile.getCoverImageUrl()));
+	    }
+	    if (doctorProfile.getCoverThumbnailImageUrl() != null) {
+		doctorProfile.setCoverThumbnailImageUrl(getFinalImageURL(doctorProfile.getCoverThumbnailImageUrl()));
+	    }
+	    if (doctorProfile.getClinicProfile() != null & !doctorProfile.getClinicProfile().isEmpty()) {
+		for (DoctorClinicProfile clinicProfile : doctorProfile.getClinicProfile()) {
+		    if (clinicProfile.getImages() != null) {
+			for (ClinicImage clinicImage : clinicProfile.getImages()) {
+			    if (clinicImage.getImageUrl() != null)
+				clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl()));
+			    if (clinicImage.getThumbnailUrl() != null)
+				clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
 			}
+		    }
 		}
+	    }
 	}
 	Response<DoctorProfile> response = new Response<DoctorProfile>();
 	response.setData(doctorProfile);

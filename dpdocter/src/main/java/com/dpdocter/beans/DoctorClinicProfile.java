@@ -8,7 +8,7 @@ public class DoctorClinicProfile {
     private String locationId;
 
     private String clinicAddress;
-    
+
     private String locationName;
 
     private String patientInitial = "P";
@@ -22,13 +22,12 @@ public class DoctorClinicProfile {
     private AppointmentSlot appointmentSlot;
 
     private List<WorkingSchedule> workingSchedules;
-    
+
     private List<ClinicImage> images;
 
     private String logoUrl;
 
     private String logoThumbnailUrl;
-
 
     public String getId() {
 	return id;
@@ -102,44 +101,43 @@ public class DoctorClinicProfile {
 	this.workingSchedules = workingSchedules;
     }
 
-	public List<ClinicImage> getImages() {
-		return images;
-	}
+    public List<ClinicImage> getImages() {
+	return images;
+    }
 
-	public void setImages(List<ClinicImage> images) {
-		this.images = images;
-	}
+    public void setImages(List<ClinicImage> images) {
+	this.images = images;
+    }
 
-	public String getLogoUrl() {
-		return logoUrl;
-	}
+    public String getLogoUrl() {
+	return logoUrl;
+    }
 
-	public void setLogoUrl(String logoUrl) {
-		this.logoUrl = logoUrl;
-	}
+    public void setLogoUrl(String logoUrl) {
+	this.logoUrl = logoUrl;
+    }
 
-	public String getLogoThumbnailUrl() {
-		return logoThumbnailUrl;
-	}
+    public String getLogoThumbnailUrl() {
+	return logoThumbnailUrl;
+    }
 
-	public void setLogoThumbnailUrl(String logoThumbnailUrl) {
-		this.logoThumbnailUrl = logoThumbnailUrl;
-	}
+    public void setLogoThumbnailUrl(String logoThumbnailUrl) {
+	this.logoThumbnailUrl = logoThumbnailUrl;
+    }
 
-	public String getLocationName() {
-		return locationName;
-	}
+    public String getLocationName() {
+	return locationName;
+    }
 
-	public void setLocationName(String locationName) {
-		this.locationName = locationName;
-	}
+    public void setLocationName(String locationName) {
+	this.locationName = locationName;
+    }
 
-	@Override
-	public String toString() {
-		return "DoctorClinicProfile [id=" + id + ", locationId=" + locationId + ", clinicAddress=" + clinicAddress
-				+ ", locationName=" + locationName + ", patientInitial=" + patientInitial + ", patientCounter="
-				+ patientCounter + ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee="
-				+ consultationFee + ", appointmentSlot=" + appointmentSlot + ", workingSchedules=" + workingSchedules
-				+ ", images=" + images + ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + "]";
-	}
+    @Override
+    public String toString() {
+	return "DoctorClinicProfile [id=" + id + ", locationId=" + locationId + ", clinicAddress=" + clinicAddress + ", locationName=" + locationName
+		+ ", patientInitial=" + patientInitial + ", patientCounter=" + patientCounter + ", appointmentBookingNumber=" + appointmentBookingNumber
+		+ ", consultationFee=" + consultationFee + ", appointmentSlot=" + appointmentSlot + ", workingSchedules=" + workingSchedules + ", images="
+		+ images + ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + "]";
+    }
 }

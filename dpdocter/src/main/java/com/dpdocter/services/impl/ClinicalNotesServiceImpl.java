@@ -91,7 +91,6 @@ import com.dpdocter.solr.document.SolrObservationsDocument;
 import com.dpdocter.solr.services.SolrClinicalNotesService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -156,8 +155,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     @Autowired
     private PatientVisitRepository patientVisitRepository;
 
-//    @Context
-//    private UriInfo uriInfo;
+    // @Context
+    // private UriInfo uriInfo;
 
     @Value(value = "${IMAGE_URL_ROOT_PATH}")
     private String imageUrlRootPath;
@@ -467,7 +466,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    clinicalNote.setDoctorName(userCollection.getFirstName());
 		}
 		PatientVisitCollection patientVisitCollection = patientVisitRepository.findByClinialNotesId(clinicalNote.getId());
-		if(patientVisitCollection != null)clinicalNote.setVisitId(patientVisitCollection.getId());
+		if (patientVisitCollection != null)
+		    clinicalNote.setVisitId(patientVisitCollection.getId());
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -685,7 +685,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
-    public List<ClinicalNotes> getPatientsClinicalNotesWithVerifiedOTP(int page, int size, String patientId, String updatedTime, boolean discarded, boolean inHistory) {
+    public List<ClinicalNotes> getPatientsClinicalNotesWithVerifiedOTP(int page, int size, String patientId, String updatedTime, boolean discarded,
+	    boolean inHistory) {
 	List<ClinicalNotes> clinicalNotesList = null;
 	List<PatientClinicalNotesCollection> patientClinicalNotesCollections = null;
 	boolean[] discards = new boolean[2];
@@ -695,16 +696,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	inHistorys[0] = true;
 
 	try {
-	    if (discarded)discards[1] = true;
-	    if (inHistory)inHistorys[1] = false;	    
-	 
+	    if (discarded)
+		discards[1] = true;
+	    if (inHistory)
+		inHistorys[1] = false;
+
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
 		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, discards, inHistorys, new Date(createdTimeStamp),
 			new PageRequest(page, size, Direction.DESC, "updatedTime"));
 	    else
-		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, discards, inHistorys, new Date(createdTimeStamp), new Sort(
-			Sort.Direction.DESC, "updatedTime"));
+		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, discards, inHistorys, new Date(createdTimeStamp),
+			new Sort(Sort.Direction.DESC, "updatedTime"));
 
 	    if (patientClinicalNotesCollections != null) {
 		@SuppressWarnings("unchecked")
@@ -743,7 +746,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	discards[0] = false;
 
 	try {
-	    if (discarded)discards[1] = true;
+	    if (discarded)
+		discards[1] = true;
 
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
@@ -767,8 +771,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				if (userCollection != null) {
 				    clinicalNotes.setDoctorName(userCollection.getFirstName() + userCollection.getLastName());
 				}
-			    if(!inHistory) clinicalNotesList.add(clinicalNotes);
-			    else if(clinicalNotes.isInHistory())clinicalNotesList.add(clinicalNotes);
+				if (!inHistory)
+				    clinicalNotesList.add(clinicalNotes);
+				else if (clinicalNotes.isInHistory())
+				    clinicalNotesList.add(clinicalNotes);
 			    }
 			}
 		    }
@@ -783,8 +789,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				if (userCollection != null) {
 				    clinicalNotes.setDoctorName(userCollection.getFirstName() + userCollection.getLastName());
 				}
-				if(!inHistory) clinicalNotesList.add(clinicalNotes);
-			    else if(clinicalNotes.isInHistory())clinicalNotesList.add(clinicalNotes);
+				if (!inHistory)
+				    clinicalNotesList.add(clinicalNotes);
+				else if (clinicalNotes.isInHistory())
+				    clinicalNotesList.add(clinicalNotes);
 			    }
 			}
 
@@ -2264,7 +2272,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		String pageSize = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
 		String margins = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getMargins() : null) : null;
 
-		String path = jasperReportService.createPDF(parameters, "mongo-clinical-notes", layout, pageSize, margins, user.getFirstName()+new Date()+"CLINICALNOTES");
+		String path = jasperReportService.createPDF(parameters, "mongo-clinical-notes", layout, pageSize, margins, user.getFirstName() + new Date()
+			+ "CLINICALNOTES");
 		FileSystemResource file = new FileSystemResource(path);
 		mailAttachment = new MailAttachment();
 		mailAttachment.setAttachmentName(file.getFilename());

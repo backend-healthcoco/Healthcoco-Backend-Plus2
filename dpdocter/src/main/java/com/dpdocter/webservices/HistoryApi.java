@@ -41,7 +41,6 @@ import com.dpdocter.response.HistoryDetailsResponse;
 import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientVisitService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -462,32 +461,31 @@ public class HistoryApi {
 	    return null;
 
     }
-    
+
     @GET
     public Response<HistoryDetailsResponse> getMultipleData(@QueryParam(value = "doctorId") String doctorId,
 	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 	    @QueryParam(value = "patientId") String patientId, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
-	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, 
-	    @DefaultValue("true") @QueryParam(value = "inHistory") Boolean inHistory) {
-    	
-    	List<HistoryDetailsResponse> historyDetailsResponses = historyServices.getMultipleData(patientId, doctorId, hospitalId, locationId, updatedTime, inHistory);
-    	
-    	if (historyDetailsResponses != null && !historyDetailsResponses.isEmpty())
-    	    for (HistoryDetailsResponse historyDetailsResponse : historyDetailsResponses) {
-    		if (historyDetailsResponse.getGeneralRecords() != null) {
-    		    for (GeneralData generalData : historyDetailsResponse.getGeneralRecords()) {
-    			if (generalData.getDataType().equals(HistoryFilter.CLINICAL_NOTES)) {
-    			    ((ClinicalNotes) generalData.getData()).setDiagrams(getFinalDiagrams(((ClinicalNotes) generalData.getData()).getDiagrams()));
-    			} else if (generalData.getDataType().equals(HistoryFilter.REPORTS)) {
-    			    ((Records) generalData.getData()).setRecordsUrl(getFinalImageURL(((Records) generalData.getData()).getRecordsUrl()));
-    			}
-    		    }
-    		}
-    	    }
-    	Response<HistoryDetailsResponse> response = new Response<HistoryDetailsResponse>();
-    	response.setDataList(historyDetailsResponses);
-    	return response;
+	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @DefaultValue("true") @QueryParam(value = "inHistory") Boolean inHistory) {
 
-    	
+	List<HistoryDetailsResponse> historyDetailsResponses = historyServices.getMultipleData(patientId, doctorId, hospitalId, locationId, updatedTime,
+		inHistory);
+
+	if (historyDetailsResponses != null && !historyDetailsResponses.isEmpty())
+	    for (HistoryDetailsResponse historyDetailsResponse : historyDetailsResponses) {
+		if (historyDetailsResponse.getGeneralRecords() != null) {
+		    for (GeneralData generalData : historyDetailsResponse.getGeneralRecords()) {
+			if (generalData.getDataType().equals(HistoryFilter.CLINICAL_NOTES)) {
+			    ((ClinicalNotes) generalData.getData()).setDiagrams(getFinalDiagrams(((ClinicalNotes) generalData.getData()).getDiagrams()));
+			} else if (generalData.getDataType().equals(HistoryFilter.REPORTS)) {
+			    ((Records) generalData.getData()).setRecordsUrl(getFinalImageURL(((Records) generalData.getData()).getRecordsUrl()));
+			}
+		    }
+		}
+	    }
+	Response<HistoryDetailsResponse> response = new Response<HistoryDetailsResponse>();
+	response.setDataList(historyDetailsResponses);
+	return response;
+
     }
 }

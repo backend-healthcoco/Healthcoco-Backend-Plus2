@@ -50,7 +50,6 @@ import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrPatientDocument;
 import com.dpdocter.solr.services.SolrRegistrationService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -110,9 +109,9 @@ public class RegistrationApi {
     public Response<RegisteredPatientDetails> editPatientRegister(PatientRegistrationRequest request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-	}
-	else{
-		if(request.getUserId() == null)throw new BusinessException(ServiceError.InvalidInput, "User Id cannot be null");
+	} else {
+	    if (request.getUserId() == null)
+		throw new BusinessException(ServiceError.InvalidInput, "User Id cannot be null");
 	}
 	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 	RegisteredPatientDetails registeredPatientDetails = registrationService.registerExistingPatient(request);
@@ -456,7 +455,6 @@ public class RegistrationApi {
 	return response;
     }
 
-
     @Path(value = PathProxy.RegistrationUrls.USER_REGISTER)
     @POST
     public Response<RegisterDoctorResponse> userRegister(DoctorRegisterRequest request) {
@@ -479,10 +477,10 @@ public class RegistrationApi {
 	SolrPatientDocument solrPatientDocument = null;
 	try {
 	    solrPatientDocument = new SolrPatientDocument();
-	    if(solrPatientDocument.getDob() != null){
-	    	solrPatientDocument.setDays(patient.getDob().getDays() + "");
-		    solrPatientDocument.setMonths(patient.getDob().getMonths() + "");
-		    solrPatientDocument.setYears(patient.getDob().getYears() + "");
+	    if (solrPatientDocument.getDob() != null) {
+		solrPatientDocument.setDays(patient.getDob().getDays() + "");
+		solrPatientDocument.setMonths(patient.getDob().getMonths() + "");
+		solrPatientDocument.setYears(patient.getDob().getYears() + "");
 	    }
 	    if (patient.getAddress() != null) {
 		BeanUtil.map(patient.getAddress(), solrPatientDocument);
@@ -530,7 +528,7 @@ public class RegistrationApi {
 	response.setDataList(professionResponse);
 	return response;
     }
-    
+
     @Path(value = PathProxy.RegistrationUrls.GET_DOCTORS)
     @GET
     public Response<ClinicDoctorResponse> getDoctors(@QueryParam("page") int page, @QueryParam("size") int size,

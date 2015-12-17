@@ -15,9 +15,9 @@ public class Role extends GenericCollection {
     private String locationId;
 
     private String hospitalId;
-    
+
     private List<AccessModule> accessModules;
-    
+
     public String getId() {
 	return id;
     }
@@ -58,17 +58,17 @@ public class Role extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
-	public List<AccessModule> getAccessModules() {
-		return accessModules;
-	}
+    public List<AccessModule> getAccessModules() {
+	return accessModules;
+    }
 
-	public void setAccessModules(List<AccessModule> accessModules) {
-		this.accessModules = accessModules;
-	}
+    public void setAccessModules(List<AccessModule> accessModules) {
+	this.accessModules = accessModules;
+    }
 
-	@Override
-	public String toString() {
-		return "Role [id=" + id + ", role=" + role + ", description=" + description + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", accessModules=" + accessModules + "]";
-	}
+    @Override
+    public String toString() {
+	return "Role [id=" + id + ", role=" + role + ", description=" + description + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+		+ ", accessModules=" + accessModules + "]";
+    }
 }

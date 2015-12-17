@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.beans.PatientCard;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.solr.beans.AdvancedSearch;
@@ -24,7 +23,6 @@ import com.dpdocter.solr.response.SolrPatientResponse;
 import com.dpdocter.solr.response.SolrPatientResponseDetails;
 import com.dpdocter.solr.services.SolrRegistrationService;
 import com.dpdocter.webservices.PathProxy;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -47,16 +45,16 @@ public class SolrRegistrationApi {
 
     @Path(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT)
     @GET
-    public Response<SolrPatientResponseDetails> searchPatient(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "searchTerm") String searchTerm, @QueryParam("page") int page,
-	    @QueryParam("size") int size) {
+    public Response<SolrPatientResponseDetails> searchPatient(@PathParam(value = "doctorId") String doctorId,
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+	    @PathParam(value = "searchTerm") String searchTerm, @QueryParam("page") int page, @QueryParam("size") int size) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, searchTerm)) {
 	    logger.warn("Doctor Id, Location Id, Hospital Id and Search Term Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Location Id, Hospital Id and Search Term Cannot Be Empty");
 	}
 	SolrPatientResponseDetails patients = solrRegistrationService.searchPatient(doctorId, locationId, hospitalId, searchTerm, page, size);
 
-	if (patients!= null && patients.getPatients() != null && !patients.getPatients().isEmpty()) {
+	if (patients != null && patients.getPatients() != null && !patients.getPatients().isEmpty()) {
 	    for (SolrPatientResponse patientCard : patients.getPatients()) {
 		patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
 		patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
@@ -70,14 +68,14 @@ public class SolrRegistrationApi {
     @Path(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT_ADV)
     @POST
     public Response<SolrPatientResponseDetails> searchPatient(AdvancedSearch request) {
-	
+
 	if (request == null) {
 	    logger.warn("Search Request Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Search Request Cannot Be Empty");
 	}
 
 	SolrPatientResponseDetails patients = solrRegistrationService.searchPatient(request);
-	if (patients!= null && patients.getPatients() != null && !patients.getPatients().isEmpty()) {
+	if (patients != null && patients.getPatients() != null && !patients.getPatients().isEmpty()) {
 	    for (SolrPatientResponse patientCard : patients.getPatients()) {
 		patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
 		patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
@@ -88,7 +86,6 @@ public class SolrRegistrationApi {
 	return response;
     }
 
-    
     private String getFinalImageURL(String imageURL) {
 	if (imageURL != null) {
 	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
@@ -96,6 +93,5 @@ public class SolrRegistrationApi {
 	} else
 	    return null;
     }
-
 
 }

@@ -122,7 +122,7 @@ public interface PathProxy {
 	public static final String ADD_ROLE = "/role/add";
 
 	public static final String GET_ROLE = "/role/{range}";
-	
+
 	public static final String GET_DOCTORS = "/doctors";
 
     }
@@ -246,7 +246,7 @@ public interface PathProxy {
 	public static final String DELETE_GLOBAL_LAB_TEST = "/labTest/{labTestId}/delete";
 
 	public static final String GET_DIAGNOSTIC_TEST = "/diagnosticTest";
-	
+
 	public static final String GET_PRESCRIPTION_ITEMS = "/{type}/{range}";
 
 	public static final String ADD_TEMPLATE = "/template/add";
@@ -357,7 +357,7 @@ public interface PathProxy {
 	//
 	// public static final String REMOVE_VISITS =
 	// "/removeVisits/{visitId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
-	
+
 	public static final String GET_MULTIPLE_DATA = "getMultipleData";
     }
 

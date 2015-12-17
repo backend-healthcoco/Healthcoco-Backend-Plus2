@@ -22,7 +22,6 @@ import com.dpdocter.repository.OTPRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.sms.services.SMSServices;
-
 import common.util.web.LoginUtils;
 
 @Service

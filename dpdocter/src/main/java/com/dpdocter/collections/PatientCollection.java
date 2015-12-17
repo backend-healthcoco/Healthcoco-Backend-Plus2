@@ -241,39 +241,36 @@ public class PatientCollection extends GenericCollection {
 	this.registrationDate = registrationDate;
     }
 
-	public String getFirstName() {
-		return firstName;
-	}
+    public String getFirstName() {
+	return firstName;
+    }
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
+    public void setFirstName(String firstName) {
+	this.firstName = firstName;
+    }
 
-	public String getGender() {
-		return gender;
-	}
+    public String getGender() {
+	return gender;
+    }
 
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
+    public void setGender(String gender) {
+	this.gender = gender;
+    }
 
-	public DOB getDob() {
-		return dob;
-	}
+    public DOB getDob() {
+	return dob;
+    }
 
-	public void setDob(DOB dob) {
-		this.dob = dob;
-	}
+    public void setDob(DOB dob) {
+	this.dob = dob;
+    }
 
-	@Override
-	public String toString() {
-		return "PatientCollection [id=" + id + ", firstName=" + firstName + ", bloodGroup=" + bloodGroup
-				+ ", profession=" + profession + ", relations=" + relations + ", emailAddress=" + emailAddress
-				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", addressId=" + addressId + ", secMobile=" + secMobile + ", adhaarId=" + adhaarId
-				+ ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId + ", insuranceId="
-				+ insuranceId + ", insuranceName=" + insuranceName + ", userId=" + userId + ", notes=" + notes
-				+ ", PID=" + PID + ", registrationDate=" + registrationDate + ", gender=" + gender + ", dob=" + dob
-				+ "]";
-	}
+    @Override
+    public String toString() {
+	return "PatientCollection [id=" + id + ", firstName=" + firstName + ", bloodGroup=" + bloodGroup + ", profession=" + profession + ", relations="
+		+ relations + ", emailAddress=" + emailAddress + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+		+ ", addressId=" + addressId + ", secMobile=" + secMobile + ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber
+		+ ", drivingLicenseId=" + drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName=" + insuranceName + ", userId=" + userId
+		+ ", notes=" + notes + ", PID=" + PID + ", registrationDate=" + registrationDate + ", gender=" + gender + ", dob=" + dob + "]";
+    }
 }

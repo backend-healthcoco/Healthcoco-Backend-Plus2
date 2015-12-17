@@ -178,23 +178,21 @@ public class DoctorSignupHandheldContinueRequest {
 	this.longitude = longitude;
     }
 
-	public String getStreetAddress() {
-		return streetAddress;
-	}
+    public String getStreetAddress() {
+	return streetAddress;
+    }
 
-	public void setStreetAddress(String streetAddress) {
-		this.streetAddress = streetAddress;
-	}
+    public void setStreetAddress(String streetAddress) {
+	this.streetAddress = streetAddress;
+    }
 
-	@Override
-	public String toString() {
-		return "DoctorSignupHandheldContinueRequest [userId=" + userId + ", specialization=" + specialization
-				+ ", hospitalName=" + hospitalName + ", hospitalPhoneNumber=" + hospitalPhoneNumber
-				+ ", hospitalImageUrl=" + hospitalImageUrl + ", hospitalDescription=" + hospitalDescription
-				+ ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city
-				+ ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl="
-				+ websiteUrl + ", locationImageUrl=" + locationImageUrl + ", hospitalId=" + hospitalId + ", latitude="
-				+ latitude + ", longitude=" + longitude + ", streetAddress=" + streetAddress + "]";
-	}
+    @Override
+    public String toString() {
+	return "DoctorSignupHandheldContinueRequest [userId=" + userId + ", specialization=" + specialization + ", hospitalName=" + hospitalName
+		+ ", hospitalPhoneNumber=" + hospitalPhoneNumber + ", hospitalImageUrl=" + hospitalImageUrl + ", hospitalDescription=" + hospitalDescription
+		+ ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city + ", locationPhoneNumber="
+		+ locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", locationImageUrl=" + locationImageUrl
+		+ ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude=" + longitude + ", streetAddress=" + streetAddress + "]";
+    }
 
 }

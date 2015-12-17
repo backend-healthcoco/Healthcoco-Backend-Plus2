@@ -17,12 +17,12 @@ public interface SolrPatientRepository extends SolrCrudRepository<SolrPatientDoc
     @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND (firstName:*?3* OR emailAddress:*?3* OR mobileNumber:*?3* OR PID:*?3*)")
     List<SolrPatientDocument> find(String doctorId, String locationId, String hospitalId, String searchTerm, Sort sort);
 
-     @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND firstName:*?3*")
-     List<SolrPatientDocument> findByFirstName(String doctorId, String locationId, String hospitalId, String searchValue, Pageable pageRequest);
-    
-     @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND firstName:*?3*")
-     List<SolrPatientDocument> findByFirstName(String doctorId, String locationId, String hospitalId, String searchValue, Sort sort);
-    
+    @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND firstName:*?3*")
+    List<SolrPatientDocument> findByFirstName(String doctorId, String locationId, String hospitalId, String searchValue, Pageable pageRequest);
+
+    @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND firstName:*?3*")
+    List<SolrPatientDocument> findByFirstName(String doctorId, String locationId, String hospitalId, String searchValue, Sort sort);
+
     // @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND middleName:*?3*")
     // List<SolrPatientDocument> findByMiddleName(String doctorId, String
     // locationId, String hospitalId, String searchValue);
@@ -30,25 +30,25 @@ public interface SolrPatientRepository extends SolrCrudRepository<SolrPatientDoc
     // @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND lastName:*?3*")
     // List<SolrPatientDocument> findByLastName(String doctorId, String
     // locationId, String hospitalId, String searchValue);
-    
-     @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND PID:*?3*")
-     List<SolrPatientDocument> findByPID(String doctorId, String locationId, String hospitalId, String searchValue, Pageable pageRequest);
-    
-     @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND PID:*?3*")
-     List<SolrPatientDocument> findByPID(String doctorId, String locationId, String hospitalId, String searchValue, Sort sort);
-    
-     @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND mobileNumber:*?3*")
-     List<SolrPatientDocument> findByMobileNumber(String doctorId, String locationId, String hospitalId, String searchValue, Pageable pageRequest);
-    
-     @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND mobileNumber:*?3*")
-     List<SolrPatientDocument> findByMobileNumber(String doctorId, String locationId, String hospitalId, String searchValue, Sort sort);
-    
-     @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND emailAddress:*?3*")
-     List<SolrPatientDocument> findByEmailAddress(String doctorId, String locationId, String hospitalId, String searchValue, Pageable pageRequest);
-    
-     @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND emailAddress:*?3*")
-     List<SolrPatientDocument> findByEmailAddress(String doctorId, String locationId, String hospitalId, String searchValue, Sort sort);
-    
+
+    @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND PID:*?3*")
+    List<SolrPatientDocument> findByPID(String doctorId, String locationId, String hospitalId, String searchValue, Pageable pageRequest);
+
+    @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND PID:*?3*")
+    List<SolrPatientDocument> findByPID(String doctorId, String locationId, String hospitalId, String searchValue, Sort sort);
+
+    @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND mobileNumber:*?3*")
+    List<SolrPatientDocument> findByMobileNumber(String doctorId, String locationId, String hospitalId, String searchValue, Pageable pageRequest);
+
+    @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND mobileNumber:*?3*")
+    List<SolrPatientDocument> findByMobileNumber(String doctorId, String locationId, String hospitalId, String searchValue, Sort sort);
+
+    @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND emailAddress:*?3*")
+    List<SolrPatientDocument> findByEmailAddress(String doctorId, String locationId, String hospitalId, String searchValue, Pageable pageRequest);
+
+    @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND emailAddress:*?3*")
+    List<SolrPatientDocument> findByEmailAddress(String doctorId, String locationId, String hospitalId, String searchValue, Sort sort);
+
     // @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND userName:*?3*")
     // List<SolrPatientDocument> findByUserName(String doctorId, String
     // locationId, String hospitalId, String searchValue);

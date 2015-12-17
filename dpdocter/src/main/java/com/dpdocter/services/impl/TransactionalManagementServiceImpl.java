@@ -184,10 +184,10 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		AddressCollection addressCollection = addressRepository.findOne(patientCollection.getAddressId());
 		SolrPatientDocument patientDocument = new SolrPatientDocument();
 
-		if(patientCollection.getDob() != null){
-			patientDocument.setDays(patientCollection.getDob().getDays() + "");
-			patientDocument.setMonths(patientCollection.getDob().getMonths() + "");
-			patientDocument.setYears(patientCollection.getDob().getYears() + "");
+		if (patientCollection.getDob() != null) {
+		    patientDocument.setDays(patientCollection.getDob().getDays() + "");
+		    patientDocument.setMonths(patientCollection.getDob().getMonths() + "");
+		    patientDocument.setYears(patientCollection.getDob().getYears() + "");
 		}
 		BeanUtil.map(userCollection, patientDocument);
 		BeanUtil.map(patientCollection, patientDocument);
@@ -209,9 +209,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	    if (drugCollection != null) {
 		SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
 		BeanUtil.map(drugCollection, solrDrugDocument);
-		if(drugCollection.getDrugType() != null){
-			solrDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
-			solrDrugDocument.setDrugType(drugCollection.getDrugType().getType());
+		if (drugCollection.getDrugType() != null) {
+		    solrDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
+		    solrDrugDocument.setDrugType(drugCollection.getDrugType().getType());
 		}
 		solrPrescriptionService.addDrug(solrDrugDocument);
 	    }

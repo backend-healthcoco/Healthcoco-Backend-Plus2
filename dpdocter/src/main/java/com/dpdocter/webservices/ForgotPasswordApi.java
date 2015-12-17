@@ -16,7 +16,6 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.ForgotUsernamePasswordRequest;
 import com.dpdocter.request.ResetPasswordRequest;
 import com.dpdocter.services.ForgotPasswordService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 

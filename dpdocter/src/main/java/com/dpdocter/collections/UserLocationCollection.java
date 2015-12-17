@@ -50,25 +50,25 @@ public class UserLocationCollection extends GenericCollection {
 	this.locationId = locationId;
     }
 
-	public Boolean getIsActivate() {
-		return isActivate;
-	}
+    public Boolean getIsActivate() {
+	return isActivate;
+    }
 
-	public void setIsActivate(Boolean isActivate) {
-		this.isActivate = isActivate;
-	}
+    public void setIsActivate(Boolean isActivate) {
+	this.isActivate = isActivate;
+    }
 
-	public Boolean getIsVerified() {
-		return isVerified;
-	}
+    public Boolean getIsVerified() {
+	return isVerified;
+    }
 
-	public void setIsVerified(Boolean isVerified) {
-		this.isVerified = isVerified;
-	}
+    public void setIsVerified(Boolean isVerified) {
+	this.isVerified = isVerified;
+    }
 
-	@Override
-	public String toString() {
-		return "UserLocationCollection [id=" + id + ", userId=" + userId + ", locationId=" + locationId
-				+ ", isActivate=" + isActivate + ", isVerified=" + isVerified + "]";
-	}
+    @Override
+    public String toString() {
+	return "UserLocationCollection [id=" + id + ", userId=" + userId + ", locationId=" + locationId + ", isActivate=" + isActivate + ", isVerified="
+		+ isVerified + "]";
+    }
 }

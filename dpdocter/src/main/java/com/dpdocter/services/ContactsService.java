@@ -29,7 +29,7 @@ public interface ContactsService {
 
     Boolean exportContacts(ExportContactsRequest request);
 
-    DoctorContactsResponse getDoctorContacts(String doctorId,  String locationId, String hospitalId, String updatedTime, boolean discarded, int page, int size);
+    DoctorContactsResponse getDoctorContacts(String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded, int page, int size);
 
     List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded);
 
@@ -37,6 +37,7 @@ public interface ContactsService {
 
     List<Group> getAllGroups(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded);
 
-	DoctorContactsResponse getDoctorContactsSortedByName(String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, int page, int size);
+    DoctorContactsResponse getDoctorContactsSortedByName(String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
+	    int page, int size);
 
 }

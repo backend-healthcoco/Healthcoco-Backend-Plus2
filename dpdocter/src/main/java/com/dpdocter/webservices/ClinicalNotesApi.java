@@ -48,7 +48,6 @@ import com.dpdocter.solr.document.SolrInvestigationsDocument;
 import com.dpdocter.solr.document.SolrNotesDocument;
 import com.dpdocter.solr.document.SolrObservationsDocument;
 import com.dpdocter.solr.services.SolrClinicalNotesService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 

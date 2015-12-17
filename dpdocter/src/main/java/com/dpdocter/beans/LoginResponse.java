@@ -14,14 +14,14 @@ public class LoginResponse {
     private Boolean isTempPassword = false;
 
     public List<String> getRole() {
-		return role;
-	}
+	return role;
+    }
 
-	public void setRole(List<String> role) {
-		this.role = role;
-	}
+    public void setRole(List<String> role) {
+	this.role = role;
+    }
 
-	public User getUser() {
+    public User getUser() {
 	return user;
     }
 

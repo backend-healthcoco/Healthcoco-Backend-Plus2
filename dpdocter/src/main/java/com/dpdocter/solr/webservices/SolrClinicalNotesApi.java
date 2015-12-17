@@ -25,7 +25,6 @@ import com.dpdocter.solr.document.SolrNotesDocument;
 import com.dpdocter.solr.document.SolrObservationsDocument;
 import com.dpdocter.solr.services.SolrClinicalNotesService;
 import com.dpdocter.webservices.PathProxy;
-
 import common.util.web.Response;
 
 @Component

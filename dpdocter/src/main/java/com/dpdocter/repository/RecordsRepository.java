@@ -29,23 +29,23 @@ public interface RecordsRepository extends MongoRepository<RecordsCollection, St
 	    Pageable pageRequest);
 
     @Query("{'patientId': ?0, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3, 'updatedTime': {'$gte': ?4}, 'discarded': {$in: ?5}, 'inHistory' : {$in: ?6}}")
-	List<RecordsCollection> findRecords(String patientId, String doctorId, String locationId, String hospitalId,
-			Date date, boolean[] discards, boolean[] inHistorys, Pageable pageRequest);
-    
+    List<RecordsCollection> findRecords(String patientId, String doctorId, String locationId, String hospitalId, Date date, boolean[] discards,
+	    boolean[] inHistorys, Pageable pageRequest);
+
     @Query("{'patientId': ?0, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3, 'updatedTime': {'$gte': ?4}, 'discarded': {$in: ?5}, 'inHistory' : {$in: ?6}}")
-	List<RecordsCollection> findRecords(String patientId, String doctorId, String locationId, String hospitalId,
-			Date date, boolean[] discards, boolean[] inHistorys, Sort sort);
+    List<RecordsCollection> findRecords(String patientId, String doctorId, String locationId, String hospitalId, Date date, boolean[] discards,
+	    boolean[] inHistorys, Sort sort);
 
     @Query("{'patientId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': {$in: ?2}}")
-	List<RecordsCollection> findRecords(String patientId, Date date, boolean[] discards, Pageable pageRequest);
+    List<RecordsCollection> findRecords(String patientId, Date date, boolean[] discards, Pageable pageRequest);
 
     @Query("{'patientId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': {$in: ?2}}")
-	List<RecordsCollection> findRecords(String patientId, Date date, boolean[] discards, Sort sort);
+    List<RecordsCollection> findRecords(String patientId, Date date, boolean[] discards, Sort sort);
 
     @Query("{'patientId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': {$in: ?2}, 'inHistory' : {$in: ?3}}")
-	List<RecordsCollection> findRecords(String patientId, Date date, boolean[] discards, boolean[] inHistorys, Pageable pageRequest);
+    List<RecordsCollection> findRecords(String patientId, Date date, boolean[] discards, boolean[] inHistorys, Pageable pageRequest);
 
     @Query("{'patientId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': {$in: ?2}, 'inHistory' : {$in: ?3}}")
-	List<RecordsCollection> findRecords(String patientId, Date date, boolean[] discards, boolean[] inHistorys,	Sort sort);
+    List<RecordsCollection> findRecords(String patientId, Date date, boolean[] discards, boolean[] inHistorys, Sort sort);
 
 }

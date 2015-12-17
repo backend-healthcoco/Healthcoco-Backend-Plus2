@@ -33,15 +33,17 @@ public interface PatientRepository extends MongoRepository<PatientCollection, St
     List<PatientCollection> findTodaysRegisteredPatient(String doctorId, String location, String hospitalId, Long startDate, Long endDate);
 
     @Query("{'userId': {'$in': ?0}, 'doctorId':?1}")
-	List<PatientCollection> findByUserIdDoctorId(Collection<String> patientIds, String doctorId, Sort sort);
+    List<PatientCollection> findByUserIdDoctorId(Collection<String> patientIds, String doctorId, Sort sort);
 
     @Query("{'userId': {'$in': ?0}, 'doctorId':?1,'locationId': ?2,'hospitalId': ?3}")
-	List<PatientCollection> findByUserIdDoctorIdLocationIdHospitalId(Collection<String> patientIds, String doctorId, String locationId, String hospitalId, Pageable pageRequest);
+    List<PatientCollection> findByUserIdDoctorIdLocationIdHospitalId(Collection<String> patientIds, String doctorId, String locationId, String hospitalId,
+	    Pageable pageRequest);
 
     @Query("{'userId': {'$in': ?0}, 'doctorId':?1,'locationId': ?2,'hospitalId': ?3}")
-	List<PatientCollection> findByUserIdDoctorIdLocationIdHospitalId(Collection<String> patientIds, String doctorId, String locationId, String hospitalId, Sort sort);
+    List<PatientCollection> findByUserIdDoctorIdLocationIdHospitalId(Collection<String> patientIds, String doctorId, String locationId, String hospitalId,
+	    Sort sort);
 
     @Query("{'userId': {'$in': ?0}, 'doctorId':?1}")
-	List<PatientCollection> findByUserIdDoctorId(Collection<String> patientIds, String doctorId, Pageable pageRequest);
+    List<PatientCollection> findByUserIdDoctorId(Collection<String> patientIds, String doctorId, Pageable pageRequest);
 
 }

@@ -103,7 +103,6 @@ import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.sms.services.SMSServices;
-
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -284,30 +283,29 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    patientCollection = patientRepository.save(patientCollection);
 
 	    ReferencesCollection referencesCollection = null;
-	    if(request.getReferredBy() != null){
-	    	if(request.getReferredBy().getId() != null){
-	    		 referencesCollection = referrenceRepository.findOne(request.getReferredBy().getId());
-	    	}
-	    	if(referencesCollection == null){
-	    		referencesCollection = new ReferencesCollection();
-	    		BeanUtil.map(request.getReferredBy(), referencesCollection);
-	    		BeanUtil.map(request, referencesCollection);
-	    		referencesCollection.setId(null);
-	    		referencesCollection = referrenceRepository.save(referencesCollection);
-	    	}
+	    if (request.getReferredBy() != null) {
+		if (request.getReferredBy().getId() != null) {
+		    referencesCollection = referrenceRepository.findOne(request.getReferredBy().getId());
+		}
+		if (referencesCollection == null) {
+		    referencesCollection = new ReferencesCollection();
+		    BeanUtil.map(request.getReferredBy(), referencesCollection);
+		    referencesCollection = referrenceRepository.save(referencesCollection);
+		}
 	    }
-	    
+
 	    PatientAdmissionCollection patientAdmissionCollection = new PatientAdmissionCollection();
 	    BeanUtil.map(request, patientAdmissionCollection);
 	    patientAdmissionCollection.setUserId(userCollection.getId());
 	    patientAdmissionCollection.setPatientId(patientCollection.getId());
 	    patientAdmissionCollection.setDoctorId(request.getDoctorId());
 	    patientAdmissionCollection.setCreatedTime(new Date());
-	   
-	    if(referencesCollection != null)patientAdmissionCollection.setReferredBy(referencesCollection.getReference());
+
+	    if (referencesCollection != null)
+		patientAdmissionCollection.setReferredBy(referencesCollection.getReference());
 	    patientAdmissionCollection = patientAdmissionRepository.save(patientAdmissionCollection);
 	    registeredPatientDetails.setReferredBy(patientAdmissionCollection.getReferredBy());
-	    
+
 	    // assign groups
 	    if (request.getGroups() != null) {
 		for (String group : request.getGroups()) {
@@ -337,7 +335,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	     */
 	    // send SMS logic
 	    // TODO
-	    
+
 	    BeanUtil.map(userCollection, registeredPatientDetails);
 	    registeredPatientDetails.setUserId(userCollection.getId());
 	    Patient patient = new Patient();
@@ -388,7 +386,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
 		smsDetails.add(smsDetail);
 		smsTrackDetail.setSmsDetails(smsDetails);
-//		sMSServices.sendSMS(smsTrackDetail, false);
+		// sMSServices.sendSMS(smsTrackDetail, false);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -441,17 +439,17 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    patientCollection = patientRepository.save(patientCollection);
 
 	    ReferencesCollection referencesCollection = null;
-	    if(request.getReferredBy() != null){
-	    	if(request.getReferredBy().getId() != null){
-	    		 referencesCollection = referrenceRepository.findOne(request.getReferredBy().getId());
-	    	}
-	    	if(referencesCollection == null){
-	    		referencesCollection = new ReferencesCollection();
-	    		BeanUtil.map(request.getReferredBy(), referencesCollection);
-	    		BeanUtil.map(request, referencesCollection);
-	    		referencesCollection.setId(null);
-	    		referencesCollection = referrenceRepository.save(referencesCollection);
-	    	}
+	    if (request.getReferredBy() != null) {
+		if (request.getReferredBy().getId() != null) {
+		    referencesCollection = referrenceRepository.findOne(request.getReferredBy().getId());
+		}
+		if (referencesCollection == null) {
+		    referencesCollection = new ReferencesCollection();
+		    BeanUtil.map(request.getReferredBy(), referencesCollection);
+		    BeanUtil.map(request, referencesCollection);
+		    referencesCollection.setId(null);
+		    referencesCollection = referrenceRepository.save(referencesCollection);
+		}
 	    }
 	    // save patient admission
 	    PatientAdmissionCollection patientAdmissionCollection = null;
@@ -461,13 +459,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 		BeanUtil.map(request, patientAdmissionCollection);
 		patientAdmissionCollection.setUserId(request.getUserId());
 		patientAdmissionCollection.setPatientId(patientCollection.getId());
-		patientAdmissionCollection.setCreatedTime(new Date());		
+		patientAdmissionCollection.setCreatedTime(new Date());
 	    }
-	    
-	    if(referencesCollection != null)patientAdmissionCollection.setReferredBy(referencesCollection.getReference());
+
+	    if (referencesCollection != null)
+		patientAdmissionCollection.setReferredBy(referencesCollection.getReference());
 	    patientAdmissionCollection = patientAdmissionRepository.save(patientAdmissionCollection);
 	    registeredPatientDetails.setReferredBy(patientAdmissionCollection.getReferredBy());
-		
+
 	    // assign groups
 	    if (request.getGroups() != null) {
 		List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getUserId());
@@ -503,7 +502,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		logger.error("Incorrect User Id");
 		throw new BusinessException(ServiceError.Unknown, "Incorrect User Id");
 	    }
-	    registeredPatientDetails = new RegisteredPatientDetails();
+	    /*registeredPatientDetails = new RegisteredPatientDetails();*/
 	    BeanUtil.map(userCollection, registeredPatientDetails);
 	    if (request.getImage() != null) {
 		String path = "profile-images";
@@ -538,7 +537,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    groupCollections = (List<GroupCollection>) groupRepository.findAll(request.getGroups());
 	    groups = new ArrayList<Group>();
 	    BeanUtil.map(groupCollections, groups);
-	    /* registeredPatientDetails.setGroups(request.getGroups()); */
 	    registeredPatientDetails.setGroups(groups);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1220,14 +1218,16 @@ public class RegistrationServiceImpl implements RegistrationService {
     public Boolean checktDoctorExistByEmailAddress(String emailAddress) {
 	try {
 	    UserCollection userCollections = userRepository.findByUserNameAndEmailAddress(emailAddress, emailAddress);
-	    if (userCollections == null) return false;
-	    else return true;
+	    if (userCollections == null)
+		return false;
+	    else
+		return true;
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
-}
+    }
 
     @Override
     public RegisterDoctorResponse registerNewUser(DoctorRegisterRequest request) {
@@ -1235,21 +1235,22 @@ public class RegistrationServiceImpl implements RegistrationService {
 	try {
 	    RoleCollection doctorRole = null;
 	    if (request.getRoleId() != null) {
-	    	doctorRole = roleRepository.findOne(request.getRoleId());
-		}
+		doctorRole = roleRepository.findOne(request.getRoleId());
+	    }
 
 	    if (doctorRole == null) {
-			logger.warn("Role Collection in database is either empty or not defind properly");
-			throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
+		logger.warn("Role Collection in database is either empty or not defind properly");
+		throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
 	    }
 	    // save user
 	    UserCollection userCollection = new UserCollection();
 	    BeanUtil.map(request, userCollection);
-//	    if (request.getDob() != null && request.getDob().getAge() < 0) {
-//		logger.warn("Incorrect Date of Birth");
-//		throw new BusinessException(ServiceError.NotAcceptable, "Incorrect Date of Birth");
-//	    }
-	    userCollection.setUserName(request.getEmailAddress());   
+	    // if (request.getDob() != null && request.getDob().getAge() < 0) {
+	    // logger.warn("Incorrect Date of Birth");
+	    // throw new BusinessException(ServiceError.NotAcceptable,
+	    // "Incorrect Date of Birth");
+	    // }
+	    userCollection.setUserName(request.getEmailAddress());
 	    userCollection.setCreatedTime(new Date());
 	    userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
 	    userCollection = userRepository.save(userCollection);
@@ -1263,9 +1264,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	    // assign role to doctor
 	    UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), doctorRole.getId());
-	   	userRoleCollection.setCreatedTime(new Date());
-	   	userRoleCollection = userRoleRepository.save(userRoleCollection);		    
-	    
+	    userRoleCollection.setCreatedTime(new Date());
+	    userRoleCollection = userRoleRepository.save(userRoleCollection);
+
 	    // save user location.
 	    UserLocationCollection userLocationCollection = new UserLocationCollection(userCollection.getId(), request.getLocationId());
 	    userLocationCollection.setCreatedTime(new Date());
@@ -1284,9 +1285,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
 
 	    body = mailBodyGenerator.generateForgotPasswordEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
-			    userCollection.getMiddleName(), userCollection.getLastName(), userCollection.getId());
-		mailService.sendEmail(userCollection.getEmailAddress(), forgotUsernamePasswordSub, body, null);
-		    
+		    userCollection.getMiddleName(), userCollection.getLastName(), userCollection.getId());
+	    mailService.sendEmail(userCollection.getEmailAddress(), forgotUsernamePasswordSub, body, null);
+
 	    response = new RegisterDoctorResponse();
 	    userCollection.setPassword(null);
 	    BeanUtil.map(userCollection, response);
@@ -1318,11 +1319,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    // }
 
 	    if (doctorRole != null) {
-			Role role = new Role();
-			BeanUtil.map(doctorRole, role);
-			AccessControl accessControl = accessControlServices.getAccessControls(role.getId(), role.getLocationId(), role.getHospitalId());
-			if(accessControl != null)role.setAccessModules(accessControl.getAccessModules());
-			response.setRole(role);
+		Role role = new Role();
+		BeanUtil.map(doctorRole, role);
+		AccessControl accessControl = accessControlServices.getAccessControls(role.getId(), role.getLocationId(), role.getHospitalId());
+		if (accessControl != null)
+		    role.setAccessModules(accessControl.getAccessModules());
+		response.setRole(role);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1339,7 +1341,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	    RoleCollection doctorRole = null;
 	    if (request.getRoleId() != null) {
-		    doctorRole = roleRepository.findOne(request.getRoleId());
+		doctorRole = roleRepository.findOne(request.getRoleId());
 	    }
 
 	    if (doctorRole == null) {
@@ -1348,16 +1350,16 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    }
 	    UserCollection userCollection = userRepository.findByUserNameAndEmailAddress(request.getEmailAddress(), request.getEmailAddress());
 	    userCollection.setFirstName(request.getFirstName());
-	    
+
 	    DoctorCollection doctorCollection = doctorRepository.findByUserId(userCollection.getId());
-	    if(doctorCollection.getAdditionalNumbers() != null)
-	    	if(!doctorCollection.getAdditionalNumbers().contains(request.getMobileNumber()))
-	    		doctorCollection.getAdditionalNumbers().add(request.getMobileNumber());
-	    else{
-	    	List<String> additionalNumbers = new ArrayList<String>();
-	    	additionalNumbers.add(request.getMobileNumber());
-	    }
-	    	
+	    if (doctorCollection.getAdditionalNumbers() != null)
+		if (!doctorCollection.getAdditionalNumbers().contains(request.getMobileNumber()))
+		    doctorCollection.getAdditionalNumbers().add(request.getMobileNumber());
+		else {
+		    List<String> additionalNumbers = new ArrayList<String>();
+		    additionalNumbers.add(request.getMobileNumber());
+		}
+
 	    UserLocationCollection userLocationCollection = new UserLocationCollection(userCollection.getId(), request.getLocationId());
 	    userLocationCollection.setIsActivate(request.getIsActivate());
 	    userLocationCollection.setCreatedTime(new Date());
@@ -1365,18 +1367,17 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	    List<RoleCollection> roleCollections = roleRepository.findByLocationIdAndHospitalId(request.getLocationId(), request.getHospitalId());
 	    List<String> roleIds = (List<String>) CollectionUtils.collect(roleCollections, new BeanToPropertyValueTransformer("id"));
-	   
+
 	    UserRoleCollection userRoleCollection = userRoleRepository.findByUserIdAndRoleId(userCollection.getId(), roleIds);
-	    if(userRoleCollection == null){
-	    	userRoleCollection = new UserRoleCollection();
-	    	userRoleCollection.setCreatedTime(new Date());
-	    	userRoleCollection.setUserId(userCollection.getId());
-	    	userRoleCollection.setRoleId(request.getRoleId());
-	    	userRoleCollection = userRoleRepository.save(userRoleCollection);		    
-	    }
-	    else{
-	    	userRoleCollection.setRoleId(request.getRoleId());
-	    	userRoleCollection = userRoleRepository.save(userRoleCollection);
+	    if (userRoleCollection == null) {
+		userRoleCollection = new UserRoleCollection();
+		userRoleCollection.setCreatedTime(new Date());
+		userRoleCollection.setUserId(userCollection.getId());
+		userRoleCollection.setRoleId(request.getRoleId());
+		userRoleCollection = userRoleRepository.save(userRoleCollection);
+	    } else {
+		userRoleCollection.setRoleId(request.getRoleId());
+		userRoleCollection = userRoleRepository.save(userRoleCollection);
 	    }
 	    response = new RegisterDoctorResponse();
 	    userCollection.setPassword(null);
@@ -1386,11 +1387,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    response.setUserId(userCollection.getId());
 
 	    if (doctorRole != null) {
-			Role role = new Role();
-			BeanUtil.map(doctorRole, role);
-			AccessControl accessControl = accessControlServices.getAccessControls(role.getId(), role.getLocationId(), role.getHospitalId());
-			if(accessControl != null)role.setAccessModules(accessControl.getAccessModules());
-			response.setRole(role);
+		Role role = new Role();
+		BeanUtil.map(doctorRole, role);
+		AccessControl accessControl = accessControlServices.getAccessControls(role.getId(), role.getLocationId(), role.getHospitalId());
+		if (accessControl != null)
+		    role.setAccessModules(accessControl.getAccessModules());
+		response.setRole(role);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1408,16 +1410,16 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    BeanUtil.map(request, roleCollection);
 	    roleCollection.setCreatedTime(new Date());
 	    roleCollection = roleRepository.save(roleCollection);
-	    
+
 	    if (request.getAccessModules() != null && !request.getAccessModules().isEmpty()) {
-			AccessControl accessControl = new AccessControl();
-			BeanUtil.map(request, accessControl);
-			accessControl.setType(Type.ROLE);
-			accessControl.setRoleOrUserId(roleCollection.getId());
-			accessControl = accessControlServices.setAccessControls(accessControl);
-			if(accessControl != null)
-				role.setAccessModules(accessControl.getAccessModules());
-		}
+		AccessControl accessControl = new AccessControl();
+		BeanUtil.map(request, accessControl);
+		accessControl.setType(Type.ROLE);
+		accessControl.setRoleOrUserId(roleCollection.getId());
+		accessControl = accessControlServices.setAccessControls(accessControl);
+		if (accessControl != null)
+		    role.setAccessModules(accessControl.getAccessModules());
+	    }
 	    BeanUtil.map(roleCollection, role);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1473,14 +1475,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    }
 	    if (roleCollections != null) {
 		response = new ArrayList<Role>();
-		for(RoleCollection roleCollection : roleCollections){
-			Role role = new Role();
-			AccessControl accessControl = accessControlServices.getAccessControls(roleCollection.getId(), roleCollection.getLocationId(), roleCollection.getHospitalId());
-			BeanUtil.map(roleCollection, role);
-			role.setAccessModules(accessControl.getAccessModules());
-			response.add(role);
-		}	
-	}
+		for (RoleCollection roleCollection : roleCollections) {
+		    Role role = new Role();
+		    AccessControl accessControl = accessControlServices.getAccessControls(roleCollection.getId(), roleCollection.getLocationId(),
+			    roleCollection.getHospitalId());
+		    BeanUtil.map(roleCollection, role);
+		    role.setAccessModules(accessControl.getAccessModules());
+		    response.add(role);
+		}
+	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
@@ -1501,14 +1504,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 		roleCollections = roleRepository.findCustom(locationId, hospitalId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
 
 	    if (roleCollections != null) {
-			response = new ArrayList<Role>();
-			for(RoleCollection roleCollection : roleCollections){
-				Role role = new Role();
-				AccessControl accessControl = accessControlServices.getAccessControls(roleCollection.getId(), roleCollection.getLocationId(), roleCollection.getHospitalId());
-				BeanUtil.map(roleCollection, role);
-				role.setAccessModules(accessControl.getAccessModules());
-				response.add(role);
-			}
+		response = new ArrayList<Role>();
+		for (RoleCollection roleCollection : roleCollections) {
+		    Role role = new Role();
+		    AccessControl accessControl = accessControlServices.getAccessControls(roleCollection.getId(), roleCollection.getLocationId(),
+			    roleCollection.getHospitalId());
+		    BeanUtil.map(roleCollection, role);
+		    role.setAccessModules(accessControl.getAccessModules());
+		    response.add(role);
+		}
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1527,17 +1531,18 @@ public class RegistrationServiceImpl implements RegistrationService {
 		roleCollections = roleRepository.findGlobal(new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC, "updatedTime"));
 	    else
 		roleCollections = roleRepository.findGlobal(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
-	   
+
 	    if (roleCollections != null) {
-			response = new ArrayList<Role>();
-			for(RoleCollection roleCollection : roleCollections){
-				Role role = new Role();
-				AccessControl accessControl = accessControlServices.getAccessControls(roleCollection.getId(), roleCollection.getLocationId(), roleCollection.getHospitalId());
-				BeanUtil.map(roleCollection, role);
-				role.setAccessModules(accessControl.getAccessModules());
-				response.add(role);
-			}
-	   }
+		response = new ArrayList<Role>();
+		for (RoleCollection roleCollection : roleCollections) {
+		    Role role = new Role();
+		    AccessControl accessControl = accessControlServices.getAccessControls(roleCollection.getId(), roleCollection.getLocationId(),
+			    roleCollection.getHospitalId());
+		    BeanUtil.map(roleCollection, role);
+		    role.setAccessModules(accessControl.getAccessModules());
+		    response.add(role);
+		}
+	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
@@ -1546,34 +1551,36 @@ public class RegistrationServiceImpl implements RegistrationService {
 	return response;
     }
 
-	@Override
-	public List<ClinicDoctorResponse> getDoctors(int page, int size, String locationId, String hospitalId, String updatedTime) {
-		List<ClinicDoctorResponse> response = null;
-		try {
-		    long createdTimeStamp = Long.parseLong(updatedTime);
-		    List<UserLocationCollection> userLocationCollections = null;
-		    if(size > 0)userLocationCollections = userLocationRepository.findByLocationId(locationId, new PageRequest(page, size, Direction.DESC,"updatedTime"));
-		    else userLocationCollections = userLocationRepository.findByLocationId(locationId, new Sort(Sort.Direction.DESC,"updatedTime"));
-		    
-		    if(userLocationCollections != null){
-		    	response = new ArrayList<ClinicDoctorResponse>();
-		    	for(UserLocationCollection userLocationCollection : userLocationCollections){
-		    		ClinicDoctorResponse clinicDoctorResponse = new ClinicDoctorResponse();
-		    		clinicDoctorResponse.setIsActivate(userLocationCollection.getIsActivate());
-		    		UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
-		    		if(userCollection != null){
-		    			clinicDoctorResponse.setFirstName(userCollection.getFirstName());
-		    			clinicDoctorResponse.setLastSession(userCollection.getLastSession());
-		    		}
-//		    		TODO
-		    	}
+    @Override
+    public List<ClinicDoctorResponse> getDoctors(int page, int size, String locationId, String hospitalId, String updatedTime) {
+	List<ClinicDoctorResponse> response = null;
+	try {
+	    long createdTimeStamp = Long.parseLong(updatedTime);
+	    List<UserLocationCollection> userLocationCollections = null;
+	    if (size > 0)
+		userLocationCollections = userLocationRepository.findByLocationId(locationId, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+	    else
+		userLocationCollections = userLocationRepository.findByLocationId(locationId, new Sort(Sort.Direction.DESC, "updatedTime"));
+
+	    if (userLocationCollections != null) {
+		response = new ArrayList<ClinicDoctorResponse>();
+		for (UserLocationCollection userLocationCollection : userLocationCollections) {
+		    ClinicDoctorResponse clinicDoctorResponse = new ClinicDoctorResponse();
+		    clinicDoctorResponse.setIsActivate(userLocationCollection.getIsActivate());
+		    UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
+		    if (userCollection != null) {
+			clinicDoctorResponse.setFirstName(userCollection.getFirstName());
+			clinicDoctorResponse.setLastSession(userCollection.getLastSession());
 		    }
-		    		    
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		    // TODO
 		}
-		return response;
+	    }
+
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return response;
+    }
 }

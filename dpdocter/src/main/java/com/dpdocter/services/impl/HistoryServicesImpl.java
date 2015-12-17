@@ -190,7 +190,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public boolean addReportToHistory(String reportId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	RecordsCollection recordsCollection = null;
@@ -251,7 +251,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public boolean addClinicalNotesToHistory(String clinicalNotesId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	ClinicalNotesCollection clinicalNotesCollection = null;
@@ -311,7 +311,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public boolean addPrescriptionToHistory(String prescriptionId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	PrescriptionCollection prescriptionCollection = null;
@@ -514,7 +514,7 @@ public class HistoryServicesImpl implements HistoryServices {
 			if (checkIfHistoryRemovedCompletely(historyCollection)) {
 			    historyRepository.delete(historyCollection.getId());
 			} else {
-				historyCollection.setUpdatedTime(new Date());
+			    historyCollection.setUpdatedTime(new Date());
 			    historyRepository.save(historyCollection);
 			}
 			// modify records that it has been removed from history
@@ -560,7 +560,7 @@ public class HistoryServicesImpl implements HistoryServices {
 			if (checkIfHistoryRemovedCompletely(historyCollection)) {
 			    historyRepository.delete(historyCollection.getId());
 			} else {
-				historyCollection.setUpdatedTime(new Date());
+			    historyCollection.setUpdatedTime(new Date());
 			    historyRepository.save(historyCollection);
 			}
 			// modify clinical notes that it has been removed from
@@ -607,7 +607,7 @@ public class HistoryServicesImpl implements HistoryServices {
 			if (checkIfHistoryRemovedCompletely(historyCollection)) {
 			    historyRepository.delete(historyCollection.getId());
 			} else {
-				historyCollection.setUpdatedTime(new Date());
+			    historyCollection.setUpdatedTime(new Date());
 			    historyRepository.save(historyCollection);
 			}
 			// modify prescription that it has been removed from
@@ -651,7 +651,7 @@ public class HistoryServicesImpl implements HistoryServices {
 			if (checkIfHistoryRemovedCompletely(historyCollection)) {
 			    historyRepository.delete(historyCollection.getId());
 			} else {
-				historyCollection.setUpdatedTime(new Date());
+			    historyCollection.setUpdatedTime(new Date());
 			    historyRepository.save(historyCollection);
 			}
 		    } else {
@@ -687,7 +687,7 @@ public class HistoryServicesImpl implements HistoryServices {
 			if (checkIfHistoryRemovedCompletely(historyCollection)) {
 			    historyRepository.delete(historyCollection.getId());
 			} else {
-				historyCollection.setUpdatedTime(new Date());
+			    historyCollection.setUpdatedTime(new Date());
 			    historyRepository.save(historyCollection);
 			}
 		    } else {
@@ -894,42 +894,48 @@ public class HistoryServicesImpl implements HistoryServices {
 	    Aggregation aggregation = null;
 	    if (!historyFilter.contains(HistoryFilter.ALL.getFilter())) {
 		matchForFilter = Aggregation.match(Criteria.where("generalRecords.dataType").in(historyFilter));
-		if(size > 0)aggregation = Aggregation.newAggregation(
-				Aggregation.match(Criteria
-						.where("patientId")
-						.is(patientId)
-						.andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
-							Criteria.where("hospitalId").is(hospitalId), Criteria.where("updatedTime").gte(new Date(createdTime)))), Aggregation.unwind("generalRecords"), matchForFilter,
-					Aggregation.skip(page * size), Aggregation.limit(size), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-		else aggregation = Aggregation.newAggregation(
-				Aggregation.match(Criteria
-						.where("patientId")
-						.is(patientId)
-						.andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
-							Criteria.where("hospitalId").is(hospitalId), Criteria.where("updatedTime").gte(new Date(createdTime)))), Aggregation.unwind("generalRecords"), matchForFilter,
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+		if (size > 0)
+		    aggregation = Aggregation.newAggregation(
+			    Aggregation.match(Criteria
+				    .where("patientId")
+				    .is(patientId)
+				    .andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
+					    Criteria.where("hospitalId").is(hospitalId), Criteria.where("updatedTime").gte(new Date(createdTime)))),
+			    Aggregation.unwind("generalRecords"), matchForFilter, Aggregation.skip(page * size), Aggregation.limit(size),
+			    Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+		else
+		    aggregation = Aggregation.newAggregation(
+			    Aggregation.match(Criteria
+				    .where("patientId")
+				    .is(patientId)
+				    .andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
+					    Criteria.where("hospitalId").is(hospitalId), Criteria.where("updatedTime").gte(new Date(createdTime)))),
+			    Aggregation.unwind("generalRecords"), matchForFilter, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 	    } else {
-		if(size > 0)aggregation = Aggregation.newAggregation(
-				Aggregation.match(Criteria
-						.where("patientId")
-						.is(patientId)
-						.andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
-							Criteria.where("hospitalId").is(hospitalId), Criteria.where("updatedTime").gte(new Date(createdTime)))), Aggregation.unwind("generalRecords"),
-					Aggregation.skip(page * size), Aggregation.limit(size), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-		else aggregation = Aggregation.newAggregation(
-				Aggregation.match(Criteria
-						.where("patientId")
-						.is(patientId)
-						.andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
-							Criteria.where("hospitalId").is(hospitalId), Criteria.where("updatedTime").gte(new Date(createdTime)))), Aggregation.unwind("generalRecords"),
-					       Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+		if (size > 0)
+		    aggregation = Aggregation.newAggregation(
+			    Aggregation.match(Criteria
+				    .where("patientId")
+				    .is(patientId)
+				    .andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
+					    Criteria.where("hospitalId").is(hospitalId), Criteria.where("updatedTime").gte(new Date(createdTime)))),
+			    Aggregation.unwind("generalRecords"), Aggregation.skip(page * size), Aggregation.limit(size),
+			    Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+		else
+		    aggregation = Aggregation.newAggregation(
+			    Aggregation.match(Criteria
+				    .where("patientId")
+				    .is(patientId)
+				    .andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
+					    Criteria.where("hospitalId").is(hospitalId), Criteria.where("updatedTime").gte(new Date(createdTime)))),
+			    Aggregation.unwind("generalRecords"), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 	    }
 	    AggregationResults<History> groupResults = mongoTemplate.aggregate(aggregation, HistoryCollection.class, History.class);
 	    List<History> general = groupResults.getMappedResults();
 	    if (general != null) {
-	    	
+
 		response = new ArrayList<HistoryDetailsResponse>();
 		for (History historyCollection : general) {
 		    HistoryDetailsResponse historyDetailsResponse = new HistoryDetailsResponse();
@@ -1035,14 +1041,24 @@ public class HistoryServicesImpl implements HistoryServices {
 	    Aggregation aggregation = null;
 	    if (!historyFilter.contains(HistoryFilter.ALL.getFilter())) {
 		matchForFilter = Aggregation.match(Criteria.where("generalRecords.dataType").in(historyFilter));
-		if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("patientId").is(patientId).and("updatedTime").gte(new Date(createdTime))), Aggregation.unwind("generalRecords"),
-				matchForFilter, Aggregation.skip(page * size), Aggregation.limit(size), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-		else aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("patientId").is(patientId).and("updatedTime").gte(new Date(createdTime))), Aggregation.unwind("generalRecords"),
-				matchForFilter, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+		if (size > 0)
+		    aggregation = Aggregation.newAggregation(
+			    Aggregation.match(Criteria.where("patientId").is(patientId).and("updatedTime").gte(new Date(createdTime))),
+			    Aggregation.unwind("generalRecords"), matchForFilter, Aggregation.skip(page * size), Aggregation.limit(size),
+			    Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+		else
+		    aggregation = Aggregation.newAggregation(
+			    Aggregation.match(Criteria.where("patientId").is(patientId).and("updatedTime").gte(new Date(createdTime))),
+			    Aggregation.unwind("generalRecords"), matchForFilter, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 	    } else {
-		if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("patientId").is(patientId).and("updatedTime").gte(new Date(createdTime))), Aggregation.unwind("generalRecords"),
-				Aggregation.skip(page * size), Aggregation.limit(size));
-		else aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("patientId").is(patientId).and("updatedTime").gte(new Date(createdTime))), Aggregation.unwind("generalRecords"));
+		if (size > 0)
+		    aggregation = Aggregation.newAggregation(
+			    Aggregation.match(Criteria.where("patientId").is(patientId).and("updatedTime").gte(new Date(createdTime))),
+			    Aggregation.unwind("generalRecords"), Aggregation.skip(page * size), Aggregation.limit(size));
+		else
+		    aggregation = Aggregation.newAggregation(
+			    Aggregation.match(Criteria.where("patientId").is(patientId).and("updatedTime").gte(new Date(createdTime))),
+			    Aggregation.unwind("generalRecords"));
 	    }
 
 	    AggregationResults<History> groupResults = mongoTemplate.aggregate(aggregation, HistoryCollection.class, History.class);
@@ -1166,7 +1182,8 @@ public class HistoryServicesImpl implements HistoryServices {
 	    HistoryCollection historyCollection = historyRepository.findHistory(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
 		if (historyCollection.getGeneralRecords() != null && !historyCollection.getGeneralRecords().isEmpty()) {
-//		    List<GeneralData> generslData = fetchGeneralData(historyCollection.getGeneralRecords());
+		    // List<GeneralData> generslData =
+		    // fetchGeneralData(historyCollection.getGeneralRecords());
 		    historyCount = historyCollection.getGeneralRecords().isEmpty() ? 0 : historyCollection.getGeneralRecords().size();
 		}
 	    }
@@ -1187,22 +1204,28 @@ public class HistoryServicesImpl implements HistoryServices {
 	    if (historyCollection != null) {
 		List<String> medicalHistoryList = historyCollection.getMedicalhistory();
 		if (medicalHistoryList != null && !medicalHistoryList.isEmpty()) {
-			if(request.getAddDiseases() != null)medicalHistoryList.addAll(request.getAddDiseases());
+		    if (request.getAddDiseases() != null)
+			medicalHistoryList.addAll(request.getAddDiseases());
 		    medicalHistoryList = new ArrayList<String>(new LinkedHashSet<String>(medicalHistoryList));
-		    if(request.getRemoveDiseases() != null)medicalHistoryList.removeAll(request.getRemoveDiseases());
+		    if (request.getRemoveDiseases() != null)
+			medicalHistoryList.removeAll(request.getRemoveDiseases());
 		    historyCollection.setMedicalhistory(medicalHistoryList);
 		} else {
 		    medicalHistoryList = new ArrayList<String>();
-		    if(request.getAddDiseases() != null)medicalHistoryList.addAll(request.getAddDiseases());
-		    if(request.getRemoveDiseases() != null)medicalHistoryList.removeAll(request.getRemoveDiseases());
+		    if (request.getAddDiseases() != null)
+			medicalHistoryList.addAll(request.getAddDiseases());
+		    if (request.getRemoveDiseases() != null)
+			medicalHistoryList.removeAll(request.getRemoveDiseases());
 		    historyCollection.setMedicalhistory(medicalHistoryList);
 		}
 	    } else {
 		historyCollection = new HistoryCollection(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId());
 		historyCollection.setCreatedTime(new Date());
 		List<String> medicalHistoryList = new ArrayList<String>();
-		if(request.getAddDiseases() != null)medicalHistoryList.addAll(request.getAddDiseases());
-		if(request.getRemoveDiseases() != null)medicalHistoryList.removeAll(request.getRemoveDiseases());
+		if (request.getAddDiseases() != null)
+		    medicalHistoryList.addAll(request.getAddDiseases());
+		if (request.getRemoveDiseases() != null)
+		    medicalHistoryList.removeAll(request.getRemoveDiseases());
 		historyCollection.setMedicalhistory(medicalHistoryList);
 	    }
 	    if (checkIfHistoryRemovedCompletely(historyCollection)) {
@@ -1231,22 +1254,28 @@ public class HistoryServicesImpl implements HistoryServices {
 	    if (historyCollection != null) {
 		List<String> familyHistoryList = historyCollection.getFamilyhistory();
 		if (familyHistoryList != null && !familyHistoryList.isEmpty()) {
-			if(request.getAddDiseases() != null)familyHistoryList.addAll(request.getAddDiseases());
+		    if (request.getAddDiseases() != null)
+			familyHistoryList.addAll(request.getAddDiseases());
 		    familyHistoryList = new ArrayList<String>(new LinkedHashSet<String>(familyHistoryList));
-		    if(request.getRemoveDiseases() != null)familyHistoryList.removeAll(request.getRemoveDiseases());
+		    if (request.getRemoveDiseases() != null)
+			familyHistoryList.removeAll(request.getRemoveDiseases());
 		    historyCollection.setFamilyhistory(familyHistoryList);
 		} else {
 		    familyHistoryList = new ArrayList<String>();
-		    if(request.getAddDiseases() != null)familyHistoryList.addAll(request.getAddDiseases());
-		    if(request.getRemoveDiseases() != null)familyHistoryList.removeAll(request.getRemoveDiseases());
+		    if (request.getAddDiseases() != null)
+			familyHistoryList.addAll(request.getAddDiseases());
+		    if (request.getRemoveDiseases() != null)
+			familyHistoryList.removeAll(request.getRemoveDiseases());
 		    historyCollection.setFamilyhistory(familyHistoryList);
 		}
 	    } else {
 		historyCollection = new HistoryCollection(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId());
 		historyCollection.setCreatedTime(new Date());
 		List<String> familyHistoryList = new ArrayList<String>();
-		if(request.getAddDiseases() != null)familyHistoryList.addAll(request.getAddDiseases());
-		if(request.getRemoveDiseases() != null)familyHistoryList.removeAll(request.getRemoveDiseases());
+		if (request.getAddDiseases() != null)
+		    familyHistoryList.addAll(request.getAddDiseases());
+		if (request.getRemoveDiseases() != null)
+		    familyHistoryList.removeAll(request.getRemoveDiseases());
 		historyCollection.setFamilyhistory(familyHistoryList);
 	    }
 	    if (checkIfHistoryRemovedCompletely(historyCollection)) {
@@ -1272,22 +1301,22 @@ public class HistoryServicesImpl implements HistoryServices {
 
 	try {
 	    historyCollection = historyRepository.findHistory(doctorId, locationId, hospitalId, patientId);
-	    if(historyCollection != null){
-	    	 response = new HistoryDetailsResponse();
-	    	BeanUtil.map(historyCollection, response);
-	    	List<String> medicalHistoryIds = historyCollection.getMedicalhistory();
-		    if (medicalHistoryIds != null && !medicalHistoryIds.isEmpty()) {
-			List<DiseaseListResponse> medicalHistory = getDiseasesByIds(medicalHistoryIds);
-			response.setMedicalhistory(medicalHistory);
-		    }
+	    if (historyCollection != null) {
+		response = new HistoryDetailsResponse();
+		BeanUtil.map(historyCollection, response);
+		List<String> medicalHistoryIds = historyCollection.getMedicalhistory();
+		if (medicalHistoryIds != null && !medicalHistoryIds.isEmpty()) {
+		    List<DiseaseListResponse> medicalHistory = getDiseasesByIds(medicalHistoryIds);
+		    response.setMedicalhistory(medicalHistory);
+		}
 
-		    List<String> familyHistoryIds = historyCollection.getFamilyhistory();
-		    if (familyHistoryIds != null && !familyHistoryIds.isEmpty()) {
-			List<DiseaseListResponse> familyHistory = getDiseasesByIds(familyHistoryIds);
-			response.setFamilyhistory(familyHistory);
-		    }
+		List<String> familyHistoryIds = historyCollection.getFamilyhistory();
+		if (familyHistoryIds != null && !familyHistoryIds.isEmpty()) {
+		    List<DiseaseListResponse> familyHistory = getDiseasesByIds(familyHistoryIds);
+		    response.setFamilyhistory(familyHistory);
+		}
 	    }
-	    
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
@@ -1393,64 +1422,67 @@ public class HistoryServicesImpl implements HistoryServices {
 	return true;
     }
 
-	@Override
-	public List<HistoryDetailsResponse> getMultipleData(String patientId, String doctorId, String hospitalId, String locationId, String updatedTime, Boolean inHistory) {
-		List<HistoryDetailsResponse> response = null;
-		try {
-		 
-			long createdTime = Long.parseLong(updatedTime);
-		    List<Prescription> prescriptions = prescriptionServices.getPrescriptions(0, 0, doctorId, hospitalId, locationId, patientId, updatedTime, false, true, inHistory);
-		    List<ClinicalNotes> clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(0, 0, patientId, doctorId, locationId, hospitalId, updatedTime, true, inHistory);
-		    List<Records> records = recordsService.getRecords(0, 0, doctorId, hospitalId, locationId, patientId, updatedTime, false, true, inHistory);
-		    
-		    if (prescriptions!= null || clinicalNotes != null || records != null) {
-		    	
-			response = new ArrayList<HistoryDetailsResponse>();
-			if(prescriptions != null)
-			for (Prescription prescription : prescriptions) {
-			    HistoryDetailsResponse historyDetailsResponse = new HistoryDetailsResponse();
-			    BeanUtil.map(prescription, historyDetailsResponse);
-			    GeneralData generalData = new GeneralData();
-			    generalData.setData(prescription);
-			    generalData.setDataType(HistoryFilter.PRESCRIPTIONS);
-			    List<GeneralData> generalRecords = new ArrayList<GeneralData>();
-				generalRecords.add(generalData);
-				historyDetailsResponse.setGeneralRecords(generalRecords);
-				response.add(historyDetailsResponse);
-			    }
-			
-			if(clinicalNotes != null)
-				for (ClinicalNotes clinicalNote : clinicalNotes) {
-				    HistoryDetailsResponse historyDetailsResponse = new HistoryDetailsResponse();
-				    BeanUtil.map(clinicalNote, historyDetailsResponse);
-				    GeneralData generalData = new GeneralData();
-				    generalData.setData(clinicalNote);
-				    generalData.setDataType(HistoryFilter.CLINICAL_NOTES);
-				    List<GeneralData> generalRecords = new ArrayList<GeneralData>();
-					generalRecords.add(generalData);
-					historyDetailsResponse.setGeneralRecords(generalRecords);
-					response.add(historyDetailsResponse);
-				    }
-			
-			if(records != null)
-				for (Records record : records) {
-				    HistoryDetailsResponse historyDetailsResponse = new HistoryDetailsResponse();
-				    BeanUtil.map(record, historyDetailsResponse);
-				    GeneralData generalData = new GeneralData();
-				    generalData.setData(record);
-				    generalData.setDataType(HistoryFilter.REPORTS);
-				    List<GeneralData> generalRecords = new ArrayList<GeneralData>();
-					generalRecords.add(generalData);
-					historyDetailsResponse.setGeneralRecords(generalRecords);
-					response.add(historyDetailsResponse);
-				    }
-		    }
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return response;
+    @Override
+    public List<HistoryDetailsResponse> getMultipleData(String patientId, String doctorId, String hospitalId, String locationId, String updatedTime,
+	    Boolean inHistory) {
+	List<HistoryDetailsResponse> response = null;
+	try {
 
+	    long createdTime = Long.parseLong(updatedTime);
+	    List<Prescription> prescriptions = prescriptionServices.getPrescriptions(0, 0, doctorId, hospitalId, locationId, patientId, updatedTime, false,
+		    true, inHistory);
+	    List<ClinicalNotes> clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(0, 0, patientId, doctorId, locationId,
+		    hospitalId, updatedTime, true, inHistory);
+	    List<Records> records = recordsService.getRecords(0, 0, doctorId, hospitalId, locationId, patientId, updatedTime, false, true, inHistory);
+
+	    if (prescriptions != null || clinicalNotes != null || records != null) {
+
+		response = new ArrayList<HistoryDetailsResponse>();
+		if (prescriptions != null)
+		    for (Prescription prescription : prescriptions) {
+			HistoryDetailsResponse historyDetailsResponse = new HistoryDetailsResponse();
+			BeanUtil.map(prescription, historyDetailsResponse);
+			GeneralData generalData = new GeneralData();
+			generalData.setData(prescription);
+			generalData.setDataType(HistoryFilter.PRESCRIPTIONS);
+			List<GeneralData> generalRecords = new ArrayList<GeneralData>();
+			generalRecords.add(generalData);
+			historyDetailsResponse.setGeneralRecords(generalRecords);
+			response.add(historyDetailsResponse);
+		    }
+
+		if (clinicalNotes != null)
+		    for (ClinicalNotes clinicalNote : clinicalNotes) {
+			HistoryDetailsResponse historyDetailsResponse = new HistoryDetailsResponse();
+			BeanUtil.map(clinicalNote, historyDetailsResponse);
+			GeneralData generalData = new GeneralData();
+			generalData.setData(clinicalNote);
+			generalData.setDataType(HistoryFilter.CLINICAL_NOTES);
+			List<GeneralData> generalRecords = new ArrayList<GeneralData>();
+			generalRecords.add(generalData);
+			historyDetailsResponse.setGeneralRecords(generalRecords);
+			response.add(historyDetailsResponse);
+		    }
+
+		if (records != null)
+		    for (Records record : records) {
+			HistoryDetailsResponse historyDetailsResponse = new HistoryDetailsResponse();
+			BeanUtil.map(record, historyDetailsResponse);
+			GeneralData generalData = new GeneralData();
+			generalData.setData(record);
+			generalData.setDataType(HistoryFilter.REPORTS);
+			List<GeneralData> generalRecords = new ArrayList<GeneralData>();
+			generalRecords.add(generalData);
+			historyDetailsResponse.setGeneralRecords(generalRecords);
+			response.add(historyDetailsResponse);
+		    }
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return response;
+
+    }
 }

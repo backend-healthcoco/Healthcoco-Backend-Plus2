@@ -164,29 +164,28 @@ public class DoctorCollection extends GenericCollection {
 	this.registerNumber = registerNumber;
     }
 
-	public String getGender() {
-		return gender;
-	}
+    public String getGender() {
+	return gender;
+    }
 
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
+    public void setGender(String gender) {
+	this.gender = gender;
+    }
 
-	public DOB getDob() {
-		return dob;
-	}
+    public DOB getDob() {
+	return dob;
+    }
 
-	public void setDob(DOB dob) {
-		this.dob = dob;
-	}
+    public void setDob(DOB dob) {
+	this.dob = dob;
+    }
 
-	@Override
-	public String toString() {
-		return "DoctorCollection [id=" + id + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses="
-				+ otherEmailAddresses + ", userId=" + userId + ", experience=" + experience + ", education=" + education
-				+ ", specialities=" + specialities + ", achievements=" + achievements + ", professionalStatement="
-				+ professionalStatement + ", registrationDetails=" + registrationDetails + ", experienceDetails="
-				+ experienceDetails + ", professionalMemberships=" + professionalMemberships + ", registerNumber="
-				+ registerNumber + ", gender=" + gender + ", dob=" + dob + "]";
-	}
+    @Override
+    public String toString() {
+	return "DoctorCollection [id=" + id + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses=" + otherEmailAddresses + ", userId="
+		+ userId + ", experience=" + experience + ", education=" + education + ", specialities=" + specialities + ", achievements=" + achievements
+		+ ", professionalStatement=" + professionalStatement + ", registrationDetails=" + registrationDetails + ", experienceDetails="
+		+ experienceDetails + ", professionalMemberships=" + professionalMemberships + ", registerNumber=" + registerNumber + ", gender=" + gender
+		+ ", dob=" + dob + "]";
+    }
 }

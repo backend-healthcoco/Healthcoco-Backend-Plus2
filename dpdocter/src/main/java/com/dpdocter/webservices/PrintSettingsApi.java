@@ -26,7 +26,6 @@ import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.services.PrintSettingsService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 

@@ -18,9 +18,9 @@ public interface UserLocationRepository extends MongoRepository<UserLocationColl
     UserLocationCollection findByUserIdAndLocationId(String userId, String locationId);
 
     @Query("{'locationId' : ?0}")
-	List<UserLocationCollection> findByLocationId(String locationId, Pageable pageable);
+    List<UserLocationCollection> findByLocationId(String locationId, Pageable pageable);
 
     @Query("{'locationId' : ?0}")
-	List<UserLocationCollection> findByLocationId(String locationId, Sort sort);
+    List<UserLocationCollection> findByLocationId(String locationId, Sort sort);
 
 }

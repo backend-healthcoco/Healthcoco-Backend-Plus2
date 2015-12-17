@@ -53,7 +53,6 @@ import com.dpdocter.request.ImportContactsRequest;
 import com.dpdocter.request.PatientGroupAddEditRequest;
 import com.dpdocter.services.ContactsService;
 import com.dpdocter.services.FileManager;
-
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -134,8 +133,9 @@ public class ContactsServiceImpl implements ContactsService {
     }
 
     @Override
-    public DoctorContactsResponse getDoctorContacts(String doctorId,  String locationId, String hospitalId, String updatedTime, boolean discarded, int page, int size) {
-    DoctorContactsResponse response = null;
+    public DoctorContactsResponse getDoctorContacts(String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded, int page,
+	    int size) {
+	DoctorContactsResponse response = null;
 	List<DoctorContactCollection> doctorContactCollections = null;
 	boolean[] discards = new boolean[2];
 	discards[0] = false;
@@ -159,10 +159,10 @@ public class ContactsServiceImpl implements ContactsService {
 	    @SuppressWarnings("unchecked")
 	    Collection<String> patientIds = CollectionUtils.collect(doctorContactCollections, new BeanToPropertyValueTransformer("contactId"));
 	    List<PatientCard> patientCards = getSpecifiedPatientCards(patientIds, doctorId, locationId, hospitalId);
-	    if(patientCards != null){
-	    	response = new DoctorContactsResponse();
-	    	response.setPatientCards(patientCards);
-	    	response.setTotalSize(doctorContactsRepository.findCountByDoctorIdAndIsBlocked(doctorId, false, discards, new Date(createdTimestamp)));
+	    if (patientCards != null) {
+		response = new DoctorContactsResponse();
+		response.setPatientCards(patientCards);
+		response.setTotalSize(doctorContactsRepository.findCountByDoctorIdAndIsBlocked(doctorId, false, discards, new Date(createdTimestamp)));
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -172,85 +172,92 @@ public class ContactsServiceImpl implements ContactsService {
 	return response;
     }
 
+    @Override
+    public DoctorContactsResponse getDoctorContactsSortedByName(String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
+	    int page, int size) {
+	DoctorContactsResponse response = null;
+	List<DoctorContactCollection> doctorContactCollections = null;
+	boolean[] discards = new boolean[2];
+	discards[0] = false;
 
-	@Override
-	public DoctorContactsResponse getDoctorContactsSortedByName(String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,	int page, int size) {
-	    DoctorContactsResponse response = null;
-		List<DoctorContactCollection> doctorContactCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	try {
+	    if (discarded) {
+		discards[1] = true;
+	    }
 
-		try {
-		    if (discarded) {
-			discards[1] = true;
-		    }
+	    long createdTimestamp = Long.parseLong(updatedTime);
+	    doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, discards, new Date(createdTimestamp), new Sort(
+		    Sort.Direction.DESC, "updatedTime"));
 
-		    long createdTimestamp = Long.parseLong(updatedTime);
-			doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, discards, new Date(createdTimestamp), new Sort(
-				Sort.Direction.DESC, "updatedTime"));
+	    if (doctorContactCollections.isEmpty()) {
+		return null;
+	    }
+	    @SuppressWarnings("unchecked")
+	    Collection<String> patientIds = CollectionUtils.collect(doctorContactCollections, new BeanToPropertyValueTransformer("contactId"));
+	    List<PatientCard> patientCards = getSpecifiedPatientCardsSorted(patientIds, doctorId, locationId, hospitalId, page, size);
+	    if (patientCards != null) {
+		response = new DoctorContactsResponse();
+		response.setPatientCards(patientCards);
+		response.setTotalSize(doctorContactsRepository.findCountByDoctorIdAndIsBlocked(doctorId, false, discards, new Date(createdTimestamp)));
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return response;
 
-		    if (doctorContactCollections.isEmpty()) {
-			return null;
-		    }
+    }
+
+    private List<PatientCard> getSpecifiedPatientCardsSorted(Collection<String> patientIds, String doctorId, String locationId, String hospitalId, int page,
+	    int size) {
+	List<PatientCollection> patientCollections = null;
+	if (!DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId) && patientIds != null && !patientIds.isEmpty()) {
+	    if (size > 0)
+		patientCollections = patientRepository.findByUserIdDoctorIdLocationIdHospitalId(patientIds, doctorId, locationId, hospitalId, new PageRequest(
+			page, size, Direction.ASC, "firstName"));
+	    else
+		patientCollections = patientRepository.findByUserIdDoctorIdLocationIdHospitalId(patientIds, doctorId, locationId, hospitalId, new Sort(
+			Sort.Direction.ASC, "firstName"));
+
+	} else if (patientIds != null && !patientIds.isEmpty() && !DPDoctorUtils.anyStringEmpty(doctorId)) {
+	    if (size > 0)
+		patientCollections = patientRepository.findByUserIdDoctorId(patientIds, doctorId, new PageRequest(page, size, Direction.ASC, "firstName"));
+	    else
+		patientCollections = patientRepository.findByUserIdDoctorId(patientIds, doctorId, new Sort(Sort.Direction.ASC, "firstName"));
+	} else {
+	    return new ArrayList<PatientCard>(0);
+	}
+
+	List<PatientCard> patientCards = new ArrayList<PatientCard>();
+	if (patientCollections != null)
+	    for (PatientCollection patientCollection : patientCollections) {
+		UserCollection userCollection = userRepository.findOne(patientCollection.getUserId());
+		if (userCollection != null) {
+		    List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getUserId());
 		    @SuppressWarnings("unchecked")
-		    Collection<String> patientIds = CollectionUtils.collect(doctorContactCollections, new BeanToPropertyValueTransformer("contactId"));
-		    List<PatientCard> patientCards = getSpecifiedPatientCardsSorted(patientIds, doctorId, locationId, hospitalId, page, size);
-		    if(patientCards != null){
-		    	response = new DoctorContactsResponse();
-		    	response.setPatientCards(patientCards);
-		    	response.setTotalSize(doctorContactsRepository.findCountByDoctorIdAndIsBlocked(doctorId, false, discards, new Date(createdTimestamp)));
-		    }
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		    Collection<String> groupIds = CollectionUtils.collect(patientGroupCollections, new BeanToPropertyValueTransformer("groupId"));
+		    List<Group> groups = new ArrayList<Group>();
+		    List<GroupCollection> groupCollections = (List<GroupCollection>) groupRepository.findAll(groupIds);
+		    BeanUtil.map(groupCollections, groups);
+		    PatientCard patientCard = new PatientCard();
+		    BeanUtil.map(patientCollection, patientCard);
+		    BeanUtil.map(userCollection, patientCard);
+		    patientCard.setGroups(groups);
+		    patientCard.setDoctorSepecificPatientId(patientCollection.getUserId());
+
+		    int historyCount = historyRepository.getByPatientIdAndNotEqualToDoctorLocationHospital(patientCollection.getUserId(), doctorId, locationId,
+			    hospitalId);
+		    if (historyCount > 0)
+			patientCard.setIsHistoryAvailable(true);
+
+		    patientCards.add(patientCard);
 		}
-		return response;
+	    }
+	return patientCards;
+    }
 
-	}
-
-    private List<PatientCard> getSpecifiedPatientCardsSorted(Collection<String> patientIds, String doctorId, String locationId, String hospitalId, int page, int size) {
-    	List<PatientCollection> patientCollections = null;
-    	 if (!DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId) && patientIds != null && !patientIds.isEmpty()) {
-    	     if(size > 0)patientCollections = patientRepository.findByUserIdDoctorIdLocationIdHospitalId(patientIds, doctorId, locationId, hospitalId, new PageRequest(page, size,Direction.ASC, "firstName"));
-    	     else patientCollections = patientRepository.findByUserIdDoctorIdLocationIdHospitalId(patientIds, doctorId, locationId, hospitalId, new Sort(Sort.Direction.ASC, "firstName"));
-    	     
-    	 } else if (patientIds != null && !patientIds.isEmpty() && !DPDoctorUtils.anyStringEmpty(doctorId)) {
-    			if(size > 0) patientCollections = patientRepository.findByUserIdDoctorId(patientIds, doctorId, new PageRequest(page, size,Direction.ASC, "firstName"));
-    			else patientCollections = patientRepository.findByUserIdDoctorId(patientIds, doctorId, new Sort(Sort.Direction.ASC, "firstName"));
-    	} else {
-    		    return new ArrayList<PatientCard>(0);
-    	}
-    	 
-    	 List<PatientCard> patientCards = new ArrayList<PatientCard>();
-    	 if(patientCollections != null)
-    		for (PatientCollection patientCollection : patientCollections) {
-    		    UserCollection userCollection = userRepository.findOne(patientCollection.getUserId());
-    		    if (userCollection != null) {
-    			List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getUserId());
-    			@SuppressWarnings("unchecked")
-    			Collection<String> groupIds = CollectionUtils.collect(patientGroupCollections, new BeanToPropertyValueTransformer("groupId"));
-    			List<Group> groups = new ArrayList<Group>();
-    			List<GroupCollection> groupCollections = (List<GroupCollection>) groupRepository.findAll(groupIds);
-    			BeanUtil.map(groupCollections, groups);
-    			PatientCard patientCard = new PatientCard();
-    			BeanUtil.map(patientCollection, patientCard);
-    			BeanUtil.map(userCollection, patientCard);
-    			patientCard.setGroups(groups);
-    			patientCard.setDoctorSepecificPatientId(patientCollection.getUserId());
-
-    			int historyCount = historyRepository.getByPatientIdAndNotEqualToDoctorLocationHospital(patientCollection.getUserId(), doctorId, locationId,
-    				hospitalId);
-    			if (historyCount > 0)
-    			    patientCard.setIsHistoryAvailable(true);
-
-    			patientCards.add(patientCard);
-    		    }
-    		}
-    		return patientCards;
-	}
-
-	public List<PatientCard> getSpecifiedPatientCards(Collection<String> patientIds, String doctorId, String locationId, String hospitalId) throws Exception {
+    public List<PatientCard> getSpecifiedPatientCards(Collection<String> patientIds, String doctorId, String locationId, String hospitalId) throws Exception {
 	// getting patients from patient ids
 	Query queryForGettingPatientsFromPatientIds = new Query();
 	if (!DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId) && patientIds != null && !patientIds.isEmpty()) {
@@ -382,13 +389,10 @@ public class ContactsServiceImpl implements ContactsService {
 		groupCollection = groupRepository.findByName(group.getName(), group.getDoctorId(), group.getLocationId(), group.getHospitalId());
 	    } else {
 		Query query = new Query();
-		
-		Criteria criteria = Criteria.where("id").ne(group.getId())
-				.and("name").is(group.getName())
-				.and("doctorId").is(group.getDoctorId())
-				.and("locationId").is(group.getLocationId())
-				.and("hospitalId").is(group.getHospitalId());
-		
+
+		Criteria criteria = Criteria.where("id").ne(group.getId()).and("name").is(group.getName()).and("doctorId").is(group.getDoctorId())
+			.and("locationId").is(group.getLocationId()).and("hospitalId").is(group.getHospitalId());
+
 		query.addCriteria(criteria);
 		groupCollection = mongoTemplate.find(query, GroupCollection.class);
 	    }
@@ -655,13 +659,13 @@ public class ContactsServiceImpl implements ContactsService {
 	PatientCollection patientCollection = patientRepository.findByUserId(request.getPatientId());
 	try {
 	    List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(request.getPatientId());
-		if (patientGroupCollections != null && !patientGroupCollections.isEmpty()) {
-		    for (PatientGroupCollection patientGroupCollection : patientGroupCollections) {
-			patientGroupRepository.delete(patientGroupCollection);
-		    }
+	    if (patientGroupCollections != null && !patientGroupCollections.isEmpty()) {
+		for (PatientGroupCollection patientGroupCollection : patientGroupCollections) {
+		    patientGroupRepository.delete(patientGroupCollection);
 		}
-		
-		if (request.getGroupIds() != null && !request.getGroupIds().isEmpty()) {
+	    }
+
+	    if (request.getGroupIds() != null && !request.getGroupIds().isEmpty()) {
 		for (String group : request.getGroupIds()) {
 		    PatientGroupCollection patientGroupCollection = new PatientGroupCollection();
 		    patientGroupCollection.setGroupId(group);
@@ -670,7 +674,7 @@ public class ContactsServiceImpl implements ContactsService {
 		    patientGroupRepository.save(patientGroupCollection);
 		}
 	    }
-		BeanUtil.map(request, response);
+	    BeanUtil.map(request, response);
 	    patientCollection.setUpdatedTime(new Date());
 	    patientRepository.save(patientCollection);
 	} catch (Exception e) {

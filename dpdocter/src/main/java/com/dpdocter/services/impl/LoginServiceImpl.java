@@ -44,7 +44,6 @@ import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.request.LoginRequest;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.LoginService;
-
 import common.util.web.DPDoctorUtils;
 
 /**
@@ -105,7 +104,7 @@ public class LoginServiceImpl implements LoginService {
 		logger.warn("Invalid username and Password");
 		throw new BusinessException(ServiceError.Unknown, "Invalid username and Password");
 	    }
-	    
+
 	    User user = new User();
 	    BeanUtil.map(userCollection, user);
 	    /**
@@ -118,18 +117,18 @@ public class LoginServiceImpl implements LoginService {
 		RoleCollection roleCollection = roleRepository.findOne(userRoleCollection.getRoleId());
 		if (roleCollection.getRole().equalsIgnoreCase(RoleEnum.PATIENT.getRole())
 			|| roleCollection.getRole().equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole())) {
-			if (!userCollection.getIsVerified()) {
-				logger.warn("This user is not verified");
-				throw new BusinessException(ServiceError.NotAuthorized, "This user is not verified");
-			    }
-			    if (!userCollection.getIsActive()) {
-				logger.warn("This user is not activated");
-				throw new BusinessException(ServiceError.NotAuthorized, "This user is not activated");
-			 }
-			    
-			userCollection.setLastSession(new Date());
-			userCollection = userRepository.save(userCollection);
-			    
+		    if (!userCollection.getIsVerified()) {
+			logger.warn("This user is not verified");
+			throw new BusinessException(ServiceError.NotAuthorized, "This user is not verified");
+		    }
+		    if (!userCollection.getIsActive()) {
+			logger.warn("This user is not activated");
+			throw new BusinessException(ServiceError.NotAuthorized, "This user is not activated");
+		    }
+
+		    userCollection.setLastSession(new Date());
+		    userCollection = userRepository.save(userCollection);
+
 		    response = new LoginResponse();
 		    response.setUser(user);
 		    roles.add(roleCollection.getRole());
@@ -137,30 +136,30 @@ public class LoginServiceImpl implements LoginService {
 		    response.setIsTempPassword(userCollection.getIsTempPassword());
 		    return response;
 		} else {
-			roles.add(roleCollection.getRole());
+		    roles.add(roleCollection.getRole());
 		    if (userCollection.getUserState() != null && userCollection.getUserState().equals(UserState.USERSTATEINCOMPLETE)) {
-		    	response = new LoginResponse();
-				user.setEmailAddress(user.getUserName());
-				response.setUser(user);
-				response.setRole(roles);
-				return response;
+			response = new LoginResponse();
+			user.setEmailAddress(user.getUserName());
+			response.setUser(user);
+			response.setRole(roles);
+			return response;
 		    }
-		    
+
 		    if (!userCollection.getIsVerified()) {
-		    	response = new LoginResponse();
-				user.setUserState(UserState.NOTVERIFIED);
-				response.setUser(user);
-				response.setRole(roles);
-				return response;
-			    }
+			response = new LoginResponse();
+			user.setUserState(UserState.NOTVERIFIED);
+			response.setUser(user);
+			response.setRole(roles);
+			return response;
+		    }
 		    if (!userCollection.getIsActive()) {
-		    	response = new LoginResponse();
-				user.setUserState(UserState.NOTACTIVATED);
-				response.setUser(user);
-				response.setRole(roles);
-				return response;
-			 }
-		    
+			response = new LoginResponse();
+			user.setUserState(UserState.NOTACTIVATED);
+			response.setUser(user);
+			response.setRole(roles);
+			return response;
+		    }
+
 		    userCollection.setLastSession(new Date());
 		    userCollection = userRepository.save(userCollection);
 		    List<UserLocationCollection> userLocationCollections = userLocationRepository.findByUserId(userCollection.getId());
@@ -240,24 +239,24 @@ public class LoginServiceImpl implements LoginService {
     }
 
     private String getFinalImageURL(String imageURL, UriInfo uriInfo) {
-    	if (imageURL != null) {
-    	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-    	    return finalImageURL + imageURL;
-    	} else
-    	    return null;
+	if (imageURL != null) {
+	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+	    return finalImageURL + imageURL;
+	} else
+	    return null;
 
-     }
-    
+    }
+
     private List<ClinicImage> getFinalClinicImages(List<ClinicImage> clinicImages, UriInfo uriInfo) {
-    if(clinicImages != null && !clinicImages.isEmpty())
-	for (ClinicImage clinicImage : clinicImages) {
-	    if (clinicImage.getImageUrl() != null) {
-	    	clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl(), uriInfo));
+	if (clinicImages != null && !clinicImages.isEmpty())
+	    for (ClinicImage clinicImage : clinicImages) {
+		if (clinicImage.getImageUrl() != null) {
+		    clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl(), uriInfo));
+		}
+		if (clinicImage.getThumbnailUrl() != null) {
+		    clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl(), uriInfo));
+		}
 	    }
-	    if (clinicImage.getThumbnailUrl() != null) {
-	    	clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl(), uriInfo));
-	    }
-	}
 	return clinicImages;
     }
 }

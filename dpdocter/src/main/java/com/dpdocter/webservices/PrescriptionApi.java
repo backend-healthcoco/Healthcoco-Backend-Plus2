@@ -54,7 +54,6 @@ import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrDrugDocument;
 import com.dpdocter.solr.document.SolrLabTestDocument;
 import com.dpdocter.solr.services.SolrPrescriptionService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -95,16 +94,16 @@ public class PrescriptionApi {
 
 	transnationalService.addResource(drugAddEditResponse.getId(), Resource.DRUG, false);
 
-	if(drugAddEditResponse != null){
-		SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
-		BeanUtil.map(drugAddEditResponse, solrDrugDocument);
-		if(drugAddEditResponse.getDrugType() != null){
-			solrDrugDocument.setDrugTypeId(drugAddEditResponse.getDrugType().getId());
-			solrDrugDocument.setDrugType(drugAddEditResponse.getDrugType().getType());
-		}
-		solrPrescriptionService.addDrug(solrDrugDocument);
+	if (drugAddEditResponse != null) {
+	    SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
+	    BeanUtil.map(drugAddEditResponse, solrDrugDocument);
+	    if (drugAddEditResponse.getDrugType() != null) {
+		solrDrugDocument.setDrugTypeId(drugAddEditResponse.getDrugType().getId());
+		solrDrugDocument.setDrugType(drugAddEditResponse.getDrugType().getType());
+	    }
+	    solrPrescriptionService.addDrug(solrDrugDocument);
 	}
-	
+
 	Response<DrugAddEditResponse> response = new Response<DrugAddEditResponse>();
 	response.setData(drugAddEditResponse);
 	return response;
@@ -121,14 +120,14 @@ public class PrescriptionApi {
 	DrugAddEditResponse drugAddEditResponse = prescriptionServices.editDrug(request);
 
 	transnationalService.addResource(drugAddEditResponse.getId(), Resource.DRUG, false);
-	if(drugAddEditResponse != null){
-		SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
-		BeanUtil.map(drugAddEditResponse, solrDrugDocument);
-		if(drugAddEditResponse.getDrugType() != null){
-			solrDrugDocument.setDrugTypeId(drugAddEditResponse.getDrugType().getId());
-			solrDrugDocument.setDrugType(drugAddEditResponse.getDrugType().getType());
-		}
-		solrPrescriptionService.editDrug(solrDrugDocument);
+	if (drugAddEditResponse != null) {
+	    SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
+	    BeanUtil.map(drugAddEditResponse, solrDrugDocument);
+	    if (drugAddEditResponse.getDrugType() != null) {
+		solrDrugDocument.setDrugTypeId(drugAddEditResponse.getDrugType().getId());
+		solrDrugDocument.setDrugType(drugAddEditResponse.getDrugType().getType());
+	    }
+	    solrPrescriptionService.editDrug(solrDrugDocument);
 	}
 	Response<DrugAddEditResponse> response = new Response<DrugAddEditResponse>();
 	response.setData(drugAddEditResponse);
@@ -221,9 +220,8 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_LAB_TEST)
     @DELETE
-    public Response<Boolean> deleteLabTest(@PathParam(value = "labTestId") String labTestId,
-	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
-	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    public Response<Boolean> deleteLabTest(@PathParam(value = "labTestId") String labTestId, @PathParam(value = "locationId") String locationId,
+	    @PathParam(value = "hospitalId") String hospitalId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(labTestId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
 	    logger.warn("Lab Test Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Lab Test Id, Hospital Id, Location Id Cannot Be Empty");
@@ -268,8 +266,8 @@ public class PrescriptionApi {
     @Path(value = PathProxy.PrescriptionUrls.GET_DIAGNOSTIC_TEST)
     @GET
     public Response<DiagnosticTestCollection> getDiagnosticTest() {
-	
-    List<DiagnosticTestCollection> diagnosticTestCollections = prescriptionServices.getDiagnosticTest();
+
+	List<DiagnosticTestCollection> diagnosticTestCollections = prescriptionServices.getDiagnosticTest();
 	Response<DiagnosticTestCollection> response = new Response<DiagnosticTestCollection>();
 	response.setDataList(diagnosticTestCollections);
 	return response;

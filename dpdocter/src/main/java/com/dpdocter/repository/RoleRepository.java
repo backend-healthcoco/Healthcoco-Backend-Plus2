@@ -48,6 +48,6 @@ public interface RoleRepository extends MongoRepository<RoleCollection, String> 
     public List<RoleCollection> findCustomGlobal(String locationId, String hospitalId, Date date, Sort sort);
 
     @Query("{'locationId': ?0, 'hospitalId': ?1}")
-	public List<RoleCollection> findByLocationIdAndHospitalId(String locationId, String hospitalId);
+    public List<RoleCollection> findByLocationIdAndHospitalId(String locationId, String hospitalId);
 
 }

@@ -80,28 +80,27 @@ public class DoctorMultipleDataAddEditResponse {
 	this.coverImageUrl = coverImageUrl;
     }
 
-	public String getThumbnailProfileImageUrl() {
-		return thumbnailProfileImageUrl;
-	}
+    public String getThumbnailProfileImageUrl() {
+	return thumbnailProfileImageUrl;
+    }
 
-	public void setThumbnailProfileImageUrl(String thumbnailProfileImageUrl) {
-		this.thumbnailProfileImageUrl = thumbnailProfileImageUrl;
-	}
+    public void setThumbnailProfileImageUrl(String thumbnailProfileImageUrl) {
+	this.thumbnailProfileImageUrl = thumbnailProfileImageUrl;
+    }
 
-	public String getThumbnailCoverImageUrl() {
-		return thumbnailCoverImageUrl;
-	}
+    public String getThumbnailCoverImageUrl() {
+	return thumbnailCoverImageUrl;
+    }
 
-	public void setThumbnailCoverImageUrl(String thumbnailCoverImageUrl) {
-		this.thumbnailCoverImageUrl = thumbnailCoverImageUrl;
-	}
+    public void setThumbnailCoverImageUrl(String thumbnailCoverImageUrl) {
+	this.thumbnailCoverImageUrl = thumbnailCoverImageUrl;
+    }
 
-	@Override
-	public String toString() {
-		return "DoctorMultipleDataAddEditResponse [doctorId=" + doctorId + ", title=" + title + ", firstName="
-				+ firstName + ", experience=" + experience + ", specialities=" + specialities + ", profileImageUrl="
-				+ profileImageUrl + ", thumbnailProfileImageUrl=" + thumbnailProfileImageUrl + ", coverImageUrl="
-				+ coverImageUrl + ", thumbnailCoverImageUrl=" + thumbnailCoverImageUrl + "]";
-	}
+    @Override
+    public String toString() {
+	return "DoctorMultipleDataAddEditResponse [doctorId=" + doctorId + ", title=" + title + ", firstName=" + firstName + ", experience=" + experience
+		+ ", specialities=" + specialities + ", profileImageUrl=" + profileImageUrl + ", thumbnailProfileImageUrl=" + thumbnailProfileImageUrl
+		+ ", coverImageUrl=" + coverImageUrl + ", thumbnailCoverImageUrl=" + thumbnailCoverImageUrl + "]";
+    }
 
 }

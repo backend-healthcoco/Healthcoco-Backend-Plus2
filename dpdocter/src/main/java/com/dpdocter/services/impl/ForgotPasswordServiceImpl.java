@@ -18,7 +18,6 @@ import com.dpdocter.response.ForgotPasswordResponse;
 import com.dpdocter.services.ForgotPasswordService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
-
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -44,9 +43,11 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	    UserCollection userCollection = null;
 	    ForgotPasswordResponse response = null;
 
-	    if (request.getUsername() == null)request.setUsername(request.getEmailAddress()); 
-	    
-	    if (request.getUsername() != null) userCollection = userRepository.findByUserName(request.getUsername());
+	    if (request.getUsername() == null)
+		request.setUsername(request.getEmailAddress());
+
+	    if (request.getUsername() != null)
+		userCollection = userRepository.findByUserName(request.getUsername());
 	    if (userCollection != null) {
 		if (userCollection.getEmailAddress().trim().equals(request.getEmailAddress().trim())) {
 		    String body = mailBodyGenerator.generateForgotPasswordEmailBody(userCollection.getUserName(), userCollection.getFirstName(),

@@ -12,8 +12,8 @@ public interface UserRoleRepository extends MongoRepository<UserRoleCollection, 
     public List<UserRoleCollection> findByUserId(String userId);
 
     @Query("{'userId': {$in: ?0}}")
-	public List<UserRoleCollection> findByUserIds(List<String> userIds);
+    public List<UserRoleCollection> findByUserIds(List<String> userIds);
 
     @Query("{'userId': ?0, 'roleId': {$in: ?1}}")
-	public UserRoleCollection findByUserIdAndRoleId(String userId, List<String> roleIds);
+    public UserRoleCollection findByUserIdAndRoleId(String userId, List<String> roleIds);
 }

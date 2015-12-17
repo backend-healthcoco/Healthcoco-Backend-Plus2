@@ -34,9 +34,10 @@ public interface PatientVisitService {
 
     void smsVisit(String visitId, String doctorId, String locationId, String hospitalId, String mobileNumber);
 
-	List<PatientVisit> getVisitsHandheld(String doctorId, String locationId, String hospitalId, String patientId, int page, int size, Boolean isOTPVerified, String updatedTime);
+    List<PatientVisit> getVisitsHandheld(String doctorId, String locationId, String hospitalId, String patientId, int page, int size, Boolean isOTPVerified,
+	    String updatedTime);
 
-	String editRecord(String id, VisitedFor prescription);
+    String editRecord(String id, VisitedFor prescription);
 
-	int getVisitCount(String doctorId, String patientId, String locationId, String hospitalId);
+    int getVisitCount(String doctorId, String patientId, String locationId, String hospitalId);
 }

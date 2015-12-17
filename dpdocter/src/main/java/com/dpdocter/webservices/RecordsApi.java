@@ -36,7 +36,6 @@ import com.dpdocter.request.RecordsSearchRequest;
 import com.dpdocter.request.TagRecordRequest;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.RecordsService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 

@@ -72,42 +72,42 @@ public class SolrLabTestDocument {
 	}
     }
 
-	public String getTestId() {
-		return testId;
-	}
+    public String getTestId() {
+	return testId;
+    }
 
-	public void setTestId(String testId) {
-		this.testId = testId;
-	}
+    public void setTestId(String testId) {
+	this.testId = testId;
+    }
 
-	public int getCost() {
-		return cost;
-	}
+    public int getCost() {
+	return cost;
+    }
 
-	public void setCost(int cost) {
-		this.cost = cost;
-	}
+    public void setCost(int cost) {
+	this.cost = cost;
+    }
 
-	public Boolean getDiscarded() {
-		return discarded;
-	}
+    public Boolean getDiscarded() {
+	return discarded;
+    }
 
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
 
-	public Date getUpdatedTime() {
-		return updatedTime;
-	}
+    public Date getUpdatedTime() {
+	return updatedTime;
+    }
 
-	public void setUpdatedTime(Date updatedTime) {
-		this.updatedTime = updatedTime;
-	}
+    public void setUpdatedTime(Date updatedTime) {
+	this.updatedTime = updatedTime;
+    }
 
-	@Override
-	public String toString() {
-		return "SolrLabTestDocument [id=" + id + ", testId=" + testId + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + ", cost=" + cost + ", discarded=" + discarded + ", updatedTime=" + updatedTime + "]";
-	}
+    @Override
+    public String toString() {
+	return "SolrLabTestDocument [id=" + id + ", testId=" + testId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", cost=" + cost
+		+ ", discarded=" + discarded + ", updatedTime=" + updatedTime + "]";
+    }
 
 }

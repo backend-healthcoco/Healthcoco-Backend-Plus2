@@ -35,7 +35,6 @@ import com.dpdocter.request.ImportContactsRequest;
 import com.dpdocter.request.PatientGroupAddEditRequest;
 import com.dpdocter.services.ContactsService;
 import com.dpdocter.services.PatientVisitService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -111,7 +110,7 @@ public class ContactsApi {
 	    break;
 	}
 
-	if (doctorContactsResponse!= null && doctorContactsResponse.getPatientCards() != null && !doctorContactsResponse.getPatientCards().isEmpty()) {
+	if (doctorContactsResponse != null && doctorContactsResponse.getPatientCards() != null && !doctorContactsResponse.getPatientCards().isEmpty()) {
 	    for (PatientCard patientCard : doctorContactsResponse.getPatientCards()) {
 		patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
 		patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));

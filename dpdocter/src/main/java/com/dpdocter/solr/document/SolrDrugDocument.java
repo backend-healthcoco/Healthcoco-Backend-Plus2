@@ -138,27 +138,26 @@ public class SolrDrugDocument {
 	this.updatedTime = updatedTime;
     }
 
-	public String getDrugTypeId() {
-		return drugTypeId;
-	}
+    public String getDrugTypeId() {
+	return drugTypeId;
+    }
 
-	public void setDrugTypeId(String drugTypeId) {
-		this.drugTypeId = drugTypeId;
-	}
+    public void setDrugTypeId(String drugTypeId) {
+	this.drugTypeId = drugTypeId;
+    }
 
-	public String getDrugType() {
-		return drugType;
-	}
+    public String getDrugType() {
+	return drugType;
+    }
 
-	public void setDrugType(String drugType) {
-		this.drugType = drugType;
-	}
+    public void setDrugType(String drugType) {
+	this.drugType = drugType;
+    }
 
-	@Override
-	public String toString() {
-		return "SolrDrugDocument [id=" + id + ", drugName=" + drugName + ", description=" + description + ", drugCode="
-				+ drugCode + ", drugTypeId=" + drugTypeId + ", drugType=" + drugType + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
-				+ ", updatedTime=" + updatedTime + "]";
-	}
+    @Override
+    public String toString() {
+	return "SolrDrugDocument [id=" + id + ", drugName=" + drugName + ", description=" + description + ", drugCode=" + drugCode + ", drugTypeId="
+		+ drugTypeId + ", drugType=" + drugType + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+		+ ", discarded=" + discarded + ", updatedTime=" + updatedTime + "]";
+    }
 }

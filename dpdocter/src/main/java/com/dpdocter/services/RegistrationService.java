@@ -84,6 +84,6 @@ public interface RegistrationService {
 
     void checkPatientCount(String mobileNumber);
 
-	List<ClinicDoctorResponse> getDoctors(int page, int size, String locationId, String hospitalId, String updatedTime);
+    List<ClinicDoctorResponse> getDoctors(int page, int size, String locationId, String hospitalId, String updatedTime);
 
 }

@@ -27,58 +27,58 @@ public class LabTestCollection extends GenericCollection {
     @Field
     private Boolean discarded = false;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public DiagnosticTest getTest() {
-		return test;
-	}
+    public DiagnosticTest getTest() {
+	return test;
+    }
 
-	public void setTest(DiagnosticTest test) {
-		this.test = test;
-	}
+    public void setTest(DiagnosticTest test) {
+	this.test = test;
+    }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
 
-	public String getHospitalId() {
-		return hospitalId;
-	}
+    public String getHospitalId() {
+	return hospitalId;
+    }
 
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
 
-	public int getCost() {
-		return cost;
-	}
+    public int getCost() {
+	return cost;
+    }
 
-	public void setCost(int cost) {
-		this.cost = cost;
-	}
+    public void setCost(int cost) {
+	this.cost = cost;
+    }
 
-	public Boolean getDiscarded() {
-		return discarded;
-	}
+    public Boolean getDiscarded() {
+	return discarded;
+    }
 
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
 
-	@Override
-	public String toString() {
-		return "LabTestCollection [id=" + id + ", test=" + test + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + ", cost=" + cost + ", discarded=" + discarded + "]";
-	}
+    @Override
+    public String toString() {
+	return "LabTestCollection [id=" + id + ", test=" + test + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", cost=" + cost
+		+ ", discarded=" + discarded + "]";
+    }
 
 }

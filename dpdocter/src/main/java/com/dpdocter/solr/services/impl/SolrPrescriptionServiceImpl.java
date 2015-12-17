@@ -21,7 +21,6 @@ import com.dpdocter.solr.document.SolrLabTestDocument;
 import com.dpdocter.solr.repository.SolrDrugRepository;
 import com.dpdocter.solr.repository.SolrLabTestRepository;
 import com.dpdocter.solr.services.SolrPrescriptionService;
-
 import common.util.web.DPDoctorUtils;
 
 @Service

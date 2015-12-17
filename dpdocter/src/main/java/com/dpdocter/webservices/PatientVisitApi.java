@@ -26,7 +26,6 @@ import com.dpdocter.request.AddMultipleDataRequest;
 import com.dpdocter.response.PatientVisitResponse;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientVisitService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -43,10 +42,9 @@ public class PatientVisitApi {
 
     @Autowired
     private OTPService otpService;
-    
+
     @Context
     private UriInfo uriInfo;
-
 
     @Path(value = PathProxy.PatientVisitUrls.ADD_MULTIPLE_DATA)
     @POST

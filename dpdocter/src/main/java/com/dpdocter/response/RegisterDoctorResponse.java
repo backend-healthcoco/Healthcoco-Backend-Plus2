@@ -2,7 +2,6 @@ package com.dpdocter.response;
 
 import java.util.List;
 
-import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.Role;
 
@@ -179,12 +178,10 @@ public class RegisterDoctorResponse {
     }
 
     @Override
-	public String toString() {
-		return "RegisterDoctorResponse [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName
-				+ ", middleName=" + middleName + ", userName=" + userName + ", password=" + password + ", emailAddress="
-				+ emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob=" + dob
-				+ ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl + ", specialization=" + specialization
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", registerNumber=" + registerNumber
-				+ ", role=" + role + "]";
-	}
+    public String toString() {
+	return "RegisterDoctorResponse [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName
+		+ ", userName=" + userName + ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender="
+		+ gender + ", dob=" + dob + ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl + ", specialization=" + specialization + ", locationId="
+		+ locationId + ", hospitalId=" + hospitalId + ", registerNumber=" + registerNumber + ", role=" + role + "]";
+    }
 }

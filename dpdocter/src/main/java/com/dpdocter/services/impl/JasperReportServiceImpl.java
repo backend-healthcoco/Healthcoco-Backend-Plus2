@@ -3,16 +3,6 @@ package com.dpdocter.services.impl;
 import java.io.File;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-import com.dpdocter.exceptions.BusinessException;
-import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.services.JasperReportService;
-import com.jaspersoft.mongodb.connection.MongoDbConnection;
-
-import ar.com.fdvs.dj.domain.constants.Page;
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRPropertiesUtil;
@@ -24,6 +14,17 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import ar.com.fdvs.dj.domain.constants.Page;
+
+import com.dpdocter.exceptions.BusinessException;
+import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.services.JasperReportService;
+import com.jaspersoft.mongodb.connection.MongoDbConnection;
 
 @Service
 public class JasperReportServiceImpl implements JasperReportService {
@@ -48,7 +49,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 	    context.setValue("net.sf.jasperreports.extension.registry.factory.queryexecuters.mongodb",
 		    "com.jaspersoft.mongodb.query.MongoDbQueryExecuterExtensionsRegistryFactory");
 	    JRPropertiesUtil propertiesUtil = JRPropertiesUtil.getInstance(context);
-	   
+
 	    JRProperties.setProperty("net.sf.jasperreports.query.executer.factory.MongoDbQuery", "com.jaspersoft.mongodb.query.MongoDbQueryExecuterFactory");
 	    JasperDesign design = JRXmlLoader.load(new File(REPORT_NAME + fileName + ".jrxml"));
 
@@ -79,7 +80,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 	    JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters);
 
-	    JasperExportManager.exportReportToPdfFile(jasperPrint, REPORT_NAME + pdfName +".pdf");
+	    JasperExportManager.exportReportToPdfFile(jasperPrint, REPORT_NAME + pdfName + ".pdf");
 
 	    return REPORT_NAME + pdfName + ".pdf";
 
