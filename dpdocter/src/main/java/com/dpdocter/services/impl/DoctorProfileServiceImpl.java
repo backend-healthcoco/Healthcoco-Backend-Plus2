@@ -449,7 +449,6 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		    doctorClinic.setImages(locationCollection.getImages());
 		    doctorClinic.setLogoUrl(locationCollection.getLogoUrl());
 		    doctorClinic.setLogoThumbnailUrl(locationCollection.getLogoThumbnailUrl());
-
 		    clinicProfile.add(doctorClinic);
 
 		}
@@ -578,10 +577,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	try {
 	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
 	    if (userLocationCollection != null) {
-		doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
+		doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getLocationId());
 		if (doctorClinicProfileCollection == null) {
 		    doctorClinicProfileCollection = new DoctorClinicProfileCollection();
-		    doctorClinicProfileCollection.setLocationId(userLocationCollection.getId());
+		    doctorClinicProfileCollection.setLocationId(userLocationCollection.getLocationId());
 		    doctorClinicProfileCollection.setCreatedTime(new Date());
 		}
 		doctorClinicProfileCollection.setAppointmentBookingNumber(request.getAppointmentBookingNumber());
@@ -603,10 +602,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	try {
 	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
 	    if (userLocationCollection != null) {
-		doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
+		doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getLocationId());
 		if (doctorClinicProfileCollection == null) {
 		    doctorClinicProfileCollection = new DoctorClinicProfileCollection();
-		    doctorClinicProfileCollection.setLocationId(userLocationCollection.getId());
+		    doctorClinicProfileCollection.setLocationId(userLocationCollection.getLocationId());
 		    doctorClinicProfileCollection.setCreatedTime(new Date());
 		}
 		doctorClinicProfileCollection.setWorkingSchedules(request.getWorkingSchedules());
@@ -628,10 +627,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	try {
 	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
 	    if (userLocationCollection != null) {
-		doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
+		doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getLocationId());
 		if (doctorClinicProfileCollection == null) {
 		    doctorClinicProfileCollection = new DoctorClinicProfileCollection();
-		    doctorClinicProfileCollection.setLocationId(userLocationCollection.getId());
+		    doctorClinicProfileCollection.setLocationId(userLocationCollection.getLocationId());
 		    doctorClinicProfileCollection.setCreatedTime(new Date());
 		}
 		doctorClinicProfileCollection.setConsultationFee(request.getConsultationFee());
@@ -653,10 +652,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	try {
 	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
 	    if (userLocationCollection != null) {
-		doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
+		doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getLocationId());
 		if (doctorClinicProfileCollection == null) {
 		    doctorClinicProfileCollection = new DoctorClinicProfileCollection();
-		    doctorClinicProfileCollection.setLocationId(userLocationCollection.getId());
+		    doctorClinicProfileCollection.setLocationId(userLocationCollection.getLocationId());
 		    doctorClinicProfileCollection.setCreatedTime(new Date());
 		}
 		doctorClinicProfileCollection.setAppointmentSlot(request.getAppointmentSlot());

@@ -91,8 +91,8 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     @Override
     public SolrPatientResponseDetails searchPatient(String doctorId, String locationId, String hospitalId, String searchTerm, int page, int size) {
 	List<SolrPatientDocument> patients = new ArrayList<SolrPatientDocument>();
-	List<SolrPatientResponse> response = null;
-	SolrPatientResponseDetails responseDetails = null;
+	List<SolrPatientResponse> patientsResponse = null;
+	SolrPatientResponseDetails patientResponseDetails = null;
 	try {
 
 	    Criteria advancedCriteria = Criteria.where("doctorId").is(doctorId).and("locationId").is(locationId).and("hospitalId").is(hospitalId);
@@ -111,18 +111,22 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 		patients = solrTemplate.queryForPage(query, SolrPatientDocument.class).getContent();
 
 	    if (patients != null && !patients.isEmpty()) {
-		response = new ArrayList<SolrPatientResponse>();
-		BeanUtil.map(patients, response);
-		responseDetails = new SolrPatientResponseDetails();
-		responseDetails.setPatients(response);
-		responseDetails.setTotalSize(solrTemplate.count(new SimpleQuery(advancedCriteria)));
+		patientsResponse = new ArrayList<SolrPatientResponse>();
+		for (SolrPatientDocument patient : patients) {
+		    SolrPatientResponse patientResponse = new SolrPatientResponse();
+		    BeanUtil.map(patient, patientResponse);
+		    patientsResponse.add(patientResponse);
+		}
+		patientResponseDetails = new SolrPatientResponseDetails();
+		patientResponseDetails.setPatients(patientsResponse);
+		patientResponseDetails.setTotalSize(solrTemplate.count(new SimpleQuery(advancedCriteria)));
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Searching Patient");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
 	}
-	return responseDetails;
+	return patientResponseDetails;
     }
 
     @Override

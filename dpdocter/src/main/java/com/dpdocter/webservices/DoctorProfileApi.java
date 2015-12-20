@@ -439,6 +439,8 @@ public class DoctorProfileApi {
 	DoctorMultipleDataAddEditResponse addEditNameResponse = doctorProfileService.addEditMultipleData(request);
 	addEditNameResponse.setCoverImageUrl(getFinalImageURL(addEditNameResponse.getCoverImageUrl()));
 	addEditNameResponse.setProfileImageUrl(getFinalImageURL(addEditNameResponse.getProfileImageUrl()));
+	addEditNameResponse.setThumbnailCoverImageUrl(getFinalImageURL(addEditNameResponse.getThumbnailCoverImageUrl()));
+	addEditNameResponse.setThumbnailProfileImageUrl(getFinalImageURL(addEditNameResponse.getThumbnailProfileImageUrl()));
 
 	Response<DoctorMultipleDataAddEditResponse> response = new Response<DoctorMultipleDataAddEditResponse>();
 	response.setData(addEditNameResponse);

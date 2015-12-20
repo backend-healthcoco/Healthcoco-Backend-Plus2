@@ -641,6 +641,10 @@ public class ContactsServiceImpl implements ContactsService {
 		    registeredPatientDetail.setCreatedTime(patientCollection.getCreatedTime());
 		    registeredPatientDetail.setPID(patientCollection.getPID());
 
+		    if (patientCollection.getDob() != null) {
+			registeredPatientDetail.setDob(patientCollection.getDob());
+		    }
+
 		    registeredPatientDetails.add(registeredPatientDetail);
 		}
 	    }
