@@ -301,7 +301,8 @@ public class HistoryApi {
     public Response<HistoryDetailsResponse> getPatientHistoryDetailsOTP(@PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId, @MatrixParam("historyFilter") List<String> historyFilter,
-	    @PathParam(value = "otpVerified") boolean otpVerified, @QueryParam("page") int page, @QueryParam("size") int size) {
+	    @PathParam(value = "otpVerified") boolean otpVerified, @QueryParam("page") int page, @QueryParam("size") int size,
+	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
 	if (DPDoctorUtils.anyStringEmpty(patientId, doctorId, hospitalId, locationId)) {
 	    logger.warn("Patient Id, Doctor Id, Hospital Id, Location Id, History Filter Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Patient Id, Doctor Id, Hospital Id, Location Id, History Filter Cannot Be Empty");
@@ -309,10 +310,10 @@ public class HistoryApi {
 	List<HistoryDetailsResponse> historyDetailsResponses = null;
 	if (otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId)) {
 	    historyDetailsResponses = historyServices.getPatientHistoryDetailsWithVerifiedOTP(patientId, doctorId, hospitalId, locationId, historyFilter, page,
-		    size);
+		    size, updatedTime);
 	} else {
 	    historyDetailsResponses = historyServices.getPatientHistoryDetailsWithoutVerifiedOTP(patientId, doctorId, hospitalId, locationId, historyFilter,
-		    page, size);
+		    page, size, updatedTime);
 	}
 	if (historyDetailsResponses != null && !historyDetailsResponses.isEmpty())
 	    for (HistoryDetailsResponse historyDetailsResponse : historyDetailsResponses) {
@@ -458,6 +459,33 @@ public class HistoryApi {
 	    return finalImageURL + imageURL;
 	} else
 	    return null;
+
+    }
+
+    @GET
+    public Response<HistoryDetailsResponse> getMultipleData(@QueryParam(value = "doctorId") String doctorId,
+	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+	    @QueryParam(value = "patientId") String patientId, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
+	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @DefaultValue("true") @QueryParam(value = "inHistory") Boolean inHistory) {
+
+	List<HistoryDetailsResponse> historyDetailsResponses = historyServices.getMultipleData(patientId, doctorId, hospitalId, locationId, updatedTime,
+		inHistory);
+
+	if (historyDetailsResponses != null && !historyDetailsResponses.isEmpty())
+	    for (HistoryDetailsResponse historyDetailsResponse : historyDetailsResponses) {
+		if (historyDetailsResponse.getGeneralRecords() != null) {
+		    for (GeneralData generalData : historyDetailsResponse.getGeneralRecords()) {
+			if (generalData.getDataType().equals(HistoryFilter.CLINICAL_NOTES)) {
+			    ((ClinicalNotes) generalData.getData()).setDiagrams(getFinalDiagrams(((ClinicalNotes) generalData.getData()).getDiagrams()));
+			} else if (generalData.getDataType().equals(HistoryFilter.REPORTS)) {
+			    ((Records) generalData.getData()).setRecordsUrl(getFinalImageURL(((Records) generalData.getData()).getRecordsUrl()));
+			}
+		    }
+		}
+	    }
+	Response<HistoryDetailsResponse> response = new Response<HistoryDetailsResponse>();
+	response.setDataList(historyDetailsResponses);
+	return response;
 
     }
 }

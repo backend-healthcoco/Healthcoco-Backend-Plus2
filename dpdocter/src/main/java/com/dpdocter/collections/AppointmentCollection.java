@@ -9,168 +9,166 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.beans.Timing;
 
 @Document(collection = "appointment_cl")
-public class AppointmentCollection extends GenericCollection{
+public class AppointmentCollection extends GenericCollection {
 
-	@Id
+    @Id
     private String id;
 
-	@Field
+    @Field
     private String userLocationId;
-	
-	@Field
+
+    @Field
     private String appointmentId;
-	
-	@Field
+
+    @Field
     private Timing time;
-	
-	@Field
+
+    @Field
     private String patientId;
-	
-	@Field
+
+    @Field
     private Boolean isConfirmed = false;
-	
-	@Field
+
+    @Field
     private Boolean isCanceled = false;
-	
-	@Field
+
+    @Field
     private Boolean isReschduled = false;
-	
-	@Field
+
+    @Field
     private Boolean isEvent = false;
-	
-	@Field
+
+    @Field
     private Boolean isCalenderBlocked = false;
 
-	@Field
-	private Date date;
-	
-	@Field
+    @Field
+    private Date date;
+
+    @Field
     private int day;
-	
-	@Field
+
+    @Field
     private int week;
-	
-	@Field
+
+    @Field
     private int month;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getUserLocationId() {
-		return userLocationId;
-	}
+    public String getUserLocationId() {
+	return userLocationId;
+    }
 
-	public void setUserLocationId(String userLocationId) {
-		this.userLocationId = userLocationId;
-	}
+    public void setUserLocationId(String userLocationId) {
+	this.userLocationId = userLocationId;
+    }
 
-	public Timing getTime() {
-		return time;
-	}
+    public Timing getTime() {
+	return time;
+    }
 
-	public void setTime(Timing time) {
-		this.time = time;
-	}
+    public void setTime(Timing time) {
+	this.time = time;
+    }
 
-	public String getPatientId() {
-		return patientId;
-	}
+    public String getPatientId() {
+	return patientId;
+    }
 
-	public void setPatientId(String patientId) {
-		this.patientId = patientId;
-	}
+    public void setPatientId(String patientId) {
+	this.patientId = patientId;
+    }
 
-	public Boolean getIsConfirmed() {
-		return isConfirmed;
-	}
+    public Boolean getIsConfirmed() {
+	return isConfirmed;
+    }
 
-	public void setIsConfirmed(Boolean isConfirmed) {
-		this.isConfirmed = isConfirmed;
-	}
+    public void setIsConfirmed(Boolean isConfirmed) {
+	this.isConfirmed = isConfirmed;
+    }
 
-	public Boolean getIsCanceled() {
-		return isCanceled;
-	}
+    public Boolean getIsCanceled() {
+	return isCanceled;
+    }
 
-	public void setIsCanceled(Boolean isCanceled) {
-		this.isCanceled = isCanceled;
-	}
+    public void setIsCanceled(Boolean isCanceled) {
+	this.isCanceled = isCanceled;
+    }
 
-	public Boolean getIsReschduled() {
-		return isReschduled;
-	}
+    public Boolean getIsReschduled() {
+	return isReschduled;
+    }
 
-	public void setIsReschduled(Boolean isReschduled) {
-		this.isReschduled = isReschduled;
-	}
+    public void setIsReschduled(Boolean isReschduled) {
+	this.isReschduled = isReschduled;
+    }
 
-	public Date getDate() {
-		return date;
-	}
+    public Date getDate() {
+	return date;
+    }
 
-	public void setDate(Date date) {
-		this.date = date;
-	}
+    public void setDate(Date date) {
+	this.date = date;
+    }
 
-	public int getDay() {
-		return day;
-	}
+    public int getDay() {
+	return day;
+    }
 
-	public void setDay(int day) {
-		this.day = day;
-	}
+    public void setDay(int day) {
+	this.day = day;
+    }
 
-	public int getWeek() {
-		return week;
-	}
+    public int getWeek() {
+	return week;
+    }
 
-	public void setWeek(int week) {
-		this.week = week;
-	}
+    public void setWeek(int week) {
+	this.week = week;
+    }
 
-	public int getMonth() {
-		return month;
-	}
+    public int getMonth() {
+	return month;
+    }
 
-	public void setMonth(int month) {
-		this.month = month;
-	}
+    public void setMonth(int month) {
+	this.month = month;
+    }
 
-	public String getAppointmentId() {
-		return appointmentId;
-	}
+    public String getAppointmentId() {
+	return appointmentId;
+    }
 
-	public void setAppointmentId(String appointmentId) {
-		this.appointmentId = appointmentId;
-	}
+    public void setAppointmentId(String appointmentId) {
+	this.appointmentId = appointmentId;
+    }
 
-	public Boolean getIsEvent() {
-		return isEvent;
-	}
+    public Boolean getIsEvent() {
+	return isEvent;
+    }
 
-	public void setIsEvent(Boolean isEvent) {
-		this.isEvent = isEvent;
-	}
+    public void setIsEvent(Boolean isEvent) {
+	this.isEvent = isEvent;
+    }
 
-	public Boolean getIsCalenderBlocked() {
-		return isCalenderBlocked;
-	}
+    public Boolean getIsCalenderBlocked() {
+	return isCalenderBlocked;
+    }
 
-	public void setIsCalenderBlocked(Boolean isCalenderBlocked) {
-		this.isCalenderBlocked = isCalenderBlocked;
-	}
+    public void setIsCalenderBlocked(Boolean isCalenderBlocked) {
+	this.isCalenderBlocked = isCalenderBlocked;
+    }
 
-	@Override
-	public String toString() {
-		return "AppointmentCollection [id=" + id + ", userLocationId=" + userLocationId + ", appointmentId="
-				+ appointmentId + ", time=" + time + ", patientId=" + patientId + ", isConfirmed=" + isConfirmed
-				+ ", isCanceled=" + isCanceled + ", isReschduled=" + isReschduled + ", isEvent=" + isEvent
-				+ ", isCalenderBlocked=" + isCalenderBlocked + ", date=" + date + ", day=" + day + ", week=" + week
-				+ ", month=" + month + "]";
-	}
+    @Override
+    public String toString() {
+	return "AppointmentCollection [id=" + id + ", userLocationId=" + userLocationId + ", appointmentId=" + appointmentId + ", time=" + time
+		+ ", patientId=" + patientId + ", isConfirmed=" + isConfirmed + ", isCanceled=" + isCanceled + ", isReschduled=" + isReschduled + ", isEvent="
+		+ isEvent + ", isCalenderBlocked=" + isCalenderBlocked + ", date=" + date + ", day=" + day + ", week=" + week + ", month=" + month + "]";
+    }
 }

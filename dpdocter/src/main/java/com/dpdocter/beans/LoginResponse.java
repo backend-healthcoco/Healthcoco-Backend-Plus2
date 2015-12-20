@@ -9,15 +9,15 @@ public class LoginResponse {
 
     private List<Hospital> hospitals = null;
 
-    private String role;
+    private List<String> role;
 
     private Boolean isTempPassword = false;
 
-    public String getRole() {
+    public List<String> getRole() {
 	return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(List<String> role) {
 	this.role = role;
     }
 

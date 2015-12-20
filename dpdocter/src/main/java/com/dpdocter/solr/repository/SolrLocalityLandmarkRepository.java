@@ -19,18 +19,18 @@ public interface SolrLocalityLandmarkRepository extends SolrCrudRepository<SolrL
     List<SolrLocalityLandmarkDocument> findByCityIdAndLocality(String cityId, String searchTerm);
 
     @Query("landmark:*?0*")
-	List<SolrLocalityLandmarkDocument> findByLandmark(String searchTerm);
+    List<SolrLocalityLandmarkDocument> findByLandmark(String searchTerm);
 
     @Query("locality:*?0*")
-	List<SolrLocalityLandmarkDocument> findByLocality(String searchTerm);
+    List<SolrLocalityLandmarkDocument> findByLocality(String searchTerm);
 
     @Query("landmark:*?0* AND !geofilt sfield='geoLocation'  pt=?1,?2 d=10")
-	List<SolrLocalityLandmarkDocument> findByLandmark(String searchTerm, double latitude, double longitude);
+    List<SolrLocalityLandmarkDocument> findByLandmark(String searchTerm, double latitude, double longitude);
 
     @Query("locality:*?0* AND !geofilt sfield='geoLocation'  pt=?1,?2 d=10")
-	List<SolrLocalityLandmarkDocument> findByLocality(String searchTerm, double latitude, double longitude);
+    List<SolrLocalityLandmarkDocument> findByLocality(String searchTerm, double latitude, double longitude);
 
     @Query("!geofilt sfield='geoLocation'  pt=?0,?1 d=10")
-	List<SolrLocalityLandmarkDocument> findByLandmarkANDLocality(double latitude, double longitude);
+    List<SolrLocalityLandmarkDocument> findByLandmarkANDLocality(double latitude, double longitude);
 
 }

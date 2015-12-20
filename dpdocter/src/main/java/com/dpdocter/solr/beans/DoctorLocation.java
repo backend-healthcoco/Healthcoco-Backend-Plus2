@@ -5,10 +5,10 @@ import java.util.List;
 import org.apache.solr.client.solrj.beans.Field;
 
 public class DoctorLocation {
-	@Field
+    @Field
     private String locationId;
-	
-	@Field
+
+    @Field
     private String locationName;
 
     @Field
@@ -55,7 +55,7 @@ public class DoctorLocation {
 
     @Field
     private List<String> specialization;
-    
+
     public String getLocationName() {
 	return locationName;
     }
@@ -176,20 +176,20 @@ public class DoctorLocation {
 	this.alternateNumber = alternateNumber;
     }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
 
-	public List<String> getSpecialization() {
-		return specialization;
-	}
+    public List<String> getSpecialization() {
+	return specialization;
+    }
 
-	public void setSpecialization(List<String> specialization) {
-		this.specialization = specialization;
-	}
+    public void setSpecialization(List<String> specialization) {
+	this.specialization = specialization;
+    }
 
 }

@@ -61,34 +61,33 @@ public class CityCollection {
 	this.isActivated = isActivated;
     }
 
-	public String getCountryId() {
-		return countryId;
-	}
+    public String getCountryId() {
+	return countryId;
+    }
 
-	public void setCountryId(String countryId) {
-		this.countryId = countryId;
-	}
+    public void setCountryId(String countryId) {
+	this.countryId = countryId;
+    }
 
-	public double getLatitude() {
-		return latitude;
-	}
+    public double getLatitude() {
+	return latitude;
+    }
 
-	public void setLatitude(double latitude) {
-		this.latitude = latitude;
-	}
+    public void setLatitude(double latitude) {
+	this.latitude = latitude;
+    }
 
-	public double getLongitude() {
-		return longitude;
-	}
+    public double getLongitude() {
+	return longitude;
+    }
 
-	public void setLongitude(double longitude) {
-		this.longitude = longitude;
-	}
+    public void setLongitude(double longitude) {
+	this.longitude = longitude;
+    }
 
-	@Override
-	public String toString() {
-		return "CityCollection [id=" + id + ", city=" + city + ", description=" + description + ", isActivated="
-				+ isActivated + ", countryId=" + countryId + ", latitude=" + latitude + ", longitude=" + longitude
-				+ "]";
-	}
+    @Override
+    public String toString() {
+	return "CityCollection [id=" + id + ", city=" + city + ", description=" + description + ", isActivated=" + isActivated + ", countryId=" + countryId
+		+ ", latitude=" + latitude + ", longitude=" + longitude + "]";
+    }
 }

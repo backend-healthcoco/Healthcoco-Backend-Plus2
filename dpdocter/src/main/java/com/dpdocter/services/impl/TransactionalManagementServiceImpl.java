@@ -184,10 +184,11 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		AddressCollection addressCollection = addressRepository.findOne(patientCollection.getAddressId());
 		SolrPatientDocument patientDocument = new SolrPatientDocument();
 
-		patientDocument.setDays(userCollection.getDob().getDays() + "");
-		patientDocument.setMonths(userCollection.getDob().getMonths() + "");
-		patientDocument.setYears(userCollection.getDob().getYears() + "");
-
+		if (patientCollection.getDob() != null) {
+		    patientDocument.setDays(patientCollection.getDob().getDays() + "");
+		    patientDocument.setMonths(patientCollection.getDob().getMonths() + "");
+		    patientDocument.setYears(patientCollection.getDob().getYears() + "");
+		}
 		BeanUtil.map(userCollection, patientDocument);
 		BeanUtil.map(patientCollection, patientDocument);
 		BeanUtil.map(patientAdmissionCollection, patientDocument);

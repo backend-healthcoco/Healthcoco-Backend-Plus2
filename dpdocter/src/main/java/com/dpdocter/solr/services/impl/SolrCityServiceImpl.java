@@ -21,7 +21,6 @@ import com.dpdocter.solr.repository.SolrCityRepository;
 import com.dpdocter.solr.repository.SolrCountryRepository;
 import com.dpdocter.solr.repository.SolrLocalityLandmarkRepository;
 import com.dpdocter.solr.services.SolrCityService;
-
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -39,19 +38,20 @@ public class SolrCityServiceImpl implements SolrCityService {
     @Autowired
     private TransactionalManagementService transnationalService;
 
-	@Override
-	public boolean addCountry(SolrCountryDocument solrCountry) {
-		boolean response = false;
-		try {
-		    solrCountryRepository.save(solrCountry);
-		    transnationalService.addResource(solrCountry.getId(), Resource.COUNTRY, true);
-		    response = true;
-		} catch (Exception e) {
-		    e.printStackTrace();
-//		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Country");
-		}
-		return response;
+    @Override
+    public boolean addCountry(SolrCountryDocument solrCountry) {
+	boolean response = false;
+	try {
+	    solrCountryRepository.save(solrCountry);
+	    transnationalService.addResource(solrCountry.getId(), Resource.COUNTRY, true);
+	    response = true;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    // throw new BusinessException(ServiceError.Unknown,
+	    // "Error Occurred While Saving Country");
 	}
+	return response;
+    }
 
     @Override
     public boolean addCities(SolrCityDocument solrCities) {
@@ -62,7 +62,8 @@ public class SolrCityServiceImpl implements SolrCityService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving City");
+	    // throw new BusinessException(ServiceError.Unknown,
+	    // "Error Occurred While Saving City");
 	}
 	return response;
     }
@@ -78,7 +79,8 @@ public class SolrCityServiceImpl implements SolrCityService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Activating Deactivating City");
+	    // throw new BusinessException(ServiceError.Unknown,
+	    // "Error Occurred While Activating Deactivating City");
 	}
 	return response;
     }
@@ -92,7 +94,8 @@ public class SolrCityServiceImpl implements SolrCityService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-//	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Locality or Landmark City");
+	    // throw new BusinessException(ServiceError.Unknown,
+	    // "Error Occurred While Saving Locality or Landmark City");
 	}
 	return response;
     }
@@ -109,7 +112,6 @@ public class SolrCityServiceImpl implements SolrCityService {
 	return response;
 
     }
-    
 
     @Override
     public List<SolrLocalityLandmarkDocument> searchLandmarkLocality(String cityId, String type, String searchTerm) {
@@ -130,64 +132,66 @@ public class SolrCityServiceImpl implements SolrCityService {
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Landmark Locality");
 	}
 	return response;
-}
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<SolrCityLandmarkLocalityResponse> searchCityLandmarkLocality(String searchTerm, String latitude, String longitude) {
-		List<SolrCityLandmarkLocalityResponse> response = new ArrayList<SolrCityLandmarkLocalityResponse>();
-		try {
-			List<SolrLocalityLandmarkDocument> landmarks = null;
-			List<SolrLocalityLandmarkDocument> localities = null;
-			List<SolrCityDocument> cities = null;
-			if(DPDoctorUtils.anyStringEmpty(latitude, longitude)){
-				if (searchTerm != null){
-			    	landmarks = solrLocalityLandmarkRepository.findByLandmark(searchTerm);
-			    	localities = solrLocalityLandmarkRepository.findByLocality(searchTerm); 
-			    	cities = solrCityRepository.findByQueryAnnotation(searchTerm);
-			    }else{
-			    	landmarks = IteratorUtils.toList(solrLocalityLandmarkRepository.findAll().iterator());
-			    	cities = IteratorUtils.toList(solrCityRepository.findAll().iterator());
-			    }
-			}
-			else{
-				if (searchTerm != null){
-			    	landmarks = solrLocalityLandmarkRepository.findByLandmark(searchTerm, Double.parseDouble(latitude), Double.parseDouble(longitude));
-			    	localities = solrLocalityLandmarkRepository.findByLocality(searchTerm, Double.parseDouble(latitude), Double.parseDouble(longitude)); 
-			    	cities = solrCityRepository.findByQueryAnnotation(searchTerm, Double.parseDouble(latitude), Double.parseDouble(longitude));
-			    }else{
-			    	landmarks = solrLocalityLandmarkRepository.findByLandmarkANDLocality(Double.parseDouble(latitude), Double.parseDouble(longitude));
-			    	cities = solrCityRepository.findByQueryAnnotation(Double.parseDouble(latitude), Double.parseDouble(longitude));
-			    }
-			}
-			if(landmarks != null && !landmarks.isEmpty()){
-				for(SolrLocalityLandmarkDocument document : landmarks){
-					SolrCityDocument city = solrCityRepository.findOne(document.getCityId());
-					SolrCityLandmarkLocalityResponse landmark = new SolrCityLandmarkLocalityResponse();
-					BeanUtil.map(document, landmark);
-					if(city!=null)landmark.setCity(city.getCity());
-					response.add(landmark);
-				}
-			}
-			if(localities != null && !localities.isEmpty()){
-				for(SolrLocalityLandmarkDocument document : localities){
-					SolrCityDocument city = solrCityRepository.findOne(document.getCityId());
-					SolrCityLandmarkLocalityResponse locality = new SolrCityLandmarkLocalityResponse();
-					BeanUtil.map(document, locality);
-					if(city!=null)locality.setCity(city.getCity());
-					response.add(locality);
-				}
-			}
-			if(cities != null && !cities.isEmpty()){
-				List<SolrCityLandmarkLocalityResponse> citiesResponse = new ArrayList<SolrCityLandmarkLocalityResponse>();
-				BeanUtil.map(cities, citiesResponse);
-				response.addAll(citiesResponse);
-			}
-			if(response != null && !response.isEmpty() && response.size()>30)response = response.subList(0, 29);
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Landmark Locality");
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<SolrCityLandmarkLocalityResponse> searchCityLandmarkLocality(String searchTerm, String latitude, String longitude) {
+	List<SolrCityLandmarkLocalityResponse> response = new ArrayList<SolrCityLandmarkLocalityResponse>();
+	try {
+	    List<SolrLocalityLandmarkDocument> landmarks = null;
+	    List<SolrLocalityLandmarkDocument> localities = null;
+	    List<SolrCityDocument> cities = null;
+	    if (DPDoctorUtils.anyStringEmpty(latitude, longitude)) {
+		if (searchTerm != null) {
+		    landmarks = solrLocalityLandmarkRepository.findByLandmark(searchTerm);
+		    localities = solrLocalityLandmarkRepository.findByLocality(searchTerm);
+		    cities = solrCityRepository.findByQueryAnnotation(searchTerm);
+		} else {
+		    landmarks = IteratorUtils.toList(solrLocalityLandmarkRepository.findAll().iterator());
+		    cities = IteratorUtils.toList(solrCityRepository.findAll().iterator());
 		}
-		return response;
+	    } else {
+		if (searchTerm != null) {
+		    landmarks = solrLocalityLandmarkRepository.findByLandmark(searchTerm, Double.parseDouble(latitude), Double.parseDouble(longitude));
+		    localities = solrLocalityLandmarkRepository.findByLocality(searchTerm, Double.parseDouble(latitude), Double.parseDouble(longitude));
+		    cities = solrCityRepository.findByQueryAnnotation(searchTerm, Double.parseDouble(latitude), Double.parseDouble(longitude));
+		} else {
+		    landmarks = solrLocalityLandmarkRepository.findByLandmarkANDLocality(Double.parseDouble(latitude), Double.parseDouble(longitude));
+		    cities = solrCityRepository.findByQueryAnnotation(Double.parseDouble(latitude), Double.parseDouble(longitude));
+		}
+	    }
+	    if (landmarks != null && !landmarks.isEmpty()) {
+		for (SolrLocalityLandmarkDocument document : landmarks) {
+		    SolrCityDocument city = solrCityRepository.findOne(document.getCityId());
+		    SolrCityLandmarkLocalityResponse landmark = new SolrCityLandmarkLocalityResponse();
+		    BeanUtil.map(document, landmark);
+		    if (city != null)
+			landmark.setCity(city.getCity());
+		    response.add(landmark);
+		}
+	    }
+	    if (localities != null && !localities.isEmpty()) {
+		for (SolrLocalityLandmarkDocument document : localities) {
+		    SolrCityDocument city = solrCityRepository.findOne(document.getCityId());
+		    SolrCityLandmarkLocalityResponse locality = new SolrCityLandmarkLocalityResponse();
+		    BeanUtil.map(document, locality);
+		    if (city != null)
+			locality.setCity(city.getCity());
+		    response.add(locality);
+		}
+	    }
+	    if (cities != null && !cities.isEmpty()) {
+		List<SolrCityLandmarkLocalityResponse> citiesResponse = new ArrayList<SolrCityLandmarkLocalityResponse>();
+		BeanUtil.map(cities, citiesResponse);
+		response.addAll(citiesResponse);
+	    }
+	    if (response != null && !response.isEmpty() && response.size() > 30)
+		response = response.subList(0, 29);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Landmark Locality");
 	}
+	return response;
+    }
 }

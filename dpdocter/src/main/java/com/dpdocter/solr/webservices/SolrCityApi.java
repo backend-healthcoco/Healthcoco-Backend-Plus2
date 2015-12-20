@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.solr.beans.SolrCityLandmarkLocalityResponse;
 import com.dpdocter.solr.services.SolrCityService;
 import com.dpdocter.webservices.PathProxy;
-
 import common.util.web.Response;
 
 @Component
@@ -30,8 +29,8 @@ public class SolrCityApi {
     @Path(value = PathProxy.SolrCityUrls.SEARCH_LOCATION)
     @GET
     public Response<SolrCityLandmarkLocalityResponse> searchLocation(@QueryParam(value = "searchTerm") String searchTerm,
-    		@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude) {
-	
+	    @QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude) {
+
 	List<SolrCityLandmarkLocalityResponse> searchResonse = solrCityService.searchCityLandmarkLocality(searchTerm, latitude, longitude);
 	Response<SolrCityLandmarkLocalityResponse> response = new Response<SolrCityLandmarkLocalityResponse>();
 	response.setDataList(searchResonse);

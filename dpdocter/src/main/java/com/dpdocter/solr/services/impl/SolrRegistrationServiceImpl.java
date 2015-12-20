@@ -36,7 +36,6 @@ import com.dpdocter.solr.repository.SolrPatientRepository;
 import com.dpdocter.solr.response.SolrPatientResponse;
 import com.dpdocter.solr.response.SolrPatientResponseDetails;
 import com.dpdocter.solr.services.SolrRegistrationService;
-
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -105,8 +104,8 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     @Override
     public SolrPatientResponseDetails searchPatient(String doctorId, String locationId, String hospitalId, String searchTerm, int page, int size) {
 	List<SolrPatientDocument> patients = new ArrayList<SolrPatientDocument>();
-	List<SolrPatientResponse> response = null;
-	SolrPatientResponseDetails responseDetails = null;
+	List<SolrPatientResponse> patientsResponse = null;
+	SolrPatientResponseDetails patientResponseDetails = null;
 	try {
 
 	    Criteria advancedCriteria = Criteria.where("doctorId").is(doctorId).and("locationId").is(locationId).and("hospitalId").is(hospitalId);
@@ -125,18 +124,22 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 		patients = solrTemplate.queryForPage(query, SolrPatientDocument.class).getContent();
 
 	    if (patients != null && !patients.isEmpty()) {
-		response = new ArrayList<SolrPatientResponse>();
-		BeanUtil.map(patients, response);
-		responseDetails = new SolrPatientResponseDetails();
-		responseDetails.setPatients(response);
-		responseDetails.setTotalSize(solrTemplate.count(new SimpleQuery(advancedCriteria)));
+		patientsResponse = new ArrayList<SolrPatientResponse>();
+		for (SolrPatientDocument patient : patients) {
+		    SolrPatientResponse patientResponse = new SolrPatientResponse();
+		    BeanUtil.map(patient, patientResponse);
+		    patientsResponse.add(patientResponse);
+		}
+		patientResponseDetails = new SolrPatientResponseDetails();
+		patientResponseDetails.setPatients(patientsResponse);
+		patientResponseDetails.setTotalSize(solrTemplate.count(new SimpleQuery(advancedCriteria)));
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Searching Patient");
 	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
 	}
-	return responseDetails;
+	return patientResponseDetails;
     }
 
     @Override
@@ -466,129 +469,132 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     public boolean addDoctor(SolrDoctorDocument request) {
 	boolean response = false;
 	try {
-		SolrDoctorDocument doctorDocument = solrDoctorRepository.findByUserIdAndLocationId(request.getUserId(), request.getLocationId());
-		if(doctorDocument != null)request.setId(doctorDocument.getId());
-		else request.setId(request.getUserId()+request.getLocationId());
-		
+	    SolrDoctorDocument doctorDocument = solrDoctorRepository.findByUserIdAndLocationId(request.getUserId(), request.getLocationId());
+	    if (doctorDocument != null)
+		request.setId(doctorDocument.getId());
+	    else
+		request.setId(request.getUserId() + request.getLocationId());
+
 	    solrDoctorRepository.save(request);
 	    transnationalService.addResource(request.getUserId(), Resource.DOCTOR, true);
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-//	    throw new BusinessException(ServiceError.Unknown, "Error While Saving Doctor Details to Solr : " + e.getMessage());
+	    // throw new BusinessException(ServiceError.Unknown,
+	    // "Error While Saving Doctor Details to Solr : " + e.getMessage());
 	}
 	return response;
     }
 
-	@Override
-	public void addEditName(DoctorNameAddEditRequest request) {
-		try {
-			List<SolrDoctorDocument> doctorDocuments = solrDoctorRepository.findByUserId(request.getDoctorId());
-			for(SolrDoctorDocument doctorDocument : doctorDocuments){
-				doctorDocument.setFirstName(request.getFirstName());
-				solrDoctorRepository.save(doctorDocument);
-				transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, true);
-			}
-		} catch (Exception e) {
-		    e.printStackTrace();
-		}	
+    @Override
+    public void addEditName(DoctorNameAddEditRequest request) {
+	try {
+	    List<SolrDoctorDocument> doctorDocuments = solrDoctorRepository.findByUserId(request.getDoctorId());
+	    for (SolrDoctorDocument doctorDocument : doctorDocuments) {
+		doctorDocument.setFirstName(request.getFirstName());
+		solrDoctorRepository.save(doctorDocument);
+		transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, true);
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
 	}
+    }
 
-	@Override
-	public void addEditSpeciality(DoctorSpecialityAddEditRequest request) {
-		try {
-			List<SolrDoctorDocument> doctorDocuments = solrDoctorRepository.findByUserId(request.getDoctorId());
-			for(SolrDoctorDocument doctorDocument : doctorDocuments){
-				doctorDocument.setSpecialities(request.getSpeciality());
-				solrDoctorRepository.save(doctorDocument);
-				transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, true);
-			}
-		} catch (Exception e) {
-		    e.printStackTrace();
-		}	
+    @Override
+    public void addEditSpeciality(DoctorSpecialityAddEditRequest request) {
+	try {
+	    List<SolrDoctorDocument> doctorDocuments = solrDoctorRepository.findByUserId(request.getDoctorId());
+	    for (SolrDoctorDocument doctorDocument : doctorDocuments) {
+		doctorDocument.setSpecialities(request.getSpeciality());
+		solrDoctorRepository.save(doctorDocument);
+		transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, true);
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
 	}
+    }
 
-	@Override
-	public void addEditProfilePicture(String doctorId, String addEditProfilePictureResponse) {
-		try {
-			List<SolrDoctorDocument> doctorDocuments = solrDoctorRepository.findByUserId(doctorId);
-			for(SolrDoctorDocument doctorDocument : doctorDocuments){
-				doctorDocument.setImageUrl(addEditProfilePictureResponse);
-				solrDoctorRepository.save(doctorDocument);
-				transnationalService.addResource(doctorId , Resource.DOCTOR, true);
-			}
-		} catch (Exception e) {
-		    e.printStackTrace();
-		}	
+    @Override
+    public void addEditProfilePicture(String doctorId, String addEditProfilePictureResponse) {
+	try {
+	    List<SolrDoctorDocument> doctorDocuments = solrDoctorRepository.findByUserId(doctorId);
+	    for (SolrDoctorDocument doctorDocument : doctorDocuments) {
+		doctorDocument.setImageUrl(addEditProfilePictureResponse);
+		solrDoctorRepository.save(doctorDocument);
+		transnationalService.addResource(doctorId, Resource.DOCTOR, true);
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
 	}
+    }
 
-	@Override
-	public void addEditVisitingTime(DoctorVisitingTimeAddEditRequest request) {
-		try {
-			SolrDoctorDocument doctorDocuments = solrDoctorRepository.findByUserIdAndLocationId(request.getDoctorId(),request.getLocationId());
-			List<SolrWorkingSchedule> solrWorkingSchedule = new ArrayList<SolrWorkingSchedule>();
-			BeanUtil.map(request.getWorkingSchedules(), solrWorkingSchedule);
-			doctorDocuments.setWorkingSchedules(solrWorkingSchedule);
-			solrDoctorRepository.save(doctorDocuments);
-			transnationalService.addResource(request.getDoctorId() , Resource.DOCTOR, true);
-		} catch (Exception e) {
-		    e.printStackTrace();
-		}	
+    @Override
+    public void addEditVisitingTime(DoctorVisitingTimeAddEditRequest request) {
+	try {
+	    SolrDoctorDocument doctorDocuments = solrDoctorRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
+	    List<SolrWorkingSchedule> solrWorkingSchedule = new ArrayList<SolrWorkingSchedule>();
+	    BeanUtil.map(request.getWorkingSchedules(), solrWorkingSchedule);
+	    doctorDocuments.setWorkingSchedules(solrWorkingSchedule);
+	    solrDoctorRepository.save(doctorDocuments);
+	    transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, true);
+	} catch (Exception e) {
+	    e.printStackTrace();
 	}
+    }
 
-	@Override
-	public void addEditConsultationFee(DoctorConsultationFeeAddEditRequest request) {
-		try {
-			SolrDoctorDocument doctorDocuments = solrDoctorRepository.findByUserIdAndLocationId(request.getDoctorId(),request.getLocationId());
-			doctorDocuments.setConsultationFee(request.getConsultationFee());
-			solrDoctorRepository.save(doctorDocuments);
-			transnationalService.addResource(request.getDoctorId() , Resource.DOCTOR, true);
-		} catch (Exception e) {
-		    e.printStackTrace();
-		}	
+    @Override
+    public void addEditConsultationFee(DoctorConsultationFeeAddEditRequest request) {
+	try {
+	    SolrDoctorDocument doctorDocuments = solrDoctorRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
+	    doctorDocuments.setConsultationFee(request.getConsultationFee());
+	    solrDoctorRepository.save(doctorDocuments);
+	    transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, true);
+	} catch (Exception e) {
+	    e.printStackTrace();
 	}
+    }
 
-	@Override
-	public void addEditExperience(String doctorId, DoctorExperience experienceResponse) {
-		try {
-			List<SolrDoctorDocument> doctorDocuments = solrDoctorRepository.findByUserId(doctorId);
-			for(SolrDoctorDocument doctorDocument : doctorDocuments){
-				doctorDocument.setExperience(experienceResponse);
-				solrDoctorRepository.save(doctorDocument);
-				transnationalService.addResource(doctorId , Resource.DOCTOR, true);
-			}
-		} catch (Exception e) {
-		    e.printStackTrace();
-		}
+    @Override
+    public void addEditExperience(String doctorId, DoctorExperience experienceResponse) {
+	try {
+	    List<SolrDoctorDocument> doctorDocuments = solrDoctorRepository.findByUserId(doctorId);
+	    for (SolrDoctorDocument doctorDocument : doctorDocuments) {
+		doctorDocument.setExperience(experienceResponse);
+		solrDoctorRepository.save(doctorDocument);
+		transnationalService.addResource(doctorId, Resource.DOCTOR, true);
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
 	}
+    }
 
-	@Override
-	public void addEditGeneralInfo(DoctorGeneralInfo request) {
-		try {
-			SolrDoctorDocument doctorDocuments = solrDoctorRepository.findByUserIdAndLocationId(request.getDoctorId(),request.getLocationId());
-			doctorDocuments.setConsultationFee(request.getConsultationFee());
-			solrDoctorRepository.save(doctorDocuments);
-			transnationalService.addResource(request.getDoctorId() , Resource.DOCTOR, true);
-		} catch (Exception e) {
-		    e.printStackTrace();
-		}
+    @Override
+    public void addEditGeneralInfo(DoctorGeneralInfo request) {
+	try {
+	    SolrDoctorDocument doctorDocuments = solrDoctorRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
+	    doctorDocuments.setConsultationFee(request.getConsultationFee());
+	    solrDoctorRepository.save(doctorDocuments);
+	    transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, true);
+	} catch (Exception e) {
+	    e.printStackTrace();
 	}
+    }
 
-	@Override
-	public void addEditMultipleData(DoctorMultipleDataAddEditResponse addEditNameResponse) {
-		try {
-			List<SolrDoctorDocument> doctorDocuments = solrDoctorRepository.findByUserId(addEditNameResponse.getDoctorId());
-			for(SolrDoctorDocument doctorDocument : doctorDocuments){
-				doctorDocument.setFirstName(addEditNameResponse.getFirstName());
-				doctorDocument.setImageUrl(addEditNameResponse.getProfileImageUrl());
-				doctorDocument.setExperience(addEditNameResponse.getExperience());
-				doctorDocument.setSpecialities(addEditNameResponse.getSpecialities());
-				solrDoctorRepository.save(doctorDocument);
-				transnationalService.addResource(addEditNameResponse.getDoctorId() , Resource.DOCTOR, true);
-			}
-		} catch (Exception e) {
-		    e.printStackTrace();
-		}
+    @Override
+    public void addEditMultipleData(DoctorMultipleDataAddEditResponse addEditNameResponse) {
+	try {
+	    List<SolrDoctorDocument> doctorDocuments = solrDoctorRepository.findByUserId(addEditNameResponse.getDoctorId());
+	    for (SolrDoctorDocument doctorDocument : doctorDocuments) {
+		doctorDocument.setFirstName(addEditNameResponse.getFirstName());
+		doctorDocument.setImageUrl(addEditNameResponse.getProfileImageUrl());
+		doctorDocument.setExperience(addEditNameResponse.getExperience());
+		doctorDocument.setSpecialities(addEditNameResponse.getSpecialities());
+		solrDoctorRepository.save(doctorDocument);
+		transnationalService.addResource(addEditNameResponse.getDoctorId(), Resource.DOCTOR, true);
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
 	}
+    }
 
 }

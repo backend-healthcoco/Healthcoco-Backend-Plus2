@@ -8,78 +8,78 @@ import org.springframework.data.solr.core.mapping.SolrDocument;
 @SolrDocument(solrCoreName = "countries")
 public class SolrCountryDocument {
 
-	  @Id
-	  @Field
-	  private String id;
+    @Id
+    @Field
+    private String id;
 
-	  @Field
-	  private String country;
+    @Field
+    private String country;
 
-	  @Field
-      private String description;
+    @Field
+    private String description;
 
-	  @SuppressWarnings("deprecation")
-      @Field
-	  private GeoLocation geoLocation;
-	    
-	  @Field
-	  private double latitude;
+    @SuppressWarnings("deprecation")
+    @Field
+    private GeoLocation geoLocation;
 
-	  @Field
-	  private double longitude;
+    @Field
+    private double latitude;
 
-	public String getId() {
-		return id;
-	}
+    @Field
+    private double longitude;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public String getCountry() {
-		return country;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public void setCountry(String country) {
-		this.country = country;
-	}
+    public String getCountry() {
+	return country;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public void setCountry(String country) {
+	this.country = country;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public String getDescription() {
+	return description;
+    }
 
-	public GeoLocation getGeoLocation() {
-		return geoLocation;
-	}
+    public void setDescription(String description) {
+	this.description = description;
+    }
 
-	public void setGeoLocation(GeoLocation geoLocation) {
-		this.geoLocation = geoLocation;
-	}
+    public GeoLocation getGeoLocation() {
+	return geoLocation;
+    }
 
-	public double getLatitude() {
-		return latitude;
-	}
+    public void setGeoLocation(GeoLocation geoLocation) {
+	this.geoLocation = geoLocation;
+    }
 
-	public void setLatitude(double latitude) {
-		this.latitude = latitude;
-	}
+    public double getLatitude() {
+	return latitude;
+    }
 
-	public double getLongitude() {
-		return longitude;
-	}
+    public void setLatitude(double latitude) {
+	this.latitude = latitude;
+    }
 
-	public void setLongitude(double longitude) {
-		this.longitude = longitude;
-	}
+    public double getLongitude() {
+	return longitude;
+    }
 
-	@Override
-	public String toString() {
-		return "SolrCountryDocument [id=" + id + ", country=" + country + ", description=" + description
-				+ ", geoLocation=" + geoLocation + ", latitude=" + latitude + ", longitude=" + longitude + "]";
-	}
-	
+    public void setLongitude(double longitude) {
+	this.longitude = longitude;
+    }
+
+    @Override
+    public String toString() {
+	return "SolrCountryDocument [id=" + id + ", country=" + country + ", description=" + description + ", geoLocation=" + geoLocation + ", latitude="
+		+ latitude + ", longitude=" + longitude + "]";
+    }
+
 }

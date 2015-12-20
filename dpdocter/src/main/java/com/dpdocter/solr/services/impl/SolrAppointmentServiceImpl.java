@@ -132,62 +132,64 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 	return response;
     }
 
-	@Override
-	public List<SolrDoctorDocument> getDoctors(String city, String location, String speciality, String symptom,
-			Boolean booking, Boolean calling, String minFee, String maxFee, String minTime, String maxTime, List<String> days,
-			String gender, String minExperience, String maxExperience) {
-		List<SolrDoctorDocument> response = null;
-		try {
-		    Criteria doctorSearchCriteria = Criteria.where("city").contains(city);
+    @Override
+    public List<SolrDoctorDocument> getDoctors(String city, String location, String speciality, String symptom, Boolean booking, Boolean calling,
+	    String minFee, String maxFee, String minTime, String maxTime, List<String> days, String gender, String minExperience, String maxExperience) {
+	List<SolrDoctorDocument> response = null;
+	try {
+	    Criteria doctorSearchCriteria = Criteria.where("city").contains(city);
 
-		    if (!DPDoctorUtils.anyStringEmpty(location)) {
-			doctorSearchCriteria = doctorSearchCriteria.and("locationName").contains(location);
-		    }
+	    if (!DPDoctorUtils.anyStringEmpty(location)) {
+		doctorSearchCriteria = doctorSearchCriteria.and("locationName").contains(location);
+	    }
 
-		    if (!DPDoctorUtils.anyStringEmpty(speciality)) {
-			doctorSearchCriteria = doctorSearchCriteria.or("specialities").contains(speciality).or("specialization").contains(speciality);
-		    }
-		    
-		    if (DPDoctorUtils.anyStringEmpty(minFee,maxFee)) {
-				if(!DPDoctorUtils.anyStringEmpty(minFee))doctorSearchCriteria = doctorSearchCriteria.or("consultationFee").greaterThanEqual(minFee);
-				if(!DPDoctorUtils.anyStringEmpty(maxFee))doctorSearchCriteria = doctorSearchCriteria.or("consultationFee").lessThanEqual(maxFee);
-			}
-		    else{
-		    	doctorSearchCriteria = doctorSearchCriteria.or("consultationFee").greaterThanEqual(minFee).lessThanEqual(maxFee);
-		    }
-		    
-		    if (DPDoctorUtils.anyStringEmpty(minExperience,maxExperience)) {
-				if(!DPDoctorUtils.anyStringEmpty(minExperience))doctorSearchCriteria = doctorSearchCriteria.or("experience").greaterThanEqual(minExperience);
-				if(!DPDoctorUtils.anyStringEmpty(maxExperience))doctorSearchCriteria = doctorSearchCriteria.or("experience").lessThanEqual(maxExperience);
-			}
-		    else{
-		    	doctorSearchCriteria = doctorSearchCriteria.or("experience").greaterThanEqual(minExperience).lessThanEqual(maxExperience);
-		    }
-		    
-		    if (!DPDoctorUtils.anyStringEmpty(gender)) {
-				doctorSearchCriteria = doctorSearchCriteria.or("gender").is(gender);
-			}
-		    
-		    if (DPDoctorUtils.anyStringEmpty(minTime,maxTime)) {
-				if(!DPDoctorUtils.anyStringEmpty(minTime))doctorSearchCriteria = doctorSearchCriteria.or("workingSchedules").greaterThanEqual(minTime);
-				if(!DPDoctorUtils.anyStringEmpty(maxTime))doctorSearchCriteria = doctorSearchCriteria.or("workingSchedules").lessThanEqual(maxTime);
-			}
-		    else{
-		    	doctorSearchCriteria = doctorSearchCriteria.or("workingSchedules").greaterThanEqual(minTime).lessThanEqual(maxTime);
-		    }
-		    
-		    if (days != null && !days.isEmpty()) {
-				doctorSearchCriteria = doctorSearchCriteria.or("workingSchedules").in(days);
-			}
-		    
-		    SimpleQuery query = new SimpleQuery(doctorSearchCriteria);
-		    solrTemplate.setSolrCore("doctors");
+	    if (!DPDoctorUtils.anyStringEmpty(speciality)) {
+		doctorSearchCriteria = doctorSearchCriteria.or("specialities").contains(speciality).or("specialization").contains(speciality);
+	    }
 
-		    response = solrTemplate.queryForPage(query, SolrDoctorDocument.class).getContent();
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown, "Error While Getting Doctor Details From Solr : " + e.getMessage());
-		}
-		return response;
+	    if (DPDoctorUtils.anyStringEmpty(minFee, maxFee)) {
+		if (!DPDoctorUtils.anyStringEmpty(minFee))
+		    doctorSearchCriteria = doctorSearchCriteria.or("consultationFee").greaterThanEqual(minFee);
+		if (!DPDoctorUtils.anyStringEmpty(maxFee))
+		    doctorSearchCriteria = doctorSearchCriteria.or("consultationFee").lessThanEqual(maxFee);
+	    } else {
+		doctorSearchCriteria = doctorSearchCriteria.or("consultationFee").greaterThanEqual(minFee).lessThanEqual(maxFee);
+	    }
+
+	    if (DPDoctorUtils.anyStringEmpty(minExperience, maxExperience)) {
+		if (!DPDoctorUtils.anyStringEmpty(minExperience))
+		    doctorSearchCriteria = doctorSearchCriteria.or("experience").greaterThanEqual(minExperience);
+		if (!DPDoctorUtils.anyStringEmpty(maxExperience))
+		    doctorSearchCriteria = doctorSearchCriteria.or("experience").lessThanEqual(maxExperience);
+	    } else {
+		doctorSearchCriteria = doctorSearchCriteria.or("experience").greaterThanEqual(minExperience).lessThanEqual(maxExperience);
+	    }
+
+	    if (!DPDoctorUtils.anyStringEmpty(gender)) {
+		doctorSearchCriteria = doctorSearchCriteria.or("gender").is(gender);
+	    }
+
+	    if (DPDoctorUtils.anyStringEmpty(minTime, maxTime)) {
+		if (!DPDoctorUtils.anyStringEmpty(minTime))
+		    doctorSearchCriteria = doctorSearchCriteria.or("workingSchedules").greaterThanEqual(minTime);
+		if (!DPDoctorUtils.anyStringEmpty(maxTime))
+		    doctorSearchCriteria = doctorSearchCriteria.or("workingSchedules").lessThanEqual(maxTime);
+	    } else {
+		doctorSearchCriteria = doctorSearchCriteria.or("workingSchedules").greaterThanEqual(minTime).lessThanEqual(maxTime);
+	    }
+
+	    if (days != null && !days.isEmpty()) {
+		doctorSearchCriteria = doctorSearchCriteria.or("workingSchedules").in(days);
+	    }
+
+	    SimpleQuery query = new SimpleQuery(doctorSearchCriteria);
+	    solrTemplate.setSolrCore("doctors");
+
+	    response = solrTemplate.queryForPage(query, SolrDoctorDocument.class).getContent();
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(ServiceError.Unknown, "Error While Getting Doctor Details From Solr : " + e.getMessage());
 	}
+	return response;
+    }
 }

@@ -33,9 +33,7 @@ import com.dpdocter.request.PatientSignUpRequest;
 import com.dpdocter.services.SignUpService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrDoctorDocument;
-import com.dpdocter.solr.services.SolrAppointmentService;
 import com.dpdocter.solr.services.SolrRegistrationService;
-
 import common.util.web.Response;
 
 @Component
@@ -251,42 +249,42 @@ public class SignUpApi {
 	return finalImageURL + imageURL;
     }
 
-     private SolrDoctorDocument getSolrDoctorDocument(DoctorSignUp doctor) {
-     SolrDoctorDocument solrDoctorDocument = null;
-     try {
-     solrDoctorDocument = new SolrDoctorDocument();
-     BeanUtil.map(doctor.getUser(), solrDoctorDocument);
-     solrDoctorDocument.setUserId(doctor.getUser().getId());
-     List<String> specialiazation = new ArrayList<String>();
-     if(doctor.getHospital() != null){
-    	 for(LocationAndAccessControl locationAndAccessControl : doctor.getHospital().getLocationsAndAccessControl()){
-    		 if(locationAndAccessControl.getLocation() != null){
-    			 specialiazation.addAll(locationAndAccessControl.getLocation().getSpecialization());
-    			 BeanUtil.map(locationAndAccessControl.getLocation(), solrDoctorDocument);
-    			 solrDoctorDocument.setLocationId(locationAndAccessControl.getLocation().getId());
-    		 }
-    	 }
-     }
-     solrDoctorDocument.setSpecialization(specialiazation);
-     } catch (Exception e) {
-     e.printStackTrace();
-     }
-     return solrDoctorDocument;
-     }
-    
-//     private List<SolrLocationDocument> getSolrLocationDocument(DoctorSignUp
-//     doctor) {
-//     List<SolrLocationDocument> solrLocationDocuments = null;
-//     try {
-//     solrLocationDocuments = new ArrayList<SolrLocationDocument>();
-//     for (Location location : doctor.getHospital().getLocations()) {
-//     SolrLocationDocument solrLocationDocument = new SolrLocationDocument();
-//     BeanUtil.map(location, solrLocationDocument);
-//     solrLocationDocuments.add(solrLocationDocument);
-//     }
-//     } catch (Exception e) {
-//     e.printStackTrace();
-//     }
-//     return solrLocationDocuments;
-//     }
+    private SolrDoctorDocument getSolrDoctorDocument(DoctorSignUp doctor) {
+	SolrDoctorDocument solrDoctorDocument = null;
+	try {
+	    solrDoctorDocument = new SolrDoctorDocument();
+	    BeanUtil.map(doctor.getUser(), solrDoctorDocument);
+	    solrDoctorDocument.setUserId(doctor.getUser().getId());
+	    List<String> specialiazation = new ArrayList<String>();
+	    if (doctor.getHospital() != null) {
+		for (LocationAndAccessControl locationAndAccessControl : doctor.getHospital().getLocationsAndAccessControl()) {
+		    if (locationAndAccessControl.getLocation() != null) {
+			specialiazation.addAll(locationAndAccessControl.getLocation().getSpecialization());
+			BeanUtil.map(locationAndAccessControl.getLocation(), solrDoctorDocument);
+			solrDoctorDocument.setLocationId(locationAndAccessControl.getLocation().getId());
+		    }
+		}
+	    }
+	    solrDoctorDocument.setSpecialization(specialiazation);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+	return solrDoctorDocument;
+    }
+
+    // private List<SolrLocationDocument> getSolrLocationDocument(DoctorSignUp
+    // doctor) {
+    // List<SolrLocationDocument> solrLocationDocuments = null;
+    // try {
+    // solrLocationDocuments = new ArrayList<SolrLocationDocument>();
+    // for (Location location : doctor.getHospital().getLocations()) {
+    // SolrLocationDocument solrLocationDocument = new SolrLocationDocument();
+    // BeanUtil.map(location, solrLocationDocument);
+    // solrLocationDocuments.add(solrLocationDocument);
+    // }
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
+    // return solrLocationDocuments;
+    // }
 }

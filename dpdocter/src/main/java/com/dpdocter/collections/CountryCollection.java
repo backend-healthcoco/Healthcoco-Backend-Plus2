@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document(collection = "country_cl")
 public class CountryCollection {
 
-	@Id
+    @Id
     private String id;
 
     @Indexed(unique = true)
@@ -23,50 +23,50 @@ public class CountryCollection {
     @Field
     private double longitude;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getCountry() {
-		return country;
-	}
+    public String getCountry() {
+	return country;
+    }
 
-	public void setCountry(String country) {
-		this.country = country;
-	}
+    public void setCountry(String country) {
+	this.country = country;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+	return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+	this.description = description;
+    }
 
-	public double getLatitude() {
-		return latitude;
-	}
+    public double getLatitude() {
+	return latitude;
+    }
 
-	public void setLatitude(double latitude) {
-		this.latitude = latitude;
-	}
+    public void setLatitude(double latitude) {
+	this.latitude = latitude;
+    }
 
-	public double getLongitude() {
-		return longitude;
-	}
+    public double getLongitude() {
+	return longitude;
+    }
 
-	public void setLongitude(double longitude) {
-		this.longitude = longitude;
-	}
+    public void setLongitude(double longitude) {
+	this.longitude = longitude;
+    }
 
-	@Override
-	public String toString() {
-		return "CountryCollection [id=" + id + ", country=" + country + ", description=" + description + ", latitude="
-				+ latitude + ", longitude=" + longitude + "]";
-	}
+    @Override
+    public String toString() {
+	return "CountryCollection [id=" + id + ", country=" + country + ", description=" + description + ", latitude=" + latitude + ", longitude=" + longitude
+		+ "]";
+    }
 
 }

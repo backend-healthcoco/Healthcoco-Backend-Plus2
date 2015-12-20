@@ -26,13 +26,13 @@ public class SolrCityDocument {
 
     @SuppressWarnings("deprecation")
     @Field
-	private GeoLocation geoLocation;
-	    
+    private GeoLocation geoLocation;
+
     @Field
-	private double latitude;
-	
+    private double latitude;
+
     @Field
-	private double longitude;
+    private double longitude;
 
     public String getId() {
 	return id;
@@ -58,50 +58,49 @@ public class SolrCityDocument {
 	this.isActivated = isActivated;
     }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+	return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+	this.description = description;
+    }
 
-	public String getCountryId() {
-		return countryId;
-	}
+    public String getCountryId() {
+	return countryId;
+    }
 
-	public void setCountryId(String countryId) {
-		this.countryId = countryId;
-	}
+    public void setCountryId(String countryId) {
+	this.countryId = countryId;
+    }
 
-	public GeoLocation getGeoLocation() {
-		return geoLocation;
-	}
+    public GeoLocation getGeoLocation() {
+	return geoLocation;
+    }
 
-	public void setGeoLocation(GeoLocation geoLocation) {
-		this.geoLocation = geoLocation;
-	}
+    public void setGeoLocation(GeoLocation geoLocation) {
+	this.geoLocation = geoLocation;
+    }
 
-	public double getLatitude() {
-		return latitude;
-	}
+    public double getLatitude() {
+	return latitude;
+    }
 
-	public void setLatitude(double latitude) {
-		this.latitude = latitude;
-	}
+    public void setLatitude(double latitude) {
+	this.latitude = latitude;
+    }
 
-	public double getLongitude() {
-		return longitude;
-	}
+    public double getLongitude() {
+	return longitude;
+    }
 
-	public void setLongitude(double longitude) {
-		this.longitude = longitude;
-	}
+    public void setLongitude(double longitude) {
+	this.longitude = longitude;
+    }
 
-	@Override
-	public String toString() {
-		return "SolrCityDocument [id=" + id + ", city=" + city + ", isActivated=" + isActivated + ", description="
-				+ description + ", countryId=" + countryId + ", geoLocation=" + geoLocation + ", latitude=" + latitude
-				+ ", longitude=" + longitude + "]";
-	}
+    @Override
+    public String toString() {
+	return "SolrCityDocument [id=" + id + ", city=" + city + ", isActivated=" + isActivated + ", description=" + description + ", countryId=" + countryId
+		+ ", geoLocation=" + geoLocation + ", latitude=" + latitude + ", longitude=" + longitude + "]";
+    }
 }

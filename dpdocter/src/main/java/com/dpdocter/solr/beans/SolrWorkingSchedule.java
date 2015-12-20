@@ -6,7 +6,7 @@ import com.dpdocter.beans.WorkingHours;
 
 public class SolrWorkingSchedule {
 
-	private String workingDay;
+    private String workingDay;
 
     private List<WorkingHours> workingHours;
 

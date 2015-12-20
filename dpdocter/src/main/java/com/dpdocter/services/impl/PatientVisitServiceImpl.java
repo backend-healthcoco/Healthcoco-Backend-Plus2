@@ -609,8 +609,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			}
 		    }
 		    patientName = "Patient Name: " + (user != null ? user.getFirstName() : "--") + "<br>";
-		    dob = "Patient Age: " + ((user != null && user.getDob() != null) ? (user.getDob().getAge() + " years") : "--") + "<br>";
-		    gender = "Patient Gender: " + (user != null ? user.getGender() : "--") + "<br>";
+		    dob = "Patient Age: " + ((patient != null && patient.getDob() != null) ? (patient.getDob().getAge() + " years") : "--") + "<br>";
+		    gender = "Patient Gender: " + (patient != null ? patient.getGender() : "--") + "<br>";
 		    mobileNumber = "Mobile Number: " + (user != null ? user.getMobileNumber() : "--") + "<br>";
 
 		    parameters.put("patientLeftText", patientName + "Patient Id: " + (patient != null ? patient.getPID() : "--") + "<br>" + dob + gender);
@@ -836,7 +836,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    String labTest = "";
 		    int i = 1;
 		    for (LabTest labTests : prescriptionCollection.getLabTests()) {
-			labTest = labTest + i + ") " + labTests.getTestName() + "<br>";
+			labTest = labTest + i + ") " + labTests.getTest().getTestName() + "<br>";
 			i++;
 		    }
 		    prescriptionItemsObj.put("labTest", labTest);

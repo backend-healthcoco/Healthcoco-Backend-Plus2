@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.Relations;
 
 @Document(collection = "patient_cl")
@@ -71,17 +72,12 @@ public class PatientCollection extends GenericCollection {
     @Field
     private Long registrationDate;
 
-    /*
-     * @Field private String firstName;
-     * 
-     * @Field private String lastName;
-     * 
-     * @Field private String middleName;
-     * 
-     * @Field private String imageUrl;
-     * 
-     * @Field private DOB dob;
-     */
+    @Field
+    private String gender;
+
+    @Field
+    private DOB dob;
+
     public String getId() {
 	return id;
     }
@@ -242,12 +238,29 @@ public class PatientCollection extends GenericCollection {
 	this.firstName = firstName;
     }
 
+    public String getGender() {
+	return gender;
+    }
+
+    public void setGender(String gender) {
+	this.gender = gender;
+    }
+
+    public DOB getDob() {
+	return dob;
+    }
+
+    public void setDob(DOB dob) {
+	this.dob = dob;
+    }
+
     @Override
     public String toString() {
 	return "PatientCollection [id=" + id + ", firstName=" + firstName + ", bloodGroup=" + bloodGroup + ", profession=" + profession + ", relations="
 		+ relations + ", emailAddress=" + emailAddress + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 		+ ", addressId=" + addressId + ", secMobile=" + secMobile + ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber
 		+ ", drivingLicenseId=" + drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName=" + insuranceName + ", userId=" + userId
-		+ ", notes=" + notes + ", PID=" + PID + ", registrationDate=" + registrationDate + "]";
+		+ ", notes=" + notes + ", PID=" + PID + ", registrationDate=" + registrationDate + ", gender=" + gender + ", dob=" + dob + "]";
     }
+
 }

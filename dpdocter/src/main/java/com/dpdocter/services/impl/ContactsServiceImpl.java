@@ -244,7 +244,6 @@ public class ContactsServiceImpl implements ContactsService {
 		    BeanUtil.map(patientCollection, patientCard);
 		    BeanUtil.map(userCollection, patientCard);
 		    patientCard.setGroups(groups);
-		    patientCard.setDob(userCollection.getDob());
 		    patientCard.setDoctorSepecificPatientId(patientCollection.getUserId());
 
 		    int historyCount = historyRepository.getByPatientIdAndNotEqualToDoctorLocationHospital(patientCollection.getUserId(), doctorId, locationId,
@@ -287,7 +286,6 @@ public class ContactsServiceImpl implements ContactsService {
 		BeanUtil.map(patientCollection, patientCard);
 		BeanUtil.map(userCollection, patientCard);
 		patientCard.setGroups(groups);
-		patientCard.setDob(userCollection.getDob());
 		patientCard.setDoctorSepecificPatientId(patientCollection.getUserId());
 
 		int historyCount = historyRepository.getByPatientIdAndNotEqualToDoctorLocationHospital(patientCollection.getUserId(), doctorId, locationId,
@@ -642,6 +640,10 @@ public class ContactsServiceImpl implements ContactsService {
 		    registeredPatientDetail.setHospitalId(patientCollection.getHospitalId());
 		    registeredPatientDetail.setCreatedTime(patientCollection.getCreatedTime());
 		    registeredPatientDetail.setPID(patientCollection.getPID());
+
+		    if (patientCollection.getDob() != null) {
+			registeredPatientDetail.setDob(patientCollection.getDob());
+		    }
 
 		    registeredPatientDetails.add(registeredPatientDetail);
 		}

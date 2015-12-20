@@ -8,7 +8,6 @@ import org.springframework.data.solr.core.mapping.SolrDocument;
 
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.DoctorExperience;
-import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.solr.beans.DoctorLocation;
 import com.dpdocter.solr.beans.SolrWorkingSchedule;
 
@@ -112,35 +111,34 @@ public class SolrDoctorDocument extends DoctorLocation {
 	this.workingSchedules = workingSchedules;
     }
 
-	public String getUserId() {
-		return userId;
-	}
+    public String getUserId() {
+	return userId;
+    }
 
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
+    public void setUserId(String userId) {
+	this.userId = userId;
+    }
 
-	public List<String> getSpecialities() {
-		return specialities;
-	}
+    public List<String> getSpecialities() {
+	return specialities;
+    }
 
-	public void setSpecialities(List<String> specialities) {
-		this.specialities = specialities;
-	}
+    public void setSpecialities(List<String> specialities) {
+	this.specialities = specialities;
+    }
 
-	public DoctorExperience getExperience() {
-		return experience;
-	}
+    public DoctorExperience getExperience() {
+	return experience;
+    }
 
-	public void setExperience(DoctorExperience experience) {
-		this.experience = experience;
-	}
+    public void setExperience(DoctorExperience experience) {
+	this.experience = experience;
+    }
 
-	@Override
-	public String toString() {
-		return "SolrDoctorDocument [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", gender=" + gender
-				+ ", emailAddress=" + emailAddress + ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl
-				+ ", consultationFee=" + consultationFee + ", workingSchedules=" + workingSchedules + ", specialities="
-				+ specialities + ", experience=" + experience + "]";
-	}
+    @Override
+    public String toString() {
+	return "SolrDoctorDocument [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", gender=" + gender + ", emailAddress=" + emailAddress
+		+ ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl + ", consultationFee=" + consultationFee + ", workingSchedules=" + workingSchedules
+		+ ", specialities=" + specialities + ", experience=" + experience + "]";
+    }
 }

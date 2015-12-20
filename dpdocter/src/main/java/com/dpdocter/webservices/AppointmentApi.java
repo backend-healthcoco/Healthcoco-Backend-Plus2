@@ -32,7 +32,6 @@ import com.dpdocter.solr.document.SolrCityDocument;
 import com.dpdocter.solr.document.SolrCountryDocument;
 import com.dpdocter.solr.document.SolrLocalityLandmarkDocument;
 import com.dpdocter.solr.services.SolrCityService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -47,7 +46,7 @@ public class AppointmentApi {
 
     @Autowired
     private SolrCityService solrCityService;
-    
+
     @Autowired
     private TransactionalManagementService transnationalService;
 
@@ -66,7 +65,7 @@ public class AppointmentApi {
 	BeanUtil.map(country, solrCountry);
 	solrCountry.setGeoLocation(new GeoLocation(country.getLatitude(), country.getLongitude()));
 	solrCityService.addCountry(solrCountry);
-	
+
 	Response<Country> response = new Response<Country>();
 	response.setData(country);
 	return response;
@@ -86,8 +85,8 @@ public class AppointmentApi {
 	SolrCityDocument solrCities = new SolrCityDocument();
 	BeanUtil.map(city, solrCities);
 	solrCities.setGeoLocation(new GeoLocation(city.getLatitude(), city.getLongitude()));
-   	solrCityService.addCities(solrCities);
-	
+	solrCityService.addCities(solrCities);
+
 	Response<City> response = new Response<City>();
 	response.setData(city);
 	return response;
@@ -138,19 +137,18 @@ public class AppointmentApi {
     public Response<LandmarkLocality> addLandmaklLocality(LandmarkLocality request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request sent is NULL");
-	} 
+	}
 	LandmarkLocality locality = appointmentService.addLandmaklLocality(request);
 	transnationalService.addResource(request.getId(), Resource.LANDMARKLOCALITY, false);
 	SolrLocalityLandmarkDocument solrLocalityLandmark = new SolrLocalityLandmarkDocument();
 	BeanUtil.map(locality, solrLocalityLandmark);
 	solrLocalityLandmark.setGeoLocation(new GeoLocation(locality.getLatitude(), locality.getLongitude()));
-    solrCityService.addLocalityLandmark(solrLocalityLandmark);
+	solrCityService.addLocalityLandmark(solrLocalityLandmark);
 
 	Response<LandmarkLocality> response = new Response<LandmarkLocality>();
 	response.setData(locality);
 	return response;
     }
-
 
     @Path(value = PathProxy.AppointmentUrls.GET_CLINIC)
     @GET
@@ -165,7 +163,7 @@ public class AppointmentApi {
 	return response;
 
     }
-    
+
     @POST
     public Response<Appointment> BookAppoinment(AppoinmentRequest request) {
 
@@ -178,14 +176,14 @@ public class AppointmentApi {
 	return response;
 
     }
-    
+
     @Path(value = PathProxy.AppointmentUrls.GET_CLINIC_APPOINTMENTS)
     @GET
     public Response<Appointment> getClinicAppointments(@QueryParam(value = "locationId") String locationId, @QueryParam(value = "doctorId") String doctorId,
-    		@QueryParam(value = "day") int day, @QueryParam(value = "month") int month, @QueryParam(value = "week") int week,
-    		@QueryParam("page") int page, @QueryParam("size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+	    @QueryParam(value = "day") int day, @QueryParam(value = "month") int month, @QueryParam(value = "week") int week, @QueryParam("page") int page,
+	    @QueryParam("size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
 
-    List<Appointment> appointment = appointmentService.getClinicAppointments(locationId, doctorId, day, month, week, page, size, updatedTime);
+	List<Appointment> appointment = appointmentService.getClinicAppointments(locationId, doctorId, day, month, week, page, size, updatedTime);
 	Response<Appointment> response = new Response<Appointment>();
 	response.setDataList(appointment);
 	return response;
@@ -194,10 +192,10 @@ public class AppointmentApi {
     @Path(value = PathProxy.AppointmentUrls.GET_DOCTOR_APPOINTMENTS)
     @GET
     public Response<Appointment> getDoctorAppointments(@QueryParam(value = "locationId") String locationId, @QueryParam(value = "doctorId") String doctorId,
-    		@QueryParam(value = "day") int day, @QueryParam(value = "month") int month, @QueryParam(value = "week") int week,
-    		@QueryParam("page") int page, @QueryParam("size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+	    @QueryParam(value = "day") int day, @QueryParam(value = "month") int month, @QueryParam(value = "week") int week, @QueryParam("page") int page,
+	    @QueryParam("size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
 
-    List<Appointment> appointment = appointmentService.getDoctorAppointments(locationId, doctorId, day, month, week, page, size, updatedTime);
+	List<Appointment> appointment = appointmentService.getDoctorAppointments(locationId, doctorId, day, month, week, page, size, updatedTime);
 	Response<Appointment> response = new Response<Appointment>();
 	response.setDataList(appointment);
 	return response;
@@ -206,10 +204,11 @@ public class AppointmentApi {
     @Path(value = PathProxy.AppointmentUrls.GET_PATIENT_APPOINTMENTS)
     @GET
     public Response<Appointment> getPatientAppointments(@QueryParam(value = "locationId") String locationId, @QueryParam(value = "doctorId") String doctorId,
-    		@QueryParam(value = "patientId") String patientId, @QueryParam(value = "day") int day, @QueryParam(value = "month") int month, @QueryParam(value = "week") int week,
-    		@QueryParam("page") int page, @QueryParam("size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+	    @QueryParam(value = "patientId") String patientId, @QueryParam(value = "day") int day, @QueryParam(value = "month") int month,
+	    @QueryParam(value = "week") int week, @QueryParam("page") int page, @QueryParam("size") int size,
+	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
 
-    List<Appointment> appointment = appointmentService.getPatientAppointments(locationId, doctorId, patientId, day, month, week, page, size, updatedTime);
+	List<Appointment> appointment = appointmentService.getPatientAppointments(locationId, doctorId, patientId, day, month, week, page, size, updatedTime);
 	Response<Appointment> response = new Response<Appointment>();
 	response.setDataList(appointment);
 	return response;

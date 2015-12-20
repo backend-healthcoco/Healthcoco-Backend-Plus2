@@ -1,11 +1,12 @@
 package com.dpdocter.collections;
 
+import java.util.Date;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.DOB;
 import com.dpdocter.enums.UserState;
 
 @Document(collection = "user_cl")
@@ -39,16 +40,10 @@ public class UserCollection extends GenericCollection {
     private String mobileNumber;
 
     @Field
-    private String gender;
-
-    @Field
     private String imageUrl;
 
     @Field
     private String thumbnailUrl;
-
-    @Field
-    private DOB dob;
 
     @Field
     private Boolean isActive = false;
@@ -70,6 +65,9 @@ public class UserCollection extends GenericCollection {
 
     @Field
     private UserState userState;
+
+    @Field
+    private Date lastSession;
 
     public String getId() {
 	return id;
@@ -111,14 +109,6 @@ public class UserCollection extends GenericCollection {
 	this.mobileNumber = mobileNumber;
     }
 
-    public String getGender() {
-	return gender;
-    }
-
-    public void setGender(String gender) {
-	this.gender = gender;
-    }
-
     public Boolean getIsActive() {
 	return isActive;
     }
@@ -157,14 +147,6 @@ public class UserCollection extends GenericCollection {
 
     public void setImageUrl(String imageUrl) {
 	this.imageUrl = imageUrl;
-    }
-
-    public DOB getDob() {
-	return dob;
-    }
-
-    public void setDob(DOB dob) {
-	this.dob = dob;
     }
 
     public String getEmailAddress() {
@@ -231,12 +213,20 @@ public class UserCollection extends GenericCollection {
 	this.userState = userState;
     }
 
+    public Date getLastSession() {
+	return lastSession;
+    }
+
+    public void setLastSession(Date lastSession) {
+	this.lastSession = lastSession;
+    }
+
     @Override
     public String toString() {
 	return "UserCollection [id=" + id + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName
-		+ ", userName=" + userName + ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender="
-		+ gender + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", dob=" + dob + ", isActive=" + isActive + ", isTempPassword="
-		+ isTempPassword + ", isVerified=" + isVerified + ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl
-		+ ", colorCode=" + colorCode + ", userState=" + userState + "]";
+		+ ", userName=" + userName + ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", imageUrl="
+		+ imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", isActive=" + isActive + ", isTempPassword=" + isTempPassword + ", isVerified=" + isVerified
+		+ ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", colorCode=" + colorCode + ", userState="
+		+ userState + ", lastSession=" + lastSession + "]";
     }
 }

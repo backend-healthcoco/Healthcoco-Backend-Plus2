@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.Achievement;
+import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.DoctorExperience;
 import com.dpdocter.beans.DoctorExperienceDetail;
 import com.dpdocter.beans.DoctorRegistrationDetail;
@@ -52,6 +53,12 @@ public class DoctorCollection extends GenericCollection {
 
     @Field
     private String registerNumber;
+
+    @Field
+    private String gender;
+
+    @Field
+    private DOB dob;
 
     public String getId() {
 	return id;
@@ -157,11 +164,28 @@ public class DoctorCollection extends GenericCollection {
 	this.registerNumber = registerNumber;
     }
 
+    public String getGender() {
+	return gender;
+    }
+
+    public void setGender(String gender) {
+	this.gender = gender;
+    }
+
+    public DOB getDob() {
+	return dob;
+    }
+
+    public void setDob(DOB dob) {
+	this.dob = dob;
+    }
+
     @Override
     public String toString() {
 	return "DoctorCollection [id=" + id + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses=" + otherEmailAddresses + ", userId="
 		+ userId + ", experience=" + experience + ", education=" + education + ", specialities=" + specialities + ", achievements=" + achievements
 		+ ", professionalStatement=" + professionalStatement + ", registrationDetails=" + registrationDetails + ", experienceDetails="
-		+ experienceDetails + ", professionalMemberships=" + professionalMemberships + ", registerNumber=" + registerNumber + "]";
+		+ experienceDetails + ", professionalMemberships=" + professionalMemberships + ", registerNumber=" + registerNumber + ", gender=" + gender
+		+ ", dob=" + dob + "]";
     }
 }

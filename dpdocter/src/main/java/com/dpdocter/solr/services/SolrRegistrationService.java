@@ -4,7 +4,6 @@ import com.dpdocter.beans.DoctorExperience;
 import com.dpdocter.beans.DoctorGeneralInfo;
 import com.dpdocter.request.DoctorConsultationFeeAddEditRequest;
 import com.dpdocter.request.DoctorNameAddEditRequest;
-import com.dpdocter.request.DoctorProfilePictureAddEditRequest;
 import com.dpdocter.request.DoctorSpecialityAddEditRequest;
 import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
 import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
@@ -25,7 +24,7 @@ public interface SolrRegistrationService {
     SolrPatientResponseDetails searchPatient(AdvancedSearch request);
 
     boolean addDoctor(SolrDoctorDocument request);
-    
+
     // List<SolrPatientDocument> searchPatientByFirstName(String doctorId,
     // String locationId, String hospitalId, String searchValue);
     //
@@ -70,20 +69,20 @@ public interface SolrRegistrationService {
 
     void patientProfilePicChange(String username, String imageUrl);
 
-	void addEditName(DoctorNameAddEditRequest request);
+    void addEditName(DoctorNameAddEditRequest request);
 
-	void addEditSpeciality(DoctorSpecialityAddEditRequest request);
+    void addEditSpeciality(DoctorSpecialityAddEditRequest request);
 
-	void addEditVisitingTime(DoctorVisitingTimeAddEditRequest request);
+    void addEditVisitingTime(DoctorVisitingTimeAddEditRequest request);
 
-	void addEditConsultationFee(DoctorConsultationFeeAddEditRequest request);
+    void addEditConsultationFee(DoctorConsultationFeeAddEditRequest request);
 
-	void addEditProfilePicture(String doctorId, String addEditProfilePictureResponse);
+    void addEditProfilePicture(String doctorId, String addEditProfilePictureResponse);
 
-	void addEditExperience(String doctorId, DoctorExperience experienceResponse);
+    void addEditExperience(String doctorId, DoctorExperience experienceResponse);
 
-	void addEditGeneralInfo(DoctorGeneralInfo request);
+    void addEditGeneralInfo(DoctorGeneralInfo request);
 
-	void addEditMultipleData(DoctorMultipleDataAddEditResponse addEditNameResponse);
+    void addEditMultipleData(DoctorMultipleDataAddEditResponse addEditNameResponse);
 
 }

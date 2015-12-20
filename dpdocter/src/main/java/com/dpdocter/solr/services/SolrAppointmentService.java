@@ -17,8 +17,7 @@ public interface SolrAppointmentService {
 
     List<SolrDoctorDocument> getDoctors(String city, String location, String keyword);
 
-	List<SolrDoctorDocument> getDoctors(String city, String location, String speciality, String symptom,
-			Boolean booking, Boolean calling, String minFee, String maxFee, String minTime, String maxTime, List<String> days, String gender,
-			String minExperience, String maxExperience);
+    List<SolrDoctorDocument> getDoctors(String city, String location, String speciality, String symptom, Boolean booking, Boolean calling, String minFee,
+	    String maxFee, String minTime, String maxTime, List<String> days, String gender, String minExperience, String maxExperience);
 
 }

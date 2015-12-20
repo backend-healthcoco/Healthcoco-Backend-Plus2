@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.repository.Query;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Prescription;
+import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.request.DrugAddEditRequest;
 import com.dpdocter.request.DrugDirectionAddEditRequest;
 import com.dpdocter.request.DrugDosageAddEditRequest;
@@ -54,7 +55,7 @@ public interface PrescriptionServices {
     Boolean deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId, String patientId, Boolean discarded);
 
     List<Prescription> getPrescriptions(int page, int size, String doctorId, String hospitalId, String locationId, String patientId, String updatedTime,
-	    boolean isOTPVerified, boolean discarded);
+	    boolean isOTPVerified, boolean discarded, boolean inHistory);
 
     List<Prescription> getPrescriptionsByIds(List<String> prescriptionIds);
 
@@ -113,12 +114,14 @@ public interface PrescriptionServices {
 
     LabTest editLabTest(LabTest request);
 
-    Boolean deleteLabTest(String labTestId, String doctorId, String hospitalId, String locationId, Boolean discarded);
+    Boolean deleteLabTest(String labTestId, String hospitalId, String locationId, Boolean discarded);
 
     Boolean deleteLabTest(String labTestId, Boolean discarded);
 
     LabTest getLabTestById(String labTestId);
 
     void importDrug();
+
+    List<DiagnosticTestCollection> getDiagnosticTest();
 
 }

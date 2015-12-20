@@ -2,15 +2,15 @@ package com.dpdocter.enums;
 
 public enum AppointmentType {
 
-	NEW("NEW"), CONFIRM("CONFIRM"), RESCHEDULE("RESCHEDULE"), CANCEL("CANCEL");
-	
-	private String type;
+    NEW("NEW"), CONFIRM("CONFIRM"), RESCHEDULE("RESCHEDULE"), CANCEL("CANCEL");
 
-	private AppointmentType(String type) {
-		this.type = type;
-	}
+    private String type;
 
-	public String getType() {
-		return type;
-	}
+    private AppointmentType(String type) {
+	this.type = type;
+    }
+
+    public String getType() {
+	return type;
+    }
 }

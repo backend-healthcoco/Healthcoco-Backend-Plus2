@@ -4,6 +4,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.DiagnosticTest;
+
 @Document(collection = "lab_test_cl")
 public class LabTestCollection extends GenericCollection {
 
@@ -11,16 +13,16 @@ public class LabTestCollection extends GenericCollection {
     private String id;
 
     @Field
-    private String testName;
-
-    @Field
-    private String doctorId;
+    private DiagnosticTest test;
 
     @Field
     private String locationId;
 
     @Field
     private String hospitalId;
+
+    @Field
+    private int cost = 0;
 
     @Field
     private Boolean discarded = false;
@@ -33,20 +35,12 @@ public class LabTestCollection extends GenericCollection {
 	this.id = id;
     }
 
-    public String getTestName() {
-	return testName;
+    public DiagnosticTest getTest() {
+	return test;
     }
 
-    public void setTestName(String testName) {
-	this.testName = testName;
-    }
-
-    public String getDoctorId() {
-	return doctorId;
-    }
-
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
+    public void setTest(DiagnosticTest test) {
+	this.test = test;
     }
 
     public String getLocationId() {
@@ -65,6 +59,14 @@ public class LabTestCollection extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
+    public int getCost() {
+	return cost;
+    }
+
+    public void setCost(int cost) {
+	this.cost = cost;
+    }
+
     public Boolean getDiscarded() {
 	return discarded;
     }
@@ -75,7 +77,8 @@ public class LabTestCollection extends GenericCollection {
 
     @Override
     public String toString() {
-	return "LabTestCollection [id=" + id + ", testName=" + testName + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-		+ hospitalId + ", discarded=" + discarded + "]";
+	return "LabTestCollection [id=" + id + ", test=" + test + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", cost=" + cost
+		+ ", discarded=" + discarded + "]";
     }
+
 }

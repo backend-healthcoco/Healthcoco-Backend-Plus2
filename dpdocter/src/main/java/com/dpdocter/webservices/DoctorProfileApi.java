@@ -53,7 +53,6 @@ import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.services.DoctorProfileService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.services.SolrRegistrationService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -73,7 +72,7 @@ public class DoctorProfileApi {
 
     @Autowired
     private TransactionalManagementService transnationalService;
-    
+
     @Context
     private UriInfo uriInfo;
 
@@ -88,7 +87,8 @@ public class DoctorProfileApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Cannot Be null");
 	}
 	Boolean addEditNameResponse = doctorProfileService.addEditName(request);
-	if(addEditNameResponse) solrRegistrationService.addEditName(request);
+	if (addEditNameResponse)
+	    solrRegistrationService.addEditName(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditNameResponse);
 	return response;
@@ -102,7 +102,8 @@ public class DoctorProfileApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Experience Request Is Empty");
 	}
 	DoctorExperience experienceResponse = doctorProfileService.addEditExperience(request);
-	if(experienceResponse != null) solrRegistrationService.addEditExperience(request.getDoctorId(), experienceResponse);
+	if (experienceResponse != null)
+	    solrRegistrationService.addEditExperience(request.getDoctorId(), experienceResponse);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -165,7 +166,8 @@ public class DoctorProfileApi {
 	}
 	List<String> specialityResponse = doctorProfileService.addEditSpeciality(request);
 	request.setSpeciality(specialityResponse);
-	if(specialityResponse != null) solrRegistrationService.addEditSpeciality(request);
+	if (specialityResponse != null)
+	    solrRegistrationService.addEditSpeciality(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -232,7 +234,8 @@ public class DoctorProfileApi {
 	}
 	String addEditProfilePictureResponse = doctorProfileService.addEditProfilePicture(request);
 	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
-	if(addEditProfilePictureResponse != null) solrRegistrationService.addEditProfilePicture(request.getDoctorId(), addEditProfilePictureResponse);
+	if (addEditProfilePictureResponse != null)
+	    solrRegistrationService.addEditProfilePicture(request.getDoctorId(), addEditProfilePictureResponse);
 	addEditProfilePictureResponse = getFinalImageURL(addEditProfilePictureResponse);
 	Response<String> response = new Response<String>();
 	response.setData(addEditProfilePictureResponse);
@@ -283,10 +286,10 @@ public class DoctorProfileApi {
 		doctorProfile.setThumbnailUrl(getFinalImageURL(doctorProfile.getThumbnailUrl()));
 	    }
 	    if (doctorProfile.getCoverImageUrl() != null) {
-		doctorProfile.setImageUrl(getFinalImageURL(doctorProfile.getCoverImageUrl()));
+		doctorProfile.setCoverImageUrl(getFinalImageURL(doctorProfile.getCoverImageUrl()));
 	    }
 	    if (doctorProfile.getCoverThumbnailImageUrl() != null) {
-		doctorProfile.setThumbnailUrl(getFinalImageURL(doctorProfile.getCoverThumbnailImageUrl()));
+		doctorProfile.setCoverThumbnailImageUrl(getFinalImageURL(doctorProfile.getCoverThumbnailImageUrl()));
 	    }
 	    if (doctorProfile.getClinicProfile() != null & !doctorProfile.getClinicProfile().isEmpty()) {
 		for (DoctorClinicProfile clinicProfile : doctorProfile.getClinicProfile()) {
@@ -356,7 +359,8 @@ public class DoctorProfileApi {
 	}
 	Boolean addEditVisitingTimeResponse = doctorProfileService.addEditVisitingTime(request);
 	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
-	if(addEditVisitingTimeResponse) solrRegistrationService.addEditVisitingTime(request);
+	if (addEditVisitingTimeResponse)
+	    solrRegistrationService.addEditVisitingTime(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditVisitingTimeResponse);
 	return response;
@@ -374,7 +378,8 @@ public class DoctorProfileApi {
 	}
 	Boolean addEditConsultationFeeResponse = doctorProfileService.addEditConsultationFee(request);
 	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
-	if(addEditConsultationFeeResponse) solrRegistrationService.addEditConsultationFee(request);
+	if (addEditConsultationFeeResponse)
+	    solrRegistrationService.addEditConsultationFee(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditConsultationFeeResponse);
 	return response;
@@ -409,7 +414,8 @@ public class DoctorProfileApi {
 
 	Boolean addEditGeneralInfoResponse = doctorProfileService.addEditGeneralInfo(request);
 	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
-	if(addEditGeneralInfoResponse) solrRegistrationService.addEditGeneralInfo(request);
+	if (addEditGeneralInfoResponse)
+	    solrRegistrationService.addEditGeneralInfo(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditGeneralInfoResponse);
 	return response;
@@ -459,9 +465,12 @@ public class DoctorProfileApi {
 	}
 	DoctorMultipleDataAddEditResponse addEditNameResponse = doctorProfileService.addEditMultipleData(request);
 	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
-	if(addEditNameResponse != null) solrRegistrationService.addEditMultipleData(addEditNameResponse);
+	if (addEditNameResponse != null)
+	    solrRegistrationService.addEditMultipleData(addEditNameResponse);
 	addEditNameResponse.setCoverImageUrl(getFinalImageURL(addEditNameResponse.getCoverImageUrl()));
 	addEditNameResponse.setProfileImageUrl(getFinalImageURL(addEditNameResponse.getProfileImageUrl()));
+	addEditNameResponse.setThumbnailCoverImageUrl(getFinalImageURL(addEditNameResponse.getThumbnailCoverImageUrl()));
+	addEditNameResponse.setThumbnailProfileImageUrl(getFinalImageURL(addEditNameResponse.getThumbnailProfileImageUrl()));
 
 	Response<DoctorMultipleDataAddEditResponse> response = new Response<DoctorMultipleDataAddEditResponse>();
 	response.setData(addEditNameResponse);

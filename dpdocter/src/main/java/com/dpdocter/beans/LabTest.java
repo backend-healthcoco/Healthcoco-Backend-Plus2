@@ -6,15 +6,15 @@ public class LabTest extends GenericCollection {
 
     private String id;
 
-    private String testName;
-
-    private String doctorId;
+    private DiagnosticTest test;
 
     private String locationId;
 
     private String hospitalId;
 
-    private Boolean discarded;
+    private int cost = 0;
+
+    private Boolean discarded = false;
 
     public String getId() {
 	return id;
@@ -24,20 +24,12 @@ public class LabTest extends GenericCollection {
 	this.id = id;
     }
 
-    public String getTestName() {
-	return testName;
+    public DiagnosticTest getTest() {
+	return test;
     }
 
-    public void setTestName(String testName) {
-	this.testName = testName;
-    }
-
-    public String getDoctorId() {
-	return doctorId;
-    }
-
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
+    public void setTest(DiagnosticTest test) {
+	this.test = test;
     }
 
     public String getLocationId() {
@@ -56,6 +48,14 @@ public class LabTest extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
+    public int getCost() {
+	return cost;
+    }
+
+    public void setCost(int cost) {
+	this.cost = cost;
+    }
+
     public Boolean getDiscarded() {
 	return discarded;
     }
@@ -66,7 +66,7 @@ public class LabTest extends GenericCollection {
 
     @Override
     public String toString() {
-	return "LabTest [id=" + id + ", testName=" + testName + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ ", discarded=" + discarded + "]";
+	return "LabTest [id=" + id + ", test=" + test + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", cost=" + cost + ", discarded="
+		+ discarded + "]";
     }
 }

@@ -26,10 +26,10 @@ public interface PatientClinicalNotesRepository extends MongoRepository<PatientC
     List<PatientClinicalNotesCollection> findByPatientId(String patientId, Date date, Sort sort);
 
     @Query("{'patientId': ?0, 'discarded': {$in: ?1}, 'updatedTime': {'$gte': ?2}}")
-    List<PatientClinicalNotesCollection> findByPatientId(String patientId, boolean[] discards, Date date, Pageable Pageable);
+    List<PatientClinicalNotesCollection> findByPatientId(String patientId, boolean[] discards, boolean[] inHistorys, Date date, Pageable Pageable);
 
     @Query("{'patientId': ?0, 'discarded': {$in: ?1}, 'updatedTime': {'$gte': ?2}}")
-    List<PatientClinicalNotesCollection> findByPatientId(String patientId, boolean[] discarded, Date date, Sort sort);
+    List<PatientClinicalNotesCollection> findByPatientId(String patientId, boolean[] discarded, boolean[] inHistorys, Date date, Sort sort);
 
     @Query("{'patientId': ?0, 'clinicalNotesId': {'$in': ?1}}")
     List<PatientClinicalNotesCollection> findAll(String patientId, List<String> clinicalNotesIds);

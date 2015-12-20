@@ -73,11 +73,9 @@ public interface PathProxy {
     public interface RegistrationUrls {
 	public static final String PATIENT_REGISTER = "/patient";
 
-	public static final String DOCTOR_REGISTER = "/doctor";
+	public static final String USER_REGISTER = "/user";
 
 	public static final String EDIT_PATIENT_PROFILE = "/patient";
-
-	public static final String EXISTING_DOCTOR_BY_EMAIL_ADDRESS = "/existing_doctor/{emailAddress}";
 
 	public static final String EXISTING_PATIENTS_BY_PHONE_NUM = "/existing_patients/{mobileNumber}/{locationId}/{hospitalId}";
 
@@ -124,6 +122,8 @@ public interface PathProxy {
 	public static final String ADD_ROLE = "/role/add";
 
 	public static final String GET_ROLE = "/role/{range}";
+
+	public static final String GET_DOCTORS = "/doctors";
 
     }
 
@@ -239,11 +239,13 @@ public interface PathProxy {
 
 	public static final String EDIT_LAB_TEST = "/labTest/{labTestId}/update";
 
-	public static final String DELETE_LAB_TEST = "/labTest/{labTestId}/{doctorId}/{locationId}/{hospitalId}/delete";
+	public static final String DELETE_LAB_TEST = "/labTest/{labTestId}/{locationId}/{hospitalId}/delete";
 
 	public static final String GET_LAB_TEST_BY_ID = "/labTest/{labTestId}";
 
 	public static final String DELETE_GLOBAL_LAB_TEST = "/labTest/{labTestId}/delete";
+
+	public static final String GET_DIAGNOSTIC_TEST = "/diagnosticTest";
 
 	public static final String GET_PRESCRIPTION_ITEMS = "/{type}/{range}";
 
@@ -355,6 +357,8 @@ public interface PathProxy {
 	//
 	// public static final String REMOVE_VISITS =
 	// "/removeVisits/{visitId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
+
+	public static final String GET_MULTIPLE_DATA = "getMultipleData";
     }
 
     public static final String DOCTOR_PROFILE_URL = BASE_URL + "/doctorProfile";
@@ -526,37 +530,37 @@ public interface PathProxy {
     public static final String APPOINTMENT_BASE_URL = BASE_URL + "/appointment";
 
     public interface AppointmentUrls {
-    	
-    	public static final String ADD_COUNTRY = "/country/add";
-    	
-    	public static final String ADD_CITY = "/city/add";
-    	
-    	public static final String ACTIVATE_DEACTIVATE_CITY = "/activateCity/{cityId}";
-    		
-    	public static final String GET_CITY = "/cities";
-    	
-    	public static final String GET_CITY_ID = "/getCity/{cityId}";
-    	
-    	public static final String ADD_LANDMARK_LOCALITY = "/landmarkLocality/add";
-    	   	
-    	public static final String GET_CLINIC = "/clinic/{locationId}";
 
-    	public static final String ADD_EDIT_APPOINTMENT_SLOT = "/clinicProfile/addEditAppointmentSlot";
-    		
-   		public static final String GET_CLINIC_APPOINTMENTS = "/clinic";
-    		
-   		public static final String GET_DOCTOR_APPOINTMENTS = "/doctor";
-    		
-    	public static final String GET_PATIENT_APPOINTMENTS = "/patient";
+	public static final String ADD_COUNTRY = "/country/add";
+
+	public static final String ADD_CITY = "/city/add";
+
+	public static final String ACTIVATE_DEACTIVATE_CITY = "/activateCity/{cityId}";
+
+	public static final String GET_CITY = "/cities";
+
+	public static final String GET_CITY_ID = "/getCity/{cityId}";
+
+	public static final String ADD_LANDMARK_LOCALITY = "/landmarkLocality/add";
+
+	public static final String GET_CLINIC = "/clinic/{locationId}";
+
+	public static final String ADD_EDIT_APPOINTMENT_SLOT = "/clinicProfile/addEditAppointmentSlot";
+
+	public static final String GET_CLINIC_APPOINTMENTS = "/clinic";
+
+	public static final String GET_DOCTOR_APPOINTMENTS = "/doctor";
+
+	public static final String GET_PATIENT_APPOINTMENTS = "/patient";
 
     }
 
     public static final String SOLR_CITY_BASE_URL = BASE_URL + "/solr/city";
 
     public interface SolrCityUrls {
-    	
-    public static final String SEARCH_LOCATION = "searchLocation";
-	    }
+
+	public static final String SEARCH_LOCATION = "searchLocation";
+    }
 
     public static final String SMS_BASE_URL = BASE_URL + "/sms";
 

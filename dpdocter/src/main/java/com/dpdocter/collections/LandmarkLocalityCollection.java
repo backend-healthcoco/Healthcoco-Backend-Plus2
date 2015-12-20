@@ -28,67 +28,66 @@ public class LandmarkLocalityCollection {
     @Field
     private double longitude;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getCityId() {
-		return cityId;
-	}
+    public String getCityId() {
+	return cityId;
+    }
 
-	public void setCityId(String cityId) {
-		this.cityId = cityId;
-	}
+    public void setCityId(String cityId) {
+	this.cityId = cityId;
+    }
 
-	public String getLocality() {
-		return locality;
-	}
+    public String getLocality() {
+	return locality;
+    }
 
-	public void setLocality(String locality) {
-		this.locality = locality;
-	}
+    public void setLocality(String locality) {
+	this.locality = locality;
+    }
 
-	public String getLandmark() {
-		return landmark;
-	}
+    public String getLandmark() {
+	return landmark;
+    }
 
-	public void setLandmark(String landmark) {
-		this.landmark = landmark;
-	}
+    public void setLandmark(String landmark) {
+	this.landmark = landmark;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+	return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+	this.description = description;
+    }
 
-	public double getLatitude() {
-		return latitude;
-	}
+    public double getLatitude() {
+	return latitude;
+    }
 
-	public void setLatitude(double latitude) {
-		this.latitude = latitude;
-	}
+    public void setLatitude(double latitude) {
+	this.latitude = latitude;
+    }
 
-	public double getLongitude() {
-		return longitude;
-	}
+    public double getLongitude() {
+	return longitude;
+    }
 
-	public void setLongitude(double longitude) {
-		this.longitude = longitude;
-	}
+    public void setLongitude(double longitude) {
+	this.longitude = longitude;
+    }
 
-	@Override
-	public String toString() {
-		return "LandmarkLocalityCollection [id=" + id + ", cityId=" + cityId + ", locality=" + locality + ", landmark="
-				+ landmark + ", description=" + description + ", latitude=" + latitude + ", longitude=" + longitude
-				+ "]";
-	}
+    @Override
+    public String toString() {
+	return "LandmarkLocalityCollection [id=" + id + ", cityId=" + cityId + ", locality=" + locality + ", landmark=" + landmark + ", description="
+		+ description + ", latitude=" + latitude + ", longitude=" + longitude + "]";
+    }
 
 }

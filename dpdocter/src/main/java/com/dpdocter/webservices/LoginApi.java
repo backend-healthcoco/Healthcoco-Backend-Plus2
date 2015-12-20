@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.LoginResponse;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -51,6 +52,21 @@ public class LoginApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	LoginResponse loginResponse = loginService.login(request, uriInfo);
+	if (loginResponse != null) {
+	    if (!DPDoctorUtils.anyStringEmpty(loginResponse.getUser().getImageUrl())) {
+		loginResponse.getUser().setImageUrl(getFinalImageURL(loginResponse.getUser().getImageUrl()));
+	    }
+	    if (!DPDoctorUtils.anyStringEmpty(loginResponse.getUser().getThumbnailUrl())) {
+		loginResponse.getUser().setThumbnailUrl(getFinalImageURL(loginResponse.getUser().getThumbnailUrl()));
+	    }
+	    if (loginResponse.getHospitals() != null && !loginResponse.getHospitals().isEmpty()) {
+		for (Hospital hospital : loginResponse.getHospitals()) {
+		    if (!DPDoctorUtils.anyStringEmpty(hospital.getHospitalImageUrl())) {
+			hospital.setHospitalImageUrl(getFinalImageURL(hospital.getHospitalImageUrl()));
+		    }
+		}
+	    }
+	}
 	Response<LoginResponse> response = new Response<LoginResponse>();
 	if (response != null)
 	    response.setData(loginResponse);

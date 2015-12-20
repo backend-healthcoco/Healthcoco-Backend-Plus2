@@ -139,7 +139,7 @@ public class SignUpServiceImpl implements SignUpService {
 		userCollection.setIsActive(true);
 		userRepository.save(userCollection);
 
-		userLocationCollection.setIsActive(true);
+		userLocationCollection.setIsActivate(true);
 		userLocationRepository.save(userLocationCollection);
 		tokenCollection.setIsUsed(true);
 		tokenRepository.save(tokenCollection);
@@ -181,7 +181,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    // save user
 	    UserCollection userCollection = new UserCollection();
 	    BeanUtil.map(request, userCollection);
-	    if (userCollection.getDob() != null && userCollection.getDob().getAge() < 0) {
+	    if (request.getDob() != null && request.getDob().getAge() < 0) {
 		logger.warn("Incorrect Date of Birth");
 		throw new BusinessException(ServiceError.NotAcceptable, "Incorrect Date of Birth");
 	    }
@@ -348,7 +348,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    // save user
 	    UserCollection userCollection = new UserCollection();
 	    BeanUtil.map(request, userCollection);
-	    if (userCollection.getDob() != null && userCollection.getDob().getAge() < 0) {
+	    if (request.getDob() != null && request.getDob().getAge() < 0) {
 		logger.warn("Incorrect Date of Birth");
 		throw new BusinessException(ServiceError.NotAcceptable, "Incorrect Date of Birth");
 	    }
@@ -491,7 +491,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    // save user
 	    UserCollection userCollection = new UserCollection();
 	    BeanUtil.map(request, userCollection);
-	    if (userCollection.getDob() != null && userCollection.getDob().getAge() < 0) {
+	    if (request.getDob() != null && request.getDob().getAge() < 0) {
 		logger.warn("Incorrect Date of Birth");
 		throw new BusinessException(ServiceError.NotAcceptable, "Incorrect Date of Birth");
 	    }

@@ -19,7 +19,7 @@ public interface SolrDoctorRepository extends SolrCrudRepository<SolrDoctorDocum
     List<SolrDoctorDocument> findAll(String city, String location, String searchTerm);
 
     @Query("userId : ?0 AND locationId : ?1")
-	SolrDoctorDocument findByUserIdAndLocationId(String userId, String locationId);
+    SolrDoctorDocument findByUserIdAndLocationId(String userId, String locationId);
 
     @Query("userId : ?0 ")
     List<SolrDoctorDocument> findByUserId(String doctorId);

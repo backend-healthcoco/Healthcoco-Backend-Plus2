@@ -19,8 +19,8 @@ public interface SolrCityService {
 
     List<SolrLocalityLandmarkDocument> searchLandmarkLocality(String cityId, String type, String searchTerm);
 
-	List<SolrCityLandmarkLocalityResponse> searchCityLandmarkLocality(String searchTerm, String latitude, String longitude);
+    List<SolrCityLandmarkLocalityResponse> searchCityLandmarkLocality(String searchTerm, String latitude, String longitude);
 
-	boolean addCountry(SolrCountryDocument solrCountry);
+    boolean addCountry(SolrCountryDocument solrCountry);
 
 }
