@@ -412,7 +412,7 @@ public interface PathProxy {
 
 	public static final String GET_EDUCATION_INSTITUTES = "/getEducationInstitutes";
 
-	public static final String GET_DOCTOR_PROFILE = "getDoctorProfile/{doctorId}";
+	public static final String GET_DOCTOR_PROFILE = "/{doctorId}/view";
 
 	public static final String GET_EDUCATION_QUALIFICATIONS = "/getEducationQualifications";
 

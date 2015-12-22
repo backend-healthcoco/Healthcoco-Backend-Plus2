@@ -37,6 +37,6 @@ public interface AppointmentService {
     List<Appointment> getPatientAppointments(String locationId, String doctorId, String patientId, int day, int month, int week, int page, int size,
 	    String updatedTime);
 
-    Country addCountry(Country request);
+	Country addCountry(Country request);
 
 }

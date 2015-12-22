@@ -77,5 +77,4 @@ public class City {
 	return "City [id=" + id + ", city=" + city + ", description=" + description + ", isActivated=" + isActivated + ", countryId=" + countryId
 		+ ", latitude=" + latitude + ", longitude=" + longitude + "]";
     }
-
 }

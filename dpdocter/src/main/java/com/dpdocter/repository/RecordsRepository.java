@@ -3,6 +3,7 @@ package com.dpdocter.repository;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -53,5 +54,4 @@ public interface RecordsRepository extends MongoRepository<RecordsCollection, St
 
     @Query("{'patientId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': {$in: ?2}, 'inHistory' : {$in: ?3}}")
     List<RecordsCollection> findRecords(String patientId, Date date, boolean[] discards, boolean[] inHistorys, Sort sort);
-
 }

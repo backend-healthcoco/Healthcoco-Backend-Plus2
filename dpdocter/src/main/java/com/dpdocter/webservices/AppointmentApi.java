@@ -32,6 +32,7 @@ import com.dpdocter.solr.document.SolrCityDocument;
 import com.dpdocter.solr.document.SolrCountryDocument;
 import com.dpdocter.solr.document.SolrLocalityLandmarkDocument;
 import com.dpdocter.solr.services.SolrCityService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -46,7 +47,7 @@ public class AppointmentApi {
 
     @Autowired
     private SolrCityService solrCityService;
-
+    
     @Autowired
     private TransactionalManagementService transnationalService;
 
@@ -137,7 +138,7 @@ public class AppointmentApi {
     public Response<LandmarkLocality> addLandmaklLocality(LandmarkLocality request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request sent is NULL");
-	}
+	} 
 	LandmarkLocality locality = appointmentService.addLandmaklLocality(request);
 	transnationalService.addResource(request.getId(), Resource.LANDMARKLOCALITY, false);
 	SolrLocalityLandmarkDocument solrLocalityLandmark = new SolrLocalityLandmarkDocument();

@@ -89,5 +89,4 @@ public class LandmarkLocalityCollection {
 	return "LandmarkLocalityCollection [id=" + id + ", cityId=" + cityId + ", locality=" + locality + ", landmark=" + landmark + ", description="
 		+ description + ", latitude=" + latitude + ", longitude=" + longitude + "]";
     }
-
 }

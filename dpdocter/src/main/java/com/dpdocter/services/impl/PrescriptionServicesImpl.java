@@ -464,7 +464,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    prescriptionCollection.setCreatedTime(createdTime);
 	    prescriptionCollection.setPrescriptionCode(PrescriptionUtils.generatePrescriptionCode());
 	    if (prescriptionCollection.getItems() != null) {
+	    	List<PrescriptionItem> items = null;
 		for (PrescriptionItem item : prescriptionCollection.getItems()) {
+		if(item.getDrugId() != null){
 		    List<DrugDirection> directions = null;
 		    if (item.getDirection() != null) {
 			for (DrugDirection drugDirection : item.getDirection()) {
@@ -480,7 +482,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (item.getDuration().getDurationUnit().getId() == null)
 			    item.getDuration().setDurationUnit(null);
 		    }
+		    if (items == null)items = new ArrayList<PrescriptionItem>();
+		    items.add(item);
 		}
+		}
+		prescriptionCollection.setItems(items);
 	    }
 	    if (prescriptionCollection.getLabTests() != null) {
 		List<LabTest> labTests = null;
@@ -855,15 +861,19 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    response = new PrescriptionAddEditResponseDetails();
 	    BeanUtil.map(prescription, response);
 	    List<PrescriptionItemDetail> prescriptionItemDetails = new ArrayList<PrescriptionItemDetail>();
-	    for (PrescriptionItem prescriptionItem : prescription.getItems()) {
-		PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
-		BeanUtil.map(prescriptionItem, prescriptionItemDetail);
-		DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
-		Drug drug = new Drug();
-		if (drugCollection != null)
-		    BeanUtil.map(drugCollection, drug);
-		prescriptionItemDetail.setDrug(drug);
-		prescriptionItemDetails.add(prescriptionItemDetail);
+	    if(prescription.getItems() != null){
+	    	for (PrescriptionItem prescriptionItem : prescription.getItems()) {
+	    		PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
+	    		BeanUtil.map(prescriptionItem, prescriptionItemDetail);
+	    		if(prescriptionItem.getDrugId() != null){
+	    			DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
+	    			Drug drug = new Drug();
+	    			if (drugCollection != null)
+	    			    BeanUtil.map(drugCollection, drug);
+	    			prescriptionItemDetail.setDrug(drug);
+	    			prescriptionItemDetails.add(prescriptionItemDetail);
+	    		}
+	    	    }
 	    }
 	    response.setItems(prescriptionItemDetails);
 	}

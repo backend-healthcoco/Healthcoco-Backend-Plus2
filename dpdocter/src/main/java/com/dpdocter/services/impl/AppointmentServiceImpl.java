@@ -57,6 +57,7 @@ import com.dpdocter.request.AppoinmentRequest;
 import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.solr.beans.Country;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -147,13 +148,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    }
 	    cityCollection.setIsActivated(activate);
 	    cityRepository.save(cityCollection);
-
 	} catch (BusinessException be) {
 	    throw be;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    // throw new BusinessException(ServiceError.Unknown,
-	    // "Error occured while Activating Deactivating City");
 	}
 	return true;
     }
@@ -216,7 +214,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return landmarkLocality;
-    }
+}
 
     @Override
     public List<Object> getLandmarkLocality(String cityId, String type) {
