@@ -3,8 +3,11 @@ package com.dpdocter.solr.services.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.core.UriInfo;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -41,6 +44,9 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 
     @Autowired
     private TransactionalManagementService transnationalService;
+
+    @Value(value = "${IMAGE_URL_ROOT_PATH}")
+    private String imageUrlRootPath;
 
     @Override
     public boolean addPatient(SolrPatientDocument request) {
@@ -89,7 +95,8 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     }
 
     @Override
-    public SolrPatientResponseDetails searchPatient(String doctorId, String locationId, String hospitalId, String searchTerm, int page, int size) {
+    public SolrPatientResponseDetails searchPatient(String doctorId, String locationId, String hospitalId, String searchTerm, int page, int size,
+    		UriInfo uriInfo) {
 	List<SolrPatientDocument> patients = new ArrayList<SolrPatientDocument>();
 	List<SolrPatientResponse> patientsResponse = null;
 	SolrPatientResponseDetails patientResponseDetails = null;
@@ -114,6 +121,9 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 		patientsResponse = new ArrayList<SolrPatientResponse>();
 		for (SolrPatientDocument patient : patients) {
 		    SolrPatientResponse patientResponse = new SolrPatientResponse();
+		    patient.setImageUrl(getFinalImageURL(patient.getImageUrl(), uriInfo));
+			patient.setThumbnailUrl(getFinalImageURL(patient.getThumbnailUrl(), uriInfo));
+			
 		    BeanUtil.map(patient, patientResponse);
 		    patientsResponse.add(patientResponse);
 		}
@@ -130,7 +140,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     }
 
     @Override
-    public SolrPatientResponseDetails searchPatient(AdvancedSearch request) {
+    public SolrPatientResponseDetails searchPatient(AdvancedSearch request, UriInfo uriInfo) {
 	List<SolrPatientDocument> patients = null;
 	List<SolrPatientResponse> response = new ArrayList<SolrPatientResponse>();
 	SolrPatientResponseDetails responseDetails = null;
@@ -149,6 +159,11 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 
 	    if (patients != null) {
 		BeanUtil.map(patients, response);
+		for(SolrPatientDocument patientDocument : patients){
+			patientDocument.setImageUrl(getFinalImageURL(patientDocument.getImageUrl(), uriInfo));
+			patientDocument.setThumbnailUrl(getFinalImageURL(patientDocument.getThumbnailUrl(), uriInfo));
+			
+		}
 		responseDetails = new SolrPatientResponseDetails();
 		responseDetails.setPatients(response);
 		responseDetails.setTotalSize(solrTemplate.count(new SimpleQuery(advancedCriteria)));
@@ -446,10 +461,14 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Searching Patients");
-	    // throw new BusinessException(ServiceError.Unknown,
-	    // "Error Occurred While Searching Patients");
 	}
 
     }
-
+    private String getFinalImageURL(String imageURL, UriInfo uriInfo) {
+	if (imageURL != null) {
+	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+	    return finalImageURL + imageURL;
+	} else
+	    return null;
+    }
 }

@@ -1,5 +1,7 @@
 package com.dpdocter.solr.services;
 
+import javax.ws.rs.core.UriInfo;
+
 import com.dpdocter.solr.beans.AdvancedSearch;
 import com.dpdocter.solr.document.SolrPatientDocument;
 import com.dpdocter.solr.response.SolrPatientResponseDetails;
@@ -11,9 +13,9 @@ public interface SolrRegistrationService {
 
     boolean deletePatient(String id);
 
-    SolrPatientResponseDetails searchPatient(String doctorId, String locationId, String hospitalId, String searchTerm, int page, int size);
+    SolrPatientResponseDetails searchPatient(String doctorId, String locationId, String hospitalId, String searchTerm, int page, int size, UriInfo uriInfo);
 
-    SolrPatientResponseDetails searchPatient(AdvancedSearch request);
+    SolrPatientResponseDetails searchPatient(AdvancedSearch request, UriInfo uriInfo);
 
     // List<SolrPatientDocument> searchPatientByFirstName(String doctorId,
     // String locationId, String hospitalId, String searchValue);

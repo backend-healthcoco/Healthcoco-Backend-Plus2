@@ -19,10 +19,10 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.solr.beans.AdvancedSearch;
-import com.dpdocter.solr.response.SolrPatientResponse;
 import com.dpdocter.solr.response.SolrPatientResponseDetails;
 import com.dpdocter.solr.services.SolrRegistrationService;
 import com.dpdocter.webservices.PathProxy;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -52,14 +52,7 @@ public class SolrRegistrationApi {
 	    logger.warn("Doctor Id, Location Id, Hospital Id and Search Term Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Location Id, Hospital Id and Search Term Cannot Be Empty");
 	}
-	SolrPatientResponseDetails patients = solrRegistrationService.searchPatient(doctorId, locationId, hospitalId, searchTerm, page, size);
-
-	if (patients != null && patients.getPatients() != null && !patients.getPatients().isEmpty()) {
-	    for (SolrPatientResponse patientCard : patients.getPatients()) {
-		patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
-		patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
-	    }
-	}
+	SolrPatientResponseDetails patients = solrRegistrationService.searchPatient(doctorId, locationId, hospitalId, searchTerm, page, size, uriInfo);
 	Response<SolrPatientResponseDetails> response = new Response<SolrPatientResponseDetails>();
 	response.setData(patients);
 	return response;
@@ -74,24 +67,10 @@ public class SolrRegistrationApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Search Request Cannot Be Empty");
 	}
 
-	SolrPatientResponseDetails patients = solrRegistrationService.searchPatient(request);
-	if (patients != null && patients.getPatients() != null && !patients.getPatients().isEmpty()) {
-	    for (SolrPatientResponse patientCard : patients.getPatients()) {
-		patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
-		patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
-	    }
-	}
+	SolrPatientResponseDetails patients = solrRegistrationService.searchPatient(request, uriInfo);
+	
 	Response<SolrPatientResponseDetails> response = new Response<SolrPatientResponseDetails>();
 	response.setData(patients);
 	return response;
     }
-
-    private String getFinalImageURL(String imageURL) {
-	if (imageURL != null) {
-	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-	    return finalImageURL + imageURL;
-	} else
-	    return null;
-    }
-
 }
