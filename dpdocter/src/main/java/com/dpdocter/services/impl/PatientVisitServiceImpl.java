@@ -286,14 +286,15 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    if (size > 0)
 		aggregation = Aggregation.newAggregation(
 			Aggregation.match((Criteria.where("doctorId").is(doctorId).andOperator(Criteria.where("locationId").is(locationId)
-				.andOperator(Criteria.where("hospitalId").is(hospitalId))))), Aggregation.sort(new Sort(Sort.Direction.DESC, "visitedTime")),
-			Aggregation.group("patientId").max("visitedTime").as("visitedTime"), Aggregation.skip((page) * size), Aggregation.limit(size));
+				.andOperator(Criteria.where("hospitalId").is(hospitalId))))), Aggregation.group("patientId").max("visitedTime").as("visitedTime"), 
+			Aggregation.sort(new Sort(Sort.Direction.DESC, "visitedTime")), Aggregation.skip((page) * size), 
+			Aggregation.limit(size));
 
 	    else
 		aggregation = Aggregation.newAggregation(
 			Aggregation.match((Criteria.where("doctorId").is(doctorId).andOperator(Criteria.where("locationId").is(locationId)
-				.andOperator(Criteria.where("hospitalId").is(hospitalId))))), Aggregation.sort(new Sort(Sort.Direction.DESC, "visitedTime")),
-			Aggregation.group("patientId").max("visitedTime").as("visitedTime"));
+				.andOperator(Criteria.where("hospitalId").is(hospitalId))))), Aggregation.group("patientId").max("visitedTime").as("visitedTime"),
+			Aggregation.sort(new Sort(Sort.Direction.DESC, "visitedTime")));
 
 	    AggregationResults<PatientVisit> groupResults = mongoTemplate.aggregate(aggregation, PatientVisitCollection.class, PatientVisit.class);
 	    List<PatientVisit> results = groupResults.getMappedResults();

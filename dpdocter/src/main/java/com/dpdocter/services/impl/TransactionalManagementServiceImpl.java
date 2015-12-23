@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.collections.AddressCollection;
@@ -103,7 +104,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     @Autowired
     private SolrClinicalNotesService solrClinicalNotesService;
 
-    // @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = 300000)
     public void checkResources() {
 	System.out.println(">>> Scheduled test service <<<");
 	List<TransactionalCollection> transactionalCollections = null;
@@ -181,7 +182,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	    PatientCollection patientCollection = patientRepository.findByUserId(id);
 	    if (userCollection != null && patientCollection != null) {
 		PatientAdmissionCollection patientAdmissionCollection = patientAdmissionRepository.findByUserIdAndDoctorId(id, patientCollection.getDoctorId());
-		AddressCollection addressCollection = addressRepository.findOne(patientCollection.getAddressId());
+		AddressCollection addressCollection = null;
+		if(patientCollection.getAddressId() != null)
+			addressCollection = addressRepository.findOne(patientCollection.getAddressId());
 		SolrPatientDocument patientDocument = new SolrPatientDocument();
 
 		if (patientCollection.getDob() != null) {
@@ -192,7 +195,10 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		BeanUtil.map(userCollection, patientDocument);
 		BeanUtil.map(patientCollection, patientDocument);
 		BeanUtil.map(patientAdmissionCollection, patientDocument);
-		BeanUtil.map(addressCollection, patientDocument);
+		if(addressCollection != null)BeanUtil.map(addressCollection, patientDocument);
+
+		patientDocument.setId(patientCollection.getId());
+		patientDocument.setReferredBy(patientAdmissionCollection.getReferredBy());
 
 		solrRegistrationService.editPatient(patientDocument);
 	    }

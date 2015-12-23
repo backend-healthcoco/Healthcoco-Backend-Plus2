@@ -3,6 +3,7 @@ package com.dpdocter.solr.response;
 import java.util.Date;
 
 import com.dpdocter.beans.DOB;
+import com.dpdocter.beans.Reference;
 
 public class SolrPatientResponse {
 
@@ -44,7 +45,7 @@ public class SolrPatientResponse {
 
     private String hospitalId;
 
-    private String referredBy;
+    private Reference referredBy;
 
     private Date createdTime;
 
@@ -204,11 +205,11 @@ public class SolrPatientResponse {
 	this.hospitalId = hospitalId;
     }
 
-    public String getReferredBy() {
+    public Reference getReferredBy() {
 	return referredBy;
     }
 
-    public void setReferredBy(String referredBy) {
+    public void setReferredBy(Reference referredBy) {
 	this.referredBy = referredBy;
     }
 

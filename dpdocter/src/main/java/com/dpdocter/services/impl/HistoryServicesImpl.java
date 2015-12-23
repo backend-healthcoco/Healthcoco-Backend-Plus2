@@ -1429,7 +1429,6 @@ public class HistoryServicesImpl implements HistoryServices {
 	List<HistoryDetailsResponse> response = null;
 	try {
 
-	    long createdTime = Long.parseLong(updatedTime);
 	    List<Prescription> prescriptions = prescriptionServices.getPrescriptions(0, 0, doctorId, hospitalId, locationId, patientId, updatedTime, false,
 		    true, inHistory);
 	    List<ClinicalNotes> clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(0, 0, patientId, doctorId, locationId,

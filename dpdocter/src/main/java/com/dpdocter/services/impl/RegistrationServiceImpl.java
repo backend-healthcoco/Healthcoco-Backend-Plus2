@@ -104,6 +104,7 @@ import com.dpdocter.services.MailService;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.sms.services.SMSServices;
 import com.dpdocter.solr.document.SolrDoctorDocument;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -305,8 +306,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    if (referencesCollection != null)
 		patientAdmissionCollection.setReferredBy(referencesCollection.getReference());
 	    patientAdmissionCollection = patientAdmissionRepository.save(patientAdmissionCollection);
-	    registeredPatientDetails.setReferredBy(patientAdmissionCollection.getReferredBy());
-
+	    
 	    // assign groups
 	    if (request.getGroups() != null) {
 		for (String group : request.getGroups()) {
@@ -349,11 +349,18 @@ public class RegistrationServiceImpl implements RegistrationService {
 		patient.setIsHistoryAvailable(true);
 
 	    registeredPatientDetails.setPatient(patient);
+	    registeredPatientDetails.setDob(patientCollection.getDob());
+	    registeredPatientDetails.setGender(patientCollection.getGender());
 	    registeredPatientDetails.setPID(patientCollection.getPID());
 	    registeredPatientDetails.setDoctorId(patientCollection.getDoctorId());
 	    registeredPatientDetails.setLocationId(patientCollection.getLocationId());
 	    registeredPatientDetails.setHospitalId(patientCollection.getHospitalId());
 	    registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
+	    if(referencesCollection != null){
+	    	Reference reference = new Reference();
+		    BeanUtil.map(referencesCollection, reference);
+		    registeredPatientDetails.setReferredBy(reference);
+	    }
 	    Address address = new Address();
 	    if (addressCollection != null) {
 		BeanUtil.map(addressCollection, address);
@@ -466,7 +473,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    if (referencesCollection != null)
 		patientAdmissionCollection.setReferredBy(referencesCollection.getReference());
 	    patientAdmissionCollection = patientAdmissionRepository.save(patientAdmissionCollection);
-	    registeredPatientDetails.setReferredBy(patientAdmissionCollection.getReferredBy());
 
 	    // assign groups
 	    if (request.getGroups() != null) {
@@ -530,6 +536,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    registeredPatientDetails.setLocationId(patientCollection.getLocationId());
 	    registeredPatientDetails.setHospitalId(patientCollection.getHospitalId());
 	    registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
+	    if(referencesCollection != null){
+	    	Reference reference = new Reference();
+		    BeanUtil.map(referencesCollection, reference);
+		    registeredPatientDetails.setReferredBy(reference);
+	    }
 	    Address address = new Address();
 	    if (addressCollection != null) {
 		BeanUtil.map(addressCollection, address);

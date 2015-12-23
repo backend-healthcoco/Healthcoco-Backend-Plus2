@@ -3,8 +3,11 @@ package com.dpdocter.solr.services.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.core.UriInfo;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -36,6 +39,7 @@ import com.dpdocter.solr.repository.SolrPatientRepository;
 import com.dpdocter.solr.response.SolrPatientResponse;
 import com.dpdocter.solr.response.SolrPatientResponseDetails;
 import com.dpdocter.solr.services.SolrRegistrationService;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -54,6 +58,9 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 
     @Autowired
     private TransactionalManagementService transnationalService;
+
+    @Value(value = "${IMAGE_URL_ROOT_PATH}")
+    private String imageUrlRootPath;
 
     @Override
     public boolean addPatient(SolrPatientDocument request) {
@@ -102,7 +109,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     }
 
     @Override
-    public SolrPatientResponseDetails searchPatient(String doctorId, String locationId, String hospitalId, String searchTerm, int page, int size) {
+    public SolrPatientResponseDetails searchPatient(String doctorId, String locationId, String hospitalId, String searchTerm, int page, int size, UriInfo uriInfo) {
 	List<SolrPatientDocument> patients = new ArrayList<SolrPatientDocument>();
 	List<SolrPatientResponse> patientsResponse = null;
 	SolrPatientResponseDetails patientResponseDetails = null;
@@ -127,6 +134,10 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 		patientsResponse = new ArrayList<SolrPatientResponse>();
 		for (SolrPatientDocument patient : patients) {
 		    SolrPatientResponse patientResponse = new SolrPatientResponse();
+		    
+		    patient.setImageUrl(getFinalImageURL(patient.getImageUrl(), uriInfo));
+			patient.setThumbnailUrl(getFinalImageURL(patient.getThumbnailUrl(), uriInfo));
+			
 		    BeanUtil.map(patient, patientResponse);
 		    patientsResponse.add(patientResponse);
 		}
@@ -143,7 +154,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     }
 
     @Override
-    public SolrPatientResponseDetails searchPatient(AdvancedSearch request) {
+    public SolrPatientResponseDetails searchPatient(AdvancedSearch request, UriInfo uriInfo) {
 	List<SolrPatientDocument> patients = null;
 	List<SolrPatientResponse> response = new ArrayList<SolrPatientResponse>();
 	SolrPatientResponseDetails responseDetails = null;
@@ -160,12 +171,21 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	    else
 		patients = solrTemplate.queryForPage(query.addSort(new Sort(Sort.Direction.DESC, "createdTime")), SolrPatientDocument.class).getContent();
 
-	    if (patients != null) {
-		BeanUtil.map(patients, response);
-		responseDetails = new SolrPatientResponseDetails();
-		responseDetails.setPatients(response);
-		responseDetails.setTotalSize(solrTemplate.count(new SimpleQuery(advancedCriteria)));
-	    }
+	    if (patients != null && !patients.isEmpty()) {
+	    	response = new ArrayList<SolrPatientResponse>();
+			for (SolrPatientDocument patient : patients) {
+			    SolrPatientResponse patientResponse = new SolrPatientResponse();
+			    
+			    patient.setImageUrl(getFinalImageURL(patient.getImageUrl(), uriInfo));
+				patient.setThumbnailUrl(getFinalImageURL(patient.getThumbnailUrl(), uriInfo));
+				
+			    BeanUtil.map(patient, patientResponse);
+			    response.add(patientResponse);
+			}
+			responseDetails = new SolrPatientResponseDetails();
+			responseDetails.setPatients(response);
+			responseDetails.setTotalSize(solrTemplate.count(new SimpleQuery(advancedCriteria)));
+		    }
 
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -596,5 +616,13 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	    e.printStackTrace();
 	}
     }
-
+    
+    
+    private String getFinalImageURL(String imageURL, UriInfo uriInfo) {
+    	if (imageURL != null) {
+    	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+    	    return finalImageURL + imageURL;
+    	} else
+    	    return null;
+        }
 }

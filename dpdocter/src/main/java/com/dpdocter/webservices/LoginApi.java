@@ -73,19 +73,7 @@ public class LoginApi {
 	return response;
     }
 
-    @Path(value = PathProxy.LoginUrls.VERIFY_USER)
-    @GET
-    public Response<Boolean> verifyUser(@PathParam("userId") String userId) {
-	if (DPDoctorUtils.anyStringEmpty(userId)) {
-	    logger.warn("Invalid Input. User Id Cannot Be Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. User Id Cannot Be Empty");
-	}
-	Boolean verifyUserResponse = loginService.verifyUser(userId);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(verifyUserResponse);
-	return response;
-    }
-
+    
     private String getFinalImageURL(String imageURL) {
 	if (imageURL != null) {
 	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);

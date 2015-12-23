@@ -631,6 +631,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	boolean[] inHistorys = new boolean[2];
 	inHistorys[0] = true;
+	inHistorys[1] = true;
 
 	try {
 	    if (discarded)

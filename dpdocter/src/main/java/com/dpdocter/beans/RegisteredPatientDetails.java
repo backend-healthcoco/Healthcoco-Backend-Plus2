@@ -42,7 +42,7 @@ public class RegisteredPatientDetails extends GenericCollection {
 
     private String colorCode;
 
-    private String referredBy;
+    private Reference referredBy;
 
     public String getUserId() {
 	return userId;
@@ -188,11 +188,11 @@ public class RegisteredPatientDetails extends GenericCollection {
 	this.thumbnailUrl = thumbnailUrl;
     }
 
-    public String getReferredBy() {
+    public Reference getReferredBy() {
 	return referredBy;
     }
 
-    public void setReferredBy(String referredBy) {
+    public void setReferredBy(Reference referredBy) {
 	this.referredBy = referredBy;
     }
 

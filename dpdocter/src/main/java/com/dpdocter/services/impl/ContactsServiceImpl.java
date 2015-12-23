@@ -148,10 +148,10 @@ public class ContactsServiceImpl implements ContactsService {
 	    long createdTimestamp = Long.parseLong(updatedTime);
 	    if (size > 0)
 		doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, discards, new Date(createdTimestamp),
-			new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			new PageRequest(page, size, Direction.DESC, "createdTime"));
 	    else
 		doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, discards, new Date(createdTimestamp), new Sort(
-			Sort.Direction.DESC, "updatedTime"));
+			Sort.Direction.DESC, "createdTime"));
 
 	    if (doctorContactCollections.isEmpty()) {
 		return null;
@@ -258,44 +258,50 @@ public class ContactsServiceImpl implements ContactsService {
     }
 
     public List<PatientCard> getSpecifiedPatientCards(Collection<String> patientIds, String doctorId, String locationId, String hospitalId) throws Exception {
-	// getting patients from patient ids
-	Query queryForGettingPatientsFromPatientIds = new Query();
-	if (!DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId) && patientIds != null && !patientIds.isEmpty()) {
-	    queryForGettingPatientsFromPatientIds.addCriteria(Criteria
-		    .where("userId")
-		    .in(patientIds)
-		    .andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
-			    Criteria.where("hospitalId").is(hospitalId)));
-	} else if (patientIds != null && !patientIds.isEmpty() && !DPDoctorUtils.anyStringEmpty(doctorId)) {
-	    queryForGettingPatientsFromPatientIds.addCriteria(Criteria.where("userId").in(patientIds).andOperator(Criteria.where("doctorId").is(doctorId)));
-	} else {
+    List<PatientCard> patientCards = new ArrayList<PatientCard>();
+	List<String> uniqueIds = new ArrayList<String>();
+    if(patientIds != null && !patientIds.isEmpty()){
+    	for(String patientId : patientIds){
+    		if(!uniqueIds.contains(patientId)){
+    			uniqueIds.add(patientId);
+        		PatientCollection patientCollection = null;
+        		if(DPDoctorUtils.anyStringEmpty(locationId, hospitalId)){
+        			patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientId, doctorId, locationId, hospitalId); 			
+        		}
+        		else{
+        			patientCollection = patientRepository.findByUserIdDoctorId(patientId, doctorId);
+        		}
+        		if(patientCollection != null){
+        			
+        			UserCollection userCollection = userRepository.findOne(patientCollection.getUserId());
+        		    if (userCollection != null) {
+        			List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getUserId());
+        			@SuppressWarnings("unchecked")
+        			Collection<String> groupIds = CollectionUtils.collect(patientGroupCollections, new BeanToPropertyValueTransformer("groupId"));
+        			List<Group> groups = new ArrayList<Group>();
+        			List<GroupCollection> groupCollections = (List<GroupCollection>) groupRepository.findAll(groupIds);
+        			BeanUtil.map(groupCollections, groups);
+        			PatientCard patientCard = new PatientCard();
+        			BeanUtil.map(patientCollection, patientCard);
+        			BeanUtil.map(userCollection, patientCard);
+        			patientCard.setGroups(groups);
+        			patientCard.setDoctorSepecificPatientId(patientCollection.getUserId());
+
+        			int historyCount = historyRepository.getByPatientIdAndNotEqualToDoctorLocationHospital(patientCollection.getUserId(), doctorId, locationId,
+        				hospitalId);
+        			if (historyCount > 0)
+        			    patientCard.setIsHistoryAvailable(true);
+
+        			patientCards.add(patientCard);
+        		    }
+        		}
+    		}
+    	}
+    }
+    else {
 	    return new ArrayList<PatientCard>(0);
 	}
-	List<PatientCollection> patientCollections = mongoTemplate.find(queryForGettingPatientsFromPatientIds, PatientCollection.class);
-	List<PatientCard> patientCards = new ArrayList<PatientCard>();
-	for (PatientCollection patientCollection : patientCollections) {
-	    UserCollection userCollection = userRepository.findOne(patientCollection.getUserId());
-	    if (userCollection != null) {
-		List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getUserId());
-		@SuppressWarnings("unchecked")
-		Collection<String> groupIds = CollectionUtils.collect(patientGroupCollections, new BeanToPropertyValueTransformer("groupId"));
-		List<Group> groups = new ArrayList<Group>();
-		List<GroupCollection> groupCollections = (List<GroupCollection>) groupRepository.findAll(groupIds);
-		BeanUtil.map(groupCollections, groups);
-		PatientCard patientCard = new PatientCard();
-		BeanUtil.map(patientCollection, patientCard);
-		BeanUtil.map(userCollection, patientCard);
-		patientCard.setGroups(groups);
-		patientCard.setDoctorSepecificPatientId(patientCollection.getUserId());
 
-		int historyCount = historyRepository.getByPatientIdAndNotEqualToDoctorLocationHospital(patientCollection.getUserId(), doctorId, locationId,
-			hospitalId);
-		if (historyCount > 0)
-		    patientCard.setIsHistoryAvailable(true);
-
-		patientCards.add(patientCard);
-	    }
-	}
 	return patientCards;
     }
 

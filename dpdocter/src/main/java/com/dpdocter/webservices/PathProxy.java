@@ -21,8 +21,10 @@ public interface PathProxy {
 
 	public static final String PATIENT_SIGNUP = "/patient";
 
-	public static final String ACTIVATE_USER = "/activate/{tokenId}";
+	public static final String ACTIVATE_USER = "/activate/{userId}";
 
+	public static final String VERIFY_USER = "/verify/{tokenId}";
+	
 	public static final String CHECK_IF_USERNAME_EXIST = "/check-username-exists/{username}";
 
 	public static final String CHECK_IF_MOBNUM_EXIST = "/check-mobnum-exists/{mobileNumber}";
@@ -36,9 +38,6 @@ public interface PathProxy {
 
     public interface LoginUrls {
 	public static final String LOGIN_USER = "/user";
-
-	public static final String VERIFY_USER = "/user/verifyUser/{userId}";
-
     }
 
     public static final String CONTACTS_BASE_URL = BASE_URL + "/contacts";

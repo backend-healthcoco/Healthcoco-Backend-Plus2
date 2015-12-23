@@ -216,27 +216,6 @@ public class LoginServiceImpl implements LoginService {
 	return response;
     }
 
-    @Override
-    public Boolean verifyUser(String userId) {
-	UserCollection userCollection = null;
-	Boolean response = false;
-	try {
-	    userCollection = userRepository.findOne(userId);
-	    if (userCollection != null) {
-		userCollection.setIsVerified(true);
-		userRepository.save(userCollection);
-		response = true;
-	    } else {
-		logger.error("User Not Found For The Given User Id");
-		throw new BusinessException(ServiceError.NotFound, "User Not Found For The Given User Id");
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error While Verifying User");
-	    throw new BusinessException(ServiceError.Unknown, "Error While Verifying User");
-	}
-	return response;
-    }
 
     private String getFinalImageURL(String imageURL, UriInfo uriInfo) {
 	if (imageURL != null) {

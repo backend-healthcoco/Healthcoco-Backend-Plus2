@@ -9,7 +9,7 @@ import com.dpdocter.request.PatientProfilePicChangeRequest;
 import com.dpdocter.request.PatientSignUpRequest;
 
 public interface SignUpService {
-    String activateUser(String tokenId);
+    Boolean activateUser(String tokenId);
 
     DoctorSignUp doctorSignUp(DoctorSignupRequest request);
 
@@ -26,4 +26,6 @@ public interface SignUpService {
     DoctorSignUp doctorHandheld(DoctorSignupHandheldRequest request);
 
     DoctorSignUp doctorHandheldContinue(DoctorSignupHandheldContinueRequest request);
+
+	String verifyUser(String tokenId);
 }

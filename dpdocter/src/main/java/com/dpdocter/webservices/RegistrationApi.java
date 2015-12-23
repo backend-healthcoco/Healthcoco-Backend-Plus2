@@ -480,7 +480,7 @@ public class RegistrationApi {
 	SolrPatientDocument solrPatientDocument = null;
 	try {
 	    solrPatientDocument = new SolrPatientDocument();
-	    if (solrPatientDocument.getDob() != null) {
+	    if (patient.getDob() != null) {
 		solrPatientDocument.setDays(patient.getDob().getDays() + "");
 		solrPatientDocument.setMonths(patient.getDob().getMonths() + "");
 		solrPatientDocument.setYears(patient.getDob().getYears() + "");
@@ -493,6 +493,7 @@ public class RegistrationApi {
 	    }
 	    BeanUtil.map(patient, solrPatientDocument);
 	    solrPatientDocument.setId(patient.getPatient().getPatientId());
+	    solrPatientDocument.setReferredBy(patient.getReferredBy().getReference());
 
 	} catch (Exception e) {
 	    e.printStackTrace();

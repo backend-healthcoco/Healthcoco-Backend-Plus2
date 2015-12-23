@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -45,5 +46,14 @@ public interface PatientRepository extends MongoRepository<PatientCollection, St
 
     @Query("{'userId': {'$in': ?0}, 'doctorId':?1}")
     List<PatientCollection> findByUserIdDoctorId(Collection<String> patientIds, String doctorId, Pageable pageRequest);
+
+    @Query("{'userId': ?0, 'doctorId':?1}")
+	PatientCollection findByUserIdDoctorId(String patientId, String doctorId);
+
+//    @Query("{'userId': ?0, 'doctorId':?1,'locationId': ?2,'hospitalId': ?3}")
+//	PatientCollection findByUserIdDoctorIdLocationIdHospitalId(String patientId, String doctorId, String locationId, String hospitalId, Pageable pageRequest);
+//
+//    @Query("{'userId': ?0, 'doctorId':?1,'locationId': ?2,'hospitalId': ?3}")
+//	PatientCollection findByUserIdDoctorIdLocationIdHospitalId(String patientId, String doctorId, String locationId, String hospitalId, Sort sort);
 
 }

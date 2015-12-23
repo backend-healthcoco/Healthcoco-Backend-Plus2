@@ -125,7 +125,7 @@ public class SignUpServiceImpl implements SignUpService {
      * @return Boolean This method activates the user account.
      */
     @Override
-    public String activateUser(String tokenId) {
+    public String verifyUser(String tokenId) {
 	try {
 	    TokenCollection tokenCollection = tokenRepository.findOne(tokenId);
 	    if (tokenCollection == null || tokenCollection.getIsUsed()) {
@@ -155,6 +155,28 @@ public class SignUpServiceImpl implements SignUpService {
 	    throw new BusinessException(ServiceError.Unknown, "Error occured while Activating user");
 	}
 
+    }
+
+    @Override
+    public Boolean activateUser(String userId) {
+	UserCollection userCollection = null;
+	Boolean response = false;
+	try {
+	    userCollection = userRepository.findOne(userId);
+	    if (userCollection != null) {
+		userCollection.setIsVerified(true);
+		userRepository.save(userCollection);
+		response = true;
+	    } else {
+		logger.error("User Not Found For The Given User Id");
+		throw new BusinessException(ServiceError.NotFound, "User Not Found For The Given User Id");
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e + " Error While Verifying User");
+	    throw new BusinessException(ServiceError.Unknown, "Error While Verifying User");
+	}
+	return response;
     }
 
     @Override
