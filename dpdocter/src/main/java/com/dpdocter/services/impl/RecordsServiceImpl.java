@@ -553,10 +553,10 @@ public class RecordsServiceImpl implements RecordsService {
 
 		UserCollection patientUserCollection = userRepository.findOne(recordsCollection.getPatientId());
 		if (patientUserCollection != null) {
-		    mailAttachment.setAttachmentName(patientUserCollection.getFirstName() + new Date() + "REPORTS"
+		    mailAttachment.setAttachmentName(patientUserCollection.getFirstName() + new Date() + "REPORTS."
 			    + FilenameUtils.getExtension(file.getFilename()));
 		} else {
-		    mailAttachment.setAttachmentName(new Date() + "REPORTS" + FilenameUtils.getExtension(file.getFilename()));
+		    mailAttachment.setAttachmentName(new Date() + "REPORTS." + FilenameUtils.getExtension(file.getFilename()));
 		}
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 		emailTrackCollection.setDoctorId(recordsCollection.getDoctorId());
