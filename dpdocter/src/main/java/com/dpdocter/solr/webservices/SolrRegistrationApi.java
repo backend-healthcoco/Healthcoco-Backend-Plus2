@@ -22,7 +22,6 @@ import com.dpdocter.solr.beans.AdvancedSearch;
 import com.dpdocter.solr.response.SolrPatientResponseDetails;
 import com.dpdocter.solr.services.SolrRegistrationService;
 import com.dpdocter.webservices.PathProxy;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -68,7 +67,7 @@ public class SolrRegistrationApi {
 	}
 
 	SolrPatientResponseDetails patients = solrRegistrationService.searchPatient(request, uriInfo);
-	
+
 	Response<SolrPatientResponseDetails> response = new Response<SolrPatientResponseDetails>();
 	response.setData(patients);
 	return response;

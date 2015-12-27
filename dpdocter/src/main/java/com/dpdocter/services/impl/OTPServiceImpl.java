@@ -133,4 +133,74 @@ public class OTPServiceImpl implements OTPService {
     public Boolean isOTPValid(Date createdTime) {
 	return Minutes.minutesBetween(new DateTime(createdTime), new DateTime()).isLessThan(Minutes.minutes(Integer.parseInt(otpTimeDifference)));
     }
+
+    @Override
+    public String otpGenerator(String mobileNumber) {
+	String OTP = null;
+	try {
+	    OTP = LoginUtils.generateOTP();
+	    SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(null, null, null, null, OTP + " is OTP for Verification", mobileNumber);
+	    sMSServices.sendSMS(smsTrackDetail, false);
+
+	    OTPCollection otpCollection = new OTPCollection();
+	    otpCollection.setCreatedTime(new Date());
+	    otpCollection.setOtpNumber(OTP);
+	    otpCollection.setMobileNumber(mobileNumber);
+	    otpCollection.setCreatedBy(mobileNumber);
+	    otpCollection = otpRepository.save(otpCollection);
+
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e + " Error While Generating OTP");
+	    throw new BusinessException(ServiceError.Unknown, "Error While Generating OTP");
+	}
+
+	return OTP;
+    }
+
+    @Override
+    public boolean verifyOTP(String mobileNumber, String otpNumber) {
+	Boolean response = false;
+	try {
+	    OTPCollection otpCollection = otpRepository.findOne(mobileNumber, otpNumber);
+	    if (otpCollection != null) {
+		if (isOTPValid(otpCollection.getCreatedTime())) {
+		    otpCollection.setIsVerified(true);
+		    otpCollection = otpRepository.save(otpCollection);
+		    response = true;
+		} else {
+		    logger.error("OTP is expired");
+		    throw new BusinessException(ServiceError.NotFound, "OTP is expired");
+		}
+
+	    } else {
+		logger.error("Incorrect OTP");
+		throw new BusinessException(ServiceError.NotFound, "Incorrect OTP");
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e + " Error While Verifying OTP");
+	    throw new BusinessException(ServiceError.Unknown, "Error While Verifying OTP");
+	}
+	return response;
+    }
+
+    @Override
+    public boolean checkOTPVerified(String mobileNumber, String otpNumber) {
+	Boolean response = false;
+	try {
+	    OTPCollection otpCollection = otpRepository.findOne(mobileNumber, otpNumber);
+	    if (otpCollection != null) {
+		response = otpCollection.getIsVerified();
+	    } else {
+		logger.error("Incorrect OTP");
+		throw new BusinessException(ServiceError.NotFound, "Incorrect OTP");
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e + " Error While checking OTP");
+	    throw new BusinessException(ServiceError.Unknown, "Error While checking OTP");
+	}
+	return response;
+    }
 }

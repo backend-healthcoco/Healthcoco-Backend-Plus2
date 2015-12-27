@@ -96,7 +96,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 
     @Override
     public SolrPatientResponseDetails searchPatient(String doctorId, String locationId, String hospitalId, String searchTerm, int page, int size,
-    		UriInfo uriInfo) {
+	    UriInfo uriInfo) {
 	List<SolrPatientDocument> patients = new ArrayList<SolrPatientDocument>();
 	List<SolrPatientResponse> patientsResponse = null;
 	SolrPatientResponseDetails patientResponseDetails = null;
@@ -122,8 +122,8 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 		for (SolrPatientDocument patient : patients) {
 		    SolrPatientResponse patientResponse = new SolrPatientResponse();
 		    patient.setImageUrl(getFinalImageURL(patient.getImageUrl(), uriInfo));
-			patient.setThumbnailUrl(getFinalImageURL(patient.getThumbnailUrl(), uriInfo));
-			
+		    patient.setThumbnailUrl(getFinalImageURL(patient.getThumbnailUrl(), uriInfo));
+
 		    BeanUtil.map(patient, patientResponse);
 		    patientsResponse.add(patientResponse);
 		}
@@ -159,10 +159,10 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 
 	    if (patients != null) {
 		BeanUtil.map(patients, response);
-		for(SolrPatientDocument patientDocument : patients){
-			patientDocument.setImageUrl(getFinalImageURL(patientDocument.getImageUrl(), uriInfo));
-			patientDocument.setThumbnailUrl(getFinalImageURL(patientDocument.getThumbnailUrl(), uriInfo));
-			
+		for (SolrPatientDocument patientDocument : patients) {
+		    patientDocument.setImageUrl(getFinalImageURL(patientDocument.getImageUrl(), uriInfo));
+		    patientDocument.setThumbnailUrl(getFinalImageURL(patientDocument.getThumbnailUrl(), uriInfo));
+
 		}
 		responseDetails = new SolrPatientResponseDetails();
 		responseDetails.setPatients(response);
@@ -464,6 +464,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	}
 
     }
+
     private String getFinalImageURL(String imageURL, UriInfo uriInfo) {
 	if (imageURL != null) {
 	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);

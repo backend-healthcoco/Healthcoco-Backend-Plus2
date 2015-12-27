@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,12 +54,14 @@ import com.dpdocter.request.DoctorSignupHandheldRequest;
 import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.PatientProfilePicChangeRequest;
 import com.dpdocter.request.PatientSignUpRequest;
+import com.dpdocter.request.PatientSignupRequestMobile;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.SignUpService;
 import com.dpdocter.sms.services.SMSServices;
+import common.util.web.DPDoctorUtils;
 
 /**
  * @author veeraj
@@ -118,6 +121,8 @@ public class SignUpServiceImpl implements SignUpService {
 
     @Value(value = "${mail.signup.subject.activation}")
     private String signupSubject;
+
+    private final double NAME_MATCH_REQUIRED = 0.80;
 
     /**
      * @param UserTemp
@@ -643,5 +648,110 @@ public class SignUpServiceImpl implements SignUpService {
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return user;
+    }
+
+    @Override
+    public boolean checkMobileNumberSignedUp(String mobileNumber) {
+	boolean response = false;
+	try {
+	    List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
+	    if (userCollections != null && !userCollections.isEmpty()) {
+		for (UserCollection userCollection : userCollections) {
+		    PatientCollection patientCollection = patientRepository.findByUserId(userCollection.getId());
+		    if (patientCollection != null && userCollection.isSignedUp()) {
+			response = true;
+			break;
+		    }
+		}
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return response;
+    }
+
+    @Override
+    public User patientSignUp(PatientSignupRequestMobile request) {
+	User user = null;
+	try {
+	    if (!DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
+		if (checkMobileNumberSignedUp(request.getMobileNumber())) {
+		    logger.warn("Mobile Number Already Registered");
+		    throw new BusinessException(ServiceError.NotAcceptable, "Mobile Number Already Registered");
+		} else {
+		    List<UserCollection> userCollections = userRepository.findByMobileNumber(request.getMobileNumber());
+		    if (userCollections != null && !userCollections.isEmpty()) {
+			for (UserCollection userCollection : userCollections) {
+			    if (matchName(userCollection.getFirstName(), userCollection.getLastName(), request.getName())) {
+				userCollection.setPassword(request.getPassword());
+				userCollection.setEmailAddress(request.getEmailAddress());
+				PatientCollection patientCollection = patientRepository.findByUserId(userCollection.getId());
+				if (patientCollection != null) {
+				    patientCollection.setEmailAddress(request.getEmailAddress());
+				}
+				userRepository.save(userCollection);
+				patientRepository.save(patientCollection);
+				user = new User();
+				BeanUtil.map(userCollection, user);
+				break;
+			    }
+			}
+		    } else {
+			// get role of specified type
+			RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.PATIENT.getRole());
+			if (roleCollection == null) {
+			    logger.warn("Role Collection in database is either empty or not defind properly");
+			    throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defined properly");
+			}
+			// save user
+			UserCollection userCollection = new UserCollection();
+			BeanUtil.map(request, userCollection);
+			userCollection.setFirstName(request.getName());
+			userCollection.setIsActive(true);
+			userCollection.setCreatedTime(new Date());
+			userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
+			userCollection = userRepository.save(userCollection);
+
+			// assign roles
+			UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), roleCollection.getId());
+			userRoleRepository.save(userRoleCollection);
+
+			// save Patient Info
+			PatientCollection patientCollection = new PatientCollection();
+			BeanUtil.map(request, patientCollection);
+			patientCollection.setFirstName(request.getName());
+			patientCollection.setUserId(userCollection.getId());
+			patientCollection.setCreatedTime(new Date());
+			patientCollection = patientRepository.save(patientCollection);
+
+			user = new User();
+			BeanUtil.map(userCollection, user);
+		    }
+		}
+	    } else {
+		logger.error("Mobile Number Cannot Be Empty!");
+		throw new BusinessException(ServiceError.NotAcceptable, "Mobile Number Cannot Be Empty!");
+	    }
+
+	} catch (BusinessException be) {
+	    logger.warn(be);
+	    throw be;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e + " Error occured while creating user");
+	    throw new BusinessException(ServiceError.Unknown, "Error occured while creating user");
+	}
+	return user;
+    }
+
+    private boolean matchName(String firstName, String lastName, String queryName) {
+	boolean result = false;
+	if (StringUtils.getJaroWinklerDistance(firstName, queryName) >= NAME_MATCH_REQUIRED
+		|| StringUtils.getJaroWinklerDistance(lastName, queryName) >= NAME_MATCH_REQUIRED) {
+	    result = true;
+	}
+	return result;
     }
 }

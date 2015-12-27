@@ -14,6 +14,9 @@ public class OTPCollection extends GenericCollection {
     private String otpNumber;
 
     @Field
+    private String mobileNumber;
+
+    @Field
     private Boolean isVerified = false;
 
     public String getId() {
@@ -32,6 +35,14 @@ public class OTPCollection extends GenericCollection {
 	this.otpNumber = otpNumber;
     }
 
+    public String getMobileNumber() {
+	return mobileNumber;
+    }
+
+    public void setMobileNumber(String mobileNumber) {
+	this.mobileNumber = mobileNumber;
+    }
+
     public Boolean getIsVerified() {
 	return isVerified;
     }
@@ -42,6 +53,7 @@ public class OTPCollection extends GenericCollection {
 
     @Override
     public String toString() {
-	return "OTPCollection [id=" + id + ", otpNumber=" + otpNumber + ", isVerified=" + isVerified + "]";
+	return "OTPCollection [id=" + id + ", otpNumber=" + otpNumber + ", mobileNumber=" + mobileNumber + ", isVerified=" + isVerified + "]";
     }
+
 }

@@ -25,9 +25,11 @@ import com.dpdocter.request.DoctorSignupHandheldRequest;
 import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.PatientProfilePicChangeRequest;
 import com.dpdocter.request.PatientSignUpRequest;
+import com.dpdocter.request.PatientSignupRequestMobile;
 import com.dpdocter.services.SignUpService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.services.SolrRegistrationService;
+import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
 @Component
@@ -158,6 +160,27 @@ public class SignUpApi {
 	return response;
     }
 
+    @Path(value = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE)
+    @POST
+    public Response<User> patientSignupMobile(PatientSignupRequestMobile request) {
+	if (request == null) {
+	    logger.warn("Request send is NULL");
+	    throw new BusinessException(ServiceError.InvalidInput, "Request send is NULL");
+	}
+	User user = signUpService.patientSignUp(request);
+	if (user != null) {
+	    if (user.getImageUrl() != null) {
+		user.setImageUrl(getFinalImageURL(user.getImageUrl()));
+	    }
+	    if (user.getThumbnailUrl() != null) {
+		user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
+	    }
+	}
+	Response<User> response = new Response<User>();
+	response.setData(user);
+	return response;
+    }
+
     @Path(value = PathProxy.SignUpUrls.PATIENT_PROFILE_PIC_CHANGE)
     @POST
     public Response<User> patientProfilePicChange(PatientProfilePicChangeRequest request) {
@@ -214,6 +237,20 @@ public class SignUpApi {
 	}
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(signUpService.checkMobileNumExist(mobileNumber));
+	return response;
+    }
+
+    @Path(value = PathProxy.SignUpUrls.CHECK_MOBNUM_SIGNEDUP)
+    @GET
+    public Response<Boolean> checkMobileNumberSignedUp(@PathParam(value = "mobileNumber") String mobileNumber) {
+	if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
+	    logger.warn("Invalid Input. Mobile Number Cannot Be Empty!");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Mobile Number Cannot Be Empty!");
+	}
+
+	boolean mobileNumberSignedUp = signUpService.checkMobileNumberSignedUp(mobileNumber);
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(mobileNumberSignedUp);
 	return response;
     }
 

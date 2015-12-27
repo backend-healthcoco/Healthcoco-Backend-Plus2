@@ -7,6 +7,7 @@ import com.dpdocter.request.DoctorSignupHandheldRequest;
 import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.PatientProfilePicChangeRequest;
 import com.dpdocter.request.PatientSignUpRequest;
+import com.dpdocter.request.PatientSignupRequestMobile;
 
 public interface SignUpService {
     String activateUser(String tokenId);
@@ -26,4 +27,8 @@ public interface SignUpService {
     DoctorSignUp doctorHandheld(DoctorSignupHandheldRequest request);
 
     DoctorSignUp doctorHandheldContinue(DoctorSignupHandheldContinueRequest request);
+
+    boolean checkMobileNumberSignedUp(String mobileNumber);
+
+    User patientSignUp(PatientSignupRequestMobile request);
 }
