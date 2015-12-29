@@ -37,4 +37,7 @@ public interface PatientClinicalNotesRepository extends MongoRepository<PatientC
     @Query(value = "{'patientId': ?0, 'clinicalNotesId': {'$in': ?1}}", count = true)
     Integer findCount(String patientId, List<String> clinicalNotesIds);
 
+    @Query(value = "{'patientId': ?0, 'clinicalNotesId': ?1}")
+	PatientClinicalNotesCollection findByPatientIdClinicalNotesId(String patientId, String id);
+
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import com.dpdocter.beans.BloodGroup;
 import com.dpdocter.beans.ClinicAddress;
 import com.dpdocter.beans.ClinicImage;
+import com.dpdocter.beans.ClinicLabProperties;
 import com.dpdocter.beans.ClinicLogo;
 import com.dpdocter.beans.ClinicProfile;
 import com.dpdocter.beans.ClinicSpecialization;
@@ -88,5 +89,11 @@ public interface RegistrationService {
     SolrDoctorDocument getSolrDoctorDocument(RegisterDoctorResponse doctorResponse);
 
     List<ClinicDoctorResponse> getDoctors(int page, int size, String locationId, String hospitalId, String updatedTime);
+
+	void deleteRole(String roleId, Boolean discarded);
+
+	void deleteUser(String userId, String locationId, Boolean discarded);
+
+	ClinicLabProperties updateLabProperties(ClinicLabProperties request);
 
 }

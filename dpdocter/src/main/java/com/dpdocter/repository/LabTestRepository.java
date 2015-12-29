@@ -37,4 +37,10 @@ public interface LabTestRepository extends MongoRepository<LabTestCollection, St
     @Query("{'$or': [{'hospitalId': ?0, 'locationId': ?1, 'updatedTime': {'$gte': ?2}, 'discarded': {$in: ?3}},{'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?2},'discarded': {$in: ?3}}]}")
     List<LabTestCollection> getCustomGlobalLabTests(String hospitalId, String locationId, Date date, boolean[] discards, Sort sort);
 
+    @Query("{'testName': ?0}")
+	List<LabTestCollection> findByTestName(String testName);
+
+    @Query("{'locationId': ?0}")
+	List<LabTestCollection> findByLocationId(String id);
+
 }

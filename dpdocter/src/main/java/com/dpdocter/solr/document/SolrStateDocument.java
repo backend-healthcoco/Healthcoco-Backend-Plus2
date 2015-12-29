@@ -5,15 +5,15 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.solr.core.geo.GeoLocation;
 import org.springframework.data.solr.core.mapping.SolrDocument;
 
-@SolrDocument(solrCoreName = "cities")
-public class SolrCityDocument {
+@SolrDocument(solrCoreName = "states")
+public class SolrStateDocument {
 
-    @Id
+	@Id
     @Field
     private String id;
 
     @Field
-    private String city;
+    private String state;
 
     @Field
     private Boolean isActivated = false;
@@ -22,7 +22,7 @@ public class SolrCityDocument {
     private String description;
 
     @Field
-    private String stateId;
+    private String countryId;
 
     @SuppressWarnings("deprecation")
     @Field
@@ -34,44 +34,44 @@ public class SolrCityDocument {
     @Field
     private double longitude;
 
-    public String getId() {
-	return id;
-    }
-
-    public void setId(String id) {
-	this.id = id;
-    }
-
-    public String getCity() {
-	return city;
-    }
-
-    public void setCity(String city) {
-	this.city = city;
-    }
-
-    public Boolean getIsActivated() {
-	return isActivated;
-    }
-
-    public void setIsActivated(Boolean isActivated) {
-	this.isActivated = isActivated;
-    }
-
-    public String getDescription() {
-	return description;
-    }
-
-    public void setDescription(String description) {
-	this.description = description;
-    }
-
-	public String getStateId() {
-		return stateId;
+	public String getId() {
+		return id;
 	}
 
-	public void setStateId(String stateId) {
-		this.stateId = stateId;
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public Boolean getIsActivated() {
+		return isActivated;
+	}
+
+	public void setIsActivated(Boolean isActivated) {
+		this.isActivated = isActivated;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getCountryId() {
+		return countryId;
+	}
+
+	public void setCountryId(String countryId) {
+		this.countryId = countryId;
 	}
 
 	public GeoLocation getGeoLocation() {
@@ -100,8 +100,8 @@ public class SolrCityDocument {
 
 	@Override
 	public String toString() {
-		return "SolrCityDocument [id=" + id + ", city=" + city + ", isActivated=" + isActivated + ", description="
-				+ description + ", stateId=" + stateId + ", geoLocation=" + geoLocation + ", latitude=" + latitude
+		return "SolrStateDocument [id=" + id + ", state=" + state + ", isActivated=" + isActivated + ", description="
+				+ description + ", countryId=" + countryId + ", geoLocation=" + geoLocation + ", latitude=" + latitude
 				+ ", longitude=" + longitude + "]";
 	}
 }

@@ -45,7 +45,7 @@ public class SolrPatientResponse {
 
     private String hospitalId;
 
-    private Reference referredBy;
+    private String referredBy;
 
     private Date createdTime;
 
@@ -53,6 +53,8 @@ public class SolrPatientResponse {
 
     private String thumbnailUrl;
 
+    private String colorCode;
+    
     public String getId() {
 	return id;
     }
@@ -205,11 +207,11 @@ public class SolrPatientResponse {
 	this.hospitalId = hospitalId;
     }
 
-    public Reference getReferredBy() {
+    public String getReferredBy() {
 	return referredBy;
     }
 
-    public void setReferredBy(Reference referredBy) {
+    public void setReferredBy(String referredBy) {
 	this.referredBy = referredBy;
     }
 
@@ -237,12 +239,23 @@ public class SolrPatientResponse {
 	this.thumbnailUrl = thumbnailUrl;
     }
 
-    @Override
-    public String toString() {
-	return "SolrPatientResponse [id=" + id + ", userId=" + userId + ", PID=" + PID + ", userName=" + userName + ", firstName=" + firstName
-		+ ", middleName=" + middleName + ", lastName=" + lastName + ", gender=" + gender + ", bloodGroup=" + bloodGroup + ", emailAddress="
-		+ emailAddress + ", dob=" + dob + ", city=" + city + ", locality=" + locality + ", postalCode=" + postalCode + ", mobileNumber=" + mobileNumber
-		+ ", profession=" + profession + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", referredBy="
-		+ referredBy + ", createdTime=" + createdTime + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + "]";
-    }
+	public String getColorCode() {
+		return colorCode;
+	}
+
+	public void setColorCode(String colorCode) {
+		this.colorCode = colorCode;
+	}
+
+	@Override
+	public String toString() {
+		return "SolrPatientResponse [id=" + id + ", userId=" + userId + ", PID=" + PID + ", userName=" + userName
+				+ ", firstName=" + firstName + ", middleName=" + middleName + ", lastName=" + lastName + ", gender="
+				+ gender + ", bloodGroup=" + bloodGroup + ", emailAddress=" + emailAddress + ", dob=" + dob + ", city="
+				+ city + ", locality=" + locality + ", postalCode=" + postalCode + ", mobileNumber=" + mobileNumber
+				+ ", profession=" + profession + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", referredBy=" + referredBy + ", createdTime=" + createdTime
+				+ ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", colorCode=" + colorCode + "]";
+	}
+
 }

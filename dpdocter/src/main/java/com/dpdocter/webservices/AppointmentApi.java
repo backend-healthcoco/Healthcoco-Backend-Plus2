@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.City;
 import com.dpdocter.beans.Clinic;
+import com.dpdocter.beans.Lab;
 import com.dpdocter.beans.LandmarkLocality;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
@@ -28,9 +29,12 @@ import com.dpdocter.request.AppoinmentRequest;
 import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.beans.Country;
+import com.dpdocter.solr.beans.State;
 import com.dpdocter.solr.document.SolrCityDocument;
 import com.dpdocter.solr.document.SolrCountryDocument;
+import com.dpdocter.solr.document.SolrDoctorDocument;
 import com.dpdocter.solr.document.SolrLocalityLandmarkDocument;
+import com.dpdocter.solr.document.SolrStateDocument;
 import com.dpdocter.solr.services.SolrCityService;
 
 import common.util.web.DPDoctorUtils;
@@ -69,6 +73,27 @@ public class AppointmentApi {
 
 	Response<Country> response = new Response<Country>();
 	response.setData(country);
+	return response;
+    }
+
+    @Path(value = PathProxy.AppointmentUrls.ADD_STATE)
+    @POST
+    public Response<State> addState(State request) {
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Request sent is NULL");
+	} else if (request.getState() == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Country cannot be NULL");
+	}
+	State state = appointmentService.addState(request);
+
+	transnationalService.addResource(state.getId(), Resource.STATE, false);
+	SolrStateDocument solrState = new SolrStateDocument();
+	BeanUtil.map(state, solrState);
+	solrState.setGeoLocation(new GeoLocation(state.getLatitude(), state.getLongitude()));
+	solrCityService.addState(solrState);
+
+	Response<State> response = new Response<State>();
+	response.setData(state);
 	return response;
     }
 
@@ -163,6 +188,18 @@ public class AppointmentApi {
 	response.setData(clinic);
 	return response;
 
+    }
+
+    @Path(value = PathProxy.AppointmentUrls.GET_LAB)
+    @GET
+    public Response<Lab> getLabs(@PathParam("locationId") String locationId) {
+   	if (DPDoctorUtils.anyStringEmpty(locationId)) {
+    	    throw new BusinessException(ServiceError.InvalidInput, "Location Id cannot be empty");
+   	}
+   	Lab lab = appointmentService.getLab(locationId);
+    	Response<Lab> response = new Response<Lab>();
+    	response.setData(lab);
+    	return response;
     }
 
     @POST

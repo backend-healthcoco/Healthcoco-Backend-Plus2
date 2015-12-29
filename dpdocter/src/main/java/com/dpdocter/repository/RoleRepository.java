@@ -50,4 +50,7 @@ public interface RoleRepository extends MongoRepository<RoleCollection, String> 
     @Query("{'locationId': ?0, 'hospitalId': ?1}")
     public List<RoleCollection> findByLocationIdAndHospitalId(String locationId, String hospitalId);
 
+    @Query("{'id':?0, 'locationId': ?1, 'hospitalId': ?2}")
+	public RoleCollection find(String roleId, String id, String hospitalId);
+
 }

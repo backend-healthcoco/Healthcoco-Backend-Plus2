@@ -17,9 +17,11 @@ import com.dpdocter.solr.beans.SolrCityLandmarkLocalityResponse;
 import com.dpdocter.solr.document.SolrCityDocument;
 import com.dpdocter.solr.document.SolrCountryDocument;
 import com.dpdocter.solr.document.SolrLocalityLandmarkDocument;
+import com.dpdocter.solr.document.SolrStateDocument;
 import com.dpdocter.solr.repository.SolrCityRepository;
 import com.dpdocter.solr.repository.SolrCountryRepository;
 import com.dpdocter.solr.repository.SolrLocalityLandmarkRepository;
+import com.dpdocter.solr.repository.SolrStateRepository;
 import com.dpdocter.solr.services.SolrCityService;
 
 import common.util.web.DPDoctorUtils;
@@ -39,6 +41,9 @@ public class SolrCityServiceImpl implements SolrCityService {
     @Autowired
     private TransactionalManagementService transnationalService;
 
+    @Autowired
+    private SolrStateRepository solrStateRepository;
+    
     @Override
     public boolean addCountry(SolrCountryDocument solrCountry) {
 	boolean response = false;
@@ -189,4 +194,17 @@ public class SolrCityServiceImpl implements SolrCityService {
 	}
 	return response;
     }
+
+	@Override
+	public boolean addState(SolrStateDocument solrState) {
+		boolean response = false;
+		try {
+		    solrStateRepository.save(solrState);
+		    transnationalService.addResource(solrState.getId(), Resource.STATE, false);
+		    response = true;
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+		return response;
+	}
 }

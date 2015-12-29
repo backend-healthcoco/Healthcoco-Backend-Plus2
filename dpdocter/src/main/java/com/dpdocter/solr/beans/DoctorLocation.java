@@ -3,6 +3,7 @@ package com.dpdocter.solr.beans;
 import java.util.List;
 
 import org.apache.solr.client.solrj.beans.Field;
+import org.springframework.data.solr.core.geo.GeoLocation;
 
 public class DoctorLocation {
     @Field
@@ -28,6 +29,10 @@ public class DoctorLocation {
 
     @Field
     private String websiteUrl;
+
+    @SuppressWarnings("deprecation")
+    @Field
+    private GeoLocation geoLocation;
 
     @Field
     private Double latitude;
@@ -56,6 +61,18 @@ public class DoctorLocation {
     @Field
     private List<String> specialization;
 
+    @Field
+    private Boolean isLab = false;
+    
+    @Field
+    private Boolean isOnlineReportsAvailable = false;
+    
+    @Field
+    private Boolean isNABLAccredited = false;
+    
+    @Field
+    private Boolean isHomeServiceAvailable = false;
+    
     public String getLocationName() {
 	return locationName;
     }
@@ -192,4 +209,44 @@ public class DoctorLocation {
 	this.specialization = specialization;
     }
 
+	public GeoLocation getGeoLocation() {
+		return geoLocation;
+	}
+
+	public void setGeoLocation(GeoLocation geoLocation) {
+		this.geoLocation = geoLocation;
+	}
+
+	public Boolean getIsLab() {
+		return isLab;
+	}
+
+	public void setIsLab(Boolean isLab) {
+		this.isLab = isLab;
+	}
+
+	public Boolean getIsOnlineReportsAvailable() {
+		return isOnlineReportsAvailable;
+	}
+
+	public void setIsOnlineReportsAvailable(Boolean isOnlineReportsAvailable) {
+		this.isOnlineReportsAvailable = isOnlineReportsAvailable;
+	}
+
+	public Boolean getIsNABLAccredited() {
+		return isNABLAccredited;
+	}
+
+	public void setIsNABLAccredited(Boolean isNABLAccredited) {
+		this.isNABLAccredited = isNABLAccredited;
+	}
+
+	public Boolean getIsHomeServiceAvailable() {
+		return isHomeServiceAvailable;
+	}
+
+	public void setIsHomeServiceAvailable(Boolean isHomeServiceAvailable) {
+		this.isHomeServiceAvailable = isHomeServiceAvailable;
+	}
+	
 }

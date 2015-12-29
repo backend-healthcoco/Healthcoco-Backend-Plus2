@@ -25,6 +25,8 @@ import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.DoctorInfo;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Hospital;
+import com.dpdocter.beans.Lab;
+import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.LandmarkLocality;
 import com.dpdocter.beans.Location;
 import com.dpdocter.collections.AppointmentCollection;
@@ -33,9 +35,11 @@ import com.dpdocter.collections.CountryCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.HospitalCollection;
+import com.dpdocter.collections.LabTestCollection;
 import com.dpdocter.collections.LandmarkCollection;
 import com.dpdocter.collections.LandmarkLocalityCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.StateCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
 import com.dpdocter.enums.CitySearchType;
@@ -48,15 +52,18 @@ import com.dpdocter.repository.CountryRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.HospitalRepository;
+import com.dpdocter.repository.LabTestRepository;
 import com.dpdocter.repository.LandmarkRepository;
 import com.dpdocter.repository.LocalityRepository;
 import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.StateRepository;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AppoinmentRequest;
 import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.solr.beans.Country;
+import com.dpdocter.solr.beans.State;
 
 import common.util.web.DPDoctorUtils;
 
@@ -68,6 +75,9 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Autowired
     private CityRepository cityRepository;
 
+    @Autowired
+    private StateRepository stateRepository;
+    
     @Autowired
     private CountryRepository countryRepository;
 
@@ -101,6 +111,9 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Autowired
     private LocationServices locationServices;
 
+    @Autowired
+    private LabTestRepository labTestRepository;
+
     @Override
     public Country addCountry(Country country) {
 	try {
@@ -123,9 +136,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 	try {
 	    CityCollection cityCollection = new CityCollection();
 	    BeanUtil.map(city, cityCollection);
-	    CountryCollection countryCollection = countryRepository.findOne(city.getCountryId());
+	    StateCollection stateCollection = stateRepository.findOne(city.getStateId());
 	    List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(city.getCity() + " "
-		    + (countryCollection != null ? countryCollection.getCountry() : ""));
+		    + (stateCollection != null ? stateCollection.getState() : ""));
 
 	    if (geocodedLocations != null && !geocodedLocations.isEmpty())
 		BeanUtil.map(geocodedLocations.get(0), cityCollection);
@@ -190,6 +203,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     public LandmarkLocality addLandmaklLocality(LandmarkLocality landmarkLocality) {
 	CityCollection cityCollection = null;
 	CountryCollection countryCollection = null;
+	StateCollection stateCollection = null;
 	try {
 	    LandmarkLocalityCollection landmarkLocalityCollection = new LandmarkLocalityCollection();
 	    BeanUtil.map(landmarkLocality, landmarkLocalityCollection);
@@ -197,12 +211,16 @@ public class AppointmentServiceImpl implements AppointmentService {
 		cityCollection = cityRepository.findOne(landmarkLocality.getCityId());
 	    }
 	    if (cityCollection != null) {
-		countryCollection = countryRepository.findOne(cityCollection.getCountryId());
+	    	stateCollection = stateRepository.findOne(cityCollection.getStateId());
+		}
+	    if (stateCollection != null) {
+		countryCollection = countryRepository.findOne(stateCollection.getCountryId());
 	    }
 	    List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(landmarkLocality.getLandmark() != null ? landmarkLocality.getLandmark()
 		    + " " : "" + landmarkLocality.getLocality() != null ? landmarkLocality.getLocality() + " "
-		    : "" + cityCollection.getCity() != null ? cityCollection.getCity() + " " : "" + countryCollection != null ? countryCollection.getCountry()
-			    : "");
+		    : "" + cityCollection.getCity() != null ? cityCollection.getCity() + " " : "" + 
+		    stateCollection != null ? stateCollection.getState(): "" +
+		    countryCollection != null ? countryCollection.getCountry(): "");
 
 	    if (geocodedLocations != null && !geocodedLocations.isEmpty())
 		BeanUtil.map(geocodedLocations.get(0), landmarkLocalityCollection);
@@ -689,4 +707,90 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 	return response;
     }
+
+	@Override
+	public State addState(State state) {
+		try {
+		    StateCollection stateCollection = new StateCollection();
+		    BeanUtil.map(state, stateCollection);
+		    CountryCollection countryCollection = countryRepository.findOne(state.getCountryId());
+		    List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(state.getState() + " "
+			    + (countryCollection != null ? countryCollection.getCountry() : ""));
+
+		    if (geocodedLocations != null && !geocodedLocations.isEmpty())
+			BeanUtil.map(geocodedLocations.get(0), stateCollection);
+
+		    stateCollection = stateRepository.save(stateCollection);
+		    BeanUtil.map(stateCollection, state);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return state;
+	}
+
+	@Override
+	public Lab getLab(String locationId) {
+		Lab response = new Lab();
+		LocationCollection localtionCollection = null;
+		Location location = new Location();
+		HospitalCollection hospitalCollection = null;
+		Hospital hospital = new Hospital();
+
+		List<Doctor> doctors = new ArrayList<Doctor>();
+		try {
+		    localtionCollection = locationRepository.findOne(locationId);
+		    if (localtionCollection == null) {
+		    	return null;
+		    } else if(!localtionCollection.getIsLab()){
+		    	return null;
+		    }else {
+			BeanUtil.map(localtionCollection, location);
+			response.setLocation(location);
+
+			hospitalCollection = hospitalRepository.findOne(localtionCollection.getHospitalId());
+			if (hospitalCollection != null) {
+			    BeanUtil.map(hospitalCollection, hospital);
+			    response.setHospital(hospital);
+			}
+
+			List<UserLocationCollection> userLocationCollections = userLocationRepository.findByLocationId(localtionCollection.getId());
+			for (Iterator<UserLocationCollection> iterator = userLocationCollections.iterator(); iterator.hasNext();) {
+			    UserLocationCollection userLocationCollection = iterator.next();
+			    DoctorCollection doctorCollection = doctorRepository.findByUserId(userLocationCollection.getUserId());
+			    UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
+			    DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection
+				    .getLocationId());
+
+			    if (doctorCollection != null) {
+				Doctor doctor = new Doctor();
+				BeanUtil.map(doctorCollection, doctor);
+				if (userCollection != null) {
+				    BeanUtil.map(userCollection, doctor);
+				}
+
+				if (doctorClinicProfileCollection != null) {
+				    DoctorClinicProfile doctorClinicProfile = new DoctorClinicProfile();
+				    BeanUtil.map(doctorClinicProfileCollection, doctorClinicProfile);
+				    doctor.setDoctorClinicProfile(doctorClinicProfile);
+				}
+				doctors.add(doctor);
+			    }
+			}
+			response.setDoctors(doctors);
+			
+			List<LabTestCollection> labTestCollections = labTestRepository.findByLocationId(localtionCollection.getId());
+			if(labTestCollections != null){
+				List<LabTest> labTests = new ArrayList<LabTest>();
+				BeanUtil.map(labTestCollections, labTests);
+				response.setLabTests(labTests);
+			}
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
 }

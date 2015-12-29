@@ -39,6 +39,7 @@ import com.dpdocter.collections.DiseasesCollection;
 import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.NotesCollection;
+import com.dpdocter.collections.PatientClinicalNotesCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.RecordsCollection;
@@ -53,6 +54,7 @@ import com.dpdocter.repository.DiseasesRepository;
 import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.NotesRepository;
+import com.dpdocter.repository.PatientClinicalNotesRepository;
 import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.RecordsRepository;
@@ -113,6 +115,9 @@ public class HistoryServicesImpl implements HistoryServices {
 
     @Autowired
     private PatientVisitRepository patientVisitRepository;
+
+    @Autowired
+    private PatientClinicalNotesRepository patientClinicalNotesRepository;
 
     @Override
     public List<DiseaseAddEditResponse> addDiseases(List<DiseaseAddEditRequest> request) {
@@ -299,6 +304,12 @@ public class HistoryServicesImpl implements HistoryServices {
 		clinicalNotesCollection.setInHistory(true);
 		clinicalNotesCollection.setUpdatedTime(new Date());
 		clinicalNotesRepository.save(clinicalNotesCollection);
+		
+		PatientClinicalNotesCollection patientClinicalNotesCollection = patientClinicalNotesRepository.findByPatientIdClinicalNotesId(patientId, clinicalNotesId);
+	    if(patientClinicalNotesCollection != null){
+	    	patientClinicalNotesCollection.setUpdatedTime(new Date());
+	    	patientClinicalNotesRepository.save(patientClinicalNotesCollection);
+	    }
 	    }
 
 	} catch (Exception e) {
@@ -570,6 +581,12 @@ public class HistoryServicesImpl implements HistoryServices {
 			    clinicalNotesCollection.setInHistory(false);
 			    clinicalNotesCollection.setUpdatedTime(new Date());
 			    clinicalNotesRepository.save(clinicalNotesCollection);
+			    
+			    PatientClinicalNotesCollection patientClinicalNotesCollection = patientClinicalNotesRepository.findByPatientIdClinicalNotesId(patientId, clinicalNotesId);
+			    if(patientClinicalNotesCollection != null){
+			    	patientClinicalNotesCollection.setUpdatedTime(new Date());
+			    	patientClinicalNotesRepository.save(patientClinicalNotesCollection);
+			    }
 			}
 		    } else {
 			logger.warn("This clinicalNote is not found for this patient to remove.");

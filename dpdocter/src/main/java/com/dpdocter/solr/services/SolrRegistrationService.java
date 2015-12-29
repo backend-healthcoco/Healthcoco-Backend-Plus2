@@ -2,6 +2,10 @@ package com.dpdocter.solr.services;
 
 import javax.ws.rs.core.UriInfo;
 
+import com.dpdocter.beans.ClinicAddress;
+import com.dpdocter.beans.ClinicLabProperties;
+import com.dpdocter.beans.ClinicProfile;
+import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.DoctorExperience;
 import com.dpdocter.beans.DoctorGeneralInfo;
 import com.dpdocter.request.DoctorConsultationFeeAddEditRequest;
@@ -86,5 +90,13 @@ public interface SolrRegistrationService {
     void addEditGeneralInfo(DoctorGeneralInfo request);
 
     void addEditMultipleData(DoctorMultipleDataAddEditResponse addEditNameResponse);
+
+	void updateClinicProfile(ClinicProfile clinicProfileUpdateResponse);
+
+	void updateClinicAddress(ClinicAddress clinicAddressUpdateResponse);
+
+	void updateClinicSpecialization(ClinicSpecialization clinicSpecializationUpdateResponse);
+
+	void updateLabProperties(ClinicLabProperties clinicLabProperties);
 
 }

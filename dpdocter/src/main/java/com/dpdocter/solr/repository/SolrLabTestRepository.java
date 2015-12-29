@@ -12,7 +12,7 @@ import com.dpdocter.solr.document.SolrLabTestDocument;
 
 public interface SolrLabTestRepository extends SolrCrudRepository<SolrLabTestDocument, String> {
 
-    @Query("testName:*?0*")
+    @Query("testName: ?0*")
     List<SolrLabTestDocument> find(String searchTerm);
 
     @Query("updatedTime: {'$gte': ?0} AND discarded: {$in: ?1} AND testName:?2}")
@@ -96,5 +96,8 @@ public interface SolrLabTestRepository extends SolrCrudRepository<SolrLabTestDoc
     @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false) AND testName:*?5*")
     List<SolrLabTestDocument> getCustomLabTests(String doctorId, String hospitalId, String locationId, Date date, boolean discarded, String searchTerm,
 	    Sort sort);
+
+    @Query("testId: ?0")
+	List<SolrLabTestDocument> findByTestId(String testId);
 
 }

@@ -2,6 +2,8 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 /**
  * @author veeraj
  */
@@ -55,6 +57,14 @@ public class Location {
 
     private boolean isTwentyFourSevenOpen;
 
+    private Boolean isLab = false;
+    
+    private Boolean isOnlineReportsAvailable = false;
+    
+    private Boolean isNABLAccredited = false;
+    
+    private Boolean isHomeServiceAvailable = false;
+    
     public String getId() {
 	return id;
     }
@@ -247,13 +257,51 @@ public class Location {
 	this.logoThumbnailUrl = logoThumbnailUrl;
     }
 
-    @Override
-    public String toString() {
-	return "Location [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city
-		+ ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", images=" + images
-		+ ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude="
-		+ longitude + ", tagLine=" + tagLine + ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress=" + locationEmailAddress
-		+ ", specialization=" + specialization + ", streetAddress=" + streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber
-		+ ", alternateNumber=" + alternateNumber + ", workingSchedules=" + workingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + "]";
-    }
+	public Boolean getIsLab() {
+		return isLab;
+	}
+
+	public void setIsLab(Boolean isLab) {
+		this.isLab = isLab;
+	}
+
+	public Boolean getIsOnlineReportsAvailable() {
+		return isOnlineReportsAvailable;
+	}
+
+	public void setIsOnlineReportsAvailable(Boolean isOnlineReportsAvailable) {
+		this.isOnlineReportsAvailable = isOnlineReportsAvailable;
+	}
+
+	public Boolean getIsNABLAccredited() {
+		return isNABLAccredited;
+	}
+
+	public void setIsNABLAccredited(Boolean isNABLAccredited) {
+		this.isNABLAccredited = isNABLAccredited;
+	}
+
+	public Boolean getIsHomeServiceAvailable() {
+		return isHomeServiceAvailable;
+	}
+
+	public void setIsHomeServiceAvailable(Boolean isHomeServiceAvailable) {
+		this.isHomeServiceAvailable = isHomeServiceAvailable;
+	}
+
+	@Override
+	public String toString() {
+		return "Location [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state
+				+ ", city=" + city + ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode
+				+ ", websiteUrl=" + websiteUrl + ", images=" + images + ", logoUrl=" + logoUrl + ", logoThumbnailUrl="
+				+ logoThumbnailUrl + ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude="
+				+ longitude + ", tagLine=" + tagLine + ", landmarkDetails=" + landmarkDetails
+				+ ", locationEmailAddress=" + locationEmailAddress + ", specialization=" + specialization
+				+ ", streetAddress=" + streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber
+				+ ", alternateNumber=" + alternateNumber + ", workingSchedules=" + workingSchedules
+				+ ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + ", isLab=" + isLab
+				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
+				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + "]";
+	}
+
 }

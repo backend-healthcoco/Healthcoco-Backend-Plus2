@@ -6,9 +6,11 @@ import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.City;
 import com.dpdocter.beans.Clinic;
 import com.dpdocter.beans.DoctorInfo;
+import com.dpdocter.beans.Lab;
 import com.dpdocter.beans.LandmarkLocality;
 import com.dpdocter.request.AppoinmentRequest;
 import com.dpdocter.solr.beans.Country;
+import com.dpdocter.solr.beans.State;
 
 public interface AppointmentService {
 
@@ -38,5 +40,9 @@ public interface AppointmentService {
 	    String updatedTime);
 
 	Country addCountry(Country request);
+
+	State addState(State request);
+
+	Lab getLab(String locationId);
 
 }

@@ -71,6 +71,7 @@ import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.services.DoctorProfileService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.solr.document.SolrDoctorDocument;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -238,12 +239,14 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	List<SpecialityCollection> specialityCollections = null;
 	List<String> specialities = null;
 	List<String> specialitiesByName = null;
-	Boolean response = false;
 	try {
 	    specialityCollections = specialityRepository.findAll();
-	    specialities = new ArrayList<String>();
+	    if(request.getSpeciality() != null)
 	    for (String speciality : request.getSpeciality()) {
 		Boolean specialityFound = false;
+		specialities = new ArrayList<String>();
+	    specialitiesByName = new ArrayList<String>();
+	    
 		for (SpecialityCollection specialityCollection : specialityCollections) {
 		    if (speciality.trim().equalsIgnoreCase(specialityCollection.getSpeciality())) {
 			specialities.add(specialityCollection.getId());
@@ -550,6 +553,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	try {
 	    professionalMembershipCollections = professionalMembershipRepository.findAll();
 	    professionalMemberships = new ArrayList<String>();
+	    if(request.getMembership() != null)
 	    for (String professionalMembership : request.getMembership()) {
 		Boolean professionalMembershipFound = false;
 		for (ProfessionalMembershipCollection professionalMembershipCollection : professionalMembershipCollections) {

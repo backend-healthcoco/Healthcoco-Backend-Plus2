@@ -9,17 +9,7 @@ public class LoginResponse {
 
     private List<Hospital> hospitals = null;
 
-    private List<String> role;
-
     private Boolean isTempPassword = false;
-
-    public List<String> getRole() {
-	return role;
-    }
-
-    public void setRole(List<String> role) {
-	this.role = role;
-    }
 
     public User getUser() {
 	return user;
@@ -48,9 +38,8 @@ public class LoginResponse {
 	this.isTempPassword = isTempPassword;
     }
 
-    @Override
-    public String toString() {
-	return "LoginResponse [user=" + user + ", hospitals=" + hospitals + ", role=" + role + ", tempPassword=" + isTempPassword + "]";
-    }
-
+	@Override
+	public String toString() {
+		return "LoginResponse [user=" + user + ", hospitals=" + hospitals + ", isTempPassword=" + isTempPassword + "]";
+	}
 }

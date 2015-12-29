@@ -21,6 +21,9 @@ public class RoleCollection extends GenericCollection {
 
     @Field
     private String hospitalId;
+    
+    @Field
+    private Boolean discarded = false;
 
     public String getId() {
 	return id;
@@ -62,9 +65,18 @@ public class RoleCollection extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
-    @Override
-    public String toString() {
-	return "RoleCollection [id=" + id + ", role=" + role + ", description=" + description + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ "]";
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	@Override
+	public String toString() {
+		return "RoleCollection [id=" + id + ", role=" + role + ", description=" + description + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + "]";
+	}
+
 }

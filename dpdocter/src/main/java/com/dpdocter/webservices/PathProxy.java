@@ -104,6 +104,8 @@ public interface PathProxy {
 
 	public static final String UPDATE_CLINIC_TIMING = "/settings/updateClinicTiming";
 
+	public static final String UPDATE_CLINIC_LAB_PROPERTIES = "/settings/updateLabProperties";
+	
 	public static final String CHANGE_CLINIC_LOGO = "/settings/changeClinicLogo";
 
 	public static final String ADD_CLINIC_IMAGE = "/settings/clinicImage/add";
@@ -121,8 +123,12 @@ public interface PathProxy {
 	public static final String ADD_ROLE = "/role/add";
 
 	public static final String GET_ROLE = "/role/{range}";
+	
+	public static final String DELETE_ROLE = "/role/{roleId}/delete";
 
-	public static final String GET_DOCTORS = "/doctors";
+	public static final String GET_USERS = "/users";
+	
+	public static final String DELETE_USER = "/user/{userId}/{locationId}/delete";
 
     }
 
@@ -531,6 +537,8 @@ public interface PathProxy {
     public interface AppointmentUrls {
 
 	public static final String ADD_COUNTRY = "/country/add";
+	
+	public static final String ADD_STATE = "/state/add";
 
 	public static final String ADD_CITY = "/city/add";
 
@@ -543,6 +551,8 @@ public interface PathProxy {
 	public static final String ADD_LANDMARK_LOCALITY = "/landmarkLocality/add";
 
 	public static final String GET_CLINIC = "/clinic/{locationId}";
+
+	public static final String GET_LAB = "/lab/{locationId}";
 
 	public static final String ADD_EDIT_APPOINTMENT_SLOT = "/clinicProfile/addEditAppointmentSlot";
 
@@ -597,9 +607,13 @@ public interface PathProxy {
 
     public interface SolrAppointmentUrls {
 
-	public static final String GET_DOCTORS = "doctors";
+    public static final String SEARCH = "/search";
+    
+	public static final String GET_DOCTORS = "/doctors";
 
-	public static final String ADD_SPECIALITY = "addSpecialization";
+	public static final String GET_LABS = "/labs";
+	
+	public static final String ADD_SPECIALITY = "/addSpecialization";
     }
 
     public static final String GENERAL_TESTS_URL = BASE_URL + "/tests";

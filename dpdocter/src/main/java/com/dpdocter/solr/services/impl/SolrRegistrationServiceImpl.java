@@ -1,11 +1,16 @@
 package com.dpdocter.solr.services.impl;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
+import org.apache.velocity.tools.config.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -16,8 +21,13 @@ import org.springframework.data.solr.core.query.Criteria;
 import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.ClinicAddress;
+import com.dpdocter.beans.ClinicLabProperties;
+import com.dpdocter.beans.ClinicProfile;
+import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.DoctorExperience;
 import com.dpdocter.beans.DoctorGeneralInfo;
+import com.dpdocter.beans.Reference;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -116,11 +126,13 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	try {
 
 	    Criteria advancedCriteria = Criteria.where("doctorId").is(doctorId).and("locationId").is(locationId).and("hospitalId").is(hospitalId);
-
-	    advancedCriteria.or(AdvancedSearchType.FIRST_NAME.getSearchType()).contains(searchTerm);
-	    advancedCriteria.or(AdvancedSearchType.EMAIL_ADDRESS.getSearchType()).contains(searchTerm);
-	    advancedCriteria.or(AdvancedSearchType.MOBILE_NUMBER.getSearchType()).contains(searchTerm);
-	    advancedCriteria.or(AdvancedSearchType.PID.getSearchType()).contains(searchTerm);
+	    
+	    Criteria criteria = Criteria.where(AdvancedSearchType.FIRST_NAME.getSearchType()).contains(searchTerm)
+	    		           .or(AdvancedSearchType.EMAIL_ADDRESS.getSearchType()).contains(searchTerm)
+	    		           .or(AdvancedSearchType.MOBILE_NUMBER.getSearchType()).contains(searchTerm)
+	    		           .or(AdvancedSearchType.PID.getSearchType()).contains(searchTerm);
+	    
+	    advancedCriteria.and(criteria);
 
 	    SimpleQuery query = new SimpleQuery(advancedCriteria);
 
@@ -139,6 +151,9 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 			patient.setThumbnailUrl(getFinalImageURL(patient.getThumbnailUrl(), uriInfo));
 			
 		    BeanUtil.map(patient, patientResponse);
+//		    Reference reference = new Reference();
+//		    reference.setReference(patient.getReferredBy());
+//		    patientResponse.setReferredBy(reference);
 		    patientsResponse.add(patientResponse);
 		}
 		patientResponseDetails = new SolrPatientResponseDetails();
@@ -180,6 +195,9 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 				patient.setThumbnailUrl(getFinalImageURL(patient.getThumbnailUrl(), uriInfo));
 				
 			    BeanUtil.map(patient, patientResponse);
+//			    Reference reference = new Reference();
+//			    reference.setReference(patient.getReferredBy());
+//			    patientResponse.setReferredBy(reference);
 			    response.add(patientResponse);
 			}
 			responseDetails = new SolrPatientResponseDetails();
@@ -195,7 +213,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	return responseDetails;
     }
 
-    private Criteria createAdvancedSearchCriteria(AdvancedSearch request) {
+    private Criteria createAdvancedSearchCriteria(AdvancedSearch request) throws ParseException {
 	String doctorId = request.getDoctorId();
 	String locationId = request.getLocationId();
 	String hospitalId = request.getHospitalId();
@@ -207,15 +225,25 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 		String searchValue = searchParameter.getSearchValue();
 		String searchType = searchParameter.getSearchType().getSearchType();
 		if (!DPDoctorUtils.anyStringEmpty(searchValue, searchType)) {
-		    if (searchType.equalsIgnoreCase("DOB")) {
+		    if (searchType.equalsIgnoreCase(AdvancedSearchType.DOB.getSearchType())) {
+		    	String[] dob = searchValue.split("/");
 			if (advancedCriteria == null) {
-			    advancedCriteria = new Criteria("days").contains(searchValue).and("months").contains(searchValue).and("years")
-				    .contains(searchValue);
+			    advancedCriteria = new Criteria("days").is(Integer.parseInt(dob[1])).and("months").is(Integer.parseInt(dob[0])).and("years").is(Integer.parseInt(dob[2]));
 			} else {
-			    advancedCriteria = advancedCriteria.and("days").contains(searchValue).and("months").contains(searchValue).and("years")
-				    .contains(searchValue);
+			    advancedCriteria = advancedCriteria.and("days").is(Integer.parseInt(dob[1])).and("months").is(Integer.parseInt(dob[0])).and("years").is(Integer.parseInt(dob[2]));
 			}
-		    } else {
+		    } else if (searchType.equalsIgnoreCase(AdvancedSearchType.REGISTRATION_DATE.getSearchType())) {
+		    	DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+		    	Date date = new Date();
+		    	date = df.parse(searchValue);
+		    	long registeredDate = date.getTime();
+			if (advancedCriteria == null) {
+			    advancedCriteria = new Criteria("registrationDate").is(registeredDate);
+			} else {
+			    advancedCriteria = advancedCriteria.and("registrationDate").is(registeredDate);
+			}
+		    }
+		    	else {
 			if (advancedCriteria == null) {
 			    advancedCriteria = new Criteria(searchType).contains(searchValue);
 			} else {
@@ -495,6 +523,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	    else
 		request.setId(request.getUserId() + request.getLocationId());
 
+	    
 	    solrDoctorRepository.save(request);
 	    transnationalService.addResource(request.getUserId(), Resource.DOCTOR, true);
 	    response = true;
@@ -624,5 +653,65 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     	    return finalImageURL + imageURL;
     	} else
     	    return null;
-        }
+    }
+
+	@Override
+	public void updateClinicProfile(ClinicProfile clinicProfileUpdateResponse) {
+		try {
+		    List<SolrDoctorDocument> doctorDocuments = solrDoctorRepository.findByLocationId(clinicProfileUpdateResponse.getId());
+		    for (SolrDoctorDocument doctorDocument : doctorDocuments) {
+			BeanUtil.map(clinicProfileUpdateResponse, doctorDocument);
+			solrDoctorRepository.save(doctorDocument);
+			transnationalService.addResource(clinicProfileUpdateResponse.getId(), Resource.LOCATION, true);
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void updateClinicAddress(ClinicAddress clinicAddressUpdateResponse) {
+		try {
+		    List<SolrDoctorDocument> doctorDocuments = solrDoctorRepository.findByLocationId(clinicAddressUpdateResponse.getId());
+		    for (SolrDoctorDocument doctorDocument : doctorDocuments) {
+			BeanUtil.map(clinicAddressUpdateResponse, doctorDocument);
+			solrDoctorRepository.save(doctorDocument);
+			transnationalService.addResource(clinicAddressUpdateResponse.getId(), Resource.LOCATION, true);
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void updateClinicSpecialization(ClinicSpecialization clinicSpecializationUpdateResponse) {
+		try {
+		    List<SolrDoctorDocument> doctorDocuments = solrDoctorRepository.findByLocationId(clinicSpecializationUpdateResponse.getId());
+		    for (SolrDoctorDocument doctorDocument : doctorDocuments) {
+			BeanUtil.map(clinicSpecializationUpdateResponse, doctorDocument);
+			solrDoctorRepository.save(doctorDocument);
+			transnationalService.addResource(clinicSpecializationUpdateResponse.getId(), Resource.LOCATION, true);
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void updateLabProperties(ClinicLabProperties clinicLabProperties) {
+		try {
+		    List<SolrDoctorDocument> doctorDocuments = solrDoctorRepository.findByLocationId(clinicLabProperties.getId());
+		    for (SolrDoctorDocument doctorDocument : doctorDocuments) {
+		    	doctorDocument.setIsLab(clinicLabProperties.getIsLab());
+		    	doctorDocument.setIsHomeServiceAvailable(clinicLabProperties.getIsHomeServiceAvailable());
+		    	doctorDocument.setIsNABLAccredited(clinicLabProperties.getIsNABLAccredited());
+		    	doctorDocument.setIsNABLAccredited(clinicLabProperties.getIsNABLAccredited());
+		    	
+			solrDoctorRepository.save(doctorDocument);
+			transnationalService.addResource(clinicLabProperties.getId(), Resource.LOCATION, true);
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+	}	
 }
