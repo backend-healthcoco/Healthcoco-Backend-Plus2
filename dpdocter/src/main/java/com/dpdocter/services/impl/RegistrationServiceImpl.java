@@ -26,11 +26,13 @@ import com.dpdocter.beans.Address;
 import com.dpdocter.beans.BloodGroup;
 import com.dpdocter.beans.ClinicAddress;
 import com.dpdocter.beans.ClinicImage;
+import com.dpdocter.beans.ClinicLabProperties;
 import com.dpdocter.beans.ClinicLogo;
 import com.dpdocter.beans.ClinicProfile;
 import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.ClinicTiming;
 import com.dpdocter.beans.FileDetails;
+import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Group;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Patient;
@@ -99,6 +101,7 @@ import com.dpdocter.response.RegisterDoctorResponse;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.GenerateUniqueUserNameService;
+import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.RegistrationService;
@@ -183,6 +186,9 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Autowired
     private PrintSettingsRepository printSettingsRepository;
 
+    @Autowired
+    private LocationServices locationServices;
+    
     @Autowired
     private HistoryRepository historyRepository;
 
@@ -963,6 +969,17 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    locationCollection = locationRepository.findOne(request.getId());
 	    if (locationCollection != null)
 		BeanUtil.map(request, locationCollection);
+	    BeanUtil.map(request, locationCollection);
+	    List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(
+	    		(locationCollection.getLocationName() != null ? locationCollection.getLocationName() : "" )+
+	    		(locationCollection.getStreetAddress()!= null ? locationCollection.getStreetAddress() : "" )+
+	    		(locationCollection.getCity()!= null ? locationCollection.getCity() : "")+
+	    		(locationCollection.getState() != null ? locationCollection.getState() : "")+
+	    		(locationCollection.getCountry() != null ? locationCollection.getCountry() : ""));
+	    
+	    if (geocodedLocations != null && !geocodedLocations.isEmpty())
+		BeanUtil.map(geocodedLocations.get(0), locationCollection);
+
 	    locationCollection.setSpecialization(request.getSpecialization());
 	    locationCollection = locationRepository.save(locationCollection);
 	    response = new ClinicProfile();
@@ -983,6 +1000,16 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    locationCollection = locationRepository.findOne(request.getId());
 	    if (locationCollection != null)
 		BeanUtil.map(request, locationCollection);
+	    List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(
+	    		(locationCollection.getLocationName() != null ? locationCollection.getLocationName() : "" )+
+	    		(locationCollection.getStreetAddress()!= null ? locationCollection.getStreetAddress() : "" )+
+	    		(locationCollection.getCity()!= null ? locationCollection.getCity() : "")+
+	    		(locationCollection.getState() != null ? locationCollection.getState() : "")+
+	    		(locationCollection.getCountry() != null ? locationCollection.getCountry() : ""));
+	    
+	    if (geocodedLocations != null && !geocodedLocations.isEmpty())
+		BeanUtil.map(geocodedLocations.get(0), locationCollection);
+	    
 	    locationCollection = locationRepository.save(locationCollection);
 	    response = new ClinicAddress();
 	    BeanUtil.map(locationCollection, response);
@@ -1566,7 +1593,6 @@ public class RegistrationServiceImpl implements RegistrationService {
     public List<ClinicDoctorResponse> getDoctors(int page, int size, String locationId, String hospitalId, String updatedTime) {
 	List<ClinicDoctorResponse> response = null;
 	try {
-	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    List<UserLocationCollection> userLocationCollections = null;
 	    if (size > 0)
 		userLocationCollections = userLocationRepository.findByLocationId(locationId, new PageRequest(page, size, Direction.DESC, "updatedTime"));
@@ -1578,12 +1604,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 		for (UserLocationCollection userLocationCollection : userLocationCollections) {
 		    ClinicDoctorResponse clinicDoctorResponse = new ClinicDoctorResponse();
 		    clinicDoctorResponse.setIsActivate(userLocationCollection.getIsActivate());
+		    clinicDoctorResponse.setDiscarded(userLocationCollection.getDiscarded());
 		    UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
 		    if (userCollection != null) {
 			clinicDoctorResponse.setFirstName(userCollection.getFirstName());
 			clinicDoctorResponse.setLastSession(userCollection.getLastSession());
+			clinicDoctorResponse.setUserId(userCollection.getId());
 		    }
-		    // TODO
 		}
 	    }
 
@@ -1610,4 +1637,63 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 	return solrDoctorDocument;
     }
+
+	@Override
+	public void deleteRole(String roleId, Boolean discarded) {
+		try {
+		    RoleCollection roleCollection = roleRepository.findOne(roleId);
+		    if (roleCollection != null) {
+		    	roleCollection.setDiscarded(discarded);
+		    	roleCollection = roleRepository.save(roleCollection);
+		    }
+		    } catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+	}
+
+	@Override
+	public void deleteUser(String userId, String locationId, Boolean discarded) {
+		try {
+		    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(userId, locationId);
+		    if (userLocationCollection != null) {
+		    	userLocationCollection.setDiscarded(discarded);
+		    	userLocationRepository.save(userLocationCollection);
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+	}
+
+	@Override
+	public ClinicLabProperties updateLabProperties(ClinicLabProperties request) {
+		ClinicLabProperties response = null;
+		LocationCollection locationCollection = null;
+		try {
+		    locationCollection = locationRepository.findOne(request.getId());
+		    if (locationCollection != null){
+		    	locationCollection.setIsLab(request.getIsLab());
+		    	if(request.getIsLab()){
+		    		locationCollection.setIsHomeServiceAvailable(request.getIsHomeServiceAvailable());
+		    		locationCollection.setIsNABLAccredited(request.getIsNABLAccredited());
+		    		locationCollection.setIsNABLAccredited(request.getIsNABLAccredited());
+		    	}
+		    	else{
+		    		locationCollection.setIsHomeServiceAvailable(false);
+		    		locationCollection.setIsNABLAccredited(false);
+		    		locationCollection.setIsNABLAccredited(false);
+		    	}
+		    	locationCollection = locationRepository.save(locationCollection);
+		    	BeanUtil.map(locationCollection, response);
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error While Updating Clinic IsLab");
+		    throw new BusinessException(ServiceError.Unknown, "Error While Updating Clinic IsLab");
+		}
+		return response;
+	}
 }

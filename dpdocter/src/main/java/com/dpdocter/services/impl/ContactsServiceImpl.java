@@ -678,7 +678,6 @@ public class ContactsServiceImpl implements ContactsService {
 		    PatientGroupCollection patientGroupCollection = new PatientGroupCollection();
 		    patientGroupCollection.setGroupId(group);
 		    patientGroupCollection.setPatientId(request.getPatientId());
-		    patientCollection.setCreatedTime(new Date());
 		    patientGroupRepository.save(patientGroupCollection);
 		}
 	    }

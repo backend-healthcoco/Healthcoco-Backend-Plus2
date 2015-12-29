@@ -70,6 +70,8 @@ import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
 import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.services.DoctorProfileService;
 import com.dpdocter.services.FileManager;
+import com.dpdocter.solr.document.SolrDoctorDocument;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -239,10 +241,17 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	List<String> specialitiesByName = null;
 	try {
 	    specialityCollections = specialityRepository.findAll();
+<<<<<<< HEAD
 	    specialities = new ArrayList<String>();
 	    specialitiesByName = new ArrayList<String>();
+=======
+	    if(request.getSpeciality() != null)
+>>>>>>> Patient Side API
 	    for (String speciality : request.getSpeciality()) {
 		Boolean specialityFound = false;
+		specialities = new ArrayList<String>();
+	    specialitiesByName = new ArrayList<String>();
+	    
 		for (SpecialityCollection specialityCollection : specialityCollections) {
 		    if (speciality.trim().equalsIgnoreCase(specialityCollection.getSpeciality())) {
 			specialities.add(specialityCollection.getId());
@@ -550,6 +559,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	try {
 	    professionalMembershipCollections = professionalMembershipRepository.findAll();
 	    professionalMemberships = new ArrayList<String>();
+	    if(request.getMembership() != null)
 	    for (String professionalMembership : request.getMembership()) {
 		Boolean professionalMembershipFound = false;
 		for (ProfessionalMembershipCollection professionalMembershipCollection : professionalMembershipCollections) {

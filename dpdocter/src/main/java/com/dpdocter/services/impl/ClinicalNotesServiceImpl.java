@@ -457,7 +457,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		String patientId = "";
 		if (patientClinicalNotesCollections != null && !patientClinicalNotesCollections.isEmpty()) {
 		    for (PatientClinicalNotesCollection patientClinicalNotesCollection : patientClinicalNotesCollections) {
-			patientId += patientClinicalNotesCollection.getPatientId() + ",";
+			patientId += patientClinicalNotesCollection.getPatientId();
 		    }
 		}
 		clinicalNote.setPatientId(patientId);
@@ -624,6 +624,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    patientClinicalNotesCollection.setClinicalNotesId(clinicalNotesCollection.getId());
 		    patientClinicalNotesCollection.setPatientId(request.getPatientId());
 		    patientClinicalNotesRepository.save(patientClinicalNotesCollection);
+		}
+		else{
+			PatientClinicalNotesCollection patientClinicalNotesCollection = patientClinicalNotesRepository.findByPatientIdClinicalNotesId(request.getPatientId(),clinicalNotesCollection.getId());
+			patientClinicalNotesCollection.setUpdatedTime(new Date());
+			patientClinicalNotesRepository.save(patientClinicalNotesCollection);
 		}
 
 	    }

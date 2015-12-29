@@ -1,7 +1,7 @@
 package com.dpdocter.solr.enums;
 
 public enum AppointmentResponseType {
-    SPECIALITY("SPECIALITY"), SYMPTOM("SYMPTOM"), DOCTOR("DOCTOR"), CLINIC("CLINIC");
+    SPECIALITY("SPECIALITY"), SYMPTOM("SYMPTOM"), DOCTOR("DOCTOR"), CLINIC("CLINIC"), LABTEST("LABTEST"), LAB("LAB");
 
     private String responseType;
 

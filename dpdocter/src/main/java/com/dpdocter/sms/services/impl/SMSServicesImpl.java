@@ -108,18 +108,23 @@ public class SMSServicesImpl implements SMSServices {
 			    SMS sms = new SMS();
 			    BeanUtil.map(smsDetails.getSms(), sms);
 			    smsList.add(sms);
+			    message.setSms(smsList);
+			    String xmlSMSData = createXMLData(message);
+			    String responseId = hitSMSUrl(SMS_POST_URL, xmlSMSData);
+			    smsTrackDetail.setResponseId(responseId);
 			}
 		    }
 		} else {
 		    SMS sms = new SMS();
 		    BeanUtil.map(smsDetails.getSms(), sms);
 		    smsList.add(sms);
+		    message.setSms(smsList);
+		    String xmlSMSData = createXMLData(message);
+		    String responseId = hitSMSUrl(SMS_POST_URL, xmlSMSData);
+		    smsTrackDetail.setResponseId(responseId);
 		}
 	    }
-	    message.setSms(smsList);
-	    String xmlSMSData = createXMLData(message);
-	    String responseId = hitSMSUrl(SMS_POST_URL, xmlSMSData);
-	    smsTrackDetail.setResponseId(responseId);
+	    
 	    if (save)
 		smsTrackRepository.save(smsTrackDetail);
 	} catch (Exception e) {

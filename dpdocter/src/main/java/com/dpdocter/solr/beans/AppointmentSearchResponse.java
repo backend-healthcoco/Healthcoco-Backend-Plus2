@@ -5,7 +5,7 @@ import com.dpdocter.solr.enums.AppointmentResponseType;
 public class AppointmentSearchResponse {
     private String id;
 
-    private String response;
+    private Object response;
 
     private AppointmentResponseType responseType;
 
@@ -17,11 +17,11 @@ public class AppointmentSearchResponse {
 	this.id = id;
     }
 
-    public String getResponse() {
+    public Object getResponse() {
 	return response;
     }
 
-    public void setResponse(String response) {
+    public void setResponse(Object response) {
 	this.response = response;
     }
 

@@ -1,12 +1,12 @@
-package com.dpdocter.beans;
+package com.dpdocter.solr.response;
 
 import java.util.List;
 
-import org.springframework.data.mongodb.core.mapping.Field;
+import com.dpdocter.solr.beans.SolrLabTest;
 
-public class LocationAndAccessControl {
-	
-	private String id;
+public class LabResponse {
+
+	private String locationId;
 
     private String locationName;
 
@@ -22,25 +22,13 @@ public class LocationAndAccessControl {
 
     private String websiteUrl;
 
-    private List<ClinicImage> images;
-
-    private String logoUrl;
-
-    private String logoThumbnailUrl;
-
-    private String hospitalId;
-
     private Double latitude;
 
     private Double longitude;
 
-    private String tagLine;
-
     private String landmarkDetails;
 
     private String locationEmailAddress;
-
-    private List<String> specialization;
 
     private String streetAddress;
 
@@ -50,9 +38,7 @@ public class LocationAndAccessControl {
 
     private String alternateNumber;
 
-    private List<WorkingSchedule> workingSchedules;
-
-    private boolean isTwentyFourSevenOpen;
+    private List<String> specialization;
 
     private Boolean isLab = false;
     
@@ -61,15 +47,15 @@ public class LocationAndAccessControl {
     private Boolean isNABLAccredited = false;
     
     private Boolean isHomeServiceAvailable = false;
-    
-    private List<Role> roles;
 
-	public String getId() {
-		return id;
+    private SolrLabTest labTest ;
+    
+	public String getLocationId() {
+		return locationId;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
 	}
 
 	public String getLocationName() {
@@ -128,38 +114,6 @@ public class LocationAndAccessControl {
 		this.websiteUrl = websiteUrl;
 	}
 
-	public List<ClinicImage> getImages() {
-		return images;
-	}
-
-	public void setImages(List<ClinicImage> images) {
-		this.images = images;
-	}
-
-	public String getLogoUrl() {
-		return logoUrl;
-	}
-
-	public void setLogoUrl(String logoUrl) {
-		this.logoUrl = logoUrl;
-	}
-
-	public String getLogoThumbnailUrl() {
-		return logoThumbnailUrl;
-	}
-
-	public void setLogoThumbnailUrl(String logoThumbnailUrl) {
-		this.logoThumbnailUrl = logoThumbnailUrl;
-	}
-
-	public String getHospitalId() {
-		return hospitalId;
-	}
-
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
-
 	public Double getLatitude() {
 		return latitude;
 	}
@@ -176,14 +130,6 @@ public class LocationAndAccessControl {
 		this.longitude = longitude;
 	}
 
-	public String getTagLine() {
-		return tagLine;
-	}
-
-	public void setTagLine(String tagLine) {
-		this.tagLine = tagLine;
-	}
-
 	public String getLandmarkDetails() {
 		return landmarkDetails;
 	}
@@ -198,14 +144,6 @@ public class LocationAndAccessControl {
 
 	public void setLocationEmailAddress(String locationEmailAddress) {
 		this.locationEmailAddress = locationEmailAddress;
-	}
-
-	public List<String> getSpecialization() {
-		return specialization;
-	}
-
-	public void setSpecialization(List<String> specialization) {
-		this.specialization = specialization;
 	}
 
 	public String getStreetAddress() {
@@ -240,28 +178,12 @@ public class LocationAndAccessControl {
 		this.alternateNumber = alternateNumber;
 	}
 
-	public List<WorkingSchedule> getWorkingSchedules() {
-		return workingSchedules;
+	public List<String> getSpecialization() {
+		return specialization;
 	}
 
-	public void setWorkingSchedules(List<WorkingSchedule> workingSchedules) {
-		this.workingSchedules = workingSchedules;
-	}
-
-	public boolean isTwentyFourSevenOpen() {
-		return isTwentyFourSevenOpen;
-	}
-
-	public void setTwentyFourSevenOpen(boolean isTwentyFourSevenOpen) {
-		this.isTwentyFourSevenOpen = isTwentyFourSevenOpen;
-	}
-
-	public List<Role> getRoles() {
-		return roles;
-	}
-
-	public void setRoles(List<Role> roles) {
-		this.roles = roles;
+	public void setSpecialization(List<String> specialization) {
+		this.specialization = specialization;
 	}
 
 	public Boolean getIsLab() {
@@ -296,18 +218,24 @@ public class LocationAndAccessControl {
 		this.isHomeServiceAvailable = isHomeServiceAvailable;
 	}
 
+	public SolrLabTest getLabTest() {
+		return labTest;
+	}
+
+	public void setLabTest(SolrLabTest labTest) {
+		this.labTest = labTest;
+	}
+
 	@Override
 	public String toString() {
-		return "LocationAndAccessControl [id=" + id + ", locationName=" + locationName + ", country=" + country
+		return "LabResponse [locationId=" + locationId + ", locationName=" + locationName + ", country=" + country
 				+ ", state=" + state + ", city=" + city + ", locationPhoneNumber=" + locationPhoneNumber
-				+ ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", images=" + images + ", logoUrl="
-				+ logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + ", hospitalId=" + hospitalId + ", latitude="
-				+ latitude + ", longitude=" + longitude + ", tagLine=" + tagLine + ", landmarkDetails="
-				+ landmarkDetails + ", locationEmailAddress=" + locationEmailAddress + ", specialization="
-				+ specialization + ", streetAddress=" + streetAddress + ", locality=" + locality + ", mobileNumber="
-				+ mobileNumber + ", alternateNumber=" + alternateNumber + ", workingSchedules=" + workingSchedules
-				+ ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + ", isLab=" + isLab
-				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
-				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", roles=" + roles + "]";
+				+ ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", latitude=" + latitude
+				+ ", longitude=" + longitude + ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress="
+				+ locationEmailAddress + ", streetAddress=" + streetAddress + ", locality=" + locality
+				+ ", mobileNumber=" + mobileNumber + ", alternateNumber=" + alternateNumber + ", specialization="
+				+ specialization + ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable
+				+ ", isNABLAccredited=" + isNABLAccredited + ", isHomeServiceAvailable=" + isHomeServiceAvailable
+				+ ", labTest=" + labTest + "]";
 	}
 }

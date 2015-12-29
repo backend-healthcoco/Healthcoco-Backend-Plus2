@@ -14,9 +14,10 @@ import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.AccessModule;
 import com.dpdocter.beans.AccessPermission;
 import com.dpdocter.beans.DoctorSignUp;
+import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Hospital;
-import com.dpdocter.beans.Location;
 import com.dpdocter.beans.LocationAndAccessControl;
+import com.dpdocter.beans.Role;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.AddressCollection;
 import com.dpdocter.collections.DoctorCollection;
@@ -57,6 +58,7 @@ import com.dpdocter.request.PatientSignUpRequest;
 import com.dpdocter.request.PatientSignupRequestMobile;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.FileManager;
+import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.SignUpService;
@@ -119,6 +121,9 @@ public class SignUpServiceImpl implements SignUpService {
     @Autowired
     private AccessControlServices accessControlServices;
 
+    @Autowired
+    private LocationServices locationServices;
+    
     @Value(value = "${mail.signup.subject.activation}")
     private String signupSubject;
 
@@ -252,6 +257,15 @@ public class SignUpServiceImpl implements SignUpService {
 	    // save location for hospital
 	    LocationCollection locationCollection = new LocationCollection();
 	    BeanUtil.map(request, locationCollection);
+	    List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(
+	    		(locationCollection.getLocationName() != null ? locationCollection.getLocationName() : "" )+
+	    		(locationCollection.getStreetAddress()!= null ? locationCollection.getStreetAddress() : "" )+
+	    		(locationCollection.getCity()!= null ? locationCollection.getCity() : "")+
+	    		(locationCollection.getState() != null ? locationCollection.getState() : "")+
+	    		(locationCollection.getCountry() != null ? locationCollection.getCountry() : ""));
+	    
+	    if (geocodedLocations != null && !geocodedLocations.isEmpty())
+		BeanUtil.map(geocodedLocations.get(0), locationCollection);
 	    if (locationCollection.getId() == null) {
 		locationCollection.setCreatedTime(new Date());
 	    }
@@ -284,12 +298,23 @@ public class SignUpServiceImpl implements SignUpService {
 		// sMSServices.sendSMS(smsTrackDetail, false);
 	    }
 
-	    /*String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
-	        userCollection.getMiddleName(), userCollection.getLastName());
-	    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);*/
+	    List<String> roleIds = new ArrayList<String>();
+	    roleIds.add(hospitalAdmin.getId());
+	    roleIds.add(locationAdmin.getId());
+	    roleIds.add(doctorRole.getId());
+	    
 	    response = new DoctorSignUp();
-	    response.setAccessControl(assignAllAccessControl(userCollection.getId(), locationCollection.getId(), locationCollection.getHospitalId()));
-
+	    List<AccessControl> accessControls = assignAllAccessControl(userCollection.getId(), locationCollection.getId(), locationCollection.getHospitalId(), roleIds);
+	    List<Role> roles = new ArrayList<Role>();
+	    for(AccessControl accessControl : accessControls){
+	    	Role role = new Role();
+	    	if(accessControl.getRoleOrUserId().equals(hospitalAdmin.getId()))role.setRole(RoleEnum.HOSPITAL_ADMIN.getRole());
+	    	if(accessControl.getRoleOrUserId().equals(locationAdmin.getId()))role.setRole(RoleEnum.LOCATION_ADMIN.getRole());
+	    	if(accessControl.getRoleOrUserId().equals(doctorRole.getId()))role.setRole(RoleEnum.DOCTOR.getRole());
+	    	BeanUtil.map(accessControl, role);
+	    	roles.add(role);
+	    }
+	    
 	    User user = new User();
 	    userCollection.setPassword(null);
 	    BeanUtil.map(userCollection, user);
@@ -298,13 +323,11 @@ public class SignUpServiceImpl implements SignUpService {
 	    Hospital hospital = new Hospital();
 	    BeanUtil.map(hospitalCollection, hospital);
 	    List<LocationAndAccessControl> locations = new ArrayList<LocationAndAccessControl>();
-	    Location location = new Location();
-	    BeanUtil.map(locationCollection, location);
-
+	   
 	    LocationAndAccessControl locationAndAccessControl = new LocationAndAccessControl();
-	    locationAndAccessControl.setAccessControl(response.getAccessControl());
-	    locationAndAccessControl.setLocation(location);
-
+	    BeanUtil.map(locationCollection, locationAndAccessControl);
+	    locationAndAccessControl.setRoles(roles);
+	    
 	    locations.add(locationAndAccessControl);
 	    hospital.setLocationsAndAccessControl(locations);
 	    response.setHospital(hospital);
@@ -320,35 +343,40 @@ public class SignUpServiceImpl implements SignUpService {
 	return response;
     }
 
-    private AccessControl assignAllAccessControl(String doctorId, String locationId, String hospitalId) {
-	AccessControl accessControl = new AccessControl();
+    private List<AccessControl> assignAllAccessControl(String doctorId, String locationId, String hospitalId, List<String> roleIds) {
+    	List<AccessControl> accessControls = new ArrayList<AccessControl>();
 	try {
-	    accessControl.setHospitalId(hospitalId);
-	    accessControl.setRoleOrUserId(doctorId);
-	    accessControl.setLocationId(locationId);
-	    accessControl.setType(Type.DOCTOR);
-	    List<AccessModule> accessModules = new ArrayList<AccessModule>();
-	    for (Module module : Module.values()) {
-		AccessModule accessModule = new AccessModule();
-		accessModule.setModule(module.getModule());
-		List<AccessPermission> accessPermissions = new ArrayList<AccessPermission>();
-		for (AccessPermissionType accessPermissionType : AccessPermissionType.values()) {
-		    AccessPermission accessPermission = new AccessPermission();
-		    accessPermission.setAccessPermissionType(accessPermissionType);
-		    accessPermission.setAccessPermissionValue(true);
-		    accessPermissions.add(accessPermission);
-		}
-		accessModule.setAccessPermissions(accessPermissions);
-		accessModules.add(accessModule);
+	    for(String roleId : roleIds){
+	    	AccessControl accessControl= new AccessControl();
+	    	
+	    	accessControl.setHospitalId(hospitalId);
+		    accessControl.setRoleOrUserId(roleId);
+		    accessControl.setLocationId(locationId);
+		    accessControl.setType(Type.ROLE);
+		    List<AccessModule> accessModules = new ArrayList<AccessModule>();
+		    for (Module module : Module.values()) {
+			AccessModule accessModule = new AccessModule();
+			accessModule.setModule(module.getModule());
+			List<AccessPermission> accessPermissions = new ArrayList<AccessPermission>();
+			for (AccessPermissionType accessPermissionType : AccessPermissionType.values()) {
+			    AccessPermission accessPermission = new AccessPermission();
+			    accessPermission.setAccessPermissionType(accessPermissionType);
+			    accessPermission.setAccessPermissionValue(true);
+			    accessPermissions.add(accessPermission);
+			}
+			accessModule.setAccessPermissions(accessPermissions);
+			accessModules.add(accessModule);
+		    }
+		    accessControl.setAccessModules(accessModules);
+		    accessControl = accessControlServices.setAccessControls(accessControl);
+		    accessControls.add(accessControl);
 	    }
-	    accessControl.setAccessModules(accessModules);
-	    accessControl = accessControlServices.setAccessControls(accessControl);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while assigning access control");
 	    throw new BusinessException(ServiceError.Unknown, "Error occured while assigning access control");
 	}
-	return accessControl;
+	return accessControls;
     }
 
     @Override
@@ -426,6 +454,21 @@ public class SignUpServiceImpl implements SignUpService {
 
 	try {
 
+		RoleCollection hospitalAdmin = roleRepository.findByRole(RoleEnum.HOSPITAL_ADMIN.getRole());
+	    if (hospitalAdmin == null) {
+		logger.warn("Role Collection in database is either empty or not defind properly");
+		throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
+	    }
+	    RoleCollection locationAdmin = roleRepository.findByRole(RoleEnum.LOCATION_ADMIN.getRole());
+	    if (locationAdmin == null) {
+		logger.warn("Role Collection in database is either empty or not defind properly");
+		throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
+	    }
+	    RoleCollection doctorRole = roleRepository.findByRole(RoleEnum.DOCTOR.getRole());
+	    if (doctorRole == null) {
+		logger.warn("Role Collection in database is either empty or not defind properly");
+		throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
+	    }
 	    // save user
 	    UserCollection userCollection = userRepository.findOne(request.getUserId());
 
@@ -472,9 +515,23 @@ public class SignUpServiceImpl implements SignUpService {
 		// sMSServices.sendSMS(smsTrackDetail, false);
 	    }
 
+	    List<String> roleIds = new ArrayList<String>();
+	    roleIds.add(hospitalAdmin.getId());
+	    roleIds.add(locationAdmin.getId());
+	    roleIds.add(doctorRole.getId());
+	    
 	    response = new DoctorSignUp();
-	    response.setAccessControl(assignAllAccessControl(userCollection.getId(), locationCollection.getId(), locationCollection.getHospitalId()));
-
+	    List<AccessControl> accessControls = assignAllAccessControl(userCollection.getId(), locationCollection.getId(), locationCollection.getHospitalId(), roleIds);
+	    List<Role> roles = new ArrayList<Role>();
+	    for(AccessControl accessControl : accessControls){
+	    	Role role = new Role();
+	    	if(accessControl.getRoleOrUserId().equals(hospitalAdmin.getId()))role.setRole(RoleEnum.HOSPITAL_ADMIN.getRole());
+	    	if(accessControl.getRoleOrUserId().equals(locationAdmin.getId()))role.setRole(RoleEnum.LOCATION_ADMIN.getRole());
+	    	if(accessControl.getRoleOrUserId().equals(doctorRole.getId()))role.setRole(RoleEnum.DOCTOR.getRole());
+	    	BeanUtil.map(accessControl.getAccessModules(), role);
+	    	roles.add(role);
+	    }
+	    
 	    User user = new User();
 	    userCollection.setPassword(null);
 	    BeanUtil.map(userCollection, user);
@@ -483,17 +540,14 @@ public class SignUpServiceImpl implements SignUpService {
 	    Hospital hospital = new Hospital();
 	    BeanUtil.map(hospitalCollection, hospital);
 	    List<LocationAndAccessControl> locations = new ArrayList<LocationAndAccessControl>();
-	    Location location = new Location();
-	    BeanUtil.map(locationCollection, location);
-
+	   
 	    LocationAndAccessControl locationAndAccessControl = new LocationAndAccessControl();
-	    locationAndAccessControl.setAccessControl(response.getAccessControl());
-	    locationAndAccessControl.setLocation(location);
-
+	    BeanUtil.map(locationCollection, locationAndAccessControl);
+	    locationAndAccessControl.setRoles(roles);
+	    
 	    locations.add(locationAndAccessControl);
 	    hospital.setLocationsAndAccessControl(locations);
 	    response.setHospital(hospital);
-
 	} catch (BusinessException be) {
 	    logger.error(be);
 	    throw be;

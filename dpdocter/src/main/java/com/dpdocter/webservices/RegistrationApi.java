@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.BloodGroup;
 import com.dpdocter.beans.ClinicAddress;
 import com.dpdocter.beans.ClinicImage;
+import com.dpdocter.beans.ClinicLabProperties;
 import com.dpdocter.beans.ClinicLogo;
 import com.dpdocter.beans.ClinicProfile;
 import com.dpdocter.beans.ClinicSpecialization;
@@ -310,6 +311,9 @@ public class RegistrationApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
 	}
 	ClinicProfile clinicProfileUpdateResponse = registrationService.updateClinicProfile(request);
+	transnationalService.addResource(clinicProfileUpdateResponse.getId(), Resource.LOCATION, false);
+	if (clinicProfileUpdateResponse != null)
+		solrRegistrationService.updateClinicProfile(clinicProfileUpdateResponse);
 	Response<ClinicProfile> response = new Response<ClinicProfile>();
 	response.setData(clinicProfileUpdateResponse);
 	return response;
@@ -322,6 +326,10 @@ public class RegistrationApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
 	}
 	ClinicAddress clinicAddressUpdateResponse = registrationService.updateClinicAddress(request);
+	transnationalService.addResource(clinicAddressUpdateResponse.getId(), Resource.LOCATION, false);
+	if (clinicAddressUpdateResponse != null)
+		solrRegistrationService.updateClinicAddress(clinicAddressUpdateResponse);
+	
 	Response<ClinicAddress> response = new Response<ClinicAddress>();
 	response.setData(clinicAddressUpdateResponse);
 	return response;
@@ -346,11 +354,29 @@ public class RegistrationApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
 	}
 	ClinicSpecialization clinicSpecializationUpdateResponse = registrationService.updateClinicSpecialization(request);
+	transnationalService.addResource(clinicSpecializationUpdateResponse.getId(), Resource.LOCATION, false);
+	if (clinicSpecializationUpdateResponse != null)	solrRegistrationService.updateClinicSpecialization(clinicSpecializationUpdateResponse);
 	Response<ClinicSpecialization> response = new Response<ClinicSpecialization>();
 	response.setData(clinicSpecializationUpdateResponse);
 	return response;
     }
 
+    @Path(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_LAB_PROPERTIES)
+    @POST
+    public Response<ClinicLabProperties> updateLabProperties(ClinicLabProperties request) {
+    if (request == null) {
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
+    	}
+    ClinicLabProperties clinicLabProperties = registrationService.updateLabProperties(request);
+    if(clinicLabProperties != null){
+    	transnationalService.addResource(request.getId(), Resource.LOCATION, false);
+    	solrRegistrationService.updateLabProperties(clinicLabProperties);
+    }
+	Response<ClinicLabProperties> response = new Response<ClinicLabProperties>();
+	response.setData(clinicLabProperties);
+	return response;
+    }
+    
     @Path(value = PathProxy.RegistrationUrls.CHANGE_CLINIC_LOGO)
     @POST
     public Response<ClinicLogo> changeClinicLogo(ClinicLogoAddRequest request) {
@@ -533,15 +559,35 @@ public class RegistrationApi {
 	return response;
     }
 
-    @Path(value = PathProxy.RegistrationUrls.GET_DOCTORS)
+    @Path(value = PathProxy.RegistrationUrls.GET_USERS)
     @GET
-    public Response<ClinicDoctorResponse> getDoctors(@QueryParam("page") int page, @QueryParam("size") int size,
+    public Response<ClinicDoctorResponse> getUsers(@QueryParam("page") int page, @QueryParam("size") int size,
 	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
 
 	List<ClinicDoctorResponse> professionResponse = registrationService.getDoctors(page, size, locationId, hospitalId, updatedTime);
 	Response<ClinicDoctorResponse> response = new Response<ClinicDoctorResponse>();
 	response.setDataList(professionResponse);
+	return response;
+    }
+    
+    @Path(value = PathProxy.RegistrationUrls.DELETE_ROLE)
+    @DELETE
+    public Response<Boolean> deleteRole(@PathParam(value = "roleId") String roleId,
+	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    	registrationService.deleteRole(roleId, discarded);
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(true);
+	return response;
+    }
+    
+    @Path(value = PathProxy.RegistrationUrls.DELETE_USER)
+    @DELETE
+    public Response<Boolean> deleteUser(@PathParam(value = "userId") String userId, @PathParam(value = "locationId") String locationId,
+	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    	registrationService.deleteUser(userId, locationId, discarded);
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(true);
 	return response;
     }
 

@@ -20,9 +20,9 @@ import org.springframework.stereotype.Service;
 import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.Hospital;
-import com.dpdocter.beans.Location;
 import com.dpdocter.beans.LocationAndAccessControl;
 import com.dpdocter.beans.LoginResponse;
+import com.dpdocter.beans.Role;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
@@ -44,6 +44,7 @@ import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.request.LoginRequest;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.LoginService;
+
 import common.util.web.DPDoctorUtils;
 
 /**
@@ -111,7 +112,6 @@ public class LoginServiceImpl implements LoginService {
 	     * Now fetch hospitals and locations for doctor, location admin and
 	     * hospital admin. For patient send user details.
 	     */
-	    List<String> roles = new ArrayList<String>();
 	    List<UserRoleCollection> userRoleCollections = userRoleRepository.findByUserId(userCollection.getId());
 	    for (UserRoleCollection userRoleCollection : userRoleCollections) {
 		RoleCollection roleCollection = roleRepository.findOne(userRoleCollection.getRoleId());
@@ -131,17 +131,13 @@ public class LoginServiceImpl implements LoginService {
 
 		    response = new LoginResponse();
 		    response.setUser(user);
-		    roles.add(roleCollection.getRole());
-		    response.setRole(roles);
 		    response.setIsTempPassword(userCollection.getIsTempPassword());
 		    return response;
 		} else {
-		    roles.add(roleCollection.getRole());
 		    if (userCollection.getUserState() != null && userCollection.getUserState().equals(UserState.USERSTATEINCOMPLETE)) {
 			response = new LoginResponse();
 			user.setEmailAddress(user.getUserName());
 			response.setUser(user);
-			response.setRole(roles);
 			return response;
 		    }
 
@@ -149,14 +145,12 @@ public class LoginServiceImpl implements LoginService {
 			response = new LoginResponse();
 			user.setUserState(UserState.NOTVERIFIED);
 			response.setUser(user);
-			response.setRole(roles);
 			return response;
 		    }
 		    if (!userCollection.getIsActive()) {
 			response = new LoginResponse();
 			user.setUserState(UserState.NOTACTIVATED);
 			response.setUser(user);
-			response.setRole(roles);
 			return response;
 		    }
 
@@ -172,16 +166,29 @@ public class LoginServiceImpl implements LoginService {
 			Map<String, Hospital> checkHospitalId = new HashMap<String, Hospital>();
 			for (LocationCollection locationCollection : locationCollections) {
 			    HospitalCollection hospitalCollection = null;
-			    Location location = new Location();
-			    BeanUtil.map(locationCollection, location);
-			    location.setLogoUrl(getFinalImageURL(location.getLogoUrl(), uriInfo));
-			    location.setLogoThumbnailUrl(getFinalImageURL(location.getLogoThumbnailUrl(), uriInfo));
-			    location.setImages(getFinalClinicImages(location.getImages(), uriInfo));
-			    AccessControl accessControl = accessControlServices.getAccessControls(userCollection.getId(), locationCollection.getId(),
-				    locationCollection.getHospitalId());
 			    LocationAndAccessControl locationAndAccessControl = new LocationAndAccessControl();
-			    locationAndAccessControl.setAccessControl(accessControl);
-			    locationAndAccessControl.setLocation(location);
+			    BeanUtil.map(locationCollection, locationAndAccessControl);
+			    locationAndAccessControl.setLogoUrl(getFinalImageURL(locationAndAccessControl.getLogoUrl(), uriInfo));
+			    locationAndAccessControl.setLogoThumbnailUrl(getFinalImageURL(locationAndAccessControl.getLogoThumbnailUrl(), uriInfo));
+			    locationAndAccessControl.setImages(getFinalClinicImages(locationAndAccessControl.getImages(), uriInfo));
+			    
+			    List<Role> roles = null;
+			    for(UserRoleCollection collection : userRoleCollections){
+			    	RoleCollection roleCollection2 = roleRepository.find(collection.getRoleId(), locationCollection.getId(), locationCollection.getHospitalId());
+			    	if(roleCollection2 != null){
+			    		AccessControl accessControl = accessControlServices.getAccessControls(roleCollection2.getId(), locationCollection.getId(),
+							    locationCollection.getHospitalId());
+						
+						Role role = new Role();
+						BeanUtil.map(roleCollection2, role);
+						role.setAccessModules(accessControl.getAccessModules());
+						
+						if(roles == null) roles = new ArrayList<Role>();
+						roles.add(role);
+			    	}
+			    }
+			   
+			    locationAndAccessControl.setRoles(roles);
 
 			    if (!checkHospitalId.containsKey(locationCollection.getHospitalId())) {
 				hospitalCollection = hospitalRepository.findOne(locationCollection.getHospitalId());
@@ -201,8 +208,9 @@ public class LoginServiceImpl implements LoginService {
 			user.setEmailAddress(user.getUserName());
 			response.setUser(user);
 			response.setHospitals(hospitals);
-			response.setRole(roles);
+			
 		    }
+		    break;
 		}
 	    }
 	} catch (BusinessException be) {

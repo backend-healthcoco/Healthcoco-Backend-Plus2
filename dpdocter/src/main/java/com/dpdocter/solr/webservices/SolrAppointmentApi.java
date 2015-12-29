@@ -16,10 +16,13 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.solr.beans.AppointmentSearchResponse;
 import com.dpdocter.solr.document.SolrDoctorDocument;
 import com.dpdocter.solr.document.SolrSpecialityDocument;
+import com.dpdocter.solr.response.LabResponse;
 import com.dpdocter.solr.services.SolrAppointmentService;
 import com.dpdocter.webservices.PathProxy;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -31,6 +34,18 @@ public class SolrAppointmentApi {
 
     @Autowired
     private SolrAppointmentService solrAppointmentService;
+
+    @Path(value = PathProxy.SolrAppointmentUrls.SEARCH)
+    @GET
+    public Response<AppointmentSearchResponse> search(@QueryParam("city") String city, @QueryParam("location") String location,
+    		@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude, @QueryParam("searchTerm") String searchTerm) {
+
+	List<AppointmentSearchResponse> appointmentSearchResponses = solrAppointmentService.search(city, location, latitude, longitude, searchTerm);
+
+	Response<AppointmentSearchResponse> response = new Response<AppointmentSearchResponse>();
+	response.setDataList(appointmentSearchResponses);
+	return response;
+    }
 
     @Path(value = PathProxy.SolrAppointmentUrls.GET_DOCTORS)
     @GET
@@ -47,6 +62,21 @@ public class SolrAppointmentApi {
 		maxTime, days, gender, minExperience, maxExperience);
 
 	Response<SolrDoctorDocument> response = new Response<SolrDoctorDocument>();
+	response.setDataList(doctors);
+	return response;
+    }
+
+    @Path(value = PathProxy.SolrAppointmentUrls.GET_LABS)
+    @GET
+    public Response<LabResponse> getLabs(@QueryParam("city") String city, @QueryParam("location") String location,
+	    @QueryParam("testId") String testId) {
+	if (DPDoctorUtils.anyStringEmpty(city)) {
+	    throw new BusinessException(ServiceError.InvalidInput, "City Cannot Be Empty");
+	}
+
+	List<LabResponse> doctors = solrAppointmentService.getLabs(city, location, testId);
+
+	Response<LabResponse> response = new Response<LabResponse>();
 	response.setDataList(doctors);
 	return response;
     }

@@ -86,6 +86,17 @@ public class SignUpApi {
 	    }
 	    transnationalService.addResource(doctorSignUp.getUser().getId(), Resource.DOCTOR, false);
 	    solrRegistrationService.addDoctor(getSolrDoctorDocument(doctorSignUp));
+	    
+//	    if(doctorSignUp.getHospital() != null){
+//	    	if(doctorSignUp.getHospital().getLocationsAndAccessControl() != null && !doctorSignUp.getHospital().getLocationsAndAccessControl().isEmpty()){
+//	    		for(LocationAndAccessControl location : doctorSignUp.getHospital().getLocationsAndAccessControl()){
+//	    			transnationalService.addResource(location.getId(), Resource.LOCATION, false);
+//	    		    solrRegistrationService.addLocation(getSolrLocationDocument(location));
+//	    		}
+//	    	}
+//	    }
+	    
+	    
 	}
 
 	Response<DoctorSignUp> response = new Response<DoctorSignUp>();
@@ -306,13 +317,11 @@ public class SignUpApi {
 	    BeanUtil.map(doctor.getUser(), solrDoctorDocument);
 	    solrDoctorDocument.setUserId(doctor.getUser().getId());
 	    List<String> specialiazation = new ArrayList<String>();
-	    if (doctor.getHospital() != null) {
-		for (LocationAndAccessControl locationAndAccessControl : doctor.getHospital().getLocationsAndAccessControl()) {
-		    if (locationAndAccessControl.getLocation() != null) {
-			specialiazation.addAll(locationAndAccessControl.getLocation().getSpecialization());
-			BeanUtil.map(locationAndAccessControl.getLocation(), solrDoctorDocument);
-			solrDoctorDocument.setLocationId(locationAndAccessControl.getLocation().getId());
-		    }
+	    if (doctor.getHospital() != null &&  doctor.getHospital().getLocationsAndAccessControl() != null) {
+		for (LocationAndAccessControl locationAndAccessControl : doctor.getHospital().getLocationsAndAccessControl()) { 
+			specialiazation.addAll(locationAndAccessControl.getSpecialization());
+			BeanUtil.map(locationAndAccessControl, solrDoctorDocument);
+			solrDoctorDocument.setLocationId(locationAndAccessControl.getId());
 		}
 	    }
 	    solrDoctorDocument.setSpecialization(specialiazation);
@@ -322,19 +331,13 @@ public class SignUpApi {
 	return solrDoctorDocument;
     }
 
-    // private List<SolrLocationDocument> getSolrLocationDocument(DoctorSignUp
-    // doctor) {
-    // List<SolrLocationDocument> solrLocationDocuments = null;
-    // try {
-    // solrLocationDocuments = new ArrayList<SolrLocationDocument>();
-    // for (Location location : doctor.getHospital().getLocations()) {
-    // SolrLocationDocument solrLocationDocument = new SolrLocationDocument();
-    // BeanUtil.map(location, solrLocationDocument);
-    // solrLocationDocuments.add(solrLocationDocument);
-    // }
-    // } catch (Exception e) {
-    // e.printStackTrace();
-    // }
-    // return solrLocationDocuments;
-    // }
+//     private SolrLocationDocument getSolrLocationDocument(LocationAndAccessControl location) {
+//    	 SolrLocationDocument solrLocationDocument = new SolrLocationDocument();
+//     try {
+//    	 BeanUtil.map(location, solrLocationDocument);
+//     } catch (Exception e) {
+//     e.printStackTrace();
+//     }
+//     return solrLocationDocuments;
+//     }
 }
