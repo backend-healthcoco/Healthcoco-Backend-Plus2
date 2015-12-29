@@ -440,12 +440,13 @@ public class PrescriptionApi {
     @GET
     public Response<Prescription> getPrescription(@PathParam(value = "prescriptionId") String prescriptionId) {
 	if (DPDoctorUtils.anyStringEmpty(prescriptionId)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Prescription Id Cannot Be Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Prescription or Patient Id Cannot Be Empty");
 	}
 
-	Prescription prescriptionResponse = prescriptionServices.getPrescriptionById(prescriptionId);
+	List<Prescription> prescriptions = prescriptionServices.getPrescriptionById(prescriptionId);
+
 	Response<Prescription> response = new Response<Prescription>();
-	response.setData(prescriptionResponse);
+	response.setDataList(prescriptions);
 	return response;
     }
 

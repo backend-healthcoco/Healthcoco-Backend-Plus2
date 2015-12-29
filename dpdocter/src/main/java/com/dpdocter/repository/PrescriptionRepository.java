@@ -36,4 +36,7 @@ public interface PrescriptionRepository extends MongoRepository<PrescriptionColl
     @Query("{'doctorId' : ?0, 'patientId' : ?1, 'updatedTime' : {'$gte' : ?2}, 'discarded' : {$in: ?3}, 'inHistory' : {$in: ?4}}")
     List<PrescriptionCollection> getPrescription(String doctorId, String patientId, Date date, boolean[] discards, boolean[] inHistorys, Sort sort);
 
+    @Query("{'patientId' : ?0}")
+    List<PrescriptionCollection> findAll(String patientId);
+
 }

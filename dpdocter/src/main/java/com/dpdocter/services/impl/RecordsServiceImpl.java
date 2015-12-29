@@ -679,4 +679,38 @@ public class RecordsServiceImpl implements RecordsService {
 
 	return records;
     }
+
+    @Override
+    public List<Records> getRecordsByPatientId(String patientId) {
+	List<Records> records = null;
+	List<RecordsCollection> recordsCollections = null;
+	try {
+	    recordsCollections = recordsRepository.findRecords(patientId);
+	    records = new ArrayList<Records>();
+	    for (RecordsCollection recordCollection : recordsCollections) {
+		Records record = new Records();
+		BeanUtil.map(recordCollection, record);
+		UserCollection userCollection = userRepository.findOne(record.getDoctorId());
+		if (userCollection != null) {
+		    record.setDoctorName(userCollection.getFirstName());
+		}
+		if (recordCollection.getLocationId() != null) {
+		    LocationCollection locationCollection = locationRepository.findOne(recordCollection.getLocationId());
+		    if (locationCollection != null)
+			record.setClinicName(locationCollection.getLocationName());
+		}
+		PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(record.getId());
+		if (patientVisitCollection != null)
+		    record.setVisitId(patientVisitCollection.getId());
+		records.add(record);
+	    }
+
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+
+	return records;
+    }
 }

@@ -201,6 +201,8 @@ public interface PathProxy {
 
 	public static final String SEARCH_RECORD = "/search";
 
+	public static final String GET_RECORDS_PATIENT_ID = "/{patientId}";
+
 	public static final String GET_RECORD_COUNT = "/getRecordCount/{doctorId}/{patientId}/{locationId}/{hospitalId}";
 
 	public static final String CREATE_TAG = "/createtag";

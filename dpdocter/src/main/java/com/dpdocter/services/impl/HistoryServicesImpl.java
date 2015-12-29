@@ -989,7 +989,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		    }
 		    break;
 		case PRESCRIPTIONS:
-		    Prescription prescription = prescriptionServices.getPrescriptionById(id.getData().toString());
+		    Prescription prescription = prescriptionServices.getPrescriptionById(id.getData().toString()).get(0);
 		    if (prescription != null) {
 			/*UserCollection userCollection = userRepository.findOne(prescription.getDoctorId());
 			if (userCollection != null)
@@ -1118,7 +1118,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		}
 		break;
 	    case PRESCRIPTIONS:
-		Prescription prescription = prescriptionServices.getPrescriptionById(generalRecords.getData().toString());
+		Prescription prescription = prescriptionServices.getPrescriptionById(generalRecords.getData().toString()).get(0);
 		if (prescription != null) {
 		    /*UserCollection userCollection = userRepository.findOne(prescription.getDoctorId());
 		    if (userCollection != null)

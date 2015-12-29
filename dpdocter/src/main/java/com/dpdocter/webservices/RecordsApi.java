@@ -111,6 +111,21 @@ public class RecordsApi {
 	return response;
     }
 
+    @Path(value = PathProxy.RecordsUrls.GET_RECORDS_PATIENT_ID)
+    @GET
+    public Response<Records> getRecordsByPatientId(@PathParam("patientId") String patientId) {
+	if (DPDoctorUtils.anyStringEmpty(patientId)) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Patient Id Cannot Be Empty");
+	}
+
+	List<Records> records = recordsService.getRecordsByPatientId(patientId);
+
+	Response<Records> response = new Response<Records>();
+	response.setDataList(records);
+	return response;
+
+    }
+
     @Path(value = PathProxy.RecordsUrls.GET_RECORD_COUNT)
     @GET
     public Response<Integer> getRecordCount(@PathParam("doctorId") String doctorId, @PathParam("patientId") String patientId,

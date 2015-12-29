@@ -52,4 +52,6 @@ public interface RecordsService {
 
     void changeLabelAndDescription(String recordId, String label, String description);
 
+    List<Records> getRecordsByPatientId(String patientId);
+
 }

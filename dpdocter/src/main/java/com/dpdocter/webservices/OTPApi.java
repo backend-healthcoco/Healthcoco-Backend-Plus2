@@ -69,7 +69,7 @@ public class OTPApi {
 	return response;
     }
 
-    @Path(value = PathProxy.OTPUrls.VERIFY_OTP)
+    @Path(value = PathProxy.OTPUrls.VERIFY_OTP_MOBILE)
     @GET
     public Response<Boolean> verifyOTP(@PathParam("mobileNumber") String mobileNumber, @PathParam("otpNumber") String otpNumber) {
 	if (DPDoctorUtils.anyStringEmpty(otpNumber, mobileNumber)) {

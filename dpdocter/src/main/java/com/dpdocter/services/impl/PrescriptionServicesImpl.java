@@ -1218,40 +1218,55 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
-    public Prescription getPrescriptionById(String prescriptionId) {
+    public List<Prescription> getPrescriptionById(String prescriptionId) {
 	Prescription prescription = null;
+	List<Prescription> prescriptions = null;
 	try {
-	    PrescriptionCollection prescriptionCollection = prescriptionRepository.findOne(prescriptionId);
-	    if (prescriptionCollection != null) {
-		prescription = new Prescription();
-		BeanUtil.map(prescriptionCollection, prescription);
-		if (prescriptionCollection.getItems() != null && !prescriptionCollection.getItems().isEmpty()) {
-		    List<PrescriptionItemDetail> prescriptionItemDetails = new ArrayList<PrescriptionItemDetail>();
-		    for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
-			PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
-			BeanUtil.map(prescriptionItem, prescriptionItemDetail);
-			DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
-			if (drugCollection != null) {
-			    Drug drug = new Drug();
-			    BeanUtil.map(drugCollection, drug);
-			    prescriptionItemDetail.setDrug(drug);
+	    List<PrescriptionCollection> prescriptionCollections = new ArrayList<PrescriptionCollection>();
+	    PrescriptionCollection prescriptionCl = prescriptionRepository.findOne(prescriptionId);
+	    if (prescriptionCl != null) {
+		prescriptionCollections.add(prescriptionCl);
+	    }
+
+	    if (prescriptionCollections.isEmpty()) {
+		prescriptionCollections = prescriptionRepository.findAll(prescriptionId);
+	    }
+
+	    if (prescriptionCollections != null && !prescriptionCollections.isEmpty()) {
+		prescriptions = new ArrayList<Prescription>();
+		for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
+		    prescription = new Prescription();
+		    BeanUtil.map(prescriptionCollection, prescription);
+		    if (prescriptionCollection.getItems() != null && !prescriptionCollection.getItems().isEmpty()) {
+			List<PrescriptionItemDetail> prescriptionItemDetails = new ArrayList<PrescriptionItemDetail>();
+			for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
+			    PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
+			    BeanUtil.map(prescriptionItem, prescriptionItemDetail);
+			    DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
+			    if (drugCollection != null) {
+				Drug drug = new Drug();
+				BeanUtil.map(drugCollection, drug);
+				prescriptionItemDetail.setDrug(drug);
+			    }
+			    prescriptionItemDetails.add(prescriptionItemDetail);
 			}
-			prescriptionItemDetails.add(prescriptionItemDetail);
+			PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(prescription.getId());
+			if (patientVisitCollection != null)
+			    prescription.setVisitId(patientVisitCollection.getId());
+			prescription.setItems(prescriptionItemDetails);
 		    }
-		    PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(prescription.getId());
-		    if (patientVisitCollection != null)
-			prescription.setVisitId(patientVisitCollection.getId());
-		    prescription.setItems(prescriptionItemDetails);
+		    prescriptions.add(prescription);
 		}
+
 	    } else {
-		throw new BusinessException(ServiceError.NotFound, "No Prescription Found For the Given Prescription Id");
+		throw new BusinessException(ServiceError.NotFound, "No Prescription Found For the Given Prescription or Patient Id");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error while getting prescription : " + e.getCause().getMessage());
 	    throw new BusinessException(ServiceError.Unknown, "Error while getting prescription : " + e.getCause().getMessage());
 	}
-	return prescription;
+	return prescriptions;
     }
 
     @Override
