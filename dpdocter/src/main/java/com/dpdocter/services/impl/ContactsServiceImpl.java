@@ -258,47 +258,45 @@ public class ContactsServiceImpl implements ContactsService {
     }
 
     public List<PatientCard> getSpecifiedPatientCards(Collection<String> patientIds, String doctorId, String locationId, String hospitalId) throws Exception {
-    List<PatientCard> patientCards = new ArrayList<PatientCard>();
+	List<PatientCard> patientCards = new ArrayList<PatientCard>();
 	List<String> uniqueIds = new ArrayList<String>();
-    if(patientIds != null && !patientIds.isEmpty()){
-    	for(String patientId : patientIds){
-    		if(!uniqueIds.contains(patientId)){
-    			uniqueIds.add(patientId);
-        		PatientCollection patientCollection = null;
-        		if(DPDoctorUtils.anyStringEmpty(locationId, hospitalId)){
-        			patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientId, doctorId, locationId, hospitalId); 			
-        		}
-        		else{
-        			patientCollection = patientRepository.findByUserIdDoctorId(patientId, doctorId);
-        		}
-        		if(patientCollection != null){
-        			
-        			UserCollection userCollection = userRepository.findOne(patientCollection.getUserId());
-        		    if (userCollection != null) {
-        			List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getUserId());
-        			@SuppressWarnings("unchecked")
-        			Collection<String> groupIds = CollectionUtils.collect(patientGroupCollections, new BeanToPropertyValueTransformer("groupId"));
-        			List<Group> groups = new ArrayList<Group>();
-        			List<GroupCollection> groupCollections = (List<GroupCollection>) groupRepository.findAll(groupIds);
-        			BeanUtil.map(groupCollections, groups);
-        			PatientCard patientCard = new PatientCard();
-        			BeanUtil.map(patientCollection, patientCard);
-        			BeanUtil.map(userCollection, patientCard);
-        			patientCard.setGroups(groups);
-        			patientCard.setDoctorSepecificPatientId(patientCollection.getUserId());
+	if (patientIds != null && !patientIds.isEmpty()) {
+	    for (String patientId : patientIds) {
+		if (!uniqueIds.contains(patientId)) {
+		    uniqueIds.add(patientId);
+		    PatientCollection patientCollection = null;
+		    if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+			patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientId, doctorId, locationId, hospitalId);
+		    } else {
+			patientCollection = patientRepository.findByUserIdDoctorId(patientId, doctorId);
+		    }
+		    if (patientCollection != null) {
 
-        			int historyCount = historyRepository.getByPatientIdAndNotEqualToDoctorLocationHospital(patientCollection.getUserId(), doctorId, locationId,
-        				hospitalId);
-        			if (historyCount > 0)
-        			    patientCard.setIsHistoryAvailable(true);
+			UserCollection userCollection = userRepository.findOne(patientCollection.getUserId());
+			if (userCollection != null) {
+			    List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getUserId());
+			    @SuppressWarnings("unchecked")
+			    Collection<String> groupIds = CollectionUtils.collect(patientGroupCollections, new BeanToPropertyValueTransformer("groupId"));
+			    List<Group> groups = new ArrayList<Group>();
+			    List<GroupCollection> groupCollections = (List<GroupCollection>) groupRepository.findAll(groupIds);
+			    BeanUtil.map(groupCollections, groups);
+			    PatientCard patientCard = new PatientCard();
+			    BeanUtil.map(patientCollection, patientCard);
+			    BeanUtil.map(userCollection, patientCard);
+			    patientCard.setGroups(groups);
+			    patientCard.setDoctorSepecificPatientId(patientCollection.getUserId());
 
-        			patientCards.add(patientCard);
-        		    }
-        		}
-    		}
-    	}
-    }
-    else {
+			    int historyCount = historyRepository.getByPatientIdAndNotEqualToDoctorLocationHospital(patientCollection.getUserId(), doctorId,
+				    locationId, hospitalId);
+			    if (historyCount > 0)
+				patientCard.setIsHistoryAvailable(true);
+
+			    patientCards.add(patientCard);
+			}
+		    }
+		}
+	    }
+	} else {
 	    return new ArrayList<PatientCard>(0);
 	}
 

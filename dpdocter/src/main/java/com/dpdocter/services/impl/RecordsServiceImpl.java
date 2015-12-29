@@ -547,7 +547,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
 	    if (recordsCollection != null) {
 
-		FileSystemResource file = new FileSystemResource(imageResource+"/"+recordsCollection.getRecordsUrl());
+		FileSystemResource file = new FileSystemResource(imageResource + "/" + recordsCollection.getRecordsUrl());
 		mailAttachment = new MailAttachment();
 		mailAttachment.setFileSystemResource(file);
 
@@ -626,7 +626,8 @@ public class RecordsServiceImpl implements RecordsService {
 	discards[0] = false;
 
 	boolean[] inHistorys = new boolean[2];
-	inHistorys[0] = true;inHistorys[1] = true;
+	inHistorys[0] = true;
+	inHistorys[1] = true;
 	try {
 	    if (discarded)
 		discards[1] = true;

@@ -57,7 +57,6 @@ import com.dpdocter.request.AppoinmentRequest;
 import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.solr.beans.Country;
-
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -214,7 +213,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return landmarkLocality;
-}
+    }
 
     @Override
     public List<Object> getLandmarkLocality(String cityId, String type) {

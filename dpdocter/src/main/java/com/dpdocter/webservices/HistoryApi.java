@@ -466,8 +466,7 @@ public class HistoryApi {
     public Response<HistoryDetailsResponse> getMultipleData(@QueryParam(value = "doctorId") String doctorId,
 	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 	    @QueryParam(value = "patientId") String patientId, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
-	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, 
-	    @DefaultValue("true") @QueryParam(value = "inHistory") Boolean inHistory) {
+	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @DefaultValue("true") @QueryParam(value = "inHistory") Boolean inHistory) {
 
 	List<HistoryDetailsResponse> historyDetailsResponses = historyServices.getMultipleData(patientId, doctorId, hospitalId, locationId, updatedTime,
 		inHistory);

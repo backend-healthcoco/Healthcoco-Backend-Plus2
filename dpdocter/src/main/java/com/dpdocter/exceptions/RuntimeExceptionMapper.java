@@ -42,7 +42,7 @@ public class RuntimeExceptionMapper implements ExceptionMapper<RuntimeException>
     public void dump(Exception exception) {
 	try {
 	    System.out.println("Exception " + new Date() + ". \007");
-	    Enumeration names = requestInvoker.get().getHeaderNames();
+	    Enumeration<?> names = requestInvoker.get().getHeaderNames();
 	    while (names.hasMoreElements()) {
 		String name = names.nextElement().toString();
 		String value = requestInvoker.get().getHeader(name);

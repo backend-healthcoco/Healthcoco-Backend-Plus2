@@ -216,7 +216,6 @@ public class LoginServiceImpl implements LoginService {
 	return response;
     }
 
-
     private String getFinalImageURL(String imageURL, UriInfo uriInfo) {
 	if (imageURL != null) {
 	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);

@@ -5,7 +5,6 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-@SuppressWarnings("restriction")
 @XmlType
 public class Error implements Serializable {
 

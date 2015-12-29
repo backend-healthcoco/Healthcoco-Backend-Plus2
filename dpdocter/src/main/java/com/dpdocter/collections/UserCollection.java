@@ -69,6 +69,9 @@ public class UserCollection extends GenericCollection {
     @Field
     private Date lastSession;
 
+    @Field
+    private boolean signedUp = false;
+
     public String getId() {
 	return id;
     }
@@ -221,12 +224,21 @@ public class UserCollection extends GenericCollection {
 	this.lastSession = lastSession;
     }
 
+    public boolean isSignedUp() {
+	return signedUp;
+    }
+
+    public void setSignedUp(boolean signedUp) {
+	this.signedUp = signedUp;
+    }
+
     @Override
     public String toString() {
 	return "UserCollection [id=" + id + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName
 		+ ", userName=" + userName + ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", imageUrl="
 		+ imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", isActive=" + isActive + ", isTempPassword=" + isTempPassword + ", isVerified=" + isVerified
 		+ ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", colorCode=" + colorCode + ", userState="
-		+ userState + ", lastSession=" + lastSession + "]";
+		+ userState + ", lastSession=" + lastSession + ", signedUp=" + signedUp + "]";
     }
+
 }

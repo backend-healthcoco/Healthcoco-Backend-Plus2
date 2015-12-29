@@ -39,7 +39,6 @@ import com.dpdocter.solr.repository.SolrPatientRepository;
 import com.dpdocter.solr.response.SolrPatientResponse;
 import com.dpdocter.solr.response.SolrPatientResponseDetails;
 import com.dpdocter.solr.services.SolrRegistrationService;
-
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -109,7 +108,9 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     }
 
     @Override
-    public SolrPatientResponseDetails searchPatient(String doctorId, String locationId, String hospitalId, String searchTerm, int page, int size, UriInfo uriInfo) {
+    public SolrPatientResponseDetails searchPatient(String doctorId, String locationId, String hospitalId, String searchTerm, int page, int size,
+	    UriInfo uriInfo) {
+
 	List<SolrPatientDocument> patients = new ArrayList<SolrPatientDocument>();
 	List<SolrPatientResponse> patientsResponse = null;
 	SolrPatientResponseDetails patientResponseDetails = null;
@@ -134,10 +135,10 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 		patientsResponse = new ArrayList<SolrPatientResponse>();
 		for (SolrPatientDocument patient : patients) {
 		    SolrPatientResponse patientResponse = new SolrPatientResponse();
-		    
+
 		    patient.setImageUrl(getFinalImageURL(patient.getImageUrl(), uriInfo));
-			patient.setThumbnailUrl(getFinalImageURL(patient.getThumbnailUrl(), uriInfo));
-			
+		    patient.setThumbnailUrl(getFinalImageURL(patient.getThumbnailUrl(), uriInfo));
+
 		    BeanUtil.map(patient, patientResponse);
 		    patientsResponse.add(patientResponse);
 		}
@@ -172,20 +173,20 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 		patients = solrTemplate.queryForPage(query.addSort(new Sort(Sort.Direction.DESC, "createdTime")), SolrPatientDocument.class).getContent();
 
 	    if (patients != null && !patients.isEmpty()) {
-	    	response = new ArrayList<SolrPatientResponse>();
-			for (SolrPatientDocument patient : patients) {
-			    SolrPatientResponse patientResponse = new SolrPatientResponse();
-			    
-			    patient.setImageUrl(getFinalImageURL(patient.getImageUrl(), uriInfo));
-				patient.setThumbnailUrl(getFinalImageURL(patient.getThumbnailUrl(), uriInfo));
-				
-			    BeanUtil.map(patient, patientResponse);
-			    response.add(patientResponse);
-			}
-			responseDetails = new SolrPatientResponseDetails();
-			responseDetails.setPatients(response);
-			responseDetails.setTotalSize(solrTemplate.count(new SimpleQuery(advancedCriteria)));
-		    }
+		response = new ArrayList<SolrPatientResponse>();
+		for (SolrPatientDocument patient : patients) {
+		    SolrPatientResponse patientResponse = new SolrPatientResponse();
+
+		    patient.setImageUrl(getFinalImageURL(patient.getImageUrl(), uriInfo));
+		    patient.setThumbnailUrl(getFinalImageURL(patient.getThumbnailUrl(), uriInfo));
+
+		    BeanUtil.map(patient, patientResponse);
+		    response.add(patientResponse);
+		}
+		responseDetails = new SolrPatientResponseDetails();
+		responseDetails.setPatients(response);
+		responseDetails.setTotalSize(solrTemplate.count(new SimpleQuery(advancedCriteria)));
+	    }
 
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -479,8 +480,6 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Searching Patients");
-	    // throw new BusinessException(ServiceError.Unknown,
-	    // "Error Occurred While Searching Patients");
 	}
 
     }
@@ -616,13 +615,13 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	    e.printStackTrace();
 	}
     }
-    
-    
+
     private String getFinalImageURL(String imageURL, UriInfo uriInfo) {
-    	if (imageURL != null) {
-    	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-    	    return finalImageURL + imageURL;
-    	} else
-    	    return null;
-        }
+	if (imageURL != null) {
+	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
+	    return finalImageURL + imageURL;
+	} else
+	    return null;
+    }
+
 }

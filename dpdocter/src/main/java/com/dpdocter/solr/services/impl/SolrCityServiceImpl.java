@@ -21,7 +21,6 @@ import com.dpdocter.solr.repository.SolrCityRepository;
 import com.dpdocter.solr.repository.SolrCountryRepository;
 import com.dpdocter.solr.repository.SolrLocalityLandmarkRepository;
 import com.dpdocter.solr.services.SolrCityService;
-
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -52,8 +51,8 @@ public class SolrCityServiceImpl implements SolrCityService {
 	    // "Error Occurred While Saving Country");
 	}
 	return response;
- }
-    
+    }
+
     @Override
     public boolean addCities(SolrCityDocument solrCities) {
 	boolean response = false;

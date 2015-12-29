@@ -21,13 +21,19 @@ public interface PathProxy {
 
 	public static final String PATIENT_SIGNUP = "/patient";
 
-	public static final String ACTIVATE_USER = "/activate/{userId}";
+	// public static final String ACTIVATE_USER = "/activate/{userId}";
+
+	public static final String PATIENT_SIGNUP_MOBILE = "/patient/mobile";
+
+	public static final String ACTIVATE_USER = "/activate/{tokenId}";
 
 	public static final String VERIFY_USER = "/verify/{tokenId}";
-	
+
 	public static final String CHECK_IF_USERNAME_EXIST = "/check-username-exists/{username}";
 
 	public static final String CHECK_IF_MOBNUM_EXIST = "/check-mobnum-exists/{mobileNumber}";
+
+	public static final String CHECK_MOBNUM_SIGNEDUP = "/{mobileNumber}/signedUp";
 
 	public static final String CHECK_IF_EMAIL_ADDR_EXIST = "/check-email-exists/{emailaddress}";
 
@@ -589,7 +595,11 @@ public interface PathProxy {
 
 	public static final String OTP_GENERATOR = "/{doctorId}/{locationId}/{hospitalId}/{patientId}/{mobileNumber}/generate";
 
+	public static final String OTP_GENERATOR_MOBILE = "/{mobileNumber}";
+
 	public static final String VERIFY_OTP = "/{doctorId}/{locationId}/{hospitalId}/{patientId}/{otpNumber}/verify";
+
+	public static final String VERIFY_OTP_MOBILE = "/{mobileNumber}/{otpNumber}/verify";
 
     }
 

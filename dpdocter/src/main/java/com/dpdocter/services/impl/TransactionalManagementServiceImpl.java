@@ -183,8 +183,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	    if (userCollection != null && patientCollection != null) {
 		PatientAdmissionCollection patientAdmissionCollection = patientAdmissionRepository.findByUserIdAndDoctorId(id, patientCollection.getDoctorId());
 		AddressCollection addressCollection = null;
-		if(patientCollection.getAddressId() != null)
-			addressCollection = addressRepository.findOne(patientCollection.getAddressId());
+		if (patientCollection.getAddressId() != null)
+		    addressCollection = addressRepository.findOne(patientCollection.getAddressId());
 		SolrPatientDocument patientDocument = new SolrPatientDocument();
 
 		if (patientCollection.getDob() != null) {
@@ -195,7 +195,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		BeanUtil.map(userCollection, patientDocument);
 		BeanUtil.map(patientCollection, patientDocument);
 		BeanUtil.map(patientAdmissionCollection, patientDocument);
-		if(addressCollection != null)BeanUtil.map(addressCollection, patientDocument);
+		if (addressCollection != null)
+		    BeanUtil.map(addressCollection, patientDocument);
 
 		patientDocument.setId(patientCollection.getId());
 		patientDocument.setReferredBy(patientAdmissionCollection.getReferredBy());

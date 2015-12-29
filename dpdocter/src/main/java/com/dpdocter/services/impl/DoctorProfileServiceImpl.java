@@ -70,7 +70,6 @@ import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
 import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.services.DoctorProfileService;
 import com.dpdocter.services.FileManager;
-import com.dpdocter.solr.document.SolrDoctorDocument;
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -238,10 +237,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	List<SpecialityCollection> specialityCollections = null;
 	List<String> specialities = null;
 	List<String> specialitiesByName = null;
-	Boolean response = false;
 	try {
 	    specialityCollections = specialityRepository.findAll();
 	    specialities = new ArrayList<String>();
+	    specialitiesByName = new ArrayList<String>();
 	    for (String speciality : request.getSpeciality()) {
 		Boolean specialityFound = false;
 		for (SpecialityCollection specialityCollection : specialityCollections) {
@@ -392,7 +391,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	return response;
     }
 
-    @SuppressWarnings({ "unchecked", "unchecked" })
+    @SuppressWarnings("unchecked")
     @Override
     public DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId) {
 	DoctorProfile doctorProfile = null;
@@ -469,7 +468,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    doctorProfile.setClinicProfile(clinicProfile);
 	    // set specialities using speciality ids
 	    if (doctorProfile.getSpecialities() != null) {
-		specialities = (List<String>) CollectionUtils.collect((Collection) specialityRepository.findAll(doctorProfile.getSpecialities()),
+		specialities = (List<String>) CollectionUtils.collect((Collection<?>) specialityRepository.findAll(doctorProfile.getSpecialities()),
 			new BeanToPropertyValueTransformer("speciality"));
 	    }
 	    doctorProfile.setSpecialities(specialities);
@@ -489,8 +488,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    doctorProfile.setRegistrationDetails(registrationDetails);
 	    // set professional memberships using professional membership ids
 	    if (doctorProfile.getProfessionalMemberships() != null) {
-		professionalMemberships = (List<String>) CollectionUtils.collect((Collection) professionalMembershipRepository.findAll(doctorProfile
-			.getProfessionalMemberships()), new BeanToPropertyValueTransformer("membership"));
+		professionalMemberships = (List<String>) CollectionUtils.collect(
+			(Collection<?>) professionalMembershipRepository.findAll(doctorProfile.getProfessionalMemberships()),
+			new BeanToPropertyValueTransformer("membership"));
 	    }
 	    doctorProfile.setProfessionalMemberships(professionalMemberships);
 
@@ -632,7 +632,6 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     @Override
     public Boolean addEditConsultationFee(DoctorConsultationFeeAddEditRequest request) {
 	DoctorClinicProfileCollection doctorClinicProfileCollection = null;
-	SolrDoctorDocument solrDoctorDocument = null;
 	Boolean response = false;
 	try {
 	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());

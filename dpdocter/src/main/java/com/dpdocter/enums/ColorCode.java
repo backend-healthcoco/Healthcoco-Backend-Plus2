@@ -15,7 +15,7 @@ public enum ColorCode {
 	this.color = color;
     }
 
-    public static class RandomEnum<E extends Enum> {
+    public static class RandomEnum<E extends Enum<?>> {
 
 	private static final Random RND = new Random();
 

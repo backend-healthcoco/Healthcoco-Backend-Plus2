@@ -49,7 +49,7 @@ public class ReflectionUtil {
 		    if (setter == null || getter == null) {
 			return;
 		    }
-		    Object fromFieldValue = getter.invoke(from, null);
+		    Object fromFieldValue = getter.invoke(from);
 		    if (isPrimeType(fieldType)) {
 			setter.invoke(to, fromFieldValue);
 		    } else {
@@ -206,22 +206,22 @@ public class ReflectionUtil {
 	return (Class<?>) s.getActualTypeArguments()[index];
     }
 
-    public static Class getFieldGenericType(Class c, String fieldName) throws Exception {
+    public static Class<?> getFieldGenericType(Class<?> c, String fieldName) throws Exception {
 	Field f = c.getDeclaredField(fieldName);
 	return getFieldGenericType(f);
     }
 
-    public static Class getFieldGenericType(Field f) throws Exception {
+    public static Class<?> getFieldGenericType(Field f) throws Exception {
 	ParameterizedType gt = (ParameterizedType) f.getGenericType();
-	return (Class) gt.getActualTypeArguments()[0];
+	return (Class<?>) gt.getActualTypeArguments()[0];
     }
 
-    public static Class getFieldGenericType(Field f, int index) throws Exception {
+    public static Class<?> getFieldGenericType(Field f, int index) throws Exception {
 	ParameterizedType gt = (ParameterizedType) f.getGenericType();
-	return (Class) gt.getActualTypeArguments()[index];
+	return (Class<?>) gt.getActualTypeArguments()[index];
     }
 
-    public static Method getMethod(Class cls, final String name, final Class<?>... parmTypes) throws Exception {
+    public static Method getMethod(Class<?> cls, final String name, final Class<?>... parmTypes) throws Exception {
 	final ArrayList<Method> holder = new ArrayList<Method>();
 	iterateClassTree(cls, new ClassCallback() {
 
@@ -242,7 +242,7 @@ public class ReflectionUtil {
 	return holder.get(0);
     }
 
-    public static boolean annotatedWith(Method method, Class annoCls) {
+    public static <T extends Annotation> boolean annotatedWith(Method method, Class<T> annoCls) {
 	try {
 	    Annotation annotation = method.getAnnotation(annoCls);
 	    return annotation != null;
@@ -251,7 +251,7 @@ public class ReflectionUtil {
 	}
     }
 
-    public static boolean annotatedWith(Field field, Class annoCls) {
+    public static <T extends Annotation> boolean annotatedWith(Field field, Class<T> annoCls) {
 	try {
 	    Annotation annotation = field.getAnnotation(annoCls);
 	    return annotation != null;
@@ -260,7 +260,7 @@ public class ReflectionUtil {
 	}
     }
 
-    public static boolean annotatedWith(Class<?> target, Class annoCls) {
+    public static <T extends Annotation> boolean annotatedWith(Class<?> target, Class<T> annoCls) {
 	try {
 	    Annotation annotation = target.getAnnotation(annoCls);
 	    return annotation != null;
@@ -269,7 +269,7 @@ public class ReflectionUtil {
 	}
     }
 
-    public static Annotation getAnnotation(Class<?> target, Class annoCls) {
+    public static <T extends Annotation> Annotation getAnnotation(Class<?> target, Class<T> annoCls) {
 	try {
 	    Annotation annotation = target.getAnnotation(annoCls);
 	    return annotation;
@@ -278,7 +278,7 @@ public class ReflectionUtil {
 	}
     }
 
-    public static Field getField(Class clazz, final String fieldName) throws Exception {
+    public static Field getField(Class<?> clazz, final String fieldName) throws Exception {
 	final ArrayList<Field> holder = new ArrayList<Field>();
 	iterateClassTree(clazz, new ClassCallback() {
 
@@ -298,7 +298,7 @@ public class ReflectionUtil {
 	return holder.get(0);
     }
 
-    public static Method getMethod(Class clazz, final String methodName, final Class<?> parameterTypes) throws Exception {
+    public static Method getMethod(Class<? extends Object> clazz, final String methodName, final Class<?> parameterTypes) throws Exception {
 	final ArrayList<Method> holder = new ArrayList<Method>();
 	iterateClassTree(clazz, new ClassCallback() {
 	    @Override
@@ -317,12 +317,12 @@ public class ReflectionUtil {
 	return holder.get(0);
     }
 
-    public static Method getSetter(Class clazz, final String fieldName, final Class<?> fieldType) throws Exception {
+    public static Method getSetter(Class<? extends Object> clazz, final String fieldName, final Class<?> fieldType) throws Exception {
 	final String methodName = "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
 	return getMethod(clazz, methodName, fieldType);
     }
 
-    public static Method getGetter(Class clazz, final String fieldName, final Class<?> fieldType) throws Exception {
+    public static Method getGetter(Class<? extends Object> clazz, final String fieldName, final Class<?> fieldType) throws Exception {
 	String prefix = boolean.class.equals(fieldType) ? "is" : "get";
 
 	String methodName = prefix + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
@@ -378,7 +378,7 @@ public class ReflectionUtil {
 	return isPrimeType(field.getType());
     }
 
-    public static boolean isPrimeType(Class type) {
+    public static boolean isPrimeType(Class<?> type) {
 	if (type.equals(String.class)) {
 	    return true;
 	}
@@ -416,7 +416,7 @@ public class ReflectionUtil {
 	return false;
     }
 
-    public static Object convert(String value, Class toType) throws Exception {
+    public static Object convert(String value, Class<?> toType) throws Exception {
 	if (value == null) {
 	    return null;
 	}

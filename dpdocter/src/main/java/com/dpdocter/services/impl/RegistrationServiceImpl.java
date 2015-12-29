@@ -104,7 +104,6 @@ import com.dpdocter.services.MailService;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.sms.services.SMSServices;
 import com.dpdocter.solr.document.SolrDoctorDocument;
-
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -306,7 +305,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    if (referencesCollection != null)
 		patientAdmissionCollection.setReferredBy(referencesCollection.getReference());
 	    patientAdmissionCollection = patientAdmissionRepository.save(patientAdmissionCollection);
-	    
+
 	    // assign groups
 	    if (request.getGroups() != null) {
 		for (String group : request.getGroups()) {
@@ -356,10 +355,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    registeredPatientDetails.setLocationId(patientCollection.getLocationId());
 	    registeredPatientDetails.setHospitalId(patientCollection.getHospitalId());
 	    registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
-	    if(referencesCollection != null){
-	    	Reference reference = new Reference();
-		    BeanUtil.map(referencesCollection, reference);
-		    registeredPatientDetails.setReferredBy(reference);
+	    if (referencesCollection != null) {
+		Reference reference = new Reference();
+		BeanUtil.map(referencesCollection, reference);
+		registeredPatientDetails.setReferredBy(reference);
 	    }
 	    Address address = new Address();
 	    if (addressCollection != null) {
@@ -536,10 +535,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    registeredPatientDetails.setLocationId(patientCollection.getLocationId());
 	    registeredPatientDetails.setHospitalId(patientCollection.getHospitalId());
 	    registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
-	    if(referencesCollection != null){
-	    	Reference reference = new Reference();
-		    BeanUtil.map(referencesCollection, reference);
-		    registeredPatientDetails.setReferredBy(reference);
+	    if (referencesCollection != null) {
+		Reference reference = new Reference();
+		BeanUtil.map(referencesCollection, reference);
+		registeredPatientDetails.setReferredBy(reference);
 	    }
 	    Address address = new Address();
 	    if (addressCollection != null) {
