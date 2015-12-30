@@ -1,6 +1,7 @@
 package com.dpdocter.services.impl;
 
 import java.io.File;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -19,6 +20,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.AccessControl;
@@ -36,6 +41,7 @@ import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Group;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Patient;
+import com.dpdocter.beans.PatientVisit;
 import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.ReferenceDetail;
@@ -56,6 +62,7 @@ import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientAdmissionCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
+import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.ProfessionCollection;
 import com.dpdocter.collections.ReferencesCollection;
@@ -193,6 +200,9 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Autowired
     private HistoryRepository historyRepository;
 
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
     @Value(value = "${mail.signup.subject.activation}")
     private String signupSubject;
 
@@ -298,6 +308,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 		if (referencesCollection == null) {
 		    referencesCollection = new ReferencesCollection();
 		    BeanUtil.map(request.getReferredBy(), referencesCollection);
+		    referencesCollection.setDoctorId(request.getDoctorId());
+		    referencesCollection.setHospitalId(request.getHospitalId());
+		    referencesCollection.setLocationId(request.getLocationId());
 		    referencesCollection = referrenceRepository.save(referencesCollection);
 		}
 	    }
@@ -446,6 +459,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    patientCollection.setNotes(request.getNotes());
 	    if (!DPDoctorUtils.anyStringEmpty(request.getPatientNumber())) {
 		patientCollection.setPID(request.getPatientNumber());
+	    } 
+	    else if (!DPDoctorUtils.anyStringEmpty(patientCollection.getPID())) {
+		patientCollection.setPID(request.getPatientNumber());
 	    } else {
 		patientCollection.setPID(patientIdGenerator(request.getDoctorId(), request.getLocationId(), request.getHospitalId()));
 	    }
@@ -462,6 +478,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    BeanUtil.map(request.getReferredBy(), referencesCollection);
 		    BeanUtil.map(request, referencesCollection);
 		    referencesCollection.setId(null);
+		    referencesCollection.setDoctorId(request.getDoctorId());
+		    referencesCollection.setHospitalId(request.getHospitalId());
+		    referencesCollection.setLocationId(request.getLocationId());
 		    referencesCollection = referrenceRepository.save(referencesCollection);
 		}
 	    }
@@ -629,6 +648,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    if (userCollection != null) {
 		PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userId, doctorId, locationId, hospitalId);
 		if (patientCollection != null) {
+			PatientAdmissionCollection patientAdmissionCollection = patientAdmissionRepository.findByPatientIdAndDoctorId(patientCollection.getId(), doctorId);
+			Reference reference = null;
+			if(patientAdmissionCollection != null){
+				reference = new Reference();
+				reference.setReference(patientAdmissionCollection.getReferredBy());
+			}
 		    AddressCollection addressCollection = new AddressCollection();
 		    if (patientCollection.getAddressId() != null) {
 			addressCollection = addressRepository.findOne(patientCollection.getAddressId());
@@ -640,6 +665,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    BeanUtil.map(patientCollection, registeredPatientDetails);
 		    BeanUtil.map(userCollection, registeredPatientDetails);
 		    registeredPatientDetails.setUserId(userCollection.getId());
+		    registeredPatientDetails.setReferredBy(reference);
 		    Patient patient = new Patient();
 		    BeanUtil.map(patientCollection, patient);
 		    patient.setPatientId(patientCollection.getId());
@@ -868,9 +894,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	    UserLocationCollection userLocation = userLocationRepository.findByUserIdAndLocationId(doctorId, locationId);
 	    if (userLocation != null) {
-		DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocation.getLocationId());
+		DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocation.getId());
 		if (clinicProfileCollection == null) {
 		    clinicProfileCollection = new DoctorClinicProfileCollection();
+		    clinicProfileCollection.setCreatedTime(new Date());
+		    clinicProfileCollection.setLocationId(userLocation.getId());
+		    doctorClinicProfileRepository.save(clinicProfileCollection);
 		}
 		String patientInitial = clinicProfileCollection.getPatientInitial();
 		int patientCounter = clinicProfileCollection.getPatientCounter();
@@ -878,7 +907,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		generatedId = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay) + DPDoctorUtils.getPrefixedNumber(currentMonth)
 			+ DPDoctorUtils.getPrefixedNumber(currentYear % 100) + DPDoctorUtils.getPrefixedNumber(patientCounter + patientCount + 1);
 
-		updatePatientInitialAndCounter(doctorId, locationId, patientInitial, patientCounter + 1);
+//		updatePatientInitialAndCounter(doctorId, locationId, patientInitial, patientCounter + 1);
 	    } else {
 		logger.warn("Doctor Id and Location Id does not match.");
 		throw new BusinessException(ServiceError.NoRecord, "Doctor Id and Location Id does not match.");
@@ -916,23 +945,27 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     @Override
-    public Boolean updatePatientInitialAndCounter(String doctorId, String locationId, String patientInitial, int patientCounter) {
-	Boolean response = false;
+    public String updatePatientInitialAndCounter(String doctorId, String locationId, String patientInitial, int patientCounter) {
+    	String response = null;
 	try {
 	    UserLocationCollection userLocation = userLocationRepository.findByUserIdAndLocationId(doctorId, locationId);
 	    if (userLocation != null) {
-		DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocation.getLocationId());
-		if (clinicProfileCollection == null)
-		    clinicProfileCollection = new DoctorClinicProfileCollection();
-		clinicProfileCollection.setLocationId(userLocation.getLocationId());
-		clinicProfileCollection.setPatientInitial(patientInitial);
-		clinicProfileCollection.setPatientCounter(patientCounter);
-		clinicProfileCollection = doctorClinicProfileRepository.save(clinicProfileCollection);
-		response = true;
-	    } else {
-		logger.warn("Doctor Id and Location Id does not match.");
-		throw new BusinessException(ServiceError.NoRecord, "Doctor Id and Location Id does not match.");
+	    	
+	    response = checkIfPatientInitialAndCounterExist(doctorId, locationId, patientInitial, patientCounter);	
+	    if(response == null){
+	    	DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocation.getId());
+			if (clinicProfileCollection == null) clinicProfileCollection = new DoctorClinicProfileCollection();
+			clinicProfileCollection.setLocationId(userLocation.getId());
+			clinicProfileCollection.setPatientInitial(patientInitial);
+			clinicProfileCollection.setPatientCounter(patientCounter);
+//			clinicProfileCollection = doctorClinicProfileRepository.save(clinicProfileCollection);
+			response = "true";
+		    } 
+	    }else {
+			logger.warn("Doctor Id and Location Id does not match.");
+			throw new BusinessException(ServiceError.NoRecord, "Doctor Id and Location Id does not match.");
 	    }
+		
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error While Updating Patient Initial and Counter");
@@ -941,7 +974,43 @@ public class RegistrationServiceImpl implements RegistrationService {
 	return response;
     }
 
-    @Override
+    private String checkIfPatientInitialAndCounterExist(String doctorId, String locationId, String patientInitial, int patientCounter) {
+    	String response = null;
+    	try {
+    	Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+	    int currentDay = localCalendar.get(Calendar.DATE);
+	    int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+	    int currentYear = localCalendar.get(Calendar.YEAR);
+
+		String date = DPDoctorUtils.getPrefixedNumber(currentDay) + DPDoctorUtils.getPrefixedNumber(currentMonth)
+		+ DPDoctorUtils.getPrefixedNumber(currentYear % 100);
+		String generatedId = patientInitial +  date ;
+
+
+		Criteria criteria = new Criteria("doctorId").is(doctorId).and("locationId").is(locationId).and("PID").regex(generatedId+".*");
+			
+		Aggregation	aggregation = Aggregation.newAggregation(
+					Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), 
+					Aggregation.limit(1));
+
+		AggregationResults<PatientCollection> groupResults = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientCollection.class);
+	    List<PatientCollection> results = groupResults.getMappedResults();
+	    String PID = results.get(0).getPID();
+	    PID = PID.substring((patientInitial+date).length());
+		if(patientCounter <= Integer.parseInt(PID)){
+			response = "Patient already exist for Prefix: "+patientInitial+ " , Date: "+ date+ " Id Number: "+patientCounter+". Please enter Id greater than "+PID;
+		}
+		else{
+			
+		}
+	    }
+    	catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
+	}
+
+	@Override
     public Location getClinicDetails(String clinicId) {
 	Location location = null;
 	LocationCollection locationCollection = null;

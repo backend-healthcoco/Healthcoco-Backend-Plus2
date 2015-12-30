@@ -140,7 +140,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    recordsCollection.setCreatedTime(createdTime);
 	    UserCollection userCollection = userRepository.findOne(recordsCollection.getDoctorId());
 	    if (userCollection != null) {
-		recordsCollection.setCreatedBy(userCollection.getFirstName());
+		recordsCollection.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());
 	    }
 	    recordsCollection = recordsRepository.save(recordsCollection);
 	    Records records = new Records();

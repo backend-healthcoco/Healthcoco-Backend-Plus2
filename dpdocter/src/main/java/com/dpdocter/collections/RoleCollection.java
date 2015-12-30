@@ -25,7 +25,17 @@ public class RoleCollection extends GenericCollection {
     @Field
     private Boolean discarded = false;
 
-    public String getId() {
+    public RoleCollection(String role, String locationId, String hospitalId) {
+		this.role = role;
+		this.locationId = locationId;
+		this.hospitalId = hospitalId;
+	}
+
+	public RoleCollection() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public String getId() {
 	return id;
     }
 

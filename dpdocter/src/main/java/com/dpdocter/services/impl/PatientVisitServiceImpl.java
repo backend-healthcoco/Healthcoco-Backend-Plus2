@@ -186,7 +186,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		patientTrackCollection.setCreatedTime(new Date());
 		UserCollection userCollection = userRepository.findOne(patientTrackCollection.getDoctorId());
 		if (userCollection != null) {
-		    patientTrackCollection.setCreatedBy(userCollection.getFirstName());
+		    patientTrackCollection.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());
 		}
 	    }
 
@@ -255,7 +255,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		}
 		if (userCollection != null) {
 		    if (userCollection.getFirstName() != null) {
-			patientTrackCollection.setCreatedBy(userCollection.getFirstName());
+			patientTrackCollection.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());
 		    }
 		}
 

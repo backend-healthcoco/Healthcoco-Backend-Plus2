@@ -265,13 +265,13 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_ID_GENERATOR_LOGIC)
     @GET
-    public Response<Boolean> updatePatientInitialAndCounter(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+    public Response<String> updatePatientInitialAndCounter(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
 	    @PathParam("patientInitial") String patientInitial, @PathParam("patientCounter") int patientCounter) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, patientInitial, new Integer(patientCounter).toString())) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Dcotor Id, ,Location Id, Patient Initial, Patient Counter Cannot Be Empty");
 	}
-	Boolean updateResponse = registrationService.updatePatientInitialAndCounter(doctorId, locationId, patientInitial, patientCounter);
-	Response<Boolean> response = new Response<Boolean>();
+	String updateResponse = registrationService.updatePatientInitialAndCounter(doctorId, locationId, patientInitial, patientCounter);
+	Response<String> response = new Response<String>();
 	response.setData(updateResponse);
 	return response;
     }
@@ -518,8 +518,8 @@ public class RegistrationApi {
 		BeanUtil.map(patient.getPatient(), solrPatientDocument);
 	    }
 	    BeanUtil.map(patient, solrPatientDocument);
-	    solrPatientDocument.setId(patient.getPatient().getPatientId());
-	    solrPatientDocument.setReferredBy(patient.getReferredBy().getReference());
+	    if (patient.getPatient() != null) solrPatientDocument.setId(patient.getPatient().getPatientId());
+	    if(patient.getReferredBy() != null)solrPatientDocument.setReferredBy(patient.getReferredBy().getReference());
 
 	} catch (Exception e) {
 	    e.printStackTrace();

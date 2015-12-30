@@ -70,7 +70,6 @@ import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
 import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.services.DoctorProfileService;
 import com.dpdocter.services.FileManager;
-import com.dpdocter.solr.document.SolrDoctorDocument;
 
 import common.util.web.DPDoctorUtils;
 
@@ -415,7 +414,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		for (Iterator<UserLocationCollection> iterator = userLocationCollections.iterator(); iterator.hasNext();) {
 		    UserLocationCollection userLocationCollection = iterator.next();
 		    DoctorClinicProfileCollection doctorClinicCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection
-			    .getLocationId());
+			    .getId());
 		    if (doctorClinicCollection != null)
 			BeanUtil.map(doctorClinicCollection, doctorClinic);
 
@@ -441,7 +440,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(userCollection.getId(), locationId);
 		if (userLocationCollection != null) {
 		    DoctorClinicProfileCollection doctorClinicCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection
-			    .getLocationId());
+			    .getId());
 
 		    if (doctorClinicCollection != null)
 			BeanUtil.map(doctorClinicCollection, doctorClinic);
@@ -590,10 +589,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	try {
 	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
 	    if (userLocationCollection != null) {
-		doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getLocationId());
+		doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
 		if (doctorClinicProfileCollection == null) {
 		    doctorClinicProfileCollection = new DoctorClinicProfileCollection();
-		    doctorClinicProfileCollection.setLocationId(userLocationCollection.getLocationId());
+		    doctorClinicProfileCollection.setLocationId(userLocationCollection.getId());
 		    doctorClinicProfileCollection.setCreatedTime(new Date());
 		}
 		doctorClinicProfileCollection.setAppointmentBookingNumber(request.getAppointmentBookingNumber());
@@ -615,10 +614,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	try {
 	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
 	    if (userLocationCollection != null) {
-		doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getLocationId());
+		doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
 		if (doctorClinicProfileCollection == null) {
 		    doctorClinicProfileCollection = new DoctorClinicProfileCollection();
-		    doctorClinicProfileCollection.setLocationId(userLocationCollection.getLocationId());
+		    doctorClinicProfileCollection.setLocationId(userLocationCollection.getId());
 		    doctorClinicProfileCollection.setCreatedTime(new Date());
 		}
 		doctorClinicProfileCollection.setWorkingSchedules(request.getWorkingSchedules());
@@ -636,15 +635,14 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     @Override
     public Boolean addEditConsultationFee(DoctorConsultationFeeAddEditRequest request) {
 	DoctorClinicProfileCollection doctorClinicProfileCollection = null;
-	SolrDoctorDocument solrDoctorDocument = null;
 	Boolean response = false;
 	try {
 	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
 	    if (userLocationCollection != null) {
-		doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getLocationId());
+		doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
 		if (doctorClinicProfileCollection == null) {
 		    doctorClinicProfileCollection = new DoctorClinicProfileCollection();
-		    doctorClinicProfileCollection.setLocationId(userLocationCollection.getLocationId());
+		    doctorClinicProfileCollection.setLocationId(userLocationCollection.getId());
 		    doctorClinicProfileCollection.setCreatedTime(new Date());
 		}
 		doctorClinicProfileCollection.setConsultationFee(request.getConsultationFee());
@@ -667,10 +665,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	try {
 	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
 	    if (userLocationCollection != null) {
-		doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getLocationId());
+		doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
 		if (doctorClinicProfileCollection == null) {
 		    doctorClinicProfileCollection = new DoctorClinicProfileCollection();
-		    doctorClinicProfileCollection.setLocationId(userLocationCollection.getLocationId());
+		    doctorClinicProfileCollection.setLocationId(userLocationCollection.getId());
 		    doctorClinicProfileCollection.setCreatedTime(new Date());
 		}
 		doctorClinicProfileCollection.setAppointmentSlot(request.getAppointmentSlot());

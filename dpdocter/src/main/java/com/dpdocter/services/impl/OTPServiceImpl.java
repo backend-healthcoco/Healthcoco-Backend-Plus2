@@ -58,7 +58,7 @@ public class OTPServiceImpl implements OTPService {
 	    otpCollection.setOtpNumber(OTP);
 	    UserCollection userCollection = userRepository.findOne(doctorId);
 	    if (userCollection != null)
-		otpCollection.setCreatedBy(userCollection.getFirstName());
+		otpCollection.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());
 	    otpCollection = otpRepository.save(otpCollection);
 
 	    DoctorOTPCollection doctorOTPCollection = new DoctorOTPCollection();

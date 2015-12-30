@@ -502,7 +502,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    }
 	    UserCollection userCollection = userRepository.findOne(prescriptionCollection.getDoctorId());
 	    if (userCollection != null) {
-		prescriptionCollection.setCreatedBy(userCollection.getFirstName());
+		prescriptionCollection.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());
 	    }
 	    prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 	    response = new PrescriptionAddEditResponse();

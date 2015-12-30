@@ -50,6 +50,12 @@ public interface PatientRepository extends MongoRepository<PatientCollection, St
     @Query("{'userId': ?0, 'doctorId':?1}")
 	PatientCollection findByUserIdDoctorId(String patientId, String doctorId);
 
+    @Query(value = "{'doctorId':?0, 'locationId':?1, 'registrationDate' : {'$gt' : ?2, '$lt' : ?3}}", count = true)
+	Integer findTodaysRegisteredPatient(String doctorId, String locationId, Long from, Long to);
+
+    @Query(value = "{'doctorId':?0, 'locationId':?1, 'PID':?2}", count = true)
+    Integer findPatientByPID(String doctorId, String locationId, String generatedId);
+
 //    @Query("{'userId': ?0, 'doctorId':?1,'locationId': ?2,'hospitalId': ?3}")
 //	PatientCollection findByUserIdDoctorIdLocationIdHospitalId(String patientId, String doctorId, String locationId, String hospitalId, Pageable pageRequest);
 //
