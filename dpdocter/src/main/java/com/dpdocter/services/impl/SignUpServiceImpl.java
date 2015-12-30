@@ -218,6 +218,7 @@ public class SignUpServiceImpl implements SignUpService {
 		throw new BusinessException(ServiceError.NotAcceptable, "Incorrect Date of Birth");
 	    }
 	    userCollection.setUserName(request.getEmailAddress());
+	    userCollection.setTitle("Dr.");
 	    if (request.getImage() != null) {
 		String path = "profile-pic";
 		// save image
@@ -238,16 +239,8 @@ public class SignUpServiceImpl implements SignUpService {
 	    doctorCollection.setUserId(userCollection.getId());
 	    doctorCollection.setCreatedTime(new Date());
 	    doctorCollection = doctorRepository.save(doctorCollection);
-	    // assign role to doctor
-	    UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), hospitalAdmin.getId());
-	    userRoleCollection.setCreatedTime(new Date());
-	    userRoleRepository.save(userRoleCollection);
-	    userRoleCollection = new UserRoleCollection(userCollection.getId(), locationAdmin.getId());
-	    userRoleCollection.setCreatedTime(new Date());
-	    userRoleRepository.save(userRoleCollection);
-	    userRoleCollection = new UserRoleCollection(userCollection.getId(), doctorRole.getId());
-	    userRoleCollection.setCreatedTime(new Date());
-	    userRoleRepository.save(userRoleCollection);
+	    
+	    
 	    // Save hospital
 	    HospitalCollection hospitalCollection = new HospitalCollection();
 	    BeanUtil.map(request, hospitalCollection);
@@ -276,6 +269,27 @@ public class SignUpServiceImpl implements SignUpService {
 	    userLocationCollection.setCreatedTime(new Date());
 	    userLocationRepository.save(userLocationCollection);
 
+	    // assign role to doctor
+	    RoleCollection roleCollection = new RoleCollection(hospitalAdmin.getRole(), locationCollection.getId(), locationCollection.getHospitalId());
+	    roleCollection.setCreatedTime(new Date());
+	    roleRepository.save(roleCollection);
+	    UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), roleCollection.getId());
+	    userRoleCollection.setCreatedTime(new Date());
+	    userRoleRepository.save(userRoleCollection);
+	    
+	    roleCollection = new RoleCollection(locationAdmin.getRole(), locationCollection.getId(), locationCollection.getHospitalId());
+	    roleCollection.setCreatedTime(new Date());
+	    roleRepository.save(roleCollection);
+	    userRoleCollection = new UserRoleCollection(userCollection.getId(), roleCollection.getId());
+	    userRoleCollection.setCreatedTime(new Date());
+	    userRoleRepository.save(userRoleCollection);
+	    
+	    roleCollection = new RoleCollection(doctorRole.getRole(), locationCollection.getId(), locationCollection.getHospitalId());
+	    roleCollection.setCreatedTime(new Date());
+	    roleRepository.save(roleCollection);
+	    userRoleCollection = new UserRoleCollection(userCollection.getId(), roleCollection.getId());
+	    userRoleCollection.setCreatedTime(new Date());
+	    userRoleRepository.save(userRoleCollection);
 	    // save token
 	    TokenCollection tokenCollection = new TokenCollection();
 	    tokenCollection.setUserLocationId(userLocationCollection.getId());
@@ -408,7 +422,7 @@ public class SignUpServiceImpl implements SignUpService {
 		throw new BusinessException(ServiceError.NotAcceptable, "Incorrect Date of Birth");
 	    }
 	    userCollection.setUserName(request.getEmailAddress());
-
+	    userCollection.setTitle("Dr.");
 	    userCollection.setCreatedTime(new Date());
 	    userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
 	    userCollection.setUserState(UserState.USERSTATEINCOMPLETE);
@@ -419,17 +433,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    doctorCollection.setUserId(userCollection.getId());
 	    doctorCollection.setCreatedTime(new Date());
 	    doctorCollection = doctorRepository.save(doctorCollection);
-	    // assign role to doctor
-	    UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), hospitalAdmin.getId());
-	    userRoleCollection.setCreatedTime(new Date());
-	    userRoleRepository.save(userRoleCollection);
-	    userRoleCollection = new UserRoleCollection(userCollection.getId(), locationAdmin.getId());
-	    userRoleCollection.setCreatedTime(new Date());
-	    userRoleRepository.save(userRoleCollection);
-	    userRoleCollection = new UserRoleCollection(userCollection.getId(), doctorRole.getId());
-	    userRoleCollection.setCreatedTime(new Date());
-	    userRoleRepository.save(userRoleCollection);
-
+	
 	    response = new DoctorSignUp();
 	    User user = new User();
 	    userCollection.setPassword(null);
@@ -493,6 +497,26 @@ public class SignUpServiceImpl implements SignUpService {
 	    userLocationCollection.setCreatedTime(new Date());
 	    userLocationRepository.save(userLocationCollection);
 
+	    RoleCollection roleCollection = new RoleCollection(hospitalAdmin.getRole(), locationCollection.getId(), locationCollection.getHospitalId());
+	    roleCollection.setCreatedTime(new Date());
+	    roleRepository.save(roleCollection);
+	    UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), roleCollection.getId());
+	    userRoleCollection.setCreatedTime(new Date());
+	    userRoleRepository.save(userRoleCollection);
+	    
+	    roleCollection = new RoleCollection(locationAdmin.getRole(), locationCollection.getId(), locationCollection.getHospitalId());
+	    roleCollection.setCreatedTime(new Date());
+	    roleRepository.save(roleCollection);
+	    userRoleCollection = new UserRoleCollection(userCollection.getId(), roleCollection.getId());
+	    userRoleCollection.setCreatedTime(new Date());
+	    userRoleRepository.save(userRoleCollection);
+	    
+	    roleCollection = new RoleCollection(doctorRole.getRole(), locationCollection.getId(), locationCollection.getHospitalId());
+	    roleCollection.setCreatedTime(new Date());
+	    roleRepository.save(roleCollection);
+	    userRoleCollection = new UserRoleCollection(userCollection.getId(), roleCollection.getId());
+	    userRoleCollection.setCreatedTime(new Date());
+	    userRoleRepository.save(userRoleCollection);
 	    // save token
 	    TokenCollection tokenCollection = new TokenCollection();
 	    tokenCollection.setUserLocationId(userLocationCollection.getId());

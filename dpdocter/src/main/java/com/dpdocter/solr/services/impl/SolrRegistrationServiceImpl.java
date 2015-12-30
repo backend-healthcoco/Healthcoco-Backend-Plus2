@@ -1,16 +1,16 @@
 package com.dpdocter.solr.services.impl;
 
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
-import org.apache.velocity.tools.config.Data;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -27,7 +27,6 @@ import com.dpdocter.beans.ClinicProfile;
 import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.DoctorExperience;
 import com.dpdocter.beans.DoctorGeneralInfo;
-import com.dpdocter.beans.Reference;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -196,9 +195,6 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 				patient.setThumbnailUrl(getFinalImageURL(patient.getThumbnailUrl(), uriInfo));
 				
 			    BeanUtil.map(patient, patientResponse);
-//			    Reference reference = new Reference();
-//			    reference.setReference(patient.getReferredBy());
-//			    patientResponse.setReferredBy(reference);
 			    response.add(patientResponse);
 			}
 			responseDetails = new SolrPatientResponseDetails();
@@ -234,14 +230,14 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 			    advancedCriteria = advancedCriteria.and("days").is(Integer.parseInt(dob[1])).and("months").is(Integer.parseInt(dob[0])).and("years").is(Integer.parseInt(dob[2]));
 			}
 		    } else if (searchType.equalsIgnoreCase(AdvancedSearchType.REGISTRATION_DATE.getSearchType())) {
-		    	DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
-		    	Date date = new Date();
-		    	date = df.parse(searchValue);
-		    	long registeredDate = date.getTime();
+		    	String[] dob = searchValue.split("/");
+		    	DateTime start = new DateTime(Integer.parseInt(dob[2]),Integer.parseInt(dob[0]),Integer.parseInt(dob[1]), 0, 0, 0);
+		    	
+		    	DateTime end = new DateTime(Integer.parseInt(dob[2]),Integer.parseInt(dob[0]),Integer.parseInt(dob[1]), 23, 59, 59);
 			if (advancedCriteria == null) {
-			    advancedCriteria = new Criteria("registrationDate").is(registeredDate);
+			    advancedCriteria = new Criteria("createdTime").between(start, end);
 			} else {
-			    advancedCriteria = advancedCriteria.and("registrationDate").is(registeredDate);
+			    advancedCriteria = advancedCriteria.and("createdTime").between(start, end);
 			}
 		    }
 		    	else {
@@ -255,7 +251,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 		}
 	    }
 	}
-
+System.out.println(advancedCriteria);
 	return advancedCriteria;
     }
 

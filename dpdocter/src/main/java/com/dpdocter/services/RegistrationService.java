@@ -48,7 +48,7 @@ public interface RegistrationService {
 
     PatientInitialAndCounter getPatientInitialAndCounter(String doctorId, String locationId);
 
-    Boolean updatePatientInitialAndCounter(String doctorId, String locationId, String patientInitial, int patientCounter);
+    String updatePatientInitialAndCounter(String doctorId, String locationId, String patientInitial, int patientCounter);
 
     Location getClinicDetails(String clinicId);
 

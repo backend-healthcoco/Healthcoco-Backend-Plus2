@@ -5,6 +5,8 @@ import com.dpdocter.enums.UserState;
 public class User {
     private String id;
 
+    private String title;
+    
     private String firstName;
 
     private String lastName;
@@ -158,11 +160,21 @@ public class User {
 	this.userState = userState;
     }
 
-    @Override
-    public String toString() {
-	return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", userName=" + userName
-		+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob=" + dob + ", secPhoneNumber="
-		+ secPhoneNumber + ", isPartOfClinic=" + isPartOfClinic + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", colorCode="
-		+ colorCode + ", userState=" + userState + "]";
-    }
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName
+				+ ", middleName=" + middleName + ", userName=" + userName + ", emailAddress=" + emailAddress
+				+ ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob=" + dob + ", secPhoneNumber="
+				+ secPhoneNumber + ", isPartOfClinic=" + isPartOfClinic + ", imageUrl=" + imageUrl + ", thumbnailUrl="
+				+ thumbnailUrl + ", colorCode=" + colorCode + ", userState=" + userState + "]";
+	}
+
 }
