@@ -20,6 +20,6 @@ public interface SMSServices {
 
     void deleteNumber(String mobileNumber);
 
-    SMSTrackDetail createSMSTrackDetail(String doctorId, String locationId, String hospitalId, String patientId, String message, String mobileNumber);
+    SMSTrackDetail createSMSTrackDetail(String doctorId, String locationId, String hospitalId, String patientId, String message, String mobileNumber, String type);
 
 }

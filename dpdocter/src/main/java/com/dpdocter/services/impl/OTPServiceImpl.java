@@ -50,7 +50,7 @@ public class OTPServiceImpl implements OTPService {
 	try {
 	    OTP = LoginUtils.generateOTP();
 	    SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(doctorId, locationId, hospitalId, patientId, OTP + " is OTP for Verification",
-		    mobileNumber);
+		    mobileNumber, "OTPVerification");
 	    sMSServices.sendSMS(smsTrackDetail, false);
 
 	    OTPCollection otpCollection = new OTPCollection();
@@ -139,7 +139,8 @@ public class OTPServiceImpl implements OTPService {
 	String OTP = null;
 	try {
 	    OTP = LoginUtils.generateOTP();
-	    SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(null, null, null, null, OTP + " is OTP for Verification", mobileNumber);
+	    SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(null, null, null, null, OTP + " is OTP for Verification", mobileNumber,
+	    		"OTPVerification");
 	    sMSServices.sendSMS(smsTrackDetail, false);
 
 	    OTPCollection otpCollection = new OTPCollection();

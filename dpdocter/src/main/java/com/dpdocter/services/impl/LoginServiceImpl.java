@@ -91,17 +91,6 @@ public class LoginServiceImpl implements LoginService {
 	     */
 	    UserCollection userCollection = userRepository.findByPasswordAndUserNameIgnoreCase(request.getPassword(), request.getUsername());
 	    if (userCollection == null) {
-		userCollection = userRepository.findByPasswordAndUserNameIgnoreCase(DPDoctorUtils.getSHA3SecurePassword(request.getPassword().trim()),
-			request.getUsername());
-		if (userCollection == null) {
-		    userCollection = userRepository.findByPasswordAndEmailAddressIgnoreCase(request.getPassword(), request.getUsername());
-		}
-		if (userCollection == null) {
-		    userCollection = userRepository.findByPasswordAndEmailAddressIgnoreCase(DPDoctorUtils.getSHA3SecurePassword(request.getPassword().trim()),
-			    request.getUsername());
-		}
-	    }
-	    if (userCollection == null) {
 		logger.warn("Invalid username and Password");
 		throw new BusinessException(ServiceError.Unknown, "Invalid username and Password");
 	    }
@@ -112,7 +101,14 @@ public class LoginServiceImpl implements LoginService {
 	     * Now fetch hospitals and locations for doctor, location admin and
 	     * hospital admin. For patient send user details.
 	     */
+	    if (userCollection.getUserState() != null && userCollection.getUserState().equals(UserState.USERSTATEINCOMPLETE)) {
+			response = new LoginResponse();
+			user.setEmailAddress(user.getUserName());
+			response.setUser(user);
+			return response;
+		 }
 	    List<UserRoleCollection> userRoleCollections = userRoleRepository.findByUserId(userCollection.getId());
+	    
 	    for (UserRoleCollection userRoleCollection : userRoleCollections) {
 		RoleCollection roleCollection = roleRepository.findOne(userRoleCollection.getRoleId());
 		if (roleCollection.getRole().equalsIgnoreCase(RoleEnum.PATIENT.getRole())
@@ -134,12 +130,6 @@ public class LoginServiceImpl implements LoginService {
 		    response.setIsTempPassword(userCollection.getIsTempPassword());
 		    return response;
 		} else {
-		    if (userCollection.getUserState() != null && userCollection.getUserState().equals(UserState.USERSTATEINCOMPLETE)) {
-			response = new LoginResponse();
-			user.setEmailAddress(user.getUserName());
-			response.setUser(user);
-			return response;
-		    }
 
 		    if (!userCollection.getIsVerified()) {
 			response = new LoginResponse();

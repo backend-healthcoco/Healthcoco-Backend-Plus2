@@ -25,9 +25,7 @@ public class Records extends GenericCollection {
 
     private Boolean discarded = false;
 
-    private String doctorName;
-
-    private String clinicName;
+    private String uploadedByLocation;
 
     private String visitId;
 
@@ -111,14 +109,6 @@ public class Records extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
-    public String getDoctorName() {
-	return doctorName;
-    }
-
-    public void setDoctorName(String doctorName) {
-	this.doctorName = doctorName;
-    }
-
     public String getVisitId() {
 	return visitId;
     }
@@ -135,20 +125,20 @@ public class Records extends GenericCollection {
 	this.patientId = patientId;
     }
 
-    public String getClinicName() {
-	return clinicName;
-    }
+	public String getUploadedByLocation() {
+		return uploadedByLocation;
+	}
 
-    public void setClinicName(String clinicName) {
-	this.clinicName = clinicName;
+	public void setUploadedByLocation(String uploadedByLocation) {
+		this.uploadedByLocation = uploadedByLocation;
+	}
 
-    }
-
-    @Override
-    public String toString() {
-	return "Records [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId
-		+ ", recordsUrl=" + recordsUrl + ", recordsLable=" + recordsLable + ", recordsType=" + recordsType + ", description=" + description
-		+ ", inHistory=" + inHistory + ", discarded=" + discarded + ", doctorName=" + doctorName + ", clinicName=" + clinicName + ", visitId="
-		+ visitId + "]";
-    }
+	@Override
+	public String toString() {
+		return "Records [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", patientId=" + patientId + ", recordsUrl=" + recordsUrl + ", recordsLable="
+				+ recordsLable + ", recordsType=" + recordsType + ", description=" + description + ", inHistory="
+				+ inHistory + ", discarded=" + discarded + ", uploadedByLocation=" + uploadedByLocation + ", visitId="
+				+ visitId + "]";
+	}
 }

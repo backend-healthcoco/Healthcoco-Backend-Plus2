@@ -367,13 +367,13 @@ public class SMSServicesImpl implements SMSServices {
     }
 
     @Override
-    public SMSTrackDetail createSMSTrackDetail(String doctorId, String locationId, String hospitalId, String patientId, String message, String mobileNumber) {
+    public SMSTrackDetail createSMSTrackDetail(String doctorId, String locationId, String hospitalId, String patientId, String message, String mobileNumber, String type) {
 	SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 	try {
 	    smsTrackDetail.setDoctorId(doctorId);
 	    smsTrackDetail.setHospitalId(hospitalId);
 	    smsTrackDetail.setLocationId(locationId);
-
+	    smsTrackDetail.setType(type);
 	    SMSDetail smsDetail = new SMSDetail();
 	    smsDetail.setPatientId(patientId);
 

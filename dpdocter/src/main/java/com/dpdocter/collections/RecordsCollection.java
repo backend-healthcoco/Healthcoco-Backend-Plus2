@@ -43,6 +43,9 @@ public class RecordsCollection extends GenericCollection {
     @Field
     private boolean inHistory = false;
 
+    @Field
+    private String uploadedByLocation;
+    
     public String getId() {
 	return id;
     }
@@ -139,10 +142,20 @@ public class RecordsCollection extends GenericCollection {
 	this.inHistory = inHistory;
     }
 
-    @Override
-    public String toString() {
-	return "RecordsCollection [id=" + id + ", recordsUrl=" + recordsUrl + ", recordsPath=" + recordsPath + ", recordsLable=" + recordsLable
-		+ ", recordsType=" + recordsType + ", description=" + description + ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId="
-		+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", inHistory=" + inHistory + "]";
-    }
+	public String getUploadedByLocation() {
+		return uploadedByLocation;
+	}
+
+	public void setUploadedByLocation(String uploadedByLocation) {
+		this.uploadedByLocation = uploadedByLocation;
+	}
+
+	@Override
+	public String toString() {
+		return "RecordsCollection [id=" + id + ", recordsUrl=" + recordsUrl + ", recordsPath=" + recordsPath
+				+ ", recordsLable=" + recordsLable + ", recordsType=" + recordsType + ", description=" + description
+				+ ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", discarded=" + discarded + ", inHistory=" + inHistory + ", uploadedByLocation="
+				+ uploadedByLocation + "]";
+	}
 }

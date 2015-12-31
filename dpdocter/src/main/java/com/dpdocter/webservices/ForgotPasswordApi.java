@@ -5,7 +5,9 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,9 @@ public class ForgotPasswordApi {
 
     @Autowired
     private ForgotPasswordService forgotPasswordService;
+    
+    @Context
+    private UriInfo uriInfo;
 
     @Path(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_DOCTOR)
     @POST
@@ -37,7 +42,7 @@ public class ForgotPasswordApi {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
-	forgotPasswordService.forgotPasswordForDoctor(request);
+	forgotPasswordService.forgotPasswordForDoctor(request, uriInfo);
 	Response<String> response = new Response<String>();
 	response.setData("RESET YOUR PASSWORD FROM EMAIL ADDRESS");
 	return response;
@@ -50,7 +55,7 @@ public class ForgotPasswordApi {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
-	boolean flag = forgotPasswordService.forgotPasswordForPatient(request);
+	boolean flag = forgotPasswordService.forgotPasswordForPatient(request, uriInfo);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(flag);
 	return response;

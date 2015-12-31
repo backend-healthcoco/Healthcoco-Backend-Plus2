@@ -11,6 +11,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
 
+import javax.ws.rs.core.UriInfo;
+
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -296,6 +298,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    if (addressCollection != null) {
 		patientCollection.setAddressId(addressCollection.getId());
 	    }
+	    
+	    if(!DPDoctorUtils.anyStringEmpty(request.getProfession())){
+	    	ProfessionCollection professionCollection = professionRepository.findOne(request.getProfession());
+	    	if(professionCollection != null)patientCollection.setProfession(professionCollection.getProfession());
+	    }
 	    patientCollection.setNotes(request.getNotes());
 	    patientCollection = patientRepository.save(patientCollection);
 
@@ -447,8 +454,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 		BeanUtil.map(request, patientCollection);
 		patientCollection.setId(patientId);
+		patientCollection.setUpdatedTime(new Date());
 	    } else {
 		patientCollection = new PatientCollection();
+		patientCollection.setCreatedTime(new Date());
 		BeanUtil.map(request, patientCollection);
 	    }
 	    if (addressCollection != null) {
@@ -463,6 +472,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 		patientCollection.setPID(request.getPatientNumber());
 	    } else {
 		patientCollection.setPID(patientIdGenerator(request.getDoctorId(), request.getLocationId(), request.getHospitalId()));
+	    }
+	    if(!DPDoctorUtils.anyStringEmpty(request.getProfession())){
+	    	ProfessionCollection professionCollection = professionRepository.findOne(request.getProfession());
+	    	if(professionCollection != null)patientCollection.setProfession(professionCollection.getProfession());
 	    }
 	    patientCollection.setRegistrationDate(request.getDateOfVisit());
 	    patientCollection = patientRepository.save(patientCollection);
@@ -957,7 +970,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			clinicProfileCollection.setLocationId(userLocation.getId());
 			clinicProfileCollection.setPatientInitial(patientInitial);
 			clinicProfileCollection.setPatientCounter(patientCounter);
-//			clinicProfileCollection = doctorClinicProfileRepository.save(clinicProfileCollection);
+			clinicProfileCollection = doctorClinicProfileRepository.save(clinicProfileCollection);
 			response = "true";
 		    } 
 	    }else {
@@ -1337,7 +1350,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     @Override
-    public RegisterDoctorResponse registerNewUser(DoctorRegisterRequest request) {
+    public RegisterDoctorResponse registerNewUser(DoctorRegisterRequest request, UriInfo uriInfo) {
 	RegisterDoctorResponse response = null;
 	try {
 	    RoleCollection doctorRole = null;
@@ -1392,7 +1405,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
 
 	    body = mailBodyGenerator.generateForgotPasswordEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
-		    userCollection.getMiddleName(), userCollection.getLastName(), userCollection.getId());
+		    userCollection.getMiddleName(), userCollection.getLastName(), userCollection.getId(), uriInfo);
 	    mailService.sendEmail(userCollection.getEmailAddress(), forgotUsernamePasswordSub, body, null);
 
 	    response = new RegisterDoctorResponse();
@@ -1756,6 +1769,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    		locationCollection.setIsNABLAccredited(false);
 		    	}
 		    	locationCollection = locationRepository.save(locationCollection);
+		    	response = new ClinicLabProperties();
 		    	BeanUtil.map(locationCollection, response);
 		    }
 		} catch (Exception e) {

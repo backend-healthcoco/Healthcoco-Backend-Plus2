@@ -126,8 +126,8 @@ public class SignUpApi {
 		    doctorSignUp.getHospital().setHospitalImageUrl(getFinalImageURL(doctorSignUp.getHospital().getHospitalImageUrl()));
 		}
 	    }
-	    transnationalService.addResource(doctorSignUp.getUser().getId(), Resource.DOCTOR, false);
-	    solrRegistrationService.addDoctor(getSolrDoctorDocument(doctorSignUp));
+//	    transnationalService.addResource(doctorSignUp.getUser().getId(), Resource.DOCTOR, false);
+//	    solrRegistrationService.addDoctor(getSolrDoctorDocument(doctorSignUp));
 	}
 	Response<DoctorSignUp> response = new Response<DoctorSignUp>();
 	response.setData(doctorSignUp);
@@ -233,7 +233,7 @@ public class SignUpApi {
     @Produces(MediaType.TEXT_HTML)
     @Path(value = PathProxy.SignUpUrls.VERIFY_USER)
     @GET
-    public String activateUser(@PathParam(value = "tokenId") String tokenId) {
+    public String verifyUser(@PathParam(value = "tokenId") String tokenId) {
 	if (tokenId == null) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -244,7 +244,7 @@ public class SignUpApi {
 
     @Path(value = PathProxy.SignUpUrls.ACTIVATE_USER)
     @GET
-    public Response<Boolean> verifyUser(@PathParam("userId") String userId) {
+    public Response<Boolean> activateUser(@PathParam("userId") String userId) {
 	if (DPDoctorUtils.anyStringEmpty(userId)) {
 	    logger.warn("Invalid Input. User Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. User Id Cannot Be Empty");

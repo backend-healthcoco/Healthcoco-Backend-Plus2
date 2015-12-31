@@ -62,4 +62,22 @@ public interface SolrDoctorRepository extends SolrCrudRepository<SolrDoctorDocum
 
     @Query("city : ?0* AND isLab : ?1")
 	SolrDoctorDocument findLabByCity(String city, boolean isLab);
+
+    @Query("city : *?0* AND firstName : *?1*")
+	List<SolrDoctorDocument> findByCity(String city, String searchTerm);
+
+    @Query("(landmarkDetails: ?0* OR streetAddress: ?0* OR locality: ?0*) AND firstName : ?1*")
+	List<SolrDoctorDocument> findByLocation(String location, String searchTerm);
+
+    @Query("city : ?0*")
+	List<SolrDoctorDocument> findByCity(String city);
+
+    @Query("(landmarkDetails: ?0* OR streetAddress: ?0* OR locality: ?0*)")
+	List<SolrDoctorDocument> findByLocation(String location);
+
+    @Query("city : *?0* AND locationName : *?1*")
+	List<SolrDoctorDocument> findByCityLocationName(String city, String searchTerm);
+
+    @Query("(landmarkDetails: ?0* OR streetAddress: ?0* OR locality: ?0*) AND locationName : ?1*")
+	List<SolrDoctorDocument> findByLocationLocationName(String location, String searchTerm);
 }

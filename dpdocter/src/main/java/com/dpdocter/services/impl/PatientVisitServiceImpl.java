@@ -224,7 +224,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    patientTrackCollection.getRecordId().add(id);
 		}
 	    }
-
+	    patientTrackCollection.setUpdatedTime(new Date());
 	    patientTrackCollection = patientVisitRepository.save(patientTrackCollection);
 
 	} catch (Exception e) {
@@ -266,6 +266,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		patientTrackCollection.setVisitedTime(new Date());
 		patientTrackCollection.getVisitedFor().add(visitedFor);
 	    }
+	    patientTrackCollection.setUpdatedTime(new Date());
 	    patientVisitRepository.save(patientTrackCollection);
 	    response = true;
 	} catch (Exception e) {

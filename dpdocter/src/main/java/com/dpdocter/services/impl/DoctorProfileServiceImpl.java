@@ -240,12 +240,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	List<String> specialitiesByName = null;
 	try {
 	    specialityCollections = specialityRepository.findAll();
-<<<<<<< HEAD
 	    specialities = new ArrayList<String>();
 	    specialitiesByName = new ArrayList<String>();
-=======
+
 	    if(request.getSpeciality() != null)
->>>>>>> Patient Side API
 	    for (String speciality : request.getSpeciality()) {
 		Boolean specialityFound = false;
 		specialities = new ArrayList<String>();

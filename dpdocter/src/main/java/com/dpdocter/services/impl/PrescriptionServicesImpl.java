@@ -110,6 +110,7 @@ import com.dpdocter.sms.services.SMSServices;
 import com.dpdocter.solr.document.SolrDrugDocument;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.PrescriptionUtils;
 
@@ -687,10 +688,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    prescriptionItemDetailsList.add(prescriptionItemDetails);
 			}
 			prescription.setItems(prescriptionItemDetailsList);
-			UserCollection userCollection = userRepository.findOne(prescription.getDoctorId());
-			if (userCollection != null) {
-			    prescription.setDoctorName(userCollection.getFirstName());
-			}
 			PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(prescription.getId());
 			if (patientVisitCollection != null)
 			    prescription.setVisitId(patientVisitCollection.getId());
@@ -740,10 +737,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    prescriptionItemDetailsList.add(prescriptionItemDetails);
 			}
 			prescription.setItems(prescriptionItemDetailsList);
-			UserCollection userCollection = userRepository.findOne(prescription.getDoctorId());
-			if (userCollection != null) {
-			    prescription.setDoctorName(userCollection.getFirstName());
-			}
 			PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(prescription.getId());
 			if (patientVisitCollection != null)
 			    prescription.setVisitId(patientVisitCollection.getId());
@@ -2467,7 +2460,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    if (headerLeftText.isEmpty())
 				headerLeftText = "<span style='font-size:" + str.getFontSize() + ";'>" + text + "</span>";
 			    else
-				headerLeftText = headerLeftText + "<br/>" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
+				headerLeftText = headerLeftText + "<br/>" + "<span style='font-size:" + str.getFontSize() + ";'>" + text + "</span>";
 			}
 
 			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText()) {
@@ -2614,7 +2607,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    smsTrackDetail.setDoctorId(doctorId);
 			    smsTrackDetail.setHospitalId(hospitalId);
 			    smsTrackDetail.setLocationId(locationId);
-
+			    smsTrackDetail.setType("PRESCRIPTION");
 			    SMSDetail smsDetail = new SMSDetail();
 			    smsDetail.setPatientId(prescriptionCollection.getPatientId());
 			    if (userCollection != null)
@@ -2783,10 +2776,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
     @Override
     public void importDrug() {
-	String csvFile = "/home/suresh/drug_solr.csv";
+	String csvFile = "/home/suresh/LabTests.csv";
 	BufferedReader br = null;
 	String line = "";
-	String cvsSplitBy = ",";
+	String cvsSplitBy = "\\?";
 
 	try {
 
@@ -2795,7 +2788,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    while ((line = br.readLine()) != null) {
 		System.out.println(i++);
 		String[] obj = line.split(cvsSplitBy);
-		String drugType = obj[1];
+//		String drugType = obj[1];
 		// DrugTypeCollection drugTypeCollection = null;
 		// if (drugType.equals("TAB")) {
 		// drugTypeCollection = drugTypeRepository.findByType("TABLET");
@@ -2829,15 +2822,18 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		//
 		// drugRepository.save(drugCollection);
 
-		SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
-		solrDrugDocument.setDrugName(obj[1]);
-		solrDrugDocument.setId(obj[0]);
-		solrDrugDocument.setDescription(null);
-		solrDrugDocument.setDoctorId(null);
-		solrDrugDocument.setHospitalId(null);
-		solrDrugDocument.setLocationId(null);
-		solrDrugDocument.setDrugCode(null);
+//		SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
+//		solrDrugDocument.setDrugName(obj[1]);
+//		solrDrugDocument.setId(obj[0]);
+//		solrDrugDocument.setDescription(null);
+//		solrDrugDocument.setDoctorId(null);
+//		solrDrugDocument.setHospitalId(null);
+//		solrDrugDocument.setLocationId(null);
+//		solrDrugDocument.setDrugCode(null);
 
+//		DiagnosticTestCollection diagnosticTestCollection = new DiagnosticTestCollection();
+//		diagnosticTestCollection.setTestName(obj[1]);
+//		diagnosticTestRepository.save(diagnosticTestCollection);
 	    }
 	} catch (FileNotFoundException e) {
 	    e.printStackTrace();

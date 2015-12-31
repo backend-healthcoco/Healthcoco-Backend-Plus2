@@ -142,6 +142,10 @@ public class RecordsServiceImpl implements RecordsService {
 	    if (userCollection != null) {
 		recordsCollection.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());
 	    }
+	    LocationCollection locationCollection = locationRepository.findOne(recordsCollection.getLocationId());
+	    if(locationCollection != null){
+	    	recordsCollection.setUploadedByLocation(locationCollection.getLocationName());
+	    }
 	    recordsCollection = recordsRepository.save(recordsCollection);
 	    Records records = new Records();
 	    BeanUtil.map(recordsCollection, records);
@@ -180,6 +184,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    RecordsCollection oldRecord = recordsRepository.findOne(request.getId());
 	    recordsCollection.setCreatedTime(oldRecord.getCreatedTime());
 	    recordsCollection.setCreatedBy(oldRecord.getCreatedBy());
+	    recordsCollection.setUploadedByLocation(oldRecord.getUploadedByLocation());
 	    recordsCollection.setDiscarded(oldRecord.getDiscarded());
 	    recordsCollection.setInHistory(oldRecord.isInHistory());
 	    recordsCollection = recordsRepository.save(recordsCollection);
@@ -277,15 +282,6 @@ public class RecordsServiceImpl implements RecordsService {
 		for (RecordsCollection recordCollection : recordsCollections) {
 		    Records record = new Records();
 		    BeanUtil.map(recordCollection, record);
-		    UserCollection userCollection = userRepository.findOne(record.getDoctorId());
-		    if (userCollection != null) {
-			record.setDoctorName(userCollection.getFirstName());
-		    }
-		    if (request.getLocationId() != null) {
-			LocationCollection locationCollection = locationRepository.findOne(request.getLocationId());
-			if (locationCollection != null)
-			    record.setClinicName(locationCollection.getLocationName());
-		    }
 		    PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(record.getId());
 		    if (patientVisitCollection != null)
 			record.setVisitId(patientVisitCollection.getId());
@@ -441,10 +437,6 @@ public class RecordsServiceImpl implements RecordsService {
 		for (RecordsCollection recordCollection : recordsCollections) {
 		    Records record = new Records();
 		    BeanUtil.map(recordCollection, record);
-		    UserCollection userCollection = userRepository.findOne(record.getDoctorId());
-		    if (userCollection != null) {
-			record.setDoctorName(userCollection.getFirstName());
-		    }
 		    PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(record.getId());
 		    if (patientVisitCollection != null)
 			record.setVisitId(patientVisitCollection.getId());
@@ -520,10 +512,6 @@ public class RecordsServiceImpl implements RecordsService {
 	    if (recordCollection != null) {
 		record = new Records();
 		BeanUtil.map(recordCollection, record);
-		UserCollection userCollection = userRepository.findOne(record.getDoctorId());
-		if (userCollection != null) {
-		    record.setDoctorName(userCollection.getFirstName());
-		}
 		PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(record.getId());
 		if (patientVisitCollection != null)
 		    record.setVisitId(patientVisitCollection.getId());
@@ -656,15 +644,6 @@ public class RecordsServiceImpl implements RecordsService {
 	    for (RecordsCollection recordCollection : recordsCollections) {
 		Records record = new Records();
 		BeanUtil.map(recordCollection, record);
-		UserCollection userCollection = userRepository.findOne(record.getDoctorId());
-		if (userCollection != null) {
-		    record.setDoctorName(userCollection.getFirstName());
-		}
-		if (locationId != null) {
-		    LocationCollection locationCollection = locationRepository.findOne(locationId);
-		    if (locationCollection != null)
-			record.setClinicName(locationCollection.getLocationName());
-		}
 		PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(record.getId());
 		if (patientVisitCollection != null)
 		    record.setVisitId(patientVisitCollection.getId());
@@ -690,15 +669,6 @@ public class RecordsServiceImpl implements RecordsService {
 	    for (RecordsCollection recordCollection : recordsCollections) {
 		Records record = new Records();
 		BeanUtil.map(recordCollection, record);
-		UserCollection userCollection = userRepository.findOne(record.getDoctorId());
-		if (userCollection != null) {
-		    record.setDoctorName(userCollection.getFirstName());
-		}
-		if (recordCollection.getLocationId() != null) {
-		    LocationCollection locationCollection = locationRepository.findOne(recordCollection.getLocationId());
-		    if (locationCollection != null)
-			record.setClinicName(locationCollection.getLocationName());
-		}
 		PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(record.getId());
 		if (patientVisitCollection != null)
 		    record.setVisitId(patientVisitCollection.getId());

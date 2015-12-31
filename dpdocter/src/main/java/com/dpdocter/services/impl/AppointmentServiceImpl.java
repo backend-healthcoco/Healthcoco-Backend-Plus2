@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.solr.core.geo.GeoLocation;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.Appointment;
@@ -64,6 +65,10 @@ import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.solr.beans.Country;
 import com.dpdocter.solr.beans.State;
+import com.dpdocter.solr.document.SolrCityDocument;
+import com.dpdocter.solr.document.SolrCountryDocument;
+import com.dpdocter.solr.document.SolrStateDocument;
+import com.dpdocter.solr.services.SolrCityService;
 
 import common.util.web.DPDoctorUtils;
 
@@ -113,6 +118,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Autowired
     private LabTestRepository labTestRepository;
+
+    @Autowired
+    private SolrCityService solrCityService;
 
     @Override
     public Country addCountry(Country country) {
@@ -176,6 +184,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    List<CityCollection> cities = cityRepository.findAll();
 	    if (cities != null) {
 		BeanUtil.map(cities, response);
+		for(CityCollection city : cities){
+			SolrCityDocument solrCities = new SolrCityDocument();
+			BeanUtil.map(city, solrCities);
+			solrCities.setGeoLocation(new GeoLocation(city.getLatitude(), city.getLongitude()));
+			solrCityService.addCities(solrCities);
+		}
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -785,6 +799,47 @@ public class AppointmentServiceImpl implements AppointmentService {
 				BeanUtil.map(labTestCollections, labTests);
 				response.setLabTests(labTests);
 			}
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public List<Country> getCountries() {
+		List<Country> response = new ArrayList<Country>();
+		try {
+		    List<CountryCollection> countries = countryRepository.findAll();
+		    if (countries != null) {
+		    	for(CountryCollection country : countries){
+					SolrCountryDocument solrCountry = new SolrCountryDocument();
+					BeanUtil.map(country, solrCountry);
+					solrCountry.setGeoLocation(new GeoLocation(country.getLatitude(), country.getLongitude()));
+					solrCityService.addCountry(solrCountry);
+				}
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public List<State> getStates() {
+		List<State> response = new ArrayList<State>();
+		try {
+		    List<StateCollection> states = stateRepository.findAll();
+		    if (states != null) {
+				for(StateCollection state : states){
+					SolrStateDocument solrState = new SolrStateDocument();
+					BeanUtil.map(state, solrState);
+					solrState.setGeoLocation(new GeoLocation(state.getLatitude(), state.getLongitude()));
+					solrCityService.addState(solrState);
+				}
+		
 		    }
 		} catch (Exception e) {
 		    e.printStackTrace();

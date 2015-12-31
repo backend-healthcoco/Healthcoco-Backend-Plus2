@@ -517,8 +517,6 @@ System.out.println(advancedCriteria);
 		request.setId(doctorDocument.getId());
 	    else
 		request.setId(request.getUserId() + request.getLocationId());
-
-	    
 	    solrDoctorRepository.save(request);
 	    transnationalService.addResource(request.getUserId(), Resource.DOCTOR, true);
 	    response = true;
@@ -642,20 +640,11 @@ System.out.println(advancedCriteria);
     }
 
     private String getFinalImageURL(String imageURL, UriInfo uriInfo) {
-<<<<<<< HEAD
 	if (imageURL != null) {
 	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
 	    return finalImageURL + imageURL;
 	} else
 	    return null;
-    }
-
-=======
-    	if (imageURL != null) {
-    	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-    	    return finalImageURL + imageURL;
-    	} else
-    	    return null;
     }
 
 	@Override
@@ -717,5 +706,4 @@ System.out.println(advancedCriteria);
 		    e.printStackTrace();
 		}
 	}	
->>>>>>> Patient Side API
 }

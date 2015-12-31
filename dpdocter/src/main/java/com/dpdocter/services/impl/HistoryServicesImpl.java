@@ -1018,14 +1018,6 @@ public class HistoryServicesImpl implements HistoryServices {
 		case REPORTS:
 		    Records record = recordsService.getRecordById(id.getData().toString());
 		    if (record != null) {
-			UserCollection userCollection = userRepository.findOne(record.getDoctorId());
-			if (userCollection != null)
-			    record.setDoctorName(userCollection.getFirstName());
-			if (record.getLocationId() != null) {
-			    LocationCollection locationCollection = locationRepository.findOne(record.getLocationId());
-			    if (locationCollection != null)
-				record.setClinicName(locationCollection.getLocationName());
-			}
 			generalData.setData(record);
 			generalData.setDataType(HistoryFilter.REPORTS);
 		    }
@@ -1148,14 +1140,6 @@ public class HistoryServicesImpl implements HistoryServices {
 	    case REPORTS:
 		Records record = recordsService.getRecordById(generalRecords.getData().toString());
 		if (record != null) {
-		    UserCollection userCollection = userRepository.findOne(record.getDoctorId());
-		    if (userCollection != null)
-			record.setDoctorName(userCollection.getFirstName());
-		    if (record.getLocationId() != null) {
-			LocationCollection locationCollection = locationRepository.findOne(record.getLocationId());
-			if (locationCollection != null)
-			    record.setClinicName(locationCollection.getLocationName());
-		    }
 		    generalData = new GeneralData();
 		    generalData.setData(record);
 		    generalData.setDataType(HistoryFilter.REPORTS);

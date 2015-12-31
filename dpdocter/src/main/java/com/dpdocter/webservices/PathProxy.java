@@ -21,11 +21,9 @@ public interface PathProxy {
 
 	public static final String PATIENT_SIGNUP = "/patient";
 
-	// public static final String ACTIVATE_USER = "/activate/{userId}";
-
 	public static final String PATIENT_SIGNUP_MOBILE = "/patient/mobile";
 
-	public static final String ACTIVATE_USER = "/activate/{tokenId}";
+	public static final String ACTIVATE_USER = "/activate/{userId}";
 
 	public static final String VERIFY_USER = "/verify/{tokenId}";
 
@@ -569,7 +567,8 @@ public interface PathProxy {
 	public static final String GET_DOCTOR_APPOINTMENTS = "/doctor";
 
 	public static final String GET_PATIENT_APPOINTMENTS = "/patient";
-
+	
+//	public static final String IMPORT = "/import";
     }
 
     public static final String SOLR_CITY_BASE_URL = BASE_URL + "/solr/city";

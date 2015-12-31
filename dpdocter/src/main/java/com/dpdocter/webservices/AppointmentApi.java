@@ -142,6 +142,19 @@ public class AppointmentApi {
 	return response;
 
     }
+    
+//    @Path(value = PathProxy.AppointmentUrls.IMPORT)
+//    @GET
+//    public Response<City> importData() {
+//
+//    	appointmentService.getCountries();
+//    	appointmentService.getStates();
+//	List<City> cities = appointmentService.getCities();
+//	
+//		Response<City> response = new Response<City>();
+//		response.setDataList(cities);
+//		return response;
+//    }
 
     @Path(value = PathProxy.AppointmentUrls.GET_CITY_ID)
     @GET

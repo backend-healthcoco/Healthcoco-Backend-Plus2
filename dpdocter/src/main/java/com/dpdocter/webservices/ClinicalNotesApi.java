@@ -90,7 +90,9 @@ public class ClinicalNotesApi {
 	    String visitId = patientTrackService.addRecord(clinicalNotes, VisitedFor.CLINICAL_NOTES, request.getVisitId());
 	    clinicalNotes.setVisitId(visitId);
 	}
-
+	if (clinicalNotes.getDiagrams() != null && !clinicalNotes.getDiagrams().isEmpty()) {
+	    clinicalNotes.setDiagrams(getFinalDiagrams(clinicalNotes.getDiagrams()));
+	}
 	Response<ClinicalNotes> response = new Response<ClinicalNotes>();
 	response.setData(clinicalNotes);
 	return response;
@@ -108,6 +110,9 @@ public class ClinicalNotesApi {
 	if (clinicalNotes != null) {
 	    String visitId = patientTrackService.editRecord(clinicalNotes.getId(), VisitedFor.CLINICAL_NOTES);
 	    clinicalNotes.setVisitId(visitId);
+	}
+	if (clinicalNotes.getDiagrams() != null && !clinicalNotes.getDiagrams().isEmpty()) {
+	    clinicalNotes.setDiagrams(getFinalDiagrams(clinicalNotes.getDiagrams()));
 	}
 	Response<ClinicalNotes> response = new Response<ClinicalNotes>();
 	response.setData(clinicalNotes);

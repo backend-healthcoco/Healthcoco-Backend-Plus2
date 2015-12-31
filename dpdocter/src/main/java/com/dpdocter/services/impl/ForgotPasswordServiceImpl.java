@@ -2,6 +2,8 @@ package com.dpdocter.services.impl;
 
 import java.util.List;
 
+import javax.ws.rs.core.UriInfo;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,7 +40,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     private MailBodyGenerator mailBodyGenerator;
 
     @Override
-    public ForgotPasswordResponse forgotPasswordForDoctor(ForgotUsernamePasswordRequest request) {
+    public ForgotPasswordResponse forgotPasswordForDoctor(ForgotUsernamePasswordRequest request, UriInfo uriInfo) {
 	try {
 	    UserCollection userCollection = null;
 	    ForgotPasswordResponse response = null;
@@ -51,7 +53,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	    if (userCollection != null) {
 		if (userCollection.getEmailAddress().trim().equals(request.getEmailAddress().trim())) {
 		    String body = mailBodyGenerator.generateForgotPasswordEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
-			    userCollection.getMiddleName(), userCollection.getLastName(), userCollection.getId());
+			    userCollection.getMiddleName(), userCollection.getLastName(), userCollection.getId(), uriInfo);
 		    mailService.sendEmail(userCollection.getEmailAddress(), forgotUsernamePasswordSub, body, null);
 		    response = new ForgotPasswordResponse(userCollection.getUserName(), userCollection.getMobileNumber(), userCollection.getEmailAddress(),
 			    RoleEnum.DOCTOR);
@@ -75,7 +77,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     }
 
     @Override
-    public Boolean forgotPasswordForPatient(ForgotUsernamePasswordRequest request) {
+    public Boolean forgotPasswordForPatient(ForgotUsernamePasswordRequest request, UriInfo uriInfo) {
 	Boolean flag = false;
 	try {
 	    UserCollection userCollection = null;
@@ -87,7 +89,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	    if (userCollection != null) {
 		if (request.getEmailAddress() != null && !request.getEmailAddress().isEmpty()) {
 		    String body = mailBodyGenerator.generateForgotPasswordEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
-			    userCollection.getMiddleName(), userCollection.getLastName(), userCollection.getId());
+			    userCollection.getMiddleName(), userCollection.getLastName(), userCollection.getId(), uriInfo);
 		    mailService.sendEmail(userCollection.getEmailAddress(), forgotUsernamePasswordSub, body, null);
 		    flag = true;
 		} else if (request.getMobileNumber() != null && !request.getMobileNumber().isEmpty()) {

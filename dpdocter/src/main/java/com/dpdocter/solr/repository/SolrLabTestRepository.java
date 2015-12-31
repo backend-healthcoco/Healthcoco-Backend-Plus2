@@ -12,9 +12,6 @@ import com.dpdocter.solr.document.SolrLabTestDocument;
 
 public interface SolrLabTestRepository extends SolrCrudRepository<SolrLabTestDocument, String> {
 
-    @Query("testName: ?0*")
-    List<SolrLabTestDocument> find(String searchTerm);
-
     @Query("updatedTime: {'$gte': ?0} AND discarded: {$in: ?1} AND testName:?2}")
     List<SolrLabTestDocument> getCustomGlobalLabTests(Date date, boolean[] discards, Pageable pageRequest);
 

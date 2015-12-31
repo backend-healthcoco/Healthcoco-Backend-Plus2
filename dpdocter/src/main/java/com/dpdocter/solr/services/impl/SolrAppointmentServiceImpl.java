@@ -16,6 +16,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.solr.beans.AppointmentSearchResponse;
+import com.dpdocter.solr.beans.SolrLabTest;
 import com.dpdocter.solr.document.SolrDiagnosticTestDocument;
 import com.dpdocter.solr.document.SolrDoctorDocument;
 import com.dpdocter.solr.document.SolrLabTestDocument;
@@ -100,6 +101,8 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 	    		}
 	    	}else{
 	    		if(city != null && location != null)solrDoctorDocuments = solrDoctorRepository.findByCityLocation(city, location, searchTerm);
+	    		else if(city != null)solrDoctorDocuments = solrDoctorRepository.findByCity(city, searchTerm);
+	    		else if(location != null)solrDoctorDocuments = solrDoctorRepository.findByLocation(location, searchTerm);
 	    	}
 	    }
 	    else{
@@ -109,6 +112,8 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 	    	}else{
 	    		if(city != null && location != null)
 	    			solrDoctorDocuments = solrDoctorRepository.findByCityLocation(city, location);
+	    		else if(city != null)solrDoctorDocuments = solrDoctorRepository.findByCity(city);
+	    		else if(location != null)solrDoctorDocuments = solrDoctorRepository.findByLocation(location);
 	    	}
 	    }
 	    		
@@ -121,6 +126,8 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 	    		}
 	    	}else{
 	    		if(city != null && location != null)solrLocationDocuments = solrDoctorRepository.findByCityLocationName(city, location, searchTerm);
+	    		else if(city != null)solrDoctorDocuments = solrDoctorRepository.findByCityLocationName(city, searchTerm);
+	    		else if(location != null)solrDoctorDocuments = solrDoctorRepository.findByLocationLocationName(location, searchTerm);
 	    	}
 	    }
 	    else{
@@ -130,6 +137,8 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 	    	}else{
 	    		if(city != null && location != null)
 	    			solrDoctorDocuments = solrDoctorRepository.findByCityLocation(city, location);
+	    		else if(city != null)solrDoctorDocuments = solrDoctorRepository.findByCity(city);
+	    		else if(location != null)solrDoctorDocuments = solrDoctorRepository.findByLocation(location);
 	    	}
 	    }
 
@@ -174,7 +183,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 	    for (SolrDoctorDocument locationDocument : solrLocationDocuments) {
 		if(!locationDocument.getIsLab()){
 			AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
-			appointmentSearchResponse.setId(locationDocument.getId());
+			appointmentSearchResponse.setId(locationDocument.getLocationId());
 			appointmentSearchResponse.setResponse(locationDocument.getLocationName());
 			appointmentSearchResponse.setResponseType(AppointmentResponseType.CLINIC);
 			response.add(appointmentSearchResponse);
@@ -184,7 +193,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 	    for (SolrDoctorDocument locationDocument : solrLocationDocuments) {
 			if(locationDocument.getIsLab()){
 				AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
-				appointmentSearchResponse.setId(locationDocument.getId());
+				appointmentSearchResponse.setId(locationDocument.getLocationId());
 				appointmentSearchResponse.setResponse(locationDocument.getLocationName());
 				appointmentSearchResponse.setResponseType(AppointmentResponseType.LAB);
 				response.add(appointmentSearchResponse);
@@ -308,7 +317,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 		    		solrLabTestDocuments = solrLabTestRepository.findByTestId(testId);
 			    	for(SolrLabTestDocument solrLabTestDocument : solrLabTestDocuments){
 			    		SolrDoctorDocument doctorDocument = null;
-			    		if(!DPDoctorUtils.allStringsEmpty(city, location)){
+			    		if(!DPDoctorUtils.anyStringEmpty(city, location)){
 			    			doctorDocument = solrDoctorRepository.findLabByCityLocationName(city, location, solrLabTestDocument.getLocationId(), true);
 			    		}else if(!DPDoctorUtils.anyStringEmpty(city)){
 			    			doctorDocument = solrDoctorRepository.findLabByCity(city, solrLabTestDocument.getLocationId(), true);
@@ -316,7 +325,9 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 			    		if(doctorDocument != null){
 			    			LabResponse labResponse = new LabResponse();
 			    			BeanUtil.map(doctorDocument, labResponse);
-			    			BeanUtil.map(solrLabTestDocument, labResponse.getLabTest());
+			    			SolrLabTest solrLabTest = new SolrLabTest();
+			    			BeanUtil.map(solrLabTestDocument, solrLabTest);
+			    			labResponse.setLabTest(solrLabTest);
 			    			if(labResponse.getLabTest() != null){
 			    				labResponse.getLabTest().setTestName(diagnosticTest.getTestName());
 			    			}
@@ -328,7 +339,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 		    }		
 		    else{
 		    	SolrDoctorDocument doctorDocument = null;
-		    	if(!DPDoctorUtils.allStringsEmpty(city, location)){
+		    	if(!DPDoctorUtils.anyStringEmpty(city, location)){
 	    			doctorDocument = solrDoctorRepository.findLabByCityLocationName(city, location, true);
 	    		}else if(!DPDoctorUtils.anyStringEmpty(city)){
 	    			doctorDocument = solrDoctorRepository.findLabByCity(city, true);

@@ -26,6 +26,9 @@ public class SMSTrackDetail extends GenericCollection {
     private List<SMSDetail> smsDetails;
 
     @Field
+    private String type;
+
+    @Field
     private String responseId;
 
     public String getId() {
@@ -76,10 +79,17 @@ public class SMSTrackDetail extends GenericCollection {
 	this.responseId = responseId;
     }
 
-    @Override
-    public String toString() {
-	return "SMSTrackDetail [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", smsDetails="
-		+ smsDetails + ", responseId=" + responseId + "]";
-    }
+	public String getType() {
+		return type;
+	}
 
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	@Override
+	public String toString() {
+		return "SMSTrackDetail [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", smsDetails=" + smsDetails + ", type=" + type + ", responseId=" + responseId + "]";
+	}
 }

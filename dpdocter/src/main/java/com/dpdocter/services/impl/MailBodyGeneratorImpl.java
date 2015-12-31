@@ -25,9 +25,6 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
     @Value(value = "${RESET_PASSWORD_LINK}")
     private String RESET_PASSWORD_LINK;
 
-    @Context
-    private UriInfo uriInfo;
-
     @Autowired
     private VelocityEngine velocityEngine;
 
@@ -43,7 +40,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
     }
 
     @Override
-    public String generateForgotPasswordEmailBody(String userName, String fName, String mName, String lName, String userId) {
+    public String generateForgotPasswordEmailBody(String userName, String fName, String mName, String lName, String userId, UriInfo uriInfo) {
 	StringBuffer body = new StringBuffer();
 	body.append("Dear " + fName + " " + lName + ", \n");
 	if (uriInfo != null)

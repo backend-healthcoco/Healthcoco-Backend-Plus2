@@ -624,7 +624,7 @@ public class ContactsServiceImpl implements ContactsService {
 		    Patient patient = new Patient();
 		    BeanUtil.map(patientCollection, patient);
 		    patient.setPatientId(patientCollection.getId());
-
+		    BeanUtil.map(patientCollection, registeredPatientDetail);
 		    int historyCount = historyRepository.getByPatientIdAndNotEqualToDoctorLocationHospital(patientCollection.getUserId(), doctorId, locationId,
 			    hospitalId);
 		    if (historyCount > 0)

@@ -6,9 +6,10 @@ import java.util.List;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.Records;
+import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.VisitedFor;
 
-public class PatientVisitResponse {
+public class PatientVisitResponse extends GenericCollection{
 
     private String id;
 

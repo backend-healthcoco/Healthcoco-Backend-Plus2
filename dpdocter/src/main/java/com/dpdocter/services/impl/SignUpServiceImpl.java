@@ -146,10 +146,10 @@ public class SignUpServiceImpl implements SignUpService {
 		    return "Invalid Url.";
 		}
 		UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
-		userCollection.setIsActive(true);
+		userCollection.setIsVerified(true);
 		userRepository.save(userCollection);
 
-		userLocationCollection.setIsActivate(true);
+		userLocationCollection.setIsVerified(true);
 		userLocationRepository.save(userLocationCollection);
 		tokenCollection.setIsUsed(true);
 		tokenRepository.save(tokenCollection);
@@ -174,7 +174,7 @@ public class SignUpServiceImpl implements SignUpService {
 	try {
 	    userCollection = userRepository.findOne(userId);
 	    if (userCollection != null) {
-		userCollection.setIsVerified(true);
+		userCollection.setIsActive(true);
 		userRepository.save(userCollection);
 		response = true;
 	    } else {

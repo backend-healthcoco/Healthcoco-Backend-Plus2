@@ -461,10 +461,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    }
 		}
 		clinicalNote.setPatientId(patientId);
-		UserCollection userCollection = userRepository.findOne(clinicalNote.getDoctorId());
-		if (userCollection != null) {
-		    clinicalNote.setDoctorName(userCollection.getFirstName());
-		}
 		PatientVisitCollection patientVisitCollection = patientVisitRepository.findByClinialNotesId(clinicalNote.getId());
 		if (patientVisitCollection != null)
 		    clinicalNote.setVisitId(patientVisitCollection.getId());
@@ -723,10 +719,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    ClinicalNotes clinicalNotes = getNotesById(clinicalNotesId);
 		    if (clinicalNotes != null) {
 			clinicalNotes.setPatientId(patientId);
-			UserCollection userCollection = userRepository.findOne(clinicalNotes.getDoctorId());
-			if (userCollection != null) {
-			    clinicalNotes.setDoctorName(userCollection.getFirstName());
-			}
 			clinicalNotesList.add(clinicalNotes);
 		    }
 		}
@@ -772,10 +764,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (clinicalNotes != null) {
 			    clinicalNotes.setPatientId(patientId);
 			    if (clinicalNotes.getDoctorId().equals(doctorId)) {
-				UserCollection userCollection = userRepository.findOne(clinicalNotes.getDoctorId());
-				if (userCollection != null) {
-				    clinicalNotes.setDoctorName(userCollection.getFirstName() + userCollection.getLastName());
-				}
 				if (!inHistory)
 				    clinicalNotesList.add(clinicalNotes);
 				else if (clinicalNotes.isInHistory())
@@ -790,10 +778,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			    clinicalNotes.setPatientId(patientId);
 			    if (clinicalNotes.getDoctorId().equals(doctorId) && clinicalNotes.getLocationId().equals(locationId)
 				    && clinicalNotes.getHospitalId().equals(hospitalId)) {
-				UserCollection userCollection = userRepository.findOne(clinicalNotes.getDoctorId());
-				if (userCollection != null) {
-				    clinicalNotes.setDoctorName(userCollection.getFirstName() + userCollection.getLastName());
-				}
 				if (!inHistory)
 				    clinicalNotesList.add(clinicalNotes);
 				else if (clinicalNotes.isInHistory())

@@ -2,6 +2,8 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import javax.ws.rs.core.UriInfo;
+
 import com.dpdocter.beans.BloodGroup;
 import com.dpdocter.beans.ClinicAddress;
 import com.dpdocter.beans.ClinicImage;
@@ -76,7 +78,7 @@ public interface RegistrationService {
 
     Boolean checktDoctorExistByEmailAddress(String emailAddress);
 
-    RegisterDoctorResponse registerNewUser(DoctorRegisterRequest request);
+    RegisterDoctorResponse registerNewUser(DoctorRegisterRequest request, UriInfo uriInfo);
 
     RegisterDoctorResponse registerExisitingUser(DoctorRegisterRequest request);
 

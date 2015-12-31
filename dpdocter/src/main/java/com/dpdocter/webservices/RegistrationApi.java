@@ -490,7 +490,7 @@ public class RegistrationApi {
 	}
 	RegisterDoctorResponse doctorResponse = null;
 	if (!registrationService.checktDoctorExistByEmailAddress(request.getEmailAddress()))
-	    doctorResponse = registrationService.registerNewUser(request);
+	    doctorResponse = registrationService.registerNewUser(request, uriInfo);
 	else
 	    doctorResponse = registrationService.registerExisitingUser(request);
 

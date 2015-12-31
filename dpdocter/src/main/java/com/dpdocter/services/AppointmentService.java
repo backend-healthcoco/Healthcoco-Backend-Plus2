@@ -45,4 +45,8 @@ public interface AppointmentService {
 
 	Lab getLab(String locationId);
 
+	List<Country> getCountries();
+
+	List<State> getStates();
+
 }
