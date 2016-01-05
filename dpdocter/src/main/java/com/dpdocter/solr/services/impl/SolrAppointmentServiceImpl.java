@@ -210,15 +210,15 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
     public List<SolrDoctorDocument> getDoctors(String city, String location, String keyword) {
 	List<SolrDoctorDocument> response = null;
 	try {
-	    Criteria doctorSearchCriteria = Criteria.where("city").contains(city);
+	    Criteria doctorSearchCriteria = Criteria.where("city").is(city);
 
 	    if (!DPDoctorUtils.anyStringEmpty(location)) {
-		doctorSearchCriteria = doctorSearchCriteria.and("locationName").contains(location);
+		doctorSearchCriteria = doctorSearchCriteria.and("locationName").is(location);
 	    }
 
 	    if (!DPDoctorUtils.anyStringEmpty(keyword)) {
-		doctorSearchCriteria = doctorSearchCriteria.or("firstName").contains(keyword).or("middleName").contains(keyword).or("lastName")
-			.contains(keyword).or("emailAddress").contains(keyword).or("specialization").contains(keyword);
+		doctorSearchCriteria = doctorSearchCriteria.or("firstName").is(keyword).or("middleName").is(keyword).or("lastName")
+			.is(keyword).or("emailAddress").is(keyword).or("specialization").is(keyword);
 	    }
 
 	    SimpleQuery query = new SimpleQuery(doctorSearchCriteria);
@@ -238,14 +238,14 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 	    String minFee, String maxFee, String minTime, String maxTime, List<String> days, String gender, String minExperience, String maxExperience) {
 	List<SolrDoctorDocument> response = null;
 	try {
-	    Criteria doctorSearchCriteria = Criteria.where("city").contains(city);
+	    Criteria doctorSearchCriteria = Criteria.where("city").is(city);
 
 	    if (!DPDoctorUtils.anyStringEmpty(location)) {
-		doctorSearchCriteria = doctorSearchCriteria.and("locationName").contains(location);
+		doctorSearchCriteria = doctorSearchCriteria.and("locationName").is(location);
 	    }
 
 	    if (!DPDoctorUtils.anyStringEmpty(speciality)) {
-		doctorSearchCriteria = doctorSearchCriteria.or("specialities").contains(speciality);
+		doctorSearchCriteria = doctorSearchCriteria.or("specialities").is(speciality);
 	    }
 
 	    if (!DPDoctorUtils.anyStringEmpty(symptom)) {

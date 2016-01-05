@@ -29,6 +29,7 @@ import com.dpdocter.beans.ClinicLogo;
 import com.dpdocter.beans.ClinicProfile;
 import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.ClinicTiming;
+import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.Reference;
@@ -126,8 +127,8 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM)
     @GET
-    public Response<User> getExistingPatients(@PathParam("mobileNumber") String mobileNumber, @PathParam("locationId") String locationId,
-	    @PathParam("hospitalId") String hospitalId) {
+    public Response<User> getExistingPatients(@PathParam("mobileNumber") String mobileNumber, @PathParam("doctorId") String doctorId,
+    		@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
 	if (mobileNumber == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.Mobile Number is null");
 	}
@@ -139,7 +140,7 @@ public class RegistrationApi {
 	}
 	Response<User> response = new Response<User>();
 
-	List<User> users = registrationService.getUsersByPhoneNumber(mobileNumber, locationId, hospitalId);
+	List<User> users = registrationService.getUsersByPhoneNumber(mobileNumber, doctorId, locationId, hospitalId);
 	if (users != null && !users.isEmpty()) {
 	    for (User user : users) {
 		user.setImageUrl(getFinalImageURL(user.getImageUrl()));
@@ -158,7 +159,7 @@ public class RegistrationApi {
 	}
 	Response<Integer> response = new Response<Integer>();
 	Integer patientCountByMobNum = 0;
-	List<User> users = registrationService.getUsersByPhoneNumber(mobileNumber, null, null);
+	List<User> users = registrationService.getUsersByPhoneNumber(mobileNumber, null, null, null);
 	if (users != null) {
 	    patientCountByMobNum = users.size();
 	}
@@ -588,6 +589,19 @@ public class RegistrationApi {
     	registrationService.deleteUser(userId, locationId, discarded);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
+	return response;
+    }
+    
+    @Path(value = PathProxy.RegistrationUrls.ADD_FEEDBACK)
+    @POST
+    public Response<Feedback> addFeedback(Feedback request) {
+    if (request == null) {
+    	 logger.warn("Request send  is NULL");
+    	 throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
+    }
+    Feedback feedback = registrationService.addFeedback(request);
+	Response<Feedback> response = new Response<Feedback>();
+	response.setData(feedback);
 	return response;
     }
 

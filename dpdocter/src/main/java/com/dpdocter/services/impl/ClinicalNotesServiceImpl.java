@@ -329,13 +329,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    List<Observation> observations = IteratorUtils.toList(observationRepository.findAll(observationIds).iterator());
 	    List<Diagnoses> diagnoses = IteratorUtils.toList(diagnosisRepository.findAll(diagnosisIds).iterator());
 	    List<Notes> notes = IteratorUtils.toList(notesRepository.findAll(noteIds).iterator());
-	    List<Diagram> diagrams = IteratorUtils.toList(diagramsRepository.findAll(diagramIds).iterator());
-	    /*if (request.getDiagrams() != null && !request.getDiagrams().isEmpty()) {
-	    diagrams = IteratorUtils.toList(diagramsRepository.findAll(request.getDiagrams()).iterator());
-	    } else {
-	    diagrams = new ArrayList<Diagram>();
-	    }*/
-
+	    List<DiagramsCollection> diagramsCollections = IteratorUtils.toList(diagramsRepository.findAll(diagramIds).iterator());
+	    List<Diagram>  diagrams = new ArrayList<Diagram>();
+	    if(diagramsCollections!= null){
+	    	for(DiagramsCollection collection : diagramsCollections){
+	    		Diagram diagram = new Diagram();
+		    	BeanUtil.map(collection, diagram);
+		    	diagrams.add(diagram);
+	    	}
+	    }
 	    clinicalNotes.setComplaints(complaints);
 	    clinicalNotes.setInvestigations(investigations);
 	    clinicalNotes.setObservations(observations);
@@ -638,12 +640,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    List<Observation> observations = IteratorUtils.toList(observationRepository.findAll(observationIds).iterator());
 	    List<Diagnoses> diagnoses = IteratorUtils.toList(diagnosisRepository.findAll(diagnosisIds).iterator());
 	    List<Notes> notes = IteratorUtils.toList(notesRepository.findAll(noteIds).iterator());
-	    List<Diagram> diagrams = IteratorUtils.toList(diagramsRepository.findAll(diagramIds).iterator());
-	    /*if (request.getDiagrams() != null && !request.getDiagrams().isEmpty()) {
-	    diagrams = IteratorUtils.toList(diagramsRepository.findAll(request.getDiagrams()).iterator());
-	    } else {
-	    diagrams = new ArrayList<Diagram>();
-	    }*/
+	    List<DiagramsCollection> diagramsCollections = IteratorUtils.toList(diagramsRepository.findAll(diagramIds).iterator());
+	    List<Diagram>  diagrams = new ArrayList<Diagram>();
+	    if(diagramsCollections!= null){
+	    	for(DiagramsCollection collection : diagramsCollections){
+	    		Diagram diagram = new Diagram();
+		    	BeanUtil.map(collection, diagram);
+		    	diagrams.add(diagram);
+	    	}
+	    }
 
 	    clinicalNotes.setComplaints(complaints);
 	    clinicalNotes.setInvestigations(investigations);

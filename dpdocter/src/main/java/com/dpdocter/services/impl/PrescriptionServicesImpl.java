@@ -1211,9 +1211,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
-    public List<Prescription> getPrescriptionById(String prescriptionId) {
+    public Prescription getPrescriptionById(String prescriptionId) {
 	Prescription prescription = null;
-	List<Prescription> prescriptions = null;
 	try {
 	    List<PrescriptionCollection> prescriptionCollections = new ArrayList<PrescriptionCollection>();
 	    PrescriptionCollection prescriptionCl = prescriptionRepository.findOne(prescriptionId);
@@ -1226,7 +1225,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    }
 
 	    if (prescriptionCollections != null && !prescriptionCollections.isEmpty()) {
-		prescriptions = new ArrayList<Prescription>();
 		for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
 		    prescription = new Prescription();
 		    BeanUtil.map(prescriptionCollection, prescription);
@@ -1248,7 +1246,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    prescription.setVisitId(patientVisitCollection.getId());
 			prescription.setItems(prescriptionItemDetails);
 		    }
-		    prescriptions.add(prescription);
 		}
 
 	    } else {
@@ -1259,7 +1256,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    logger.error(e + " Error while getting prescription : " + e.getCause().getMessage());
 	    throw new BusinessException(ServiceError.Unknown, "Error while getting prescription : " + e.getCause().getMessage());
 	}
-	return prescriptions;
+	return prescription;
     }
 
     @Override

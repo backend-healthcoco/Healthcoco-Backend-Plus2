@@ -1,7 +1,6 @@
 package com.dpdocter.services.impl;
 
 import java.io.File;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -38,12 +37,12 @@ import com.dpdocter.beans.ClinicLogo;
 import com.dpdocter.beans.ClinicProfile;
 import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.ClinicTiming;
+import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Group;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Patient;
-import com.dpdocter.beans.PatientVisit;
 import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.ReferenceDetail;
@@ -59,12 +58,12 @@ import com.dpdocter.collections.BloodGroupCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DoctorContactCollection;
+import com.dpdocter.collections.FeedbackCollection;
 import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientAdmissionCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
-import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.ProfessionCollection;
 import com.dpdocter.collections.ReferencesCollection;
@@ -86,6 +85,7 @@ import com.dpdocter.repository.BloodGroupRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorContactsRepository;
 import com.dpdocter.repository.DoctorRepository;
+import com.dpdocter.repository.FeedbackRepository;
 import com.dpdocter.repository.GroupRepository;
 import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.repository.LocationRepository;
@@ -116,6 +116,7 @@ import com.dpdocter.services.MailService;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.sms.services.SMSServices;
 import com.dpdocter.solr.document.SolrDoctorDocument;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -201,6 +202,9 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Autowired
     private HistoryRepository historyRepository;
 
+    @Autowired
+    private FeedbackRepository feedbackRepository;
+    
     @Autowired
     private MongoTemplate mongoTemplate;
 
@@ -608,7 +612,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     @Override
-    public List<User> getUsersByPhoneNumber(String phoneNumber, String locationId, String hospitalId) {
+    public List<User> getUsersByPhoneNumber(String phoneNumber, String doctorId, String locationId, String hospitalId) {
 	List<User> users = null;
 	try {
 	    List<UserCollection> userCollections = userRepository.findByMobileNumber(phoneNumber);
@@ -620,8 +624,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    if (locationId != null && hospitalId != null) {
 			PatientCollection patientCollection = patientRepository.findByUserId(userCollection.getId());
 			if (patientCollection != null) {
-			    if (patientCollection.getLocationId() != null && patientCollection.getHospitalId() != null) {
-				if (patientCollection.getLocationId().equals(locationId) && patientCollection.getHospitalId().equals(hospitalId)) {
+			    if (patientCollection.getDoctorId() != null && patientCollection.getLocationId() != null && patientCollection.getHospitalId() != null) {
+				if (patientCollection.getDoctorId().equals(doctorId) && patientCollection.getLocationId().equals(locationId) && patientCollection.getHospitalId().equals(hospitalId)) {
 				    user.setIsPartOfClinic(true);
 				} else {
 				    user.setIsPartOfClinic(false);
@@ -635,9 +639,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    }
 		    users.add(user);
 		}
-
-	    }
-
+	  }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
@@ -1776,6 +1778,23 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    e.printStackTrace();
 		    logger.error(e + " Error While Updating Clinic IsLab");
 		    throw new BusinessException(ServiceError.Unknown, "Error While Updating Clinic IsLab");
+		}
+		return response;
+	}
+
+	@Override
+	public Feedback addFeedback(Feedback request) {
+		Feedback response = new Feedback();
+		try {
+			FeedbackCollection feedbackCollection = new FeedbackCollection();
+		    BeanUtil.map(request, feedbackCollection);
+		    feedbackCollection.setCreatedTime(new Date());
+		    feedbackCollection = feedbackRepository.save(feedbackCollection);
+		    BeanUtil.map(feedbackCollection, response);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, "Error while adding feedback");
 		}
 		return response;
 	}

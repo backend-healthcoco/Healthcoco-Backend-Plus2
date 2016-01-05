@@ -691,7 +691,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     public Boolean addEditGeneralInfo(DoctorGeneralInfo request) {
 	boolean response = false;
 	try {
-	    if (request.getAppointmentBookingNumber() != null || !request.getAppointmentBookingNumber().isEmpty()) {
+	    if (request.getAppointmentBookingNumber() != null && !request.getAppointmentBookingNumber().isEmpty()) {
 		DoctorAppointmentNumbersAddEditRequest appointmentNumbersAddEditRequest = new DoctorAppointmentNumbersAddEditRequest();
 		BeanUtil.map(request, appointmentNumbersAddEditRequest);
 		response = addEditAppointmentNumbers(appointmentNumbersAddEditRequest);
@@ -858,34 +858,6 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Profile");
 	    throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
-	}
-	return response;
-    }
-
-    @Override
-    public List<WorkingSchedule> getTimeSlots(String doctorId, String locationId, String day) {
-	DoctorClinicProfileCollection doctorClinicProfileCollection = null;
-	List<WorkingSchedule> response = null;
-	try {
-	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(doctorId, locationId);
-	    doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
-	    if (doctorClinicProfileCollection != null) {
-		if (doctorClinicProfileCollection.getWorkingSchedules() != null) {
-		    response = new ArrayList<WorkingSchedule>();
-		    if (day != null) {
-			for (WorkingSchedule workingSchedule : doctorClinicProfileCollection.getWorkingSchedules()) {
-			    if (EnumUtils.isValidEnum(Day.class, day.toUpperCase()) && workingSchedule.getWorkingDay().equals(Day.valueOf(day.toUpperCase()))) {
-				response.add(workingSchedule);
-			    }
-			}
-		    } else {
-			BeanUtil.map(doctorClinicProfileCollection.getWorkingSchedules(), response);
-		    }
-		}
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Clinic Profile");
 	}
 	return response;
     }

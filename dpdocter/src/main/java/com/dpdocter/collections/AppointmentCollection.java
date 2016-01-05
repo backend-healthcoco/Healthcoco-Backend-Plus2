@@ -1,12 +1,15 @@
 package com.dpdocter.collections;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.Timing;
+import com.dpdocter.beans.WorkingHours;
+import com.dpdocter.enums.AppointmentState;
+import com.dpdocter.enums.AppointmentType;
 
 @Document(collection = "appointment_cl")
 public class AppointmentCollection extends GenericCollection {
@@ -21,25 +24,16 @@ public class AppointmentCollection extends GenericCollection {
     private String appointmentId;
 
     @Field
-    private Timing time;
+    private WorkingHours time;
 
     @Field
     private String patientId;
 
     @Field
-    private Boolean isConfirmed = false;
-
-    @Field
-    private Boolean isCanceled = false;
+    private AppointmentState state = AppointmentState.NEW;
 
     @Field
     private Boolean isReschduled = false;
-
-    @Field
-    private Boolean isEvent = false;
-
-    @Field
-    private Boolean isCalenderBlocked = false;
 
     @Field
     private Date date;
@@ -53,122 +47,138 @@ public class AppointmentCollection extends GenericCollection {
     @Field
     private int month;
 
-    public String getId() {
-	return id;
-    }
+    @Field
+    private int year;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getUserLocationId() {
-	return userLocationId;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void setUserLocationId(String userLocationId) {
-	this.userLocationId = userLocationId;
-    }
+	public String getUserLocationId() {
+		return userLocationId;
+	}
 
-    public Timing getTime() {
-	return time;
-    }
+	public void setUserLocationId(String userLocationId) {
+		this.userLocationId = userLocationId;
+	}
 
-    public void setTime(Timing time) {
-	this.time = time;
-    }
+	public String getAppointmentId() {
+		return appointmentId;
+	}
 
-    public String getPatientId() {
-	return patientId;
-    }
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
 
-    public void setPatientId(String patientId) {
-	this.patientId = patientId;
-    }
+	public WorkingHours getTime() {
+		return time;
+	}
 
-    public Boolean getIsConfirmed() {
-	return isConfirmed;
-    }
+	public void setTime(WorkingHours time) {
+		this.time = time;
+	}
 
-    public void setIsConfirmed(Boolean isConfirmed) {
-	this.isConfirmed = isConfirmed;
-    }
+	public String getPatientId() {
+		return patientId;
+	}
 
-    public Boolean getIsCanceled() {
-	return isCanceled;
-    }
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
 
-    public void setIsCanceled(Boolean isCanceled) {
-	this.isCanceled = isCanceled;
-    }
+	public AppointmentState getState() {
+		return state;
+	}
 
-    public Boolean getIsReschduled() {
-	return isReschduled;
-    }
+	public void setState(AppointmentState state) {
+		this.state = state;
+	}
 
-    public void setIsReschduled(Boolean isReschduled) {
-	this.isReschduled = isReschduled;
-    }
+	public Boolean getIsReschduled() {
+		return isReschduled;
+	}
 
-    public Date getDate() {
-	return date;
-    }
+	public void setIsReschduled(Boolean isReschduled) {
+		this.isReschduled = isReschduled;
+	}
 
-    public void setDate(Date date) {
-	this.date = date;
-    }
+	public Date getDate() {
+		return date;
+	}
 
-    public int getDay() {
-	return day;
-    }
+	public void setDate(Date date) {
+		this.date = date;
+		if(this.date != null){
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(date);
+			this.week = calendar.get(Calendar.WEEK_OF_MONTH);
+			this.day = calendar.get(Calendar.DAY_OF_MONTH);
+			this.month = calendar.get(Calendar.MONTH);
+			this.year = calendar.get(Calendar.YEAR);
+		}
+	}
 
-    public void setDay(int day) {
-	this.day = day;
-    }
+	public int getDay() {
+		if(this.date != null){
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(date);
+			return calendar.get(Calendar.DAY_OF_MONTH);
+		}
+		else return day;
+	}
 
-    public int getWeek() {
-	return week;
-    }
+	public void setDay(int day) {
+		this.day = day;
+	}
 
-    public void setWeek(int week) {
-	this.week = week;
-    }
+	public int getWeek() {
+		if(this.date != null){
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(date);
+			return calendar.get(Calendar.WEEK_OF_MONTH);
+		}
+		else return week;
+	}
 
-    public int getMonth() {
-	return month;
-    }
+	public void setWeek(int week) {
+		this.week = week;
+	}
 
-    public void setMonth(int month) {
-	this.month = month;
-    }
+	public int getMonth() {
+		if(this.date != null){
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(date);
+			return calendar.get(Calendar.MONTH);
+		}
+		else return month;
+	}
 
-    public String getAppointmentId() {
-	return appointmentId;
-    }
+	public void setMonth(int month) {
+		this.month = month;
+	}
 
-    public void setAppointmentId(String appointmentId) {
-	this.appointmentId = appointmentId;
-    }
+	public int getYear() {
+		if(this.date != null){
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(date);
+			return calendar.get(Calendar.YEAR);
+		}
+		else return year;
+	}
 
-    public Boolean getIsEvent() {
-	return isEvent;
-    }
+	public void setYear(int year) {
+		this.year = year;
+	}
 
-    public void setIsEvent(Boolean isEvent) {
-	this.isEvent = isEvent;
-    }
-
-    public Boolean getIsCalenderBlocked() {
-	return isCalenderBlocked;
-    }
-
-    public void setIsCalenderBlocked(Boolean isCalenderBlocked) {
-	this.isCalenderBlocked = isCalenderBlocked;
-    }
-
-    @Override
-    public String toString() {
-	return "AppointmentCollection [id=" + id + ", userLocationId=" + userLocationId + ", appointmentId=" + appointmentId + ", time=" + time
-		+ ", patientId=" + patientId + ", isConfirmed=" + isConfirmed + ", isCanceled=" + isCanceled + ", isReschduled=" + isReschduled + ", isEvent="
-		+ isEvent + ", isCalenderBlocked=" + isCalenderBlocked + ", date=" + date + ", day=" + day + ", week=" + week + ", month=" + month + "]";
-    }
+	@Override
+	public String toString() {
+		return "AppointmentCollection [id=" + id + ", userLocationId=" + userLocationId + ", appointmentId="
+				+ appointmentId + ", time=" + time + ", patientId=" + patientId + ", state=" + state + ", isReschduled="
+				+ isReschduled + ", date=" + date + ", day=" + day + ", week=" + week + ", month=" + month + ", year="
+				+ year + "]";
+	}
 }

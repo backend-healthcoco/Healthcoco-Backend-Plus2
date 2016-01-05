@@ -1,10 +1,13 @@
 package com.dpdocter.webservices;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -19,23 +22,27 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.City;
 import com.dpdocter.beans.Clinic;
+import com.dpdocter.beans.Event;
 import com.dpdocter.beans.Lab;
 import com.dpdocter.beans.LandmarkLocality;
+import com.dpdocter.beans.Slot;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
-import com.dpdocter.request.AppoinmentRequest;
+import com.dpdocter.request.AppointmentRequest;
+import com.dpdocter.request.EventRequest;
+import com.dpdocter.response.ClinicAppointmentsResponse;
 import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.beans.Country;
 import com.dpdocter.solr.beans.State;
 import com.dpdocter.solr.document.SolrCityDocument;
 import com.dpdocter.solr.document.SolrCountryDocument;
-import com.dpdocter.solr.document.SolrDoctorDocument;
 import com.dpdocter.solr.document.SolrLocalityLandmarkDocument;
 import com.dpdocter.solr.document.SolrStateDocument;
 import com.dpdocter.solr.services.SolrCityService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -143,19 +150,6 @@ public class AppointmentApi {
 
     }
     
-//    @Path(value = PathProxy.AppointmentUrls.IMPORT)
-//    @GET
-//    public Response<City> importData() {
-//
-//    	appointmentService.getCountries();
-//    	appointmentService.getStates();
-//	List<City> cities = appointmentService.getCities();
-//	
-//		Response<City> response = new Response<City>();
-//		response.setDataList(cities);
-//		return response;
-//    }
-
     @Path(value = PathProxy.AppointmentUrls.GET_CITY_ID)
     @GET
     public Response<City> getCityById(@PathParam(value = "cityId") String cityId) {
@@ -215,12 +209,17 @@ public class AppointmentApi {
     }
 
     @POST
-    public Response<Appointment> BookAppoinment(AppoinmentRequest request) {
-
+    public Response<Appointment> BookAppoinment(AppointmentRequest request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "request cannot be null");
 	}
-	Appointment appointment = appointmentService.appointment(request);
+	Appointment appointment = null;
+	if(request.getAppointmentId() == null){
+		appointment = appointmentService.addAppointment(request);
+	}else{
+		appointment = appointmentService.updateAppointment(request);
+	}
+	
 	Response<Appointment> response = new Response<Appointment>();
 	response.setData(appointment);
 	return response;
@@ -229,23 +228,21 @@ public class AppointmentApi {
 
     @Path(value = PathProxy.AppointmentUrls.GET_CLINIC_APPOINTMENTS)
     @GET
-    public Response<Appointment> getClinicAppointments(@QueryParam(value = "locationId") String locationId, @QueryParam(value = "doctorId") String doctorId,
-	    @QueryParam(value = "day") int day, @QueryParam(value = "month") int month, @QueryParam(value = "week") int week, @QueryParam("page") int page,
-	    @QueryParam("size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+    public Response<ClinicAppointmentsResponse> getClinicAppointments(@QueryParam(value = "locationId") String locationId, @QueryParam(value = "doctorId") String doctorId,
+    		@QueryParam(value = "patientId") String patientId, @QueryParam(value = "date") String date, @QueryParam(value = "filterBy") String filterBy) {
 
-	List<Appointment> appointment = appointmentService.getClinicAppointments(locationId, doctorId, day, month, week, page, size, updatedTime);
-	Response<Appointment> response = new Response<Appointment>();
-	response.setDataList(appointment);
+	List<ClinicAppointmentsResponse> appointments = appointmentService.getClinicAppointments(locationId, doctorId, patientId, date, filterBy);
+	Response<ClinicAppointmentsResponse> response = new Response<ClinicAppointmentsResponse>();
+	response.setDataList(appointments);
 	return response;
     }
 
     @Path(value = PathProxy.AppointmentUrls.GET_DOCTOR_APPOINTMENTS)
     @GET
     public Response<Appointment> getDoctorAppointments(@QueryParam(value = "locationId") String locationId, @QueryParam(value = "doctorId") String doctorId,
-	    @QueryParam(value = "day") int day, @QueryParam(value = "month") int month, @QueryParam(value = "week") int week, @QueryParam("page") int page,
-	    @QueryParam("size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+    		@QueryParam(value = "patientId") String patientId, @QueryParam(value = "date") String date, @MatrixParam("filterBy") List<String> filterBy, @QueryParam(value = "page") int page, @QueryParam(value = "size") int size) {
 
-	List<Appointment> appointment = appointmentService.getDoctorAppointments(locationId, doctorId, day, month, week, page, size, updatedTime);
+	List<Appointment> appointment = appointmentService.getDoctorAppointments(locationId, doctorId, date, patientId, filterBy, page, size);
 	Response<Appointment> response = new Response<Appointment>();
 	response.setDataList(appointment);
 	return response;
@@ -254,14 +251,64 @@ public class AppointmentApi {
     @Path(value = PathProxy.AppointmentUrls.GET_PATIENT_APPOINTMENTS)
     @GET
     public Response<Appointment> getPatientAppointments(@QueryParam(value = "locationId") String locationId, @QueryParam(value = "doctorId") String doctorId,
-	    @QueryParam(value = "patientId") String patientId, @QueryParam(value = "day") int day, @QueryParam(value = "month") int month,
-	    @QueryParam(value = "week") int week, @QueryParam("page") int page, @QueryParam("size") int size,
-	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+    		@QueryParam(value = "patientId") String patientId, @MatrixParam("filterBy") List<String> filterBy, @QueryParam(value = "page") int page, @QueryParam(value = "size") int size) {
 
-	List<Appointment> appointment = appointmentService.getPatientAppointments(locationId, doctorId, patientId, day, month, week, page, size, updatedTime);
+	List<Appointment> appointment = appointmentService.getPatientAppointments(locationId, doctorId, patientId, filterBy, page, size);
 	Response<Appointment> response = new Response<Appointment>();
 	response.setDataList(appointment);
 	return response;
     }
+    
+    @Path(value = PathProxy.AppointmentUrls.GET_TIME_SLOTS)
+    @GET
+    public Response<Slot> getTimeSlots(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+    		@PathParam("date") String date) {
+    Response<Slot> response = new Response<Slot>();
+	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
+	}
+    Date dateObj = new  Date(Long.parseLong(date));
+	List<Slot> timeSlots = appointmentService.getTimeSlots(doctorId, locationId, dateObj);
+	response.setDataList(timeSlots);
+	return response;
+    }
 
+    @Path(value = PathProxy.AppointmentUrls.ADD_EDIT_EVENT)
+    @POST
+    public Response<Event> addEditEvent(EventRequest request) {
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "request cannot be null");
+	}
+	Event event = appointmentService.addEditEvent(request);
+	
+	Response<Event> response = new Response<Event>();
+	response.setData(event);
+	return response;
+    }
+    
+    @Path(value = PathProxy.AppointmentUrls.CANCEL_EVENT)
+    @DELETE
+    public Response<Boolean> cancelEvent(@PathParam(value = "eventId") String eventId, @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId) {
+	if (DPDoctorUtils.anyStringEmpty(eventId, doctorId, locationId)) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Event Id, DoctorId or LocationId cannot be null");
+	}
+	Boolean event = appointmentService.cancelEvent(eventId, doctorId, locationId);
+	
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(event);
+	return response;
+    }
+    
+    @Path(value = PathProxy.AppointmentUrls.SEND_REMINDER)
+    @GET
+    public Response<Boolean> sendReminder(@PathParam(value = "appointmentId") String appointmentId) {
+	if (DPDoctorUtils.anyStringEmpty(appointmentId)) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Appointment Id cannot be null");
+	}
+	Boolean sendReminder = appointmentService.sendReminder(appointmentId);
+	
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(sendReminder);
+	return response;
+    }
 }

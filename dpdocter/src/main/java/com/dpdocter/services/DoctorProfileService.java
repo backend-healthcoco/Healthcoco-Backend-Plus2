@@ -84,8 +84,6 @@ public interface DoctorProfileService {
 
     DoctorMultipleDataAddEditResponse addEditMultipleData(DoctorMultipleDataAddEditRequest request);
 
-    List<WorkingSchedule> getTimeSlots(String doctorId, String locationId, String day);
-
     Boolean addEditIBS(DoctorAddEditIBSRequest request);
 
 }

@@ -30,7 +30,7 @@ public class SolrDoctorDocument extends DoctorLocation {
     private String emailAddress;
 
     @Field
-    private String phoneNumber;
+    private String mobileNumber;
 
     @Field
     private String imageUrl;
@@ -79,15 +79,15 @@ public class SolrDoctorDocument extends DoctorLocation {
 	this.emailAddress = emailAddress;
     }
 
-    public String getPhoneNumber() {
-	return phoneNumber;
-    }
+    public String getMobileNumber() {
+		return mobileNumber;
+	}
 
-    public void setPhoneNumber(String phoneNumber) {
-	this.phoneNumber = phoneNumber;
-    }
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
 
-    public String getImageUrl() {
+	public String getImageUrl() {
 	return imageUrl;
     }
 
@@ -135,10 +135,11 @@ public class SolrDoctorDocument extends DoctorLocation {
 	this.experience = experience;
     }
 
-    @Override
-    public String toString() {
-	return "SolrDoctorDocument [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", gender=" + gender + ", emailAddress=" + emailAddress
-		+ ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl + ", consultationFee=" + consultationFee + ", workingSchedules=" + workingSchedules
-		+ ", specialities=" + specialities + ", experience=" + experience + "]";
-    }
+	@Override
+	public String toString() {
+		return "SolrDoctorDocument [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", gender=" + gender
+				+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", imageUrl=" + imageUrl
+				+ ", consultationFee=" + consultationFee + ", workingSchedules=" + workingSchedules + ", specialities="
+				+ specialities + ", experience=" + experience + "]";
+	}
 }

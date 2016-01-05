@@ -80,7 +80,7 @@ public interface PathProxy {
 
 	public static final String EDIT_PATIENT_PROFILE = "/patient";
 
-	public static final String EXISTING_PATIENTS_BY_PHONE_NUM = "/existing_patients/{mobileNumber}/{locationId}/{hospitalId}";
+	public static final String EXISTING_PATIENTS_BY_PHONE_NUM = "/existing_patients/{mobileNumber}/{doctorId}/{locationId}/{hospitalId}";
 
 	public static final String EXISTING_PATIENTS_BY_PHONE_NUM_COUNT = "/existing_patients_count/{mobileNumber}";
 
@@ -133,6 +133,8 @@ public interface PathProxy {
 	public static final String GET_USERS = "/users";
 	
 	public static final String DELETE_USER = "/user/{userId}/{locationId}/delete";
+	
+	public static final String ADD_FEEDBACK = "/feedback/add";
 
     }
 
@@ -431,8 +433,6 @@ public interface PathProxy {
 
 	public static final String ON_OFF_IBS = "clinicProfile/editInstantBookingSystem";
 
-	public static final String GET_TIME_SLOTS = "getTimeSlots/{doctorId}/{locationId}";
-
     }
 
     public static final String PATIENT_VISIT_BASE_URL = BASE_URL + "/patientVisit";
@@ -560,15 +560,21 @@ public interface PathProxy {
 
 	public static final String GET_LAB = "/lab/{locationId}";
 
-	public static final String ADD_EDIT_APPOINTMENT_SLOT = "/clinicProfile/addEditAppointmentSlot";
+	public static final String ADD_EDIT_EVENT = "/event";
 
+	public static final String CANCEL_EVENT = "/event/{eventId}/{doctorId}/{locationId}/cancel";
+	
 	public static final String GET_CLINIC_APPOINTMENTS = "/clinic";
 
 	public static final String GET_DOCTOR_APPOINTMENTS = "/doctor";
 
 	public static final String GET_PATIENT_APPOINTMENTS = "/patient";
 	
+	public static final String GET_TIME_SLOTS = "getTimeSlots/{doctorId}/{locationId}/{date}";
+	
 //	public static final String IMPORT = "/import";
+	
+	public static final String SEND_REMINDER = "/sendReminder/{appointmentId}";
     }
 
     public static final String SOLR_CITY_BASE_URL = BASE_URL + "/solr/city";

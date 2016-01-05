@@ -59,7 +59,7 @@ public interface PrescriptionServices {
 
     List<Prescription> getPrescriptionsByIds(List<String> prescriptionIds);
 
-    List<Prescription> getPrescriptionById(String prescriptionId);
+    Prescription getPrescriptionById(String prescriptionId);
 
     List<TemplateAddEditResponseDetails> getTemplates(int page, int size, String doctorId, String hospitalId, String locationId, String updatedTime,
 	    boolean discarded);

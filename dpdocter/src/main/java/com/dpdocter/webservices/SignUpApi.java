@@ -239,7 +239,14 @@ public class SignUpApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	String response = signUpService.verifyUser(tokenId);
-	return "<html><body>" + response + "</body></html>";
+	
+	response = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'><html><head><META http-equiv='Content-Type' content='text/html; charset=utf-8'></head><body>"+
+				"<div><div style='margin-top:130px'><div style='padding:20px 30px;border-radius:3px;background-color:#fefefe;border:1px solid #f1f1f1;line-height:30px;margin-bottom:30px;font-family:&#39;Open Sans&#39;,sans-serif;margin:0px auto'>"+
+				"<div align='center'><h2 style='font-size:20px;color:#2c3335;text-align:center;letter-spacing:1px'>Account Verification</h2>"+
+				"<br><p style='color:#2c3335;font-size:15px;text-align:left'> Your Account is activated successfully. lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum</p><br>"+
+				"<p style='color:#8a6d3b;font-size:15px;text-align:left'>If you don&#39;t receive anything within 5 minutes, submit a support request to let us know.</p>"+
+				"</div></div></div></div></body></html>";	
+	return  response;
     }
 
     @Path(value = PathProxy.SignUpUrls.ACTIVATE_USER)

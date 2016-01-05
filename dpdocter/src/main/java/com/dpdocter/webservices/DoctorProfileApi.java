@@ -477,20 +477,6 @@ public class DoctorProfileApi {
 	return response;
     }
 
-    @Path(value = PathProxy.DoctorProfileUrls.GET_TIME_SLOTS)
-    @GET
-    public Response<WorkingSchedule> getTimeSlots(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
-	    @QueryParam("day") String day) {
-	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
-	}
-
-	List<WorkingSchedule> workingSchedules = doctorProfileService.getTimeSlots(doctorId, locationId, day);
-	Response<WorkingSchedule> response = new Response<WorkingSchedule>();
-	response.setDataList(workingSchedules);
-	return response;
-    }
-
     @Path(value = PathProxy.DoctorProfileUrls.ON_OFF_IBS)
     @POST
     public Response<Boolean> addEditIBS(DoctorAddEditIBSRequest request) {

@@ -443,10 +443,10 @@ public class PrescriptionApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Prescription or Patient Id Cannot Be Empty");
 	}
 
-	List<Prescription> prescriptions = prescriptionServices.getPrescriptionById(prescriptionId);
+	Prescription prescription = prescriptionServices.getPrescriptionById(prescriptionId);
 
 	Response<Prescription> response = new Response<Prescription>();
-	response.setDataList(prescriptions);
+	response.setData(prescription);
 	return response;
     }
 

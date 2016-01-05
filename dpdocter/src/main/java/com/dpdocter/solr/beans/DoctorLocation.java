@@ -53,7 +53,7 @@ public class DoctorLocation {
     private String locality;
 
     @Field
-    private String mobileNumber;
+    private String locationMobileNumber;
 
     @Field
     private String alternateNumber;
@@ -177,15 +177,15 @@ public class DoctorLocation {
 	this.locality = locality;
     }
 
-    public String getMobileNumber() {
-	return mobileNumber;
-    }
+    public String getLocationMobileNumber() {
+		return locationMobileNumber;
+	}
 
-    public void setMobileNumber(String mobileNumber) {
-	this.mobileNumber = mobileNumber;
-    }
+	public void setLocationMobileNumber(String locationMobileNumber) {
+		this.locationMobileNumber = locationMobileNumber;
+	}
 
-    public String getAlternateNumber() {
+	public String getAlternateNumber() {
 	return alternateNumber;
     }
 

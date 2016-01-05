@@ -12,6 +12,7 @@ import com.dpdocter.beans.ClinicLogo;
 import com.dpdocter.beans.ClinicProfile;
 import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.ClinicTiming;
+import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.Reference;
@@ -35,7 +36,7 @@ public interface RegistrationService {
 
     RegisteredPatientDetails registerExistingPatient(PatientRegistrationRequest request);
 
-    List<User> getUsersByPhoneNumber(String phoneNumber, String locationId, String hospitalId);
+    List<User> getUsersByPhoneNumber(String phoneNumber, String doctorId, String locationId, String hospitalId);
 
     RegisteredPatientDetails getPatientProfileByUserId(String userId, String doctorId, String locationId, String hospitalId);
 
@@ -97,5 +98,7 @@ public interface RegistrationService {
 	void deleteUser(String userId, String locationId, Boolean discarded);
 
 	ClinicLabProperties updateLabProperties(ClinicLabProperties request);
+
+	Feedback addFeedback(Feedback request);
 
 }

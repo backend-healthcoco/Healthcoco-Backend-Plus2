@@ -39,6 +39,7 @@ import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.beans.AdvancedSearch;
 import com.dpdocter.solr.beans.AdvancedSearchParameter;
+import com.dpdocter.solr.beans.DoctorLocation;
 import com.dpdocter.solr.beans.SolrWorkingSchedule;
 import com.dpdocter.solr.document.SolrDoctorDocument;
 import com.dpdocter.solr.document.SolrPatientDocument;
@@ -127,10 +128,10 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 
 	    Criteria advancedCriteria = Criteria.where("doctorId").is(doctorId).and("locationId").is(locationId).and("hospitalId").is(hospitalId);
 	    
-	    Criteria criteria = Criteria.where(AdvancedSearchType.FIRST_NAME.getSearchType()).contains(searchTerm)
-	    		           .or(AdvancedSearchType.EMAIL_ADDRESS.getSearchType()).contains(searchTerm)
-	    		           .or(AdvancedSearchType.MOBILE_NUMBER.getSearchType()).contains(searchTerm)
-	    		           .or(AdvancedSearchType.PID.getSearchType()).contains(searchTerm);
+	    Criteria criteria = Criteria.where(AdvancedSearchType.FIRST_NAME.getSearchType()).is(searchTerm)
+	    		           .or(AdvancedSearchType.EMAIL_ADDRESS.getSearchType()).is(searchTerm)
+	    		           .or(AdvancedSearchType.MOBILE_NUMBER.getSearchType()).is(searchTerm)
+	    		           .or(AdvancedSearchType.PID.getSearchType()).is(searchTerm);
 	    
 	    advancedCriteria.and(criteria);
 
@@ -242,16 +243,15 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 		    }
 		    	else {
 			if (advancedCriteria == null) {
-			    advancedCriteria = new Criteria(searchType).contains(searchValue);
+			    advancedCriteria = new Criteria(searchType).is(searchValue);
 			} else {
-			    advancedCriteria = advancedCriteria.and(searchType).contains(searchValue);
+			    advancedCriteria = advancedCriteria.and(searchType).is(searchValue);
 			}
 		    }
 
 		}
 	    }
 	}
-System.out.println(advancedCriteria);
 	return advancedCriteria;
     }
 
@@ -614,9 +614,11 @@ System.out.println(advancedCriteria);
     public void addEditGeneralInfo(DoctorGeneralInfo request) {
 	try {
 	    SolrDoctorDocument doctorDocuments = solrDoctorRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
-	    doctorDocuments.setConsultationFee(request.getConsultationFee());
-	    solrDoctorRepository.save(doctorDocuments);
-	    transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, true);
+	    if(doctorDocuments != null){
+	    	doctorDocuments.setConsultationFee(request.getConsultationFee());
+		    solrDoctorRepository.save(doctorDocuments);
+		    transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, true);
+	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}
@@ -652,7 +654,10 @@ System.out.println(advancedCriteria);
 		try {
 		    List<SolrDoctorDocument> doctorDocuments = solrDoctorRepository.findByLocationId(clinicProfileUpdateResponse.getId());
 		    for (SolrDoctorDocument doctorDocument : doctorDocuments) {
+		    String mobileNumber = doctorDocument.getMobileNumber();
 			BeanUtil.map(clinicProfileUpdateResponse, doctorDocument);
+			doctorDocument.setMobileNumber(mobileNumber);
+			doctorDocument.setLocationMobileNumber(clinicProfileUpdateResponse.getMobileNumber());
 			solrDoctorRepository.save(doctorDocument);
 			transnationalService.addResource(clinicProfileUpdateResponse.getId(), Resource.LOCATION, true);
 		    }
@@ -701,6 +706,20 @@ System.out.println(advancedCriteria);
 		    	
 			solrDoctorRepository.save(doctorDocument);
 			transnationalService.addResource(clinicLabProperties.getId(), Resource.LOCATION, true);
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void editLocation(DoctorLocation doctorLocation) {
+		try {
+		    List<SolrDoctorDocument> doctorDocuments = solrDoctorRepository.findByLocationId(doctorLocation.getLocationId());
+		    for (SolrDoctorDocument doctorDocument : doctorDocuments) {
+				BeanUtil.map(doctorLocation, doctorDocument);
+				solrDoctorRepository.save(doctorDocument);
+				transnationalService.addResource(doctorLocation.getLocationId(), Resource.LOCATION, true);
 		    }
 		} catch (Exception e) {
 		    e.printStackTrace();

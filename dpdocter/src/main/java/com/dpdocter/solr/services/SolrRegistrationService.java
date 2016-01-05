@@ -14,6 +14,7 @@ import com.dpdocter.request.DoctorSpecialityAddEditRequest;
 import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
 import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.solr.beans.AdvancedSearch;
+import com.dpdocter.solr.beans.DoctorLocation;
 import com.dpdocter.solr.document.SolrDoctorDocument;
 import com.dpdocter.solr.document.SolrPatientDocument;
 import com.dpdocter.solr.response.SolrPatientResponseDetails;
@@ -56,5 +57,7 @@ public interface SolrRegistrationService {
 	void updateClinicSpecialization(ClinicSpecialization clinicSpecializationUpdateResponse);
 
 	void updateLabProperties(ClinicLabProperties clinicLabProperties);
+
+	void editLocation(DoctorLocation doctorLocation);
 
 }
