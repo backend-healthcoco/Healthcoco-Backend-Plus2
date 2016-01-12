@@ -165,8 +165,15 @@ public class SolrCityServiceImpl implements SolrCityService {
 		    SolrCityDocument city = solrCityRepository.findOne(document.getCityId());
 		    SolrCityLandmarkLocalityResponse landmark = new SolrCityLandmarkLocalityResponse();
 		    BeanUtil.map(document, landmark);
-		    if (city != null)
-			landmark.setCity(city.getCity());
+		    if (city != null){
+		    	landmark.setCity(city.getCity());
+		    	SolrStateDocument state = solrStateRepository.findOne(city.getStateId());
+			    if(state != null){
+			    	landmark.setState(state.getState());
+			    	SolrCountryDocument country = solrCountryRepository.findOne(state.getCountryId());
+			    	if(country != null) landmark.setCountry(country.getCountry());
+			    }
+		    }
 		    response.add(landmark);
 		}
 	    }
@@ -175,15 +182,32 @@ public class SolrCityServiceImpl implements SolrCityService {
 		    SolrCityDocument city = solrCityRepository.findOne(document.getCityId());
 		    SolrCityLandmarkLocalityResponse locality = new SolrCityLandmarkLocalityResponse();
 		    BeanUtil.map(document, locality);
-		    if (city != null)
-			locality.setCity(city.getCity());
+		    if (city != null){
+		    	locality.setCity(city.getCity());
+		    	SolrStateDocument state = solrStateRepository.findOne(city.getStateId());
+			    if(state != null){
+			    	locality.setState(state.getState());
+			    	SolrCountryDocument country = solrCountryRepository.findOne(state.getCountryId());
+			    	if(country != null) locality.setCountry(country.getCountry());
+			    }
+		    }
 		    response.add(locality);
 		}
 	    }
 	    if (cities != null && !cities.isEmpty()) {
-		List<SolrCityLandmarkLocalityResponse> citiesResponse = new ArrayList<SolrCityLandmarkLocalityResponse>();
-		BeanUtil.map(cities, citiesResponse);
-		response.addAll(citiesResponse);
+		for (SolrCityDocument document : cities) {
+			SolrCityLandmarkLocalityResponse city = new SolrCityLandmarkLocalityResponse();
+		    BeanUtil.map(document, city);
+		    if (city != null){
+		    	SolrStateDocument state = solrStateRepository.findOne(document.getStateId());
+			    if(state != null){
+			    	city.setState(state.getState());
+			    	SolrCountryDocument country = solrCountryRepository.findOne(state.getCountryId());
+			    	if(country != null) city.setCountry(country.getCountry());
+			    }
+		    }
+		    response.add(city);
+		}
 	    }
 	    if (response != null && !response.isEmpty() && response.size() > 30)
 		response = response.subList(0, 29);

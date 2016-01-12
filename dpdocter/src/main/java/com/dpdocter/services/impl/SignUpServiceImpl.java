@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.ws.rs.core.UriInfo;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -190,7 +192,7 @@ public class SignUpServiceImpl implements SignUpService {
     }
 
     @Override
-    public DoctorSignUp doctorSignUp(DoctorSignupRequest request) {
+    public DoctorSignUp doctorSignUp(DoctorSignupRequest request, UriInfo uriInfo) {
 	DoctorSignUp response = null;
 
 	try {
@@ -298,7 +300,7 @@ public class SignUpServiceImpl implements SignUpService {
 
 	    // send activation email
 	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
-		    userCollection.getMiddleName(), userCollection.getLastName(), tokenCollection.getId());
+		    userCollection.getMiddleName(), userCollection.getLastName(), tokenCollection.getId(), uriInfo);
 	    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
 
 	    // user.setPassword(null);
@@ -453,7 +455,7 @@ public class SignUpServiceImpl implements SignUpService {
     }
 
     @Override
-    public DoctorSignUp doctorHandheldContinue(DoctorSignupHandheldContinueRequest request) {
+    public DoctorSignUp doctorHandheldContinue(DoctorSignupHandheldContinueRequest request, UriInfo uriInfo) {
 	DoctorSignUp response = null;
 
 	try {
@@ -525,7 +527,7 @@ public class SignUpServiceImpl implements SignUpService {
 
 	    // send activation email
 	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
-		    userCollection.getMiddleName(), userCollection.getLastName(), tokenCollection.getId());
+		    userCollection.getMiddleName(), userCollection.getLastName(), tokenCollection.getId(), uriInfo);
 	    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
 
 	    // user.setPassword(null);
@@ -760,7 +762,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
 	    if (userCollections != null && !userCollections.isEmpty()) {
 		for (UserCollection userCollection : userCollections) {
-		    PatientCollection patientCollection = patientRepository.findByUserId(userCollection.getId());
+		    List<PatientCollection> patientCollection = patientRepository.findByUserId(userCollection.getId());
 		    if (patientCollection != null && userCollection.isSignedUp()) {
 			response = true;
 			break;
@@ -790,12 +792,14 @@ public class SignUpServiceImpl implements SignUpService {
 			    if (matchName(userCollection.getFirstName(), userCollection.getLastName(), request.getName())) {
 				userCollection.setPassword(request.getPassword());
 				userCollection.setEmailAddress(request.getEmailAddress());
-				PatientCollection patientCollection = patientRepository.findByUserId(userCollection.getId());
-				if (patientCollection != null) {
-				    patientCollection.setEmailAddress(request.getEmailAddress());
+				List<PatientCollection> patientCollections = patientRepository.findByUserId(userCollection.getId());
+				if (patientCollections != null) {
+				    for(PatientCollection patientCollection : patientCollections){
+				    	patientCollection.setEmailAddress(request.getEmailAddress());
+				    }
 				}
 				userRepository.save(userCollection);
-				patientRepository.save(patientCollection);
+//				patientRepository.save(patientCollection);
 				user = new User();
 				BeanUtil.map(userCollection, user);
 				break;

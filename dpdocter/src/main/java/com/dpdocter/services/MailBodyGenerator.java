@@ -7,7 +7,7 @@ import javax.ws.rs.core.UriInfo;
 import com.dpdocter.collections.UserCollection;
 
 public interface MailBodyGenerator {
-    public String generateActivationEmailBody(String userName, String fName, String mName, String lName, String tokenId) throws Exception;
+    public String generateActivationEmailBody(String userName, String fName, String mName, String lName, String tokenId, UriInfo uriInfo) throws Exception;
 
     public String generateForgotPasswordEmailBody(String userName, String fName, String mName, String lName, String userId, UriInfo uriInfo);
 

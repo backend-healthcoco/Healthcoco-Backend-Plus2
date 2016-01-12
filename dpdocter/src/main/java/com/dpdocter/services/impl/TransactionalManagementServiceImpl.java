@@ -49,6 +49,7 @@ import com.dpdocter.repository.NotesRepository;
 import com.dpdocter.repository.ObservationRepository;
 import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.StateRepository;
 import com.dpdocter.repository.TransnationalRepositiory;
 import com.dpdocter.repository.UserLocationRepository;
@@ -154,7 +155,10 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     @Autowired
     private SolrClinicalNotesService solrClinicalNotesService;
     
-    @Scheduled(fixedRate = 300000)
+    @Autowired
+    private ReferenceRepository ReferenceRepository;
+
+//    @Scheduled(fixedRate = 300000)
     public void checkResources() {
 	System.out.println(">>> Scheduled test service <<<");
 	List<TransactionalCollection> transactionalCollections = null;
@@ -226,14 +230,14 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	TransactionalCollection transactionalCollection = null;
 	try {
 	    transactionalCollection = transnationalRepositiory.findByResourceIdAndResource(resourceId, resource.getType());
-	    if (transactionalCollection == null) {
+	    if (transactionalCollection == null || !isCached) {
 		transactionalCollection = new TransactionalCollection();
 		transactionalCollection.setResourceId(resourceId);
 		transactionalCollection.setResource(resource);
 		transactionalCollection.setIsCached(isCached);
 		transnationalRepositiory.save(transactionalCollection);
 	    }
-	    if (transactionalCollection != null) {
+	    else if (transactionalCollection != null) {
 		transactionalCollection.setIsCached(isCached);
 		transnationalRepositiory.save(transactionalCollection);
 	    }
@@ -248,29 +252,31 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     public void checkPatient(String id) {
 	try {
 	    UserCollection userCollection = userRepository.findOne(id);
-	    PatientCollection patientCollection = patientRepository.findByUserId(id);
-	    if (userCollection != null && patientCollection != null) {
-		PatientAdmissionCollection patientAdmissionCollection = patientAdmissionRepository.findByUserIdAndDoctorId(id, patientCollection.getDoctorId());
-		AddressCollection addressCollection = null;
-		if (patientCollection.getAddressId() != null)
-		    addressCollection = addressRepository.findOne(patientCollection.getAddressId());
-		SolrPatientDocument patientDocument = new SolrPatientDocument();
+	    List<PatientCollection> patientCollections = patientRepository.findByUserId(id);
+	    if (userCollection != null && patientCollections != null) {
+	    	for(PatientCollection patientCollection : patientCollections){
+	    		PatientAdmissionCollection patientAdmissionCollection = patientAdmissionRepository.findByUserIdAndDoctorId(id, patientCollection.getDoctorId());
+	    		AddressCollection addressCollection = null;
+	    		if (patientCollection.getAddressId() != null)
+	    		    addressCollection = addressRepository.findOne(patientCollection.getAddressId());
+	    		SolrPatientDocument patientDocument = new SolrPatientDocument();
 
-		if (patientCollection.getDob() != null) {
-		    patientDocument.setDays(patientCollection.getDob().getDays() + "");
-		    patientDocument.setMonths(patientCollection.getDob().getMonths() + "");
-		    patientDocument.setYears(patientCollection.getDob().getYears() + "");
-		}
-		BeanUtil.map(userCollection, patientDocument);
-		BeanUtil.map(patientCollection, patientDocument);
-		BeanUtil.map(patientAdmissionCollection, patientDocument);
-		if (addressCollection != null)
-		    BeanUtil.map(addressCollection, patientDocument);
+	    		if (patientCollection.getDob() != null) {
+	    		    patientDocument.setDays(patientCollection.getDob().getDays() + "");
+	    		    patientDocument.setMonths(patientCollection.getDob().getMonths() + "");
+	    		    patientDocument.setYears(patientCollection.getDob().getYears() + "");
+	    		}
+	    		BeanUtil.map(userCollection, patientDocument);
+	    		BeanUtil.map(patientCollection, patientDocument);
+	    		BeanUtil.map(patientAdmissionCollection, patientDocument);
+	    		if (addressCollection != null)
+	    		    BeanUtil.map(addressCollection, patientDocument);
 
-		patientDocument.setId(patientCollection.getId());
-		patientDocument.setReferredBy(patientAdmissionCollection.getReferredBy());
+	    		patientDocument.setId(patientCollection.getId());
+	    		patientDocument.setReferredBy(patientAdmissionCollection.getReferredBy());
 
-		solrRegistrationService.editPatient(patientDocument);
+	    		solrRegistrationService.editPatient(patientDocument);
+	    	}
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();

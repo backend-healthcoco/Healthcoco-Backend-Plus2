@@ -21,7 +21,7 @@ public interface SolrPatientRepository extends SolrCrudRepository<SolrPatientDoc
     List<SolrPatientDocument> findByFirstName(String doctorId, String locationId, String hospitalId, String searchValue, Pageable pageRequest);
 
     @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND firstName:*?3*")
-    List<SolrPatientDocument> findByFirstName(String doctorId, String locationId, String hospitalId, String searchValue, Sort sort);
+    List<SolrPatientDocument> findByFirstName(String doctorId, String locationId, String hospitalId, String searchValue);
 
     // @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND middleName:*?3*")
     // List<SolrPatientDocument> findByMiddleName(String doctorId, String

@@ -2,10 +2,9 @@ package com.dpdocter.request;
 
 import java.util.Date;
 
-import com.dpdocter.beans.Timing;
 import com.dpdocter.beans.WorkingHours;
-import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentCreatedBy;
+import com.dpdocter.enums.AppointmentState;
 
 public class AppointmentRequest {
 
@@ -16,6 +15,8 @@ public class AppointmentRequest {
     private String doctorId;
 
     private String locationId;
+    
+    private String hospitalId;
 
     private String patientId;
 
@@ -129,12 +130,20 @@ public class AppointmentRequest {
 		this.notifyDoctorByEmail = notifyDoctorByEmail;
 	}
 
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentRequest [appointmentId=" + appointmentId + ", state=" + state + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", patientId=" + patientId + ", time=" + time + ", date=" + date
-				+ ", createdBy=" + createdBy + ", notifyPatientBySms=" + notifyPatientBySms + ", notifyPatientByEmail="
-				+ notifyPatientByEmail + ", notifyDoctorBySms=" + notifyDoctorBySms + ", notifyDoctorByEmail="
-				+ notifyDoctorByEmail + "]";
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", time="
+				+ time + ", date=" + date + ", createdBy=" + createdBy + ", notifyPatientBySms=" + notifyPatientBySms
+				+ ", notifyPatientByEmail=" + notifyPatientByEmail + ", notifyDoctorBySms=" + notifyDoctorBySms
+				+ ", notifyDoctorByEmail=" + notifyDoctorByEmail + "]";
 	}
 }

@@ -26,4 +26,7 @@ public interface UserLocationRepository extends MongoRepository<UserLocationColl
     @Query("{'locationId' : ?0}")
     List<UserLocationCollection> findByLocationId(String locationId, Sort sort);
 
+    @Query("{'userId':{$in: ?0}, 'locationId':?1}")
+    List<UserLocationCollection> findByUserIdAndLocationId(List<String> doctorId, String locationId);
+
 }

@@ -101,6 +101,8 @@ public interface PathProxy {
 	public static final String GET_CLINIC_DETAILS = "/settings/getClinicDetails/{clinicId}";
 
 	public static final String UPDATE_CLINIC_PROFILE = "/settings/updateClinicProfile";
+	
+	public static final String UPDATE_CLINIC_PROFILE_HANDHELD = "/settings/updateClinicProfileHandheld";
 
 	public static final String UPDATE_CLINIC_SPECIALIZATION = "/settings/updateClinicSpecialization";
 
@@ -564,15 +566,11 @@ public interface PathProxy {
 
 	public static final String CANCEL_EVENT = "/event/{eventId}/{doctorId}/{locationId}/cancel";
 	
-	public static final String GET_CLINIC_APPOINTMENTS = "/clinic";
-
-	public static final String GET_DOCTOR_APPOINTMENTS = "/doctor";
-
 	public static final String GET_PATIENT_APPOINTMENTS = "/patient";
 	
 	public static final String GET_TIME_SLOTS = "getTimeSlots/{doctorId}/{locationId}/{date}";
 	
-//	public static final String IMPORT = "/import";
+	public static final String IMPORT = "/import";
 	
 	public static final String SEND_REMINDER = "/sendReminder/{appointmentId}";
     }

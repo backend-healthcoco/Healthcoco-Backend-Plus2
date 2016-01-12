@@ -52,10 +52,10 @@ public interface SolrDoctorRepository extends SolrCrudRepository<SolrDoctorDocum
 	List<SolrDoctorDocument> findByCityLocationName(String city, String location, String searchTerm);
     
     @Query("city : ?0* AND (landmarkDetails: ?1* OR streetAddress: ?1* OR locality: ?1*) AND locationId : ?2 AND isLab : ?3")
-	SolrDoctorDocument findLabByCityLocationName(String city, String location, String locationId, boolean isLab);
+	List<SolrDoctorDocument> findLabByCityLocationName(String city, String location, String locationId, boolean isLab);
 
     @Query("city : ?0* AND locationId : ?1 AND isLab : ?2")
-	SolrDoctorDocument findLabByCity(String city, String locationId, boolean isLab);
+	List<SolrDoctorDocument> findLabByCity(String city, String locationId, boolean isLab);
 
     @Query("city : ?0* AND (landmarkDetails: ?1* OR streetAddress: ?1* OR locality: ?1*) AND isLab : ?2")
 	SolrDoctorDocument findLabByCityLocationName(String city, String location, boolean isLab);
@@ -80,4 +80,7 @@ public interface SolrDoctorRepository extends SolrCrudRepository<SolrDoctorDocum
 
     @Query("(landmarkDetails: ?0* OR streetAddress: ?0* OR locality: ?0*) AND locationName : ?1*")
 	List<SolrDoctorDocument> findByLocationLocationName(String location, String searchTerm);
+
+    @Query("!geofilt sfield='geoLocation'  pt=?0,?1 d=10 AND locationId : ?2 AND isLab : ?3 ")
+	List<SolrDoctorDocument> findLabByLatLong(String latitude, String longitude, String locationId, boolean isLab);
 }

@@ -15,13 +15,13 @@ import com.dpdocter.collections.PatientCollection;
 @Repository
 public interface PatientRepository extends MongoRepository<PatientCollection, String> {
     @Query("{'userId': ?0}")
-    PatientCollection findByUserId(String userId);
+    List<PatientCollection> findByUserId(String userId);
 
     @Query("{'userId': {'$in': ?0}}")
     List<PatientCollection> findByUserId(List<String> userIds);
 
     @Query("{'userId': ?0,'doctorId': ?1,'locationId': ?2,'hospitalId': ?3}")
-    public PatientCollection findByUserIdDoctorIdLocationIdAndHospitalId(String userId, String doctorId, String locationId, String hospitalId);
+    PatientCollection findByUserIdDoctorIdLocationIdAndHospitalId(String userId, String doctorId, String locationId, String hospitalId);
 
     @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}}")
     List<PatientCollection> findByDoctorId(String doctorId, Date date, Sort sort);
@@ -36,12 +36,10 @@ public interface PatientRepository extends MongoRepository<PatientCollection, St
     List<PatientCollection> findByUserIdDoctorId(Collection<String> patientIds, String doctorId, Sort sort);
 
     @Query("{'userId': {'$in': ?0}, 'doctorId':?1,'locationId': ?2,'hospitalId': ?3}")
-    List<PatientCollection> findByUserIdDoctorIdLocationIdHospitalId(Collection<String> patientIds, String doctorId, String locationId, String hospitalId,
-	    Pageable pageRequest);
+    List<PatientCollection> findByUserIdDoctorIdLocationIdHospitalId(Collection<String> patientIds, String doctorId, String locationId, String hospitalId, Pageable pageRequest);
 
     @Query("{'userId': {'$in': ?0}, 'doctorId':?1,'locationId': ?2,'hospitalId': ?3}")
-    List<PatientCollection> findByUserIdDoctorIdLocationIdHospitalId(Collection<String> patientIds, String doctorId, String locationId, String hospitalId,
-	    Sort sort);
+    List<PatientCollection> findByUserIdDoctorIdLocationIdHospitalId(Collection<String> patientIds, String doctorId, String locationId, String hospitalId, Sort sort);
 
     @Query("{'userId': {'$in': ?0}, 'doctorId':?1}")
     List<PatientCollection> findByUserIdDoctorId(Collection<String> patientIds, String doctorId, Pageable pageRequest);

@@ -51,7 +51,7 @@ public class Location {
 
     private String mobileNumber;
 
-    private String alternateNumber;
+    private List<String> alternateNumber;
 
     private List<WorkingSchedule> workingSchedules;
 
@@ -225,11 +225,11 @@ public class Location {
 	this.mobileNumber = mobileNumber;
     }
 
-    public String getAlternateNumber() {
+    public List<String> getAlternateNumber() {
 	return alternateNumber;
     }
 
-    public void setAlternateNumber(String alternateNumber) {
+    public void setAlternateNumber(List<String> alternateNumber) {
 	this.alternateNumber = alternateNumber;
     }
 

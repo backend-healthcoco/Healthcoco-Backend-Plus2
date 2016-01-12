@@ -18,7 +18,13 @@ public class AppointmentBookedSlotCollection extends GenericCollection{
     private String appointmentId;
 
 	@Field
-    private String userLocationId;
+    private String doctorId;
+
+    @Field
+    private String locationId;
+
+    @Field
+    private String hospitalId;
 
     @Field
     private WorkingHours time;
@@ -42,12 +48,28 @@ public class AppointmentBookedSlotCollection extends GenericCollection{
 		this.appointmentId = appointmentId;
 	}
 
-	public String getUserLocationId() {
-		return userLocationId;
+	public String getDoctorId() {
+		return doctorId;
 	}
 
-	public void setUserLocationId(String userLocationId) {
-		this.userLocationId = userLocationId;
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
 	}
 
 	public WorkingHours getTime() {
@@ -68,7 +90,8 @@ public class AppointmentBookedSlotCollection extends GenericCollection{
 
 	@Override
 	public String toString() {
-		return "AppointmentBookedSlotCollection [id=" + id + ", appointmentId=" + appointmentId + ", userLocationId="
-				+ userLocationId + ", time=" + time + ", date=" + date + "]";
+		return "AppointmentBookedSlotCollection [id=" + id + ", appointmentId=" + appointmentId + ", doctorId="
+				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", time=" + time + ", date="
+				+ date + "]";
 	}
 }

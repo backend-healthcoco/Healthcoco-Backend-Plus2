@@ -2,19 +2,23 @@ package com.dpdocter.beans;
 
 import java.util.Date;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.AppointmentState;
-import com.dpdocter.enums.Day;
+import com.dpdocter.enums.AppointmentType;
 
 public class Appointment extends GenericCollection {
 
     private String id;
 
-    private String time;
+    private String doctorId;
+
+    private String locationId;
+
+    private String hospitalId;
+
+    private WorkingHours time;
     
-    private String patientId;
+    private PatientCard patient;
 
     private AppointmentState state;
 
@@ -23,6 +27,14 @@ public class Appointment extends GenericCollection {
     private Date date;
 
     private String appointmentId;
+    
+    private String subject;
+
+    private String description;
+
+    private AppointmentType type;
+    
+    private Boolean isCalenderBlocked = false;
 
 	public String getId() {
 		return id;
@@ -32,20 +44,20 @@ public class Appointment extends GenericCollection {
 		this.id = id;
 	}
 
-	public String getTime() {
+	public WorkingHours getTime() {
 		return time;
 	}
 
-	public void setTime(String time) {
+	public void setTime(WorkingHours time) {
 		this.time = time;
 	}
 
-	public String getPatientId() {
-		return patientId;
+	public PatientCard getPatient() {
+		return patient;
 	}
 
-	public void setPatientId(String patientId) {
-		this.patientId = patientId;
+	public void setPatient(PatientCard patient) {
+		this.patient = patient;
 	}
 
 	public AppointmentState getState() {
@@ -80,9 +92,67 @@ public class Appointment extends GenericCollection {
 		this.appointmentId = appointmentId;
 	}
 
+	public String getSubject() {
+		return subject;
+	}
+
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public AppointmentType getType() {
+		return type;
+	}
+
+	public void setType(AppointmentType type) {
+		this.type = type;
+	}
+
+	public Boolean getIsCalenderBlocked() {
+		return isCalenderBlocked;
+	}
+
+	public void setIsCalenderBlocked(Boolean isCalenderBlocked) {
+		this.isCalenderBlocked = isCalenderBlocked;
+	}
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
 	@Override
 	public String toString() {
-		return "Appointment [id=" + id + ", time=" + time + ", patientId=" + patientId + ", state=" + state
-				+ ", isReschduled=" + isReschduled + ", date=" + date + ", appointmentId=" + appointmentId + "]";
+		return "Appointment [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", time=" + time + ", patient=" + patient + ", state=" + state + ", isReschduled="
+				+ isReschduled + ", date=" + date + ", appointmentId=" + appointmentId + ", subject=" + subject
+				+ ", description=" + description + ", type=" + type + ", isCalenderBlocked=" + isCalenderBlocked + "]";
 	}
 }

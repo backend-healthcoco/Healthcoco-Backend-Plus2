@@ -1,5 +1,7 @@
 package com.dpdocter.services;
 
+import javax.ws.rs.core.UriInfo;
+
 import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.User;
 import com.dpdocter.request.DoctorSignupHandheldContinueRequest;
@@ -12,7 +14,7 @@ import com.dpdocter.request.PatientSignupRequestMobile;
 public interface SignUpService {
     Boolean activateUser(String tokenId);
 
-    DoctorSignUp doctorSignUp(DoctorSignupRequest request);
+    DoctorSignUp doctorSignUp(DoctorSignupRequest request, UriInfo uriInfo);
 
     User patientSignUp(PatientSignUpRequest request);
 
@@ -26,7 +28,7 @@ public interface SignUpService {
 
     DoctorSignUp doctorHandheld(DoctorSignupHandheldRequest request);
 
-    DoctorSignUp doctorHandheldContinue(DoctorSignupHandheldContinueRequest request);
+    DoctorSignUp doctorHandheldContinue(DoctorSignupHandheldContinueRequest request, UriInfo uriInfo);
 
     String verifyUser(String tokenId);
 

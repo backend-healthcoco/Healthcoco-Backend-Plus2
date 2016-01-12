@@ -19,7 +19,7 @@ import com.dpdocter.services.MailBodyGenerator;
 @Service
 public class MailBodyGeneratorImpl implements MailBodyGenerator {
 
-    @Value(value = "${LINK}")
+    @Value(value = "${VERIFY_LINK}")
     private String link;
 
     @Value(value = "${RESET_PASSWORD_LINK}")
@@ -29,12 +29,12 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
     private VelocityEngine velocityEngine;
 
     @Override
-    public String generateActivationEmailBody(String userName, String fName, String mName, String lName, String tokenId) throws Exception {
+    public String generateActivationEmailBody(String userName, String fName, String mName, String lName, String tokenId, UriInfo uriInfo) throws Exception {
 
 	Map<String, Object> model = new HashMap<String, Object>();
 	model.put("fName", fName);
 	model.put("lName", lName);
-	model.put("link", link + "signup/verify/" + tokenId);
+	model.put("link", uriInfo.getBaseUri() + link + tokenId);
 	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "mailTemplate.vm", "UTF-8", model);
 	return text;
     }

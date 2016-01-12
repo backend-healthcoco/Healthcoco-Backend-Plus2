@@ -6,6 +6,12 @@ public class PatientGroupAddEditRequest {
 
     private String patientId;
 
+    private String doctorId;
+
+    private String locationId;
+
+    private String hospitaId;
+
     private List<String> groupIds;
 
     public String getPatientId() {
@@ -16,7 +22,31 @@ public class PatientGroupAddEditRequest {
 	this.patientId = patientId;
     }
 
-    public List<String> getGroupIds() {
+    public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitaId() {
+		return hospitaId;
+	}
+
+	public void setHospitaId(String hospitaId) {
+		this.hospitaId = hospitaId;
+	}
+
+	public List<String> getGroupIds() {
 	return groupIds;
     }
 
@@ -24,9 +54,9 @@ public class PatientGroupAddEditRequest {
 	this.groupIds = groupIds;
     }
 
-    @Override
-    public String toString() {
-	return "PatientGroupAddEditRequest [patientId=" + patientId + ", groupIds=" + groupIds + "]";
-    }
-
+	@Override
+	public String toString() {
+		return "PatientGroupAddEditRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitaId=" + hospitaId + ", groupIds=" + groupIds + "]";
+	}
 }

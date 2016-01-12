@@ -760,5 +760,4 @@ public class PrescriptionApi {
 	response.setData(true);
 	return response;
     }
-
 }

@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
+import org.eclipse.jdt.internal.core.builder.ReferenceCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -23,6 +24,7 @@ import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Group;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PatientCard;
+import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.collections.AddressCollection;
 import com.dpdocter.collections.DoctorContactCollection;
@@ -32,6 +34,7 @@ import com.dpdocter.collections.ImportContactsRequestCollection;
 import com.dpdocter.collections.PatientAdmissionCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
+import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -46,6 +49,7 @@ import com.dpdocter.repository.ImportContactsRequestRepository;
 import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientGroupRepository;
 import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.ExportContactsRequest;
 import com.dpdocter.request.GetDoctorContactsRequest;
@@ -96,6 +100,8 @@ public class ContactsServiceImpl implements ContactsService {
     @Autowired
     private HistoryRepository historyRepository;
 
+    @Autowired
+    private ReferenceRepository referenceRepository;
     /**
      * This method returns all unblocked or blocked patients (based on param
      * blocked) of specified doctor.
@@ -428,7 +434,8 @@ public class ContactsServiceImpl implements ContactsService {
 		patientGroupCollection = patientGroupRepository.findByGroupId(groupCollection.getId());
 		if (patientGroupCollection != null) {
 		    for (PatientGroupCollection patientGroup : patientGroupCollection) {
-			PatientCollection patientCollection = patientRepository.findByUserId(patientGroup.getPatientId());
+			PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientGroup.getPatientId(), 
+					groupCollection.getDoctorId(), groupCollection.getLocationId(), groupCollection.getHospitalId());
 			if (patientCollection != null) {
 			    patientCollection.setUpdatedTime(new Date());
 			    patientCollection = patientRepository.save(patientCollection);
@@ -648,7 +655,13 @@ public class ContactsServiceImpl implements ContactsService {
 		    if (patientCollection.getDob() != null) {
 			registeredPatientDetail.setDob(patientCollection.getDob());
 		    }
-
+		    PatientAdmissionCollection patientAdmissionCollection = patientAdmissionRepository.findByPatientIdAndDoctorId(userCollection.getId(), doctorId);
+		    if(patientAdmissionCollection != null){
+		    	Reference reference = new Reference();
+		    	ReferencesCollection referencesCollection = referenceRepository.findOne(patientAdmissionCollection.getReferredBy());
+		    	if(referencesCollection != null)BeanUtil.map(referencesCollection, reference);
+		    	registeredPatientDetail.setReferredBy(reference);
+		    }
 		    registeredPatientDetails.add(registeredPatientDetail);
 		}
 	    }
@@ -664,7 +677,7 @@ public class ContactsServiceImpl implements ContactsService {
     @Override
     public PatientGroupAddEditRequest addGroupToPatient(PatientGroupAddEditRequest request) {
 	PatientGroupAddEditRequest response = new PatientGroupAddEditRequest();
-	PatientCollection patientCollection = patientRepository.findByUserId(request.getPatientId());
+	PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(request.getPatientId(), request.getDoctorId(), request.getLocationId(), request.getHospitaId());
 	try {
 	    List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(request.getPatientId());
 	    if (patientGroupCollections != null && !patientGroupCollections.isEmpty()) {

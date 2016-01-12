@@ -3,10 +3,13 @@ package com.dpdocter.request;
 import java.util.Date;
 
 import com.dpdocter.beans.WorkingHours;
+import com.dpdocter.enums.AppointmentState;
 
 public class EventRequest {
 
-	private String id;
+    private String id;
+
+    private AppointmentState state;
 
     private String subject;
 
@@ -28,6 +31,14 @@ public class EventRequest {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public AppointmentState getState() {
+		return state;
+	}
+
+	public void setState(AppointmentState state) {
+		this.state = state;
 	}
 
 	public String getSubject() {
@@ -88,8 +99,8 @@ public class EventRequest {
 
 	@Override
 	public String toString() {
-		return "EventRequest [id=" + id + ", subject=" + subject + ", description=" + description + ", locationId="
-				+ locationId + ", doctorId=" + doctorId + ", time=" + time + ", isCalenderBlocked=" + isCalenderBlocked
-				+ ", date=" + date + "]";
+		return "EventRequest [id=" + id + ", state=" + state + ", subject=" + subject + ", description=" + description
+				+ ", locationId=" + locationId + ", doctorId=" + doctorId + ", time=" + time + ", isCalenderBlocked="
+				+ isCalenderBlocked + ", date=" + date + "]";
 	}
 }

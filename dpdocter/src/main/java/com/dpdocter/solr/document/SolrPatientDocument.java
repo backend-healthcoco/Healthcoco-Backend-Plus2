@@ -28,10 +28,7 @@ public class SolrPatientDocument {
     private String firstName;
 
     @Field
-    private String middleName;
-
-    @Field
-    private String lastName;
+    private String firstNameWithoutSpace;
 
     @Field
     private String gender;
@@ -133,25 +130,18 @@ public class SolrPatientDocument {
 
     public void setFirstName(String firstName) {
 	this.firstName = firstName;
+	setFirstNameWithoutSpace(firstName);
     }
 
-    public String getMiddleName() {
-	return middleName;
-    }
+    public String getFirstNameWithoutSpace() {
+		return firstNameWithoutSpace;
+	}
 
-    public void setMiddleName(String middleName) {
-	this.middleName = middleName;
-    }
+	public void setFirstNameWithoutSpace(String firstNameWithoutSpace) {
+		this.firstNameWithoutSpace = firstNameWithoutSpace.replaceAll("\\s+","");
+	}
 
-    public String getLastName() {
-	return lastName;
-    }
-
-    public void setLastName(String lastName) {
-	this.lastName = lastName;
-    }
-
-    public String getGender() {
+	public String getGender() {
 	return gender;
     }
 
@@ -319,13 +309,16 @@ public class SolrPatientDocument {
 	this.thumbnailUrl = thumbnailUrl;
     }
 
-    @Override
-    public String toString() {
-	return "SolrPatientDocument [id=" + id + ", userId=" + userId + ", PID=" + PID + ", userName=" + userName + ", firstName=" + firstName
-		+ ", middleName=" + middleName + ", lastName=" + lastName + ", gender=" + gender + ", bloodGroup=" + bloodGroup + ", emailAddress="
-		+ emailAddress + ", days=" + days + ", months=" + months + ", years=" + years + ", dob=" + dob + ", city=" + city + ", locality=" + locality
-		+ ", postalCode=" + postalCode + ", mobileNumber=" + mobileNumber + ", profession=" + profession + ", doctorId=" + doctorId + ", locationId="
-		+ locationId + ", hospitalId=" + hospitalId + ", referredBy=" + referredBy + ", createdTime=" + createdTime + ", imageUrl=" + imageUrl
-		+ ", thumbnailUrl=" + thumbnailUrl + ", colorCode=" + colorCode + ", registrationDate=" + registrationDate + "]";
-    }
+	@Override
+	public String toString() {
+		return "SolrPatientDocument [id=" + id + ", userId=" + userId + ", PID=" + PID + ", userName=" + userName
+				+ ", firstName=" + firstName + ", firstNameWithoutSpace=" + firstNameWithoutSpace + ", gender=" + gender
+				+ ", bloodGroup=" + bloodGroup + ", emailAddress=" + emailAddress + ", days=" + days + ", months="
+				+ months + ", years=" + years + ", dob=" + dob + ", city=" + city + ", locality=" + locality
+				+ ", postalCode=" + postalCode + ", mobileNumber=" + mobileNumber + ", profession=" + profession
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", referredBy=" + referredBy + ", createdTime=" + createdTime + ", imageUrl=" + imageUrl
+				+ ", thumbnailUrl=" + thumbnailUrl + ", colorCode=" + colorCode + ", registrationDate="
+				+ registrationDate + "]";
+	}
 }

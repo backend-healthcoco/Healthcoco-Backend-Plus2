@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.City;
 import com.dpdocter.beans.Clinic;
-import com.dpdocter.beans.Event;
 import com.dpdocter.beans.Lab;
 import com.dpdocter.beans.LandmarkLocality;
 import com.dpdocter.beans.Slot;
@@ -32,7 +30,6 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.EventRequest;
-import com.dpdocter.response.ClinicAppointmentsResponse;
 import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.beans.Country;
@@ -226,23 +223,12 @@ public class AppointmentApi {
 
     }
 
-    @Path(value = PathProxy.AppointmentUrls.GET_CLINIC_APPOINTMENTS)
     @GET
-    public Response<ClinicAppointmentsResponse> getClinicAppointments(@QueryParam(value = "locationId") String locationId, @QueryParam(value = "doctorId") String doctorId,
-    		@QueryParam(value = "patientId") String patientId, @QueryParam(value = "date") String date, @QueryParam(value = "filterBy") String filterBy) {
+    public Response<Appointment> getDoctorAppointments(@QueryParam(value = "locationId") String locationId, @MatrixParam(value = "doctorId") List<String> doctorId,
+    		@QueryParam(value = "patientId") String patientId, @QueryParam(value = "from") String from, @QueryParam(value = "to") String to, 
+    		@QueryParam(value = "page") int page, @QueryParam(value = "size") int size) {
 
-	List<ClinicAppointmentsResponse> appointments = appointmentService.getClinicAppointments(locationId, doctorId, patientId, date, filterBy);
-	Response<ClinicAppointmentsResponse> response = new Response<ClinicAppointmentsResponse>();
-	response.setDataList(appointments);
-	return response;
-    }
-
-    @Path(value = PathProxy.AppointmentUrls.GET_DOCTOR_APPOINTMENTS)
-    @GET
-    public Response<Appointment> getDoctorAppointments(@QueryParam(value = "locationId") String locationId, @QueryParam(value = "doctorId") String doctorId,
-    		@QueryParam(value = "patientId") String patientId, @QueryParam(value = "date") String date, @MatrixParam("filterBy") List<String> filterBy, @QueryParam(value = "page") int page, @QueryParam(value = "size") int size) {
-
-	List<Appointment> appointment = appointmentService.getDoctorAppointments(locationId, doctorId, date, patientId, filterBy, page, size);
+	List<Appointment> appointment = appointmentService.getAppointments(locationId, doctorId, patientId, from, to, page, size);
 	Response<Appointment> response = new Response<Appointment>();
 	response.setDataList(appointment);
 	return response;
@@ -251,9 +237,9 @@ public class AppointmentApi {
     @Path(value = PathProxy.AppointmentUrls.GET_PATIENT_APPOINTMENTS)
     @GET
     public Response<Appointment> getPatientAppointments(@QueryParam(value = "locationId") String locationId, @QueryParam(value = "doctorId") String doctorId,
-    		@QueryParam(value = "patientId") String patientId, @MatrixParam("filterBy") List<String> filterBy, @QueryParam(value = "page") int page, @QueryParam(value = "size") int size) {
+    		@QueryParam(value = "patientId") String patientId, @QueryParam(value = "from") String from, @QueryParam(value = "to") String to, @QueryParam(value = "page") int page, @QueryParam(value = "size") int size) {
 
-	List<Appointment> appointment = appointmentService.getPatientAppointments(locationId, doctorId, patientId, filterBy, page, size);
+	List<Appointment> appointment = appointmentService.getPatientAppointments(locationId, doctorId, patientId, from, to, page, size);
 	Response<Appointment> response = new Response<Appointment>();
 	response.setDataList(appointment);
 	return response;
@@ -275,30 +261,19 @@ public class AppointmentApi {
 
     @Path(value = PathProxy.AppointmentUrls.ADD_EDIT_EVENT)
     @POST
-    public Response<Event> addEditEvent(EventRequest request) {
+    public Response<Appointment> addEditEvent(EventRequest request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "request cannot be null");
 	}
-	Event event = appointmentService.addEditEvent(request);
+	Appointment event = null;
+	if(request.getId() == null)event = appointmentService.addEvent(request);
+	else event = appointmentService.updateEvent(request);
 	
-	Response<Event> response = new Response<Event>();
+	Response<Appointment> response = new Response<Appointment>();
 	response.setData(event);
 	return response;
     }
-    
-    @Path(value = PathProxy.AppointmentUrls.CANCEL_EVENT)
-    @DELETE
-    public Response<Boolean> cancelEvent(@PathParam(value = "eventId") String eventId, @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId) {
-	if (DPDoctorUtils.anyStringEmpty(eventId, doctorId, locationId)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Event Id, DoctorId or LocationId cannot be null");
-	}
-	Boolean event = appointmentService.cancelEvent(eventId, doctorId, locationId);
-	
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(event);
-	return response;
-    }
-    
+        
     @Path(value = PathProxy.AppointmentUrls.SEND_REMINDER)
     @GET
     public Response<Boolean> sendReminder(@PathParam(value = "appointmentId") String appointmentId) {
@@ -311,4 +286,15 @@ public class AppointmentApi {
 	response.setData(sendReminder);
 	return response;
     }
+    
+    @Path(value = PathProxy.AppointmentUrls.IMPORT)
+    @GET
+    public Response<Boolean> importDrug() {
+    	appointmentService.importMaster();
+
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(true);
+	return response;
+    }
+
 }

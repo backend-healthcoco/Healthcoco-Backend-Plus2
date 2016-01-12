@@ -35,6 +35,7 @@ import com.dpdocter.services.SignUpService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrDoctorDocument;
 import com.dpdocter.solr.services.SolrRegistrationService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -69,7 +70,7 @@ public class SignUpApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
 	}
 
-	DoctorSignUp doctorSignUp = signUpService.doctorSignUp(request);
+	DoctorSignUp doctorSignUp = signUpService.doctorSignUp(request, uriInfo);
 	if (doctorSignUp != null) {
 	    if (doctorSignUp.getUser() != null) {
 		if (doctorSignUp.getUser().getImageUrl() != null) {
@@ -141,7 +142,7 @@ public class SignUpApi {
 	    logger.warn("Request send  is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
 	}
-	DoctorSignUp doctorSignUp = signUpService.doctorHandheldContinue(request);
+	DoctorSignUp doctorSignUp = signUpService.doctorHandheldContinue(request, uriInfo);
 	if (doctorSignUp != null) {
 	    if (doctorSignUp.getUser() != null) {
 		if (doctorSignUp.getUser().getImageUrl() != null) {

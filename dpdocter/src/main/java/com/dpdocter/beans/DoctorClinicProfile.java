@@ -2,6 +2,8 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 public class DoctorClinicProfile {
     private String id;
 
@@ -10,6 +12,14 @@ public class DoctorClinicProfile {
     private String clinicAddress;
 
     private String locationName;
+
+    private String country;
+
+    private String state;
+
+    private String city;
+
+    private String postalCode;
 
     private String patientInitial = "P";
 
@@ -143,12 +153,46 @@ public class DoctorClinicProfile {
 	this.locationName = locationName;
     }
 
-    @Override
-    public String toString() {
-	return "DoctorClinicProfile [id=" + id + ", locationId=" + locationId + ", clinicAddress=" + clinicAddress + ", locationName=" + locationName
-		+ ", patientInitial=" + patientInitial + ", patientCounter=" + patientCounter + ", appointmentBookingNumber=" + appointmentBookingNumber
-		+ ", consultationFee=" + consultationFee + ", appointmentSlot=" + appointmentSlot + ", workingSchedules=" + workingSchedules + ", isIBSOn="
-		+ isIBSOn + ", images=" + images + ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + "]";
-    }
+	public String getCountry() {
+		return country;
+	}
 
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorClinicProfile [id=" + id + ", locationId=" + locationId + ", clinicAddress=" + clinicAddress
+				+ ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city
+				+ ", postalCode=" + postalCode + ", patientInitial=" + patientInitial + ", patientCounter="
+				+ patientCounter + ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee="
+				+ consultationFee + ", appointmentSlot=" + appointmentSlot + ", workingSchedules=" + workingSchedules
+				+ ", isIBSOn=" + isIBSOn + ", images=" + images + ", logoUrl=" + logoUrl + ", logoThumbnailUrl="
+				+ logoThumbnailUrl + "]";
+	}
 }

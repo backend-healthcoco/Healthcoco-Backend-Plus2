@@ -22,6 +22,7 @@ import com.dpdocter.beans.Role;
 import com.dpdocter.beans.User;
 import com.dpdocter.request.ClinicImageAddRequest;
 import com.dpdocter.request.ClinicLogoAddRequest;
+import com.dpdocter.request.ClinicProfileHandheld;
 import com.dpdocter.request.DoctorRegisterRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.ClinicDoctorResponse;
@@ -100,5 +101,7 @@ public interface RegistrationService {
 	ClinicLabProperties updateLabProperties(ClinicLabProperties request);
 
 	Feedback addFeedback(Feedback request);
+
+	ClinicProfile updateClinicProfileHandheld(ClinicProfileHandheld request);
 
 }

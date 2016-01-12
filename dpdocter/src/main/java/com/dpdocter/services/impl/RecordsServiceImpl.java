@@ -352,9 +352,9 @@ public class RecordsServiceImpl implements RecordsService {
     public String getPatientEmailAddress(String patientId) {
 	String emailAddress = null;
 	try {
-	    PatientCollection patientCollection = patientRepository.findByUserId(patientId);
-	    if (patientCollection != null) {
-		emailAddress = patientCollection.getEmailAddress();
+	    UserCollection userCollection = userRepository.findOne(patientId);
+	    if (userCollection != null) {
+		emailAddress = userCollection.getEmailAddress();
 	    } else {
 		logger.warn("Invalid PatientId");
 		throw new BusinessException(ServiceError.Unknown, "Invalid PatientId");

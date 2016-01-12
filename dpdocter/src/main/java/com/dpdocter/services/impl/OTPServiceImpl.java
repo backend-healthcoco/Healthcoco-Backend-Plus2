@@ -49,6 +49,7 @@ public class OTPServiceImpl implements OTPService {
 	String OTP = null;
 	try {
 	    OTP = LoginUtils.generateOTP();
+	    UserCollection userCollection = userRepository.findOne(doctorId);
 	    SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(doctorId, locationId, hospitalId, patientId, OTP + " is OTP for Verification",
 		    mobileNumber, "OTPVerification");
 	    sMSServices.sendSMS(smsTrackDetail, false);
@@ -56,7 +57,7 @@ public class OTPServiceImpl implements OTPService {
 	    OTPCollection otpCollection = new OTPCollection();
 	    otpCollection.setCreatedTime(new Date());
 	    otpCollection.setOtpNumber(OTP);
-	    UserCollection userCollection = userRepository.findOne(doctorId);
+	    
 	    if (userCollection != null)
 		otpCollection.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());
 	    otpCollection = otpRepository.save(otpCollection);

@@ -10,8 +10,8 @@ import com.dpdocter.collections.AppointmentBookedSlotCollection;
 
 public interface AppointmentBookedSlotRepository extends MongoRepository<AppointmentBookedSlotCollection, String>{
 
-	@Query("{'userLocationId': ?0, 'date': ?1}")
-	List<AppointmentBookedSlotCollection> findByUserLocationId(String userLocationId, Date date);
+	@Query("{'doctorId': ?0, 'locationId': ?1, 'date': ?2}")
+	List<AppointmentBookedSlotCollection> findByDoctorLocationId(String doctorId, String locationId, Date date);
 
 	@Query("{'appointmentId': ?0}")
 	AppointmentBookedSlotCollection findByAppointmentId(String appointmentId);

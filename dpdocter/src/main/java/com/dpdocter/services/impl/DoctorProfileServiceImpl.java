@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.EnumUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -24,7 +23,6 @@ import com.dpdocter.beans.EducationQualification;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Speciality;
-import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.EducationInstituteCollection;
@@ -35,7 +33,6 @@ import com.dpdocter.collections.ProfessionalMembershipCollection;
 import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
-import com.dpdocter.enums.Day;
 import com.dpdocter.enums.DoctorExperienceUnit;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -457,7 +454,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					    + locationCollection.getState() != null
 					    && locationCollection.getPostalCode() == null ? ", "
 					    : "" + locationCollection.getCountry() != null ? locationCollection.getCountry() : "";
-		    doctorClinic.setClinicAddress(address);
+		    
+			doctorClinic.setLocationId(locationId);
+			doctorClinic.setClinicAddress(address);
 		    doctorClinic.setLocationName(locationCollection.getLocationName());
 		    doctorClinic.setClinicAddress(address);
 		    doctorClinic.setImages(locationCollection.getImages());
@@ -691,21 +690,21 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     public Boolean addEditGeneralInfo(DoctorGeneralInfo request) {
 	boolean response = false;
 	try {
-	    if (request.getAppointmentBookingNumber() != null && !request.getAppointmentBookingNumber().isEmpty()) {
+//	    if (request.getAppointmentBookingNumber() != null && !request.getAppointmentBookingNumber().isEmpty()) {
 		DoctorAppointmentNumbersAddEditRequest appointmentNumbersAddEditRequest = new DoctorAppointmentNumbersAddEditRequest();
 		BeanUtil.map(request, appointmentNumbersAddEditRequest);
 		response = addEditAppointmentNumbers(appointmentNumbersAddEditRequest);
-	    }
-	    if (request.getAppointmentSlot() != null) {
+//	    }
+//	    if (request.getAppointmentSlot() != null) {
 		DoctorAppointmentSlotAddEditRequest appointmentSlotAddEditRequest = new DoctorAppointmentSlotAddEditRequest();
 		BeanUtil.map(request, appointmentSlotAddEditRequest);
 		response = addEditAppointmentSlot(appointmentSlotAddEditRequest);
-	    }
-	    if (request.getConsultationFee() != null) {
+//	    }
+//	    if (request.getConsultationFee() != null) {
 		DoctorConsultationFeeAddEditRequest consultationFeeAddEditRequest = new DoctorConsultationFeeAddEditRequest();
 		BeanUtil.map(request, consultationFeeAddEditRequest);
 		response = addEditConsultationFee(consultationFeeAddEditRequest);
-	    }
+//	    }
 	} catch (Exception e) {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, "Error while adding or editing general info : " + e.getMessage());
@@ -798,30 +797,34 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		    doctorCollection.setExperience(doctorExperience);
 		}
 
-		if (!request.getSpeciality().isEmpty()) {
-		    specialityCollections = specialityRepository.findAll();
-		    specialities = new ArrayList<String>();
-		    specialitiesresponse = new ArrayList<String>();
-		    for (String speciality : request.getSpeciality()) {
-			Boolean specialityFound = false;
-			for (SpecialityCollection specialityCollection : specialityCollections) {
-			    if (speciality.trim().equalsIgnoreCase(specialityCollection.getSpeciality())) {
-				specialities.add(specialityCollection.getId());
-				specialitiesresponse.add(specialityCollection.getSpeciality());
-				specialityFound = true;
-				break;
+		if(request.getSpeciality() != null){
+			if (!request.getSpeciality().isEmpty()) {
+			    specialityCollections = specialityRepository.findAll();
+			    specialities = new ArrayList<String>();
+			    specialitiesresponse = new ArrayList<String>();
+			    for (String speciality : request.getSpeciality()) {
+				Boolean specialityFound = false;
+				for (SpecialityCollection specialityCollection : specialityCollections) {
+				    if (speciality.trim().equalsIgnoreCase(specialityCollection.getSpeciality())) {
+					specialities.add(specialityCollection.getId());
+					specialitiesresponse.add(specialityCollection.getSpeciality());
+					specialityFound = true;
+					break;
+				    }
+				}
+				if (!specialityFound) {
+				    SpecialityCollection specialityCollection = new SpecialityCollection();
+				    specialityCollection.setSpeciality(speciality);
+				    specialityCollection.setCreatedTime(new Date());
+				    specialityCollection = specialityRepository.save(specialityCollection);
+				    specialities.add(specialityCollection.getId());
+				    specialitiesresponse.add(specialityCollection.getSpeciality());
+				}
 			    }
+			    doctorCollection.setSpecialities(specialities);
+			}else{
+				doctorCollection.setSpecialities(new ArrayList<String>());
 			}
-			if (!specialityFound) {
-			    SpecialityCollection specialityCollection = new SpecialityCollection();
-			    specialityCollection.setSpeciality(speciality);
-			    specialityCollection.setCreatedTime(new Date());
-			    specialityCollection = specialityRepository.save(specialityCollection);
-			    specialities.add(specialityCollection.getId());
-			    specialitiesresponse.add(specialityCollection.getSpeciality());
-			}
-		    }
-		    doctorCollection.setSpecialities(specialities);
 		}
 
 		if (request.getProfileImage() != null) {

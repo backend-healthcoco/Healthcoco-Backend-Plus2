@@ -7,13 +7,11 @@ import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.City;
 import com.dpdocter.beans.Clinic;
 import com.dpdocter.beans.DoctorInfo;
-import com.dpdocter.beans.Event;
 import com.dpdocter.beans.Lab;
 import com.dpdocter.beans.LandmarkLocality;
 import com.dpdocter.beans.Slot;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.EventRequest;
-import com.dpdocter.response.ClinicAppointmentsResponse;
 import com.dpdocter.solr.beans.Country;
 import com.dpdocter.solr.beans.State;
 
@@ -33,11 +31,9 @@ public interface AppointmentService {
 
     List<DoctorInfo> getDoctors(String spetiality, String city, String localityOrLandmark);
 
-    List<ClinicAppointmentsResponse> getClinicAppointments(String locationId, String doctorId, String patientId, String date,	String filterBy);
+    List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,	String to, int page, int size);
 
-    List<Appointment> getDoctorAppointments(String locationId, String doctorId, String date, String patientId, List<String> filterBy, int page, int size);
-
-    List<Appointment> getPatientAppointments(String locationId, String doctorId, String patientId, List<String> filterBy, int page, int size);
+    List<Appointment> getPatientAppointments(String locationId, String doctorId, String patientId, String from, String to, int page, int size);
 
     Country addCountry(Country request);
 
@@ -55,10 +51,12 @@ public interface AppointmentService {
 
 	Appointment updateAppointment(AppointmentRequest request);
 
-	Event addEditEvent(EventRequest request);
+	Appointment addEvent(EventRequest request);
 
-	Boolean cancelEvent(String eventId, String doctorId, String locationId);
+	Appointment updateEvent(EventRequest request);
 
 	Boolean sendReminder(String appointmentId);
+
+	void importMaster();
 
 }

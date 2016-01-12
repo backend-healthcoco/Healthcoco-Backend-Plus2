@@ -2,10 +2,8 @@ package com.dpdocter.solr.services.impl;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.List;
-import java.util.TimeZone;
 
 import javax.ws.rs.core.UriInfo;
 
@@ -49,6 +47,7 @@ import com.dpdocter.solr.repository.SolrPatientRepository;
 import com.dpdocter.solr.response.SolrPatientResponse;
 import com.dpdocter.solr.response.SolrPatientResponseDetails;
 import com.dpdocter.solr.services.SolrRegistrationService;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -128,13 +127,16 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 
 	    Criteria advancedCriteria = Criteria.where("doctorId").is(doctorId).and("locationId").is(locationId).and("hospitalId").is(hospitalId);
 	    
-	    Criteria criteria = Criteria.where(AdvancedSearchType.FIRST_NAME.getSearchType()).is(searchTerm)
-	    		           .or(AdvancedSearchType.EMAIL_ADDRESS.getSearchType()).is(searchTerm)
-	    		           .or(AdvancedSearchType.MOBILE_NUMBER.getSearchType()).is(searchTerm)
-	    		           .or(AdvancedSearchType.PID.getSearchType()).is(searchTerm);
+	    if(searchTerm != null && !searchTerm.isEmpty()){
+	    	searchTerm = searchTerm.replaceAll("\\s+","");
+	    	
+		    Criteria criteria = Criteria.where(AdvancedSearchType.FIRST_NAME.getSearchType()).contains(searchTerm)
+		    		           .or(AdvancedSearchType.EMAIL_ADDRESS.getSearchType()).contains(Arrays.asList(searchTerm))
+		    		           .or(AdvancedSearchType.MOBILE_NUMBER.getSearchType()).contains(Arrays.asList(searchTerm))
+		    		           .or(AdvancedSearchType.PID.getSearchType()).contains(Arrays.asList(searchTerm));
+		    advancedCriteria.and(criteria);
+	    }
 	    
-	    advancedCriteria.and(criteria);
-
 	    SimpleQuery query = new SimpleQuery(advancedCriteria);
 
 	    solrTemplate.setSolrCore("patients");
@@ -242,10 +244,11 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 			}
 		    }
 		    	else {
+		    searchValue = searchValue.replaceAll("\\s+","");
 			if (advancedCriteria == null) {
-			    advancedCriteria = new Criteria(searchType).is(searchValue);
+			    advancedCriteria = new Criteria(searchType).contains(searchValue);
 			} else {
-			    advancedCriteria = advancedCriteria.and(searchType).is(searchValue);
+			    advancedCriteria = advancedCriteria.and(searchType).contains(searchValue);
 			}
 		    }
 

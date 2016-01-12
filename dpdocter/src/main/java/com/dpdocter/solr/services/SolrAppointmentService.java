@@ -14,13 +14,11 @@ public interface SolrAppointmentService {
 
     boolean addSpeciality(List<SolrSpecialityDocument> request);
 
-    List<SolrDoctorDocument> getDoctors(String city, String location, String keyword);
-
-    List<SolrDoctorDocument> getDoctors(String city, String location, String speciality, String symptom, Boolean booking, Boolean calling, String minFee,
+    List<SolrDoctorDocument> getDoctors(String city, String location, String latitude, String longitude, String speciality, String symptom, Boolean booking, Boolean calling, String minFee,
 	    String maxFee, String minTime, String maxTime, List<String> days, String gender, String minExperience, String maxExperience);
 
 	List<AppointmentSearchResponse> search(String city, String location, String latitude, String longitude, String searchTerm);
 
-	List<LabResponse> getLabs(String city, String location, String testId);
+	List<LabResponse> getLabs(String city, String location, String latitude, String longitude, String testId);
 
 }

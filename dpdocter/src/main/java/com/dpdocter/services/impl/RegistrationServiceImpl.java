@@ -102,6 +102,7 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.request.ClinicImageAddRequest;
 import com.dpdocter.request.ClinicLogoAddRequest;
+import com.dpdocter.request.ClinicProfileHandheld;
 import com.dpdocter.request.DoctorRegisterRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.ClinicDoctorResponse;
@@ -294,11 +295,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    patientCollection.setRegistrationDate(request.getDateOfVisit());
 
 	    patientCollection.setCreatedTime(createdTime);
-	    if (!DPDoctorUtils.anyStringEmpty(request.getPatientNumber())) {
-		patientCollection.setPID(request.getPatientNumber());
-	    } else {
-		patientCollection.setPID(patientIdGenerator(request.getDoctorId(), request.getLocationId(), request.getHospitalId()));
-	    }
+	    patientCollection.setPID(patientIdGenerator(request.getDoctorId(), request.getLocationId(), request.getHospitalId()));
+	    
 	    if (addressCollection != null) {
 		patientCollection.setAddressId(addressCollection.getId());
 	    }
@@ -333,7 +331,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    patientAdmissionCollection.setCreatedTime(new Date());
 
 	    if (referencesCollection != null)
-		patientAdmissionCollection.setReferredBy(referencesCollection.getReference());
+		patientAdmissionCollection.setReferredBy(referencesCollection.getId());
 	    patientAdmissionCollection = patientAdmissionRepository.save(patientAdmissionCollection);
 
 	    // assign groups
@@ -512,7 +510,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    }
 
 	    if (referencesCollection != null)
-		patientAdmissionCollection.setReferredBy(referencesCollection.getReference());
+		patientAdmissionCollection.setReferredBy(referencesCollection.getId());
 	    patientAdmissionCollection = patientAdmissionRepository.save(patientAdmissionCollection);
 
 	    // assign groups
@@ -602,9 +600,14 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Override
     public void checkPatientCount(String mobileNumber) {
 
+    int count = 0;	
 	List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
 	if (userCollections != null && !userCollections.isEmpty()) {
-	    if (userCollections.size() >= Integer.parseInt(patientCount)) {
+		for(UserCollection userCollection : userCollections){
+			if(!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress()))
+				count++;
+		}
+	    if (count >= Integer.parseInt(patientCount)) {
 		logger.warn("Only Nine patients can register with same mobile number");
 		throw new BusinessException(ServiceError.NoRecord, "Only Nine patients can register with same mobile number");
 	    }
@@ -619,26 +622,28 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    if (userCollections != null) {
 		users = new ArrayList<User>();
 		for (UserCollection userCollection : userCollections) {
-		    User user = new User();
-		    BeanUtil.map(userCollection, user);
-		    if (locationId != null && hospitalId != null) {
-			PatientCollection patientCollection = patientRepository.findByUserId(userCollection.getId());
-			if (patientCollection != null) {
-			    if (patientCollection.getDoctorId() != null && patientCollection.getLocationId() != null && patientCollection.getHospitalId() != null) {
-				if (patientCollection.getDoctorId().equals(doctorId) && patientCollection.getLocationId().equals(locationId) && patientCollection.getHospitalId().equals(hospitalId)) {
-				    user.setIsPartOfClinic(true);
-				} else {
-				    user.setIsPartOfClinic(false);
+			if(!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress())){
+			    User user = new User();
+			    BeanUtil.map(userCollection, user);
+			    if (locationId != null && hospitalId != null) {
+				List<PatientCollection> patientCollections = patientRepository.findByUserId(userCollection.getId());
+				boolean isPartOfClinic = false;
+				if (patientCollections != null) {
+				    for(PatientCollection patientCollection : patientCollections){
+				    	if (patientCollection.getDoctorId() != null && patientCollection.getLocationId() != null && patientCollection.getHospitalId() != null) {
+							if (patientCollection.getDoctorId().equals(doctorId) && patientCollection.getLocationId().equals(locationId) && patientCollection.getHospitalId().equals(hospitalId)) {
+							    isPartOfClinic = true;
+							    break;
+							} 
+				    	}
+				    }
 				}
-			    } else {
-				user.setIsPartOfClinic(false);
+				user.setIsPartOfClinic(isPartOfClinic);
 			    }
-			} else {
-			    user.setIsPartOfClinic(false);
+			    users.add(user);
 			}
-		    }
-		    users.add(user);
-		}
+			}
+		
 	  }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1403,7 +1408,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	    // send activation email
 	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
-		    userCollection.getMiddleName(), userCollection.getLastName(), tokenCollection.getId());
+		    userCollection.getMiddleName(), userCollection.getLastName(), tokenCollection.getId(), uriInfo);
 	    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
 
 	    body = mailBodyGenerator.generateForgotPasswordEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
@@ -1795,6 +1800,25 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    e.printStackTrace();
 		    logger.error(e);
 		    throw new BusinessException(ServiceError.Unknown, "Error while adding feedback");
+		}
+		return response;
+	}
+
+	@Override
+	public ClinicProfile updateClinicProfileHandheld(ClinicProfileHandheld request) {
+		ClinicProfile response = null;
+		LocationCollection locationCollection = null;
+		try {
+		    locationCollection = locationRepository.findOne(request.getId());
+		    if (locationCollection != null)
+			BeanUtil.map(request, locationCollection);
+		    locationCollection = locationRepository.save(locationCollection);
+		    response = new ClinicProfile();
+		    BeanUtil.map(locationCollection, response);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error While Updating Clinic Details");
+		    throw new BusinessException(ServiceError.Unknown, "Error While Updating Clinic Details");
 		}
 		return response;
 	}

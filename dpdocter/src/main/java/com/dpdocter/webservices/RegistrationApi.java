@@ -43,6 +43,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.ClinicImageAddRequest;
 import com.dpdocter.request.ClinicLogoAddRequest;
+import com.dpdocter.request.ClinicProfileHandheld;
 import com.dpdocter.request.DoctorRegisterRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.ClinicDoctorResponse;
@@ -320,6 +321,21 @@ public class RegistrationApi {
 	return response;
     }
 
+    @Path(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_PROFILE_HANDHELD)
+    @POST
+    public Response<ClinicProfile> updateClinicProfile(ClinicProfileHandheld request) {
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
+	}
+	ClinicProfile clinicProfileUpdateResponse = registrationService.updateClinicProfileHandheld(request);
+	transnationalService.addResource(clinicProfileUpdateResponse.getId(), Resource.LOCATION, false);
+	if (clinicProfileUpdateResponse != null)
+		solrRegistrationService.updateClinicProfile(clinicProfileUpdateResponse);
+	Response<ClinicProfile> response = new Response<ClinicProfile>();
+	response.setData(clinicProfileUpdateResponse);
+	return response;
+    }
+    
     @Path(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_ADDRESS)
     @POST
     public Response<ClinicAddress> updateClinicAddress(ClinicAddress request) {

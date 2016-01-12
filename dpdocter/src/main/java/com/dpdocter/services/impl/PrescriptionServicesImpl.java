@@ -1,9 +1,5 @@
 package com.dpdocter.services.impl;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,6 +54,7 @@ import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
+import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.TemplateCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
@@ -82,6 +79,7 @@ import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
+import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.TemplateRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DrugAddEditRequest;
@@ -108,6 +106,7 @@ import com.dpdocter.services.MailService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.sms.services.SMSServices;
 import com.dpdocter.solr.document.SolrDrugDocument;
+import com.dpdocter.solr.services.SolrPrescriptionService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
@@ -178,6 +177,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
     @Autowired
     private DiagnosticTestRepository diagnosticTestRepository;
+
+    @Autowired
+    private ReferenceRepository referenceRepository;
+
+    @Autowired
+    private SolrPrescriptionService solrPrescriptionService;
 
     @Value(value = "${IMAGE_URL_ROOT_PATH}")
     private String imageUrlRootPath;
@@ -784,19 +789,22 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    Sort.Direction.DESC, "updatedTime"));
 	    }
 
-	    if (!templateCollections.isEmpty()) {
+	    if (templateCollections != null && !templateCollections.isEmpty()) {
 		response = new ArrayList<TemplateAddEditResponseDetails>();
 		for (TemplateCollection templateCollection : templateCollections) {
 		    TemplateAddEditResponseDetails template = new TemplateAddEditResponseDetails();
 		    BeanUtil.map(templateCollection, template);
 		    int i = 0;
+		    if(templateCollection.getItems() != null)
 		    for (TemplateItem item : templateCollection.getItems()) {
-			DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
-			Drug drug = new Drug();
-			if (drugCollection != null)
-			    BeanUtil.map(drugCollection, drug);
-			template.getItems().get(i).setDrug(drug);
-			i++;
+			if(item.getDrugId() != null){
+				DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
+				Drug drug = new Drug();
+				if (drugCollection != null)
+				    BeanUtil.map(drugCollection, drug);
+				template.getItems().get(i).setDrug(drug);
+				i++;
+			}
 		    }
 		    response.add(template);
 		}
@@ -2393,7 +2401,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			patientAdmission = patientAdmissionRepository.findByUserIdAndDoctorId(prescriptionCollection.getPatientId(), doctorId);
 			user = userRepository.findOne(prescriptionCollection.getPatientId());
-			patient = patientRepository.findByUserId(prescriptionCollection.getPatientId());
+			patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(prescriptionCollection.getPatientId(), doctorId, locationId, hospitalId);
 
 			emailTrackCollection.setDoctorId(doctorId);
 			emailTrackCollection.setHospitalId(hospitalId);
@@ -2440,7 +2448,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 		parameters.put("printSettingsId", Arrays.asList(printId));
 		String headerLeftText = "", headerRightText = "", footerBottomText = "";
-		String patientName = "", dob = "", gender = "", mobileNumber = "";
+		String patientName = "", dob = "", gender = "", mobileNumber = "", refferedBy ="";
 		if (printSettings != null) {
 		    if (printSettings.getHeaderSetup() != null) {
 			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()) {
@@ -2455,9 +2463,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				text = "<i>" + text + "</i>";
 
 			    if (headerLeftText.isEmpty())
-				headerLeftText = "<span style='font-size:" + str.getFontSize() + ";'>" + text + "</span>";
+				headerLeftText = "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 			    else
-				headerLeftText = headerLeftText + "<br/>" + "<span style='font-size:" + str.getFontSize() + ";'>" + text + "</span>";
+				headerLeftText = headerLeftText + "<br/>" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 			}
 
 			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText()) {
@@ -2505,14 +2513,16 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		dob = "Patient Age: " + ((patient != null && patient.getDob() != null) ? (patient.getDob().getAge() + "years") : "--") + "<br>";
 		gender = "Patient Gender: " + (patient != null ? patient.getGender() : "--") + "<br>";
 		mobileNumber = "Mobile Number: " + (user != null ? user.getMobileNumber() : "--") + "<br>";
-
+		if(patientAdmission != null && patientAdmission.getReferredBy() != null){
+			ReferencesCollection referencesCollection = referenceRepository.findOne(patientAdmission.getReferredBy());
+			if(referencesCollection != null)refferedBy = referencesCollection.getReference();
+		}
 		parameters.put("patientLeftText", patientName + "Patient Id: " + (patient != null ? patient.getPID() : "--") + "<br>" + dob + gender);
 		parameters
 			.put("patientRightText",
 				mobileNumber
 					+ "Reffered By: "
-					+ (patientAdmission != null && patientAdmission.getReferredBy() != null && patientAdmission.getReferredBy() != "" ? patientAdmission
-						.getReferredBy() : "--") + "<br>" + "Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
+					+ (refferedBy != "" ? refferedBy : "--") + "<br>" + "Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
 		parameters.put("headerLeftText", headerLeftText);
 		parameters.put("headerRightText", headerRightText);
 		parameters.put("footerBottomText", footerBottomText);
@@ -2560,7 +2570,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    && prescriptionCollection.getLocationId().equals(locationId)) {
 
 			UserCollection userCollection = userRepository.findOne(prescriptionCollection.getPatientId());
-			PatientCollection patientCollection = patientRepository.findByUserId(prescriptionCollection.getPatientId());
+			PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(prescriptionCollection.getPatientId(), doctorId, locationId, hospitalId);
 			// LocationCollection location =
 			// locationRepository.findOne(locationId);
 			if (patientCollection != null) {
@@ -2773,51 +2783,51 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
     @Override
     public void importDrug() {
-	String csvFile = "/home/suresh/LabTests.csv";
-	BufferedReader br = null;
-	String line = "";
-	String cvsSplitBy = "\\?";
+//	String csvFile = "/home/suresh/drug.csv";
+//	BufferedReader br = null;
+//	String line = "";
+//	String cvsSplitBy = ",";
 
 	try {
 
-	    br = new BufferedReader(new FileReader(csvFile));
-	    int i = 0;
-	    while ((line = br.readLine()) != null) {
-		System.out.println(i++);
-		String[] obj = line.split(cvsSplitBy);
+//	    br = new BufferedReader(new FileReader(csvFile));
+//	    int i = 0;
+//	    while ((line = br.readLine()) != null) {
+//		System.out.println(i++);
+//		String[] obj = line.split(cvsSplitBy);
 //		String drugType = obj[1];
-		// DrugTypeCollection drugTypeCollection = null;
-		// if (drugType.equals("TAB")) {
-		// drugTypeCollection = drugTypeRepository.findByType("TABLET");
-		// } else if (drugType.equals("CAP")) {
-		// drugTypeCollection =
-		// drugTypeRepository.findByType("CAPSULE");
-		// } else if (drugType.equals("OINT")) {
-		// drugTypeCollection =
-		// drugTypeRepository.findByType("OINTMENT");
-		// } else if (drugType.equals("SYP")) {
-		// drugTypeCollection = drugTypeRepository.findByType("SYRUP");
-		// }
-		//
-		// DrugType type = null;
-		// if (drugTypeCollection != null) {
-		// type = new DrugType();
-		// drugTypeCollection.setType(drugType);
-		// BeanUtil.map(drugTypeCollection, type);
-		//
-		// }
-		//
-		// DrugCollection drugCollection = new DrugCollection();
-		// drugCollection.setCreatedBy("ADMIN");
-		// drugCollection.setCreatedTime(new Date());
-		// drugCollection.setDiscarded(false);
-		// drugCollection.setDrugName(obj[0]);
-		// drugCollection.setDrugType(type);
-		// drugCollection.setDoctorId(null);
-		// drugCollection.setHospitalId(null);
-		// drugCollection.setLocationId(null);
-		//
-		// drugRepository.save(drugCollection);
+//		 DrugTypeCollection drugTypeCollection = null;
+//		 if (drugType.equals("TAB")) {
+//		 drugTypeCollection = drugTypeRepository.findByType("TABLET");
+//		 } else if (drugType.equals("CAP")) {
+//		 drugTypeCollection =
+//		 drugTypeRepository.findByType("CAPSULE");
+//		 } else if (drugType.equals("OINT")) {
+//		 drugTypeCollection =
+//		 drugTypeRepository.findByType("OINTMENT");
+//		 } else if (drugType.equals("SYP")) {
+//		 drugTypeCollection = drugTypeRepository.findByType("SYRUP");
+//		 }
+//		
+//		 DrugType type = null;
+//		 if (drugTypeCollection != null) {
+//		 type = new DrugType();
+//		 drugTypeCollection.setType(drugType);
+//		 BeanUtil.map(drugTypeCollection, type);
+//		
+//		 }
+//		
+//		 DrugCollection drugCollection = new DrugCollection();
+//		 drugCollection.setCreatedBy("ADMIN");
+//		 drugCollection.setCreatedTime(new Date());
+//		 drugCollection.setDiscarded(false);
+//		 drugCollection.setDrugName(obj[0]);
+//		 drugCollection.setDrugType(type);
+//		 drugCollection.setDoctorId(null);
+//		 drugCollection.setHospitalId(null);
+//		 drugCollection.setLocationId(null);
+//		
+//		 drugRepository.save(drugCollection);
 
 //		SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
 //		solrDrugDocument.setDrugName(obj[1]);
@@ -2831,21 +2841,32 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 //		DiagnosticTestCollection diagnosticTestCollection = new DiagnosticTestCollection();
 //		diagnosticTestCollection.setTestName(obj[1]);
 //		diagnosticTestRepository.save(diagnosticTestCollection);
-	    }
-	} catch (FileNotFoundException e) {
-	    e.printStackTrace();
-	} catch (IOException e) {
-	    e.printStackTrace();
-	} finally {
-	    if (br != null) {
-		try {
-		    br.close();
-		} catch (IOException e) {
-		    e.printStackTrace();
+//	    }
+		
+	boolean[] discard = new boolean[2];
+	discard[0] = true;discard[0] = false;
+	List<DrugCollection> drugCollection = drugRepository.getGlobalDrugs(new Date(Long.parseLong("0")), discard, new Sort(Sort.Direction.DESC));
+	for(DrugCollection collection : drugCollection){
+		SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
+		BeanUtil.map(collection, solrDrugDocument);
+		if(collection.getDrugType()!=null){
+			solrDrugDocument.setDrugTypeId(collection.getDrugType().getId());
+			solrDrugDocument.setDrugType(collection.getDrugType().getType());
 		}
-	    }
+		solrPrescriptionService.addDrug(solrDrugDocument);
 	}
-
+	} catch (Exception e) {
+	    e.printStackTrace();
+	} 
+//	finally {
+//	    if (br != null) {
+//		try {
+//		    br.close();
+//		} catch (IOException e) {
+//		    e.printStackTrace();
+//		}
+//	    }
+//	}
 	System.out.println("Done");
 
     }

@@ -53,6 +53,7 @@ import com.dpdocter.collections.PatientClinicalNotesCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
+import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ClinicalItems;
 import com.dpdocter.enums.ComponentType;
@@ -75,6 +76,7 @@ import com.dpdocter.repository.PatientClinicalNotesRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
+import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.ClinicalNotesAddRequest;
 import com.dpdocter.request.ClinicalNotesEditRequest;
@@ -91,6 +93,7 @@ import com.dpdocter.solr.document.SolrObservationsDocument;
 import com.dpdocter.solr.services.SolrClinicalNotesService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -155,8 +158,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     @Autowired
     private PatientVisitRepository patientVisitRepository;
 
-    // @Context
-    // private UriInfo uriInfo;
+     @Autowired
+     private ReferenceRepository referenceRepository;
 
     @Value(value = "${IMAGE_URL_ROOT_PATH}")
     private String imageUrlRootPath;
@@ -2125,7 +2128,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			throw new BusinessException(ServiceError.NotFound, "No patient found");
 		    }
 		    user = userRepository.findOne(patientId);
-		    patient = patientRepository.findByUserId(patientId);
+		    patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientId, doctorId, locationId, hospitalId);
 
 		    emailTrackCollection.setDoctorId(doctorId);
 		    emailTrackCollection.setHospitalId(hospitalId);
@@ -2180,7 +2183,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 		parameters.put("printSettingsId", Arrays.asList(printId));
 		String headerLeftText = "", headerRightText = "", footerBottomText = "";
-		String patientName = "", dob = "", gender = "", mobileNumber = "";
+		String patientName = "", dob = "", gender = "", mobileNumber = "", refferedBy = "";
 		if (printSettings != null) {
 		    if (printSettings.getHeaderSetup() != null) {
 			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()) {
@@ -2245,14 +2248,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		dob = "Patient Age: " + ((patient != null && patient.getDob() != null) ? (patient.getDob().getAge() + " years") : "--") + "<br>";
 		gender = "Patient Gender: " + (patient != null ? patient.getGender() : "--") + "<br>";
 		mobileNumber = "Mobile Number: " + (user != null ? user.getMobileNumber() : "--") + "<br>";
-
+		if(patientAdmission != null && patientAdmission.getReferredBy() != null){
+			ReferencesCollection referencesCollection = referenceRepository.findOne(patientAdmission.getReferredBy());
+			if(referencesCollection != null)refferedBy = referencesCollection.getReference();
+		}
+		
 		parameters.put("patientLeftText", patientName + "Patient Id: " + (patient != null ? patient.getPID() : "--") + "<br>" + dob + gender);
 		parameters
 			.put("patientRightText",
 				mobileNumber
 					+ "Reffered By: "
-					+ (patientAdmission != null && patientAdmission.getReferredBy() != null && patientAdmission.getReferredBy() != "" ? patientAdmission
-						.getReferredBy() : "--") + "<br>" + "Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
+					+ (refferedBy != "" ? refferedBy : "--") + "<br>" + "Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
 		parameters.put("headerLeftText", headerLeftText);
 		parameters.put("headerRightText", headerRightText);
 		parameters.put("footerBottomText", footerBottomText);

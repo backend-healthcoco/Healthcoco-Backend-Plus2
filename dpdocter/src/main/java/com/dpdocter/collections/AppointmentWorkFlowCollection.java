@@ -19,7 +19,7 @@ public class AppointmentWorkFlowCollection extends GenericCollection{
     private String appointmentId;
 
     @Field
-    private String time;
+    private WorkingHours time;
 
     @Field
     private AppointmentState state = AppointmentState.NEW;
@@ -43,11 +43,11 @@ public class AppointmentWorkFlowCollection extends GenericCollection{
 		this.appointmentId = appointmentId;
 	}
 
-	public String getTime() {
+	public WorkingHours getTime() {
 		return time;
 	}
 
-	public void setTime(String time) {
+	public void setTime(WorkingHours time) {
 		this.time = time;
 	}
 
