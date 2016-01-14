@@ -9,12 +9,14 @@ import org.joda.time.Minutes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.SMSTrackDetail;
 import com.dpdocter.collections.DoctorOTPCollection;
 import com.dpdocter.collections.OTPCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.OTPState;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.repository.DoctorOTPRepository;
@@ -41,8 +43,11 @@ public class OTPServiceImpl implements OTPService {
     @Autowired
     private DoctorOTPRepository doctorOTPRepository;
 
-    @Value(value = "${OTP_VALIDATION_TIME_DIFFERENCE}")
+    @Value(value = "${OTP_VALIDATION_TIME_DIFFERENCE_IN_MINS}")
     private String otpTimeDifference;
+
+    @Value(value = "${OTP_NON_VERIFIED_TIME_DIFFERENCE_IN_MINS}")
+    private String otpNonVerifiedTimeDifference;
 
     @Override
     public String otpGenerator(String doctorId, String locationId, String hospitalId, String patientId, String mobileNumber) {
@@ -91,7 +96,7 @@ public class OTPServiceImpl implements OTPService {
 		if (otpCollection != null) {
 		    if (otpCollection.getOtpNumber().equals(otpNumber)) {
 			if (isOTPValid(otpCollection.getCreatedTime())) {
-			    otpCollection.setIsVerified(true);
+			    otpCollection.setState(OTPState.VERIFIED);
 			    otpCollection = otpRepository.save(otpCollection);
 			    response = true;
 			} else {
@@ -120,8 +125,9 @@ public class OTPServiceImpl implements OTPService {
 		    "createdTime"));
 	    if (doctorOTPCollection != null && !doctorOTPCollection.isEmpty() && doctorOTPCollection.size() > 0) {
 		OTPCollection otpCollection = otpRepository.findOne(doctorOTPCollection.get(0).getOtpId());
-		if (otpCollection != null)
-		    response = otpCollection.getIsVerified();
+		if (otpCollection != null && otpCollection.getState().equals(OTPState.VERIFIED)){
+			if(isOTPValid(otpCollection.getCreatedTime()))response = true;
+		}
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -135,6 +141,10 @@ public class OTPServiceImpl implements OTPService {
 	return Minutes.minutesBetween(new DateTime(createdTime), new DateTime()).isLessThan(Minutes.minutes(Integer.parseInt(otpTimeDifference)));
     }
 
+    private boolean isNonVerifiedOTPValid(Date createdTime) {
+    	return Minutes.minutesBetween(new DateTime(createdTime), new DateTime()).isLessThan(Minutes.minutes(Integer.parseInt(otpNonVerifiedTimeDifference)));
+	}
+    
     @Override
     public String otpGenerator(String mobileNumber) {
 	String OTP = null;
@@ -167,7 +177,7 @@ public class OTPServiceImpl implements OTPService {
 	    OTPCollection otpCollection = otpRepository.findOne(mobileNumber, otpNumber);
 	    if (otpCollection != null) {
 		if (isOTPValid(otpCollection.getCreatedTime())) {
-		    otpCollection.setIsVerified(true);
+		    otpCollection.setState(OTPState.VERIFIED);
 		    otpCollection = otpRepository.save(otpCollection);
 		    response = true;
 		} else {
@@ -193,7 +203,9 @@ public class OTPServiceImpl implements OTPService {
 	try {
 	    OTPCollection otpCollection = otpRepository.findOne(mobileNumber, otpNumber);
 	    if (otpCollection != null) {
-		response = otpCollection.getIsVerified();
+	    	if (otpCollection != null && otpCollection.getState().equals(OTPState.VERIFIED)){
+				if(isOTPValid(otpCollection.getCreatedTime()))response = true;
+			}
 	    } else {
 		logger.error("Incorrect OTP");
 		throw new BusinessException(ServiceError.NotFound, "Incorrect OTP");
@@ -204,5 +216,29 @@ public class OTPServiceImpl implements OTPService {
 	    throw new BusinessException(ServiceError.Unknown, "Error While checking OTP");
 	}
 	return response;
+    }
+    
+    @Scheduled(fixedRate = 300000)
+    public void checkOTP(){
+    	try {
+    		List<OTPCollection> otpCollections = otpRepository.findNonExpiredOtp(OTPState.EXPIRED);
+    		if(otpCollections != null){
+    			for(OTPCollection otpCollection : otpCollections){
+    				if(otpCollection.getState().equals(OTPState.VERIFIED)){
+    					if(!isOTPValid(otpCollection.getCreatedTime())){
+    						otpCollection.setState(OTPState.EXPIRED);
+    					}
+    				}else if(otpCollection.getState().equals(OTPState.NOTVERIFIED)){
+    					if(!isNonVerifiedOTPValid(otpCollection.getCreatedTime())){
+    						otpCollection.setState(OTPState.EXPIRED);
+    					}
+    				}
+    				otpRepository.save(otpCollection);
+    			}
+    		}
+    	} catch (Exception e) {
+    	    e.printStackTrace();
+    	    logger.error(e);
+    	}
     }
 }

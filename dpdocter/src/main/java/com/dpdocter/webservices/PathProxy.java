@@ -189,6 +189,9 @@ public interface PathProxy {
     public static final String FORGOT_PASSWORD_BASE_URL = BASE_URL + "/forgotPassword";
 
     public interface ForgotPasswordUrls {
+    
+    public static final String CHECK_LINK_IS_ALREADYUSED = "/checkLink";
+    	
 	public static final String FORGOT_PASSWORD_DOCTOR = "/forgotPasswordDoctor";
 
 	public static final String FORGOT_PASSWORD_PATIENT = "/forgotPasswordPatient";

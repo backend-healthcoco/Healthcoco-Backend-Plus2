@@ -137,7 +137,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	try {
 	    doctorCollection = doctorRepository.findByUserId(request.getDoctorId());
 	    DoctorExperience doctorExperience = new DoctorExperience();
-	    doctorExperience.setExperience(Float.parseFloat(request.getExperience()));
+	    doctorExperience.setExperience(request.getExperience());
 	    doctorExperience.setPeriod(DoctorExperienceUnit.YEAR);
 	    doctorCollection.setExperience(doctorExperience);
 	    doctorRepository.save(doctorCollection);
@@ -792,7 +792,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 		if (request.getExperience() != null) {
 		    DoctorExperience doctorExperience = new DoctorExperience();
-		    doctorExperience.setExperience(Float.parseFloat(request.getExperience()));
+		    doctorExperience.setExperience(request.getExperience());
 		    doctorExperience.setPeriod(DoctorExperienceUnit.YEAR);
 		    doctorCollection.setExperience(doctorExperience);
 		}

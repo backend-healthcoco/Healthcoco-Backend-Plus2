@@ -2108,7 +2108,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			    if (diagramsCollection != null) {
 				if (diagramsCollection.getDiagramUrl() != null) {
 				    diagram.put("url", getFinalImageURL(diagramsCollection.getDiagramUrl(), uriInfo));
-				    System.out.println(getFinalImageURL(diagramsCollection.getDiagramUrl(), uriInfo));
+//				    System.out.println(getFinalImageURL(diagramsCollection.getDiagramUrl(), uriInfo));
 				}
 				diagram.put("tags", diagramsCollection.getTags());
 				diagramIds.add(diagram);

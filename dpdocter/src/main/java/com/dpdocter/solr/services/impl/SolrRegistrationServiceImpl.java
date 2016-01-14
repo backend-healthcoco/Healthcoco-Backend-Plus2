@@ -25,6 +25,8 @@ import com.dpdocter.beans.ClinicProfile;
 import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.DoctorExperience;
 import com.dpdocter.beans.DoctorGeneralInfo;
+import com.dpdocter.beans.WorkingHours;
+import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -577,10 +579,19 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     public void addEditVisitingTime(DoctorVisitingTimeAddEditRequest request) {
 	try {
 	    SolrDoctorDocument doctorDocuments = solrDoctorRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
-	    List<SolrWorkingSchedule> solrWorkingSchedule = new ArrayList<SolrWorkingSchedule>();
-	    BeanUtil.map(request.getWorkingSchedules(), solrWorkingSchedule);
-	    doctorDocuments.setWorkingSchedules(solrWorkingSchedule);
-	    solrDoctorRepository.save(doctorDocuments);
+	    List<SolrWorkingSchedule> solrWorkingSchedules = new ArrayList<SolrWorkingSchedule>();
+	    if(request.getWorkingSchedules() != null){
+	    	for(WorkingSchedule workingSchedule : request.getWorkingSchedules()){
+	    		SolrWorkingSchedule solrWorkingSchedule = new SolrWorkingSchedule();
+		    	solrWorkingSchedule.setWorkingDay(workingSchedule.getWorkingDay());
+		    	List<WorkingHours> hours = workingSchedule.getWorkingHours();
+		    	solrWorkingSchedule.setWorkingHours(hours);
+		    	solrWorkingSchedules.add(solrWorkingSchedule);
+	    	}
+	    }
+	    doctorDocuments.setWorkingSchedules(solrWorkingSchedules);
+	    doctorDocuments = solrDoctorRepository.save(doctorDocuments);
+	    BeanUtil.map(doctorDocuments, request);
 	    transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, true);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -592,7 +603,8 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	try {
 	    SolrDoctorDocument doctorDocuments = solrDoctorRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
 	    doctorDocuments.setConsultationFee(request.getConsultationFee());
-	    solrDoctorRepository.save(doctorDocuments);
+	    doctorDocuments = solrDoctorRepository.save(doctorDocuments);
+	    BeanUtil.map(doctorDocuments, request);
 	    transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, true);
 	} catch (Exception e) {
 	    e.printStackTrace();

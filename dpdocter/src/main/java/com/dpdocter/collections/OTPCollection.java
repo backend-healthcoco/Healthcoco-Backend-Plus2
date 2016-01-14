@@ -4,6 +4,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.enums.OTPState;
+
 @Document(collection = "otp_cl")
 public class OTPCollection extends GenericCollection {
 
@@ -17,7 +19,7 @@ public class OTPCollection extends GenericCollection {
     private String mobileNumber;
 
     @Field
-    private Boolean isVerified = false;
+    private OTPState state = OTPState.NOTVERIFIED;
 
     public String getId() {
 	return id;
@@ -43,17 +45,17 @@ public class OTPCollection extends GenericCollection {
 	this.mobileNumber = mobileNumber;
     }
 
-    public Boolean getIsVerified() {
-	return isVerified;
-    }
+	public OTPState getState() {
+		return state;
+	}
 
-    public void setIsVerified(Boolean isVerified) {
-	this.isVerified = isVerified;
-    }
+	public void setState(OTPState state) {
+		this.state = state;
+	}
 
-    @Override
-    public String toString() {
-	return "OTPCollection [id=" + id + ", otpNumber=" + otpNumber + ", mobileNumber=" + mobileNumber + ", isVerified=" + isVerified + "]";
-    }
-
+	@Override
+	public String toString() {
+		return "OTPCollection [id=" + id + ", otpNumber=" + otpNumber + ", mobileNumber=" + mobileNumber + ", state="
+				+ state + "]";
+	}
 }

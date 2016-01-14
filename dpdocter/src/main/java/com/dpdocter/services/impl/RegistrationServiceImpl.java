@@ -16,8 +16,10 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -82,18 +84,20 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.AddressRepository;
 import com.dpdocter.repository.BloodGroupRepository;
+import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorContactsRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.FeedbackRepository;
 import com.dpdocter.repository.GroupRepository;
-import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientGroupRepository;
 import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.ProfessionRepository;
+import com.dpdocter.repository.RecordsRepository;
 import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.TokenRepository;
@@ -114,6 +118,7 @@ import com.dpdocter.services.GenerateUniqueUserNameService;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
+import com.dpdocter.services.OTPService;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.sms.services.SMSServices;
 import com.dpdocter.solr.document.SolrDoctorDocument;
@@ -201,13 +206,22 @@ public class RegistrationServiceImpl implements RegistrationService {
     private LocationServices locationServices;
     
     @Autowired
-    private HistoryRepository historyRepository;
-
+    private PrescriptionRepository prescriptionRepository;
+    
+    @Autowired
+    private ClinicalNotesRepository clinicalNotesRepository;
+    
+    @Autowired
+    private RecordsRepository recordsRepository;
+    
     @Autowired
     private FeedbackRepository feedbackRepository;
     
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @Autowired
+    private OTPService otpService;
 
     @Value(value = "${mail.signup.subject.activation}")
     private String signupSubject;
@@ -326,7 +340,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    PatientAdmissionCollection patientAdmissionCollection = new PatientAdmissionCollection();
 	    BeanUtil.map(request, patientAdmissionCollection);
 	    patientAdmissionCollection.setUserId(userCollection.getId());
-	    patientAdmissionCollection.setPatientId(patientCollection.getId());
+	    patientAdmissionCollection.setPatientId(patientCollection.getUserId());
 	    patientAdmissionCollection.setDoctorId(request.getDoctorId());
 	    patientAdmissionCollection.setCreatedTime(new Date());
 
@@ -368,12 +382,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    registeredPatientDetails.setUserId(userCollection.getId());
 	    Patient patient = new Patient();
 	    BeanUtil.map(patientCollection, patient);
-	    patient.setPatientId(patientCollection.getId());
+	    patient.setPatientId(userCollection.getId());
 
-	    int historyCount = historyRepository.getByPatientIdAndNotEqualToDoctorLocationHospital(patientCollection.getUserId(),
-		    patientCollection.getDoctorId(), patientCollection.getLocationId(), patientCollection.getHospitalId());
-	    if (historyCount > 0)
-		patient.setIsHistoryAvailable(true);
+	    Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(patientCollection.getDoctorId(), userCollection.getId(), patientCollection.getHospitalId(), patientCollection.getLocationId());
+	    Integer clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(patientCollection.getDoctorId(), userCollection.getId(), patientCollection.getHospitalId(), patientCollection.getLocationId());
+	    Integer recordsCount = recordsRepository.getRecordsForOtherDoctors(patientCollection.getDoctorId(), userCollection.getId(), patientCollection.getHospitalId(), patientCollection.getLocationId());
+	    
+	    if (prescriptionCount != null || clinicalNotesCount != null || recordsCount != null)patient.setIsDataAvailableWithOtherDoctor(true);
+	    
+	    patient.setIsPatientOTPVerified(otpService.checkOTPVerified(patientCollection.getDoctorId(), patientCollection.getLocationId(), patientCollection.getHospitalId(), userCollection.getId()));
 
 	    registeredPatientDetails.setPatient(patient);
 	    registeredPatientDetails.setDob(patientCollection.getDob());
@@ -500,12 +517,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    }
 	    // save patient admission
 	    PatientAdmissionCollection patientAdmissionCollection = null;
-	    patientAdmissionCollection = patientAdmissionRepository.findByPatientIdAndDoctorId(patientCollection.getId(), request.getDoctorId());
+	    patientAdmissionCollection = patientAdmissionRepository.findByPatientIdAndDoctorId(patientCollection.getUserId(), request.getDoctorId());
 	    if (patientAdmissionCollection == null) {
 		patientAdmissionCollection = new PatientAdmissionCollection();
 		BeanUtil.map(request, patientAdmissionCollection);
 		patientAdmissionCollection.setUserId(request.getUserId());
-		patientAdmissionCollection.setPatientId(patientCollection.getId());
+		patientAdmissionCollection.setPatientId(patientCollection.getUserId());
 		patientAdmissionCollection.setCreatedTime(new Date());
 	    }
 
@@ -562,14 +579,20 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    registeredPatientDetails.setUserId(userCollection.getId());
 	    Patient patient = new Patient();
 	    BeanUtil.map(patientCollection, patient);
-	    patient.setPatientId(patientCollection.getId());
+	    patient.setPatientId(userCollection.getId());
 
-	    int historyCount = historyRepository.getByPatientIdAndNotEqualToDoctorLocationHospital(patientCollection.getUserId(),
-		    patientCollection.getDoctorId(), patientCollection.getLocationId(), patientCollection.getHospitalId());
-	    if (historyCount > 0)
-		patient.setIsHistoryAvailable(true);
+	    Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(patientCollection.getDoctorId(), userCollection.getId(), patientCollection.getHospitalId(), patientCollection.getLocationId());
+	    Integer clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(patientCollection.getDoctorId(), userCollection.getId(), patientCollection.getHospitalId(), patientCollection.getLocationId());
+	    Integer recordsCount = recordsRepository.getRecordsForOtherDoctors(patientCollection.getDoctorId(), userCollection.getId(), patientCollection.getHospitalId(), patientCollection.getLocationId());
+	    
+	    if (prescriptionCount != null || clinicalNotesCount != null || recordsCount != null)patient.setIsDataAvailableWithOtherDoctor(true);
+	    
+	    patient.setIsPatientOTPVerified(otpService.checkOTPVerified(patientCollection.getDoctorId(), patientCollection.getLocationId(), patientCollection.getHospitalId(), userCollection.getId()));
+
 
 	    registeredPatientDetails.setPatient(patient);
+	    registeredPatientDetails.setDob(patientCollection.getDob());
+	    registeredPatientDetails.setGender(patientCollection.getGender());
 	    registeredPatientDetails.setPID(patientCollection.getPID());
 	    registeredPatientDetails.setDoctorId(patientCollection.getDoctorId());
 	    registeredPatientDetails.setLocationId(patientCollection.getLocationId());
@@ -667,11 +690,16 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    if (userCollection != null) {
 		PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userId, doctorId, locationId, hospitalId);
 		if (patientCollection != null) {
-			PatientAdmissionCollection patientAdmissionCollection = patientAdmissionRepository.findByPatientIdAndDoctorId(patientCollection.getId(), doctorId);
+			PatientAdmissionCollection patientAdmissionCollection = patientAdmissionRepository.findByPatientIdAndDoctorId(userCollection.getId(), doctorId);
 			Reference reference = null;
 			if(patientAdmissionCollection != null){
-				reference = new Reference();
-				reference.setReference(patientAdmissionCollection.getReferredBy());
+				if(patientAdmissionCollection.getReferredBy() != null){
+					ReferencesCollection referencesCollection = referrenceRepository.findOne(patientAdmissionCollection.getReferredBy());
+					if(referencesCollection != null){
+						reference = new Reference();
+						BeanUtil.map(referencesCollection, reference);
+					}
+				}
 			}
 		    AddressCollection addressCollection = new AddressCollection();
 		    if (patientCollection.getAddressId() != null) {
@@ -687,13 +715,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    registeredPatientDetails.setReferredBy(reference);
 		    Patient patient = new Patient();
 		    BeanUtil.map(patientCollection, patient);
-		    patient.setPatientId(patientCollection.getId());
+		    patient.setPatientId(userCollection.getId());
 
-		    int historyCount = historyRepository.getByPatientIdAndNotEqualToDoctorLocationHospital(patientCollection.getUserId(),
-			    patientCollection.getDoctorId(), patientCollection.getLocationId(), patientCollection.getHospitalId());
-		    if (historyCount > 0)
-			patient.setIsHistoryAvailable(true);
+		    Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(doctorId, userCollection.getId(), hospitalId, locationId);
+		    Integer clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(doctorId, userCollection.getId(), hospitalId, locationId);
+		    Integer recordsCount = recordsRepository.getRecordsForOtherDoctors(doctorId, userCollection.getId(), hospitalId, locationId);
+		    
+		    if (prescriptionCount != null || clinicalNotesCount != null || recordsCount != null)patient.setIsDataAvailableWithOtherDoctor(true);
 
+		    patient.setIsPatientOTPVerified(otpService.checkOTPVerified(patientCollection.getDoctorId(), patientCollection.getLocationId(), patientCollection.getHospitalId(), userCollection.getId()));
 		    registeredPatientDetails.setPatient(patient);
 		    Address address = new Address();
 		    BeanUtil.map(addressCollection, address);
@@ -900,12 +930,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 	    int currentYear = localCalendar.get(Calendar.YEAR);
 
-	    String startDate = currentDay + "-" + currentMonth + "-" + currentYear + " 00:00:00";
-	    String endDate = currentDay + "-" + currentMonth + "-" + currentYear + " 23:59:59";
-	    SimpleDateFormat dateFormat = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
-	    Long from = dateFormat.parse(startDate).getTime();
-	    Long to = dateFormat.parse(endDate).getTime();
-	    List<PatientCollection> patientCollections = patientRepository.findTodaysRegisteredPatient(doctorId, locationId, hospitalId, from, to);
+//	    String startDate = currentDay + "-" + currentMonth + "-" + currentYear + " 00:00:00";
+//	    String endDate = currentDay + "-" + currentMonth + "-" + currentYear + " 23:59:59";
+//	    SimpleDateFormat dateFormat = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
+//	    Long from = dateFormat.parse(startDate).getTime();
+//	    Long to = dateFormat.parse(endDate).getTime();
+//	    
+	    DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
+    	DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
+	    List<PatientCollection> patientCollections = patientRepository.findTodaysRegisteredPatient(doctorId, locationId, hospitalId, start, end);
 	    int patientCount = 0;
 	    if (CollectionUtils.isNotEmpty(patientCollections)) {
 		patientCount = patientCollections.size();
@@ -925,7 +958,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 		generatedId = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay) + DPDoctorUtils.getPrefixedNumber(currentMonth)
 			+ DPDoctorUtils.getPrefixedNumber(currentYear % 100) + DPDoctorUtils.getPrefixedNumber(patientCounter + patientCount + 1);
-
+		System.out.println(patientCount+ ""+ generatedId);
 //		updatePatientInitialAndCounter(doctorId, locationId, patientInitial, patientCounter + 1);
 	    } else {
 		logger.warn("Doctor Id and Location Id does not match.");
@@ -1402,7 +1435,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	    // save token
 	    TokenCollection tokenCollection = new TokenCollection();
-	    tokenCollection.setUserLocationId(userLocationCollection.getId());
+	    tokenCollection.setResourceId(userLocationCollection.getId());
 	    tokenCollection.setCreatedTime(new Date());
 	    tokenCollection = tokenRepository.save(tokenCollection);
 
@@ -1453,6 +1486,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    role.setAccessModules(accessControl.getAccessModules());
 		response.setRole(role);
 	    }
+	} catch (DuplicateKeyException de) {
+	    logger.error(de);
+	    throw new BusinessException(ServiceError.Unknown, "Email address already registerd. Please login");
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);

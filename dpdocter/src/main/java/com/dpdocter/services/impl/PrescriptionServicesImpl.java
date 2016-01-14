@@ -448,10 +448,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    response.getItems().get(i).setDrug(drug);
 		    i++;
 		}
-	    } else {
-		logger.warn("Template Not Found");
-		throw new BusinessException(ServiceError.NotFound, "Template Not Found");
 	    }
+//	    else {
+//		logger.warn("Template Not Found");
+//		throw new BusinessException(ServiceError.NotFound, "Template Not Found");
+//	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Template");
@@ -808,10 +809,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    }
 		    response.add(template);
 		}
-	    } else {
-		logger.warn("Template Not Found");
-		throw new BusinessException(ServiceError.NotFound, "Template Not Found");
 	    }
+//	    else {
+//		logger.warn("Template Not Found");
+//		throw new BusinessException(ServiceError.NotFound, "Template Not Found");
+//	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Template");
@@ -844,11 +846,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    for (TemplateItem templateItem : template.getItems()) {
 		TemplateItemDetail templateItemDetail = new TemplateItemDetail();
 		BeanUtil.map(templateItem, templateItemDetail);
-		DrugCollection drugCollection = drugRepository.findOne(templateItem.getDrugId());
-		Drug drug = new Drug();
-		if (drugCollection != null)
-		    BeanUtil.map(drugCollection, drug);
-		templateItemDetail.setDrug(drug);
+		if(templateItem.getDrugId() != null){
+			DrugCollection drugCollection = drugRepository.findOne(templateItem.getDrugId());
+			Drug drug = new Drug();
+			if (drugCollection != null)
+			    BeanUtil.map(drugCollection, drug);
+			templateItemDetail.setDrug(drug);
+		}
 		templateItemDetails.add(templateItemDetail);
 	    }
 	    response.setItems(templateItemDetails);
@@ -2845,7 +2849,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		
 	boolean[] discard = new boolean[2];
 	discard[0] = true;discard[0] = false;
-	List<DrugCollection> drugCollection = drugRepository.getGlobalDrugs(new Date(Long.parseLong("0")), discard, new Sort(Sort.Direction.DESC));
+	List<DrugCollection> drugCollection = drugRepository.getGlobalDrugs(new Date(Long.parseLong("0")), discard, new Sort(Sort.Direction.DESC,"updatedTime"));
 	for(DrugCollection collection : drugCollection){
 		SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
 		BeanUtil.map(collection, solrDrugDocument);

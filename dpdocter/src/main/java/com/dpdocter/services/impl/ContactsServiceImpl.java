@@ -41,6 +41,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.reflections.ReflectionUtil;
 import com.dpdocter.repository.AddressRepository;
+import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.DoctorContactsRepository;
 import com.dpdocter.repository.ExportContactsRequestRepository;
 import com.dpdocter.repository.GroupRepository;
@@ -49,6 +50,8 @@ import com.dpdocter.repository.ImportContactsRequestRepository;
 import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientGroupRepository;
 import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.PrescriptionRepository;
+import com.dpdocter.repository.RecordsRepository;
 import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.ExportContactsRequest;
@@ -57,6 +60,8 @@ import com.dpdocter.request.ImportContactsRequest;
 import com.dpdocter.request.PatientGroupAddEditRequest;
 import com.dpdocter.services.ContactsService;
 import com.dpdocter.services.FileManager;
+import com.dpdocter.services.OTPService;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -98,10 +103,21 @@ public class ContactsServiceImpl implements ContactsService {
     private FileManager fileManager;
 
     @Autowired
-    private HistoryRepository historyRepository;
-
-    @Autowired
     private ReferenceRepository referenceRepository;
+    
+    @Autowired
+    private PrescriptionRepository prescriptionRepository;
+    
+    @Autowired
+    private ClinicalNotesRepository clinicalNotesRepository;
+    
+    @Autowired
+    private RecordsRepository recordsRepository;
+    
+    @Autowired
+    private OTPService otpService;
+
+    
     /**
      * This method returns all unblocked or blocked patients (based on param
      * blocked) of specified doctor.
@@ -252,11 +268,13 @@ public class ContactsServiceImpl implements ContactsService {
 		    patientCard.setGroups(groups);
 		    patientCard.setDoctorSepecificPatientId(patientCollection.getUserId());
 
-		    int historyCount = historyRepository.getByPatientIdAndNotEqualToDoctorLocationHospital(patientCollection.getUserId(), doctorId, locationId,
-			    hospitalId);
-		    if (historyCount > 0)
-			patientCard.setIsHistoryAvailable(true);
+		    Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(doctorId, userCollection.getId(), hospitalId, locationId);
+		    Integer clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(doctorId, userCollection.getId(), hospitalId, locationId);
+		    Integer recordsCount = recordsRepository.getRecordsForOtherDoctors(doctorId, userCollection.getId(), hospitalId, locationId);
+		    
+		    if (prescriptionCount != null || clinicalNotesCount != null || recordsCount != null)patientCard.setIsDataAvailableWithOtherDoctor(true);
 
+		    patientCard.setIsPatientOTPVerified(otpService.checkOTPVerified(doctorId, locationId, hospitalId, userCollection.getId()));
 		    patientCards.add(patientCard);
 		}
 	    }
@@ -292,10 +310,13 @@ public class ContactsServiceImpl implements ContactsService {
 			    patientCard.setGroups(groups);
 			    patientCard.setDoctorSepecificPatientId(patientCollection.getUserId());
 
-			    int historyCount = historyRepository.getByPatientIdAndNotEqualToDoctorLocationHospital(patientCollection.getUserId(), doctorId,
-				    locationId, hospitalId);
-			    if (historyCount > 0)
-				patientCard.setIsHistoryAvailable(true);
+			    Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(doctorId, userCollection.getId(), hospitalId, locationId);
+			    Integer clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(doctorId, userCollection.getId(), hospitalId, locationId);
+			    Integer recordsCount = recordsRepository.getRecordsForOtherDoctors(doctorId, userCollection.getId(), hospitalId, locationId);
+			    
+			    if (prescriptionCount != null || clinicalNotesCount != null || recordsCount != null)patientCard.setIsDataAvailableWithOtherDoctor(true);
+
+			    patientCard.setIsPatientOTPVerified(otpService.checkOTPVerified(doctorId, locationId, hospitalId, userCollection.getId()));
 
 			    patientCards.add(patientCard);
 			}
@@ -630,13 +651,15 @@ public class ContactsServiceImpl implements ContactsService {
 		    }
 		    Patient patient = new Patient();
 		    BeanUtil.map(patientCollection, patient);
-		    patient.setPatientId(patientCollection.getId());
+		    patient.setPatientId(userCollection.getId());
 		    BeanUtil.map(patientCollection, registeredPatientDetail);
-		    int historyCount = historyRepository.getByPatientIdAndNotEqualToDoctorLocationHospital(patientCollection.getUserId(), doctorId, locationId,
-			    hospitalId);
-		    if (historyCount > 0)
-			patient.setIsHistoryAvailable(true);
-
+		    
+		    Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(doctorId, userCollection.getId(), hospitalId, locationId);
+		    Integer clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(doctorId, userCollection.getId(), hospitalId, locationId);
+		    Integer recordsCount = recordsRepository.getRecordsForOtherDoctors(doctorId, userCollection.getId(), hospitalId, locationId);
+		    
+		    if (prescriptionCount != null || clinicalNotesCount != null || recordsCount != null)patient.setIsDataAvailableWithOtherDoctor(true);
+		    patient.setIsPatientOTPVerified(otpService.checkOTPVerified(doctorId, locationId, hospitalId, userCollection.getId()));
 		    registeredPatientDetail.setPatient(patient);
 		    Address address = new Address();
 		    BeanUtil.map(addressCollection, address);
@@ -658,8 +681,10 @@ public class ContactsServiceImpl implements ContactsService {
 		    PatientAdmissionCollection patientAdmissionCollection = patientAdmissionRepository.findByPatientIdAndDoctorId(userCollection.getId(), doctorId);
 		    if(patientAdmissionCollection != null){
 		    	Reference reference = new Reference();
-		    	ReferencesCollection referencesCollection = referenceRepository.findOne(patientAdmissionCollection.getReferredBy());
-		    	if(referencesCollection != null)BeanUtil.map(referencesCollection, reference);
+		    	if(patientAdmissionCollection.getReferredBy() != null){
+		    		ReferencesCollection referencesCollection = referenceRepository.findOne(patientAdmissionCollection.getReferredBy());
+			    	if(referencesCollection != null)BeanUtil.map(referencesCollection, reference);
+		    	}
 		    	registeredPatientDetail.setReferredBy(reference);
 		    }
 		    registeredPatientDetails.add(registeredPatientDetail);

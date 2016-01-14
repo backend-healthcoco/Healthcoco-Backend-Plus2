@@ -25,7 +25,7 @@ public class ConsultationFee {
 
     @Override
     public String toString() {
-	return "ConsultationFee [amount=" + amount + ", currency=" + currency + "]";
+	return "{amount=" + amount + ", currency=" + currency + "}";
     }
 
 }

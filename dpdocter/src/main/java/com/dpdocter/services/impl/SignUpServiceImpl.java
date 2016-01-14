@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.AccessControl;
@@ -65,6 +66,7 @@ import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.SignUpService;
 import com.dpdocter.sms.services.SMSServices;
+
 import common.util.web.DPDoctorUtils;
 
 /**
@@ -139,13 +141,21 @@ public class SignUpServiceImpl implements SignUpService {
     @Override
     public String verifyUser(String tokenId) {
 	try {
+		String startText = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'><html><head><META http-equiv='Content-Type' content='text/html; charset=utf-8'></head><body>"
+				+"<div><div style='margin-top:130px'><div style='padding:20px 30px;border-radius:3px;background-color:#fefefe;border:1px solid #f1f1f1;line-height:30px;margin-bottom:30px;font-family:&#39;Open Sans&#39;,sans-serif;margin:0px auto;min-width:200px;max-width:500px'>"
+				+"<div align='center'><h2 style='font-size:20px;color:#2c3335;text-align:center;letter-spacing:1px'>Account Verification</h2><br><p style='color:#2c3335;font-size:15px;text-align:left'>";
+
+		String endText = "</p><br><p style='color:#8a6d3b;font-size:15px;text-align:left'>lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum</p>"
+						+"</div></div></div></div></body></html>";
+
+		
 	    TokenCollection tokenCollection = tokenRepository.findOne(tokenId);
 	    if (tokenCollection == null || tokenCollection.getIsUsed()) {
-		return "Link is already Used";
+		return startText+"Link is already Used"+endText;
 	    } else {
-		UserLocationCollection userLocationCollection = userLocationRepository.findOne(tokenCollection.getUserLocationId());
+		UserLocationCollection userLocationCollection = userLocationRepository.findOne(tokenCollection.getResourceId());
 		if (userLocationCollection == null) {
-		    return "Invalid Url.";
+		    return startText+"Invalid Url."+endText;
 		}
 		UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
 		userCollection.setIsVerified(true);
@@ -155,7 +165,7 @@ public class SignUpServiceImpl implements SignUpService {
 		userLocationRepository.save(userLocationCollection);
 		tokenCollection.setIsUsed(true);
 		tokenRepository.save(tokenCollection);
-		return "Account is Activated";
+		return startText+"Account is Activated"+endText;
 	    }
 
 	} catch (BusinessException be) {
@@ -294,7 +304,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    userRoleRepository.save(userRoleCollection);
 	    // save token
 	    TokenCollection tokenCollection = new TokenCollection();
-	    tokenCollection.setUserLocationId(userLocationCollection.getId());
+	    tokenCollection.setResourceId(userLocationCollection.getId());
 	    tokenCollection.setCreatedTime(new Date());
 	    tokenCollection = tokenRepository.save(tokenCollection);
 
@@ -347,7 +357,9 @@ public class SignUpServiceImpl implements SignUpService {
 	    locations.add(locationAndAccessControl);
 	    hospital.setLocationsAndAccessControl(locations);
 	    response.setHospital(hospital);
-
+	} catch (DuplicateKeyException de) {
+	    logger.error(de);
+	    throw new BusinessException(ServiceError.Unknown, "Email address already registerd. Please login");
 	} catch (BusinessException be) {
 	    logger.error(be);
 	    throw be;
@@ -443,6 +455,9 @@ public class SignUpServiceImpl implements SignUpService {
 	    user.setEmailAddress(userCollection.getEmailAddress());
 	    response.setUser(user);
 
+	} catch (DuplicateKeyException de) {
+	    logger.error(de);
+	    throw new BusinessException(ServiceError.Unknown, "Email address already registerd. Please login");
 	} catch (BusinessException be) {
 	    logger.error(be);
 	    throw be;
@@ -521,7 +536,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    userRoleRepository.save(userRoleCollection);
 	    // save token
 	    TokenCollection tokenCollection = new TokenCollection();
-	    tokenCollection.setUserLocationId(userLocationCollection.getId());
+	    tokenCollection.setResourceId(userLocationCollection.getId());
 	    tokenCollection.setCreatedTime(new Date());
 	    tokenCollection = tokenRepository.save(tokenCollection);
 

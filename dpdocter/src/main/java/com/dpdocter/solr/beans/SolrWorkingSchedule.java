@@ -3,18 +3,19 @@ package com.dpdocter.solr.beans;
 import java.util.List;
 
 import com.dpdocter.beans.WorkingHours;
+import com.dpdocter.enums.Day;
 
 public class SolrWorkingSchedule {
 
-    private String workingDay;
+    private Day workingDay;
 
     private List<WorkingHours> workingHours;
 
-    public String getWorkingDay() {
+    public Day getWorkingDay() {
 	return workingDay;
     }
 
-    public void setWorkingDay(String workingDay) {
+    public void setWorkingDay(Day workingDay) {
 	this.workingDay = workingDay;
     }
 
@@ -26,9 +27,8 @@ public class SolrWorkingSchedule {
 	this.workingHours = workingHours;
     }
 
-    @Override
-    public String toString() {
-	return "workingSchedule [workingHours=" + workingHours + "]";
-    }
-
+	@Override
+	public String toString() {
+		return "{workingDay=" + workingDay + ", workingHours=" + workingHours + "}";
+	}
 }

@@ -21,13 +21,16 @@ import com.dpdocter.collections.LabTestCollection;
 import com.dpdocter.collections.LandmarkLocalityCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.NotesCollection;
+import com.dpdocter.collections.OTPCollection;
 import com.dpdocter.collections.ObservationCollection;
 import com.dpdocter.collections.PatientAdmissionCollection;
 import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.StateCollection;
 import com.dpdocter.collections.TransactionalCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
+import com.dpdocter.enums.OTPState;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -46,6 +49,7 @@ import com.dpdocter.repository.LabTestRepository;
 import com.dpdocter.repository.LandmarkLocalityRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.NotesRepository;
+import com.dpdocter.repository.OTPRepository;
 import com.dpdocter.repository.ObservationRepository;
 import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientRepository;
@@ -54,6 +58,7 @@ import com.dpdocter.repository.StateRepository;
 import com.dpdocter.repository.TransnationalRepositiory;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.services.OTPService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.beans.DoctorLocation;
 import com.dpdocter.solr.document.SolrCityDocument;
@@ -156,9 +161,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     private SolrClinicalNotesService solrClinicalNotesService;
     
     @Autowired
-    private ReferenceRepository ReferenceRepository;
-
-//    @Scheduled(fixedRate = 300000)
+    private ReferenceRepository referenceRepository;
+    
+    @Scheduled(fixedRate = 900000)
     public void checkResources() {
 	System.out.println(">>> Scheduled test service <<<");
 	List<TransactionalCollection> transactionalCollections = null;
@@ -166,6 +171,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	    transactionalCollections = transnationalRepositiory.findByIsCached(false);
 	    if (transactionalCollections != null) {
 		for (TransactionalCollection transactionalCollection : transactionalCollections) {
+			if(transactionalCollection.getResourceId() != null)
 		    switch (transactionalCollection.getResource()) {
 
 		    case PATIENT:
@@ -224,7 +230,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	    logger.error(e);
 	}
     }
-
+    
 	@Override
     public void addResource(String resourceId, Resource resource, boolean isCached) {
 	TransactionalCollection transactionalCollection = null;
@@ -267,15 +273,19 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	    		    patientDocument.setYears(patientCollection.getDob().getYears() + "");
 	    		}
 	    		BeanUtil.map(userCollection, patientDocument);
-	    		BeanUtil.map(patientCollection, patientDocument);
-	    		BeanUtil.map(patientAdmissionCollection, patientDocument);
-	    		if (addressCollection != null)
-	    		    BeanUtil.map(addressCollection, patientDocument);
+	    		if (patientCollection != null)BeanUtil.map(patientCollection, patientDocument);
+	    		if (patientAdmissionCollection != null)BeanUtil.map(patientAdmissionCollection, patientDocument);
+	    		if (addressCollection != null)BeanUtil.map(addressCollection, patientDocument);
 
-	    		patientDocument.setId(patientCollection.getId());
-	    		patientDocument.setReferredBy(patientAdmissionCollection.getReferredBy());
+	    		if (patientCollection != null)patientDocument.setId(patientCollection.getId());
+	    		if (patientAdmissionCollection != null){
+	    			if(patientAdmissionCollection.getReferredBy() != null){
+	    				ReferencesCollection referencesCollection = referenceRepository.findOne(patientAdmissionCollection.getReferredBy());
+	    				if(referencesCollection != null)patientDocument.setReferredBy(referencesCollection.getReference());
+	    			}
+	    			}
 
-	    		solrRegistrationService.editPatient(patientDocument);
+	    		if (patientCollection != null)solrRegistrationService.editPatient(patientDocument);
 	    	}
 	    }
 	} catch (Exception e) {
@@ -434,14 +444,14 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			    	LocationCollection locationCollection = locationRepository.findOne(collection.getLocationId());
 			    	DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(collection.getId());
 			    	SolrDoctorDocument doctorDocument = new SolrDoctorDocument();
-			    	BeanUtil.map(locationCollection, doctorDocument);
-			    	BeanUtil.map(userCollection, doctorDocument);
-			    	BeanUtil.map(doctorCollection, doctorDocument);
+			    	if(locationCollection != null)BeanUtil.map(locationCollection, doctorDocument);
+			    	if(userCollection != null)BeanUtil.map(userCollection, doctorDocument);
+			    	if(doctorCollection != null)BeanUtil.map(doctorCollection, doctorDocument);
 			    	if(clinicProfileCollection != null)BeanUtil.map(clinicProfileCollection, doctorDocument);
 			    	else {
 			    		doctorDocument.setWorkingSchedules(null);
 			    	}
-			    	doctorDocument.setLocationId(locationCollection.getId());
+			    	if(locationCollection != null)doctorDocument.setLocationId(locationCollection.getId());
 			    	solrRegistrationService.addDoctor(doctorDocument);
 			    }
 		    }

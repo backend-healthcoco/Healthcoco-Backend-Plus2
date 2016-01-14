@@ -130,7 +130,7 @@ public class SolrPatientDocument {
 
     public void setFirstName(String firstName) {
 	this.firstName = firstName;
-	setFirstNameWithoutSpace(firstName);
+	if(firstName != null)setFirstNameWithoutSpace(firstName);
     }
 
     public String getFirstNameWithoutSpace() {

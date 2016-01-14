@@ -39,4 +39,7 @@ public interface PrescriptionRepository extends MongoRepository<PrescriptionColl
     @Query("{'patientId' : ?0}")
     List<PrescriptionCollection> findAll(String patientId);
 
+    @Query(value = "{'doctorId' : {'$ne' : ?0}, 'patientId': ?1, 'hospitalId' : {'$ne' : ?2}, 'locationId' : {'$ne' : ?3}}", count = true)
+    Integer getPrescriptionCountForOtherDoctors(String doctorId, String id, String hospitalId, String locationId);
+
 }

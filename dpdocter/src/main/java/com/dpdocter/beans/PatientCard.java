@@ -47,8 +47,10 @@ public class PatientCard {
 
     private String colorCode;
 
-    private Boolean isHistoryAvailable = false;
+    private Boolean isDataAvailableWithOtherDoctor = false;
 
+    private Boolean isPatientOTPVerified = false;
+    
     public String getId() {
 	return id;
     }
@@ -225,21 +227,31 @@ public class PatientCard {
 	this.thumbnailUrl = thumbnailUrl;
     }
 
-    public Boolean getIsHistoryAvailable() {
-	return isHistoryAvailable;
-    }
+	public Boolean getIsDataAvailableWithOtherDoctor() {
+		return isDataAvailableWithOtherDoctor;
+	}
 
-    public void setIsHistoryAvailable(Boolean isHistoryAvailable) {
-	this.isHistoryAvailable = isHistoryAvailable;
-    }
+	public void setIsDataAvailableWithOtherDoctor(Boolean isDataAvailableWithOtherDoctor) {
+		this.isDataAvailableWithOtherDoctor = isDataAvailableWithOtherDoctor;
+	}
 
-    @Override
-    public String toString() {
-	return "PatientCard [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", userName=" + userName
-		+ ", emailAddress=" + emailAddress + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", bloodGroup=" + bloodGroup + ", PID="
-		+ PID + ", gender=" + gender + ", mobileNumber=" + mobileNumber + ", secPhoneNumber=" + secPhoneNumber + ", dob=" + dob + ", count=" + count
-		+ ", dateOfVisit=" + dateOfVisit + ", groups=" + groups + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-		+ hospitalId + ", doctorSepecificPatientId=" + doctorSepecificPatientId + ", colorCode=" + colorCode + ", isHistoryAvailable="
-		+ isHistoryAvailable + "]";
-    }
+	public Boolean getIsPatientOTPVerified() {
+		return isPatientOTPVerified;
+	}
+
+	public void setIsPatientOTPVerified(Boolean isPatientOTPVerified) {
+		this.isPatientOTPVerified = isPatientOTPVerified;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientCard [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName="
+				+ middleName + ", userName=" + userName + ", emailAddress=" + emailAddress + ", imageUrl=" + imageUrl
+				+ ", thumbnailUrl=" + thumbnailUrl + ", bloodGroup=" + bloodGroup + ", PID=" + PID + ", gender="
+				+ gender + ", mobileNumber=" + mobileNumber + ", secPhoneNumber=" + secPhoneNumber + ", dob=" + dob
+				+ ", count=" + count + ", dateOfVisit=" + dateOfVisit + ", groups=" + groups + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorSepecificPatientId="
+				+ doctorSepecificPatientId + ", colorCode=" + colorCode + ", isDataAvailableWithOtherDoctor="
+				+ isDataAvailableWithOtherDoctor + ", isPatientOTPVerified=" + isPatientOTPVerified + "]";
+	}
 }

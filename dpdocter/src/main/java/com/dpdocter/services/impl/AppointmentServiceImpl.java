@@ -667,7 +667,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    		List<WorkingHours> workingHours = workingSchedule.getWorkingHours();
 		    		if(workingHours != null && !workingHours.isEmpty()){
 		    			for(WorkingHours workingHour : workingHours){
-		    				if(workingHour.getFrom() > 0 && workingHour.getTo() > 0 && doctorClinicProfileCollection.getAppointmentSlot().getTime() > 0){
+		    				if(workingHour.getFrom() != null && workingHour.getTo() != null && doctorClinicProfileCollection.getAppointmentSlot().getTime() > 0){
 		    					List<Slot> slots = DateAndTimeUtility.sliceTime(workingHour.getFrom(), workingHour.getTo(), Math.round(doctorClinicProfileCollection.getAppointmentSlot().getTime()));
 		    					if(slots != null)response.addAll(slots);
 		    				}	    				
@@ -758,7 +758,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				appointmentCollection.setState(request.getState());
 				
 				if(request.getState().equals(AppointmentState.CANCEL)){
-			    	AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository.findByAppointmentId(appointmentCollection.getId());
+			    	AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository.findByAppointmentId(appointmentCollection.getAppointmentId());
 			    	if(bookedSlotCollection != null) appointmentBookedSlotRepository.delete(bookedSlotCollection);
 			    }
 			    else {
@@ -768,12 +768,16 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    	if(request.getState().equals(AppointmentState.RESCHEDULE)){
 				    	appointmentCollection.setIsReschduled(true);
 				    	appointmentCollection.setState(AppointmentState.CONFIRM);
-				    	AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository.findByAppointmentId(appointmentCollection.getId());
+				    	AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository.findByAppointmentId(appointmentCollection.getAppointmentId());
 				    	if(bookedSlotCollection != null) {
-				    		bookedSlotCollection.setDate(appointmentCollection.getDate());
-						    bookedSlotCollection.setTime(appointmentCollection.getTime());
-						    bookedSlotCollection.setUpdatedTime(new Date());
-				    		appointmentBookedSlotRepository.save(bookedSlotCollection);
+				    		if(appointmentCollection.getIsCalenderBlocked()){
+				    			bookedSlotCollection.setDate(appointmentCollection.getDate());
+							    bookedSlotCollection.setTime(appointmentCollection.getTime());
+							    bookedSlotCollection.setUpdatedTime(new Date());
+					    		appointmentBookedSlotRepository.save(bookedSlotCollection);
+				    		}else{
+				    			appointmentBookedSlotRepository.delete(bookedSlotCollection);
+				    		}
 				    	}
 				    }
 			    }
@@ -859,27 +863,27 @@ public class AppointmentServiceImpl implements AppointmentService {
 //			    cityCollection = cityRepository.save(cityCollection);
 //		    }
 
-				List<Country> countries = getCountries();
+				List<CountryCollection> countries = countryRepository.findAll();
 		    	if(countries != null){
-		    		for(Country country : countries){
+		    		for(CountryCollection country : countries){
 						SolrCountryDocument solrCountry = new SolrCountryDocument();
 						BeanUtil.map(country, solrCountry);
 						solrCountry.setGeoLocation(new GeoLocation(country.getLatitude(), country.getLongitude()));
 						solrCityService.addCountry(solrCountry);
 					}
 		    	}
-		    	List<State> states = getStates();
+		    	List<StateCollection> states = stateRepository.findAll();
 		    	if (states != null) {
-					for(State state : states){
+					for(StateCollection state : states){
 						SolrStateDocument solrState = new SolrStateDocument();
 						BeanUtil.map(state, solrState);
 						solrState.setGeoLocation(new GeoLocation(state.getLatitude(), state.getLongitude()));
 						solrCityService.addState(solrState);
 					}
 			    }
-			    List<City> cities = getCities();
+			    List<CityCollection> cities = cityRepository.findAll();
 			    if (cities != null) {
-				for(City city : cities){
+				for(CityCollection city : cities){
 					SolrCityDocument solrCities = new SolrCityDocument();
 					BeanUtil.map(city, solrCities);
 					solrCities.setGeoLocation(new GeoLocation(city.getLatitude(), city.getLongitude()));

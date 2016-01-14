@@ -451,29 +451,34 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	List<PatientVisitCollection> patientVisitCollections = null;
 	try {
 
+		List<VisitedFor> visitedFors = new ArrayList<VisitedFor>();
+		visitedFors.add(VisitedFor.CLINICAL_NOTES);
+		visitedFors.add(VisitedFor.PRESCRIPTION);
+		visitedFors.add(VisitedFor.REPORTS);
+	    
 	    long createdTimestamp = Long.parseLong(updatedTime);
 	    if (!isOTPVerified) {
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
-			patientVisitCollections = patientVisitRepository.find(doctorId, patientId, new Date(createdTimestamp), new PageRequest(page, size,
+			patientVisitCollections = patientVisitRepository.find(doctorId, patientId, visitedFors, new Date(createdTimestamp), new PageRequest(page, size,
 				Direction.DESC, "updatedTime"));
 		    else
-			patientVisitCollections = patientVisitRepository.find(doctorId, patientId, new Date(createdTimestamp), new Sort(Sort.Direction.DESC,
+			patientVisitCollections = patientVisitRepository.find(doctorId, patientId, visitedFors, new Date(createdTimestamp), new Sort(Sort.Direction.DESC,
 				"updatedTime"));
 		} else {
 		    if (size > 0)
-			patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, new Date(createdTimestamp),
+			patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, visitedFors, new Date(createdTimestamp),
 				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, new Date(createdTimestamp),
+			patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, visitedFors,new Date(createdTimestamp),
 				new Sort(Sort.Direction.DESC, "updatedTime"));
 		}
 	    } else {
 		if (size > 0)
-		    patientVisitCollections = patientVisitRepository.find(patientId, new Date(createdTimestamp), new PageRequest(page, size, Direction.DESC,
+		    patientVisitCollections = patientVisitRepository.find(patientId, visitedFors, new Date(createdTimestamp), new PageRequest(page, size, Direction.DESC,
 			    "updatedTime"));
 		else
-		    patientVisitCollections = patientVisitRepository.find(patientId, new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+		    patientVisitCollections = patientVisitRepository.find(patientId, visitedFors, new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
 	    }
 	    if (patientVisitCollections != null) {
 		response = new ArrayList<PatientVisitResponse>();
@@ -1036,29 +1041,33 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	List<PatientVisit> response = null;
 	List<PatientVisitCollection> patientVisitCollections = null;
 	try {
+		List<VisitedFor> visitedFors = new ArrayList<VisitedFor>();
+		visitedFors.add(VisitedFor.CLINICAL_NOTES);
+		visitedFors.add(VisitedFor.PRESCRIPTION);
+		visitedFors.add(VisitedFor.REPORTS);
 	    long createdTimestamp = Long.parseLong(updatedTime);
 	    if (!isOTPVerified) {
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
-			patientVisitCollections = patientVisitRepository.find(doctorId, patientId, new Date(createdTimestamp), new PageRequest(page, size,
+			patientVisitCollections = patientVisitRepository.find(doctorId, patientId, visitedFors, new Date(createdTimestamp), new PageRequest(page, size,
 				Direction.DESC, "updatedTime"));
 		    else
-			patientVisitCollections = patientVisitRepository.find(doctorId, patientId, new Date(createdTimestamp), new Sort(Sort.Direction.DESC,
+			patientVisitCollections = patientVisitRepository.find(doctorId, patientId, visitedFors, new Date(createdTimestamp), new Sort(Sort.Direction.DESC,
 				"updatedTime"));
 		} else {
 		    if (size > 0)
-			patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, new Date(createdTimestamp),
+			patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, visitedFors, new Date(createdTimestamp),
 				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, new Date(createdTimestamp),
+			patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, visitedFors, new Date(createdTimestamp),
 				new Sort(Sort.Direction.DESC, "updatedTime"));
 		}
 	    } else {
 		if (size > 0)
-		    patientVisitCollections = patientVisitRepository.find(patientId, new Date(createdTimestamp), new PageRequest(page, size, Direction.DESC,
+		    patientVisitCollections = patientVisitRepository.find(patientId, visitedFors, new Date(createdTimestamp), new PageRequest(page, size, Direction.DESC,
 			    "updatedTime"));
 		else
-		    patientVisitCollections = patientVisitRepository.find(patientId, new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+		    patientVisitCollections = patientVisitRepository.find(patientId, visitedFors, new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
 	    }
 	    if (patientVisitCollections != null) {
 		response = new ArrayList<PatientVisit>();
@@ -1116,7 +1125,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     public int getVisitCount(String doctorId, String patientId, String locationId, String hospitalId) {
 	Integer visitCount = 0;
 	try {
-	    visitCount = patientVisitRepository.getVisitCount(doctorId, patientId, hospitalId, locationId, false);
+		List<VisitedFor> visitedFors = new ArrayList<VisitedFor>();
+		visitedFors.add(VisitedFor.CLINICAL_NOTES);
+		visitedFors.add(VisitedFor.PRESCRIPTION);
+		visitedFors.add(VisitedFor.REPORTS);
+	    visitCount = patientVisitRepository.getVisitCount(doctorId, patientId, hospitalId, locationId, visitedFors, false);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error while getting Visits Count");

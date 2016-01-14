@@ -289,7 +289,7 @@ public class AppointmentApi {
     
     @Path(value = PathProxy.AppointmentUrls.IMPORT)
     @GET
-    public Response<Boolean> importDrug() {
+    public Response<Boolean> importMaster() {
     	appointmentService.importMaster();
 
 	Response<Boolean> response = new Response<Boolean>();

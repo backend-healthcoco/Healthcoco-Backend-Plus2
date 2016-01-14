@@ -57,4 +57,7 @@ public interface RecordsRepository extends MongoRepository<RecordsCollection, St
     @Query("{'patientId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': {$in: ?2}, 'inHistory' : {$in: ?3}}")
     List<RecordsCollection> findRecords(String patientId, Date date, boolean[] discards, boolean[] inHistorys, Sort sort);
 
+    @Query(value = "{'doctorId' : {'$ne' : ?0}, 'patientId': ?1, 'hospitalId' : {'$ne' : ?2}, 'locationId' : {'$ne' : ?3}}", count = true)
+    Integer getRecordsForOtherDoctors(String doctorId, String id, String hospitalId, String locationId);
+
 }

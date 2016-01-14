@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -29,8 +30,8 @@ public interface PatientRepository extends MongoRepository<PatientCollection, St
     @Query("{'doctorId': ?0,'locationId': ?1,'hospitalId': ?2, 'updatedTime': {'$gte': ?3}}")
     List<PatientCollection> findByDoctorIdLocationIdAndHospitalId(String doctorId, String locationId, String hospitalId, Date date, Sort sort);
 
-    @Query("{'doctorId':?0,'locationId':?1,'hospitalId':?2,'registrationDate' : {'$gt' : ?3, '$lt' : ?4}}")
-    List<PatientCollection> findTodaysRegisteredPatient(String doctorId, String location, String hospitalId, Long startDate, Long endDate);
+    @Query("{'doctorId':?0,'locationId':?1,'hospitalId':?2,'createdTime' : {'$gte' : ?3, '$lte' : ?4}}")
+    List<PatientCollection> findTodaysRegisteredPatient(String doctorId, String location, String hospitalId, DateTime start, DateTime end);
 
     @Query("{'userId': {'$in': ?0}, 'doctorId':?1}")
     List<PatientCollection> findByUserIdDoctorId(Collection<String> patientIds, String doctorId, Sort sort);

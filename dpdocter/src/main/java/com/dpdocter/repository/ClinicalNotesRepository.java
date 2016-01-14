@@ -16,4 +16,7 @@ public interface ClinicalNotesRepository extends MongoRepository<ClinicalNotesCo
     @Query(value = "{'doctorId' : ?0, 'hospitalId' : ?1, 'locationId' : ?2}")
     List<ClinicalNotesCollection> getClinicalNotes(String doctorId, String hospitalId, String locationId);
 
+    @Query(value = "{'doctorId' : {'$ne' : ?0}, 'patientId': ?1, 'hospitalId' : {'$ne' : ?2}, 'locationId' : {'$ne' : ?3}}", count = true)
+    Integer getClinicalNotesCountForOtherDoctors(String doctorId, String id, String hospitalId, String locationId);
+
 }
