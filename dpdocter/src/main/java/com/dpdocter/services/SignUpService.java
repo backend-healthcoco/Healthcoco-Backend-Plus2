@@ -1,5 +1,7 @@
 package com.dpdocter.services;
 
+import java.util.List;
+
 import javax.ws.rs.core.UriInfo;
 
 import com.dpdocter.beans.DoctorSignUp;
@@ -12,6 +14,7 @@ import com.dpdocter.request.PatientSignUpRequest;
 import com.dpdocter.request.PatientSignupRequestMobile;
 
 public interface SignUpService {
+	
     Boolean activateUser(String tokenId);
 
     DoctorSignUp doctorSignUp(DoctorSignupRequest request, UriInfo uriInfo);
@@ -34,5 +37,12 @@ public interface SignUpService {
 
     boolean checkMobileNumberSignedUp(String mobileNumber);
 
-    User patientSignUp(PatientSignupRequestMobile request);
+   // User patientSignUp(PatientSignupRequestMobile request);
+    User signupNewPatient(PatientSignupRequestMobile request);
+    
+    List<User> signupAlreadyRegisteredPatient(PatientSignupRequestMobile request);
+    
+    boolean verifyPatientBasedOn80PercentMatchOfName(String name,String mobileNumber);
+    
+    boolean unlockPatientBasedOn80PercentMatch(String name,String mobileNumber);
 }

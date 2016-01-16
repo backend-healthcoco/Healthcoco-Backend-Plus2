@@ -31,6 +31,7 @@ import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.PatientProfilePicChangeRequest;
 import com.dpdocter.request.PatientSignUpRequest;
 import com.dpdocter.request.PatientSignupRequestMobile;
+import com.dpdocter.request.VerifyUnlockPatientRequest;
 import com.dpdocter.services.SignUpService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrDoctorDocument;
@@ -186,7 +187,17 @@ public class SignUpApi {
 	response.setData(user);
 	return response;
     }
-
+    
+    /**
+     * This API signup patient into DB.
+     * It contains a flag isNewPatientNeedToBeCreated which indicates that a new patient signup need to be done or not.
+     * When new patient is created then unlock only that new patient only.Rest of the patients will be locked.
+     * When patient signup is done (for already registered from doc.)
+     *  with 80% match then unlock all the patients with that mobile number.
+     *  
+     * @param PatientSignupRequestMobile 
+     * @return User List
+     */
     @Path(value = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE)
     @POST
     public Response<User> patientSignupMobile(PatientSignupRequestMobile request) {
@@ -194,19 +205,49 @@ public class SignUpApi {
 	    logger.warn("Request send is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request send is NULL");
 	}
-	User user = signUpService.patientSignUp(request);
-	if (user != null) {
-	    if (user.getImageUrl() != null) {
-		user.setImageUrl(getFinalImageURL(user.getImageUrl()));
-	    }
-	    if (user.getThumbnailUrl() != null) {
-		user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
-	    }
+	List<User> users = new ArrayList<>();
+	
+	if(request.isNewPatientNeedToBeCreated()){
+		User user = signUpService.signupNewPatient(request);
+		users.add(user);
+	}else{
+		users = signUpService.signupAlreadyRegisteredPatient(request);
+	}
+	for(User user : users){
+		    if (user.getImageUrl() != null) {
+			user.setImageUrl(getFinalImageURL(user.getImageUrl()));
+		    }
+		    if (user.getThumbnailUrl() != null) {
+			user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
+		}
 	}
 	Response<User> response = new Response<User>();
-	response.setData(user);
+	response.setDataList(users);
 	return response;
     }
+    
+    /**
+     * This API will take name and mobile num and flag (to verify or unlock) as i/p 
+     * and return true or false based on 80 % match of name.POST API.In case of unlock
+     *  it will unlock the user.In case of verify only return true or false ,no unlock 
+     *  in this case.Also while unlock check 80% match for only lock patients.
+     */
+    @Path(value = PathProxy.SignUpUrls.VERIFY_UNLOCK_PATIENT)
+    @POST
+    public Response<Boolean> verifyOrUnlockPatient(VerifyUnlockPatientRequest request) {
+		boolean flag = false;
+		if(request.getVerifyOrUnlock().equals(VerifyUnlockPatientRequest.FlagEnum.VERIFY.getFlag())){
+			flag = signUpService.verifyPatientBasedOn80PercentMatchOfName(request.getName(), request.getMobileNumber());
+		}else if (request.getVerifyOrUnlock().equals(VerifyUnlockPatientRequest.FlagEnum.UNLOCK.getFlag())){
+			flag = signUpService.unlockPatientBasedOn80PercentMatch(request.getName(), request.getMobileNumber());
+		}
+    	Response<Boolean> flagResponse = new Response<Boolean>();
+    	flagResponse.setData(flag);
+    	return null;
+    	
+    }
+    	
+    
 
     @Path(value = PathProxy.SignUpUrls.PATIENT_PROFILE_PIC_CHANGE)
     @POST

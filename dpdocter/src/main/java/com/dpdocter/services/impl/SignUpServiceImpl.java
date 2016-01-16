@@ -67,8 +67,6 @@ import com.dpdocter.services.MailService;
 import com.dpdocter.services.SignUpService;
 import com.dpdocter.sms.services.SMSServices;
 
-import common.util.web.DPDoctorUtils;
-
 /**
  * @author veeraj
  */
@@ -792,7 +790,7 @@ public class SignUpServiceImpl implements SignUpService {
 	return response;
     }
 
-    @Override
+   /* @Override
     public User patientSignUp(PatientSignupRequestMobile request) {
 	User user = null;
 	try {
@@ -806,8 +804,7 @@ public class SignUpServiceImpl implements SignUpService {
 			for (UserCollection userCollection : userCollections) {
 			    if (matchName(userCollection.getFirstName(), userCollection.getLastName(), request.getName())) {
 				userCollection.setPassword(request.getPassword());
-				userCollection.setEmailAddress(request.getEmailAddress());
-				List<PatientCollection> patientCollections = patientRepository.findByUserId(userCollection.getId());
+				//List<PatientCollection> patientCollections = patientRepository.findByUserId(userCollection.getId());
 				if (patientCollections != null) {
 				    for(PatientCollection patientCollection : patientCollections){
 				    	patientCollection.setEmailAddress(request.getEmailAddress());
@@ -866,14 +863,145 @@ public class SignUpServiceImpl implements SignUpService {
 	    throw new BusinessException(ServiceError.Unknown, "Error occured while creating user");
 	}
 	return user;
-    }
+    
+    	return null;}*/
 
-    private boolean matchName(String firstName, String lastName, String queryName) {
-	boolean result = false;
-	if (StringUtils.getJaroWinklerDistance(firstName, queryName) >= NAME_MATCH_REQUIRED
-		|| StringUtils.getJaroWinklerDistance(lastName, queryName) >= NAME_MATCH_REQUIRED) {
-	    result = true;
+  /**
+   * This service implementation checks if 
+   * name/names for mobileNumber matches 80% with the queryName.
+   * @return boolean 
+   */
+
+	@Override
+	public boolean verifyPatientBasedOn80PercentMatchOfName(String name,
+			String mobileNumber) {
+		boolean checkMatch = false;
+	
+		if (!checkMobileNumberSignedUp(mobileNumber)) {
+		    logger.error("Cannot verify patient as No patient is registered for mobile number " + mobileNumber);
+		    throw new BusinessException(ServiceError.NoRecord, "No patient is registered for mobile number " + mobileNumber);
+		} else {
+		    List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
+		    if (userCollections != null && !userCollections.isEmpty()) {
+			for (UserCollection userCollection : userCollections) {
+			    if (!userCollection.isSignedUp() && matchName(userCollection.getFirstName(),name)) {
+			    	checkMatch = true;
+			    	break;
+			    }
+			  }
+		    }
+		}
+			return checkMatch;
 	}
-	return result;
-    }
+	
+	/**
+	 * This Service Implementation will check for 80% match of name,if matched 
+	 *  then unlock all the locked users for the given mobile number.
+	 */
+	
+	@Override
+	public boolean unlockPatientBasedOn80PercentMatch(String name,
+			String mobileNumber) {
+		boolean isUnlocked = false;
+		
+		if (!checkMobileNumberSignedUp(mobileNumber)) {
+		    logger.error("Cannot unlock patient as No patient is registered for mobile number " + mobileNumber);
+		    throw new BusinessException(ServiceError.NoRecord, "No patient is registered for mobile number " + mobileNumber);
+		} else {
+		    List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
+		    if (userCollections != null && !userCollections.isEmpty()) {
+			for (UserCollection userCollection : userCollections) {
+			    if (!userCollection.isSignedUp() && matchName(userCollection.getFirstName(),name)) {
+			    	userCollection.setSignedUp(true);
+			    }
+			  }
+			//This batch update will unlock all the locked users.(make signedup flag =true) 
+			userRepository.save(userCollections);
+			isUnlocked = true;
+		    }
+		}
+			return isUnlocked;
+	}
+	
+	/**
+	 * This utility method checks for 80% match of name.
+	 * @param actualName
+	 * @param queryName
+	 * @return boolean
+	 */
+	  private boolean matchName(String actualName,String queryName) {
+		boolean result = false;
+			if (StringUtils.getJaroWinklerDistance(actualName, queryName) >= NAME_MATCH_REQUIRED) {
+				result = true;
+			}
+			return result;
+		 }
+	  
+	  /**
+	   * This service implementation will signup the new patient into DB.
+	   * This newly created patient will be in unlock state.
+	   */
+	@Override
+	public User signupNewPatient(PatientSignupRequestMobile request) {
+		RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.PATIENT.getRole());
+		if (roleCollection == null) {
+		    logger.warn("Role Collection in database is either empty or not defind properly");
+		    throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defined properly");
+		}
+		// save user
+		UserCollection userCollection = new UserCollection();
+		BeanUtil.map(request, userCollection);
+		userCollection.setFirstName(request.getName());
+		userCollection.setIsActive(true);
+		userCollection.setCreatedTime(new Date());
+		userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
+		userCollection.setSignedUp(true);
+		userCollection = userRepository.save(userCollection);
+
+		// assign roles
+		UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), roleCollection.getId());
+		userRoleRepository.save(userRoleCollection);
+
+		// save Patient Info
+		PatientCollection patientCollection = new PatientCollection();
+		BeanUtil.map(request, patientCollection);
+		patientCollection.setFirstName(request.getName());
+		patientCollection.setUserId(userCollection.getId());
+		patientCollection.setCreatedTime(new Date());
+		patientCollection = patientRepository.save(patientCollection);
+		
+		User user = new User();
+		BeanUtil.map(userCollection, user);
+		return user;
+	}
+	/**
+	 * This Service Impl will signup the already registered patients into the DB.
+	 * If 80% match is found for the fname then it will unlock all the patients in the DB.
+	 */
+	@Override
+	public List<User> signupAlreadyRegisteredPatient(PatientSignupRequestMobile request) {
+		
+		List<User> users = new ArrayList<User>();
+		List<UserCollection> userCollections = userRepository.findByMobileNumber(request.getMobileNumber());
+	    if (userCollections != null && !userCollections.isEmpty()) {
+	    	if(verifyPatientBasedOn80PercentMatchOfName(request.getName(),request.getMobileNumber())){
+	    		for (UserCollection userCollection : userCollections) {
+	    				userCollection.setPassword(request.getPassword());
+	    				userCollection.setSignedUp(true);
+	    				userRepository.save(userCollection);
+	    				
+	    				User user = new User();
+		    			BeanUtil.map(userCollection, user);
+		    			users.add(user);
+	    		    }
+	    		    
+	    		  }
+	    	}else{//In case if no patient is registered for this mobile number.Then signup new patient.
+	    		User user = signupNewPatient(request);
+	    		users.add(user);
+	    	}
+	    return users;
+		
+	    }
+	
 }
