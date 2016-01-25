@@ -52,7 +52,7 @@ public interface HistoryServices {
     List<HistoryDetailsResponse> getPatientHistoryDetailsWithVerifiedOTP(String patientId, String doctorId, String hospitalId, String locationId,
 	    List<String> historyFilter, int page, int size, String updatedTime);
 
-    Integer getHistoryCount(String doctorId, String patientId, String locationId, String hospitalId);
+    Integer getHistoryCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified);
 
     boolean handleMedicalHistory(MedicalHistoryHandler request);
 
@@ -67,5 +67,7 @@ public interface HistoryServices {
     boolean removeVisits(String visitId, String patientId, String doctorId, String hospitalId, String locationId);
 
     List<HistoryDetailsResponse> getMultipleData(String patientId, String doctorId, String hospitalId, String locationId, String updatedTime, Boolean inHistory);
+
+	List<HistoryDetailsResponse> getPatientHistory(String patientId, List<String> historyFilter, int page, int size, String updatedTime);
 
 }

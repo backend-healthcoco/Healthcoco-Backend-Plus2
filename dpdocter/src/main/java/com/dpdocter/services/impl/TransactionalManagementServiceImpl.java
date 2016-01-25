@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.collections.AddressCollection;
@@ -21,7 +20,6 @@ import com.dpdocter.collections.LabTestCollection;
 import com.dpdocter.collections.LandmarkLocalityCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.NotesCollection;
-import com.dpdocter.collections.OTPCollection;
 import com.dpdocter.collections.ObservationCollection;
 import com.dpdocter.collections.PatientAdmissionCollection;
 import com.dpdocter.collections.PatientCollection;
@@ -30,7 +28,6 @@ import com.dpdocter.collections.StateCollection;
 import com.dpdocter.collections.TransactionalCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
-import com.dpdocter.enums.OTPState;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -49,7 +46,6 @@ import com.dpdocter.repository.LabTestRepository;
 import com.dpdocter.repository.LandmarkLocalityRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.NotesRepository;
-import com.dpdocter.repository.OTPRepository;
 import com.dpdocter.repository.ObservationRepository;
 import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientRepository;
@@ -58,7 +54,6 @@ import com.dpdocter.repository.StateRepository;
 import com.dpdocter.repository.TransnationalRepositiory;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
-import com.dpdocter.services.OTPService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.beans.DoctorLocation;
 import com.dpdocter.solr.document.SolrCityDocument;
@@ -163,7 +158,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     @Autowired
     private ReferenceRepository referenceRepository;
     
-    @Scheduled(fixedRate = 900000)
+//    @Scheduled(fixedRate = 900000)
     public void checkResources() {
 	System.out.println(">>> Scheduled test service <<<");
 	List<TransactionalCollection> transactionalCollections = null;

@@ -2,8 +2,6 @@ package com.dpdocter.beans;
 
 import java.util.Date;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
 public class SMSTrack {
 
     private String id;

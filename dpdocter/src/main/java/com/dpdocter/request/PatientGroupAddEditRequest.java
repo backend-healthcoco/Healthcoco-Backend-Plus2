@@ -10,7 +10,7 @@ public class PatientGroupAddEditRequest {
 
     private String locationId;
 
-    private String hospitaId;
+    private String hospitalId;
 
     private List<String> groupIds;
 
@@ -38,12 +38,12 @@ public class PatientGroupAddEditRequest {
 		this.locationId = locationId;
 	}
 
-	public String getHospitaId() {
-		return hospitaId;
+	public String getHospitalId() {
+		return hospitalId;
 	}
 
-	public void setHospitaId(String hospitaId) {
-		this.hospitaId = hospitaId;
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
 	}
 
 	public List<String> getGroupIds() {
@@ -57,6 +57,6 @@ public class PatientGroupAddEditRequest {
 	@Override
 	public String toString() {
 		return "PatientGroupAddEditRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitaId=" + hospitaId + ", groupIds=" + groupIds + "]";
+				+ locationId + ", hospitalId=" + hospitalId + ", groupIds=" + groupIds + "]";
 	}
 }

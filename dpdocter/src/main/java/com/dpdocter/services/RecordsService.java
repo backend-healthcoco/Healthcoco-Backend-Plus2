@@ -1,6 +1,7 @@
 package com.dpdocter.services;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.List;
 
 import javax.ws.rs.core.UriInfo;
@@ -10,6 +11,7 @@ import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.Tags;
 import com.dpdocter.request.RecordsAddRequest;
+import com.dpdocter.request.RecordsAddRequestMultipart;
 import com.dpdocter.request.RecordsEditRequest;
 import com.dpdocter.request.RecordsSearchRequest;
 import com.dpdocter.request.TagRecordRequest;
@@ -44,7 +46,7 @@ public interface RecordsService {
 
     void deleteRecord(String recordId, Boolean discarded);
 
-    Integer getRecordCount(String doctorId, String patientId, String locationId, String hospitalId);
+    Integer getRecordCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified);
 
     FlexibleCounts getFlexibleCounts(FlexibleCounts flexibleCounts);
 
@@ -52,6 +54,8 @@ public interface RecordsService {
 
     void changeLabelAndDescription(String recordId, String label, String description);
 
-    List<Records> getRecordsByPatientId(String patientId);
+    List<Records> getRecordsByPatientId(String patientId, int page, int size, String updatedTime, Boolean discarded);
+
+	Records addRecordsMultipart(InputStream fileInputStream, RecordsAddRequestMultipart request);
 
 }

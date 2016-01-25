@@ -18,6 +18,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.ForgotUsernamePasswordRequest;
 import com.dpdocter.request.ResetPasswordRequest;
 import com.dpdocter.services.ForgotPasswordService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -86,6 +87,19 @@ public class ForgotPasswordApi {
 	return "<html><body>" + response + "</body></html>";
     }
 
+    @Path(value = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED)
+    @POST
+    public Response<String> checkLinkIsAlreadyUsed(@FormParam(value = "userId") String userId) {
+    if (DPDoctorUtils.anyStringEmpty(userId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    }
+    String string = forgotPasswordService.checkLinkIsAlreadyUsed(userId);
+	Response<String> response = new Response<String>();
+	response.setData(string);
+	return response;
+    }
+    
     @Path(value = PathProxy.ForgotPasswordUrls.FORGOT_USERNAME)
     @POST
     public Response<Boolean> forgotUsername(ForgotUsernamePasswordRequest request) {

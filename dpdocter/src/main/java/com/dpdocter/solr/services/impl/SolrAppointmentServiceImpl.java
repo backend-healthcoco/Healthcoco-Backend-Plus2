@@ -147,6 +147,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 	    List<SolrDiagnosticTestDocument> diagnosticTestDocuments = solrDiagnosticTestRepository.findAll(searchTerm);
 	    
 	    response = new ArrayList<AppointmentSearchResponse>();
+	    if(solrSpecialityDocuments != null)
 	    for (SolrSpecialityDocument speciality : solrSpecialityDocuments) {
 		AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
 		appointmentSearchResponse.setId(speciality.getId());
@@ -155,6 +156,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 		response.add(appointmentSearchResponse);
 	    }
 
+	    if(solrSymptomsDocuments != null)
 	    for (SolrSymptomsDocument symptom : solrSymptomsDocuments) {
 			AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
 			appointmentSearchResponse.setId(symptom.getId());
@@ -163,6 +165,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 			response.add(appointmentSearchResponse);
 		 }
 
+	    if(diagnosticTestDocuments != null)
 	    for (SolrDiagnosticTestDocument diagnosticTest : diagnosticTestDocuments) {
 			AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
 			appointmentSearchResponse.setId(diagnosticTest.getId());
@@ -171,6 +174,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 			response.add(appointmentSearchResponse);
 		 }
 	    
+	    if(solrDoctorDocuments != null)
 	    for (SolrDoctorDocument doctor : solrDoctorDocuments) {
 		AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
 		appointmentSearchResponse.setId(doctor.getUserId());
@@ -182,6 +186,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 		response.add(appointmentSearchResponse);
 	    }
 
+	    if(solrLocationDocuments != null)
 	    for (SolrDoctorDocument locationDocument : solrLocationDocuments) {
 		if(!locationDocument.getIsLab()){
 			AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
@@ -192,6 +197,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 		}
 	    }
 	    
+	    if(solrLocationDocuments != null)
 	    for (SolrDoctorDocument locationDocument : solrLocationDocuments) {
 			if(locationDocument.getIsLab()){
 				AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();

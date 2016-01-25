@@ -6,13 +6,14 @@ import java.util.List;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.Minutes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.collections.TokenCollection;
 import com.dpdocter.collections.UserCollection;
-import com.dpdocter.collections.UserLocationCollection;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -24,6 +25,7 @@ import com.dpdocter.response.ForgotPasswordResponse;
 import com.dpdocter.services.ForgotPasswordService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -45,6 +47,9 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
     @Autowired
     private TokenRepository tokenRepository;
+
+    @Value(value = "${FORGOT_PASSWORD_VALID_TIME_IN_MINS}")
+    private String forgotPasswordValidTime;
 
     @Override
     public ForgotPasswordResponse forgotPasswordForDoctor(ForgotUsernamePasswordRequest request, UriInfo uriInfo) {
@@ -211,6 +216,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		if (tokenCollection == null || tokenCollection.getIsUsed()) {
 			return startText+"Link is already Used"+endText;
 		    } else {
+		    	if(!isLinkValid(tokenCollection.getCreatedTime()))
+					return startText+"Link is Expired"+endText;
 		    	UserCollection userCollection = userRepository.findOne(tokenCollection.getResourceId());
 			if (userCollection == null) {
 			    return startText+"Invalid Url."+endText;
@@ -229,4 +236,30 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
+
+	@Override
+	public String checkLinkIsAlreadyUsed(String userId) {
+		try {			
+			TokenCollection tokenCollection = tokenRepository.findOne(userId);
+			if (tokenCollection == null || tokenCollection.getIsUsed()) {
+				return "ALREADY_USED";
+			} else {
+					if(!isLinkValid(tokenCollection.getCreatedTime()))
+						return "EXPIRED";
+			    	UserCollection userCollection = userRepository.findOne(tokenCollection.getResourceId());
+			    	if (userCollection == null) {
+			    		return "INVALID";
+			    	}
+			    	return "VALID";
+			}
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+	}
+	
+	private boolean isLinkValid(Date createdTime) {
+    	return Minutes.minutesBetween(new DateTime(createdTime), new DateTime()).isLessThan(Minutes.minutes(Integer.parseInt(forgotPasswordValidTime)));
+	}
 }

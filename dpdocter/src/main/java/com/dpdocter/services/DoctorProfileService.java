@@ -10,7 +10,6 @@ import com.dpdocter.beans.EducationQualification;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Speciality;
-import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
 import com.dpdocter.request.DoctorAddEditIBSRequest;
 import com.dpdocter.request.DoctorAppointmentNumbersAddEditRequest;
@@ -42,7 +41,7 @@ public interface DoctorProfileService {
 
     Boolean addEditMedicalCouncils(List<MedicalCouncil> medicalCouncils);
 
-    List<MedicalCouncil> getMedicalCouncils();
+    List<MedicalCouncil> getMedicalCouncils(int page, int size, String updatedTime);
 
     List<String> addEditSpeciality(DoctorSpecialityAddEditRequest request);
 
@@ -62,7 +61,7 @@ public interface DoctorProfileService {
 
     Boolean insertProfessionalMemberships(List<ProfessionalMembership> professionalMemberships);
 
-    List<ProfessionalMembership> getProfessionalMemberships();
+    List<ProfessionalMembership> getProfessionalMemberships(int page, int size, String updatedTime);
 
     Boolean addEditProfessionalMembership(DoctorProfessionalAddEditRequest request);
 
@@ -76,11 +75,11 @@ public interface DoctorProfileService {
 
     Boolean addEditGeneralInfo(DoctorGeneralInfo request);
 
-    List<Speciality> getSpecialities();
+    List<Speciality> getSpecialities(int page, int size, String updatedTime);
 
-    List<EducationInstitute> getEducationInstitutes(int page, int size);
+    List<EducationInstitute> getEducationInstitutes(int page, int size, String updatedTime);
 
-    List<EducationQualification> getEducationQualifications(int page, int size);
+    List<EducationQualification> getEducationQualifications(int page, int size, String updatedTime);
 
     DoctorMultipleDataAddEditResponse addEditMultipleData(DoctorMultipleDataAddEditRequest request);
 

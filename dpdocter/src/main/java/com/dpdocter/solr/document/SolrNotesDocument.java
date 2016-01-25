@@ -15,7 +15,7 @@ public class SolrNotesDocument {
     private String id;
 
     @Field
-    private String notes;
+    private String note;
 
     @Field
     private String doctorId = "";
@@ -40,16 +40,16 @@ public class SolrNotesDocument {
     public void setId(String id) {
 	this.id = id;
     }
+    
+    public String getNote() {
+		return note;
+	}
 
-    public String getNotes() {
-	return notes;
-    }
+	public void setNote(String note) {
+		this.note = note;
+	}
 
-    public void setNotes(String notes) {
-	this.notes = notes;
-    }
-
-    public String getDoctorId() {
+	public String getDoctorId() {
 	if (doctorId == null) {
 	    return "";
 	}
@@ -110,9 +110,10 @@ public class SolrNotesDocument {
 	this.updatedTime = updatedTime;
     }
 
-    @Override
-    public String toString() {
-	return "SolrNotesDocument [id=" + id + ", notes=" + notes + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ ", discarded=" + discarded + ", updatedTime=" + updatedTime + "]";
-    }
+	@Override
+	public String toString() {
+		return "SolrNotesDocument [id=" + id + ", note=" + note + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", updatedTime="
+				+ updatedTime + "]";
+	}
 }

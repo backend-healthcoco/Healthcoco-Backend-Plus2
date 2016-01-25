@@ -21,6 +21,9 @@ import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.LocationAndAccessControl;
 import com.dpdocter.beans.Role;
+import com.dpdocter.beans.SMS;
+import com.dpdocter.beans.SMSAddress;
+import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.AddressCollection;
 import com.dpdocter.collections.DoctorCollection;
@@ -28,6 +31,7 @@ import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.RoleCollection;
+import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TokenCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
@@ -37,6 +41,7 @@ import com.dpdocter.enums.ColorCode;
 import com.dpdocter.enums.ColorCode.RandomEnum;
 import com.dpdocter.enums.Module;
 import com.dpdocter.enums.RoleEnum;
+import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.Type;
 import com.dpdocter.enums.UserState;
 import com.dpdocter.exceptions.BusinessException;
@@ -49,6 +54,7 @@ import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.RoleRepository;
+import com.dpdocter.repository.SMSFormatRepository;
 import com.dpdocter.repository.TokenRepository;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
@@ -61,6 +67,7 @@ import com.dpdocter.request.PatientSignUpRequest;
 import com.dpdocter.request.PatientSignupRequestMobile;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.FileManager;
+import com.dpdocter.services.GenerateUniqueUserNameService;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
@@ -130,6 +137,12 @@ public class SignUpServiceImpl implements SignUpService {
     private String signupSubject;
 
     private final double NAME_MATCH_REQUIRED = 0.80;
+    
+    @Autowired
+    private SMSFormatRepository sMSFormatRepository;
+    
+    @Autowired
+    private GenerateUniqueUserNameService generateUniqueUserNameService;
 
     /**
      * @param UserTemp
@@ -163,7 +176,7 @@ public class SignUpServiceImpl implements SignUpService {
 		userLocationRepository.save(userLocationCollection);
 		tokenCollection.setIsUsed(true);
 		tokenRepository.save(tokenCollection);
-		return startText+"Account is Activated"+endText;
+		return startText+"Account is Verfied"+endText;
 	    }
 
 	} catch (BusinessException be) {
@@ -187,6 +200,28 @@ public class SignUpServiceImpl implements SignUpService {
 		userCollection.setIsActive(true);
 		userRepository.save(userCollection);
 		response = true;
+		if (userCollection.getMobileNumber() != null) { 
+	    	SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+		    
+		    smsTrackDetail.setType("AFTER_VERIFICATION_TO_DOCTOR");
+		    SMSDetail smsDetail = new SMSDetail();
+		    smsDetail.setUserId(userCollection.getId());
+		    smsDetail.setUserName(userCollection.getFirstName());
+		    SMS sms = new SMS();
+		    sms.setSmsText("Healthcoco "+(userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName()+",Your Healthcoco+ account has been activated,for any query please mail us at support@healthcoco.com ");
+
+		    SMSAddress smsAddress = new SMSAddress();
+		    smsAddress.setRecipient(userCollection.getMobileNumber());
+		    sms.setSmsAddress(smsAddress);
+
+		    smsDetail.setSms(sms);
+		    smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+		    List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+		    smsDetails.add(smsDetail);
+		    smsTrackDetail.setSmsDetails(smsDetails);
+		    sMSServices.sendSMS(smsTrackDetail, true);
+	    }
+
 	    } else {
 		logger.error("User Not Found For The Given User Id");
 		throw new BusinessException(ServiceError.NotFound, "User Not Found For The Given User Id");
@@ -491,7 +526,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    // save user
 	    UserCollection userCollection = userRepository.findOne(request.getUserId());
 
-	    userCollection.setUserState(UserState.USERSTATECOMPLETE);
+	    userCollection.setUserState(UserState.NOTVERIFIED);
 	    userCollection = userRepository.save(userCollection);
 
 	    HospitalCollection hospitalCollection = new HospitalCollection();
@@ -545,13 +580,26 @@ public class SignUpServiceImpl implements SignUpService {
 
 	    // user.setPassword(null);
 
-	    if (userCollection.getMobileNumber() != null) {
-		// SMSTrackDetail smsTrackDetail =
-		// sMSServices.createSMSTrackDetail(doctorCollection.getUserId(),
-		// locationCollection.getId(),
-		// hospitalCollection.getId(), doctorCollection.getUserId(),
-		// "OTP Verification", userCollection.getMobileNumber());
-		// sMSServices.sendSMS(smsTrackDetail, false);
+	    if (userCollection.getMobileNumber() != null) { 
+	    	SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+		    
+		    smsTrackDetail.setType("BEFORE_VERIFICATION_TO_DOCTOR");
+		    SMSDetail smsDetail = new SMSDetail();
+		    smsDetail.setUserId(userCollection.getId());
+		    smsDetail.setUserName(userCollection.getFirstName());
+		    SMS sms = new SMS();
+		    sms.setSmsText("Healthcoco "+(userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName()+",Thank you for signing up with Healthcoco.We will contact you shortly to get you started with Healthcoco+.");
+
+		    SMSAddress smsAddress = new SMSAddress();
+		    smsAddress.setRecipient(userCollection.getMobileNumber());
+		    sms.setSmsAddress(smsAddress);
+
+		    smsDetail.setSms(sms);
+		    smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+		    List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+		    smsDetails.add(smsDetail);
+		    smsTrackDetail.setSmsDetails(smsDetails);
+		    sMSServices.sendSMS(smsTrackDetail, true);
 	    }
 
 	    List<String> roleIds = new ArrayList<String>();
@@ -956,6 +1004,10 @@ public class SignUpServiceImpl implements SignUpService {
 		userCollection.setCreatedTime(new Date());
 		userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
 		userCollection.setSignedUp(true);
+		
+		User user = new User();
+		BeanUtil.map(userCollection, user);
+		userCollection.setUserName(generateUniqueUserNameService.generate(user));
 		userCollection = userRepository.save(userCollection);
 
 		// assign roles
@@ -970,7 +1022,29 @@ public class SignUpServiceImpl implements SignUpService {
 		patientCollection.setCreatedTime(new Date());
 		patientCollection = patientRepository.save(patientCollection);
 		
-		User user = new User();
+	    SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+//	    smsTrackDetail.setDoctorId(doctorId);
+//	    smsTrackDetail.setHospitalId(hospitalId);
+//	    smsTrackDetail.setLocationId(locationId);
+//	    smsTrackDetail.setType("Verfication");
+//	    SMSDetail smsDetail = new SMSDetail();
+//	    smsDetail.setUserId(prescriptionCollection.getPatientId());
+//	    if (userCollection != null)
+//		smsDetail.setUserName(userCollection.getFirstName());
+//	    SMS sms = new SMS();
+//	    sms.setSmsText("PID : " + patientCollection.getPID() + ", " + prescriptionDetails);// location.getLocationName()+
+//
+//	    SMSAddress smsAddress = new SMSAddress();
+//	    smsAddress.setRecipient(mobileNumber);
+//	    sms.setSmsAddress(smsAddress);
+//
+//	    smsDetail.setSms(sms);
+//	    smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+//	    List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+//	    smsDetails.add(smsDetail);
+//	    smsTrackDetail.setSmsDetails(smsDetails);
+//	    sMSServices.sendSMS(smsTrackDetail, true);
+
 		BeanUtil.map(userCollection, user);
 		return user;
 	}

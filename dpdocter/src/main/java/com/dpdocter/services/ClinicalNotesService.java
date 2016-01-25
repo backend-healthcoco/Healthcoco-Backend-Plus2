@@ -55,8 +55,7 @@ public interface ClinicalNotesService {
 
     void deleteDiagram(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
-    @Query(value = "{'doctorId': ?0, 'patientId': ?1, 'locationId': ?2, 'hospitalId': ?3}", count = true)
-    Integer getClinicalNotesCount(String doctorId, String patientId, String locationId, String hospitalId);
+    Integer getClinicalNotesCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified);
 
     List<Object> getClinicalItems(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded);
@@ -64,5 +63,7 @@ public interface ClinicalNotesService {
     void emailClinicalNotes(String clinicalNotesId, String doctorId, String locationId, String hospitalId, String emailAddress, UriInfo uriInfo);
 
     MailAttachment getClinicalNotesMailData(String clinicalNotesId, String doctorId, String locationId, String hospitalId, UriInfo uriInfo);
+
+	List<ClinicalNotes> getClinicalNotes(String patientId, int page, int size, String updatedTime, Boolean discarded);
 
 }

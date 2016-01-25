@@ -9,7 +9,6 @@ import java.util.List;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
-import org.eclipse.jdt.internal.core.builder.ReferenceCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -45,7 +44,6 @@ import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.DoctorContactsRepository;
 import com.dpdocter.repository.ExportContactsRequestRepository;
 import com.dpdocter.repository.GroupRepository;
-import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.repository.ImportContactsRequestRepository;
 import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientGroupRepository;
@@ -244,9 +242,9 @@ public class ContactsServiceImpl implements ContactsService {
 
 	} else if (patientIds != null && !patientIds.isEmpty() && !DPDoctorUtils.anyStringEmpty(doctorId)) {
 	    if (size > 0)
-		patientCollections = patientRepository.findByUserIdDoctorId(patientIds, doctorId, new PageRequest(page, size, Direction.ASC, "firstName"));
+		patientCollections = patientRepository.findByUserIdDoctorId(patientIds, doctorId, new PageRequest(page, size, new Sort(Direction.ASC, "firstName")));
 	    else
-		patientCollections = patientRepository.findByUserIdDoctorId(patientIds, doctorId, new Sort(Sort.Direction.ASC, "firstName"));
+		patientCollections = patientRepository.findByUserIdDoctorId(patientIds, doctorId, new Sort(Direction.ASC, "firstName"));
 	} else {
 	    return new ArrayList<PatientCard>(0);
 	}
@@ -272,7 +270,8 @@ public class ContactsServiceImpl implements ContactsService {
 		    Integer clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(doctorId, userCollection.getId(), hospitalId, locationId);
 		    Integer recordsCount = recordsRepository.getRecordsForOtherDoctors(doctorId, userCollection.getId(), hospitalId, locationId);
 		    
-		    if (prescriptionCount != null || clinicalNotesCount != null || recordsCount != null)patientCard.setIsDataAvailableWithOtherDoctor(true);
+		    if ((prescriptionCount != null && prescriptionCount > 0) || (clinicalNotesCount != null && clinicalNotesCount > 0) || (recordsCount != null && recordsCount > 0))
+		    	patientCard.setIsDataAvailableWithOtherDoctor(true);
 
 		    patientCard.setIsPatientOTPVerified(otpService.checkOTPVerified(doctorId, locationId, hospitalId, userCollection.getId()));
 		    patientCards.add(patientCard);
@@ -314,7 +313,8 @@ public class ContactsServiceImpl implements ContactsService {
 			    Integer clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(doctorId, userCollection.getId(), hospitalId, locationId);
 			    Integer recordsCount = recordsRepository.getRecordsForOtherDoctors(doctorId, userCollection.getId(), hospitalId, locationId);
 			    
-			    if (prescriptionCount != null || clinicalNotesCount != null || recordsCount != null)patientCard.setIsDataAvailableWithOtherDoctor(true);
+			    if ((prescriptionCount != null && prescriptionCount > 0) || (clinicalNotesCount != null && clinicalNotesCount > 0) || (recordsCount != null && recordsCount > 0))
+			    	patientCard.setIsDataAvailableWithOtherDoctor(true);
 
 			    patientCard.setIsPatientOTPVerified(otpService.checkOTPVerified(doctorId, locationId, hospitalId, userCollection.getId()));
 
@@ -651,14 +651,15 @@ public class ContactsServiceImpl implements ContactsService {
 		    }
 		    Patient patient = new Patient();
 		    BeanUtil.map(patientCollection, patient);
-		    patient.setPatientId(userCollection.getId());
+		    patient.setPatientId(patientCollection.getId());
 		    BeanUtil.map(patientCollection, registeredPatientDetail);
 		    
 		    Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(doctorId, userCollection.getId(), hospitalId, locationId);
 		    Integer clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(doctorId, userCollection.getId(), hospitalId, locationId);
 		    Integer recordsCount = recordsRepository.getRecordsForOtherDoctors(doctorId, userCollection.getId(), hospitalId, locationId);
 		    
-		    if (prescriptionCount != null || clinicalNotesCount != null || recordsCount != null)patient.setIsDataAvailableWithOtherDoctor(true);
+		    if ((prescriptionCount != null && prescriptionCount > 0) || (clinicalNotesCount != null && clinicalNotesCount > 0) || (recordsCount != null && recordsCount > 0))
+		    	patient.setIsDataAvailableWithOtherDoctor(true);
 		    patient.setIsPatientOTPVerified(otpService.checkOTPVerified(doctorId, locationId, hospitalId, userCollection.getId()));
 		    registeredPatientDetail.setPatient(patient);
 		    Address address = new Address();
@@ -702,7 +703,7 @@ public class ContactsServiceImpl implements ContactsService {
     @Override
     public PatientGroupAddEditRequest addGroupToPatient(PatientGroupAddEditRequest request) {
 	PatientGroupAddEditRequest response = new PatientGroupAddEditRequest();
-	PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(request.getPatientId(), request.getDoctorId(), request.getLocationId(), request.getHospitaId());
+	PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(request.getPatientId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId());
 	try {
 	    List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(request.getPatientId());
 	    if (patientGroupCollections != null && !patientGroupCollections.isEmpty()) {

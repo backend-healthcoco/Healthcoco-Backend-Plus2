@@ -29,6 +29,7 @@ import com.dpdocter.solr.repository.SolrInvestigationsRepository;
 import com.dpdocter.solr.repository.SolrNotesRepository;
 import com.dpdocter.solr.repository.SolrObservationsRepository;
 import com.dpdocter.solr.services.SolrClinicalNotesService;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -1073,10 +1074,10 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 		    } else {
 			if (size > 0)
 			    observationCollections = solrObservationsRepository.findCustomObservations(doctorId, locationId, hospitalId, new Date(
-				    createdTimeStamp), searchTerm, discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				    createdTimeStamp), discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
 			    observationCollections = solrObservationsRepository.findCustomObservations(doctorId, locationId, hospitalId, new Date(
-				    createdTimeStamp), searchTerm, discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+				    createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
 		    }
 		}
 	    }

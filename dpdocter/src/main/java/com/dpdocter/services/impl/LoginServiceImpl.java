@@ -45,8 +45,6 @@ import com.dpdocter.request.LoginRequest;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.LoginService;
 
-import common.util.web.DPDoctorUtils;
-
 /**
  * @author veeraj
  */

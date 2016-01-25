@@ -48,11 +48,13 @@ import com.dpdocter.request.DoctorRegisterRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.ClinicDoctorResponse;
 import com.dpdocter.response.PatientInitialAndCounter;
+import com.dpdocter.response.PatientStatusResponse;
 import com.dpdocter.response.RegisterDoctorResponse;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrPatientDocument;
 import com.dpdocter.solr.services.SolrRegistrationService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -469,8 +471,8 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.GET_BLOOD_GROUP)
     @GET
-    public Response<BloodGroup> getBloodGroup() {
-	List<BloodGroup> bloodGroupResponse = registrationService.getBloodGroup();
+    public Response<BloodGroup> getBloodGroup(@QueryParam("page") int page, @QueryParam("size") int size, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+	List<BloodGroup> bloodGroupResponse = registrationService.getBloodGroup(page, size, updatedTime);
 	Response<BloodGroup> response = new Response<BloodGroup>();
 	response.setDataList(bloodGroupResponse);
 	return response;
@@ -490,9 +492,9 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.GET_PROFESSION)
     @GET
-    public Response<Profession> getProfession(@QueryParam("page") int page, @QueryParam("size") int size) {
+    public Response<Profession> getProfession(@QueryParam("page") int page, @QueryParam("size") int size, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
 
-	List<Profession> professionResponse = registrationService.getProfession(page, size);
+	List<Profession> professionResponse = registrationService.getProfession(page, size, updatedTime);
 	Response<Profession> response = new Response<Profession>();
 	response.setDataList(professionResponse);
 	return response;
@@ -618,6 +620,18 @@ public class RegistrationApi {
     Feedback feedback = registrationService.addFeedback(request);
 	Response<Feedback> response = new Response<Feedback>();
 	response.setData(feedback);
+	return response;
+    }
+
+    @Path(value = PathProxy.RegistrationUrls.GET_PATIENT_STATUS)
+    @GET
+    public Response<PatientStatusResponse> getPatientStatus(@PathParam("patientId") String patientId, @PathParam("doctorId") String doctorId,
+	    @PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+	
+	Response<PatientStatusResponse> response = new Response<PatientStatusResponse>();
+
+	PatientStatusResponse patientStatusResponse = registrationService.getPatientStatus(patientId, doctorId, locationId, hospitalId);
+	response.setData(patientStatusResponse);
 	return response;
     }
 

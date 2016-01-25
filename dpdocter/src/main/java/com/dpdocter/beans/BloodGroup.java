@@ -1,6 +1,8 @@
 package com.dpdocter.beans;
 
-public class BloodGroup {
+import com.dpdocter.collections.GenericCollection;
+
+public class BloodGroup extends GenericCollection{
 
     private String id;
 

@@ -2,6 +2,7 @@ package com.dpdocter.collections;
 
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -125,7 +126,7 @@ public class UserCollection extends GenericCollection {
     }
 
     public void setFirstName(String firstName) {
-	this.firstName = firstName;
+	this.firstName = StringUtils.capitalize(firstName);
     }
 
     public String getLastName() {

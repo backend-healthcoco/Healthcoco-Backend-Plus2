@@ -11,6 +11,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.DoctorClinicProfile;
@@ -214,11 +215,15 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
-    public List<MedicalCouncil> getMedicalCouncils() {
+    public List<MedicalCouncil> getMedicalCouncils(int page, int size, String updatedTime) {
 	List<MedicalCouncil> medicalCouncils = null;
 	List<MedicalCouncilCollection> medicalCouncilCollections = null;
 	try {
-	    medicalCouncilCollections = medicalCouncilRepository.findAll();
+	     long updatedTimeStamp = Long.parseLong(updatedTime);
+	    if (size > 0)
+	    	medicalCouncilCollections = medicalCouncilRepository.find(new Date(updatedTimeStamp), new PageRequest(page, size, Sort.Direction.DESC,"updatedTime"));
+	    else
+	    	medicalCouncilCollections = medicalCouncilRepository.find(new Date(updatedTimeStamp), new Sort(Sort.Direction.DESC,"updatedTime"));
 	    medicalCouncils = new ArrayList<MedicalCouncil>();
 	    BeanUtil.map(medicalCouncilCollections, medicalCouncils);
 	} catch (Exception e) {
@@ -240,29 +245,29 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    specialities = new ArrayList<String>();
 	    specialitiesByName = new ArrayList<String>();
 
-	    if(request.getSpeciality() != null)
-	    for (String speciality : request.getSpeciality()) {
-		Boolean specialityFound = false;
-		specialities = new ArrayList<String>();
-	    specialitiesByName = new ArrayList<String>();
-	    
-		for (SpecialityCollection specialityCollection : specialityCollections) {
-		    if (speciality.trim().equalsIgnoreCase(specialityCollection.getSpeciality())) {
-			specialities.add(specialityCollection.getId());
-			specialitiesByName.add(specialityCollection.getSpeciality());
-			specialityFound = true;
-			break;
-		    }
+	    if(request.getSpeciality() != null){
+			if (!request.getSpeciality().isEmpty()) {
+			    specialityCollections = specialityRepository.findAll();
+			    specialities = new ArrayList<String>();
+			    for (String speciality : request.getSpeciality()) {
+				Boolean specialityFound = false;
+				for (SpecialityCollection specialityCollection : specialityCollections) {
+				    if (speciality.trim().equalsIgnoreCase(specialityCollection.getSpeciality())) {
+					specialities.add(specialityCollection.getId());
+					specialityFound = true;
+					break;
+				    }
+				}
+				if (!specialityFound) {
+				    SpecialityCollection specialityCollection = new SpecialityCollection();
+				    specialityCollection.setSpeciality(speciality);
+				    specialityCollection.setCreatedTime(new Date());
+				    specialityCollection = specialityRepository.save(specialityCollection);
+				    specialities.add(specialityCollection.getId());
+				}
+			    }
+			}
 		}
-		if (!specialityFound) {
-		    SpecialityCollection specialityCollection = new SpecialityCollection();
-		    specialityCollection.setSpeciality(speciality);
-		    specialityCollection.setCreatedTime(new Date());
-		    specialityCollection = specialityRepository.save(specialityCollection);
-		    specialities.add(specialityCollection.getId());
-		    specialitiesByName.add(specialityCollection.getSpeciality());
-		}
-	    }
 	    doctorCollection = doctorRepository.findByUserId(request.getDoctorId());
 	    doctorCollection.setSpecialities(specialities);
 	    doctorRepository.save(doctorCollection);
@@ -531,11 +536,15 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
-    public List<ProfessionalMembership> getProfessionalMemberships() {
+    public List<ProfessionalMembership> getProfessionalMemberships(int page, int size, String updatedTime) {
 	List<ProfessionalMembership> professionalMemberships = null;
 	List<ProfessionalMembershipCollection> professionalMembershipCollections = null;
 	try {
-	    professionalMembershipCollections = professionalMembershipRepository.findAll();
+	    long updatedTimeStamp = Long.parseLong(updatedTime);
+	    if (size > 0)
+	    	professionalMembershipCollections = professionalMembershipRepository.find(new Date(updatedTimeStamp), new PageRequest(page, size, Sort.Direction.DESC,"updatedTime"));
+	    else
+	    	professionalMembershipCollections = professionalMembershipRepository.find(new Date(updatedTimeStamp), new Sort(Sort.Direction.DESC,"updatedTime"));
 	    professionalMemberships = new ArrayList<ProfessionalMembership>();
 	    BeanUtil.map(professionalMembershipCollections, professionalMemberships);
 	} catch (Exception e) {
@@ -713,11 +722,16 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
-    public List<Speciality> getSpecialities() {
+    public List<Speciality> getSpecialities(int page, int size, String updatedTime) {
 	List<Speciality> specialities = null;
 	List<SpecialityCollection> specialitiesCollections = null;
 	try {
-	    specialitiesCollections = specialityRepository.findAll();
+	     
+	    long updatedTimeStamp = Long.parseLong(updatedTime);
+	    if (size > 0)
+	    	specialitiesCollections = specialityRepository.find(new Date(updatedTimeStamp), new PageRequest(page, size, Sort.Direction.DESC,"updatedTime"));
+	    else
+	    	specialitiesCollections = specialityRepository.find(new Date(updatedTimeStamp), new Sort(Sort.Direction.DESC,"updatedTime"));
 	    specialities = new ArrayList<Speciality>();
 	    BeanUtil.map(specialitiesCollections, specialities);
 	} catch (Exception e) {
@@ -729,14 +743,16 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
-    public List<EducationInstitute> getEducationInstitutes(int page, int size) {
+    public List<EducationInstitute> getEducationInstitutes(int page, int size, String updatedTime) {
 	List<EducationInstitute> educationInstitutes = null;
 	List<EducationInstituteCollection> educationInstituteCollections = null;
 	try {
+		long updatedTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
-		educationInstituteCollections = educationInstituteRepository.findAll(new PageRequest(page, size)).getContent();
+	    	educationInstituteCollections = educationInstituteRepository.find(new Date(updatedTimeStamp), new PageRequest(page, size, Sort.Direction.DESC,"updatedTime"));
 	    else
-		educationInstituteCollections = educationInstituteRepository.findAll();
+	    	educationInstituteCollections = educationInstituteRepository.find(new Date(updatedTimeStamp), new Sort(Sort.Direction.DESC,"updatedTime"));
+	   
 	    educationInstitutes = new ArrayList<EducationInstitute>();
 	    BeanUtil.map(educationInstituteCollections, educationInstitutes);
 	} catch (Exception e) {
@@ -748,14 +764,15 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
-    public List<EducationQualification> getEducationQualifications(int page, int size) {
+    public List<EducationQualification> getEducationQualifications(int page, int size, String updatedTime) {
 	List<EducationQualification> qualifications = null;
 	List<EducationQualificationCollection> qualificationCollections = null;
 	try {
+		long updatedTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
-		qualificationCollections = educationQualificationRepository.findAll(new PageRequest(page, size)).getContent();
+		qualificationCollections = educationQualificationRepository.find(new Date(updatedTimeStamp), new PageRequest(page, size, Sort.Direction.DESC,"updatedTime"));
 	    else
-		qualificationCollections = educationQualificationRepository.findAll();
+		qualificationCollections = educationQualificationRepository.find(new Date(updatedTimeStamp), new Sort(Sort.Direction.DESC,"updatedTime"));
 	    qualifications = new ArrayList<EducationQualification>();
 	    BeanUtil.map(qualificationCollections, qualifications);
 	} catch (Exception e) {

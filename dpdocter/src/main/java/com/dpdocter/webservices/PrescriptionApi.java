@@ -54,6 +54,7 @@ import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrDrugDocument;
 import com.dpdocter.solr.document.SolrLabTestDocument;
 import com.dpdocter.solr.services.SolrPrescriptionService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -465,11 +466,27 @@ public class PrescriptionApi {
 	return response;
     }
 
+    @Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_PATIENT_ID)
+    @GET
+    public Response<Prescription> getPrescriptionByPatientId(@PathParam("patientId") String patientId, @QueryParam("page") int page, @QueryParam("size") int size,
+	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+
+	List<Prescription> prescriptions = null;
+
+	prescriptions = prescriptionServices.getPrescriptions(patientId, page, size, updatedTime, discarded);
+
+	Response<Prescription> response = new Response<Prescription>();
+	response.setDataList(prescriptions);
+	return response;
+    }
+
     @Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_COUNT)
     @GET
     public Response<Integer> getPrescriptionCount(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
-	Integer prescriptionCount = prescriptionServices.getPrescriptionCount(doctorId, patientId, locationId, hospitalId);
+	
+    Boolean isOTPVerified = otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId);	
+    Integer prescriptionCount = prescriptionServices.getPrescriptionCount(doctorId, patientId, locationId, hospitalId, isOTPVerified);
 	Response<Integer> response = new Response<Integer>();
 	response.setData(prescriptionCount);
 	return response;

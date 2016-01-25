@@ -13,40 +13,40 @@ import com.dpdocter.collections.NotesCollection;
 
 public interface NotesRepository extends MongoRepository<NotesCollection, String>, PagingAndSortingRepository<NotesCollection, String> {
 
-    @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': {$in: ?4}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?3},'discarded': {$in: ?4}}]}")
+    @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gt': ?3},'discarded': {$in: ?4}}]}")
     List<NotesCollection> findCustomGlobalNotes(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': {$in: ?1}}")
+    @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
     List<NotesCollection> findGlobalNotes(Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': {$in: ?4}}")
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}}")
     List<NotesCollection> findCustomNotes(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': {$in: ?2}}")
+    @Query("{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
     List<NotesCollection> findCustomNotes(String doctorId, Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': {$in: ?2}},{'doctorId': null, 'updatedTime': {'$gte': ?1},'discarded': {$in: ?2}}]}")
+    @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}},{'doctorId': null, 'updatedTime': {'$gt': ?1},'discarded': {$in: ?2}}]}")
     List<NotesCollection> findCustomGlobalNotes(String doctorId, Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': {$in: ?4}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?3},'discarded': {$in: ?4}}]}")
+    @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gt': ?3},'discarded': {$in: ?4}}]}")
     List<NotesCollection> findCustomGlobalNotes(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards, Sort sort);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': {$in: ?1}}")
+    @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
     List<NotesCollection> findGlobalNotes(Date date, boolean[] discards, Sort sort);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': {$in: ?4}}")
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}}")
     List<NotesCollection> findCustomNotes(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards, Sort sort);
 
-    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': {$in: ?2}}")
+    @Query("{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
     List<NotesCollection> findCustomNotes(String doctorId, Date date, boolean[] discards, Sort sort);
 
-    @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': {$in: ?2}},{'doctorId': null, 'updatedTime': {'$gte': ?1},'discarded': {$in: ?2}}]}")
+    @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}},{'doctorId': null, 'updatedTime': {'$gt': ?1},'discarded': {$in: ?2}}]}")
     List<NotesCollection> findCustomGlobalNotes(String doctorId, Date date, boolean[] discards, Sort sort);
 
-    @Query("{'updatedTime': {'$gte': ?0}, 'discarded': {$in: ?1}}")
+    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
     List<NotesCollection> findCustomGlobalNotes(Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'updatedTime': {'$gte': ?0}, 'discarded': {$in: ?1}}")
+    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
     List<NotesCollection> findCustomGlobalNotes(Date date, boolean[] discards, Sort sort);
 
 }

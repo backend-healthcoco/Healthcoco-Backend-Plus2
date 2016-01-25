@@ -3,6 +3,7 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -28,7 +29,6 @@ import com.dpdocter.beans.EducationQualification;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Speciality;
-import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -53,6 +53,7 @@ import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.services.DoctorProfileService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.services.SolrRegistrationService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -150,8 +151,8 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.GET_MEDICAL_COUNCILS)
     @GET
-    public Response<MedicalCouncil> getMedicalCouncils() {
-	List<MedicalCouncil> medicalCouncils = doctorProfileService.getMedicalCouncils();
+    public Response<MedicalCouncil> getMedicalCouncils(@QueryParam("page") int page, @QueryParam("size") int size, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+	List<MedicalCouncil> medicalCouncils = doctorProfileService.getMedicalCouncils(page, size, updatedTime);
 	Response<MedicalCouncil> response = new Response<MedicalCouncil>();
 	response.setDataList(medicalCouncils);
 	return response;
@@ -324,8 +325,8 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.GET_PROFESSIONAL_MEMBERSHIPS)
     @GET
-    public Response<ProfessionalMembership> getProfessionalMemberships() {
-	List<ProfessionalMembership> professionalMemberships = doctorProfileService.getProfessionalMemberships();
+    public Response<ProfessionalMembership> getProfessionalMemberships(@QueryParam("page") int page, @QueryParam("size") int size, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+	List<ProfessionalMembership> professionalMemberships = doctorProfileService.getProfessionalMemberships(page, size, updatedTime);
 	Response<ProfessionalMembership> response = new Response<ProfessionalMembership>();
 	response.setDataList(professionalMemberships);
 	return response;
@@ -431,8 +432,8 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.GET_SPECIALITIES)
     @GET
-    public Response<Speciality> getSpeciality() {
-	List<Speciality> specialities = doctorProfileService.getSpecialities();
+    public Response<Speciality> getSpeciality(@QueryParam("page") int page, @QueryParam("size") int size, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+	List<Speciality> specialities = doctorProfileService.getSpecialities(page, size, updatedTime);
 	Response<Speciality> response = new Response<Speciality>();
 	response.setDataList(specialities);
 	return response;
@@ -440,8 +441,8 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.GET_EDUCATION_INSTITUTES)
     @GET
-    public Response<EducationInstitute> getEducationInstitutes(@QueryParam("page") int page, @QueryParam("size") int size) {
-	List<EducationInstitute> educationInstitutes = doctorProfileService.getEducationInstitutes(page, size);
+    public Response<EducationInstitute> getEducationInstitutes(@QueryParam("page") int page, @QueryParam("size") int size, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+	List<EducationInstitute> educationInstitutes = doctorProfileService.getEducationInstitutes(page, size, updatedTime);
 	Response<EducationInstitute> response = new Response<EducationInstitute>();
 	response.setDataList(educationInstitutes);
 	return response;
@@ -449,8 +450,8 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.GET_EDUCATION_QUALIFICATIONS)
     @GET
-    public Response<EducationQualification> getEducationQualifications(@QueryParam("page") int page, @QueryParam("size") int size) {
-	List<EducationQualification> qualifications = doctorProfileService.getEducationQualifications(page, size);
+    public Response<EducationQualification> getEducationQualifications(@QueryParam("page") int page, @QueryParam("size") int size, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+	List<EducationQualification> qualifications = doctorProfileService.getEducationQualifications(page, size, updatedTime);
 	Response<EducationQualification> response = new Response<EducationQualification>();
 	response.setDataList(qualifications);
 	return response;

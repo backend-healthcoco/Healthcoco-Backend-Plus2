@@ -245,7 +245,13 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 			    advancedCriteria = advancedCriteria.and("createdTime").between(start, end);
 			}
 		    }
-		    	else {
+		    else if (searchType.equalsIgnoreCase(AdvancedSearchType.REFERRED_BY.getSearchType()) || searchType.equalsIgnoreCase(AdvancedSearchType.PROFESSION.getSearchType())){
+				if (advancedCriteria == null) {
+				    advancedCriteria = new Criteria(searchType).is(searchValue);
+				} else {
+				    advancedCriteria = advancedCriteria.and(searchType).is(searchValue);
+				}
+		    }else {
 		    searchValue = searchValue.replaceAll("\\s+","");
 			if (advancedCriteria == null) {
 			    advancedCriteria = new Criteria(searchType).contains(searchValue);

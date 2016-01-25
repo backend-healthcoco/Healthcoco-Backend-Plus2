@@ -1,6 +1,8 @@
 package com.dpdocter.beans;
 
-public class Reference {
+import com.dpdocter.collections.GenericCollection;
+
+public class Reference extends GenericCollection{
     private String id;
 
     private String reference;
@@ -13,6 +15,8 @@ public class Reference {
 
     private String hospitalId;
 
+    private Boolean discarded = false;
+    
     public String getId() {
 	return id;
     }
@@ -61,10 +65,18 @@ public class Reference {
 	this.hospitalId = hospitalId;
     }
 
-    @Override
-    public String toString() {
-	return "Reference [id=" + id + ", reference=" + reference + ", description=" + description + ", doctorId=" + doctorId + ", locationId=" + locationId
-		+ ", hospitalId=" + hospitalId + "]";
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	@Override
+	public String toString() {
+		return "Reference [id=" + id + ", reference=" + reference + ", description=" + description + ", doctorId="
+				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ "]";
+	}
 }

@@ -545,21 +545,19 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    patientVisitCollection = patientVisitRepository.findOne(visitId);
 
 	    if (patientVisitCollection != null) {
-		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(patientVisitCollection.getDoctorId(),
-			patientVisitCollection.getLocationId(), patientVisitCollection.getHospitalId(), ComponentType.ALL.getType());
-		if (printSettings != null) {
-		    DBObject printId = new BasicDBObject();
-		    printId.put("$oid", printSettings.getId());
+	    	String patientName = "", dob = "", gender = "", mobileNumber = "", refferedBy ="";
+			PrintSettingsCollection printSettings = printSettingsRepository.getSettings(patientVisitCollection.getDoctorId(), patientVisitCollection.getLocationId(), patientVisitCollection.getHospitalId(),
+					ComponentType.ALL.getType());
+			
+			parameters.put("printSettingsId", printSettings != null ? printSettings.getId() :"");
 
-		    parameters.put("printSettingsId", Arrays.asList(printId));
-
+			if(printSettings != null){
 		    PatientAdmissionCollection patientAdmission = patientAdmissionRepository.findByPatientIdAndDoctorId(patientVisitCollection.getPatientId(),
 			    patientVisitCollection.getDoctorId());
 		    PatientCollection patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientVisitCollection.getPatientId(), patientVisitCollection.getDoctorId(), patientVisitCollection.getLocationId(), patientVisitCollection.getHospitalId());
 		    UserCollection user = userRepository.findOne(patientVisitCollection.getPatientId());
 
 		    String headerLeftText = "", headerRightText = "", footerBottomText = "";
-		    String patientName = "", dob = "", gender = "", mobileNumber = "", refferedBy = "";
 		    if (printSettings != null) {
 			if (printSettings.getHeaderSetup() != null) {
 			    for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()) {
@@ -615,11 +613,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				    else
 					footerBottomText = footerBottomText + "" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 				}
-			    UserCollection doctorUser = userRepository.findOne(patientVisitCollection.getDoctorId());
-			    if (doctorUser != null)
-				parameters.put("footerSignature", doctorUser.getTitle() + " " + doctorUser.getFirstName());
 			}
 		    }
+		    
+		    UserCollection doctorUser = userRepository.findOne(patientVisitCollection.getDoctorId());
+		    if (doctorUser != null)
+			parameters.put("footerSignature", doctorUser.getTitle() + " " + doctorUser.getFirstName());
+		    
 		    patientName = "Patient Name: " + (user != null ? user.getFirstName() : "--") + "<br>";
 		    dob = "Patient Age: " + ((patient != null && patient.getDob() != null) ? (patient.getDob().getAge() + " years") : "--") + "<br>";
 		    gender = "Patient Gender: " + (patient != null ? patient.getGender() : "--") + "<br>";
@@ -640,7 +640,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 		    LocationCollection location = locationRepository.findOne(patientVisitCollection.getLocationId());
 		    if (location != null)
-			parameters.put("logoURL", getFinalImageURL(location.getLogoUrl(), uriInfo));
+		    	parameters.put("logoURL", getFinalImageURL(location.getLogoUrl(), uriInfo));
+		    else 
+		    	parameters.put("logoURL", "");
 
 		    String layout = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 			    : "PORTRAIT";
@@ -1122,14 +1124,17 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     }
 
     @Override
-    public int getVisitCount(String doctorId, String patientId, String locationId, String hospitalId) {
+    public int getVisitCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified) {
 	Integer visitCount = 0;
 	try {
 		List<VisitedFor> visitedFors = new ArrayList<VisitedFor>();
 		visitedFors.add(VisitedFor.CLINICAL_NOTES);
 		visitedFors.add(VisitedFor.PRESCRIPTION);
 		visitedFors.add(VisitedFor.REPORTS);
-	    visitCount = patientVisitRepository.getVisitCount(doctorId, patientId, hospitalId, locationId, visitedFors, false);
+	    if(isOTPVerified)
+	    	visitCount = patientVisitRepository.getVisitCount(patientId, visitedFors, false);
+	    else
+	    	visitCount = patientVisitRepository.getVisitCount(doctorId, patientId, hospitalId, locationId, visitedFors, false);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error while getting Visits Count");

@@ -19,4 +19,6 @@ public interface ForgotPasswordService {
 
     String resetPassword(String userId, String password);
 
+	String checkLinkIsAlreadyUsed(String userId);
+
 }

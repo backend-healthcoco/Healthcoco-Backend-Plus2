@@ -1,6 +1,9 @@
 package com.dpdocter.services.impl;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -29,7 +32,6 @@ import com.dpdocter.beans.Records;
 import com.dpdocter.beans.Tags;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.LocationCollection;
-import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.RecordsCollection;
 import com.dpdocter.collections.RecordsTagsCollection;
@@ -47,6 +49,7 @@ import com.dpdocter.repository.RecordsTagsRepository;
 import com.dpdocter.repository.TagsRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.RecordsAddRequest;
+import com.dpdocter.request.RecordsAddRequestMultipart;
 import com.dpdocter.request.RecordsEditRequest;
 import com.dpdocter.request.RecordsSearchRequest;
 import com.dpdocter.request.TagRecordRequest;
@@ -238,8 +241,7 @@ public class RecordsServiceImpl implements RecordsService {
 	boolean[] discards = new boolean[2];
 	discards[0] = false;
 	try {
-	    boolean isOTPVerified = otpService
-		    .checkOTPVerified(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId());
+	    boolean isOTPVerified = otpService.checkOTPVerified(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId());
 	    if (request.getDiscarded())
 		discards[1] = true;
 	    long createdTimeStamp = Long.parseLong(request.getUpdatedTime());
@@ -452,10 +454,11 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public Integer getRecordCount(String doctorId, String patientId, String locationId, String hospitalId) {
+    public Integer getRecordCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified) {
 	Integer recordCount = 0;
 	try {
-	    recordCount = recordsRepository.getRecordCount(doctorId, patientId, hospitalId, locationId, false);
+	    if(isOTPVerified)recordCount = recordsRepository.getRecordCount(patientId, false);
+	    else recordCount = recordsRepository.getRecordCount(doctorId, patientId, hospitalId, locationId, false);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error while getting Records Count");
@@ -473,22 +476,23 @@ public class RecordsServiceImpl implements RecordsService {
 
 	List<Count> counts = flexibleCounts.getCounts();
 	try {
+		boolean isOTPVerified = otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId);
 	    for (Count count : counts) {
 		switch (count.getCountFor()) {
 		case PRESCRIPTIONS:
-		    count.setValue(prescriptionService.getPrescriptionCount(doctorId, patientId, locationId, hospitalId));
+		    count.setValue(prescriptionService.getPrescriptionCount(doctorId, patientId, locationId, hospitalId, isOTPVerified));
 		    break;
 		case RECORDS:
-		    count.setValue(getRecordCount(doctorId, patientId, locationId, hospitalId));
+		    count.setValue(getRecordCount(doctorId, patientId, locationId, hospitalId, isOTPVerified));
 		    break;
 		case NOTES:
-		    count.setValue(clinicalNotesService.getClinicalNotesCount(doctorId, patientId, locationId, hospitalId));
+		    count.setValue(clinicalNotesService.getClinicalNotesCount(doctorId, patientId, locationId, hospitalId, isOTPVerified));
 		    break;
 		case HISTORY:
-		    count.setValue(historyServices.getHistoryCount(doctorId, patientId, locationId, hospitalId));
+		    count.setValue(historyServices.getHistoryCount(doctorId, patientId, locationId, hospitalId, isOTPVerified));
 		    break;
 		case PATIENTVISITS:
-		    count.setValue(patientVisitServices.getVisitCount(doctorId, patientId, locationId, hospitalId));
+		    count.setValue(patientVisitServices.getVisitCount(doctorId, patientId, locationId, hospitalId, isOTPVerified));
 		default:
 		    break;
 		}
@@ -660,11 +664,16 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public List<Records> getRecordsByPatientId(String patientId) {
+    public List<Records> getRecordsByPatientId(String patientId, int page, int size, String updatedTime, Boolean discarded) {
 	List<Records> records = null;
 	List<RecordsCollection> recordsCollections = null;
+	boolean[] discards = new boolean[2];
+	discards[0] = false;	
 	try {
-	    recordsCollections = recordsRepository.findRecords(patientId);
+		long updatedTimeLong = Long.parseLong(updatedTime);
+		if(discarded) discards[1] = true;
+		if(size > 0)recordsCollections = recordsRepository.findRecordsByPatientId(patientId, new Date(updatedTimeLong), discards, new PageRequest(page, size, Sort.Direction.DESC,"updatedTime"));
+		else recordsCollections = recordsRepository.findRecordsByPatientId(patientId, new Date(updatedTimeLong), discards , new Sort(Sort.Direction.DESC,"updatedTime"));
 	    records = new ArrayList<Records>();
 	    for (RecordsCollection recordCollection : recordsCollections) {
 		Records record = new Records();
@@ -674,13 +683,64 @@ public class RecordsServiceImpl implements RecordsService {
 		    record.setVisitId(patientVisitCollection.getId());
 		records.add(record);
 	    }
-
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
-
 	return records;
     }
+
+	@Override
+	public Records addRecordsMultipart(InputStream fileInputStream, RecordsAddRequestMultipart request) {
+		try {
+
+		    Date createdTime = new Date();
+
+		    RecordsCollection recordsCollection = new RecordsCollection();
+		    BeanUtil.map(request, recordsCollection);
+		    if (fileInputStream != null) {
+		  
+			String recordLabel = request.getFileName();
+//			request.getFileDetails().setFileName(request.getFileDetails().getFileName() + createdTime.getTime());
+			String path = request.getPatientId() + File.separator + "records";
+//			// save image
+//			String recordUrl = fileManager.saveImageAndReturnImageUrl(request.getFileDetails(), path);
+//			String fileName = request.getFileDetails().getFileName() + "." + request.getFileDetails().getFileExtension();
+//			String recordPath = imageResource + File.separator + path + File.separator + fileName;
+			String recordPath = imageResource + File.separator + path + File.separator;
+			int read = 0;
+	        byte[] bytes = new byte[1024];
+	 
+	        OutputStream out = new FileOutputStream(new File(recordPath + request.getFileName()+createdTime.getTime()));
+	        while ((read = fileInputStream.read(bytes)) != -1)
+	        {
+	            out.write(bytes, 0, read);
+	        }
+	        out.flush();
+	        out.close();
+			recordsCollection.setRecordsUrl(path+"/"+request.getFileName()+createdTime.getTime());
+			recordsCollection.setRecordsPath(recordPath+request.getFileName()+createdTime.getTime());
+			recordsCollection.setRecordsLable(recordLabel);
+		    }
+		    recordsCollection.setCreatedTime(createdTime);
+		    UserCollection userCollection = userRepository.findOne(recordsCollection.getDoctorId());
+		    if (userCollection != null) {
+			recordsCollection.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());
+		    }
+		    LocationCollection locationCollection = locationRepository.findOne(recordsCollection.getLocationId());
+		    if(locationCollection != null){
+		    	recordsCollection.setUploadedByLocation(locationCollection.getLocationName());
+		    }
+		    recordsCollection = recordsRepository.save(recordsCollection);
+		    Records records = new Records();
+		    BeanUtil.map(recordsCollection, records);
+
+		    return records;
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+	}
 }

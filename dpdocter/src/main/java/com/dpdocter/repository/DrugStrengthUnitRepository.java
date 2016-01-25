@@ -21,10 +21,10 @@ public interface DrugStrengthUnitRepository extends MongoRepository<DrugStrength
     @Query("{'doctorId': null, 'discarded': ?0}")
     List<DrugStrengthUnitCollection> getGlobalDrugStrengthUnit(boolean discarded, Sort sort);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}}")
+    @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}}")
     List<DrugStrengthUnitCollection> getGlobalDrugStrengthUnit(Date date, Sort sort);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
+    @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': ?1}")
     List<DrugStrengthUnitCollection> getGlobalDrugStrengthUnit(Date date, boolean discarded, Sort sort);
 
     @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2}")
@@ -33,10 +33,10 @@ public interface DrugStrengthUnitRepository extends MongoRepository<DrugStrength
     @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2,'discarded': ?3}")
     List<DrugStrengthUnitCollection> getCustomDrugStrengthUnit(String doctorId, String hospitalId, String locationId, boolean discarded, Sort sort);
 
-    @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3}}")
+    @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gt': ?3}}")
     List<DrugStrengthUnitCollection> getCustomDrugStrengthUnit(String doctorId, String hospitalId, String locationId, Date date, Sort sort);
 
-    @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3},'discarded': ?4}")
+    @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gt': ?3},'discarded': ?4}")
     List<DrugStrengthUnitCollection> getCustomDrugStrengthUnit(String doctorId, String hospitalId, String locationId, Date date, boolean discarded, Sort sort);
 
     @Query("{'$or': [{'doctorId': ?0,  'hospitalId': ?1, 'locationId': ?2},{'doctorId': null, 'locationId': null, 'hospitalId': null}]}")
@@ -45,10 +45,10 @@ public interface DrugStrengthUnitRepository extends MongoRepository<DrugStrength
     @Query("{'$or': [{'doctorId': ?0,  'hospitalId': ?1, 'locationId': ?2, 'discarded': ?3},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'discarded': ?3}]}")
     List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, String hospitalId, String locationId, boolean discarded, Sort sort);
 
-    @Query("{'$or': [{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3}} , {'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?3}}]}")
+    @Query("{'$or': [{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gt': ?3}} , {'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gt': ?3}}]}")
     List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, String hospitalId, String locationId, Date date, Sort sort);
 
-    @Query("{'$or': [{'doctorId': ?0,  'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': ?4},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?3},'discarded': ?4}]}")
+    @Query("{'$or': [{'doctorId': ?0,  'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': ?4},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gt': ?3},'discarded': ?4}]}")
     List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, String hospitalId, String locationId, Date date, boolean discarded,
 	    Sort sort);
 
@@ -58,10 +58,10 @@ public interface DrugStrengthUnitRepository extends MongoRepository<DrugStrength
     @Query("{'doctorId': ?0, 'discarded': ?1}")
     List<DrugStrengthUnitCollection> getCustomDrugStrengthUnit(String doctorId, boolean discarded, Sort sort);
 
-    @Query("{'doctorId': ?0,'updatedTime': {'$gte': ?1}}")
+    @Query("{'doctorId': ?0,'updatedTime': {'$gt': ?1}}")
     List<DrugStrengthUnitCollection> getCustomDrugStrengthUnit(String doctorId, Date date, Sort sort);
 
-    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1},'discarded': ?2}")
+    @Query("{'doctorId': ?0, 'updatedTime': {'$gt': ?1},'discarded': ?2}")
     List<DrugStrengthUnitCollection> getCustomDrugStrengthUnit(String doctorId, Date date, boolean discarded, Sort sort);
 
     @Query("{'$or': [{'doctorId': ?0},{'doctorId': null}]}")
@@ -70,10 +70,10 @@ public interface DrugStrengthUnitRepository extends MongoRepository<DrugStrength
     @Query("{'$or': [{'doctorId': ?0, 'discarded': ?1},{'doctorId': null,'discarded': ?1}]}")
     List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, boolean discarded, Sort sort);
 
-    @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}},{'doctorId': null, 'updatedTime': {'$gte': ?1}}]}")
+    @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gt': ?1}},{'doctorId': null, 'updatedTime': {'$gt': ?1}}]}")
     List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, Date date, Sort sort);
 
-    @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2},{'doctorId': null, 'updatedTime': {'$gte': ?1},'discarded': ?2}]}")
+    @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': ?2},{'doctorId': null, 'updatedTime': {'$gt': ?1},'discarded': ?2}]}")
     List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, Date date, boolean discarded, Sort sort);
 
     @Query("{'doctorId': null}")
@@ -82,10 +82,10 @@ public interface DrugStrengthUnitRepository extends MongoRepository<DrugStrength
     @Query("{'doctorId': null, 'discarded': ?0}")
     List<DrugStrengthUnitCollection> getGlobalDrugStrengthUnit(boolean discarded, Pageable pageable);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}}")
+    @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}}")
     List<DrugStrengthUnitCollection> getGlobalDrugStrengthUnit(Date date, Pageable pageable);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
+    @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': ?1}")
     List<DrugStrengthUnitCollection> getGlobalDrugStrengthUnit(Date date, boolean discarded, Pageable pageable);
 
     @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2}")
@@ -94,10 +94,10 @@ public interface DrugStrengthUnitRepository extends MongoRepository<DrugStrength
     @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2,'discarded': ?3}")
     List<DrugStrengthUnitCollection> getCustomDrugStrengthUnit(String doctorId, String hospitalId, String locationId, boolean discarded, Pageable pageable);
 
-    @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3}}")
+    @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gt': ?3}}")
     List<DrugStrengthUnitCollection> getCustomDrugStrengthUnit(String doctorId, String hospitalId, String locationId, Date date, Pageable pageable);
 
-    @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3},'discarded': ?4}")
+    @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gt': ?3},'discarded': ?4}")
     List<DrugStrengthUnitCollection> getCustomDrugStrengthUnit(String doctorId, String hospitalId, String locationId, Date date, boolean discarded,
 	    Pageable pageable);
 
@@ -107,10 +107,10 @@ public interface DrugStrengthUnitRepository extends MongoRepository<DrugStrength
     @Query("{'$or': [{'doctorId': ?0,  'hospitalId': ?1, 'locationId': ?2, 'discarded': ?3},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'discarded': ?3}]}")
     List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, String hospitalId, String locationId, boolean discarded, Pageable pageable);
 
-    @Query("{'$or': [{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3}} , {'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?3}}]}")
+    @Query("{'$or': [{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gt': ?3}} , {'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gt': ?3}}]}")
     List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, String hospitalId, String locationId, Date date, Pageable pageable);
 
-    @Query("{'$or': [{'doctorId': ?0,  'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': ?4},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?3},'discarded': ?4}]}")
+    @Query("{'$or': [{'doctorId': ?0,  'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': ?4},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gt': ?3},'discarded': ?4}]}")
     List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, String hospitalId, String locationId, Date date, boolean discarded,
 	    Pageable pageable);
 
@@ -120,10 +120,10 @@ public interface DrugStrengthUnitRepository extends MongoRepository<DrugStrength
     @Query("{'doctorId': ?0, 'discarded': ?1}")
     List<DrugStrengthUnitCollection> getCustomDrugStrengthUnit(String doctorId, boolean discarded, Pageable pageable);
 
-    @Query("{'doctorId': ?0,'updatedTime': {'$gte': ?1}}")
+    @Query("{'doctorId': ?0,'updatedTime': {'$gt': ?1}}")
     List<DrugStrengthUnitCollection> getCustomDrugStrengthUnit(String doctorId, Date date, Pageable pageable);
 
-    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1},'discarded': ?2}")
+    @Query("{'doctorId': ?0, 'updatedTime': {'$gt': ?1},'discarded': ?2}")
     List<DrugStrengthUnitCollection> getCustomDrugStrengthUnit(String doctorId, Date date, boolean discarded, Pageable pageable);
 
     @Query("{'$or': [{'doctorId': ?0},{'doctorId': null}]}")
@@ -132,25 +132,25 @@ public interface DrugStrengthUnitRepository extends MongoRepository<DrugStrength
     @Query("{'$or': [{'doctorId': ?0, 'discarded': ?1},{'doctorId': null,'discarded': ?1}]}")
     List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, boolean discarded, Pageable pageable);
 
-    @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}},{'doctorId': null, 'updatedTime': {'$gte': ?1}}]}")
+    @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gt': ?1}},{'doctorId': null, 'updatedTime': {'$gt': ?1}}]}")
     List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, Date date, Pageable pageable);
 
-    @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2},{'doctorId': null, 'updatedTime': {'$gte': ?1},'discarded': ?2}]}")
+    @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': ?2},{'doctorId': null, 'updatedTime': {'$gt': ?1},'discarded': ?2}]}")
     List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, Date date, boolean discarded, Pageable pageable);
 
     @Override
     Page<DrugStrengthUnitCollection> findAll(Pageable pageable);
 
-    @Query("{'updatedTime': {'$gte': ?0}}")
+    @Query("{'updatedTime': {'$gt': ?0}}")
     List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(Date date, Pageable pageable);
 
-    @Query("{'updatedTime': {'$gte': ?0}}")
+    @Query("{'updatedTime': {'$gt': ?0}}")
     List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(Date date, Sort sort);
 
-    @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
+    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': ?1}")
     List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(Date date, boolean discarded, Pageable pageable);
 
-    @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
+    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': ?1}")
     List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(Date date, boolean discarded, Sort sort);
 
     @Query("{'discarded': ?0}")

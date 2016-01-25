@@ -9,7 +9,7 @@ import com.dpdocter.solr.document.SolrSymptomsDocument;
 
 public interface SolrSymptomsRepository extends SolrCrudRepository<SolrSymptomsDocument, String> {
 
-	@Query("symptom : *?0*")
+	@Query("symptom : ?0*")
 	List<SolrSymptomsDocument> findAll(String searchTerm);
 
 }

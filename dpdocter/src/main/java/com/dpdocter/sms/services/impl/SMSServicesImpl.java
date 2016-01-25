@@ -13,6 +13,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -34,15 +35,18 @@ import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDeliveryReports;
 import com.dpdocter.beans.SMSDetail;
+import com.dpdocter.beans.SMSFormat;
 import com.dpdocter.beans.SMSReport;
 import com.dpdocter.beans.SMSTrack;
-import com.dpdocter.beans.SMSTrackDetail;
 import com.dpdocter.beans.UserMobileNumbers;
+import com.dpdocter.collections.SMSFormatCollection;
+import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.SMSFormatRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.DoctorSMSResponse;
 import com.dpdocter.response.SMSResponse;
@@ -79,6 +83,9 @@ public class SMSServicesImpl implements SMSServices {
 
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private SMSFormatRepository sMSFormatRepository;
 
     @Override
     public void sendSMS(SMSTrackDetail smsTrackDetail, Boolean save) {
@@ -367,7 +374,8 @@ public class SMSServicesImpl implements SMSServices {
     }
 
     @Override
-    public SMSTrackDetail createSMSTrackDetail(String doctorId, String locationId, String hospitalId, String patientId, String message, String mobileNumber, String type) {
+    public SMSTrackDetail createSMSTrackDetail(String doctorId, String locationId, String hospitalId, String patientId, String patientName,
+    		String message, String mobileNumber, String type) {
 	SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 	try {
 	    smsTrackDetail.setDoctorId(doctorId);
@@ -375,8 +383,8 @@ public class SMSServicesImpl implements SMSServices {
 	    smsTrackDetail.setLocationId(locationId);
 	    smsTrackDetail.setType(type);
 	    SMSDetail smsDetail = new SMSDetail();
-	    smsDetail.setPatientId(patientId);
-
+	    smsDetail.setUserId(patientId);
+	    smsDetail.setUserName(patientName);
 	    SMS sms = new SMS();
 	    sms.setSmsText(message);
 
@@ -395,4 +403,45 @@ public class SMSServicesImpl implements SMSServices {
 	}
 	return smsTrackDetail;
     }
+
+	@Override
+	public SMSFormat addSmsFormat(SMSFormat request) {
+		SMSFormat response = null;
+		SMSFormatCollection smsFormatCollection = null;
+		try {
+			smsFormatCollection = sMSFormatRepository.find(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getType().getType());
+		    if (smsFormatCollection == null) {
+		    	smsFormatCollection = new SMSFormatCollection();
+		    	BeanUtil.map(request, smsFormatCollection);
+		    	smsFormatCollection.setCreatedTime(new Date());
+		    }else{
+		    	smsFormatCollection.setContent(request.getContent());
+		    	smsFormatCollection.setUpdatedTime(new Date());
+		    }
+		    smsFormatCollection = sMSFormatRepository.save(smsFormatCollection);
+		    response = new SMSFormat();
+			BeanUtil.map(smsFormatCollection, response);
+		} catch (BusinessException e) {
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, "Error while Adding/Editing Sms Format");
+		}
+		return response;
+	}
+
+	@Override
+	public List<SMSFormat> getSmsFormat(String doctorId, String locationId, String hospitalId) {
+		List<SMSFormat> response = null;
+		List<SMSFormatCollection> smsFormatCollections = null;
+		try {
+			smsFormatCollections = sMSFormatRepository.find(doctorId, locationId, hospitalId);
+			if(smsFormatCollections != null){
+			    response = new ArrayList<SMSFormat>();
+				BeanUtil.map(smsFormatCollections, response);
+			}
+		} catch (BusinessException e) {
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, "Error while Adding/Editing Sms Format");
+		}
+		return response;
+	}
 }

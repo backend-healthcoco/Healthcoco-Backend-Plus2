@@ -8,10 +8,10 @@ import org.springframework.data.solr.repository.SolrCrudRepository;
 import com.dpdocter.solr.document.SolrCityDocument;
 
 public interface SolrCityRepository extends SolrCrudRepository<SolrCityDocument, String> {
-    @Query("city:*?0* AND isActivated:true")
+    @Query("city:?0* AND isActivated:true")
     List<SolrCityDocument> findByQueryAnnotation(String searchTerm);
 
-    @Query("city:*?0* AND isActivated:true AND !geofilt sfield='geoLocation'  pt=?1,?2 d=10")
+    @Query("city:?0* AND isActivated:true AND !geofilt sfield='geoLocation'  pt=?1,?2 d=10")
     List<SolrCityDocument> findByQueryAnnotation(String searchTerm, double latitude, double longitude);
 
     @Query("isActivated:true AND !geofilt sfield='geoLocation'  pt=?0,?1 d=10")

@@ -21,16 +21,16 @@ public interface DoctorContactsRepository extends MongoRepository<DoctorContactC
     @Query("{'doctorId': ?0, 'isBlocked': ?1}")
     List<DoctorContactCollection> findByDoctorIdAndIsBlocked(String doctorId, boolean isBlocked, Sort sort);
 
-    @Query("{'doctorId':?0, 'isBlocked':?1, 'discarded':{$in: ?2}, 'updatedTime': {'$gte' : ?3}}")
+    @Query("{'doctorId':?0, 'isBlocked':?1, 'discarded':{$in: ?2}, 'updatedTime': {'$gt' : ?3}}")
     List<DoctorContactCollection> findByDoctorIdAndIsBlocked(String doctorId, boolean isBlocked, boolean[] discards, Date date, Pageable pageable);
 
-    @Query("{'doctorId':?0, 'isBlocked':?1, 'discarded':{$in: ?2}, 'updatedTime': {'$gte' : ?3}}")
+    @Query("{'doctorId':?0, 'isBlocked':?1, 'discarded':{$in: ?2}, 'updatedTime': {'$gt' : ?3}}")
     List<DoctorContactCollection> findByDoctorIdAndIsBlocked(String doctorId, boolean isBlocked, boolean[] discards, Date date, Sort sort);
 
     @Query("{'doctorId':?0,'contactId':?1}")
     DoctorContactCollection findByDoctorIdAndContactId(String doctorId, String contactId);
 
-    @Query(value = "{'doctorId':?0, 'isBlocked':?1, 'discarded':{$in: ?2}, 'updatedTime': {'$gte' : ?3}}", count = true)
+    @Query(value = "{'doctorId':?0, 'isBlocked':?1, 'discarded':{$in: ?2}, 'updatedTime': {'$gt' : ?3}}", count = true)
     Integer findCountByDoctorIdAndIsBlocked(String doctorId, boolean b, boolean[] discards, Date date);
 
 }

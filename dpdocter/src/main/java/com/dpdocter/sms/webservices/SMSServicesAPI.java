@@ -21,13 +21,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.SMSDeliveryReports;
+import com.dpdocter.beans.SMSFormat;
 import com.dpdocter.beans.SMSTrack;
-import com.dpdocter.beans.SMSTrackDetail;
+import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.SMSResponse;
 import com.dpdocter.sms.services.SMSServices;
 import com.dpdocter.webservices.PathProxy;
+
 import common.util.web.Response;
 
 @Component
@@ -114,6 +116,33 @@ public class SMSServicesAPI {
 	smsServices.deleteNumber(mobileNumber);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
+	return response;
+    }
+    
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path(value = PathProxy.SMSUrls.ADD_EDIT_SMS_FORMAT)
+    @POST
+    public Response<SMSFormat> addSmsFormat(SMSFormat request) {
+    	if (request == null) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
+    	SMSFormat smsFormat = smsServices.addSmsFormat(request);
+	Response<SMSFormat> response = new Response<SMSFormat>();
+	response.setData(smsFormat);
+	return response;
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path(value = PathProxy.SMSUrls.GET_SMS_FORMAT)
+    @GET
+    public Response<SMSFormat> getSmsFormat(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+    		@PathParam(value = "hospitalId") String hospitalId) {
+    	List<SMSFormat> smsFormat = smsServices.getSmsFormat(doctorId, locationId, hospitalId);
+	Response<SMSFormat> response = new Response<SMSFormat>();
+	response.setDataList(smsFormat);
 	return response;
     }
 }

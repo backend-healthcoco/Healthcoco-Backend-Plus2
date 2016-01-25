@@ -3,7 +3,6 @@ package com.dpdocter.solr.response;
 import java.util.Date;
 
 import com.dpdocter.beans.DOB;
-import com.dpdocter.beans.Reference;
 
 public class SolrPatientResponse {
 

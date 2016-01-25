@@ -1,6 +1,8 @@
 package com.dpdocter.beans;
 
-public class EducationInstitute {
+import com.dpdocter.collections.GenericCollection;
+
+public class EducationInstitute extends GenericCollection{
 
     private String id;
 

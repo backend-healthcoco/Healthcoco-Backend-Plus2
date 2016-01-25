@@ -140,6 +140,7 @@ public interface PathProxy {
 	
 	public static final String ADD_FEEDBACK = "/feedback/add";
 
+	public static final String GET_PATIENT_STATUS = "/patientStatus/{patientId}/{doctorId}/{locationId}/{hospitalId}";
     }
 
     public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";
@@ -152,6 +153,8 @@ public interface PathProxy {
 	public static final String DELETE_CLINICAL_NOTES = "/{clinicalNotesId}/delete";
 
 	public static final String GET_CLINICAL_NOTES_ID = "/{clinicalNotesId}/view";
+	
+	public static final String GET_CLINICAL_NOTES_PATIENT_ID = "/{patientId}";
 
 	public static final String GET_CLINIC_NOTES_COUNT = "/getClinicalNotesCount/{doctorId}/{patientId}/{locationId}/{hospitalId}";
 
@@ -183,16 +186,13 @@ public interface PathProxy {
 
 	public static final String EMAIL_CLINICAL_NOTES = "/{clinicalNotesId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 
-	// public static final String SMS_CLINICAL_NOTES =
-	// "/{clinicalNotesId}/{doctorId}/{locationId}/{hospitalId}/{mobileNumber}/sms";
-
     }
 
     public static final String FORGOT_PASSWORD_BASE_URL = BASE_URL + "/forgotPassword";
 
     public interface ForgotPasswordUrls {
     
-    public static final String CHECK_LINK_IS_ALREADYUSED = "/checkLink";
+    public static final String CHECK_LINK_IS_ALREADY_USED = "/checkLink";
     	
 	public static final String FORGOT_PASSWORD_DOCTOR = "/forgotPasswordDoctor";
 
@@ -238,12 +238,15 @@ public interface PathProxy {
 
 	public static final String CHANGE_LABEL_AND_DESCRIPTION_RECORD = "/changeLabelAndDescription";
 
+	public static final String ADD_RECORDS_MULTIPART = "/add";
     }
 
     public static final String PRESCRIPTION_BASE_URL = BASE_URL + "/prescription";
 
     public interface PrescriptionUrls {
-	public static final String GET_PRESCRIPTION = "/{prescriptionId}";
+	public static final String GET_PRESCRIPTION = "/{prescriptionId}/view";
+	
+	public static final String GET_PRESCRIPTION_PATIENT_ID = "/{patientId}";
 
 	public static final String ADD_DRUG = "/drug/add";
 
@@ -370,6 +373,8 @@ public interface PathProxy {
 
 	public static final String GET_PATIENT_HISTORY_OTP_VERIFIED = "/getPatientHistory/{patientId}/{doctorId}/{locationId}/{hospitalId}/{otpVerified}";
 
+	public static final String GET_PATIENT_HISTORY = "/{patientId}";
+	
 	public static final String MAIL_MEDICAL_DATA = "mailMedicalData";
 
 	// public static final String ADD_VISITS_TO_HISTORY =
@@ -600,6 +605,10 @@ public interface PathProxy {
 	public static final String ADD_NUMBER = "/addNumber/{mobileNumber}";
 
 	public static final String DELETE_NUMBER = "/deleteNumber/{mobileNumber}";
+	
+	public static final String ADD_EDIT_SMS_FORMAT = "/format/add";
+	
+	public static final String GET_SMS_FORMAT = "/format/{doctorId}/{locationId}/{hospitalId}";
 
     }
 
@@ -613,7 +622,7 @@ public interface PathProxy {
 
     public interface OTPUrls {
 
-	public static final String OTP_GENERATOR = "/{doctorId}/{locationId}/{hospitalId}/{patientId}/{mobileNumber}/generate";
+	public static final String OTP_GENERATOR = "/{doctorId}/{locationId}/{hospitalId}/{patientId}/generate";
 
 	public static final String OTP_GENERATOR_MOBILE = "/{mobileNumber}";
 
@@ -637,5 +646,28 @@ public interface PathProxy {
     }
 
     public static final String GENERAL_TESTS_URL = BASE_URL + "/tests";
+
+    public static final String SOLR_MASTER_BASE_URL = BASE_URL + "/solr/";
+
+    public interface SolrMasterUrls {
+
+    public static final String SEARCH_REFERENCE = "/reference/{range}";
+    
+	public static final String SEARCH_DISEASE = "/disease/{range}";
+
+	public static final String SEARCH_BLOOD_GROUP = "/bloodGroup";
+	
+	public static final String SEARCH_PROFESSION = "/profession";
+	
+	public static final String SEARCH_MEDICAL_COUNCIL = "/medicalCouncil";
+    
+	public static final String SEARCH_EDUCATION_INSTITUTE = "/educationInstitute";
+
+	public static final String SEARCH_EDUCATION_QUALIFICATION = "/educationQualification";
+	
+	public static final String SEARCH_PROFESSIONAL_MEMBERSHIP = "/professionalMembership";
+
+	public static final String SEARCH_SPECIALITY = "/speciality";
+    }
 
 }

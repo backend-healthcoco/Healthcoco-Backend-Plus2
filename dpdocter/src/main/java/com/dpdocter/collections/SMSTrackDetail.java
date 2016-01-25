@@ -1,4 +1,4 @@
-package com.dpdocter.beans;
+package com.dpdocter.collections;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.beans.SMSDetail;
 
 @Document(collection = "sms_track_cl")
 public class SMSTrackDetail extends GenericCollection {

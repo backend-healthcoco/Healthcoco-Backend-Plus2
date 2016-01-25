@@ -6,7 +6,6 @@ import java.util.List;
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.City;
 import com.dpdocter.beans.Clinic;
-import com.dpdocter.beans.DoctorInfo;
 import com.dpdocter.beans.Lab;
 import com.dpdocter.beans.LandmarkLocality;
 import com.dpdocter.beans.Slot;
@@ -28,8 +27,6 @@ public interface AppointmentService {
     LandmarkLocality addLandmaklLocality(LandmarkLocality locality);
 
     Clinic getClinic(String locationId);
-
-    List<DoctorInfo> getDoctors(String spetiality, String city, String localityOrLandmark);
 
     List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,	String to, int page, int size);
 

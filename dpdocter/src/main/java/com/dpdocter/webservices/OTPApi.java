@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.services.OTPService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -31,12 +32,12 @@ public class OTPApi {
     @Path(value = PathProxy.OTPUrls.OTP_GENERATOR)
     @GET
     public Response<String> otpGenerator(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
-	    @PathParam("hospitalId") String hospitalId, @PathParam("patientId") String patientId, @PathParam("mobileNumber") String mobileNumber) {
-	if (DPDoctorUtils.anyStringEmpty(mobileNumber, doctorId, locationId, hospitalId, patientId)) {
-	    logger.warn("Invalid Input. DoctorId, LocationId, HospitalId, PatientId, Mobile Number Cannot Be Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. DoctorId, LocationId, HospitalId, PatientId, Mobile Number Cannot Be Empty");
+	    @PathParam("hospitalId") String hospitalId, @PathParam("patientId") String patientId) {
+	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, patientId)) {
+	    logger.warn("Invalid Input. DoctorId, LocationId, HospitalId, PatientId Cannot Be Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. DoctorId, LocationId, HospitalId, PatientId, Cannot Be Empty");
 	}
-	String OTP = otpService.otpGenerator(doctorId, locationId, hospitalId, patientId, mobileNumber);
+	String OTP = otpService.otpGenerator(doctorId, locationId, hospitalId, patientId);
 	Response<String> response = new Response<String>();
 	response.setData(OTP);
 	return response;

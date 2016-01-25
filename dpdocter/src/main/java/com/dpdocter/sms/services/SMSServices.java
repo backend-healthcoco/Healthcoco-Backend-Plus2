@@ -3,8 +3,9 @@ package com.dpdocter.sms.services;
 import java.util.List;
 
 import com.dpdocter.beans.SMSDeliveryReports;
+import com.dpdocter.beans.SMSFormat;
 import com.dpdocter.beans.SMSTrack;
-import com.dpdocter.beans.SMSTrackDetail;
+import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.response.SMSResponse;
 
 public interface SMSServices {
@@ -20,6 +21,10 @@ public interface SMSServices {
 
     void deleteNumber(String mobileNumber);
 
-    SMSTrackDetail createSMSTrackDetail(String doctorId, String locationId, String hospitalId, String patientId, String message, String mobileNumber, String type);
+    SMSTrackDetail createSMSTrackDetail(String doctorId, String locationId, String hospitalId, String patientId, String patientName, String message, String mobileNumber, String type);
+
+	SMSFormat addSmsFormat(SMSFormat request);
+
+	List<SMSFormat> getSmsFormat(String doctorId, String locationId, String hospitalId);
 
 }

@@ -36,7 +36,6 @@ import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
-import com.dpdocter.beans.SMSTrackDetail;
 import com.dpdocter.beans.TemplateItem;
 import com.dpdocter.beans.TemplateItemDetail;
 import com.dpdocter.collections.DiagnosticTestCollection;
@@ -55,6 +54,7 @@ import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.ReferencesCollection;
+import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TemplateCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
@@ -80,6 +80,7 @@ import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.ReferenceRepository;
+import com.dpdocter.repository.SMSFormatRepository;
 import com.dpdocter.repository.TemplateRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DrugAddEditRequest;
@@ -187,6 +188,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     @Value(value = "${IMAGE_URL_ROOT_PATH}")
     private String imageUrlRootPath;
 
+    @Autowired
+    private SMSFormatRepository sMSFormatRepository;
+    
     @Override
     public DrugAddEditResponse addDrug(DrugAddEditRequest request) {
 	DrugAddEditResponse response = null;
@@ -823,10 +827,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
-    public Integer getPrescriptionCount(String doctorId, String patientId, String locationId, String hospitalId) {
+    public Integer getPrescriptionCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified) {
 	Integer prescriptionCount = 0;
 	try {
-	    prescriptionCount = prescriptionRepository.getPrescriptionCount(doctorId, patientId, hospitalId, locationId, false);
+	    if(isOTPVerified)prescriptionCount = prescriptionRepository.getPrescriptionCount(patientId, false);
+	    else prescriptionCount = prescriptionRepository.getPrescriptionCount(doctorId, patientId, hospitalId, locationId, false);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Prescription Count");
@@ -2392,7 +2397,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					duration = "----";
 				    else
 					duration = durationValue + " " + durationUnit;
-				    PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
+				    no = no+1;
+				    PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(no, drugName,
 					    prescriptionItem.getDosage() != null ? prescriptionItem.getDosage() : "----", duration,
 					    directions.isEmpty() ? "----" : directions,
 					    prescriptionItem.getInstructions() != null ? prescriptionItem.getInstructions() : "----");
@@ -2437,22 +2443,16 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			throw new BusinessException(ServiceError.NotFound, "Prescription Id, doctorId, location Id, hospital Id does not match");
 		    }
 		}
-
+		String patientName = "", dob = "", gender = "", mobileNumber = "", refferedBy ="";
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(doctorId, locationId, hospitalId,
-			ComponentType.PRESCRIPTIONS.getType());
-		DBObject printId = new BasicDBObject();
+				ComponentType.PRESCRIPTIONS.getType());
+		
 		if (printSettings == null) {
 		    printSettings = printSettingsRepository.getSettings(doctorId, locationId, hospitalId, ComponentType.ALL.getType());
-		    if (printSettings != null) {
-			printId.put("$oid", printSettings.getId());
+		}    
 
-		    }
-		} else
-		    printId.put("$oid", printSettings.getId());
-
-		parameters.put("printSettingsId", Arrays.asList(printId));
+		parameters.put("printSettingsId", printSettings != null ? printSettings.getId() :"");
 		String headerLeftText = "", headerRightText = "", footerBottomText = "";
-		String patientName = "", dob = "", gender = "", mobileNumber = "", refferedBy ="";
 		if (printSettings != null) {
 		    if (printSettings.getHeaderSetup() != null) {
 			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()) {
@@ -2491,7 +2491,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 		    }
 		    if (printSettings.getFooterSetup() != null) {
-			if (printSettings.getFooterSetup().getCustomFooter())
 			    for (PrintSettingsText str : printSettings.getFooterSetup().getBottomText()) {
 				boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 				boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
@@ -2508,11 +2507,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				else
 				    footerBottomText = footerBottomText + "" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 			    }
-			UserCollection doctorUser = userRepository.findOne(doctorId);
-			if (doctorUser != null)
-			    parameters.put("footerSignature", doctorUser.getTitle() + " " + doctorUser.getFirstName());
-		    }
 		}
+		UserCollection doctorUser = userRepository.findOne(doctorId);
+		if (doctorUser != null)
+			    parameters.put("footerSignature", doctorUser.getTitle() + " " + doctorUser.getFirstName());
+		}    
 		patientName = "Patient Name: " + (user != null ? user.getFirstName() : "--") + "<br>";
 		dob = "Patient Age: " + ((patient != null && patient.getDob() != null) ? (patient.getDob().getAge() + "years") : "--") + "<br>";
 		gender = "Patient Gender: " + (patient != null ? patient.getGender() : "--") + "<br>";
@@ -2534,13 +2533,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		LocationCollection location = locationRepository.findOne(locationId);
 		if (location != null)
 		    parameters.put("logoURL", getFinalImageURL(location.getLogoUrl(), uriInfo));
+		else parameters.put("logoURL", "");
 
 		String layout = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 			: "PORTRAIT";
 		String pageSize = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
 		String margins = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getMargins() : null) : null;
 
-		String path = jasperReportService.createPDF(parameters, "mongo-prescription", layout, pageSize, margins, user.getFirstName() + new Date()
+		String path = jasperReportService.createPDF(parameters, "mongo-prescription", layout, pageSize, margins, (user!= null?user.getFirstName():"") + new Date()
 			+ "PRESCRIPTION");
 		FileSystemResource file = new FileSystemResource(path);
 		mailAttachment = new MailAttachment();
@@ -2575,8 +2575,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			UserCollection userCollection = userRepository.findOne(prescriptionCollection.getPatientId());
 			PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(prescriptionCollection.getPatientId(), doctorId, locationId, hospitalId);
-			// LocationCollection location =
-			// locationRepository.findOne(locationId);
 			if (patientCollection != null) {
 			    String prescriptionDetails = "";
 			    int i = 0;
@@ -2615,16 +2613,26 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				}
 			    }
 			    SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+			    
+			    String patientName = patientCollection.getFirstName(), doctorName = "", clinicContactNum="";
+			    
+			    UserCollection doctor = userRepository.findOne(doctorId);
+			    if(doctor != null)doctorName = doctor.getTitle()+" "+doctor.getFirstName(); 
+			    
+			    LocationCollection locationCollection = locationRepository.findOne(locationId);
+			 	if(locationCollection != null && locationCollection.getLocationPhoneNumber() != null)
+			    		clinicContactNum = " "+ locationCollection.getLocationPhoneNumber();
+			    
 			    smsTrackDetail.setDoctorId(doctorId);
 			    smsTrackDetail.setHospitalId(hospitalId);
 			    smsTrackDetail.setLocationId(locationId);
 			    smsTrackDetail.setType("PRESCRIPTION");
 			    SMSDetail smsDetail = new SMSDetail();
-			    smsDetail.setPatientId(prescriptionCollection.getPatientId());
+			    smsDetail.setUserId(prescriptionCollection.getPatientId());
 			    if (userCollection != null)
-				smsDetail.setPatientName(userCollection.getFirstName());
+				smsDetail.setUserName(userCollection.getFirstName());
 			    SMS sms = new SMS();
-			    sms.setSmsText("PID : " + patientCollection.getPID() + ", " + prescriptionDetails);// location.getLocationName()+
+			    sms.setSmsText("Hi "+patientName+", Prescription(PID:"+patientCollection.getPID()+") by "+doctorName+prescriptionDetails+".Pls call"+clinicContactNum+" in case of query");
 
 			    SMSAddress smsAddress = new SMSAddress();
 			    smsAddress.setRecipient(mobileNumber);
@@ -2904,4 +2912,58 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 	return response;
     }
+
+	@Override
+	public List<Prescription> getPrescriptions(String patientId, int page, int size, String updatedTime, Boolean discarded) {
+		List<PrescriptionCollection> prescriptionCollections = null;
+		List<Prescription> prescriptions = null;
+		boolean[] discards = new boolean[2];
+		discards[0] = false;
+		try {
+		    if (discarded)discards[1] = true;
+
+		    long createdTimestamp = Long.parseLong(updatedTime);
+			    if (size > 0)
+				prescriptionCollections = prescriptionRepository.getPrescription(patientId, new Date(createdTimestamp), discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    else
+				prescriptionCollections = prescriptionRepository.getPrescription(patientId, new Date(createdTimestamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
+
+		    if (prescriptionCollections != null) {
+			prescriptions = new ArrayList<Prescription>();
+			for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
+			    if (prescriptionCollection.getItems() != null) {
+				Prescription prescription = new Prescription();
+				BeanUtil.map(prescriptionCollection, prescription);
+				List<PrescriptionItemDetail> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetail>();
+				for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
+				    PrescriptionItemDetail prescriptionItemDetails = new PrescriptionItemDetail();
+				    BeanUtil.map(prescriptionItem, prescriptionItemDetails);
+				    if (prescriptionItem.getDrugId() != null) {
+					DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
+					Drug drug = new Drug();
+					if (drugCollection != null)
+					    BeanUtil.map(drugCollection, drug);
+					prescriptionItemDetails.setDrug(drug);
+				    }
+				    prescriptionItemDetailsList.add(prescriptionItemDetails);
+				}
+				prescription.setItems(prescriptionItemDetailsList);
+				PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(prescription.getId());
+				if (patientVisitCollection != null)
+				    prescription.setVisitId(patientVisitCollection.getId());
+				prescriptions.add(prescription);
+			    }
+
+			}
+		    } else {
+			logger.warn("Prescription Not Found");
+			throw new BusinessException(ServiceError.NotFound, "Prescription Not Found");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(" Error Occurred While Getting Prescription");
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Prescription");
+		}
+		return prescriptions;
+	}
 }

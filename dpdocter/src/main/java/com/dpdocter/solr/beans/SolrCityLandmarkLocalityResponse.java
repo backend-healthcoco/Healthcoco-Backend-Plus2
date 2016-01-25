@@ -1,7 +1,5 @@
 package com.dpdocter.solr.beans;
 
-import org.apache.solr.client.solrj.beans.Field;
-
 public class SolrCityLandmarkLocalityResponse {
 
     private String id;

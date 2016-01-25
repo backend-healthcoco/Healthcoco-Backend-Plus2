@@ -701,21 +701,16 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	boolean[] discards = new boolean[2];
 	discards[0] = false;
 
-	boolean[] inHistorys = new boolean[2];
-	inHistorys[0] = true;
-
 	try {
 	    if (discarded)
 		discards[1] = true;
-	    if (inHistory)
-		inHistorys[1] = false;
 
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
-		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, discards, inHistorys, new Date(createdTimeStamp),
+		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, discards, new Date(createdTimeStamp),
 			new PageRequest(page, size, Direction.DESC, "updatedTime"));
 	    else
-		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, discards, inHistorys, new Date(createdTimeStamp),
+		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, discards, new Date(createdTimeStamp),
 			new Sort(Sort.Direction.DESC, "updatedTime"));
 
 	    if (patientClinicalNotesCollections != null) {
@@ -726,8 +721,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		for (String clinicalNotesId : clinicalNotesIds) {
 		    ClinicalNotes clinicalNotes = getNotesById(clinicalNotesId);
 		    if (clinicalNotes != null) {
-			clinicalNotes.setPatientId(patientId);
-			clinicalNotesList.add(clinicalNotes);
+		    	clinicalNotes.setPatientId(patientId);
+		    if (!inHistory)
+				    clinicalNotesList.add(clinicalNotes);
+			else if (clinicalNotes.isInHistory())
+				    clinicalNotesList.add(clinicalNotes);
 		    }
 		}
 	    } else {
@@ -1142,14 +1140,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
-    public Integer getClinicalNotesCount(String doctorId, String patientId, String locationId, String hospitalId) {
+    public Integer getClinicalNotesCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified) {
 	List<ClinicalNotesCollection> clinicalNotesCollections = null;
 	Integer clinicalNotesCount = 0;
 	try {
-	    clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(doctorId, hospitalId, locationId);
-	    @SuppressWarnings("unchecked")
-	    List<String> clinicalNotesIds = (List<String>) CollectionUtils.collect(clinicalNotesCollections, new BeanToPropertyValueTransformer("id"));
-	    clinicalNotesCount = patientClinicalNotesRepository.findCount(patientId, clinicalNotesIds);
+	    if(isOTPVerified){
+	    	clinicalNotesCount = patientClinicalNotesRepository.findCount(patientId);
+	    }else{
+	    	clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(doctorId, hospitalId, locationId);
+		    @SuppressWarnings("unchecked")
+		    List<String> clinicalNotesIds = (List<String>) CollectionUtils.collect(clinicalNotesCollections, new BeanToPropertyValueTransformer("id"));
+		    clinicalNotesCount = patientClinicalNotesRepository.findCount(patientId, clinicalNotesIds);
+	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
@@ -2169,21 +2171,16 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    throw new BusinessException(ServiceError.NotFound, "Clinical Notes Id, doctorId, location Id, hospital Id does not match");
 		}
 
+		String patientName = "", dob = "", gender = "", mobileNumber = "", refferedBy ="";
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(doctorId, locationId, hospitalId,
-			ComponentType.CLINICAL_NOTES.getType());
-		DBObject printId = new BasicDBObject();
+				ComponentType.CLINICAL_NOTES.getType());
+		
 		if (printSettings == null) {
 		    printSettings = printSettingsRepository.getSettings(doctorId, locationId, hospitalId, ComponentType.ALL.getType());
-		    if (printSettings != null) {
-			printId.put("$oid", printSettings.getId());
+		}    
 
-		    }
-		} else
-		    printId.put("$oid", printSettings.getId());
-
-		parameters.put("printSettingsId", Arrays.asList(printId));
+		parameters.put("printSettingsId", printSettings != null ? printSettings.getId() :"");
 		String headerLeftText = "", headerRightText = "", footerBottomText = "";
-		String patientName = "", dob = "", gender = "", mobileNumber = "", refferedBy = "";
 		if (printSettings != null) {
 		    if (printSettings.getHeaderSetup() != null) {
 			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()) {
@@ -2239,11 +2236,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				else
 				    footerBottomText = footerBottomText + "" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 			    }
-			UserCollection doctorUser = userRepository.findOne(doctorId);
+			
+		}
+
+		 UserCollection doctorUser = userRepository.findOne(doctorId);
 			if (doctorUser != null)
 			    parameters.put("footerSignature", doctorUser.getTitle() + " " + doctorUser.getFirstName());
-		    }
-		}
+		 }    
 		patientName = "Patient Name: " + (user != null ? user.getFirstName() : "--") + "<br>";
 		dob = "Patient Age: " + ((patient != null && patient.getDob() != null) ? (patient.getDob().getAge() + " years") : "--") + "<br>";
 		gender = "Patient Gender: " + (patient != null ? patient.getGender() : "--") + "<br>";
@@ -2266,6 +2265,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		LocationCollection location = locationRepository.findOne(locationId);
 		if (location != null)
 		    parameters.put("logoURL", getFinalImageURL(location.getLogoUrl(), uriInfo));
+		else parameters.put("logoURL", "");
 
 		String layout = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 			: "PORTRAIT";
@@ -2313,4 +2313,46 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    }
 	return false;
     }
+
+	@Override
+	public List<ClinicalNotes> getClinicalNotes(String patientId, int page, int size, String updatedTime, Boolean discarded) {
+		List<ClinicalNotes> clinicalNotesList = null;
+		List<PatientClinicalNotesCollection> patientClinicalNotesCollections = null;
+		boolean[] discards = new boolean[2];
+		discards[0] = false;
+		try {
+		    if (discarded)
+			discards[1] = true;
+
+		    long createdTimeStamp = Long.parseLong(updatedTime);
+		    if (size > 0)
+			patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, discards, new Date(createdTimeStamp),
+				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+		    else
+			patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, discards, new Date(createdTimeStamp),
+				new Sort(Sort.Direction.DESC, "updatedTime"));
+
+		    if (patientClinicalNotesCollections != null) {
+			@SuppressWarnings("unchecked")
+			Collection<String> clinicalNotesIds = CollectionUtils.collect(patientClinicalNotesCollections, new BeanToPropertyValueTransformer(
+				"clinicalNotesId"));
+			clinicalNotesList = new ArrayList<ClinicalNotes>();
+			for (String clinicalNotesId : clinicalNotesIds) {
+			    ClinicalNotes clinicalNotes = getNotesById(clinicalNotesId);
+			    if (clinicalNotes != null) {
+				clinicalNotes.setPatientId(patientId);
+				clinicalNotesList.add(clinicalNotes);
+			    }
+			}
+		    } else {
+			logger.warn("No Clinical Notes found for patient Id : " + patientId);
+			throw new BusinessException(ServiceError.Unknown, "No Clinical Notes found for patient Id : " + patientId);
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return clinicalNotesList;
+	}
 }

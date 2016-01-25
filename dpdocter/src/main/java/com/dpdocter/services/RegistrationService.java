@@ -27,6 +27,7 @@ import com.dpdocter.request.DoctorRegisterRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.ClinicDoctorResponse;
 import com.dpdocter.response.PatientInitialAndCounter;
+import com.dpdocter.response.PatientStatusResponse;
 import com.dpdocter.response.RegisterDoctorResponse;
 import com.dpdocter.solr.document.SolrDoctorDocument;
 
@@ -66,11 +67,11 @@ public interface RegistrationService {
 
     BloodGroup addBloodGroup(BloodGroup request);
 
-    List<BloodGroup> getBloodGroup();
+    List<BloodGroup> getBloodGroup(int page, int size, String updatedTime);
 
     Profession addProfession(Profession request);
 
-    List<Profession> getProfession(int page, int size);
+    List<Profession> getProfession(int page, int size, String updatedTime);
 
     ClinicLogo changeClinicLogo(ClinicLogoAddRequest request);
 
@@ -103,5 +104,7 @@ public interface RegistrationService {
 	Feedback addFeedback(Feedback request);
 
 	ClinicProfile updateClinicProfileHandheld(ClinicProfileHandheld request);
+
+	PatientStatusResponse getPatientStatus(String patientId, String doctorId, String locationId, String hospitalId);
 
 }

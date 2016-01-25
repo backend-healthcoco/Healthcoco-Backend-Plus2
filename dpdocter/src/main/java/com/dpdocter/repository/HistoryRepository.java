@@ -1,5 +1,7 @@
 package com.dpdocter.repository;
 
+import java.util.List;
+
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -13,6 +15,9 @@ public interface HistoryRepository extends MongoRepository<HistoryCollection, St
 
     @Query(value = "{'patientId' : ?0, 'doctorId': {$ne : ?1}, 'locationId' : {$ne : ?2}, 'hospitalId' : {$ne : ?3}}", count = true)
     Integer getByPatientIdAndNotEqualToDoctorLocationHospital(String patientId, String doctorId, String locationId, String hospitalId);
+
+    @Query("{'patientId' : ?0}")
+    List<HistoryCollection> findHistory(String patientId);
 
     /*@Query(value = "{'patientId': ?0}", fields = "{ 'prescriptions' : 0, 'clinicalNotes' : 0}")
     List<HistoryCollection> findByPatientIdFilterByReports(String patientId);

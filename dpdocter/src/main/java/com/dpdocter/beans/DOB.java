@@ -30,6 +30,7 @@ public class DOB {
 	this.days = days;
 	this.months = months;
 	this.years = years;
+	this.age = getAge();
     }
 
     public int getDays() {

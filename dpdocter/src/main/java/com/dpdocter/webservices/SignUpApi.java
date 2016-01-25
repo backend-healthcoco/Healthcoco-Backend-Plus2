@@ -32,6 +32,7 @@ import com.dpdocter.request.PatientProfilePicChangeRequest;
 import com.dpdocter.request.PatientSignUpRequest;
 import com.dpdocter.request.PatientSignupRequestMobile;
 import com.dpdocter.request.VerifyUnlockPatientRequest;
+import com.dpdocter.request.VerifyUnlockPatientRequest.FlagEnum;
 import com.dpdocter.services.SignUpService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrDoctorDocument;
@@ -236,19 +237,17 @@ public class SignUpApi {
     @POST
     public Response<Boolean> verifyOrUnlockPatient(VerifyUnlockPatientRequest request) {
 		boolean flag = false;
-		if(request.getVerifyOrUnlock().equals(VerifyUnlockPatientRequest.FlagEnum.VERIFY.getFlag())){
+		if((request.getVerifyOrUnlock().getFlag()).equals(FlagEnum.VERIFY.getFlag())){
 			flag = signUpService.verifyPatientBasedOn80PercentMatchOfName(request.getName(), request.getMobileNumber());
-		}else if (request.getVerifyOrUnlock().equals(VerifyUnlockPatientRequest.FlagEnum.UNLOCK.getFlag())){
+		}else if ((request.getVerifyOrUnlock().getFlag()).equals(FlagEnum.UNLOCK.getFlag())){
 			flag = signUpService.unlockPatientBasedOn80PercentMatch(request.getName(), request.getMobileNumber());
 		}
     	Response<Boolean> flagResponse = new Response<Boolean>();
     	flagResponse.setData(flag);
-    	return null;
+    	return flagResponse;
     	
     }
     	
-    
-
     @Path(value = PathProxy.SignUpUrls.PATIENT_PROFILE_PIC_CHANGE)
     @POST
     public Response<User> patientProfilePicChange(PatientProfilePicChangeRequest request) {

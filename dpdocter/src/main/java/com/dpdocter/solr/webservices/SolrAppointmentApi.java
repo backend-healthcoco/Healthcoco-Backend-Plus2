@@ -23,7 +23,6 @@ import com.dpdocter.solr.response.LabResponse;
 import com.dpdocter.solr.services.SolrAppointmentService;
 import com.dpdocter.webservices.PathProxy;
 
-import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
 @Component

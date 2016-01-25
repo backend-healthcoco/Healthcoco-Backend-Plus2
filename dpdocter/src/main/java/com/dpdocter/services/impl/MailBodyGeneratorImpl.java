@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.velocity.app.VelocityEngine;
@@ -33,7 +32,6 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 
 	Map<String, Object> model = new HashMap<String, Object>();
 	model.put("fName", fName);
-	model.put("lName", lName);
 	model.put("link", uriInfo.getBaseUri() + link + tokenId);
 	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "mailTemplate.vm", "UTF-8", model);
 	return text;
@@ -42,7 +40,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
     @Override
     public String generateForgotPasswordEmailBody(String userName, String fName, String mName, String lName, String userId, UriInfo uriInfo) {
 	StringBuffer body = new StringBuffer();
-	body.append("Dear " + fName + " " + lName + ", \n");
+	body.append("Dear " + fName +  ", \n");
 	if (uriInfo != null)
 	    body.append("Please click on below link to Reset Password. \n" + uriInfo.getBaseUri() + RESET_PASSWORD_LINK + "?uid=" + userId);
 	return body.toString();

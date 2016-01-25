@@ -41,6 +41,7 @@ import com.dpdocter.response.HistoryDetailsResponse;
 import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientVisitService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -316,6 +317,31 @@ public class HistoryApi {
 		    page, size, updatedTime);
 	}
 	if (historyDetailsResponses != null && !historyDetailsResponses.isEmpty())
+	    for (HistoryDetailsResponse historyDetailsResponse : historyDetailsResponses) {
+		if (historyDetailsResponse.getGeneralRecords() != null) {
+		    for (GeneralData generalData : historyDetailsResponse.getGeneralRecords()) {
+			if (generalData.getDataType().equals(HistoryFilter.CLINICAL_NOTES)) {
+			    ((ClinicalNotes) generalData.getData()).setDiagrams(getFinalDiagrams(((ClinicalNotes) generalData.getData()).getDiagrams()));
+			} else if (generalData.getDataType().equals(HistoryFilter.REPORTS)) {
+			    ((Records) generalData.getData()).setRecordsUrl(getFinalImageURL(((Records) generalData.getData()).getRecordsUrl()));
+			}
+		    }
+		}
+	    }
+	Response<HistoryDetailsResponse> response = new Response<HistoryDetailsResponse>();
+	response.setDataList(historyDetailsResponses);
+	return response;
+    }
+
+    @Path(value = PathProxy.HistoryUrls.GET_PATIENT_HISTORY)
+    @GET
+    public Response<HistoryDetailsResponse> getPatientHistory(@PathParam(value = "patientId") String patientId,
+    		@MatrixParam("historyFilter") List<String> historyFilter, @QueryParam("page") int page, @QueryParam("size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+	
+	List<HistoryDetailsResponse> historyDetailsResponses = null;
+	    historyDetailsResponses = historyServices.getPatientHistory(patientId, historyFilter, page, size, updatedTime);
+	
+	    if (historyDetailsResponses != null && !historyDetailsResponses.isEmpty())
 	    for (HistoryDetailsResponse historyDetailsResponse : historyDetailsResponses) {
 		if (historyDetailsResponse.getGeneralRecords() != null) {
 		    for (GeneralData generalData : historyDetailsResponse.getGeneralRecords()) {

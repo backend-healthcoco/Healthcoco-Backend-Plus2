@@ -15,16 +15,16 @@ public interface TemplateRepository extends MongoRepository<TemplateCollection, 
     @Query("{'id': ?0, 'doctorId': ?1, 'hospitalId': ?2, 'locationId': ?3}")
     TemplateCollection getTemplate(String templateId, String doctorId, String hospitalId, String locationId);
 
-    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': {$in: ?2}}")
+    @Query("{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
     List<TemplateCollection> getTemplates(String doctorId, Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': {$in: ?4}}")
+    @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}}")
     List<TemplateCollection> getTemplates(String doctorId, String hospitalId, String locationId, Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': {$in: ?2}}")
+    @Query("{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
     List<TemplateCollection> getTemplates(String doctorId, Date date, boolean[] discards, Sort sort);
 
-    @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': {$in: ?4}}")
+    @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}}")
     List<TemplateCollection> getTemplates(String doctorId, String hospitalId, String locationId, Date date, boolean[] discards, Sort sort);
 
 }

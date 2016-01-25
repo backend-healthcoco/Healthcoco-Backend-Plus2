@@ -5,9 +5,9 @@ import java.util.Date;
 import com.dpdocter.enums.SMSStatus;
 
 public class SMSDetail {
-    private String patientId;
+    private String userId;
 
-    private String patientName;
+    private String userName;
 
     private SMS sms;
 
@@ -17,23 +17,23 @@ public class SMSDetail {
 
     private String deliveredTime;
 
-    public String getPatientId() {
-	return patientId;
-    }
+    public String getUserId() {
+		return userId;
+	}
 
-    public void setPatientId(String patientId) {
-	this.patientId = patientId;
-    }
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 
-    public String getPatientName() {
-	return patientName;
-    }
+	public String getUserName() {
+		return userName;
+	}
 
-    public void setPatientName(String patientName) {
-	this.patientName = patientName;
-    }
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
 
-    public SMS getSms() {
+	public SMS getSms() {
 	return sms;
     }
 
@@ -65,10 +65,9 @@ public class SMSDetail {
 	this.deliveredTime = deliveredTime;
     }
 
-    @Override
-    public String toString() {
-	return "SMSDetail [patientId=" + patientId + ", patientName=" + patientName + ", sms=" + sms + ", deliveryStatus=" + deliveryStatus + ", sentTime="
-		+ sentTime + ", deliveredTime=" + deliveredTime + "]";
-    }
-
+	@Override
+	public String toString() {
+		return "SMSDetail [userId=" + userId + ", userName=" + userName + ", sms=" + sms + ", deliveryStatus="
+				+ deliveryStatus + ", sentTime=" + sentTime + ", deliveredTime=" + deliveredTime + "]";
+	}
 }

@@ -2,7 +2,7 @@ package com.dpdocter.services;
 
 public interface OTPService {
 
-    String otpGenerator(String doctorId, String locationId, String hospitalId, String patientId, String mobileNumber);
+    String otpGenerator(String doctorId, String locationId, String hospitalId, String patientId);
 
     String otpGenerator(String mobileNumber);
 

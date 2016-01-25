@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-import com.dpdocter.beans.Timing;
 import com.dpdocter.collections.AppointmentCollection;
 
 public interface AppointmentRepository extends MongoRepository<AppointmentCollection, String>, PagingAndSortingRepository<AppointmentCollection, String> {

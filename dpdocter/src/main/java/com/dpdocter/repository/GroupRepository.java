@@ -20,10 +20,10 @@ public interface GroupRepository extends MongoRepository<GroupCollection, String
     @Query("{'doctorId': ?0, 'discarded': ?1}")
     public List<GroupCollection> findByDoctorId(String doctorId, boolean discarded, Sort sort);
 
-    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}}")
+    @Query("{'doctorId': ?0, 'updatedTime': {'$gt': ?1}}")
     public List<GroupCollection> findByDoctorId(String doctorId, Date date, Sort sort);
 
-    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2}")
+    @Query("{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': ?2}")
     public List<GroupCollection> findByDoctorId(String doctorId, Date date, boolean discarded, Sort sort);
 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2}")
@@ -33,10 +33,10 @@ public interface GroupRepository extends MongoRepository<GroupCollection, String
     public List<GroupCollection> findByDoctorIdPatientIdHospitalId(String doctorId, String locationId, String hospitalId, boolean discarded,
 	    Pageable pageRequest);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}}")
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}}")
     public List<GroupCollection> findByDoctorIdPatientIdHospitalId(String doctorId, String locationId, String hospitalId, Date date, Pageable pageRequest);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3, 'updatedTime': {'$gte': ?4}}")
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3, 'updatedTime': {'$gt': ?4}}")
     public List<GroupCollection> findByDoctorIdPatientIdHospitalId(String doctorId, String locationId, String hospitalId, boolean discarded, Date date,
 	    Pageable pageRequest);
 
@@ -46,26 +46,26 @@ public interface GroupRepository extends MongoRepository<GroupCollection, String
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3}")
     public List<GroupCollection> findByDoctorIdPatientIdHospitalId(String doctorId, String locationId, String hospitalId, boolean discarded, Sort sort);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}}")
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}}")
     public List<GroupCollection> findByDoctorIdPatientIdHospitalId(String doctorId, String locationId, String hospitalId, Date date, Sort sort);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3, 'updatedTime': {'$gte': ?4}}")
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3, 'updatedTime': {'$gt': ?4}}")
     public List<GroupCollection> findByDoctorIdPatientIdHospitalId(String doctorId, String locationId, String hospitalId, boolean discarded, Date date,
 	    Sort sort);
 
     @Query("{'name': ?0, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3}")
     public List<GroupCollection> findByName(String name, String doctorId, String locationId, String hospitalId);
 
-    @Query("{'doctorId': ?0, 'discarded': {$in: ?1}, 'updatedTime': {'$gte': ?2}}")
+    @Query("{'doctorId': ?0, 'discarded': {$in: ?1}, 'updatedTime': {'$gt': ?2}}")
     public List<GroupCollection> findAll(String doctorId, boolean[] discarded, Date date, Pageable pageRequest);
 
-    @Query("{'doctorId': ?0, 'discarded': {$in: ?1}, 'updatedTime': {'$gte': ?2}}")
+    @Query("{'doctorId': ?0, 'discarded': {$in: ?1}, 'updatedTime': {'$gt': ?2}}")
     public List<GroupCollection> findAll(String doctorId, boolean[] discarded, Date date, Sort sort);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': {$in: ?3}, 'updatedTime': {'$gte': ?4}}")
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': {$in: ?3}, 'updatedTime': {'$gt': ?4}}")
     public List<GroupCollection> findAll(String doctorId, String locationId, String hospitalId, boolean[] discarded, Date date, Pageable pageRequest);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': {$in: ?3}, 'updatedTime': {'$gte': ?4}}")
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': {$in: ?3}, 'updatedTime': {'$gt': ?4}}")
     public List<GroupCollection> findAll(String doctorId, String locationId, String hospitalId, boolean[] discarded, Date date, Sort sort);
 
 }

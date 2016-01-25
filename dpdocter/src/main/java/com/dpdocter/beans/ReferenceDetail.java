@@ -13,6 +13,8 @@ public class ReferenceDetail {
 
     private String hospitalId;
 
+    private Boolean discarded = false;
+    
     public String getId() {
 	return id;
     }
@@ -61,9 +63,18 @@ public class ReferenceDetail {
 	this.hospitalId = hospitalId;
     }
 
-    @Override
-    public String toString() {
-	return "ReferenceDetail [id=" + id + ", reference=" + reference + ", description=" + description + ", doctorId=" + doctorId + ", locationId="
-		+ locationId + ", hospitalId=" + hospitalId + "]";
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	@Override
+	public String toString() {
+		return "ReferenceDetail [id=" + id + ", reference=" + reference + ", description=" + description + ", doctorId="
+				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ "]";
+	}
 }

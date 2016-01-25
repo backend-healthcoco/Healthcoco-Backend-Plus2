@@ -19,17 +19,11 @@ public interface PatientClinicalNotesRepository extends MongoRepository<PatientC
     @Query("{'clinicalNotesId': ?0}")
     List<PatientClinicalNotesCollection> findByClinicalNotesId(String clinicalNotesId);
 
-    @Query("{'patientId': ?0, 'updatedTime': {'$gte': ?1}}")
+    @Query("{'patientId': ?0, 'updatedTime': {'$gt': ?1}}")
     List<PatientClinicalNotesCollection> findByPatientId(String patientId, Date date, Pageable Pageable);
 
-    @Query("{'patientId': ?0, 'updatedTime': {'$gte': ?1}}")
+    @Query("{'patientId': ?0, 'updatedTime': {'$gt': ?1}}")
     List<PatientClinicalNotesCollection> findByPatientId(String patientId, Date date, Sort sort);
-
-    @Query("{'patientId': ?0, 'discarded': {$in: ?1}, 'updatedTime': {'$gte': ?2}}")
-    List<PatientClinicalNotesCollection> findByPatientId(String patientId, boolean[] discards, boolean[] inHistorys, Date date, Pageable Pageable);
-
-    @Query("{'patientId': ?0, 'discarded': {$in: ?1}, 'updatedTime': {'$gte': ?2}}")
-    List<PatientClinicalNotesCollection> findByPatientId(String patientId, boolean[] discarded, boolean[] inHistorys, Date date, Sort sort);
 
     @Query("{'patientId': ?0, 'clinicalNotesId': {'$in': ?1}}")
     List<PatientClinicalNotesCollection> findAll(String patientId, List<String> clinicalNotesIds);
@@ -39,5 +33,14 @@ public interface PatientClinicalNotesRepository extends MongoRepository<PatientC
 
     @Query(value = "{'patientId': ?0, 'clinicalNotesId': ?1}")
 	PatientClinicalNotesCollection findByPatientIdClinicalNotesId(String patientId, String id);
+
+    @Query("{'patientId': ?0, 'discarded': {$in: ?1}, 'updatedTime': {'$gt': ?2}}")
+	List<PatientClinicalNotesCollection> findByPatientId(String patientId, boolean[] discards, Date date, Pageable pageRequest);
+
+    @Query("{'patientId': ?0, 'discarded': {$in: ?1}, 'updatedTime': {'$gt': ?2}}")
+	List<PatientClinicalNotesCollection> findByPatientId(String patientId, boolean[] discards, Date date, Sort sort);
+
+    @Query(value = "{'patientId': ?0}", count = true)
+	Integer findCount(String patientId);
 
 }

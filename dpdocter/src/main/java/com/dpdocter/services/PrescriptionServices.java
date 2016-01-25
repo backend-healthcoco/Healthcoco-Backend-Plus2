@@ -64,8 +64,7 @@ public interface PrescriptionServices {
     List<TemplateAddEditResponseDetails> getTemplates(int page, int size, String doctorId, String hospitalId, String locationId, String updatedTime,
 	    boolean discarded);
 
-    @Query(value = "{'doctorId': ?0, 'patientId': ?1, 'locationId': ?2, 'hospitalId': ?3}", count = true)
-    Integer getPrescriptionCount(String doctorId, String patientId, String locationId, String hospitalId);
+    Integer getPrescriptionCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified);
 
     TemplateAddEditResponseDetails addTemplateHandheld(TemplateAddEditRequest request);
 
@@ -123,5 +122,7 @@ public interface PrescriptionServices {
     void importDrug();
 
     List<DiagnosticTestCollection> getDiagnosticTest();
+
+	List<Prescription> getPrescriptions(String patientId, int page, int size, String updatedTime, Boolean discarded);
 
 }

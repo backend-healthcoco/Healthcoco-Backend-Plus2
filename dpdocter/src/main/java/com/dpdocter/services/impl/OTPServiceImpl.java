@@ -12,18 +12,20 @@ import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import com.dpdocter.beans.SMSTrackDetail;
 import com.dpdocter.collections.DoctorOTPCollection;
 import com.dpdocter.collections.OTPCollection;
+import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.OTPState;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.repository.DoctorOTPRepository;
 import com.dpdocter.repository.OTPRepository;
+import com.dpdocter.repository.SMSFormatRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.sms.services.SMSServices;
+
 import common.util.web.LoginUtils;
 
 @Service
@@ -42,6 +44,9 @@ public class OTPServiceImpl implements OTPService {
 
     @Autowired
     private DoctorOTPRepository doctorOTPRepository;
+    
+    @Autowired
+    private SMSFormatRepository sMSFormatRepository;
 
     @Value(value = "${OTP_VALIDATION_TIME_DIFFERENCE_IN_MINS}")
     private String otpTimeDifference;
@@ -50,32 +55,43 @@ public class OTPServiceImpl implements OTPService {
     private String otpNonVerifiedTimeDifference;
 
     @Override
-    public String otpGenerator(String doctorId, String locationId, String hospitalId, String patientId, String mobileNumber) {
+    public String otpGenerator(String doctorId, String locationId, String hospitalId, String patientId) {
 	String OTP = null;
 	try {
 	    OTP = LoginUtils.generateOTP();
 	    UserCollection userCollection = userRepository.findOne(doctorId);
-	    SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(doctorId, locationId, hospitalId, patientId, OTP + " is OTP for Verification",
-		    mobileNumber, "OTPVerification");
-	    sMSServices.sendSMS(smsTrackDetail, false);
-
-	    OTPCollection otpCollection = new OTPCollection();
-	    otpCollection.setCreatedTime(new Date());
-	    otpCollection.setOtpNumber(OTP);
 	    
-	    if (userCollection != null)
-		otpCollection.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());
-	    otpCollection = otpRepository.save(otpCollection);
+	    UserCollection patient = userRepository.findOne(patientId);
+	    
+	    if(userCollection != null && patient != null){
+	    	
+	    	String doctorName=(userCollection.getTitle()!=null?userCollection.getTitle():"")+" "+userCollection.getFirstName();
+	    	
+		    SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(doctorId, locationId, hospitalId, patientId, patient.getFirstName(),
+		    		"One time Password to share Healthcoco records with "+doctorName+" is "+OTP+".Pls do not share this with anyone else",
+				    patient.getMobileNumber(), "OTPVerification");
+			    sMSServices.sendSMS(smsTrackDetail, false);
 
-	    DoctorOTPCollection doctorOTPCollection = new DoctorOTPCollection();
-	    doctorOTPCollection.setCreatedTime(new Date());
-	    doctorOTPCollection.setOtpId(otpCollection.getId());
-	    doctorOTPCollection.setDoctorId(doctorId);
-	    doctorOTPCollection.setLocationId(locationId);
-	    doctorOTPCollection.setHospitalId(hospitalId);
-	    doctorOTPCollection.setPatientId(patientId);
-	    doctorOTPCollection = doctorOTPRepository.save(doctorOTPCollection);
+			    OTPCollection otpCollection = new OTPCollection();
+			    otpCollection.setCreatedTime(new Date());
+			    otpCollection.setOtpNumber(OTP);
+			    
+			    if (userCollection != null)
+				otpCollection.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());
+			    otpCollection = otpRepository.save(otpCollection);
 
+			    DoctorOTPCollection doctorOTPCollection = new DoctorOTPCollection();
+			    doctorOTPCollection.setCreatedTime(new Date());
+			    doctorOTPCollection.setOtpId(otpCollection.getId());
+			    doctorOTPCollection.setDoctorId(doctorId);
+			    doctorOTPCollection.setLocationId(locationId);
+			    doctorOTPCollection.setHospitalId(hospitalId);
+			    doctorOTPCollection.setPatientId(patientId);
+			    doctorOTPCollection = doctorOTPRepository.save(doctorOTPCollection);
+	    }else{
+	    	logger.error("Invalid doctorId or patientId");
+		    throw new BusinessException(ServiceError.Unknown, "Invalid doctorId or patientId");
+	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error While Generating OTP");
@@ -150,7 +166,7 @@ public class OTPServiceImpl implements OTPService {
 	String OTP = null;
 	try {
 	    OTP = LoginUtils.generateOTP();
-	    SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(null, null, null, null, OTP + " is OTP for Verification", mobileNumber,
+	    SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(null, null, null, null, null, OTP + " is OTP for Verification", mobileNumber,
 	    		"OTPVerification");
 	    sMSServices.sendSMS(smsTrackDetail, false);
 
@@ -221,7 +237,7 @@ public class OTPServiceImpl implements OTPService {
     @Scheduled(fixedRate = 300000)
     public void checkOTP(){
     	try {
-    		List<OTPCollection> otpCollections = otpRepository.findNonExpiredOtp(OTPState.EXPIRED);
+    		List<OTPCollection> otpCollections = otpRepository.findNonExpiredOtp(OTPState.EXPIRED.getState());
     		if(otpCollections != null){
     			for(OTPCollection otpCollection : otpCollections){
     				if(otpCollection.getState().equals(OTPState.VERIFIED)){
