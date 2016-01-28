@@ -41,6 +41,7 @@ import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserRoleRepository;
+import com.dpdocter.request.LoginPatientRequest;
 import com.dpdocter.request.LoginRequest;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.LoginService;
@@ -90,7 +91,7 @@ public class LoginServiceImpl implements LoginService {
 	    UserCollection userCollection = userRepository.findByPasswordAndUserNameIgnoreCase(request.getPassword(), request.getUsername());
 	    if (userCollection == null) {
 		logger.warn("Invalid username and Password");
-		throw new BusinessException(ServiceError.Unknown, "Invalid username and Password");
+		throw new BusinessException(ServiceError.InvalidInput, "Invalid username and Password");
 	    }
 
 	    User user = new User();
@@ -207,7 +208,7 @@ public class LoginServiceImpl implements LoginService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while login");
-	    throw new BusinessException(ServiceError.Unknown, "Error occured while login");
+	    throw new BusinessException(ServiceError.Forbidden, "Error occured while login");
 	}
 	return response;
     }
@@ -233,4 +234,51 @@ public class LoginServiceImpl implements LoginService {
 	    }
 	return clinicImages;
     }
+
+	@Override
+	public LoginResponse loginPatient(LoginPatientRequest request, UriInfo uriInfo) {
+		LoginResponse response = null;
+		try {
+		    /**
+		     * Check if user exist.
+		     */
+		    UserCollection userCollection = userRepository.findByPasswordAndMobileNumberIgnoreCase(request.getPassword(), request.getMobileNumber());
+		    if (userCollection == null) {
+			logger.warn("Invalid mobile Number and Password");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid mobile Number and Password");
+		    }
+
+		    User user = new User();
+		    BeanUtil.map(userCollection, user);
+
+		    if (userCollection.getUserState() != null && userCollection.getUserState().equals(UserState.USERSTATEINCOMPLETE)) {
+				response = new LoginResponse();
+				user.setEmailAddress(user.getUserName());
+				response.setUser(user);
+				return response;
+			 }
+		    List<UserRoleCollection> userRoleCollections = userRoleRepository.findByUserId(userCollection.getId());
+		    
+		    for (UserRoleCollection userRoleCollection : userRoleCollections) {
+			RoleCollection roleCollection = roleRepository.findOne(userRoleCollection.getRoleId());
+			if (roleCollection.getRole().equalsIgnoreCase(RoleEnum.PATIENT.getRole())) {
+			    userCollection.setLastSession(new Date());
+			    userCollection = userRepository.save(userCollection);
+
+			    response = new LoginResponse();
+			    response.setUser(user);
+			    response.setIsTempPassword(userCollection.getIsTempPassword());
+			    return response;
+			} 
+		    }
+		} catch (BusinessException be) {
+		    logger.error(be);
+		    throw be;
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error occured while login");
+		    throw new BusinessException(ServiceError.Forbidden, "Error occured while login");
+		}
+		return response;
+	}
 }

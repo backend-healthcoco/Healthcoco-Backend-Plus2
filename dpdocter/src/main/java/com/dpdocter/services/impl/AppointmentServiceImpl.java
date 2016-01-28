@@ -165,7 +165,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    BeanUtil.map(countryCollection, country);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 	return country;
     }
@@ -186,7 +186,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    BeanUtil.map(cityCollection, city);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 	return city;
     }
@@ -196,7 +196,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	try {
 	    CityCollection cityCollection = cityRepository.findOne(cityId);
 	    if (cityCollection == null) {
-		throw new BusinessException(ServiceError.Unknown, "Invalid Url.");
+		throw new BusinessException(ServiceError.InvalidInput, "Invalid city Id");
 	    }
 	    cityCollection.setIsActivated(activate);
 	    cityRepository.save(cityCollection);
@@ -218,7 +218,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 	return response;
     }
@@ -233,7 +233,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 	return response;
     }
@@ -268,7 +268,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    BeanUtil.map(landmarkLocalityCollection, landmarkLocality);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 	return landmarkLocality;
     }
@@ -323,7 +323,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 	return response;
     }
@@ -420,16 +420,16 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    BeanUtil.map(appointmentCollection, response);
 		} else {
 		    logger.error("Time slot is already booked");
-		    throw new BusinessException(ServiceError.Unknown, "Time slot is already booked");
+		    throw new BusinessException(ServiceError.NotAcceptable, "Time slot is already booked");
 		}
 	    } else {
 		logger.error("Incorrect appointment Id");
-		throw new BusinessException(ServiceError.Unknown, "Incorrect appointment Id");
+		throw new BusinessException(ServiceError.InvalidInput, "Incorrect appointment Id");
 	    }
 	}
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 	return response;
     }
@@ -508,12 +508,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    }
 			} else {
 			    logger.error("Time slot is already booked");
-			    throw new BusinessException(ServiceError.Unknown, "Time slot is already booked");
+			    throw new BusinessException(ServiceError.NotAcceptable, "Time slot is already booked");
 			}
 		}
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 	return response;
     }
@@ -688,7 +688,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		}
 	    } catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 	return response;
     }
@@ -726,7 +726,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			}
 		} catch (Exception e) {
 		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 		}
 		return response;
  }
@@ -747,7 +747,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    BeanUtil.map(stateCollection, state);
 		} catch (Exception e) {
 		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 		}
 		return state;
 	}
@@ -811,7 +811,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    }
 		} catch (Exception e) {
 		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 		}
 		return response;
 	}
@@ -826,7 +826,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    }
 		} catch (Exception e) {
 		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 		}
 		return response;
 	}
@@ -841,7 +841,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    }
 		} catch (Exception e) {
 		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 		}
 		return response;
 	}
@@ -887,7 +887,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	  }
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error whie getting time slots");
+	    throw new BusinessException(ServiceError.Forbidden, "Error whie getting time slots");
 	}
 	return response;
     }
@@ -923,12 +923,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 				    }
 				} else {
 				    logger.error("Event cannot be added as appointment is already book");
-				    throw new BusinessException(ServiceError.Unknown, "Event cannot be added as appointment is already book");
+				    throw new BusinessException(ServiceError.NotAcceptable, "Event cannot be added as appointment is already book");
 				}
 			}
 		} catch (Exception e) {
 		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 		}
 		return response;
 	}
@@ -982,15 +982,15 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    BeanUtil.map(appointmentCollection, response);
 			} else {
 			    logger.error("Event cannot be added as appointment is already book");
-			    throw new BusinessException(ServiceError.Unknown, "Event cannot be added as appointment is already book");
+			    throw new BusinessException(ServiceError.NotAcceptable, "Event cannot be added as appointment is already book");
 			}
 		    } else {
 			logger.error("Incorrect Id");
-			throw new BusinessException(ServiceError.Unknown, "Incorrect Id");
+			throw new BusinessException(ServiceError.InvalidInput, "Incorrect Id");
 		    }
 		} catch (Exception e) {
 		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 		}
 		return response;
 	}
@@ -1015,11 +1015,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 				}
 			}else{
 				logger.error("Appointment does not exist for this appointmentId");
-			    throw new BusinessException(ServiceError.Unknown, "Appointment does not exist for this appointmentId");
+			    throw new BusinessException(ServiceError.InvalidInput, "Appointment does not exist for this appointmentId");
 			}
 		} catch (Exception e) {
 		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 		}
 		return response;
 	}

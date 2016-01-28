@@ -43,4 +43,7 @@ public interface UserRepository extends MongoRepository<UserCollection, String> 
     @Query("{'userName': ?0, 'emailAddress':?1}")
     public UserCollection findByUserNameAndEmailAddress(String userName, String emailAddress);
 
+    @Query("{'password' : ?0, 'mobileNumber' : ?1}")
+	public UserCollection findByPasswordAndMobileNumberIgnoreCase(String password, String mobileNumber);
+
 }

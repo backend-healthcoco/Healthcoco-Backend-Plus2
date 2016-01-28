@@ -24,8 +24,14 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
     @Value(value = "${RESET_PASSWORD_LINK}")
     private String RESET_PASSWORD_LINK;
 
+    @Value(value = "${RESET_PASSWORD_WEB_LINK}")
+    private String RESET_PASSWORD_WEB_LINK;
+
     @Autowired
     private VelocityEngine velocityEngine;
+    
+    @Value(value = "${IMAGE_URL_ROOT_PATH}")
+    private String imageUrlRootPath;
 
     @Override
     public String generateActivationEmailBody(String userName, String fName, String mName, String lName, String tokenId, UriInfo uriInfo) throws Exception {
@@ -33,17 +39,20 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	Map<String, Object> model = new HashMap<String, Object>();
 	model.put("fName", fName);
 	model.put("link", uriInfo.getBaseUri() + link + tokenId);
+	model.put("imageURL", uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath)+"/templatesImage/");
 	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "mailTemplate.vm", "UTF-8", model);
 	return text;
     }
 
     @Override
-    public String generateForgotPasswordEmailBody(String userName, String fName, String mName, String lName, String userId, UriInfo uriInfo) {
-	StringBuffer body = new StringBuffer();
-	body.append("Dear " + fName +  ", \n");
-	if (uriInfo != null)
-	    body.append("Please click on below link to Reset Password. \n" + uriInfo.getBaseUri() + RESET_PASSWORD_LINK + "?uid=" + userId);
-	return body.toString();
+    public String generateForgotPasswordEmailBody(String emailAddress, String fName, String mName, String lName, String userId, UriInfo uriInfo) {
+    	Map<String, Object> model = new HashMap<String, Object>();
+    	model.put("fName", fName);
+    	model.put("emailAddress", emailAddress);
+    	model.put("link", uriInfo.getBaseUri() + RESET_PASSWORD_LINK + "?uid=" + userId);
+    	model.put("imageURL", uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath)+"/templatesImage/");
+    	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "forgotPasswordTemplate.vm", "UTF-8", model);
+    	return text;
     }
 
     @Override
@@ -71,5 +80,36 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	body.append("Issue is created");
 	return body.toString();
     }
+
+	@Override
+	public String generateResetPasswordSuccessEmailBody(String emailAddress, String firstName, UriInfo uriInfo) {
+		Map<String, Object> model = new HashMap<String, Object>();
+    	model.put("fName", firstName);
+    	model.put("link", RESET_PASSWORD_WEB_LINK);
+    	model.put("imageURL", uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath)+"/templatesImage/");
+    	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "resetPasswordSuccess.vm", "UTF-8", model);
+    	return text;
+	}
+
+	@Override
+	public String generateRecordsShareOtpBeforeVerificationEmailBody(String emailAddress, String firstName,	String doctorName, UriInfo uriInfo) {
+		Map<String, Object> model = new HashMap<String, Object>();
+    	model.put("fName", firstName);
+    	model.put("doctorName", doctorName);
+    	model.put("imageURL", uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath)+"/templatesImage/");
+    	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "recordShareOtpBeforeVerificationTemplate.vm", "UTF-8", model);
+    	return text;
+
+	}
+
+	@Override
+	public String generateRecordsShareOtpAfterVerificationEmailBody(String emailAddress, String firstName, String doctorName, UriInfo uriInfo) {
+		Map<String, Object> model = new HashMap<String, Object>();
+    	model.put("fName", firstName);
+    	model.put("doctorName", doctorName);
+    	model.put("imageURL", uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath)+"/templatesImage/");
+    	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "recordShareOtpAfterVerificationTemplate.vm", "UTF-8", model);
+    	return text;
+	}
 
 }

@@ -185,7 +185,7 @@ public class SignUpServiceImpl implements SignUpService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while Activating user");
-	    throw new BusinessException(ServiceError.Unknown, "Error occured while Activating user");
+	    throw new BusinessException(ServiceError.Forbidden, "Error occured while Activating user");
 	}
 
     }
@@ -229,7 +229,7 @@ public class SignUpServiceImpl implements SignUpService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error While Verifying User");
-	    throw new BusinessException(ServiceError.Unknown, "Error While Verifying User");
+	    throw new BusinessException(ServiceError.Forbidden, "Error While Verifying User");
 	}
 	return response;
     }
@@ -392,14 +392,14 @@ public class SignUpServiceImpl implements SignUpService {
 	    response.setHospital(hospital);
 	} catch (DuplicateKeyException de) {
 	    logger.error(de);
-	    throw new BusinessException(ServiceError.Unknown, "Email address already registerd. Please login");
+	    throw new BusinessException(ServiceError.NotAcceptable, "Email address already registerd. Please login");
 	} catch (BusinessException be) {
 	    logger.error(be);
 	    throw be;
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while creating doctor");
-	    throw new BusinessException(ServiceError.Unknown, "Error occured while creating doctor");
+	    throw new BusinessException(ServiceError.Forbidden, "Error occured while creating doctor");
 	}
 	return response;
     }
@@ -435,7 +435,7 @@ public class SignUpServiceImpl implements SignUpService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while assigning access control");
-	    throw new BusinessException(ServiceError.Unknown, "Error occured while assigning access control");
+	    throw new BusinessException(ServiceError.Forbidden, "Error occured while assigning access control");
 	}
 	return accessControls;
     }
@@ -490,14 +490,14 @@ public class SignUpServiceImpl implements SignUpService {
 
 	} catch (DuplicateKeyException de) {
 	    logger.error(de);
-	    throw new BusinessException(ServiceError.Unknown, "Email address already registerd. Please login");
+	    throw new BusinessException(ServiceError.NotAcceptable, "Email address already registerd. Please login");
 	} catch (BusinessException be) {
 	    logger.error(be);
 	    throw be;
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while creating doctor");
-	    throw new BusinessException(ServiceError.Unknown, "Error occured while creating doctor");
+	    throw new BusinessException(ServiceError.Forbidden, "Error occured while creating doctor");
 	}
 	return response;
     }
@@ -641,7 +641,7 @@ public class SignUpServiceImpl implements SignUpService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while creating doctor");
-	    throw new BusinessException(ServiceError.Unknown, "Error occured while creating doctor");
+	    throw new BusinessException(ServiceError.Forbidden, "Error occured while creating doctor");
 	}
 	return response;
     }
@@ -725,7 +725,7 @@ public class SignUpServiceImpl implements SignUpService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while creating user");
-	    throw new BusinessException(ServiceError.Unknown, "Error occured while creating user");
+	    throw new BusinessException(ServiceError.Forbidden, "Error occured while creating user");
 	}
 	return user;
     }
@@ -741,7 +741,7 @@ public class SignUpServiceImpl implements SignUpService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
     }
 
@@ -760,7 +760,7 @@ public class SignUpServiceImpl implements SignUpService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 
     }
@@ -780,7 +780,7 @@ public class SignUpServiceImpl implements SignUpService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
     }
 
@@ -811,7 +811,7 @@ public class SignUpServiceImpl implements SignUpService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 	return user;
     }
@@ -833,7 +833,29 @@ public class SignUpServiceImpl implements SignUpService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	}
+	return response;
+    }
+    
+    @Override
+    public boolean checkMobileNumberExistForPatient(String mobileNumber) {
+	boolean response = false;
+	try {
+	    List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
+	    if (userCollections != null && !userCollections.isEmpty()) {
+		for (UserCollection userCollection : userCollections) {
+		    List<PatientCollection> patientCollection = patientRepository.findByUserId(userCollection.getId());
+		    if (patientCollection != null) {
+			response = true;
+			break;
+		    }
+		}
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 	return response;
     }
@@ -908,7 +930,7 @@ public class SignUpServiceImpl implements SignUpService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while creating user");
-	    throw new BusinessException(ServiceError.Unknown, "Error occured while creating user");
+	    throw new BusinessException(ServiceError.Forbidden, "Error occured while creating user");
 	}
 	return user;
     
@@ -921,18 +943,18 @@ public class SignUpServiceImpl implements SignUpService {
    */
 
 	@Override
-	public boolean verifyPatientBasedOn80PercentMatchOfName(String name,
-			String mobileNumber) {
+	public boolean verifyPatientBasedOn80PercentMatchOfName(String name, String mobileNumber) {
 		boolean checkMatch = false;
 	
-		if (!checkMobileNumberSignedUp(mobileNumber)) {
+		if (!checkMobileNumberExistForPatient(mobileNumber)) {
 		    logger.error("Cannot verify patient as No patient is registered for mobile number " + mobileNumber);
 		    throw new BusinessException(ServiceError.NoRecord, "No patient is registered for mobile number " + mobileNumber);
 		} else {
 		    List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
 		    if (userCollections != null && !userCollections.isEmpty()) {
 			for (UserCollection userCollection : userCollections) {
-			    if (!userCollection.isSignedUp() && matchName(userCollection.getFirstName(),name)) {
+				if(!userCollection.getUserName().equals(userCollection.getEmailAddress()))
+			    if (userCollection.isSignedUp() && matchName(userCollection.getFirstName(),name)) {
 			    	checkMatch = true;
 			    	break;
 			    }

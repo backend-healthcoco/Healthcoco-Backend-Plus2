@@ -424,7 +424,7 @@ public class RegistrationApi {
 	} else if (request.getImages() == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Image Is Null");
 	} else if (request.getImages().size() > 5) {
-	    throw new BusinessException(ServiceError.Unknown, "More than 5 images cannot be uploaded at a time");
+	    throw new BusinessException(ServiceError.NotAcceptable, "More than 5 images cannot be uploaded at a time");
 	}
 	List<ClinicImage> clinicImageResponse = registrationService.addClinicImage(request);
 	if (clinicImageResponse != null && !clinicImageResponse.isEmpty()) {

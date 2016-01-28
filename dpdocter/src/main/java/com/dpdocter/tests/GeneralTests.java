@@ -5,16 +5,28 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 
 import org.apache.commons.lang.StringUtils;
-
-import com.dpdocter.beans.PrescriptionItem;
+import org.apache.commons.lang.WordUtils;
 
 public class GeneralTests {
 
 //	private static Logger log = Logger.getLogger(PrescriptionApi.class.getName());
 	
     public static void main(String[] args) throws ParseException, IOException {
+    	
+    	char[] chars = "ABSDEFGHIJKLMNOPQRSTUVWXYZ1234567890".toCharArray();
+    	Random r = new Random(System.currentTimeMillis());
+    	char[] id = new char[8];
+    	for (int i = 0;  i < 8;  i++) {
+    	    id[i] = chars[r.nextInt(chars.length)];
+    	}
+    	System.out.println(new String(id));
+    	System.out.println(WordUtils.capitalize(("neha pateliya").toLowerCase()));
+    	System.out.println(WordUtils.capitalize(("").toLowerCase()));
+//    	System.out.println(WordUtils.capitalize((null).toLowerCase()));
+    	/*
     	int no = 0;
 		System.out.println(StringUtils.capitalize("AB Special"));
     	for(int i =0 ;i<2;i++){
@@ -38,7 +50,7 @@ public class GeneralTests {
 //         
 //        formDataMultiPart.close();
 //        multipart.close();
-    }
+    */}
     
     
     public static void interval2(int begin, int end, int interval) {

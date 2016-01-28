@@ -3,11 +3,14 @@ package com.dpdocter.services.impl;
 import java.util.Date;
 import java.util.List;
 
+import javax.ws.rs.core.UriInfo;
+
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,8 @@ import com.dpdocter.repository.DoctorOTPRepository;
 import com.dpdocter.repository.OTPRepository;
 import com.dpdocter.repository.SMSFormatRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.services.MailBodyGenerator;
+import com.dpdocter.services.MailService;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.sms.services.SMSServices;
 
@@ -54,8 +59,20 @@ public class OTPServiceImpl implements OTPService {
     @Value(value = "${OTP_NON_VERIFIED_TIME_DIFFERENCE_IN_MINS}")
     private String otpNonVerifiedTimeDifference;
 
+    @Autowired
+    private MailBodyGenerator mailBodyGenerator;
+    
+    @Autowired
+    private MailService mailService;
+
+    @Value(value = "${mail.recordsShareOtpBeforeVerification.subject}")
+    private String recordsShareOtpBeforeVerification;
+    
+    @Value(value = "${mail.recordsShareOtpAfterVerification.subject}")
+    private String recordsShareOtpAfterVerification;
+
     @Override
-    public String otpGenerator(String doctorId, String locationId, String hospitalId, String patientId) {
+    public String otpGenerator(String doctorId, String locationId, String hospitalId, String patientId, UriInfo uriInfo) {
 	String OTP = null;
 	try {
 	    OTP = LoginUtils.generateOTP();
@@ -67,11 +84,6 @@ public class OTPServiceImpl implements OTPService {
 	    	
 	    	String doctorName=(userCollection.getTitle()!=null?userCollection.getTitle():"")+" "+userCollection.getFirstName();
 	    	
-		    SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(doctorId, locationId, hospitalId, patientId, patient.getFirstName(),
-		    		"One time Password to share Healthcoco records with "+doctorName+" is "+OTP+".Pls do not share this with anyone else",
-				    patient.getMobileNumber(), "OTPVerification");
-			    sMSServices.sendSMS(smsTrackDetail, false);
-
 			    OTPCollection otpCollection = new OTPCollection();
 			    otpCollection.setCreatedTime(new Date());
 			    otpCollection.setOtpNumber(OTP);
@@ -88,25 +100,37 @@ public class OTPServiceImpl implements OTPService {
 			    doctorOTPCollection.setHospitalId(hospitalId);
 			    doctorOTPCollection.setPatientId(patientId);
 			    doctorOTPCollection = doctorOTPRepository.save(doctorOTPCollection);
+			    
+			    SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(doctorId, locationId, hospitalId, patientId, patient.getFirstName(),
+			    		"One time Password to share Healthcoco records with "+doctorName+" is "+OTP+".Pls do not share this with anyone else",
+					    patient.getMobileNumber(), "OTPVerification");
+				sMSServices.sendSMS(smsTrackDetail, false);
+				
+				String body = mailBodyGenerator.generateRecordsShareOtpBeforeVerificationEmailBody(patient.getEmailAddress(), patient.getFirstName()
+						,doctorName, uriInfo);
+				mailService.sendEmail(patient.getEmailAddress(), recordsShareOtpBeforeVerification, body, null);
+
 	    }else{
 	    	logger.error("Invalid doctorId or patientId");
-		    throw new BusinessException(ServiceError.Unknown, "Invalid doctorId or patientId");
+		    throw new BusinessException(ServiceError.InvalidInput, "Invalid doctorId or patientId");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error While Generating OTP");
-	    throw new BusinessException(ServiceError.Unknown, "Error While Generating OTP");
+	    throw new BusinessException(ServiceError.Forbidden, "Error While Generating OTP");
 	}
 
 	return OTP;
     }
 
     @Override
-    public Boolean verifyOTP(String doctorId, String locationId, String hospitalId, String patientId, String otpNumber) {
+    public Boolean verifyOTP(String doctorId, String locationId, String hospitalId, String patientId, String otpNumber, UriInfo uriInfo) {
 	Boolean response = false;
 	try {
-	    List<DoctorOTPCollection> doctorOTPCollection = doctorOTPRepository.find(doctorId, locationId, hospitalId, patientId, new Sort(Sort.Direction.DESC,
-		    "createdTime"));
+		UserCollection userCollection = userRepository.findOne(doctorId);
+	    UserCollection patient = userRepository.findOne(patientId);
+	    String doctorName=(userCollection.getTitle()!=null?userCollection.getTitle():"")+" "+userCollection.getFirstName();
+	    List<DoctorOTPCollection> doctorOTPCollection = doctorOTPRepository.find(doctorId, locationId, hospitalId, patientId, new PageRequest(0, 1, new Sort(Sort.Direction.DESC,"createdTime")));
 	    if (doctorOTPCollection != null) {
 		OTPCollection otpCollection = otpRepository.findOne(doctorOTPCollection.get(0).getOtpId());
 		if (otpCollection != null) {
@@ -115,6 +139,9 @@ public class OTPServiceImpl implements OTPService {
 			    otpCollection.setState(OTPState.VERIFIED);
 			    otpCollection = otpRepository.save(otpCollection);
 			    response = true;
+			    String body = mailBodyGenerator.generateRecordsShareOtpAfterVerificationEmailBody(patient.getEmailAddress(),patient.getFirstName(), 
+			    		doctorName, uriInfo);
+				mailService.sendEmail(patient.getEmailAddress(), recordsShareOtpAfterVerification+" "+userCollection.getFirstName(), body, null);
 			} else {
 			    logger.error("OTP is expired");
 			    throw new BusinessException(ServiceError.NotFound, "OTP is expired");
@@ -128,7 +155,7 @@ public class OTPServiceImpl implements OTPService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error While Verifying OTP");
-	    throw new BusinessException(ServiceError.Unknown, "Error While Verifying OTP");
+	    throw new BusinessException(ServiceError.Forbidden, "Error While Verifying OTP");
 	}
 	return response;
     }
@@ -137,8 +164,7 @@ public class OTPServiceImpl implements OTPService {
     public Boolean checkOTPVerified(String doctorId, String locationId, String hospitalId, String patientId) {
 	Boolean response = false;
 	try {
-	    List<DoctorOTPCollection> doctorOTPCollection = doctorOTPRepository.find(doctorId, locationId, hospitalId, patientId, new Sort(Sort.Direction.DESC,
-		    "createdTime"));
+		List<DoctorOTPCollection> doctorOTPCollection = doctorOTPRepository.find(doctorId, locationId, hospitalId, patientId, new PageRequest(0, 1, new Sort(Sort.Direction.DESC,"createdTime")));
 	    if (doctorOTPCollection != null && !doctorOTPCollection.isEmpty() && doctorOTPCollection.size() > 0) {
 		OTPCollection otpCollection = otpRepository.findOne(doctorOTPCollection.get(0).getOtpId());
 		if (otpCollection != null && otpCollection.getState().equals(OTPState.VERIFIED)){
@@ -148,7 +174,7 @@ public class OTPServiceImpl implements OTPService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error While checking OTP");
-	    throw new BusinessException(ServiceError.Unknown, "Error While checking OTP");
+	    throw new BusinessException(ServiceError.Forbidden, "Error While checking OTP");
 	}
 	return response;
     }
@@ -166,7 +192,8 @@ public class OTPServiceImpl implements OTPService {
 	String OTP = null;
 	try {
 	    OTP = LoginUtils.generateOTP();
-	    SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(null, null, null, null, null, OTP + " is OTP for Verification", mobileNumber,
+	    SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(null, null, null, null, null, 
+	    		"Your Healthcoco account verification number is: "+OTP+ ".Enter this in our app to confirm your Healthcoco account.", mobileNumber,
 	    		"OTPVerification");
 	    sMSServices.sendSMS(smsTrackDetail, false);
 
@@ -180,7 +207,7 @@ public class OTPServiceImpl implements OTPService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error While Generating OTP");
-	    throw new BusinessException(ServiceError.Unknown, "Error While Generating OTP");
+	    throw new BusinessException(ServiceError.Forbidden, "Error While Generating OTP");
 	}
 
 	return OTP;
@@ -208,7 +235,7 @@ public class OTPServiceImpl implements OTPService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error While Verifying OTP");
-	    throw new BusinessException(ServiceError.Unknown, "Error While Verifying OTP");
+	    throw new BusinessException(ServiceError.Forbidden, "Error While Verifying OTP");
 	}
 	return response;
     }
@@ -229,7 +256,7 @@ public class OTPServiceImpl implements OTPService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error While checking OTP");
-	    throw new BusinessException(ServiceError.Unknown, "Error While checking OTP");
+	    throw new BusinessException(ServiceError.Forbidden, "Error While checking OTP");
 	}
 	return response;
     }

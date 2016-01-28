@@ -1,68 +1,61 @@
-<HTML>
-<BODY>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>
 
-<DIV style="padding:0;width:100%!important;margin:0" marginheight="0" marginwidth="0">
+</head>
 
-<CENTER>
-<TABLE style="padding:0;width:100%!important;background:#ffffff;margin:0;background-color:#ffffff" border="0" cellpadding="8" cellspacing="0">
-<TBODY>
-<TR>
-<TD valign="top">
-<TABLE style="border-radius:4px;border:1px #dceaf5 solid" border="0" cellpadding="0" cellspacing="0" align="center">
-<TBODY>
-<TR>
-<TD colspan="3" height="6"></TD>
-</TR>
-<TR style="line-height:0px">
-<TD width="100%" align="center">
-<H1 style="color:#0077b5; margin-top:30px;">Healthcoco Logo</H1>
-</TD>
-</TR>
-<TR>
-<TD>
-<TABLE style="line-height:25px" border="0" cellpadding="0" cellspacing="0" align="center">
-<TBODY>
-<TR>
-<TD colspan="3" height="30"></TD>
-</TR>
+<body cz-shortcut-listen="true" style="font-family: 'Open Sans', sans-serif; font-size:15px; color:#2c3335;">
 
-<TR>
-<TD width="36"></TD>
-<TD style="color:#444444;border-collapse:collapse;font-size:11pt;font-family:proxima_nova,'Open Sans','Lucida Grande','Segoe UI',Arial,Verdana,'Lucida Sans Unicode',Tahoma,'Sans Serif';max-width:454px" valign="top" width="454" align="left">
-Dear ${fName},<BR><BR>Please click on below link to activate the account.<BR>
-			<BR><BR>
+  <div style="margin:20px auto; max-width:800px; min-width:320px;">
 
-<CENTER>
-<A style="border-radius:3px;color:white;font-size:15px;padding:14px 7px 14px 7px;max-width:210px;font-family:proxima_nova,'Open Sans','lucida grande','Segoe UI',arial,verdana,'lucida sans unicode',tahoma,sans-serif;border:1px #1373b5 solid;text-align:center;text-decoration:none;width:210px;margin:6px auto;display:block;background-color:#007ee6" href=${link} target="_blank">Verify your email</a>
-</CENTER>
+    <div style="margin-top:5px">
 
-<BR>Thanks!<br>- The <SPAN class="il">Healthcoco</SPAN> Team</TD>
+      <div style="margin: 10px -20px;">
+       <img src="${imageURL}logo1.png" style="width:280px;">
+      </div>
+      <div style="border-bottom: 2px solid #0077b5;"></div>
+      
+      <div>
+        <p style="margin:20px 0px; line-height: 20px;">Hello,<br>
+        Welcome to Healthcoco!<br><br>
+        We have build a healthcare and wellness platform which will help you connect with users. We aim to improve the access and
+        quality of healthcare among masses and you have brought us one step closer to our goal.<br><br>
+        We are excited to have you on-board and there's just one step to verify if it's actually your e-mail address:</p>
+      </div>
 
-<TD width="36"></TD>
-</TR>
+      <div style="margin-top:20px;">
+        <a style="border-radius:3px;color:white;font-size:15px; padding:11px 7px; max-width:200px; border:1px #1373b5 solid;text-align:center;text-decoration:none; width:200px; margin:10px auto; display:block; background-color:#007ee6" 
+        href="${link}" target="_blank">Verify now</a>
+      </div>
 
-<TR>
-<TD colspan="3" height="36"></TD>
-</TR>
-</TBODY>
-</TABLE>
-</TD>
-</TR>
-</TBODY>
-</TABLE>
-<TABLE border="0" cellpadding="0" cellspacing="0" align="center">
-<TBODY>
-<TR><TD height="10"></TD></TR>
-<TR><TD style="padding:0;border-collapse:collapse">
-<TABLE border="0" cellpadding="0" cellspacing="0" align="center">
-<TBODY>
-<TR style="color:#0077b5;font-size:12px;font-family:proxima_nova,'Open Sans','Lucida Grande','Segoe UI',Arial,Verdana,'Lucida Sans Unicode',Tahoma,'Sans Serif'">
-<TD width="350" align="left"></TD>
-<TD width="160" align="right" >- 2015 <SPAN class="il">@Healthcoco.com</SPAN></TD>
-</TR></TBODY></TABLE>
-</TD></TR>
-</TBODY></TABLE></TD></TR>
-</TBODY></TABLE></CENTER></DIV>
+      <div style="float:left; width:65%; padding:0px 10px; word-wrap: break-word; word-break: break-all;">
+        <p style="margin:20px 0px; line-height: 20px;">Alternatively, open the following url in your browser:<br>
+        <a href="${imageURL}" style="text-decoration:none; color:#0077b5;">${imageURL}</a><br><br>
 
-</BODY>
-</HTML>
+        We will contact you shortly to complete your further verification process and get you started with Healthcoco+.
+        <br><br>
+        If you have any questions or need help you can visit our Support Pages or contact us anytime at <a style="color:#0077b5; text-decoration:none;" href="" target="_blank"> usersfirst@healthcoco.com</a>
+        <br><br>Stay Healthy and Happy,<br>The Healthcoco Team.
+        </p>
+      </div>
+
+      <div style="float:left; width:30%; padding:0px 10px;"> 
+        <img class="mob_img" src="${imageURL}mobye.png" width="100%;">
+           <p style="font-size:17px; text-align:center; color:#555555; font-weight:bold;margin-top:10px;">Coming soon</p>
+           <p align="center"> 
+           <a href="" style="paddin-right:10px;"><img src="${imageURL}appl.png" width="40" height="40"></a>
+           <a href="" style="paddin-left:10px;"><img src="${imageURL}and.png" width="40" height="40"></a>
+           </p>
+      </div> 
+      <div style="clear:both;">
+
+    <div style="border-bottom: 2px solid #0077b5;"></div>
+
+    <div style="margin:10px auto;">
+      <p style="text-align:center;">© 2016 Healthcoco Technologies Pvt Ltd.</p>
+    </div>
+  </div>
+
+</body>
+</html>

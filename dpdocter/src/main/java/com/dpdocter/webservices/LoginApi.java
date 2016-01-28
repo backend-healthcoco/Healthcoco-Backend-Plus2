@@ -17,6 +17,7 @@ import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.LoginResponse;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.request.LoginPatientRequest;
 import com.dpdocter.request.LoginRequest;
 import com.dpdocter.services.LoginService;
 
@@ -72,6 +73,35 @@ public class LoginApi {
 	return response;
     }
 
+    @Path(value = PathProxy.LoginUrls.LOGIN_PATIENT)
+    @POST
+    public Response<LoginResponse> loginPatient(LoginPatientRequest request) {
+	if (request == null) {
+	    logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	}
+	LoginResponse loginResponse = loginService.loginPatient(request, uriInfo);
+	if (loginResponse != null) {
+	    if (!DPDoctorUtils.anyStringEmpty(loginResponse.getUser().getImageUrl())) {
+		loginResponse.getUser().setImageUrl(getFinalImageURL(loginResponse.getUser().getImageUrl()));
+	    }
+	    if (!DPDoctorUtils.anyStringEmpty(loginResponse.getUser().getThumbnailUrl())) {
+		loginResponse.getUser().setThumbnailUrl(getFinalImageURL(loginResponse.getUser().getThumbnailUrl()));
+	    }
+	    if (loginResponse.getHospitals() != null && !loginResponse.getHospitals().isEmpty()) {
+		for (Hospital hospital : loginResponse.getHospitals()) {
+		    if (!DPDoctorUtils.anyStringEmpty(hospital.getHospitalImageUrl())) {
+			hospital.setHospitalImageUrl(getFinalImageURL(hospital.getHospitalImageUrl()));
+		    }
+		}
+	    }
+	}
+	Response<LoginResponse> response = new Response<LoginResponse>();
+	if (response != null)
+	    response.setData(loginResponse);
+	return response;
+    }
+    
     private String getFinalImageURL(String imageURL) {
 	if (imageURL != null) {
 	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);

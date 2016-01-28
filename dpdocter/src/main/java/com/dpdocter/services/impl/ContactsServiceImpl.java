@@ -148,7 +148,7 @@ public class ContactsServiceImpl implements ContactsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
     }
 
@@ -187,7 +187,7 @@ public class ContactsServiceImpl implements ContactsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 	return response;
     }
@@ -223,7 +223,7 @@ public class ContactsServiceImpl implements ContactsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 	return response;
 
@@ -379,13 +379,13 @@ public class ContactsServiceImpl implements ContactsService {
 		doctorContactsRepository.save(doctorContactCollection);
 	    } else {
 		logger.warn("PatientId and DoctorId send is not proper.");
-		throw new BusinessException(ServiceError.Unknown, "PatientId and DoctorId send is not proper.");
+		throw new BusinessException(ServiceError.InvalidInput, "PatientId and DoctorId send is not proper.");
 	    }
 
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
     }
 
@@ -409,7 +409,7 @@ public class ContactsServiceImpl implements ContactsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
     }
 
@@ -436,7 +436,7 @@ public class ContactsServiceImpl implements ContactsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 
     }
@@ -473,7 +473,7 @@ public class ContactsServiceImpl implements ContactsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Group");
+	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Deleting Group");
 	}
 	return response;
     }
@@ -492,7 +492,7 @@ public class ContactsServiceImpl implements ContactsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 	return null;
     }
@@ -517,7 +517,7 @@ public class ContactsServiceImpl implements ContactsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 
     }
@@ -564,7 +564,7 @@ public class ContactsServiceImpl implements ContactsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 	return groups;
     }
@@ -588,7 +588,7 @@ public class ContactsServiceImpl implements ContactsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Importing Contact");
-	    throw new BusinessException(ServiceError.Unknown, "Error Importing Contact");
+	    throw new BusinessException(ServiceError.Forbidden, "Error Importing Contact");
 	}
 	return response;
     }
@@ -605,7 +605,7 @@ public class ContactsServiceImpl implements ContactsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Exporting Contact");
-	    throw new BusinessException(ServiceError.Unknown, "Error Exporting Contact");
+	    throw new BusinessException(ServiceError.Forbidden, "Error Exporting Contact");
 	}
 	return response;
     }
@@ -695,7 +695,7 @@ public class ContactsServiceImpl implements ContactsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 	return registeredPatientDetails;
     }
@@ -726,7 +726,7 @@ public class ContactsServiceImpl implements ContactsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 	return response;
     }

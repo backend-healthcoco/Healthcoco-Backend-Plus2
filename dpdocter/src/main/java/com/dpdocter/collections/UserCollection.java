@@ -3,6 +3,7 @@ package com.dpdocter.collections;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -65,7 +66,7 @@ public class UserCollection extends GenericCollection {
     private String colorCode;
 
     @Field
-    private UserState userState;
+    private UserState userState = UserState.USERSTATECOMPLETE;
 
     @Field
     private Date lastSession;
@@ -126,7 +127,8 @@ public class UserCollection extends GenericCollection {
     }
 
     public void setFirstName(String firstName) {
-	this.firstName = StringUtils.capitalize(firstName);
+    	if(firstName!=null)	this.firstName = WordUtils.capitalize(firstName.toLowerCase());
+        else this.firstName = firstName;
     }
 
     public String getLastName() {

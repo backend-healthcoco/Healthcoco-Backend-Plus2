@@ -52,7 +52,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while saving default settings");
-	    throw new BusinessException(ServiceError.Unknown, "Error occured while saving default settings");
+	    throw new BusinessException(ServiceError.Forbidden, "Error occured while saving default settings");
 	}
 	return response;
     }
@@ -67,7 +67,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while Getting default settings");
-	    throw new BusinessException(ServiceError.Unknown, "Error occured while Getting default settings");
+	    throw new BusinessException(ServiceError.Forbidden, "Error occured while Getting default settings");
 	}
 	return response;
     }
@@ -115,7 +115,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while saving settings");
-	    throw new BusinessException(ServiceError.Unknown, "Error occured while saving settings");
+	    throw new BusinessException(ServiceError.Forbidden, "Error occured while saving settings");
 	}
 	return response;
     }
@@ -183,7 +183,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Print Settings");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Print Settings");
+	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Print Settings");
 	}
 	return response;
 
@@ -204,21 +204,21 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			return true;
 		    } else {
 			logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
-			throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Doctor Id, Hospital Id, Or Location Id");
 		    }
 		} else {
 		    logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
-		    throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
+		    throw new BusinessException(ServiceError.InvalidInput, "Invalid Doctor Id, Hospital Id, Or Location Id");
 		}
 
 	    } else {
 		logger.warn("Print Settings not found!");
-		throw new BusinessException(ServiceError.Unknown, "Print Settings not found!");
+		throw new BusinessException(ServiceError.NoRecord, "Print Settings not found!");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 
     }

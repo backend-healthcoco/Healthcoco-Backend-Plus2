@@ -2,7 +2,7 @@ package com.dpdocter.collections;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -236,7 +236,8 @@ public class PatientCollection extends GenericCollection {
     }
 
     public void setFirstName(String firstName) {
-	this.firstName = StringUtils.capitalize(firstName);
+    if(firstName!=null)	this.firstName = WordUtils.capitalize(firstName.toLowerCase());
+    else this.firstName = firstName;
     }
 
     public String getGender() {

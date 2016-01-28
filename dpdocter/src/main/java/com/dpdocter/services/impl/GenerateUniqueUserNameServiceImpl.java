@@ -47,7 +47,7 @@ public class GenerateUniqueUserNameServiceImpl implements GenerateUniqueUserName
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 	return userName;
     }

@@ -44,6 +44,8 @@ public interface PathProxy {
 
     public interface LoginUrls {
 	public static final String LOGIN_USER = "/user";
+	
+	public static final String LOGIN_PATIENT = "/patient";
     }
 
     public static final String CONTACTS_BASE_URL = BASE_URL + "/contacts";
@@ -198,9 +200,9 @@ public interface PathProxy {
 
 	public static final String FORGOT_PASSWORD_PATIENT = "/forgotPasswordPatient";
 
-	public static final String RESET_PASSWORD = "/reset-password";
-
-	public static final String RESET_PASSWORD_GET = "/resetPassword";
+	public static final String RESET_PASSWORD_PATIENT = "/resetPassword/{mobileNumber}/{password}";
+	
+	public static final String RESET_PASSWORD = "/resetPassword";
 
 	public static final String FORGOT_USERNAME = "/forgot-username";
     }

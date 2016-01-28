@@ -66,7 +66,7 @@ public class EmailTrackServiceImpl implements EmailTackService {
 	    }
 	} catch (BusinessException e) {
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 	return response;
     }
@@ -77,7 +77,7 @@ public class EmailTrackServiceImpl implements EmailTackService {
 	    emailTrackRepository.save(emailTrack);
 	} catch (BusinessException e) {
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 
     }

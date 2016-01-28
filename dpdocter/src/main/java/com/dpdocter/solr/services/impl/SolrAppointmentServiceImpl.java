@@ -68,7 +68,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error While Saving Location Details to Solr : " + e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, "Error While Saving Location Details to Solr : " + e.getMessage());
 	}
 	return response;
     }
@@ -81,7 +81,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error While Saving Speciality Details to Solr : " + e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, "Error While Saving Speciality Details to Solr : " + e.getMessage());
 	}
 	return response;
     }
@@ -288,7 +288,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 	    response = solrTemplate.queryForPage(query, SolrDoctorDocument.class).getContent();
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error While Getting Doctor Details From Solr : " + e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, "Error While Getting Doctor Details From Solr : " + e.getMessage());
 	}
 	return response;
     }
@@ -349,7 +349,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 		    }
 		} catch (Exception e) {
 		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown, "Error While Getting Labs From Solr : " + e.getMessage());
+		    throw new BusinessException(ServiceError.Forbidden, "Error While Getting Labs From Solr : " + e.getMessage());
 		}
 		return response;
 

@@ -86,7 +86,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 	} catch (JRException e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
     }
 }

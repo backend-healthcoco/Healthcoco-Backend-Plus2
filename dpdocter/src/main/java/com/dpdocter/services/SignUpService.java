@@ -45,4 +45,6 @@ public interface SignUpService {
     boolean verifyPatientBasedOn80PercentMatchOfName(String name,String mobileNumber);
     
     boolean unlockPatientBasedOn80PercentMatch(String name,String mobileNumber);
+
+	boolean checkMobileNumberExistForPatient(String mobileNumber);
 }

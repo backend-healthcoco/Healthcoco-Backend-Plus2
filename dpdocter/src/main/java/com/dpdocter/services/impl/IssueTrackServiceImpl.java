@@ -86,7 +86,7 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Add Edit Issue");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Add Edit Issue");
+	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Add Edit Issue");
 	}
 	return response;
     }
@@ -171,7 +171,7 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Issue");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Issue");
+	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Issue");
 	}
 	return response;
     }
@@ -193,28 +193,28 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 				response = true;
 			    } else {
 				logger.warn("Doctor can only reopen the issue");
-				throw new BusinessException(ServiceError.Unknown, "Doctor can only reopen the issue");
+				throw new BusinessException(ServiceError.NotAcceptable, "Doctor can only reopen the issue");
 			    }
 			} else {
 			    logger.warn("Doctor can only reopen the issue if issue is Completed");
-			    throw new BusinessException(ServiceError.Unknown, "Doctor can only reopen the issue if issue is Completed");
+			    throw new BusinessException(ServiceError.NotAcceptable, "Doctor can only reopen the issue if issue is Completed");
 			}
 		    } else {
 			logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
-			throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Doctor Id, Hospital Id, Or Location Id");
 		    }
 		} else {
 		    logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
-		    throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
+		    throw new BusinessException(ServiceError.InvalidInput, "Invalid Doctor Id, Hospital Id, Or Location Id");
 		}
 	    } else {
 		logger.warn("Issue not found!");
-		throw new BusinessException(ServiceError.Unknown, "Issue not found!");
+		throw new BusinessException(ServiceError.NoRecord, "Issue not found!");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error while updating status");
-	    throw new BusinessException(ServiceError.Unknown, "Error while updating status");
+	    throw new BusinessException(ServiceError.Forbidden, "Error while updating status");
 	}
 	return response;
     }
@@ -232,17 +232,17 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 		    response = true;
 		} else {
 		    logger.warn("Only Doctor can reopen the issue");
-		    throw new BusinessException(ServiceError.Unknown, "Only Doctor can reopen the issue");
+		    throw new BusinessException(ServiceError.NotAcceptable, "Only Doctor can reopen the issue");
 		}
 
 	    } else {
 		logger.warn("Issue not found!");
-		throw new BusinessException(ServiceError.Unknown, "Issue not found!");
+		throw new BusinessException(ServiceError.NoRecord, "Issue not found!");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error while updating status");
-	    throw new BusinessException(ServiceError.Unknown, "Error while updating status");
+	    throw new BusinessException(ServiceError.Forbidden, "Error while updating status");
 	}
 	return response;
 
@@ -262,21 +262,21 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 			return true;
 		    } else {
 			logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
-			throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Doctor Id, Hospital Id, Or Location Id");
 		    }
 		} else {
 		    logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
-		    throw new BusinessException(ServiceError.Unknown, "Invalid Doctor Id, Hospital Id, Or Location Id");
+		    throw new BusinessException(ServiceError.InvalidInput, "Invalid Doctor Id, Hospital Id, Or Location Id");
 		}
 
 	    } else {
 		logger.warn("Issue not found!");
-		throw new BusinessException(ServiceError.Unknown, "Issue not found!");
+		throw new BusinessException(ServiceError.NoRecord, "Issue not found!");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 
     }

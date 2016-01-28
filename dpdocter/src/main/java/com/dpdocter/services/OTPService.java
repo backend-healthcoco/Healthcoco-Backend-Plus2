@@ -1,12 +1,14 @@
 package com.dpdocter.services;
 
+import javax.ws.rs.core.UriInfo;
+
 public interface OTPService {
 
-    String otpGenerator(String doctorId, String locationId, String hospitalId, String patientId);
+    String otpGenerator(String doctorId, String locationId, String hospitalId, String patientId, UriInfo uriInfo);
 
     String otpGenerator(String mobileNumber);
 
-    Boolean verifyOTP(String doctorId, String locationId, String hospitalId, String patientId, String otpNumber);
+    Boolean verifyOTP(String doctorId, String locationId, String hospitalId, String patientId, String otpNumber, UriInfo uriInfo);
 
     boolean verifyOTP(String mobileNumber, String otpNumber);
 

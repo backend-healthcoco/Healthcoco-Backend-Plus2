@@ -1,8 +1,8 @@
 package com.dpdocter.services.impl;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -235,7 +235,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error while saving patient visit record : " + e.getCause().getMessage());
-	    throw new BusinessException(ServiceError.Unknown, "Error while saving patient visit record : " + e.getCause().getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, "Error while saving patient visit record : " + e.getCause().getMessage());
 	}
 	return patientTrackCollection.getId();
     }
@@ -277,7 +277,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error while saving patient visit record : " + e.getCause().getMessage());
-	    throw new BusinessException(ServiceError.Unknown, "Error while saving patient visit record : " + e.getCause().getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, "Error while saving patient visit record : " + e.getCause().getMessage());
 	}
 	return response;
     }
@@ -325,7 +325,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error while recently visited patients record : " + e.getCause().getMessage());
-	    throw new BusinessException(ServiceError.Unknown, "Error while getting recently visited patients record : " + e.getCause().getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, "Error while getting recently visited patients record : " + e.getCause().getMessage());
 	}
 	return response;
     }
@@ -365,7 +365,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error while getting most visited patients record : " + e.getCause().getMessage());
-	    throw new BusinessException(ServiceError.Unknown, "Error while getting most visited patients record : " + e.getCause().getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, "Error while getting most visited patients record : " + e.getCause().getMessage());
 	}
 	return response;
     }
@@ -439,7 +439,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error while adding patient Visit : " + e.getCause().getMessage());
-	    throw new BusinessException(ServiceError.Unknown, "Error while adding patient Visit : " + e.getCause().getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, "Error while adding patient Visit : " + e.getCause().getMessage());
 	}
 	return response;
     }
@@ -521,7 +521,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error while geting patient Visit : " + e.getCause().getMessage());
-	    throw new BusinessException(ServiceError.Unknown, "Error while geting patient Visit : " + e.getCause().getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, "Error while geting patient Visit : " + e.getCause().getMessage());
 	}
 	return response;
     }
@@ -614,6 +614,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					footerBottomText = footerBottomText + "" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 				}
 			}
+			String logoURL = getFinalImageURL(printSettings.getClinicLogoUrl(), uriInfo);
+		    parameters.put("logoURL", new File(logoURL).canRead()?logoURL:"");		
 		    }
 		    
 		    UserCollection doctorUser = userRepository.findOne(patientVisitCollection.getDoctorId());
@@ -637,12 +639,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    parameters.put("headerLeftText", headerLeftText);
 		    parameters.put("headerRightText", headerRightText);
 		    parameters.put("footerBottomText", footerBottomText);
-
-		    LocationCollection location = locationRepository.findOne(patientVisitCollection.getLocationId());
-		    if (location != null)
-		    	parameters.put("logoURL", getFinalImageURL(location.getLogoUrl(), uriInfo));
-		    else 
-		    	parameters.put("logoURL", "");
 
 		    String layout = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 			    : "PORTRAIT";
@@ -711,7 +707,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 	return true;
     }
@@ -832,11 +828,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    }
 	} catch (BusinessException e) {
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 	return clinicalNotesJasperDetails;
     }
@@ -902,15 +898,15 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		}
 	    } else {
 		logger.warn("Prescription not found.Please check prescriptionId.");
-		throw new BusinessException(ServiceError.Unknown, "Prescription not found.Please check prescriptionId.");
+		throw new BusinessException(ServiceError.Forbidden, "Prescription not found.Please check prescriptionId.");
 	    }
 	} catch (BusinessException e) {
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 
 	return prescriptionItems;
@@ -945,12 +941,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	    } else {
 		logger.warn("Visit not found!");
-		throw new BusinessException(ServiceError.Unknown, "Visit not found!");
+		throw new BusinessException(ServiceError.Forbidden, "Visit not found!");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 	return true;
     }
@@ -967,12 +963,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		}
 	    } else {
 		logger.warn("Visit not found!");
-		throw new BusinessException(ServiceError.Unknown, "Visit not found!");
+		throw new BusinessException(ServiceError.Forbidden, "Visit not found!");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
     }
 
@@ -1032,7 +1028,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 	return response;
     }
@@ -1079,7 +1075,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error while geting patient Visit : " + e.getCause().getMessage());
-	    throw new BusinessException(ServiceError.Unknown, "Error while geting patient Visit : " + e.getCause().getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, "Error while geting patient Visit : " + e.getCause().getMessage());
 	}
 	return response;
     }
@@ -1108,7 +1104,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error while editing patient visit record : " + e.getCause().getMessage());
-	    throw new BusinessException(ServiceError.Unknown, "Error while editing patient visit record : " + e.getCause().getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, "Error while editing patient visit record : " + e.getCause().getMessage());
 	}
 	return patientTrackCollection.getId();
 
@@ -1138,7 +1134,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error while getting Visits Count");
-	    throw new BusinessException(ServiceError.Unknown, "Error while getting Visits Count");
+	    throw new BusinessException(ServiceError.Forbidden, "Error while getting Visits Count");
 	}
 	return visitCount;
     }

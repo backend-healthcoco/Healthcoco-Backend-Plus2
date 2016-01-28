@@ -33,7 +33,7 @@ public class DoctorSearchSolrServiceImpl implements DoctorSearchSolrService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while saving");
-	    throw new BusinessException(ServiceError.Unknown, "Error occured while saving");
+	    throw new BusinessException(ServiceError.Forbidden, "Error occured while saving");
 	}
 
     }
@@ -45,7 +45,7 @@ public class DoctorSearchSolrServiceImpl implements DoctorSearchSolrService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown);
+	    throw new BusinessException(ServiceError.Forbidden);
 	}
 
     }
@@ -58,7 +58,7 @@ public class DoctorSearchSolrServiceImpl implements DoctorSearchSolrService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while searching");
-	    throw new BusinessException(ServiceError.Unknown, "Error occured while searching");
+	    throw new BusinessException(ServiceError.Forbidden, "Error occured while searching");
 	}
 	return searchDoctorSolrDocuments;
     }
@@ -70,7 +70,7 @@ public class DoctorSearchSolrServiceImpl implements DoctorSearchSolrService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while saving");
-	    throw new BusinessException(ServiceError.Unknown, "Error occured while saving");
+	    throw new BusinessException(ServiceError.Forbidden, "Error occured while saving");
 	}
 
     }
@@ -83,7 +83,7 @@ public class DoctorSearchSolrServiceImpl implements DoctorSearchSolrService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while searching");
-	    throw new BusinessException(ServiceError.Unknown, "Error occured while searching");
+	    throw new BusinessException(ServiceError.Forbidden, "Error occured while searching");
 	}
 	return doctorCoreDemoDocuments;
     }

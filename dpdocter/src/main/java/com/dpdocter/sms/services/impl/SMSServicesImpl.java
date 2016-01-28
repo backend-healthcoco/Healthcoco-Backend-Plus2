@@ -136,7 +136,7 @@ public class SMSServicesImpl implements SMSServices {
 		smsTrackRepository.save(smsTrackDetail);
 	} catch (Exception e) {
 	    logger.error("Error : " + e.getMessage());
-	    throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, "Error : " + e.getMessage());
 	}
 
     }
@@ -194,7 +194,7 @@ public class SMSServicesImpl implements SMSServices {
 	    xmlData = "data=" + xmlStringWriter.toString();
 	} catch (JAXBException e) {
 	    logger.error("Error : " + e.getMessage());
-	    throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, "Error : " + e.getMessage());
 	}
 	return xmlData;
     }
@@ -227,7 +227,7 @@ public class SMSServicesImpl implements SMSServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting SMS");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting SMS");
+	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting SMS");
 	}
 	return response;
     }
@@ -288,7 +288,7 @@ public class SMSServicesImpl implements SMSServices {
 	    }
 	} catch (BusinessException e) {
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 	return response;
 
@@ -317,7 +317,7 @@ public class SMSServicesImpl implements SMSServices {
 	    }
 	} catch (BusinessException e) {
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
     }
 
@@ -343,7 +343,7 @@ public class SMSServicesImpl implements SMSServices {
 	    }
 	} catch (BusinessException | IOException | ClassNotFoundException e) {
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
     }
 
@@ -368,7 +368,7 @@ public class SMSServicesImpl implements SMSServices {
 	    }
 	} catch (BusinessException | IOException | ClassNotFoundException e) {
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 
     }
@@ -399,7 +399,7 @@ public class SMSServicesImpl implements SMSServices {
 
 	} catch (BusinessException e) {
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
 	return smsTrackDetail;
     }
@@ -423,7 +423,7 @@ public class SMSServicesImpl implements SMSServices {
 			BeanUtil.map(smsFormatCollection, response);
 		} catch (BusinessException e) {
 		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, "Error while Adding/Editing Sms Format");
+		    throw new BusinessException(ServiceError.Forbidden, "Error while Adding/Editing Sms Format");
 		}
 		return response;
 	}
@@ -440,7 +440,7 @@ public class SMSServicesImpl implements SMSServices {
 			}
 		} catch (BusinessException e) {
 		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, "Error while Adding/Editing Sms Format");
+		    throw new BusinessException(ServiceError.Forbidden, "Error while Adding/Editing Sms Format");
 		}
 		return response;
 	}

@@ -17,8 +17,10 @@ public interface ForgotPasswordService {
 
     ForgotPasswordResponse getEmailAndMobNumberOfPatient(String username);
 
-    String resetPassword(String userId, String password);
+    String resetPassword(String userId, String password, UriInfo uriInfo);
 
 	String checkLinkIsAlreadyUsed(String userId);
+
+	Boolean resetPasswordPatient(String mobileNumber, String password);
 
 }

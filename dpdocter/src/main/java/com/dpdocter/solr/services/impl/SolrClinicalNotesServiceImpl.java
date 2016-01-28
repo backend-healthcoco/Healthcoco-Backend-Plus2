@@ -69,7 +69,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Complaints");
-	    // throw new BusinessException(ServiceError.Unknown,
+	    // throw new BusinessException(ServiceError.Forbidden,
 	    // "Error Occurred While Saving Complaints");
 	}
 	return response;
@@ -85,7 +85,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Complaints");
-	    // throw new BusinessException(ServiceError.Unknown,
+	    // throw new BusinessException(ServiceError.Forbidden,
 	    // "Error Occurred While Editing Complaints");
 	}
 	return response;
@@ -106,7 +106,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Complaints");
-	    // throw new BusinessException(ServiceError.Unknown,
+	    // throw new BusinessException(ServiceError.Forbidden,
 	    // "Error Occurred While Deleting Complaints");
 	}
 	return response;
@@ -123,7 +123,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Diagnosis");
-	    // throw new BusinessException(ServiceError.Unknown,
+	    // throw new BusinessException(ServiceError.Forbidden,
 	    // "Error Occurred While Saving Diagnoses");
 	}
 	return response;
@@ -140,7 +140,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Diagnosis");
-	    // throw new BusinessException(ServiceError.Unknown,
+	    // throw new BusinessException(ServiceError.Forbidden,
 	    // "Error Occurred While Editing Diagnoses");
 	}
 	return response;
@@ -161,7 +161,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Diagnosis");
-	    // throw new BusinessException(ServiceError.Unknown,
+	    // throw new BusinessException(ServiceError.Forbidden,
 	    // "Error Occurred While Deleting Diagnoses");
 	}
 	return response;
@@ -178,7 +178,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Notes");
-	    // throw new BusinessException(ServiceError.Unknown,
+	    // throw new BusinessException(ServiceError.Forbidden,
 	    // "Error Occurred While Saving Notes");
 	}
 	return response;
@@ -195,7 +195,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Notes");
-	    // throw new BusinessException(ServiceError.Unknown,
+	    // throw new BusinessException(ServiceError.Forbidden,
 	    // "Error Occurred While Editing Notes");
 	}
 	return response;
@@ -217,7 +217,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Notes");
-	    // throw new BusinessException(ServiceError.Unknown,
+	    // throw new BusinessException(ServiceError.Forbidden,
 	    // "Error Occurred While Deleting Notes");
 	}
 	return response;
@@ -233,7 +233,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Diagrams");
-	    // throw new BusinessException(ServiceError.Unknown,
+	    // throw new BusinessException(ServiceError.Forbidden,
 	    // "Error Occurred While Saving Diagrams");
 	}
 	return response;
@@ -249,7 +249,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Diagrams");
-	    // throw new BusinessException(ServiceError.Unknown,
+	    // throw new BusinessException(ServiceError.Forbidden,
 	    // "Error Occurred While Editing Diagrams");
 	}
 	return response;
@@ -270,7 +270,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Diagrams");
-	    // throw new BusinessException(ServiceError.Unknown,
+	    // throw new BusinessException(ServiceError.Forbidden,
 	    // "Error Occurred While Deleting Diagrams");
 	}
 	return response;
@@ -284,7 +284,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Searching Diagrams");
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Diagrams");
+	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Searching Diagrams");
 	}
 	return response;
     }
@@ -299,7 +299,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Investigations");
-	    // throw new BusinessException(ServiceError.Unknown,
+	    // throw new BusinessException(ServiceError.Forbidden,
 	    // "Error Occurred While Saving Investigations");
 	}
 	return response;
@@ -315,7 +315,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Investigations");
-	    // throw new BusinessException(ServiceError.Unknown,
+	    // throw new BusinessException(ServiceError.Forbidden,
 	    // "Error Occurred While Editing Investigations");
 	}
 	return response;
@@ -336,7 +336,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Investigations");
-	    // throw new BusinessException(ServiceError.Unknown,
+	    // throw new BusinessException(ServiceError.Forbidden,
 	    // "Error Occurred While Deleting Investigations");
 	}
 	return response;
@@ -352,7 +352,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Observations");
-	    // throw new BusinessException(ServiceError.Unknown,
+	    // throw new BusinessException(ServiceError.Forbidden,
 	    // "Error Occurred While Saving Observations");
 	}
 	return response;
@@ -369,7 +369,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Observations");
-	    // throw new BusinessException(ServiceError.Unknown,
+	    // throw new BusinessException(ServiceError.Forbidden,
 	    // "Error Occurred While Editing Observations");
 	}
 	return response;
@@ -390,7 +390,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Observations");
-	    // throw new BusinessException(ServiceError.Unknown,
+	    // throw new BusinessException(ServiceError.Forbidden,
 	    // "Error Occurred While Deleting Observations");
 	}
 	return response;
@@ -569,7 +569,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
+	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Complaints");
 	}
 	return complaintCollections;
 
@@ -598,7 +598,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
+	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Complaints");
 	}
 	return complaintCollections;
     }
@@ -651,7 +651,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
+	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Complaints");
 	}
 	return complaintCollections;
     }
@@ -716,7 +716,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagrams");
+	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Diagrams");
 	}
 	return diagramCollections;
     }
@@ -743,7 +743,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagrams");
+	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Diagrams");
 	}
 	return diagramCollections;
     }
@@ -793,7 +793,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagrams");
+	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Diagrams");
 	}
 	return diagramCollections;
     }
@@ -858,7 +858,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Investigations");
+	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Investigations");
 	}
 	return investigationsCollections;
     }
@@ -886,7 +886,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Investigations");
+	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Investigations");
 	}
 	return investigationsCollections;
     }
@@ -937,7 +937,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Investigations");
+	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Investigations");
 	}
 	return investigationsCollections;
     }
@@ -1004,7 +1004,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Observations");
+	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Observations");
 	}
 	return observationCollections;
 
@@ -1033,7 +1033,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Observations");
+	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Observations");
 	}
 	return observationCollections;
     }
@@ -1084,7 +1084,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Observations");
+	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Observations");
 	}
 	return observationCollections;
     }
@@ -1152,7 +1152,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnosis");
+	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Diagnosis");
 	}
 	return diagnosisCollections;
     }
@@ -1179,7 +1179,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnosis");
+	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Diagnosis");
 	}
 	return diagnosisCollections;
     }
@@ -1230,7 +1230,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnosis");
+	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Diagnosis");
 	}
 	return diagnosisCollections;
     }
@@ -1296,7 +1296,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Notes");
+	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Notes");
 	}
 	return notesCollections;
 
@@ -1324,7 +1324,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Notes");
+	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Notes");
 	}
 	return notesCollections;
     }
@@ -1378,7 +1378,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Notes");
+	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Notes");
 	}
 	return notesCollections;
     }
