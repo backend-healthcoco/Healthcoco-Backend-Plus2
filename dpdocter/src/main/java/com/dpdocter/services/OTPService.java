@@ -1,5 +1,7 @@
 package com.dpdocter.services;
 
+import java.util.Date;
+
 import javax.ws.rs.core.UriInfo;
 
 public interface OTPService {
@@ -14,6 +16,8 @@ public interface OTPService {
 
     Boolean checkOTPVerified(String doctorId, String locationId, String hospitalId, String patientId);
 
-    boolean checkOTPVerified(String mobileNumber, String otpNumber);
+	boolean isNonVerifiedOTPValid(Date createdTime);
+
+	boolean isOTPValid(Date createdTime);
 
 }

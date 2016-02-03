@@ -19,6 +19,9 @@ public class OTPCollection extends GenericCollection {
     private String mobileNumber;
 
     @Field
+    private String generatorId;
+
+    @Field
     private OTPState state = OTPState.NOTVERIFIED;
 
     public String getId() {
@@ -53,9 +56,18 @@ public class OTPCollection extends GenericCollection {
 		this.state = state;
 	}
 
+	public String getGeneratorId() {
+		return generatorId;
+	}
+
+	public void setGeneratorId(String generatorId) {
+		this.generatorId = generatorId;
+	}
+
 	@Override
 	public String toString() {
-		return "OTPCollection [id=" + id + ", otpNumber=" + otpNumber + ", mobileNumber=" + mobileNumber + ", state="
-				+ state + "]";
+		return "OTPCollection [id=" + id + ", otpNumber=" + otpNumber + ", mobileNumber=" + mobileNumber
+				+ ", generatorId=" + generatorId + ", state=" + state + "]";
 	}
+
 }

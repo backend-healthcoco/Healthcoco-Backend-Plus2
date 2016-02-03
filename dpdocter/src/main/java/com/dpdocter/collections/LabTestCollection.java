@@ -13,7 +13,7 @@ public class LabTestCollection extends GenericCollection {
     private String id;
 
     @Field
-    private DiagnosticTest test;
+    private String testId;
 
     @Field
     private String locationId;
@@ -35,15 +35,15 @@ public class LabTestCollection extends GenericCollection {
 	this.id = id;
     }
 
-    public DiagnosticTest getTest() {
-	return test;
-    }
+    public String getTestId() {
+		return testId;
+	}
 
-    public void setTest(DiagnosticTest test) {
-	this.test = test;
-    }
+	public void setTestId(String testId) {
+		this.testId = testId;
+	}
 
-    public String getLocationId() {
+	public String getLocationId() {
 	return locationId;
     }
 
@@ -75,10 +75,10 @@ public class LabTestCollection extends GenericCollection {
 	this.discarded = discarded;
     }
 
-    @Override
-    public String toString() {
-	return "LabTestCollection [id=" + id + ", test=" + test + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", cost=" + cost
-		+ ", discarded=" + discarded + "]";
-    }
+	@Override
+	public String toString() {
+		return "LabTestCollection [id=" + id + ", testId=" + testId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", cost=" + cost + ", discarded=" + discarded + "]";
+	}
 
 }

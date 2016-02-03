@@ -11,10 +11,6 @@ public class DoctorProfile {
 
     private String firstName;
 
-    private String lastName;
-
-    private String middleName;
-
     private String emailAddress;
 
     private String mobileNumber;
@@ -83,22 +79,6 @@ public class DoctorProfile {
 
     public void setFirstName(String firstName) {
 	this.firstName = firstName;
-    }
-
-    public String getLastName() {
-	return lastName;
-    }
-
-    public void setLastName(String lastName) {
-	this.lastName = lastName;
-    }
-
-    public String getMiddleName() {
-	return middleName;
-    }
-
-    public void setMiddleName(String middleName) {
-	this.middleName = middleName;
     }
 
     public String getEmailAddress() {
@@ -255,8 +235,7 @@ public class DoctorProfile {
 
     @Override
     public String toString() {
-	return "DoctorProfile [id=" + id + ", userId=" + userId + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName="
-		+ middleName + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl=" + imageUrl
+	return "DoctorProfile [id=" + id + ", userId=" + userId + ", title=" + title + ", firstName=" + firstName + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl=" + imageUrl
 		+ ", thumbnailUrl=" + thumbnailUrl + ", dob=" + dob + ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl
 		+ ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses=" + otherEmailAddresses + ", experience=" + experience + ", education="
 		+ education + ", specialities=" + specialities + ", achievements=" + achievements + ", professionalStatement=" + professionalStatement

@@ -3,7 +3,6 @@ package com.dpdocter.services.impl;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -38,6 +37,7 @@ import com.dpdocter.beans.Investigation;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Notes;
 import com.dpdocter.beans.Observation;
+import com.dpdocter.beans.PatientDetails;
 import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.ComplaintCollection;
@@ -45,7 +45,6 @@ import com.dpdocter.collections.DiagnosisCollection;
 import com.dpdocter.collections.DiagramsCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.InvestigationCollection;
-import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.NotesCollection;
 import com.dpdocter.collections.ObservationCollection;
 import com.dpdocter.collections.PatientAdmissionCollection;
@@ -301,7 +300,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    } else {
 		diagramIds = request.getDiagrams();
 	    }
-
+	    clinicalNotesCollection.setUniqueId(DPDoctorUtils.generateRandomId());
 	    clinicalNotesCollection.setCreatedTime(createdTime);
 	    UserCollection userCollection = userRepository.findOne(clinicalNotesCollection.getDoctorId());
 	    if (userCollection != null) {
@@ -617,6 +616,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    clinicalNotesCollection.setDiscarded(oldClinicalNotesCollection.getDiscarded());
 	    clinicalNotesCollection.setInHistory(oldClinicalNotesCollection.isInHistory());
 	    clinicalNotesCollection.setUpdatedTime(new Date());
+	    clinicalNotesCollection.setUniqueId(oldClinicalNotesCollection.getUniqueId());
 	    clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
 	    if (clinicalNotesCollection != null) {
 		if (request.getId() == null) {
@@ -2110,7 +2110,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			    if (diagramsCollection != null) {
 				if (diagramsCollection.getDiagramUrl() != null) {
 				    diagram.put("url", getFinalImageURL(diagramsCollection.getDiagramUrl(), uriInfo));
-//				    System.out.println(getFinalImageURL(diagramsCollection.getDiagramUrl(), uriInfo));
 				}
 				diagram.put("tags", diagramsCollection.getTags());
 				diagramIds.add(diagram);
@@ -2171,9 +2170,20 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    throw new BusinessException(ServiceError.NotFound, "Clinical Notes Id, doctorId, location Id, hospital Id does not match");
 		}
 
-		String patientName = "", dob = "", gender = "", mobileNumber = "", refferedBy ="";
-		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(doctorId, locationId, hospitalId,
-				ComponentType.CLINICAL_NOTES.getType());
+		String patientName = "", dob = "", gender = "", mobileNumber = "", refferedBy ="", pid="", date="", resourceId="";
+		if(patientAdmission != null && patientAdmission.getReferredBy() != null){
+			ReferencesCollection referencesCollection = referenceRepository.findOne(patientAdmission.getReferredBy());
+			if(referencesCollection != null)refferedBy = referencesCollection.getReference();
+		}
+		patientName = "Patient Name: " + (user != null ? user.getFirstName() : "--") + "<br>";
+		dob = "Patient Age: " + ((patient != null && patient.getDob() != null) ? (patient.getDob().getAge() + " years") : "--") + "<br>";
+		gender = "Patient Gender: " + (patient != null ? patient.getGender() : "--") + "<br>";
+		mobileNumber = "Mobile Number: " + (user != null ? user.getMobileNumber() : "--") + "<br>";
+		pid= "Patient Id: " + (patient != null ? patient.getPID() : "--") + "<br>";
+		refferedBy = "Reffered By: "+ (refferedBy != "" ? refferedBy : "--") + "<br>";
+		date = "Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date())+"<br>";
+		resourceId = "ClinicalNotesId: " + (clinicalNotesCollection.getUniqueId() != null ? clinicalNotesCollection.getUniqueId() : "--") + "<br>";
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(doctorId, locationId, hospitalId, ComponentType.CLINICAL_NOTES.getType());
 		
 		if (printSettings == null) {
 		    printSettings = printSettingsRepository.getSettings(doctorId, locationId, hospitalId, ComponentType.ALL.getType());
@@ -2184,15 +2194,16 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		if (printSettings != null) {
 		    if (printSettings.getHeaderSetup() != null) {
 			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()) {
+
+				if((str.getFontSize()!= null) && (!str.getFontSize().equalsIgnoreCase("10pt") || !str.getFontSize().equalsIgnoreCase("11pt") || !str.getFontSize().equalsIgnoreCase("12pt")
+						|| !str.getFontSize().equalsIgnoreCase("13pt") || !str.getFontSize().equalsIgnoreCase("14pt") || !str.getFontSize().equalsIgnoreCase("15pt")))
+					str.setFontSize("10pt");
+				
 			    boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 			    boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
 			    String text = str.getText();
-			    if (isBold && isItalic)
-				text = "<b><i>" + text + "</i></b>";
-			    else if (isBold)
-				text = "<b>" + text + "</b>";
-			    else if (isItalic)
-				text = "<i>" + text + "</i>";
+			    if (isItalic)text = "<i>" + text + "</i>";
+				if (isBold)text = "<b>" + text + "</b>";
 
 			    if (headerLeftText.isEmpty())
 				headerLeftText = "<span style='font-size:" + str.getFontSize() + ";'>" + text + "</span>";
@@ -2201,15 +2212,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 
 			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText()) {
+				if((str.getFontSize()!= null) && (!str.getFontSize().equalsIgnoreCase("10pt") || !str.getFontSize().equalsIgnoreCase("11pt") || !str.getFontSize().equalsIgnoreCase("12pt")
+						|| !str.getFontSize().equalsIgnoreCase("13pt") || !str.getFontSize().equalsIgnoreCase("14pt") || !str.getFontSize().equalsIgnoreCase("15pt")))
+					str.setFontSize("10pt");
 			    boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 			    boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
 			    String text = str.getText();
-			    if (isBold && isItalic)
-				text = "<b><i>" + text + "</i></b>";
-			    else if (isBold)
-				text = "<b>" + text + "</b>";
-			    else if (isItalic)
-				text = "<i>" + text + "</i>";
+			    if (isItalic)text = "<i>" + text + "</i>";
+				if (isBold)text = "<b>" + text + "</b>";
 
 			    if (headerRightText.isEmpty())
 				headerRightText = "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
@@ -2221,44 +2231,59 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    if (printSettings.getFooterSetup() != null) {
 			if (printSettings.getFooterSetup().getCustomFooter())
 			    for (PrintSettingsText str : printSettings.getFooterSetup().getBottomText()) {
+			     if((str.getFontSize()!= null) && (!str.getFontSize().equalsIgnoreCase("10pt") || !str.getFontSize().equalsIgnoreCase("11pt") || !str.getFontSize().equalsIgnoreCase("12pt")
+							|| !str.getFontSize().equalsIgnoreCase("13pt") || !str.getFontSize().equalsIgnoreCase("14pt") || !str.getFontSize().equalsIgnoreCase("15pt")))
+						str.setFontSize("10pt");
+			    	
 				boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 				boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
 				String text = str.getText();
-				if (isBold && isItalic)
-				    text = "<b><i>" + text + "</i></b>";
-				else if (isBold)
-				    text = "<b>" + text + "</b>";
-				else if (isItalic)
-				    text = "<i>" + text + "</i>";
-
+				if (isItalic)text = "<i>" + text + "</i>";
+				if (isBold)text = "<b>" + text + "</b>";
+				
 				if (footerBottomText.isEmpty())
 				    footerBottomText = "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 				else
 				    footerBottomText = footerBottomText + "" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 			    }
 			String logoURL = getFinalImageURL(printSettings.getClinicLogoUrl(), uriInfo);
-		    parameters.put("logoURL", new File(logoURL).canRead()?logoURL:"");
+		    parameters.put("logoURL", new File(logoURL).exists()?logoURL:"");
+		    
+		    if(printSettings.getHeaderSetup() != null && printSettings.getHeaderSetup().getPatientDetails() != null && printSettings.getHeaderSetup().getPatientDetails().getStyle() != null){
+				PatientDetails patientDetails = printSettings.getHeaderSetup().getPatientDetails();
+				boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), patientDetails.getStyle().getFontStyle());
+				boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), patientDetails.getStyle().getFontStyle());
+				String fontSize = patientDetails.getStyle().getFontSize();
+				if((fontSize!= null) && (!fontSize.equalsIgnoreCase("10pt") || !fontSize.equalsIgnoreCase("11pt") || !fontSize.equalsIgnoreCase("12pt")	|| !fontSize.equalsIgnoreCase("13pt") || !fontSize.equalsIgnoreCase("14pt") || !fontSize.equalsIgnoreCase("15pt")))
+					fontSize = "10pt";
+				
+				if (isItalic){
+					patientName = "<i>" + patientName + "</i>";pid = "<i>" + pid + "</i>";dob = "<i>" + dob + "</i>";
+					gender = "<i>" + gender + "</i>";mobileNumber = "<i>" + mobileNumber + "</i>";refferedBy = "<i>" + refferedBy + "</i>";
+					date = "<i>" + date + "</i>";resourceId = "<i>" + resourceId + "</i>";
+				}
+				if (isBold){
+					patientName = "<b>" + patientName + "</b>";pid = "<b>" + pid + "</b>";dob = "<b>" + dob + "</b>";
+					gender = "<b>" + gender + "</b>";mobileNumber = "<b>" + mobileNumber + "</b>";refferedBy = "<b>" + refferedBy + "</b>";
+					date = "<b>" + date + "</b>";resourceId = "<b>" + resourceId + "</b>";
+				}
+				patientName = "<span style='font-size:" + fontSize + "'>" + patientName + "</span>";pid = "<span style='font-size:" + fontSize + "'>" + pid + "</span>";
+				dob = "<span style='font-size:" + fontSize + "'>" + dob + "</span>";
+				gender = "<span style='font-size:" + fontSize + "'>" + gender + "</span>";
+				mobileNumber = "<span style='font-size:" + fontSize + "'>" + mobileNumber + "</span>";
+				refferedBy = "<span style='font-size:" + fontSize + "'>" + refferedBy + "</span>";
+				date = "<span style='font-size:" + fontSize + "'>" + date + "</span>";
+				resourceId = "<span style='font-size:" + fontSize + "'>" + resourceId + "</span>";
+		    }
 		}
-
+	}  
+	
 		 UserCollection doctorUser = userRepository.findOne(doctorId);
 			if (doctorUser != null)
 			    parameters.put("footerSignature", doctorUser.getTitle() + " " + doctorUser.getFirstName());
-		 }    
-		patientName = "Patient Name: " + (user != null ? user.getFirstName() : "--") + "<br>";
-		dob = "Patient Age: " + ((patient != null && patient.getDob() != null) ? (patient.getDob().getAge() + " years") : "--") + "<br>";
-		gender = "Patient Gender: " + (patient != null ? patient.getGender() : "--") + "<br>";
-		mobileNumber = "Mobile Number: " + (user != null ? user.getMobileNumber() : "--") + "<br>";
-		if(patientAdmission != null && patientAdmission.getReferredBy() != null){
-			ReferencesCollection referencesCollection = referenceRepository.findOne(patientAdmission.getReferredBy());
-			if(referencesCollection != null)refferedBy = referencesCollection.getReference();
-		}
 		
-		parameters.put("patientLeftText", patientName + "Patient Id: " + (patient != null ? patient.getPID() : "--") + "<br>" + dob + gender);
-		parameters
-			.put("patientRightText",
-				mobileNumber
-					+ "Reffered By: "
-					+ (refferedBy != "" ? refferedBy : "--") + "<br>" + "Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
+		parameters.put("patientLeftText", patientName + pid + dob + gender);
+		parameters.put("patientRightText",mobileNumber+ refferedBy+date+resourceId);
 		parameters.put("headerLeftText", headerLeftText);
 		parameters.put("headerRightText", headerRightText);
 		parameters.put("footerBottomText", footerBottomText);

@@ -8,6 +8,8 @@ import com.dpdocter.enums.VisitedFor;
 public class PatientVisit {
     private String id;
 
+    private String uniqueId;
+    
     private String patientId;
 
     private String doctorId;
@@ -116,10 +118,19 @@ public class PatientVisit {
 	this.discarded = discarded;
     }
 
-    @Override
-    public String toString() {
-	return "PatientVisit [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ ", visitedTime=" + visitedTime + ", visitedFor=" + visitedFor + ", prescriptionId=" + prescriptionId + ", clinicalNotesId=" + clinicalNotesId
-		+ ", recordId=" + recordId + ", discarded=" + discarded + "]";
-    }
+	public String getUniqueId() {
+		return uniqueId;
+	}
+
+	public void setUniqueId(String uniqueId) {
+		this.uniqueId = uniqueId;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientVisit [id=" + id + ", uniqueId=" + uniqueId + ", patientId=" + patientId + ", doctorId="
+				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", visitedTime="
+				+ visitedTime + ", visitedFor=" + visitedFor + ", prescriptionId=" + prescriptionId
+				+ ", clinicalNotesId=" + clinicalNotesId + ", recordId=" + recordId + ", discarded=" + discarded + "]";
+	}
 }

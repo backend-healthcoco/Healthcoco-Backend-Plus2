@@ -22,4 +22,6 @@ public interface MailBodyGenerator {
 	public String generateRecordsShareOtpBeforeVerificationEmailBody(String emailAddress, String firstName,	String doctorName, UriInfo uriInfo);
 
 	public String generateRecordsShareOtpAfterVerificationEmailBody(String emailAddress, String firstName, String doctorName, UriInfo uriInfo);
+
+	public String generateRecordsUploadedEmailBody(String userName, String firstName, String middleName, String lastName);
 }

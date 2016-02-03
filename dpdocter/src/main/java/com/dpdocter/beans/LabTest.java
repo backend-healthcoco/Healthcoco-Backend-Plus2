@@ -12,7 +12,7 @@ public class LabTest extends GenericCollection {
 
     private String hospitalId;
 
-    private int cost = 0;
+    private Integer cost = 0;
 
     private Boolean discarded = false;
 
@@ -48,11 +48,11 @@ public class LabTest extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
-    public int getCost() {
+    public Integer getCost() {
 	return cost;
     }
 
-    public void setCost(int cost) {
+    public void setCost(Integer cost) {
 	this.cost = cost;
     }
 

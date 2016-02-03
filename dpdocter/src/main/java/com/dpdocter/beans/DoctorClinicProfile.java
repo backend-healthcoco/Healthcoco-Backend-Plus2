@@ -2,6 +2,8 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import com.dpdocter.enums.DoctorFacility;
+
 public class DoctorClinicProfile {
     private String id;
 
@@ -31,7 +33,7 @@ public class DoctorClinicProfile {
 
     private List<WorkingSchedule> workingSchedules;
 
-    private Boolean isIBSOn = false;
+    private DoctorFacility facility;
 
     private List<ClinicImage> images;
 
@@ -111,14 +113,6 @@ public class DoctorClinicProfile {
 	this.workingSchedules = workingSchedules;
     }
 
-    public Boolean getIsIBSOn() {
-	return isIBSOn;
-    }
-
-    public void setIsIBSOn(Boolean isIBSOn) {
-	this.isIBSOn = isIBSOn;
-    }
-
     public List<ClinicImage> getImages() {
 	return images;
     }
@@ -183,6 +177,14 @@ public class DoctorClinicProfile {
 		this.postalCode = postalCode;
 	}
 
+	public DoctorFacility getFacility() {
+		return facility;
+	}
+
+	public void setFacility(DoctorFacility facility) {
+		this.facility = facility;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorClinicProfile [id=" + id + ", locationId=" + locationId + ", clinicAddress=" + clinicAddress
@@ -190,7 +192,7 @@ public class DoctorClinicProfile {
 				+ ", postalCode=" + postalCode + ", patientInitial=" + patientInitial + ", patientCounter="
 				+ patientCounter + ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee="
 				+ consultationFee + ", appointmentSlot=" + appointmentSlot + ", workingSchedules=" + workingSchedules
-				+ ", isIBSOn=" + isIBSOn + ", images=" + images + ", logoUrl=" + logoUrl + ", logoThumbnailUrl="
+				+ ", facility=" + facility + ", images=" + images + ", logoUrl=" + logoUrl + ", logoThumbnailUrl="
 				+ logoThumbnailUrl + "]";
 	}
 }

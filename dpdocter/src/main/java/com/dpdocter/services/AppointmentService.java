@@ -8,9 +8,11 @@ import com.dpdocter.beans.City;
 import com.dpdocter.beans.Clinic;
 import com.dpdocter.beans.Lab;
 import com.dpdocter.beans.LandmarkLocality;
+import com.dpdocter.beans.PatientQueue;
 import com.dpdocter.beans.Slot;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.EventRequest;
+import com.dpdocter.request.PatientQueueAddEditRequest;
 import com.dpdocter.solr.beans.Country;
 import com.dpdocter.solr.beans.State;
 
@@ -55,5 +57,11 @@ public interface AppointmentService {
 	Boolean sendReminder(String appointmentId);
 
 	void importMaster();
+
+	List<PatientQueue> addPatientInQueue(PatientQueueAddEditRequest request);
+
+	List<PatientQueue> rearrangePatientInQueue(String doctorId, String locationId, String hospitalId, String patientId, String appointmentId, int sequenceNo);
+
+	List<PatientQueue> getPatientQueue(String doctorId, String locationId, String hospitalId);
 
 }

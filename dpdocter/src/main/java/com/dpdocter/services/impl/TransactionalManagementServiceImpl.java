@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.collections.AddressCollection;
@@ -20,6 +21,7 @@ import com.dpdocter.collections.LabTestCollection;
 import com.dpdocter.collections.LandmarkLocalityCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.NotesCollection;
+import com.dpdocter.collections.OTPCollection;
 import com.dpdocter.collections.ObservationCollection;
 import com.dpdocter.collections.PatientAdmissionCollection;
 import com.dpdocter.collections.PatientCollection;
@@ -28,6 +30,7 @@ import com.dpdocter.collections.StateCollection;
 import com.dpdocter.collections.TransactionalCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
+import com.dpdocter.enums.OTPState;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -46,6 +49,7 @@ import com.dpdocter.repository.LabTestRepository;
 import com.dpdocter.repository.LandmarkLocalityRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.NotesRepository;
+import com.dpdocter.repository.OTPRepository;
 import com.dpdocter.repository.ObservationRepository;
 import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientRepository;
@@ -54,6 +58,7 @@ import com.dpdocter.repository.StateRepository;
 import com.dpdocter.repository.TransnationalRepositiory;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.services.OTPService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.beans.DoctorLocation;
 import com.dpdocter.solr.document.SolrCityDocument;
@@ -76,7 +81,7 @@ import com.dpdocter.solr.services.SolrPrescriptionService;
 import com.dpdocter.solr.services.SolrRegistrationService;
 
 @Service
-public class TransactionalManagementServiceImpl implements TransactionalManagementService {
+public class TransactionalManagementServiceImpl implements TransactionalManagementService{
 
     private static Logger logger = Logger.getLogger(TransactionalManagementServiceImpl.class.getName());
 
@@ -158,7 +163,14 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     @Autowired
     private ReferenceRepository referenceRepository;
     
-//    @Scheduled(fixedRate = 900000)
+    @Autowired
+    private OTPRepository otpRepository;
+
+    @Autowired
+    private OTPService otpService;
+
+//    @Scheduled(fixedDelay = 1800000)
+    @Override
     public void checkResources() {
 	System.out.println(">>> Scheduled test service <<<");
 	List<TransactionalCollection> transactionalCollections = null;
@@ -220,10 +232,34 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		    }
 		}
 	    }
+	    checkOTP();
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
 	}
+    }
+    
+    public void checkOTP(){
+    	try {
+    		List<OTPCollection> otpCollections = otpRepository.findNonExpiredOtp(OTPState.EXPIRED.getState());
+    		if(otpCollections != null){
+    			for(OTPCollection otpCollection : otpCollections){
+    				if(otpCollection.getState().equals(OTPState.VERIFIED)){
+    					if(!otpService.isOTPValid(otpCollection.getCreatedTime())){
+    						otpCollection.setState(OTPState.EXPIRED);
+    					}
+    				}else if(otpCollection.getState().equals(OTPState.NOTVERIFIED)){
+    					if(!otpService.isNonVerifiedOTPValid(otpCollection.getCreatedTime())){
+    						otpCollection.setState(OTPState.EXPIRED);
+    					}
+    				}
+    				otpRepository.save(otpCollection);
+    			}
+    		}
+    	} catch (Exception e) {
+    	    e.printStackTrace();
+    	    logger.error(e);
+    	}
     }
     
 	@Override
@@ -231,14 +267,14 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	TransactionalCollection transactionalCollection = null;
 	try {
 	    transactionalCollection = transnationalRepositiory.findByResourceIdAndResource(resourceId, resource.getType());
-	    if (transactionalCollection == null || !isCached) {
+	    if (transactionalCollection == null) {
 		transactionalCollection = new TransactionalCollection();
 		transactionalCollection.setResourceId(resourceId);
 		transactionalCollection.setResource(resource);
 		transactionalCollection.setIsCached(isCached);
 		transnationalRepositiory.save(transactionalCollection);
 	    }
-	    else if (transactionalCollection != null) {
+	    else {
 		transactionalCollection.setIsCached(isCached);
 		transnationalRepositiory.save(transactionalCollection);
 	    }
@@ -413,7 +449,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	}
     }
     
-    private void checkLocation(String resourceId) {
+    @Override
+    public void checkLocation(String resourceId) {
     	try {
     	    LocationCollection locationCollection = locationRepository.findOne(resourceId);
     	    if (locationCollection != null) {
@@ -428,8 +465,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     	    logger.error(e);
     	}	
 	}
-
-	private void checkDoctor(String resourceId) {
+    
+    @Override
+    public void checkDoctor(String resourceId) {
 		try {
 		    DoctorCollection doctorCollection = doctorRepository.findByUserId(resourceId);
 		    UserCollection userCollection = userRepository.findOne(resourceId);

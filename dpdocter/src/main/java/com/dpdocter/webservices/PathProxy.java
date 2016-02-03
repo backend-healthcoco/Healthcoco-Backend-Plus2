@@ -88,7 +88,7 @@ public interface PathProxy {
 
 	public static final String EXISTING_PATIENTS_BY_PHONE_NUM_COUNT = "/existing_patients_count/{mobileNumber}";
 
-	public static final String GET_PATIENT_PROFILE = "/getpatientprofile/{userId}/{doctorId}/{locationId}/{hospitalId}";
+	public static final String GET_PATIENT_PROFILE = "/getpatientprofile/{userId}";
 
 	public static final String ADD_REFERRENCE = "/referrence/add";
 
@@ -272,6 +272,14 @@ public interface PathProxy {
 
 	public static final String GET_DIAGNOSTIC_TEST = "/diagnosticTest";
 
+	public static final String ADD_EDIT_DIAGNOSTIC_TEST = "/diagnosticTest/addEdit";
+
+	public static final String DELETE_DIAGNOSTIC_TEST = "/diagnosticTest/{diagnosticTestId}/{locationId}/{hospitalId}/delete";
+
+	public static final String GET_DIAGNOSTIC_TEST_BY_ID = "/diagnosticTest/{diagnosticTestId}";
+
+	public static final String DELETE_GLOBAL_DIAGNOSTIC_TEST = "/diagnosticTest/{diagnosticTestId}/delete";
+
 	public static final String GET_PRESCRIPTION_ITEMS = "/{type}/{range}";
 
 	public static final String ADD_TEMPLATE = "/template/add";
@@ -331,6 +339,8 @@ public interface PathProxy {
 	public static final String SMS_PRESCRIPTION = "/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{mobileNumber}/sms";
 
 	public static final String IMPORT_DRUG = "/importDrug";
+	
+	public static final String CHECK_PRESCRIPTION_EXISTS_FOR_PATIENT = "/prescriptionExist/{uniqueId}/{patientId}";
 
     }
 
@@ -445,7 +455,7 @@ public interface PathProxy {
 
 	public static final String ADD_EDIT_MULTIPLE_DATA = "/addEditMultipleData";
 
-	public static final String ON_OFF_IBS = "clinicProfile/editInstantBookingSystem";
+	public static final String ADD_EDIT_FACILITY = "clinicProfile/editFacility";
 
     }
 
@@ -542,6 +552,8 @@ public interface PathProxy {
 	public static final String SEARCH_DRUG = "searchDrug/{range}";
 
 	public static final String SEARCH_LAB_TEST = "searchLabTest/{range}";
+	
+	public static final String SEARCH_DIAGNOSTIC_TEST = "searchDiagnosticTest/{range}";
     }
 
     public static final String SOLR_REGISTRATION_BASEURL = BASE_URL + "/solr/registration";
@@ -585,6 +597,12 @@ public interface PathProxy {
 	public static final String IMPORT = "/import";
 	
 	public static final String SEND_REMINDER = "/sendReminder/{appointmentId}";
+	
+	public static final String ADD_PATIENT_IN_QUEUE = "/queue/add";
+	
+	public static final String REARRANGE_PATIENT_IN_QUEUE = "/queue/{doctorId}/{locationId}/{hospitalId}/{patientId}/{appointmentId}/{sequenceNo}/rearrange";
+	
+	public static final String GET_PATIENT_QUEUE = "/queue/{doctorId}/{locationId}/{hospitalId}";
     }
 
     public static final String SOLR_CITY_BASE_URL = BASE_URL + "/solr/city";

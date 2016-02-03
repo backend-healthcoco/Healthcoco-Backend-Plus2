@@ -1,7 +1,6 @@
 package com.dpdocter.webservices;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -30,6 +29,7 @@ import com.dpdocter.beans.Tags;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.ChangeRecordLabelDescriptionRequest;
 import com.dpdocter.request.RecordsAddRequest;
 import com.dpdocter.request.RecordsAddRequestMultipart;
@@ -39,6 +39,7 @@ import com.dpdocter.request.TagRecordRequest;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.RecordsService;
+import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
 
 import common.util.web.DPDoctorUtils;
@@ -75,8 +76,11 @@ public class RecordsApi {
 
 	// patient track
 	if (records != null) {
+		Records visitRecord = new Records();
+		BeanUtil.map(records, visitRecord);
+		visitRecord.setPrescriptionId(null);
 	    records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
-	    String visitId = patientTrackService.addRecord(records, VisitedFor.REPORTS, request.getVisitId());
+	    String visitId = patientTrackService.addRecord(visitRecord, VisitedFor.REPORTS, request.getVisitId());
 	    records.setVisitId(visitId);
 	}
 
@@ -104,12 +108,8 @@ public class RecordsApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	request.setIsOTPVerified(otpService.checkOTPVerified(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId()));
-	List<Records> records = recordsService.searchRecords(request);
-	if (records != null && !records.isEmpty()) {
-	    for (Records record : records) {
-		record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl()));
-	    }
-	}
+	List<Records> records = recordsService.searchRecords(request, uriInfo);
+	
 	Response<Records> response = new Response<Records>();
 	response.setDataList(records);
 	return response;
@@ -123,7 +123,7 @@ public class RecordsApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Patient Id Cannot Be Empty");
 	}
 
-	List<Records> records = recordsService.getRecordsByPatientId(patientId, page, size, updatedTime, discarded);
+	List<Records> records = recordsService.getRecordsByPatientId(patientId, page, size, updatedTime, discarded, uriInfo);
 
 	Response<Records> response = new Response<Records>();
 	response.setDataList(records);
@@ -263,26 +263,26 @@ public class RecordsApi {
 	return response;
     }
     
-//    @POST
-//    @Path(value = PathProxy.RecordsUrls.ADD_RECORDS_MULTIPART)
-//    @Consumes({MediaType.MULTIPART_FORM_DATA})
-//    public Response<Records> addRecordsMultipart(@FormDataParam("file") InputStream fileInputStream, 
-//    		@FormDataParam("data") RecordsAddRequestMultipart request) {
-//	if (request == null) {
-//	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-//	}
-//
-//	Records records = recordsService.addRecordsMultipart(fileInputStream, request);
-//
-//	// patient track 
-//	if (records != null) {
-//	    records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
-//	    String visitId = patientTrackService.addRecord(records, VisitedFor.REPORTS, request.getVisitId());
-//	    records.setVisitId(visitId);
-//	}
-//
-//	Response<Records> response = new Response<Records>();
-//	response.setData(records);
-//	return response;
-//    }
+    @POST
+    @Path(value = PathProxy.RecordsUrls.ADD_RECORDS_MULTIPART)
+    @Consumes({MediaType.MULTIPART_FORM_DATA})
+    public Response<Records> addRecordsMultipart(@FormDataParam("file") FormDataBodyPart file, 
+    		@FormDataParam("data") RecordsAddRequestMultipart request) {
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	}
+
+	Records records = recordsService.addRecordsMultipart(file, request);
+
+	// patient track 
+	if (records != null) {
+	    records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
+	    String visitId = patientTrackService.addRecord(records, VisitedFor.REPORTS, request.getVisitId());
+	    records.setVisitId(visitId);
+	}
+
+	Response<Records> response = new Response<Records>();
+	response.setData(records);
+	return response;
+    }
 }

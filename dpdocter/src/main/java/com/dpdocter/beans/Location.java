@@ -49,7 +49,7 @@ public class Location {
 
     private String mobileNumber;
 
-    private List<String> alternateNumber;
+    private List<String> alternateNumbers;
 
     private List<WorkingSchedule> workingSchedules;
 
@@ -223,14 +223,6 @@ public class Location {
 	this.mobileNumber = mobileNumber;
     }
 
-    public List<String> getAlternateNumber() {
-	return alternateNumber;
-    }
-
-    public void setAlternateNumber(List<String> alternateNumber) {
-	this.alternateNumber = alternateNumber;
-    }
-
     public List<WorkingSchedule> getWorkingSchedules() {
 	return workingSchedules;
     }
@@ -287,6 +279,14 @@ public class Location {
 		this.isHomeServiceAvailable = isHomeServiceAvailable;
 	}
 
+	public List<String> getAlternateNumbers() {
+		return alternateNumbers;
+	}
+
+	public void setAlternateNumbers(List<String> alternateNumbers) {
+		this.alternateNumbers = alternateNumbers;
+	}
+
 	@Override
 	public String toString() {
 		return "Location [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state
@@ -296,10 +296,9 @@ public class Location {
 				+ longitude + ", tagLine=" + tagLine + ", landmarkDetails=" + landmarkDetails
 				+ ", locationEmailAddress=" + locationEmailAddress + ", specialization=" + specialization
 				+ ", streetAddress=" + streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber
-				+ ", alternateNumber=" + alternateNumber + ", workingSchedules=" + workingSchedules
+				+ ", alternateNumbers=" + alternateNumbers + ", workingSchedules=" + workingSchedules
 				+ ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + ", isLab=" + isLab
 				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
 				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + "]";
 	}
-
 }

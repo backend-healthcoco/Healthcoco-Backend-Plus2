@@ -51,4 +51,7 @@ public interface PrescriptionRepository extends MongoRepository<PrescriptionColl
     @Query(value = "{'patientId': ?0, 'discarded' : ?1}", count = true)
 	Integer getPrescriptionCount(String patientId, boolean discarded);
 
+    @Query("{'uniqueId' : ?0, 'patientId' : ?1}")
+	PrescriptionCollection findByUniqueIdAndPatientId(String uniqueId, String patientId);
+
 }

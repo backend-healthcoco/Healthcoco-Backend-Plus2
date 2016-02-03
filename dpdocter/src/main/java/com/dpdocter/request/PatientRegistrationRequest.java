@@ -13,10 +13,6 @@ public class PatientRegistrationRequest {
 
     private String firstName;
 
-    private String middleName;
-
-    private String lastName;
-
     private String mobileNumber;
 
     private String gender;
@@ -81,22 +77,6 @@ public class PatientRegistrationRequest {
 
     public void setFirstName(String firstName) {
 	this.firstName = firstName;
-    }
-
-    public String getMiddleName() {
-	return middleName;
-    }
-
-    public void setMiddleName(String middleName) {
-	this.middleName = middleName;
-    }
-
-    public String getLastName() {
-	return lastName;
-    }
-
-    public void setLastName(String lastName) {
-	this.lastName = lastName;
     }
 
     public String getEmailAddress() {
@@ -299,15 +279,16 @@ public class PatientRegistrationRequest {
 	this.image = image;
     }
 
-    @Override
-    public String toString() {
-	return "PatientRegistrationRequest [userId=" + userId + ", firstName=" + firstName + ", middleName=" + middleName + ", lastName=" + lastName
-		+ ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob=" + dob + ", emailAddress=" + emailAddress + ", groups=" + groups
-		+ ", bloodGroup=" + bloodGroup + ", profession=" + profession + ", relations=" + relations + ", secMobile=" + secMobile + ", adhaarId="
-		+ adhaarId + ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId + ", insuranceId=" + insuranceId
-		+ ", insuranceName=" + insuranceName + ", notes=" + notes + ", address=" + address + ", dateOfVisit=" + dateOfVisit + ", pastHistoryId="
-		+ pastHistoryId + ", medicalHistoryId=" + medicalHistoryId + ", patientNumber=" + patientNumber + ", referredBy=" + referredBy
-		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId + "]";
-    }
-
+	@Override
+	public String toString() {
+		return "PatientRegistrationRequest [userId=" + userId + ", firstName=" + firstName + ", mobileNumber="
+				+ mobileNumber + ", gender=" + gender + ", dob=" + dob + ", image=" + image + ", emailAddress="
+				+ emailAddress + ", groups=" + groups + ", bloodGroup=" + bloodGroup + ", profession=" + profession
+				+ ", relations=" + relations + ", secMobile=" + secMobile + ", adhaarId=" + adhaarId
+				+ ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId + ", insuranceId="
+				+ insuranceId + ", insuranceName=" + insuranceName + ", notes=" + notes + ", address=" + address
+				+ ", dateOfVisit=" + dateOfVisit + ", pastHistoryId=" + pastHistoryId + ", medicalHistoryId="
+				+ medicalHistoryId + ", patientNumber=" + patientNumber + ", referredBy=" + referredBy + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId + "]";
+	}
 }

@@ -1,9 +1,12 @@
 package com.dpdocter.solr.services.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -16,8 +19,10 @@ import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.services.TransactionalManagementService;
+import com.dpdocter.solr.document.SolrDiagnosticTestDocument;
 import com.dpdocter.solr.document.SolrDrugDocument;
 import com.dpdocter.solr.document.SolrLabTestDocument;
+import com.dpdocter.solr.repository.SolrDiagnosticTestRepository;
 import com.dpdocter.solr.repository.SolrDrugRepository;
 import com.dpdocter.solr.repository.SolrLabTestRepository;
 import com.dpdocter.solr.services.SolrPrescriptionService;
@@ -38,6 +43,9 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
     @Autowired
     private TransactionalManagementService transnationalService;
 
+    @Autowired
+    private SolrDiagnosticTestRepository solrDiagnosticTestRepository;
+    
     @Override
     public boolean addDrug(SolrDrugDocument request) {
 	boolean response = false;
@@ -315,7 +323,7 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
     }
 
     @Override
-    public List<SolrLabTestDocument> searchLabTest(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+    public List<SolrLabTestDocument> searchLabTest(String range, int page, int size, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded, String searchTerm) {
 	List<SolrLabTestDocument> response = null;
 	switch (Range.valueOf(range.toUpperCase())) {
@@ -324,10 +332,10 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	    response = getGlobalLabTests(page, size, updatedTime, discarded, searchTerm);
 	    break;
 	case CUSTOM:
-	    response = getCustomLabTests(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	    response = getCustomLabTests(page, size, locationId, hospitalId, updatedTime, discarded, searchTerm);
 	    break;
 	case BOTH:
-	    response = getCustomGlobalLabTests(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	    response = getCustomGlobalLabTests(page, size, locationId, hospitalId, updatedTime, discarded, searchTerm);
 	    break;
 	}
 	return response;
@@ -346,12 +354,16 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 		    labTestCollections = solrLabTestRepository.getGlobalLabTests(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC,
 			    "updatedTime"));
 	    } else {
+	    List<SolrDiagnosticTestDocument> diagnosticTestCollections = solrDiagnosticTestRepository.findAll(searchTerm);
+	    @SuppressWarnings("unchecked")
+	    Collection<String> testIds = CollectionUtils.collect(diagnosticTestCollections, new BeanToPropertyValueTransformer("id"));
+	    
 		if (size > 0)
-		    labTestCollections = solrLabTestRepository.getGlobalLabTests(new Date(createdTimeStamp), discarded, searchTerm, new PageRequest(page, size,
+		    labTestCollections = solrLabTestRepository.getGlobalLabTests(new Date(createdTimeStamp), discarded, testIds, new PageRequest(page, size,
 			    Direction.DESC, "updatedTime"));
 
 		else
-		    labTestCollections = solrLabTestRepository.getGlobalLabTests(new Date(createdTimeStamp), discarded, searchTerm, new Sort(
+		    labTestCollections = solrLabTestRepository.getGlobalLabTests(new Date(createdTimeStamp), discarded, testIds, new Sort(
 			    Sort.Direction.DESC, "updatedTime"));
 	    }
 
@@ -363,52 +375,33 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	return labTestCollections;
     }
 
-    private List<SolrLabTestDocument> getCustomLabTests(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+    private List<SolrLabTestDocument> getCustomLabTests(int page, int size, String locationId, String hospitalId, String updatedTime,
 	    boolean discarded, String searchTerm) {
 	List<SolrLabTestDocument> labTestCollections = null;
 	try {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
-
-	    if (doctorId == null)
-		labTestCollections = new ArrayList<SolrLabTestDocument>();
-
-	    else {
-		if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
-		    if (locationId == null && hospitalId == null) {
-			if (size > 0)
-			    labTestCollections = solrLabTestRepository.getCustomLabTests(doctorId, new Date(createdTimeStamp), discarded, new PageRequest(page,
-				    size, Direction.DESC, "updatedTime"));
-			else
-			    labTestCollections = solrLabTestRepository.getCustomLabTests(doctorId, new Date(createdTimeStamp), discarded, new Sort(
-				    Sort.Direction.DESC, "updatedTime"));
-		    } else {
-			if (size > 0)
-			    labTestCollections = solrLabTestRepository.getCustomLabTests(doctorId, hospitalId, locationId, new Date(createdTimeStamp),
-				    discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-			else
-			    labTestCollections = solrLabTestRepository.getCustomLabTests(doctorId, hospitalId, locationId, new Date(createdTimeStamp),
-				    discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
-		    }
-		} else {
-		    if (locationId == null && hospitalId == null) {
-			if (size > 0)
-			    labTestCollections = solrLabTestRepository.getCustomLabTests(doctorId, new Date(createdTimeStamp), discarded, searchTerm,
-				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
-			else
-			    labTestCollections = solrLabTestRepository.getCustomLabTests(doctorId, new Date(createdTimeStamp), discarded, searchTerm, new Sort(
-				    Sort.Direction.DESC, "updatedTime"));
-		    } else {
-			if (size > 0)
-			    labTestCollections = solrLabTestRepository.getCustomLabTests(doctorId, hospitalId, locationId, new Date(createdTimeStamp),
-				    discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-			else
-			    labTestCollections = solrLabTestRepository.getCustomLabTests(doctorId, hospitalId, locationId, new Date(createdTimeStamp),
-				    discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
-		    }
-
-		}
+	    if (locationId == null && hospitalId == null);
+	    else{
+	    	if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				if (size > 0)
+				    labTestCollections = solrLabTestRepository.getCustomLabTests(locationId, hospitalId, new Date(createdTimeStamp),
+					    discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else
+				    labTestCollections = solrLabTestRepository.getCustomLabTests(locationId, hospitalId, new Date(createdTimeStamp),
+					    discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+			} else {
+				 List<SolrDiagnosticTestDocument> diagnosticTestCollections = solrDiagnosticTestRepository.findAll(searchTerm);
+				 @SuppressWarnings("unchecked")
+				 Collection<String> testIds = CollectionUtils.collect(diagnosticTestCollections, new BeanToPropertyValueTransformer("id"));
+				    
+			    if (size > 0)
+				    labTestCollections = solrLabTestRepository.getCustomLabTests(locationId ,hospitalId, new Date(createdTimeStamp),
+					    discarded, testIds, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else
+				    labTestCollections = solrLabTestRepository.getCustomLabTests(locationId, hospitalId, new Date(createdTimeStamp),
+					    discarded, testIds, new Sort(Sort.Direction.DESC, "updatedTime"));    
+			}	
 	    }
-
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting LabTests");
@@ -417,66 +410,42 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	return labTestCollections;
     }
 
-    private List<SolrLabTestDocument> getCustomGlobalLabTests(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+    private List<SolrLabTestDocument> getCustomGlobalLabTests(int page, int size, String locationId, String hospitalId, String updatedTime,
 	    boolean discarded, String searchTerm) {
 	List<SolrLabTestDocument> labTestCollections = null;
 	try {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 
-	    if (doctorId == null) {
-		if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
-		    if (size > 0)
-			labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(new Date(createdTimeStamp), discarded, new PageRequest(page, size,
-				Direction.DESC, "updatedTime"));
-		    else
-			labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC,
-				"updatedTime"));
-		} else {
-		    if (size > 0)
-			labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(new Date(createdTimeStamp), discarded, searchTerm, new PageRequest(
-				page, size, Direction.DESC, "updatedTime"));
-		    else
-			labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(new Date(createdTimeStamp), discarded, searchTerm, new Sort(
-				Sort.Direction.DESC, "updatedTime"));
-
-		}
-	    } else {
-		if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
-		    if (locationId == null && hospitalId == null) {
-			if (size > 0)
-			    labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(doctorId, new Date(createdTimeStamp), discarded,
-				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
-			else
-			    labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(doctorId, new Date(createdTimeStamp), discarded, new Sort(
-				    Sort.Direction.DESC, "updatedTime"));
-		    } else {
-			if (size > 0)
-			    labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(doctorId, hospitalId, locationId, new Date(createdTimeStamp),
-				    discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-			else
-			    labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(doctorId, hospitalId, locationId, new Date(createdTimeStamp),
-				    discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
-		    }
-		} else {
-		    if (locationId == null && hospitalId == null) {
-			if (size > 0)
-			    labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(doctorId, new Date(createdTimeStamp), discarded, searchTerm,
-				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
-			else
-			    labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(doctorId, new Date(createdTimeStamp), discarded, searchTerm,
-				    new Sort(Sort.Direction.DESC, "updatedTime"));
-		    } else {
-			if (size > 0)
-			    labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(doctorId, hospitalId, locationId, new Date(createdTimeStamp),
-				    discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-			else
-			    labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(doctorId, hospitalId, locationId, new Date(createdTimeStamp),
-				    discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
-		    }
-
-		}
+	    if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
+	    	if (locationId == null && hospitalId == null) {
+				if (size > 0)
+				    labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(new Date(createdTimeStamp), discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else
+				    labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+			    } else {
+				if (size > 0)
+				    labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(locationId, hospitalId, new Date(createdTimeStamp), discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else
+				    labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(locationId, hospitalId, new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+			    }
+	    }else{
+	    	List<SolrDiagnosticTestDocument> diagnosticTestCollections = solrDiagnosticTestRepository.findAll(searchTerm);
+			 @SuppressWarnings("unchecked")
+			 Collection<String> testIds = CollectionUtils.collect(diagnosticTestCollections, new BeanToPropertyValueTransformer("id"));
+	    	if (locationId == null && hospitalId == null) {
+				if (size > 0)
+				    labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(new Date(createdTimeStamp), discarded, testIds, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else
+				    labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(new Date(createdTimeStamp), discarded, testIds, new Sort(Sort.Direction.DESC, "updatedTime"));
+			    } else {
+				if (size > 0)
+				    labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(locationId, hospitalId, new Date(createdTimeStamp),
+					    discarded, testIds, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else
+				    labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(locationId, hospitalId, new Date(createdTimeStamp),
+					    discarded, testIds, new Sort(Sort.Direction.DESC, "updatedTime"));
+			    }
 	    }
-
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting LabTests");
@@ -484,5 +453,156 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	}
 	return labTestCollections;
     }
+
+	@Override
+	public Boolean addEditDiagnosticTest(SolrDiagnosticTestDocument solrDiagnosticTestDocument) {
+		boolean response = false;
+		try {
+		    solrDiagnosticTestRepository.save(solrDiagnosticTestDocument);
+		    response = true;
+		    transnationalService.addResource(solrDiagnosticTestDocument.getId(), Resource.DIAGNOSTICTEST, true);
+
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error Occurred While Saving Diagnostic Test in Solr");
+		    // throw new BusinessException(ServiceError.Forbidden,
+		    // "Error Occurred While Saving Lab Test in Solr");
+		}	
+		return response;
+	}
+
+	@Override
+	public boolean deleteDiagnosticTest(String diagnosticTestId, Boolean discarded) {
+		boolean response = false;
+		try {
+			SolrDiagnosticTestDocument solrDiagnosticTestDocument = solrDiagnosticTestRepository.findOne(diagnosticTestId);
+		    if (solrDiagnosticTestDocument != null) {
+		    	solrDiagnosticTestDocument.setDiscarded(discarded);
+		    	solrDiagnosticTestDocument.setUpdatedTime(new Date());
+			solrDiagnosticTestRepository.save(solrDiagnosticTestDocument);
+		    }
+		    response = true;
+		    transnationalService.addResource(diagnosticTestId, Resource.DIAGNOSTICTEST, true);
+
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error Occurred While Deleting Lab Test in Solr");
+		    // throw new BusinessException(ServiceError.Forbidden,
+		    // "Error Occurred While Deleting Lab Test");
+		}
+		return response;
+	}
+
+	@Override
+	public List<SolrDiagnosticTestDocument> searchDiagnosticTest(String range, int page, int size, String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<SolrDiagnosticTestDocument> response = null;
+		switch (Range.valueOf(range.toUpperCase())) {
+
+		case GLOBAL:
+		    response = getGlobalDiagnosticTests(page, size, updatedTime, discarded, searchTerm);
+		    break;
+		case CUSTOM:
+		    response = getCustomDiagnosticTests(page, size, locationId, hospitalId, updatedTime, discarded, searchTerm);
+		    break;
+		case BOTH:
+		    response = getCustomGlobalDiagnosticTests(page, size, locationId, hospitalId, updatedTime, discarded, searchTerm);
+		    break;
+		}
+		return response;
+	    }
+
+	    private List<SolrDiagnosticTestDocument> getGlobalDiagnosticTests(int page, int size, String updatedTime, Boolean discarded, String searchTerm) {
+		List<SolrDiagnosticTestDocument> diagnosticTestCollections = null;
+		try {
+		    long createdTimeStamp = Long.parseLong(updatedTime);
+		    if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
+			if (size > 0)
+			    diagnosticTestCollections = solrDiagnosticTestRepository.getGlobalDiagnosticTests(new Date(createdTimeStamp), discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+
+			else
+			    diagnosticTestCollections = solrDiagnosticTestRepository.getGlobalDiagnosticTests(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC,"updatedTime"));
+		    } else {
+		    
+			if (size > 0)
+			    diagnosticTestCollections = solrDiagnosticTestRepository.getGlobalDiagnosticTests(new Date(createdTimeStamp), discarded, searchTerm, new PageRequest(page, size,
+				    Direction.DESC, "updatedTime"));
+
+			else
+			    diagnosticTestCollections = solrDiagnosticTestRepository.getGlobalDiagnosticTests(new Date(createdTimeStamp), discarded, searchTerm, new Sort(
+				    Sort.Direction.DESC, "updatedTime"));
+		    }
+
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error Occurred While Getting DiagnosticTests");
+		    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting DiagnosticTests");
+		}
+		return diagnosticTestCollections;
+	    }
+
+	    private List<SolrDiagnosticTestDocument> getCustomDiagnosticTests(int page, int size, String locationId, String hospitalId, String updatedTime, boolean discarded, String searchTerm) {
+		List<SolrDiagnosticTestDocument> diagnosticTestCollections = null;
+		try {
+		    long createdTimeStamp = Long.parseLong(updatedTime);
+		    if (locationId == null && hospitalId == null);
+		    else{
+		    	if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
+					if (size > 0)
+					    diagnosticTestCollections = solrDiagnosticTestRepository.getCustomDiagnosticTests(locationId, hospitalId, new Date(createdTimeStamp), discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+					else
+					    diagnosticTestCollections = solrDiagnosticTestRepository.getCustomDiagnosticTests(locationId, hospitalId, new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+				} else {				    
+				    if (size > 0)
+					    diagnosticTestCollections = solrDiagnosticTestRepository.getCustomDiagnosticTests(locationId ,hospitalId, new Date(createdTimeStamp), discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+					else
+					    diagnosticTestCollections = solrDiagnosticTestRepository.getCustomDiagnosticTests(locationId, hospitalId, new Date(createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));    
+				}	
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error Occurred While Getting LabTests");
+		    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting LabTests");
+		}
+		return diagnosticTestCollections;
+	    }
+
+	    private List<SolrDiagnosticTestDocument> getCustomGlobalDiagnosticTests(int page, int size, String locationId, String hospitalId, String updatedTime, boolean discarded, String searchTerm) {
+		List<SolrDiagnosticTestDocument> diagnosticTestCollections = null;
+		try {
+		    long createdTimeStamp = Long.parseLong(updatedTime);
+
+		    if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
+		    	if (locationId == null && hospitalId == null) {
+					if (size > 0)
+					    diagnosticTestCollections = solrDiagnosticTestRepository.getCustomGlobalDiagnosticTests(new Date(createdTimeStamp), discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+					else
+					    diagnosticTestCollections = solrDiagnosticTestRepository.getCustomGlobalDiagnosticTests(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+				    } else {
+					if (size > 0)
+					    diagnosticTestCollections = solrDiagnosticTestRepository.getCustomGlobalDiagnosticTests(locationId, hospitalId, new Date(createdTimeStamp), discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+					else
+					    diagnosticTestCollections = solrDiagnosticTestRepository.getCustomGlobalDiagnosticTests(locationId, hospitalId, new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+				    }
+		    }else{
+		    	if (locationId == null && hospitalId == null) {
+					if (size > 0)
+					    diagnosticTestCollections = solrDiagnosticTestRepository.getCustomGlobalDiagnosticTests(new Date(createdTimeStamp), discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+					else
+					    diagnosticTestCollections = solrDiagnosticTestRepository.getCustomGlobalDiagnosticTests(new Date(createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
+				    } else {
+					if (size > 0)
+					    diagnosticTestCollections = solrDiagnosticTestRepository.getCustomGlobalDiagnosticTests(locationId, hospitalId, new Date(createdTimeStamp), discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+					else
+					    diagnosticTestCollections = solrDiagnosticTestRepository.getCustomGlobalDiagnosticTests(locationId, hospitalId, new Date(createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
+				    }
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error Occurred While Getting LabTests");
+		    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting LabTests");
+		}
+		return diagnosticTestCollections;
+	    }
+
 
 }

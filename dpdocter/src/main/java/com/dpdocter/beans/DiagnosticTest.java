@@ -1,12 +1,20 @@
 package com.dpdocter.beans;
 
-public class DiagnosticTest {
+import com.dpdocter.collections.GenericCollection;
+
+public class DiagnosticTest extends GenericCollection{
 
     private String id;
 
     private String testName;
 
     private String description;
+
+    private String locationId;
+
+    private String hospitalId;
+
+    private Boolean discarded = false;
 
     public String getId() {
 	return id;
@@ -32,8 +40,33 @@ public class DiagnosticTest {
 	this.description = description;
     }
 
-    @Override
-    public String toString() {
-	return "DiagnosticTest [id=" + id + ", testName=" + testName + ", description=" + description + "]";
-    }
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	@Override
+	public String toString() {
+		return "DiagnosticTest [id=" + id + ", testName=" + testName + ", description=" + description + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + "]";
+	}
 }

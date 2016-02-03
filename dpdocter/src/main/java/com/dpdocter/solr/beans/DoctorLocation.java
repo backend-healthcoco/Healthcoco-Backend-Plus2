@@ -10,6 +10,9 @@ public class DoctorLocation {
     private String locationId;
 
     @Field
+    private String hospitalId;
+
+    @Field
     private String locationName;
 
     @Field
@@ -248,5 +251,25 @@ public class DoctorLocation {
 	public void setIsHomeServiceAvailable(Boolean isHomeServiceAvailable) {
 		this.isHomeServiceAvailable = isHomeServiceAvailable;
 	}
-	
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorLocation [locationId=" + locationId + ", hospitalId=" + hospitalId + ", locationName="
+				+ locationName + ", country=" + country + ", state=" + state + ", city=" + city
+				+ ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl="
+				+ websiteUrl + ", geoLocation=" + geoLocation + ", latitude=" + latitude + ", longitude=" + longitude
+				+ ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress=" + locationEmailAddress
+				+ ", streetAddress=" + streetAddress + ", locality=" + locality + ", locationMobileNumber="
+				+ locationMobileNumber + ", alternateNumber=" + alternateNumber + ", specialization=" + specialization
+				+ ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited="
+				+ isNABLAccredited + ", isHomeServiceAvailable=" + isHomeServiceAvailable + "]";
+	}
 }

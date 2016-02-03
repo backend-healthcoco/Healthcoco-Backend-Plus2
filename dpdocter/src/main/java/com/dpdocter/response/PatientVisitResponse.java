@@ -13,6 +13,8 @@ public class PatientVisitResponse extends GenericCollection{
 
     private String id;
 
+    private String uniqueId;
+    
     private String patientId;
 
     private String doctorId;
@@ -111,11 +113,19 @@ public class PatientVisitResponse extends GenericCollection{
 	this.records = records;
     }
 
-    @Override
-    public String toString() {
-	return "PatientVisitResponse [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-		+ hospitalId + ", visitedTime=" + visitedTime + ", visitedFor=" + visitedFor + ", prescriptions=" + prescriptions + ", clinicalNotes="
-		+ clinicalNotes + ", records=" + records + "]";
-    }
+	public String getUniqueId() {
+		return uniqueId;
+	}
 
+	public void setUniqueId(String uniqueId) {
+		this.uniqueId = uniqueId;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientVisitResponse [id=" + id + ", uniqueId=" + uniqueId + ", patientId=" + patientId + ", doctorId="
+				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", visitedTime="
+				+ visitedTime + ", visitedFor=" + visitedFor + ", prescriptions=" + prescriptions + ", clinicalNotes="
+				+ clinicalNotes + ", records=" + records + "]";
+	}
 }

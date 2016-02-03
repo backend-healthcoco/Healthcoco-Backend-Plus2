@@ -1,6 +1,8 @@
 package com.dpdocter.request;
 
-public class DoctorAddEditIBSRequest {
+import com.dpdocter.enums.DoctorFacility;
+
+public class DoctorAddEditFacilityRequest {
 
     private String id;
 
@@ -8,7 +10,7 @@ public class DoctorAddEditIBSRequest {
 
     private String locationId;
 
-    private Boolean isIBSOn = false;
+    private DoctorFacility facility;
 
     public String getId() {
 	return id;
@@ -34,16 +36,17 @@ public class DoctorAddEditIBSRequest {
 	this.locationId = locationId;
     }
 
-    public Boolean getIsIBSOn() {
-	return isIBSOn;
-    }
+	public DoctorFacility getFacility() {
+		return facility;
+	}
 
-    public void setIsIBSOn(Boolean isIBSOn) {
-	this.isIBSOn = isIBSOn;
-    }
+	public void setFacility(DoctorFacility facility) {
+		this.facility = facility;
+	}
 
-    @Override
-    public String toString() {
-	return "DoctorAddEditIBSRequest [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", isIBSOn=" + isIBSOn + "]";
-    }
+	@Override
+	public String toString() {
+		return "DoctorAddEditFacilityRequest [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", facility=" + facility + "]";
+	}
 }

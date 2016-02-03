@@ -64,7 +64,7 @@ public class SolrCityServiceImpl implements SolrCityService {
 	boolean response = false;
 	try {
 	    solrCityRepository.save(solrCities);
-	    transnationalService.addResource(solrCities.getId(), Resource.CITY, false);
+	    transnationalService.addResource(solrCities.getId(), Resource.CITY, true);
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -224,7 +224,7 @@ public class SolrCityServiceImpl implements SolrCityService {
 		boolean response = false;
 		try {
 		    solrStateRepository.save(solrState);
-		    transnationalService.addResource(solrState.getId(), Resource.STATE, false);
+		    transnationalService.addResource(solrState.getId(), Resource.STATE, true);
 		    response = true;
 		} catch (Exception e) {
 		    e.printStackTrace();

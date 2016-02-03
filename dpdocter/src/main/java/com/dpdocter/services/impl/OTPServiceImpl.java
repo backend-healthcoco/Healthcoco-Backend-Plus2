@@ -19,12 +19,14 @@ import com.dpdocter.collections.DoctorOTPCollection;
 import com.dpdocter.collections.OTPCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.collections.UserLocationCollection;
 import com.dpdocter.enums.OTPState;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.repository.DoctorOTPRepository;
 import com.dpdocter.repository.OTPRepository;
 import com.dpdocter.repository.SMSFormatRepository;
+import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
@@ -41,6 +43,9 @@ public class OTPServiceImpl implements OTPService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private UserLocationRepository userLocationRepository;
+    
     @Autowired
     private SMSServices sMSServices;
 
@@ -77,10 +82,10 @@ public class OTPServiceImpl implements OTPService {
 	try {
 	    OTP = LoginUtils.generateOTP();
 	    UserCollection userCollection = userRepository.findOne(doctorId);
-	    
+	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(doctorId, locationId);
 	    UserCollection patient = userRepository.findOne(patientId);
 	    
-	    if(userCollection != null && patient != null){
+	    if(userCollection != null && patient != null && userLocationCollection!= null){
 	    	
 	    	String doctorName=(userCollection.getTitle()!=null?userCollection.getTitle():"")+" "+userCollection.getFirstName();
 	    	
@@ -90,14 +95,13 @@ public class OTPServiceImpl implements OTPService {
 			    
 			    if (userCollection != null)
 				otpCollection.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());
+			    otpCollection.setGeneratorId(doctorId);
 			    otpCollection = otpRepository.save(otpCollection);
 
 			    DoctorOTPCollection doctorOTPCollection = new DoctorOTPCollection();
 			    doctorOTPCollection.setCreatedTime(new Date());
 			    doctorOTPCollection.setOtpId(otpCollection.getId());
-			    doctorOTPCollection.setDoctorId(doctorId);
-			    doctorOTPCollection.setLocationId(locationId);
-			    doctorOTPCollection.setHospitalId(hospitalId);
+			    doctorOTPCollection.setUserLocationId(userLocationCollection.getId());
 			    doctorOTPCollection.setPatientId(patientId);
 			    doctorOTPCollection = doctorOTPRepository.save(doctorOTPCollection);
 			    
@@ -106,10 +110,11 @@ public class OTPServiceImpl implements OTPService {
 					    patient.getMobileNumber(), "OTPVerification");
 				sMSServices.sendSMS(smsTrackDetail, false);
 				
-				String body = mailBodyGenerator.generateRecordsShareOtpBeforeVerificationEmailBody(patient.getEmailAddress(), patient.getFirstName()
-						,doctorName, uriInfo);
-				mailService.sendEmail(patient.getEmailAddress(), recordsShareOtpBeforeVerification, body, null);
-
+				if(patient.getEmailAddress() != null || !patient.getEmailAddress().isEmpty()){
+					String body = mailBodyGenerator.generateRecordsShareOtpBeforeVerificationEmailBody(patient.getEmailAddress(), patient.getFirstName()
+							,doctorName, uriInfo);
+					mailService.sendEmail(patient.getEmailAddress(), recordsShareOtpBeforeVerification, body, null);
+				}
 	    }else{
 	    	logger.error("Invalid doctorId or patientId");
 		    throw new BusinessException(ServiceError.InvalidInput, "Invalid doctorId or patientId");
@@ -128,29 +133,34 @@ public class OTPServiceImpl implements OTPService {
 	Boolean response = false;
 	try {
 		UserCollection userCollection = userRepository.findOne(doctorId);
+		UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(doctorId, locationId);
 	    UserCollection patient = userRepository.findOne(patientId);
-	    String doctorName=(userCollection.getTitle()!=null?userCollection.getTitle():"")+" "+userCollection.getFirstName();
-	    List<DoctorOTPCollection> doctorOTPCollection = doctorOTPRepository.find(doctorId, locationId, hospitalId, patientId, new PageRequest(0, 1, new Sort(Sort.Direction.DESC,"createdTime")));
-	    if (doctorOTPCollection != null) {
-		OTPCollection otpCollection = otpRepository.findOne(doctorOTPCollection.get(0).getOtpId());
-		if (otpCollection != null) {
-		    if (otpCollection.getOtpNumber().equals(otpNumber)) {
-			if (isOTPValid(otpCollection.getCreatedTime())) {
-			    otpCollection.setState(OTPState.VERIFIED);
-			    otpCollection = otpRepository.save(otpCollection);
-			    response = true;
-			    String body = mailBodyGenerator.generateRecordsShareOtpAfterVerificationEmailBody(patient.getEmailAddress(),patient.getFirstName(), 
-			    		doctorName, uriInfo);
-				mailService.sendEmail(patient.getEmailAddress(), recordsShareOtpAfterVerification+" "+userCollection.getFirstName(), body, null);
-			} else {
-			    logger.error("OTP is expired");
-			    throw new BusinessException(ServiceError.NotFound, "OTP is expired");
+	    if(userCollection != null && patient != null && userLocationCollection != null){
+	    	String doctorName=(userCollection.getTitle()!=null?userCollection.getTitle():"")+" "+userCollection.getFirstName();
+	    	List<DoctorOTPCollection> doctorOTPCollection = doctorOTPRepository.find(userLocationCollection.getId(), patientId, new PageRequest(0, 1, new Sort(Sort.Direction.DESC,"createdTime")));
+		    if (doctorOTPCollection != null) {
+			OTPCollection otpCollection = otpRepository.findOne(doctorOTPCollection.get(0).getOtpId());
+			if (otpCollection != null) {
+			    if (otpCollection.getOtpNumber().equals(otpNumber)) {
+				if (isOTPValid(otpCollection.getCreatedTime())) {
+				    otpCollection.setState(OTPState.VERIFIED);
+				    otpCollection = otpRepository.save(otpCollection);
+				    response = true;
+				    if(patient.getEmailAddress() != null || !patient.getEmailAddress().isEmpty()){
+				    	String body = mailBodyGenerator.generateRecordsShareOtpAfterVerificationEmailBody(patient.getEmailAddress(),patient.getFirstName(), 
+					    		doctorName, uriInfo);
+						mailService.sendEmail(patient.getEmailAddress(), recordsShareOtpAfterVerification+" "+userCollection.getFirstName(), body, null);
+				    }
+				} else {
+				    logger.error("OTP is expired");
+				    throw new BusinessException(ServiceError.NotFound, "OTP is expired");
+				}
+			    } else {
+				logger.error("Incorrect OTP");
+				throw new BusinessException(ServiceError.NotFound, "Incorrect OTP");
+			    }
 			}
-		    } else {
-			logger.error("Incorrect OTP");
-			throw new BusinessException(ServiceError.NotFound, "Incorrect OTP");
 		    }
-		}
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -164,13 +174,16 @@ public class OTPServiceImpl implements OTPService {
     public Boolean checkOTPVerified(String doctorId, String locationId, String hospitalId, String patientId) {
 	Boolean response = false;
 	try {
-		List<DoctorOTPCollection> doctorOTPCollection = doctorOTPRepository.find(doctorId, locationId, hospitalId, patientId, new PageRequest(0, 1, new Sort(Sort.Direction.DESC,"createdTime")));
-	    if (doctorOTPCollection != null && !doctorOTPCollection.isEmpty() && doctorOTPCollection.size() > 0) {
-		OTPCollection otpCollection = otpRepository.findOne(doctorOTPCollection.get(0).getOtpId());
-		if (otpCollection != null && otpCollection.getState().equals(OTPState.VERIFIED)){
-			if(isOTPValid(otpCollection.getCreatedTime()))response = true;
+		UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(doctorId, locationId);
+		if(userLocationCollection != null){
+			List<DoctorOTPCollection> doctorOTPCollection = doctorOTPRepository.find(userLocationCollection.getId(), patientId, new PageRequest(0, 1, new Sort(Sort.Direction.DESC,"createdTime")));
+		    if (doctorOTPCollection != null && !doctorOTPCollection.isEmpty() && doctorOTPCollection.size() > 0) {
+			OTPCollection otpCollection = otpRepository.findOne(doctorOTPCollection.get(0).getOtpId());
+			if (otpCollection != null && otpCollection.getState().equals(OTPState.VERIFIED)){
+				if(isOTPValid(otpCollection.getCreatedTime()))response = true;
+			}
+		    }
 		}
-	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error While checking OTP");
@@ -179,11 +192,13 @@ public class OTPServiceImpl implements OTPService {
 	return response;
     }
 
-    public Boolean isOTPValid(Date createdTime) {
+    @Override
+    public boolean isOTPValid(Date createdTime) {
 	return Minutes.minutesBetween(new DateTime(createdTime), new DateTime()).isLessThan(Minutes.minutes(Integer.parseInt(otpTimeDifference)));
     }
 
-    private boolean isNonVerifiedOTPValid(Date createdTime) {
+    @Override
+    public boolean isNonVerifiedOTPValid(Date createdTime) {
     	return Minutes.minutesBetween(new DateTime(createdTime), new DateTime()).isLessThan(Minutes.minutes(Integer.parseInt(otpNonVerifiedTimeDifference)));
 	}
     
@@ -193,13 +208,14 @@ public class OTPServiceImpl implements OTPService {
 	try {
 	    OTP = LoginUtils.generateOTP();
 	    SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(null, null, null, null, null, 
-	    		"Your Healthcoco account verification number is: "+OTP+ ".Enter this in our app to confirm your Healthcoco account.", mobileNumber,
+	    		"Your Healthcoco account verification number is: "+OTP+".Enter this in our app to confirm your Healthcoco account.", mobileNumber,
 	    		"OTPVerification");
 	    sMSServices.sendSMS(smsTrackDetail, false);
 
 	    OTPCollection otpCollection = new OTPCollection();
 	    otpCollection.setCreatedTime(new Date());
 	    otpCollection.setOtpNumber(OTP);
+	    otpCollection.setGeneratorId(mobileNumber);
 	    otpCollection.setMobileNumber(mobileNumber);
 	    otpCollection.setCreatedBy(mobileNumber);
 	    otpCollection = otpRepository.save(otpCollection);
@@ -217,7 +233,7 @@ public class OTPServiceImpl implements OTPService {
     public boolean verifyOTP(String mobileNumber, String otpNumber) {
 	Boolean response = false;
 	try {
-	    OTPCollection otpCollection = otpRepository.findOne(mobileNumber, otpNumber);
+	    OTPCollection otpCollection = otpRepository.findOne(mobileNumber, otpNumber, mobileNumber);
 	    if (otpCollection != null) {
 		if (isOTPValid(otpCollection.getCreatedTime())) {
 		    otpCollection.setState(OTPState.VERIFIED);
@@ -239,49 +255,5 @@ public class OTPServiceImpl implements OTPService {
 	}
 	return response;
     }
-
-    @Override
-    public boolean checkOTPVerified(String mobileNumber, String otpNumber) {
-	Boolean response = false;
-	try {
-	    OTPCollection otpCollection = otpRepository.findOne(mobileNumber, otpNumber);
-	    if (otpCollection != null) {
-	    	if (otpCollection != null && otpCollection.getState().equals(OTPState.VERIFIED)){
-				if(isOTPValid(otpCollection.getCreatedTime()))response = true;
-			}
-	    } else {
-		logger.error("Incorrect OTP");
-		throw new BusinessException(ServiceError.NotFound, "Incorrect OTP");
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error While checking OTP");
-	    throw new BusinessException(ServiceError.Forbidden, "Error While checking OTP");
-	}
-	return response;
-    }
     
-    @Scheduled(fixedRate = 300000)
-    public void checkOTP(){
-    	try {
-    		List<OTPCollection> otpCollections = otpRepository.findNonExpiredOtp(OTPState.EXPIRED.getState());
-    		if(otpCollections != null){
-    			for(OTPCollection otpCollection : otpCollections){
-    				if(otpCollection.getState().equals(OTPState.VERIFIED)){
-    					if(!isOTPValid(otpCollection.getCreatedTime())){
-    						otpCollection.setState(OTPState.EXPIRED);
-    					}
-    				}else if(otpCollection.getState().equals(OTPState.NOTVERIFIED)){
-    					if(!isNonVerifiedOTPValid(otpCollection.getCreatedTime())){
-    						otpCollection.setState(OTPState.EXPIRED);
-    					}
-    				}
-    				otpRepository.save(otpCollection);
-    			}
-    		}
-    	} catch (Exception e) {
-    	    e.printStackTrace();
-    	    logger.error(e);
-    	}
-    }
 }

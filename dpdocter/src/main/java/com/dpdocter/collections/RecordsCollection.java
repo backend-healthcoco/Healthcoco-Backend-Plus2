@@ -11,6 +11,9 @@ public class RecordsCollection extends GenericCollection {
     private String id;
 
     @Field
+    private String uniqueId;
+    
+    @Field
     private String recordsUrl;
 
     @Field
@@ -45,7 +48,22 @@ public class RecordsCollection extends GenericCollection {
 
     @Field
     private String uploadedByLocation;
-    
+
+    @Field
+    private String prescriptionId;
+
+    @Field
+    private String prescribedByDoctorId;
+
+    @Field
+    private String prescribedByLocationId;
+
+    @Field
+    private String prescribedByHospitalId;
+
+    @Field
+    private String testId;;
+
     public String getId() {
 	return id;
     }
@@ -150,12 +168,63 @@ public class RecordsCollection extends GenericCollection {
 		this.uploadedByLocation = uploadedByLocation;
 	}
 
+	public String getUniqueId() {
+		return uniqueId;
+	}
+
+	public void setUniqueId(String uniqueId) {
+		this.uniqueId = uniqueId;
+	}
+
+	public String getPrescriptionId() {
+		return prescriptionId;
+	}
+
+	public void setPrescriptionId(String prescriptionId) {
+		this.prescriptionId = prescriptionId;
+	}
+
+	public String getPrescribedByDoctorId() {
+		return prescribedByDoctorId;
+	}
+
+	public void setPrescribedByDoctorId(String prescribedByDoctorId) {
+		this.prescribedByDoctorId = prescribedByDoctorId;
+	}
+
+	public String getPrescribedByLocationId() {
+		return prescribedByLocationId;
+	}
+
+	public void setPrescribedByLocationId(String prescribedByLocationId) {
+		this.prescribedByLocationId = prescribedByLocationId;
+	}
+
+	public String getPrescribedByHospitalId() {
+		return prescribedByHospitalId;
+	}
+
+	public void setPrescribedByHospitalId(String prescribedByHospitalId) {
+		this.prescribedByHospitalId = prescribedByHospitalId;
+	}
+
+	public String getTestId() {
+		return testId;
+	}
+
+	public void setTestId(String testId) {
+		this.testId = testId;
+	}
+
 	@Override
 	public String toString() {
-		return "RecordsCollection [id=" + id + ", recordsUrl=" + recordsUrl + ", recordsPath=" + recordsPath
-				+ ", recordsLable=" + recordsLable + ", recordsType=" + recordsType + ", description=" + description
-				+ ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + ", discarded=" + discarded + ", inHistory=" + inHistory + ", uploadedByLocation="
-				+ uploadedByLocation + "]";
+		return "RecordsCollection [id=" + id + ", uniqueId=" + uniqueId + ", recordsUrl=" + recordsUrl
+				+ ", recordsPath=" + recordsPath + ", recordsLable=" + recordsLable + ", recordsType=" + recordsType
+				+ ", description=" + description + ", patientId=" + patientId + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ ", inHistory=" + inHistory + ", uploadedByLocation=" + uploadedByLocation + ", prescriptionId="
+				+ prescriptionId + ", prescribedByDoctorId=" + prescribedByDoctorId + ", prescribedByLocationId="
+				+ prescribedByLocationId + ", prescribedByHospitalId=" + prescribedByHospitalId + ", testId=" + testId
+				+ "]";
 	}
 }

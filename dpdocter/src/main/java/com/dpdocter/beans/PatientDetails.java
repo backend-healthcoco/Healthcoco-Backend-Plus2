@@ -3,6 +3,8 @@ package com.dpdocter.beans;
 public class PatientDetails {
 
     private Boolean showName;
+    
+    private Boolean showPID;
 
     private Boolean showMobileNumber;
 
@@ -18,6 +20,8 @@ public class PatientDetails {
     
     private Boolean showResourceId;
 
+    private PrintSettingsText style;
+    
     public Boolean getShowName() {
 	return showName;
     }
@@ -82,10 +86,28 @@ public class PatientDetails {
 		this.showResourceId = showResourceId;
 	}
 
+	public Boolean getShowPID() {
+		return showPID;
+	}
+
+	public void setShowPID(Boolean showPID) {
+		this.showPID = showPID;
+	}
+
+	public PrintSettingsText getStyle() {
+		return style;
+	}
+
+	public void setStyle(PrintSettingsText style) {
+		this.style = style;
+	}
+
 	@Override
 	public String toString() {
-		return "PatientDetails [showName=" + showName + ", showMobileNumber=" + showMobileNumber + ", showDOB="
-				+ showDOB + ", showGender=" + showGender + ", showReferedBy=" + showReferedBy + ", showDate=" + showDate
-				+ ", showBloodGroup=" + showBloodGroup + ", showResourceId=" + showResourceId + "]";
+		return "PatientDetails [showName=" + showName + ", showPID=" + showPID + ", showMobileNumber="
+				+ showMobileNumber + ", showDOB=" + showDOB + ", showGender=" + showGender + ", showReferedBy="
+				+ showReferedBy + ", showDate=" + showDate + ", showBloodGroup=" + showBloodGroup + ", showResourceId="
+				+ showResourceId + ", style=" + style + "]";
 	}
+
 }

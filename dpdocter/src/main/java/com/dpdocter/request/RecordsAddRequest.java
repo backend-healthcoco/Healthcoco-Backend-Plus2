@@ -22,6 +22,10 @@ public class RecordsAddRequest {
 
     private String visitId;
 
+    private String prescriptionId;
+    
+    private String testId;
+
     public String getPatientId() {
 	return patientId;
     }
@@ -94,10 +98,27 @@ public class RecordsAddRequest {
 	this.visitId = visitId;
     }
 
-    @Override
-    public String toString() {
-	return "RecordsAddRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", description=" + description + ", fileDetails=" + fileDetails
-		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", recordsType=" + recordsType + ", createdBy=" + createdBy + ", visitId="
-		+ visitId + "]";
-    }
+	public String getPrescriptionId() {
+		return prescriptionId;
+	}
+
+	public void setPrescriptionId(String prescriptionId) {
+		this.prescriptionId = prescriptionId;
+	}
+
+	public String getTestId() {
+		return testId;
+	}
+
+	public void setTestId(String testId) {
+		this.testId = testId;
+	}
+
+	@Override
+	public String toString() {
+		return "RecordsAddRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", description=" + description
+				+ ", fileDetails=" + fileDetails + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", recordsType=" + recordsType + ", createdBy=" + createdBy + ", visitId=" + visitId
+				+ ", prescriptionId=" + prescriptionId + ", testId=" + testId + "]";
+	}
 }

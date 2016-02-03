@@ -9,13 +9,8 @@ public class User {
     
     private String firstName;
 
-    private String lastName;
-
-    private String middleName;
-
     private String userName;
 
-    // private String password;
     private String emailAddress;
 
     private String mobileNumber;
@@ -66,22 +61,6 @@ public class User {
 
     public void setFirstName(String firstName) {
 	this.firstName = firstName;
-    }
-
-    public String getLastName() {
-	return lastName;
-    }
-
-    public void setLastName(String lastName) {
-	this.lastName = lastName;
-    }
-
-    public String getMiddleName() {
-	return middleName;
-    }
-
-    public void setMiddleName(String middleName) {
-	this.middleName = middleName;
     }
 
     public String getUserName() {
@@ -170,11 +149,10 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName
-				+ ", middleName=" + middleName + ", userName=" + userName + ", emailAddress=" + emailAddress
-				+ ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob=" + dob + ", secPhoneNumber="
-				+ secPhoneNumber + ", isPartOfClinic=" + isPartOfClinic + ", imageUrl=" + imageUrl + ", thumbnailUrl="
-				+ thumbnailUrl + ", colorCode=" + colorCode + ", userState=" + userState + "]";
+		return "User [id=" + id + ", title=" + title + ", firstName=" + firstName + ", userName=" + userName
+				+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob="
+				+ dob + ", secPhoneNumber=" + secPhoneNumber + ", isPartOfClinic=" + isPartOfClinic + ", imageUrl="
+				+ imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", colorCode=" + colorCode + ", userState=" + userState
+				+ "]";
 	}
-
 }

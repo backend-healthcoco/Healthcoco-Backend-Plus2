@@ -15,13 +15,14 @@ import com.dpdocter.request.RecordsAddRequestMultipart;
 import com.dpdocter.request.RecordsEditRequest;
 import com.dpdocter.request.RecordsSearchRequest;
 import com.dpdocter.request.TagRecordRequest;
+import com.sun.jersey.multipart.FormDataBodyPart;
 
 public interface RecordsService {
     Records addRecord(RecordsAddRequest request);
 
     void tagRecord(TagRecordRequest request);
 
-    List<Records> searchRecords(RecordsSearchRequest request);
+    List<Records> searchRecords(RecordsSearchRequest request, UriInfo uriInfo);
 
     List<Records> getRecords(int page, int size, String doctorId, String hospitalId, String locationId, String patientId, String updatedTime,
 	    boolean isOTPVerified, boolean discarded, boolean inHistory);
@@ -54,8 +55,8 @@ public interface RecordsService {
 
     void changeLabelAndDescription(String recordId, String label, String description);
 
-    List<Records> getRecordsByPatientId(String patientId, int page, int size, String updatedTime, Boolean discarded);
+    List<Records> getRecordsByPatientId(String patientId, int page, int size, String updatedTime, Boolean discarded, UriInfo uriInfo);
 
-	Records addRecordsMultipart(InputStream fileInputStream, RecordsAddRequestMultipart request);
+	Records addRecordsMultipart(FormDataBodyPart file, RecordsAddRequestMultipart request);
 
 }

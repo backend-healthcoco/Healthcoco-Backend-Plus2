@@ -9,6 +9,8 @@ import com.dpdocter.collections.GenericCollection;
 public class PrescriptionAddEditResponseDetails extends GenericCollection {
     private String id;
 
+    private String uniqueId;
+    
     private String name;
 
     private String doctorId;
@@ -27,7 +29,7 @@ public class PrescriptionAddEditResponseDetails extends GenericCollection {
 
     private String visitId;
 
-    private List<LabTest> labTests;
+    private List<TestAndRecordDataResponse> testsAndRecords;
 
     private String advice;
 
@@ -111,15 +113,7 @@ public class PrescriptionAddEditResponseDetails extends GenericCollection {
 	this.visitId = visitId;
     }
 
-    public List<LabTest> getLabTests() {
-	return labTests;
-    }
-
-    public void setLabTests(List<LabTest> labTests) {
-	this.labTests = labTests;
-    }
-
-    public String getAdvice() {
+	public String getAdvice() {
 	return advice;
     }
 
@@ -127,10 +121,28 @@ public class PrescriptionAddEditResponseDetails extends GenericCollection {
 	this.advice = advice;
     }
 
-    @Override
-    public String toString() {
-	return "PrescriptionAddEditResponseDetails [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-		+ hospitalId + ", items=" + items + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + ", discarded=" + discarded
-		+ ", visitId=" + visitId + ", labTests=" + labTests + ", advice=" + advice + "]";
-    }
+	public String getUniqueId() {
+		return uniqueId;
+	}
+
+	public void setUniqueId(String uniqueId) {
+		this.uniqueId = uniqueId;
+	}
+
+	public List<TestAndRecordDataResponse> getTestsAndRecords() {
+		return testsAndRecords;
+	}
+
+	public void setTestsAndRecords(List<TestAndRecordDataResponse> testsAndRecords) {
+		this.testsAndRecords = testsAndRecords;
+	}
+
+	@Override
+	public String toString() {
+		return "PrescriptionAddEditResponseDetails [id=" + id + ", uniqueId=" + uniqueId + ", name=" + name
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", items="
+				+ items + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + ", discarded="
+				+ discarded + ", visitId=" + visitId + ", testsAndRecords=" + testsAndRecords + ", advice=" + advice
+				+ "]";
+	}
 }

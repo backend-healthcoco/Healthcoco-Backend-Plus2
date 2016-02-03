@@ -4,8 +4,7 @@ import java.util.List;
 
 import javax.ws.rs.core.UriInfo;
 
-import org.springframework.data.mongodb.repository.Query;
-
+import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Prescription;
@@ -26,6 +25,7 @@ import com.dpdocter.response.DrugStrengthAddEditResponse;
 import com.dpdocter.response.DrugTypeAddEditResponse;
 import com.dpdocter.response.PrescriptionAddEditResponse;
 import com.dpdocter.response.PrescriptionAddEditResponseDetails;
+import com.dpdocter.response.PrescriptionTestAndRecord;
 import com.dpdocter.response.TemplateAddEditResponse;
 import com.dpdocter.response.TemplateAddEditResponseDetails;
 
@@ -124,5 +124,15 @@ public interface PrescriptionServices {
     List<DiagnosticTestCollection> getDiagnosticTest();
 
 	List<Prescription> getPrescriptions(String patientId, int page, int size, String updatedTime, Boolean discarded);
+
+	DiagnosticTest addEditDiagnosticTest(DiagnosticTest request);
+
+	DiagnosticTest getDiagnosticTest(String diagnosticTestId);
+
+	Boolean deleteDiagnosticTest(String diagnosticTestId, Boolean discarded);
+
+	Boolean deleteDiagnosticTest(String diagnosticTestId, String hospitalId, String locationId, Boolean discarded);
+
+	PrescriptionTestAndRecord checkPrescriptionExists(String uniqueId, String patientId);
 
 }

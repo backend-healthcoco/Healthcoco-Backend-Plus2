@@ -172,20 +172,12 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.GET_PATIENT_PROFILE)
     @GET
-    public Response<RegisteredPatientDetails> getPatientProfile(@PathParam("userId") String userId, @PathParam("doctorId") String doctorId,
-	    @PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+    public Response<RegisteredPatientDetails> getPatientProfile(@PathParam("userId") String userId, @QueryParam("doctorId") String doctorId,
+    		@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId) {
 	if (userId == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.userId is null");
 	}
-	if (doctorId == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.doctorId is null");
-	}
-	if (locationId == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.locationId is null");
-	}
-	if (hospitalId == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.hospitalId is null");
-	}
+	
 	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 
 	RegisteredPatientDetails registeredPatientDetails = registrationService.getPatientProfileByUserId(userId, doctorId, locationId, hospitalId);

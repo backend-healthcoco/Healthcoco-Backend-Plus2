@@ -7,10 +7,6 @@ public class PatientCard {
 
     private String firstName;
 
-    private String lastName;
-
-    private String middleName;
-
     private String userName;
 
     private String emailAddress;
@@ -65,22 +61,6 @@ public class PatientCard {
 
     public void setFirstName(String firstName) {
 	this.firstName = firstName;
-    }
-
-    public String getLastName() {
-	return lastName;
-    }
-
-    public void setLastName(String lastName) {
-	this.lastName = lastName;
-    }
-
-    public String getMiddleName() {
-	return middleName;
-    }
-
-    public void setMiddleName(String middleName) {
-	this.middleName = middleName;
     }
 
     public String getUserName() {
@@ -245,13 +225,14 @@ public class PatientCard {
 
 	@Override
 	public String toString() {
-		return "PatientCard [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName="
-				+ middleName + ", userName=" + userName + ", emailAddress=" + emailAddress + ", imageUrl=" + imageUrl
-				+ ", thumbnailUrl=" + thumbnailUrl + ", bloodGroup=" + bloodGroup + ", PID=" + PID + ", gender="
-				+ gender + ", mobileNumber=" + mobileNumber + ", secPhoneNumber=" + secPhoneNumber + ", dob=" + dob
-				+ ", count=" + count + ", dateOfVisit=" + dateOfVisit + ", groups=" + groups + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorSepecificPatientId="
-				+ doctorSepecificPatientId + ", colorCode=" + colorCode + ", isDataAvailableWithOtherDoctor="
-				+ isDataAvailableWithOtherDoctor + ", isPatientOTPVerified=" + isPatientOTPVerified + "]";
+		return "PatientCard [id=" + id + ", firstName=" + firstName + ", userName=" + userName + ", emailAddress="
+				+ emailAddress + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", bloodGroup="
+				+ bloodGroup + ", PID=" + PID + ", gender=" + gender + ", mobileNumber=" + mobileNumber
+				+ ", secPhoneNumber=" + secPhoneNumber + ", dob=" + dob + ", count=" + count + ", dateOfVisit="
+				+ dateOfVisit + ", groups=" + groups + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", doctorSepecificPatientId=" + doctorSepecificPatientId
+				+ ", colorCode=" + colorCode + ", isDataAvailableWithOtherDoctor=" + isDataAvailableWithOtherDoctor
+				+ ", isPatientOTPVerified=" + isPatientOTPVerified + "]";
 	}
+
 }

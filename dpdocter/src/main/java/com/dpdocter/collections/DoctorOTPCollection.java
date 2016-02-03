@@ -14,13 +14,7 @@ public class DoctorOTPCollection extends GenericCollection {
     private String otpId;
 
     @Field
-    private String doctorId;
-
-    @Field
-    private String locationId;
-
-    @Field
-    private String hospitalId;
+    private String userLocationId;
 
     @Field
     private String patientId;
@@ -41,41 +35,25 @@ public class DoctorOTPCollection extends GenericCollection {
 	this.otpId = otpId;
     }
 
-    public String getDoctorId() {
-	return doctorId;
-    }
+	public String getUserLocationId() {
+		return userLocationId;
+	}
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setUserLocationId(String userLocationId) {
+		this.userLocationId = userLocationId;
+	}
 
-    public String getLocationId() {
-	return locationId;
-    }
+	public String getPatientId() {
+		return patientId;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
-
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
-
-    public String getPatientId() {
-	return patientId;
-    }
-
-    public void setPatientId(String patientId) {
-	this.patientId = patientId;
-    }
-
-    @Override
-    public String toString() {
-	return "DoctorOTPCollection [id=" + id + ", otpId=" + otpId + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ ", patientId=" + patientId + "]";
-    }
+	@Override
+	public String toString() {
+		return "DoctorOTPCollection [id=" + id + ", otpId=" + otpId + ", userLocationId=" + userLocationId
+				+ ", patientId=" + patientId + "]";
+	}
 }

@@ -5,6 +5,8 @@ import com.dpdocter.collections.GenericCollection;
 public class Records extends GenericCollection {
     private String id;
 
+    private String uniqueId;
+    
     private String doctorId;
 
     private String locationId;
@@ -28,6 +30,16 @@ public class Records extends GenericCollection {
     private String uploadedByLocation;
 
     private String visitId;
+
+    private String prescriptionId;
+
+    private String prescribedByDoctorId;
+
+    private String prescribedByLocationId;
+
+    private String prescribedByHospitalId;
+
+    private String testId;;
 
     public String getId() {
 	return id;
@@ -133,12 +145,62 @@ public class Records extends GenericCollection {
 		this.uploadedByLocation = uploadedByLocation;
 	}
 
+	public String getUniqueId() {
+		return uniqueId;
+	}
+
+	public void setUniqueId(String uniqueId) {
+		this.uniqueId = uniqueId;
+	}
+
+	public String getPrescriptionId() {
+		return prescriptionId;
+	}
+
+	public void setPrescriptionId(String prescriptionId) {
+		this.prescriptionId = prescriptionId;
+	}
+
+	public String getPrescribedByDoctorId() {
+		return prescribedByDoctorId;
+	}
+
+	public void setPrescribedByDoctorId(String prescribedByDoctorId) {
+		this.prescribedByDoctorId = prescribedByDoctorId;
+	}
+
+	public String getPrescribedByLocationId() {
+		return prescribedByLocationId;
+	}
+
+	public void setPrescribedByLocationId(String prescribedByLocationId) {
+		this.prescribedByLocationId = prescribedByLocationId;
+	}
+
+	public String getPrescribedByHospitalId() {
+		return prescribedByHospitalId;
+	}
+
+	public void setPrescribedByHospitalId(String prescribedByHospitalId) {
+		this.prescribedByHospitalId = prescribedByHospitalId;
+	}
+
+	public String getTestId() {
+		return testId;
+	}
+
+	public void setTestId(String testId) {
+		this.testId = testId;
+	}
+
 	@Override
 	public String toString() {
-		return "Records [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + ", patientId=" + patientId + ", recordsUrl=" + recordsUrl + ", recordsLable="
-				+ recordsLable + ", recordsType=" + recordsType + ", description=" + description + ", inHistory="
-				+ inHistory + ", discarded=" + discarded + ", uploadedByLocation=" + uploadedByLocation + ", visitId="
-				+ visitId + "]";
+		return "Records [id=" + id + ", uniqueId=" + uniqueId + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", recordsUrl=" + recordsUrl
+				+ ", recordsLable=" + recordsLable + ", recordsType=" + recordsType + ", description=" + description
+				+ ", inHistory=" + inHistory + ", discarded=" + discarded + ", uploadedByLocation=" + uploadedByLocation
+				+ ", visitId=" + visitId + ", prescriptionId=" + prescriptionId + ", prescribedByDoctorId="
+				+ prescribedByDoctorId + ", prescribedByLocationId=" + prescribedByLocationId
+				+ ", prescribedByHospitalId=" + prescribedByHospitalId + ", testId=" + testId + "]";
 	}
 }

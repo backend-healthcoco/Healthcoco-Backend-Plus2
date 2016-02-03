@@ -2,12 +2,14 @@ package com.dpdocter.services.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimeZone;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -30,6 +32,7 @@ import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.LandmarkLocality;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.PatientCard;
+import com.dpdocter.beans.PatientQueue;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
@@ -47,6 +50,8 @@ import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LabTestCollection;
 import com.dpdocter.collections.LandmarkLocalityCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PatientQueueCollection;
 import com.dpdocter.collections.SMSFormatCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.StateCollection;
@@ -55,6 +60,7 @@ import com.dpdocter.collections.UserLocationCollection;
 import com.dpdocter.enums.AppointmentCreatedBy;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
+import com.dpdocter.enums.DoctorFacility;
 import com.dpdocter.enums.SMSContent;
 import com.dpdocter.enums.SMSFormatType;
 import com.dpdocter.enums.SMSStatus;
@@ -72,12 +78,15 @@ import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LabTestRepository;
 import com.dpdocter.repository.LandmarkLocalityRepository;
 import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.PatientQueueRepository;
+import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.SMSFormatRepository;
 import com.dpdocter.repository.StateRepository;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.EventRequest;
+import com.dpdocter.request.PatientQueueAddEditRequest;
 import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.sms.services.SMSServices;
@@ -127,6 +136,9 @@ public class AppointmentServiceImpl implements AppointmentService {
     private UserRepository userRepository;
 
     @Autowired
+    private PatientRepository patientRepository;
+
+    @Autowired
     private AppointmentRepository appointmentRepository;
 
     @Autowired
@@ -153,6 +165,9 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Autowired
     private SMSServices sMSServices;
     
+    @Autowired
+    private PatientQueueRepository patientQueueRepository;
+
     @Override
     public Country addCountry(Country country) {
 	try {
@@ -348,8 +363,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 			
 			appointmentCollection.setState(request.getState());
 			
-			String patientName=patient.getFirstName(), appointmentId= appointmentCollection.getAppointmentId(), 
-					dateTime=appointmentCollection.getDate()+" "+String.format("%02d:%02d", appointmentCollection.getTime().getFrom() / 60, appointmentCollection.getTime().getFrom() % 60),
+			String patientName=patient.getFirstName() != null?patient.getFirstName().split(" ")[0] :"", appointmentId= appointmentCollection.getAppointmentId(), 
+					dateTime=new SimpleDateFormat("MMM dd,yyyy").format(appointmentCollection.getDate())+" "+String.format("%02d:%02d", appointmentCollection.getTime().getFrom() / 60, appointmentCollection.getTime().getFrom() % 60),
 					doctorName=userCollection.getTitle()+" "+userCollection.getFirstName(),clinicName= locationCollection.getLocationName(),clinicContactNum=locationCollection.getLocationPhoneNumber() != null ? locationCollection.getLocationPhoneNumber() :"";
 					
 			if(request.getState().getState().equals(AppointmentState.CANCEL.getState())){
@@ -409,15 +424,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    		sendMsg(SMSFormatType.CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT.getType(), request.getDoctorId(),request.getLocationId(), request.getHospitalId(), request.getPatientId(), 
 		    				patient.getMobileNumber(), patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum);
 		    	}
-//		    	else{
-//		    		sendMsg(smsFormatCollections, SMSFormatType.CONFIRMED_APPOINTMENT_REQUEST_TO_DOCTOR, request.getDoctorId(), 
-//		    				userCollection.getMobileNumber(), patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum);
-//		    		sendMsg(smsFormatCollections, SMSFormatType.TENTATIVE_APPOINTMENT_TO_PATIENT, request.getPatientId(), 
-//		    				patient.getMobileNumber(), patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum);
-//		    	}
 		    }
 		    response = new Appointment();
 		    BeanUtil.map(appointmentCollection, response);
+		    
+		    if(appointmentCollection.getState().getState().equalsIgnoreCase(AppointmentState.CONFIRM.getState())){
+		    	updateQueue(appointmentCollection.getAppointmentId(), appointmentCollection.getDoctorId(), appointmentCollection.getLocationId(), appointmentCollection.getHospitalId(), appointmentCollection.getPatientId(), appointmentCollection.getDate(), appointmentCollection.getTime().getFrom(), null, false);
+		    }
 		} else {
 		    logger.error("Time slot is already booked");
 		    throw new BusinessException(ServiceError.NotAcceptable, "Time slot is already booked");
@@ -451,10 +464,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    appointmentCollection = new AppointmentCollection();
 			    BeanUtil.map(request, appointmentCollection);
 			    appointmentCollection.setCreatedTime(new Date());
-			    appointmentCollection.setAppointmentId(RandomStringUtils.randomAlphanumeric(7).toUpperCase());
+			    appointmentCollection.setAppointmentId(DPDoctorUtils.generateRandomId());
 			    
-			    String patientName=patient.getFirstName(), appointmentId= appointmentCollection.getAppointmentId(), 
-						dateTime=appointmentCollection.getDate()+" "+String.format("%02d:%02d", appointmentCollection.getTime().getFrom() / 60, appointmentCollection.getTime().getFrom() % 60),
+			    String patientName = patient.getFirstName() != null?patient.getFirstName().split(" ")[0] :"", appointmentId= appointmentCollection.getAppointmentId(), 
+						dateTime= new SimpleDateFormat("MMM dd,yyyy").format(appointmentCollection.getDate())+" "+String.format("%02d:%02d", appointmentCollection.getTime().getFrom() / 60, appointmentCollection.getTime().getFrom() % 60),
 						doctorName=userCollection.getTitle()+" "+userCollection.getFirstName(),clinicName= locationCollection.getLocationName(),clinicContactNum=locationCollection.getLocationPhoneNumber() != null ? locationCollection.getLocationPhoneNumber() :"";
 						
 			    if(request.getCreatedBy().equals(AppointmentCreatedBy.DOCTOR)){
@@ -463,7 +476,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    else{
 			    	userLocationCollection = userLocationRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
 			        clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
-			    	if(clinicProfileCollection != null && clinicProfileCollection.getIsIBSOn() != null && clinicProfileCollection.getIsIBSOn()){
+			    	if(clinicProfileCollection != null && clinicProfileCollection.getFacility() != null && (clinicProfileCollection.getFacility().getType().equalsIgnoreCase(DoctorFacility.IBS.getType()))){
 			    		appointmentCollection.setState(AppointmentState.CONFIRM);
 			    	}else{
 			    		appointmentCollection.setState(AppointmentState.NEW);
@@ -478,19 +491,19 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    	
 		    	//sendSMS after appointment is saved	
 		    	if(request.getCreatedBy().equals(AppointmentCreatedBy.DOCTOR)){
-			    	if(request.getNotifyDoctorByEmail());
-			    	if(request.getNotifyDoctorBySms()){
+			    	if(request.getNotifyDoctorByEmail()!=null && request.getNotifyDoctorByEmail());
+			    	if(request.getNotifyDoctorBySms()!=null && request.getNotifyDoctorBySms()){
 			    		sendMsg("CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(),request.getLocationId(), request.getHospitalId(), request.getDoctorId(), 
 			    				userCollection.getMobileNumber(), patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum);
 			    	}
-			    	if(request.getNotifyPatientByEmail())System.out.println("send email to patient");
-			    	if(request.getNotifyPatientBySms()){
+			    	if(request.getNotifyPatientByEmail()!=null && request.getNotifyPatientByEmail())System.out.println("send email to patient");
+			    	if(request.getNotifyPatientBySms()!=null && request.getNotifyPatientBySms()){
 			    		sendMsg(SMSFormatType.CONFIRMED_APPOINTMENT_TO_PATIENT.getType(), request.getDoctorId(),request.getLocationId(), request.getHospitalId(), request.getPatientId(), 
 			    				patient.getMobileNumber(), patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum);
 			    	}
 			    }
 			    else{
-			    	if(clinicProfileCollection != null && clinicProfileCollection.getIsIBSOn() != null && clinicProfileCollection.getIsIBSOn()){
+			    	if(clinicProfileCollection != null && clinicProfileCollection.getFacility() != null && (clinicProfileCollection.getFacility().getType().equalsIgnoreCase(DoctorFacility.IBS.getType()))){
 			    		sendMsg("CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(),request.getLocationId(), request.getHospitalId(), request.getDoctorId(), 
 			    				userCollection.getMobileNumber(), patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum);
 			    		sendMsg(SMSFormatType.CONFIRMED_APPOINTMENT_TO_PATIENT.getType(), request.getDoctorId(),request.getLocationId(), request.getHospitalId(), request.getPatientId(), 
@@ -506,6 +519,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 				response = new Appointment();
 				BeanUtil.map(appointmentCollection, response);
 			    }
+			    
+			    if(appointmentCollection.getState().getState().equalsIgnoreCase(AppointmentState.CONFIRM.getState())){
+			    	updateQueue(appointmentCollection.getAppointmentId(), appointmentCollection.getDoctorId(), appointmentCollection.getLocationId(), appointmentCollection.getHospitalId(), appointmentCollection.getPatientId(), appointmentCollection.getDate(), appointmentCollection.getTime().getFrom(),null, false);
+			    }
 			} else {
 			    logger.error("Time slot is already booked");
 			    throw new BusinessException(ServiceError.NotAcceptable, "Time slot is already booked");
@@ -520,7 +537,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	private void sendMsg(String type, String doctorId, String locationId, String hospitalId,String userId, String mobileNumber, String patientName, String appointmentId, String dateTime, String doctorName, String clinicName, String clinicContactNum) {
 		SMSFormatCollection smsFormatCollection = sMSFormatRepository.find(doctorId, locationId, hospitalId, type);
-		
 		
 		SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 		smsTrackDetail.setDoctorId(doctorId);
@@ -554,7 +570,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    String text = "";
 	    switch (type) {
 		case "CONFIRMED_APPOINTMENT_TO_PATIENT" :{
-			text = "Hi"+patientName+",your appointment"+appointmentId+"has been confirmed"+(dateTime!= ""?" for"+dateTime:"")+ 
+			text = "Hi"+patientName+",your appointment"+appointmentId+" has been confirmed"+(dateTime!= ""?" for"+dateTime:"")+ 
 					(doctorName!= ""?" with"+doctorName:"")+ clinicName +clinicContactNum;
 			smsDetail.setUserName(patientName);
 		}
@@ -902,6 +918,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				if (appointmentCollection == null || !request.getIsCalenderBlocked()) {
 				    appointmentCollection = new AppointmentCollection();
 				    BeanUtil.map(request, appointmentCollection);
+				    appointmentCollection.setAppointmentId(DPDoctorUtils.generateRandomId());
 				    appointmentCollection.setState(AppointmentState.CONFIRM);
 					appointmentCollection.setType(AppointmentType.EVENT);
 					appointmentCollection.setCreatedTime(new Date());
@@ -913,7 +930,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				    	AppointmentBookedSlotCollection bookedSlotCollection = new AppointmentBookedSlotCollection();
 					    BeanUtil.map(appointmentCollection, bookedSlotCollection);
 					    bookedSlotCollection.setId(null);
-					    bookedSlotCollection.setAppointmentId(appointmentCollection.getId());
+					    bookedSlotCollection.setAppointmentId(appointmentCollection.getAppointmentId());
 				    	appointmentBookedSlotRepository.save(bookedSlotCollection);
 				    }
 			    	
@@ -1106,4 +1123,189 @@ public class AppointmentServiceImpl implements AppointmentService {
 //		}
 		System.out.println("Done");
 	}
+
+	@Override
+	public List<PatientQueue> addPatientInQueue(PatientQueueAddEditRequest request) {
+		List<PatientQueue> response = null;
+		try{
+			response = updateQueue(null, request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId(), new Date(), null, null, true);
+		}catch(Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Forbidden, "Error while adding patient In Queue");
+		}
+		return response;
+	}
+
+	@Override
+	public List<PatientQueue> rearrangePatientInQueue(String doctorId, String locationId, String hospitalId, String patientId, String appointmentId, int sequenceNo) {
+		List<PatientQueue> response = null;
+		try{
+			response = updateQueue(appointmentId, doctorId, locationId, hospitalId, patientId, new Date(), null, sequenceNo, true);
+		}catch(Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Forbidden, "Error while rearranging patient In Queue");
+		}
+		return response;
+	}
+
+	@Override
+	public List<PatientQueue> getPatientQueue(String doctorId, String locationId, String hospitalId) {
+		List<PatientQueue> response = null;
+		try{
+		    Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		    localCalendar.setTime(new Date());
+		    int currentDay = localCalendar.get(Calendar.DATE);
+		    int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+		    int currentYear = localCalendar.get(Calendar.YEAR);
+
+		    DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
+	    	DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
+		    
+	    	List<PatientQueueCollection> patientQueueCollections = patientQueueRepository.find(doctorId, locationId, hospitalId, start, end, false, new Sort(Direction.DESC,"sequenceNo"));
+	    	if(patientQueueCollections != null){
+	    		response = new ArrayList<PatientQueue>();
+	    		for(PatientQueueCollection collection : patientQueueCollections){
+	    			PatientQueue patientQueue = new PatientQueue();
+	    			BeanUtil.map(collection, patientQueue);
+	    			PatientCard patientCard = new PatientCard();
+	    			UserCollection userCollection = userRepository.findOne(collection.getPatientId());
+	    			if(userCollection!=null)BeanUtil.map(userCollection, patientCard);
+	    			PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(collection.getPatientId(), doctorId, locationId, hospitalId);
+	    			if(patientCollection!=null)BeanUtil.map(patientCollection, patientCard);
+	    			patientQueue.setPatient(patientCard);
+	    			response.add(patientQueue);
+	    		}
+	    	}
+		}catch(Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Forbidden, "Error while rearranging patient In Queue");
+		}
+		return response;
+	}
+	
+	private List<PatientQueue> updateQueue(String appointmentId, String doctorId, String locationId, String hospitalId, String patientId, Date date, Integer startTime, Integer sequenceNo, Boolean isPatientDetailRequire) {
+		List<PatientQueue> response = null;
+		List<PatientQueueCollection> patientQueueCollections = null; 
+		try{
+    		PatientQueueCollection patientQueueCollection = new PatientQueueCollection();
+    		patientQueueCollection.setAppointmentId(appointmentId);
+    		patientQueueCollection.setDoctorId(doctorId);
+    		patientQueueCollection.setLocationId(locationId);
+    		patientQueueCollection.setHospitalId(hospitalId);
+    		patientQueueCollection.setPatientId(patientId);
+    		patientQueueCollection.setDate(date);
+    		patientQueueCollection.setStartTime(startTime);
+
+		    Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		    localCalendar.setTime(date);
+		    int currentDay = localCalendar.get(Calendar.DATE);
+		    int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+		    int currentYear = localCalendar.get(Calendar.YEAR);
+
+		    DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
+	    	DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
+		    
+	    	patientQueueCollections = patientQueueRepository.find(doctorId, locationId, hospitalId, start, end, false, new Sort(Direction.DESC,"sequenceNo"));
+	    	if(startTime !=null){
+		    	if(patientQueueCollections == null || patientQueueCollections.isEmpty()){
+		    		patientQueueCollection.setSequenceNo(1);
+		    		patientQueueRepository.save(patientQueueCollection);
+		    	}else{
+		    		for(PatientQueueCollection queueCollection : patientQueueCollections){
+		    			int seq = queueCollection.getSequenceNo();
+		    			if(queueCollection.getStartTime()>startTime){
+		    				queueCollection.setSequenceNo(seq+1);
+		    				patientQueueRepository.save(queueCollection);
+		    			}else{
+		    				patientQueueCollection.setSequenceNo(seq+1);
+		    				patientQueueRepository.save(patientQueueCollection);
+		    				break;
+		    			}
+		    		}
+		    	}
+	    	}else if(sequenceNo != null){
+	    			if(sequenceNo == 0){
+	    				for(PatientQueueCollection queueCollection : patientQueueCollections){
+			    				int seq = queueCollection.getSequenceNo();
+			    				if(appointmentId.equalsIgnoreCase(queueCollection.getAppointmentId())){
+			    					queueCollection.setDiscarded(true);
+					    			patientQueueRepository.save(queueCollection);
+					    			break;
+			    				}else{
+			    					queueCollection.setSequenceNo(seq-1);
+					    			patientQueueRepository.save(queueCollection);
+			    				}
+				    			
+			    		}
+	    			}else{
+	    				Integer toCheck = patientQueueRepository.find(appointmentId, doctorId, locationId, hospitalId, patientId, start, end, sequenceNo, false);
+	    				if(toCheck == null || toCheck == 0){
+	    					PatientQueueCollection temp = null;
+	    					for(PatientQueueCollection queueCollection : patientQueueCollections){
+				    			if(appointmentId.equalsIgnoreCase(queueCollection.getAppointmentId())){
+				    				queueCollection.setSequenceNo(sequenceNo);
+				    				temp = queueCollection;
+				    			}else{
+				    				int seq = queueCollection.getSequenceNo();
+					    			if(queueCollection.getSequenceNo() > sequenceNo){
+					    				queueCollection.setSequenceNo(seq+1);
+					    				patientQueueRepository.save(queueCollection);
+					    			}else{
+					    				if(queueCollection.getSequenceNo() == sequenceNo){
+					    					if(temp != null){
+					    						temp.setStartTime(queueCollection.getStartTime()-1);
+					    						patientQueueRepository.save(temp);
+					    					}
+						    				queueCollection.setSequenceNo(seq+1);
+						    				patientQueueRepository.save(queueCollection);
+						    			}
+					    			}
+				    			}
+				    		}
+	    				}
+	    				
+	    			}
+	    	}else{
+	    			patientQueueCollection.setAppointmentId(DPDoctorUtils.generateRandomId());
+	    			if(patientQueueCollections == null || patientQueueCollections.isEmpty()){
+			    		patientQueueCollection.setSequenceNo(1);
+			    		patientQueueCollection.setStartTime(0);
+			    	}
+	    			else{
+	    				for(PatientQueueCollection queueCollection : patientQueueCollections){
+			    			int seq = queueCollection.getSequenceNo();
+			    			patientQueueCollection.setSequenceNo(seq+1);
+			    			patientQueueCollection.setStartTime(queueCollection.getStartTime()+1);
+			    			break;
+			    		}
+	    			}
+	    			patientQueueRepository.save(patientQueueCollection);
+	    	}
+	    	
+	    	patientQueueCollections = patientQueueRepository.find(doctorId, locationId, hospitalId, start, end, false, new Sort(Direction.ASC,"sequenceNo"));
+	    	if(patientQueueCollections != null){
+	    		response = new ArrayList<PatientQueue>();
+	    		if(isPatientDetailRequire){
+	    			for(PatientQueueCollection collection : patientQueueCollections){
+		    			PatientQueue patientQueue = new PatientQueue();
+		    			BeanUtil.map(collection, patientQueue);
+		    			PatientCard patientCard = new PatientCard();
+		    			UserCollection userCollection = userRepository.findOne(collection.getPatientId());
+		    			if(userCollection!=null)BeanUtil.map(userCollection, patientCard);
+		    			PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(collection.getPatientId(), doctorId, locationId, hospitalId);
+		    			if(patientCollection!=null)BeanUtil.map(patientCollection, patientCard);
+		    			patientQueue.setPatient(patientCard);
+		    			response.add(patientQueue);
+		    		}
+	    		}else{
+	    			BeanUtil.map(patientQueueCollections, response);
+	    		}	    		
+	    	}
+		}catch(Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+		}
+		return response;
+	}
+
 }

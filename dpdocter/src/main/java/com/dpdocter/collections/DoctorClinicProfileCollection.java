@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.WorkingSchedule;
+import com.dpdocter.enums.DoctorFacility;
 
 @Document(collection = "doctor_clinic_profile_cl")
 public class DoctorClinicProfileCollection extends GenericCollection {
@@ -37,7 +38,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
     private List<WorkingSchedule> workingSchedules;
 
     @Field
-    private Boolean isIBSOn = false;
+    private DoctorFacility facility = DoctorFacility.BOOK;
 
     public String getId() {
 	return id;
@@ -103,18 +104,19 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	this.workingSchedules = workingSchedules;
     }
 
-    public Boolean getIsIBSOn() {
-	return isIBSOn;
-    }
+	public DoctorFacility getFacility() {
+		return facility;
+	}
 
-    public void setIsIBSOn(Boolean isIBSOn) {
-	this.isIBSOn = isIBSOn;
-    }
+	public void setFacility(DoctorFacility facility) {
+		this.facility = facility;
+	}
 
-    @Override
-    public String toString() {
-	return "DoctorClinicProfileCollection [id=" + id + ", locationId=" + locationId + ", patientInitial=" + patientInitial + ", patientCounter="
-		+ patientCounter + ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee=" + consultationFee + ", appointmentSlot="
-		+ appointmentSlot + ", workingSchedules=" + workingSchedules + ", isIBSOn=" + isIBSOn + "]";
-    }
+	@Override
+	public String toString() {
+		return "DoctorClinicProfileCollection [id=" + id + ", locationId=" + locationId + ", patientInitial="
+				+ patientInitial + ", patientCounter=" + patientCounter + ", appointmentBookingNumber="
+				+ appointmentBookingNumber + ", consultationFee=" + consultationFee + ", appointmentSlot="
+				+ appointmentSlot + ", workingSchedules=" + workingSchedules + ", facility=" + facility + "]";
+	}
 }

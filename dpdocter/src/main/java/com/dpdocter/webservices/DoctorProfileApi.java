@@ -33,7 +33,7 @@ import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
-import com.dpdocter.request.DoctorAddEditIBSRequest;
+import com.dpdocter.request.DoctorAddEditFacilityRequest;
 import com.dpdocter.request.DoctorAppointmentNumbersAddEditRequest;
 import com.dpdocter.request.DoctorAppointmentSlotAddEditRequest;
 import com.dpdocter.request.DoctorConsultationFeeAddEditRequest;
@@ -88,8 +88,7 @@ public class DoctorProfileApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Cannot Be null");
 	}
 	Boolean addEditNameResponse = doctorProfileService.addEditName(request);
-	if (addEditNameResponse)
-	    solrRegistrationService.addEditName(request);
+	if (addEditNameResponse)transnationalService.checkDoctor(request.getDoctorId());
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditNameResponse);
 	return response;
@@ -103,8 +102,7 @@ public class DoctorProfileApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Experience Request Is Empty");
 	}
 	DoctorExperience experienceResponse = doctorProfileService.addEditExperience(request);
-	if (experienceResponse != null)
-	    solrRegistrationService.addEditExperience(request.getDoctorId(), experienceResponse);
+	if (experienceResponse != null)	transnationalService.checkDoctor(request.getDoctorId());
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -167,8 +165,7 @@ public class DoctorProfileApi {
 	}
 	List<String> specialityResponse = doctorProfileService.addEditSpeciality(request);
 	request.setSpeciality(specialityResponse);
-	if (specialityResponse != null)
-	    solrRegistrationService.addEditSpeciality(request);
+	if (specialityResponse != null)	transnationalService.checkDoctor(request.getDoctorId());
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -235,8 +232,7 @@ public class DoctorProfileApi {
 	}
 	String addEditProfilePictureResponse = doctorProfileService.addEditProfilePicture(request);
 	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
-	if (addEditProfilePictureResponse != null)
-	    solrRegistrationService.addEditProfilePicture(request.getDoctorId(), addEditProfilePictureResponse);
+	if (addEditProfilePictureResponse != null)	transnationalService.checkDoctor(request.getDoctorId());
 	addEditProfilePictureResponse = getFinalImageURL(addEditProfilePictureResponse);
 	Response<String> response = new Response<String>();
 	response.setData(addEditProfilePictureResponse);
@@ -360,8 +356,7 @@ public class DoctorProfileApi {
 	}
 	Boolean addEditVisitingTimeResponse = doctorProfileService.addEditVisitingTime(request);
 	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
-	if (addEditVisitingTimeResponse)
-	    solrRegistrationService.addEditVisitingTime(request);
+	if (addEditVisitingTimeResponse)transnationalService.checkDoctor(request.getDoctorId());
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditVisitingTimeResponse);
 	return response;
@@ -379,8 +374,7 @@ public class DoctorProfileApi {
 	}
 	Boolean addEditConsultationFeeResponse = doctorProfileService.addEditConsultationFee(request);
 	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
-	if (addEditConsultationFeeResponse)
-	    solrRegistrationService.addEditConsultationFee(request);
+	if (addEditConsultationFeeResponse)transnationalService.checkDoctor(request.getDoctorId());
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditConsultationFeeResponse);
 	return response;
@@ -397,6 +391,7 @@ public class DoctorProfileApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, LocationId Is Empty");
 	}
 	Boolean addEditAppointmentSlotResponse = doctorProfileService.addEditAppointmentSlot(request);
+	
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditAppointmentSlotResponse);
 	return response;
@@ -415,8 +410,7 @@ public class DoctorProfileApi {
 
 	Boolean addEditGeneralInfoResponse = doctorProfileService.addEditGeneralInfo(request);
 	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
-	if (addEditGeneralInfoResponse)
-	    solrRegistrationService.addEditGeneralInfo(request);
+	if (addEditGeneralInfoResponse)transnationalService.checkDoctor(request.getDoctorId());
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditGeneralInfoResponse);
 	return response;
@@ -466,8 +460,7 @@ public class DoctorProfileApi {
 	}
 	DoctorMultipleDataAddEditResponse addEditNameResponse = doctorProfileService.addEditMultipleData(request);
 	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
-	if (addEditNameResponse != null)
-	    solrRegistrationService.addEditMultipleData(addEditNameResponse);
+	if (addEditNameResponse != null)transnationalService.checkDoctor(request.getDoctorId());
 	addEditNameResponse.setCoverImageUrl(getFinalImageURL(addEditNameResponse.getCoverImageUrl()));
 	addEditNameResponse.setProfileImageUrl(getFinalImageURL(addEditNameResponse.getProfileImageUrl()));
 	addEditNameResponse.setThumbnailCoverImageUrl(getFinalImageURL(addEditNameResponse.getThumbnailCoverImageUrl()));
@@ -478,18 +471,19 @@ public class DoctorProfileApi {
 	return response;
     }
 
-    @Path(value = PathProxy.DoctorProfileUrls.ON_OFF_IBS)
+    @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_FACILITY)
     @POST
-    public Response<Boolean> addEditIBS(DoctorAddEditIBSRequest request) {
+    public Response<Boolean> addEditFacility(DoctorAddEditFacilityRequest request) {
 	if (request == null) {
-	    logger.warn("Doctor IBS Request Is Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor IBS Request Is Empty");
+	    logger.warn("Request Is Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Request Is Empty");
 	} else if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId())) {
 	    logger.warn("Doctor Id, LocationId Is Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, LocationId Is Empty");
 	}
 
-	Boolean addEditIBSResponse = doctorProfileService.addEditIBS(request);
+	Boolean addEditIBSResponse = doctorProfileService.addEditFacility(request);
+	transnationalService.checkDoctor(request.getDoctorId());
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditIBSResponse);
 	return response;

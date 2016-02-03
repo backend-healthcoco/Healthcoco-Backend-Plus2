@@ -4,7 +4,7 @@ import java.util.List;
 
 public class PrintSettingsText {
 
-    private String text;
+	private String text;
 
     private List<String> fontStyle;
 
@@ -44,8 +44,9 @@ public class PrintSettingsText {
 	this.fontSize = fontSize;
     }
 
-    @Override
-    public String toString() {
-	return "PrintSettingsText [text=" + text + ", fontStyle=" + fontStyle + ", fontColor=" + fontColor + ", fontSize=" + fontSize + "]";
-    }
+	@Override
+	public String toString() {
+		return "PrintSettingsText [text=" + text + ", fontStyle=" + fontStyle + ", fontColor="
+				+ fontColor + ", fontSize=" + fontSize + "]";
+	}
 }

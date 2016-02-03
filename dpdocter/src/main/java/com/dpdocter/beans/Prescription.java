@@ -3,9 +3,12 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.response.TestAndRecordDataResponse;
 
 public class Prescription extends GenericCollection {
     private String id;
+
+    private String uniqueId;
 
     private String name;
 
@@ -21,7 +24,7 @@ public class Prescription extends GenericCollection {
 
     private Boolean discarded;
 
-    private List<LabTest> labTests;
+    private List<TestAndRecordDataResponse> tests;
 
     private String advice;
 
@@ -37,7 +40,15 @@ public class Prescription extends GenericCollection {
 	this.id = id;
     }
 
-    public String getName() {
+    public String getUniqueId() {
+		return uniqueId;
+	}
+
+	public void setUniqueId(String uniqueId) {
+		this.uniqueId = uniqueId;
+	}
+
+	public String getName() {
 	return name;
     }
 
@@ -93,14 +104,6 @@ public class Prescription extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
-    public List<LabTest> getLabTests() {
-	return labTests;
-    }
-
-    public void setLabTests(List<LabTest> labTests) {
-	this.labTests = labTests;
-    }
-
     public String getAdvice() {
 	return advice;
     }
@@ -125,12 +128,19 @@ public class Prescription extends GenericCollection {
 		this.patientId = patientId;
 	}
 
-	@Override
-	public String toString() {
-		return "Prescription [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", items=" + items + ", inHistory=" + inHistory + ", discarded="
-				+ discarded + ", labTests=" + labTests + ", advice=" + advice + ", visitId=" + visitId + ", patientId="
-				+ patientId + "]";
+	public List<TestAndRecordDataResponse> getTests() {
+		return tests;
 	}
 
+	public void setTests(List<TestAndRecordDataResponse> tests) {
+		this.tests = tests;
+	}
+
+	@Override
+	public String toString() {
+		return "Prescription [id=" + id + ", uniqueId=" + uniqueId + ", name=" + name + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", items=" + items + ", inHistory="
+				+ inHistory + ", discarded=" + discarded + ", tests=" + tests + ", advice=" + advice + ", visitId="
+				+ visitId + ", patientId=" + patientId + "]";
+	}
 }

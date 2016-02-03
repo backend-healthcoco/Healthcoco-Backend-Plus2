@@ -824,8 +824,9 @@ public class SignUpServiceImpl implements SignUpService {
 	    if (userCollections != null && !userCollections.isEmpty()) {
 		for (UserCollection userCollection : userCollections) {
 		    List<PatientCollection> patientCollection = patientRepository.findByUserId(userCollection.getId());
-		    if (patientCollection != null && userCollection.isSignedUp()) {
-			response = true;
+		    if (patientCollection != null) {
+		    	if(userCollection.isSignedUp())throw new BusinessException(ServiceError.NotAcceptable, "Already Signed Up Please Login");
+		    	else response = true;
 			break;
 		    }
 		}
@@ -1041,6 +1042,9 @@ public class SignUpServiceImpl implements SignUpService {
 		BeanUtil.map(request, patientCollection);
 		patientCollection.setFirstName(request.getName());
 		patientCollection.setUserId(userCollection.getId());
+		patientCollection.setDoctorId(null);
+		patientCollection.setLocationId(null);
+		patientCollection.setHospitalId(null);
 		patientCollection.setCreatedTime(new Date());
 		patientCollection = patientRepository.save(patientCollection);
 		

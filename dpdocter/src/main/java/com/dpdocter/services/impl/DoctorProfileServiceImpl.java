@@ -49,7 +49,7 @@ import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
-import com.dpdocter.request.DoctorAddEditIBSRequest;
+import com.dpdocter.request.DoctorAddEditFacilityRequest;
 import com.dpdocter.request.DoctorAppointmentNumbersAddEditRequest;
 import com.dpdocter.request.DoctorAppointmentSlotAddEditRequest;
 import com.dpdocter.request.DoctorConsultationFeeAddEditRequest;
@@ -891,7 +891,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
-    public Boolean addEditIBS(DoctorAddEditIBSRequest request) {
+    public Boolean addEditFacility(DoctorAddEditFacilityRequest request) {
 	DoctorClinicProfileCollection doctorClinicProfileCollection = null;
 	Boolean response = false;
 	try {
@@ -901,9 +901,11 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		if (doctorClinicProfileCollection == null) {
 		    doctorClinicProfileCollection = new DoctorClinicProfileCollection();
 		    doctorClinicProfileCollection.setLocationId(userLocationCollection.getId());
-		    // doctorClinicProfileCollection.setCreatedTime(new Date());
+		    doctorClinicProfileCollection.setCreatedTime(new Date());
+		}else{
+			doctorClinicProfileCollection.setUpdatedTime(new Date());
 		}
-		doctorClinicProfileCollection.setIsIBSOn(request.getIsIBSOn());
+		doctorClinicProfileCollection.setFacility(request.getFacility());
 		doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 		response = true;
 	    }

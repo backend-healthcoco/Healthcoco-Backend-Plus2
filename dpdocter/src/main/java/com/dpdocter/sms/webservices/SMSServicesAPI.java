@@ -119,6 +119,10 @@ public class SMSServicesAPI {
 	return response;
     }
     
+    /**
+     * SMS Content : Pass whichever option is selected as string : PATIENT_NAME, DOCTOR_NAME, APPOINTMENT_ID ,DATE_TIME ,CLINIC_NAME,CLINIC_CONTACT_NUMBER
+     */
+    
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path(value = PathProxy.SMSUrls.ADD_EDIT_SMS_FORMAT)

@@ -23,6 +23,7 @@ import com.dpdocter.beans.City;
 import com.dpdocter.beans.Clinic;
 import com.dpdocter.beans.Lab;
 import com.dpdocter.beans.LandmarkLocality;
+import com.dpdocter.beans.PatientQueue;
 import com.dpdocter.beans.Slot;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
@@ -30,6 +31,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.EventRequest;
+import com.dpdocter.request.PatientQueueAddEditRequest;
 import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.beans.Country;
@@ -294,6 +296,46 @@ public class AppointmentApi {
 
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
+	return response;
+    }
+
+    @Path(value = PathProxy.AppointmentUrls.ADD_PATIENT_IN_QUEUE)
+    @POST
+    public Response<PatientQueue> addPatientInQueue(PatientQueueAddEditRequest request) {
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "request cannot be null");
+	}
+	List<PatientQueue> patientQueues = appointmentService.addPatientInQueue(request);
+	
+	Response<PatientQueue> response = new Response<PatientQueue>();
+	response.setDataList(patientQueues);
+	return response;
+    }
+        
+    @Path(value = PathProxy.AppointmentUrls.REARRANGE_PATIENT_IN_QUEUE)
+    @GET
+    public Response<PatientQueue> rearrangePatientInQueue(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+    		@PathParam(value = "patientId") String patientId, @PathParam(value = "appointmentId") String appointmentId, @PathParam(value = "sequenceNo") int sequenceNo) {
+	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, patientId, appointmentId)) {
+	    throw new BusinessException(ServiceError.InvalidInput, "DoctorId, LocationId, HospitalId, PatientId cannot be null");
+	}
+	List<PatientQueue> patientQueues = appointmentService.rearrangePatientInQueue(doctorId, locationId, hospitalId, patientId, appointmentId, sequenceNo);
+	
+	Response<PatientQueue> response = new Response<PatientQueue>();
+	response.setDataList(patientQueues);
+	return response;
+    }
+    
+    @Path(value = PathProxy.AppointmentUrls.GET_PATIENT_QUEUE)
+    @GET
+    public Response<PatientQueue> getPatientQueue(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
+    	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+    	    throw new BusinessException(ServiceError.InvalidInput, "DoctorId, LocationId, HospitalId cannot be null");
+    	}
+    List<PatientQueue> patientQueues = appointmentService.getPatientQueue(doctorId, locationId, hospitalId);
+
+	Response<PatientQueue> response = new Response<PatientQueue>();
+	response.setDataList(patientQueues);
 	return response;
     }
 

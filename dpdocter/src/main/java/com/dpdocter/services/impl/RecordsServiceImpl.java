@@ -2,6 +2,7 @@ package com.dpdocter.services.impl;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -30,9 +31,11 @@ import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.Tags;
+import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientVisitCollection;
+import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.RecordsCollection;
 import com.dpdocter.collections.RecordsTagsCollection;
 import com.dpdocter.collections.TagsCollection;
@@ -44,6 +47,7 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientVisitRepository;
+import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.RecordsRepository;
 import com.dpdocter.repository.RecordsTagsRepository;
 import com.dpdocter.repository.TagsRepository;
@@ -57,11 +61,16 @@ import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.HistoryServices;
+import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.RecordsService;
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataBodyPart;
+
+import common.util.web.DPDoctorUtils;
 
 @Service
 public class RecordsServiceImpl implements RecordsService {
@@ -83,6 +92,9 @@ public class RecordsServiceImpl implements RecordsService {
     @Autowired
     private PatientRepository patientRepository;
 
+    @Autowired 
+    private MailBodyGenerator mailBodyGenerator;
+    
     @Autowired
     private MailService mailService;
 
@@ -109,6 +121,9 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Autowired
     private OTPService otpService;
+
+    @Autowired
+    private PrescriptionRepository prescriptionRepository;
 
     @Value(value = "${IMAGE_RESOURCE}")
     private String imageResource;
@@ -141,6 +156,7 @@ public class RecordsServiceImpl implements RecordsService {
 		recordsCollection.setRecordsLable(recordLabel);
 	    }
 	    recordsCollection.setCreatedTime(createdTime);
+	    recordsCollection.setUniqueId(DPDoctorUtils.generateRandomId());
 	    UserCollection userCollection = userRepository.findOne(recordsCollection.getDoctorId());
 	    if (userCollection != null) {
 		recordsCollection.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());
@@ -149,7 +165,35 @@ public class RecordsServiceImpl implements RecordsService {
 	    if(locationCollection != null){
 	    	recordsCollection.setUploadedByLocation(locationCollection.getLocationName());
 	    }
+	    PrescriptionCollection prescriptionCollection = null;
+	    if(recordsCollection.getPrescriptionId() != null){
+	    	prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(recordsCollection.getPrescriptionId(), recordsCollection.getPatientId());
+	    }
+	    if(prescriptionCollection != null){
+	    	recordsCollection.setPrescribedByDoctorId(prescriptionCollection.getDoctorId());
+	    	recordsCollection.setPrescribedByLocationId(prescriptionCollection.getLocationId());
+	    	recordsCollection.setPrescribedByHospitalId(prescriptionCollection.getHospitalId());
+	    	
+	    }
 	    recordsCollection = recordsRepository.save(recordsCollection);
+	    
+	    if(prescriptionCollection != null && (prescriptionCollection.getTests() != null || !prescriptionCollection.getTests().isEmpty())){
+	    		List<TestAndRecordData> tests = new ArrayList<TestAndRecordData>();
+	    		for(TestAndRecordData data : prescriptionCollection.getTests()){
+	    			if(data.getLabTestId().equals(recordsCollection.getTestId())){
+	    				data.setRecordId(recordsCollection.getId());
+	    			}
+	    			tests.add(data);
+	    		}
+	    		prescriptionCollection.setTests(tests);
+	    		prescriptionCollection.setUpdatedTime(new Date());
+	    		prescriptionRepository.save(prescriptionCollection);
+	    		String body = mailBodyGenerator.generateRecordsUploadedEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
+	    			    userCollection.getMiddleName(), userCollection.getLastName());
+    		    mailService.sendEmail(userCollection.getEmailAddress(), "Records Uploaded", "Record is uploaded", null);
+
+	    }
+	    
 	    Records records = new Records();
 	    BeanUtil.map(recordsCollection, records);
 
@@ -190,6 +234,39 @@ public class RecordsServiceImpl implements RecordsService {
 	    recordsCollection.setUploadedByLocation(oldRecord.getUploadedByLocation());
 	    recordsCollection.setDiscarded(oldRecord.getDiscarded());
 	    recordsCollection.setInHistory(oldRecord.isInHistory());
+	    recordsCollection.setUniqueId(oldRecord.getUniqueId());
+	    recordsCollection.setPrescribedByDoctorId(oldRecord.getDoctorId());
+    	recordsCollection.setPrescribedByLocationId(oldRecord.getLocationId());
+    	recordsCollection.setPrescribedByHospitalId(oldRecord.getHospitalId());
+    	recordsCollection.setPrescriptionId(oldRecord.getPrescriptionId());
+    	recordsCollection.setTestId(oldRecord.getTestId());
+    	
+    	
+//	    PrescriptionCollection prescriptionCollection = null;
+//	    if(recordsCollection.getPrescriptionId() != null){
+//	    	prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(recordsCollection.getPrescriptionId(), recordsCollection.getPatientId());
+//	    }
+//	    if(prescriptionCollection != null){
+//	    	recordsCollection.setPrescribedByDoctorId(prescriptionCollection.getDoctorId());
+//	    	recordsCollection.setPrescribedByLocationId(prescriptionCollection.getLocationId());
+//	    	recordsCollection.setPrescribedByHospitalId(prescriptionCollection.getHospitalId());
+//	    	
+//	    }
+//	    recordsCollection = recordsRepository.save(recordsCollection);
+//	    
+//	    if(prescriptionCollection != null && (prescriptionCollection.getTests() != null || !prescriptionCollection.getTests().isEmpty())){
+//	    		List<TestAndRecordData> tests = new ArrayList<TestAndRecordData>();
+//	    		for(TestAndRecordData data : prescriptionCollection.getTests()){
+//	    			if(data.getLabTestId().equals(recordsCollection.getTestId())){
+//	    				data.setRecordId(recordsCollection.getId());
+//	    			}
+//	    			tests.add(data);
+//	    		}
+//	    		prescriptionCollection.setTests(tests);
+//	    		prescriptionCollection.setUpdatedTime(new Date());
+//	    		prescriptionRepository.save(prescriptionCollection);
+//	    }
+	    
 	    recordsCollection = recordsRepository.save(recordsCollection);
 	    BeanUtil.map(recordsCollection, records);
 	    return records;
@@ -235,7 +312,7 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public List<Records> searchRecords(RecordsSearchRequest request) {
+    public List<Records> searchRecords(RecordsSearchRequest request, UriInfo uriInfo) {
 	List<Records> records = null;
 	List<RecordsCollection> recordsCollections = null;
 	boolean[] discards = new boolean[2];
@@ -287,6 +364,7 @@ public class RecordsServiceImpl implements RecordsService {
 		    PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(record.getId());
 		    if (patientVisitCollection != null)
 			record.setVisitId(patientVisitCollection.getId());
+		    record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl(), uriInfo));
 		    records.add(record);
 		}
 	    }
@@ -664,7 +742,7 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public List<Records> getRecordsByPatientId(String patientId, int page, int size, String updatedTime, Boolean discarded) {
+    public List<Records> getRecordsByPatientId(String patientId, int page, int size, String updatedTime, Boolean discarded, UriInfo uriInfo) {
 	List<Records> records = null;
 	List<RecordsCollection> recordsCollections = null;
 	boolean[] discards = new boolean[2];
@@ -681,6 +759,7 @@ public class RecordsServiceImpl implements RecordsService {
 		PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(record.getId());
 		if (patientVisitCollection != null)
 		    record.setVisitId(patientVisitCollection.getId());
+		record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl(), uriInfo));
 		records.add(record);
 	    }
 	} catch (Exception e) {
@@ -692,35 +771,24 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
 	@Override
-	public Records addRecordsMultipart(InputStream fileInputStream, RecordsAddRequestMultipart request) {
+	public Records addRecordsMultipart(FormDataBodyPart file, RecordsAddRequestMultipart request) {
 		try {
 
 		    Date createdTime = new Date();
 
 		    RecordsCollection recordsCollection = new RecordsCollection();
 		    BeanUtil.map(request, recordsCollection);
-		    if (fileInputStream != null) {
+		    if (file != null) {
 		  
 			String recordLabel = request.getFileName();
-//			request.getFileDetails().setFileName(request.getFileDetails().getFileName() + createdTime.getTime());
 			String path = request.getPatientId() + File.separator + "records";
-//			// save image
-//			String recordUrl = fileManager.saveImageAndReturnImageUrl(request.getFileDetails(), path);
-//			String fileName = request.getFileDetails().getFileName() + "." + request.getFileDetails().getFileExtension();
-//			String recordPath = imageResource + File.separator + path + File.separator + fileName;
+
+			FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
 			String recordPath = imageResource + File.separator + path + File.separator;
-			int read = 0;
-	        byte[] bytes = new byte[1024];
-	 
-	        OutputStream out = new FileOutputStream(new File(recordPath + request.getFileName()+createdTime.getTime()));
-	        while ((read = fileInputStream.read(bytes)) != -1)
-	        {
-	            out.write(bytes, 0, read);
-	        }
-	        out.flush();
-	        out.close();
-			recordsCollection.setRecordsUrl(path+"/"+request.getFileName()+createdTime.getTime());
-			recordsCollection.setRecordsPath(recordPath+request.getFileName()+createdTime.getTime());
+			writeToFile(file.getEntityAs(InputStream.class), recordPath);
+			
+			recordsCollection.setRecordsUrl(path+"/"+fileDetail.getFileName()+createdTime.getTime());
+			recordsCollection.setRecordsPath(recordPath+fileDetail.getFileName()+createdTime.getTime());
 			recordsCollection.setRecordsLable(recordLabel);
 		    }
 		    recordsCollection.setCreatedTime(createdTime);
@@ -743,4 +811,24 @@ public class RecordsServiceImpl implements RecordsService {
 		    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 		}
 	}
+	
+    private void writeToFile(InputStream uploadedInputStream, String uploadedFileLocation) {
+
+	try {
+	    OutputStream out = new FileOutputStream(new File(uploadedFileLocation));
+	    int read = 0;
+	    byte[] bytes = new byte[1024];
+
+	    out = new FileOutputStream(new File(uploadedFileLocation));
+	    while ((read = uploadedInputStream.read(bytes)) != -1) {
+		out.write(bytes, 0, read);
+	    }
+	    out.flush();
+	    out.close();
+	} catch (IOException e) {
+
+	    e.printStackTrace();
+	}
+
+    }
 }

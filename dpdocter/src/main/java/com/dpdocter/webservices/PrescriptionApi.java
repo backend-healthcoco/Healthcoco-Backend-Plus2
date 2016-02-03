@@ -21,9 +21,9 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.Prescription;
-import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
@@ -45,12 +45,14 @@ import com.dpdocter.response.DrugStrengthAddEditResponse;
 import com.dpdocter.response.DrugTypeAddEditResponse;
 import com.dpdocter.response.PrescriptionAddEditResponse;
 import com.dpdocter.response.PrescriptionAddEditResponseDetails;
+import com.dpdocter.response.PrescriptionTestAndRecord;
 import com.dpdocter.response.TemplateAddEditResponse;
 import com.dpdocter.response.TemplateAddEditResponseDetails;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.TransactionalManagementService;
+import com.dpdocter.solr.document.SolrDiagnosticTestDocument;
 import com.dpdocter.solr.document.SolrDrugDocument;
 import com.dpdocter.solr.document.SolrLabTestDocument;
 import com.dpdocter.solr.services.SolrPrescriptionService;
@@ -261,16 +263,6 @@ public class PrescriptionApi {
 	LabTest labTestResponse = prescriptionServices.getLabTestById(labTestId);
 	Response<LabTest> response = new Response<LabTest>();
 	response.setData(labTestResponse);
-	return response;
-    }
-
-    @Path(value = PathProxy.PrescriptionUrls.GET_DIAGNOSTIC_TEST)
-    @GET
-    public Response<DiagnosticTestCollection> getDiagnosticTest() {
-
-	List<DiagnosticTestCollection> diagnosticTestCollections = prescriptionServices.getDiagnosticTest();
-	Response<DiagnosticTestCollection> response = new Response<DiagnosticTestCollection>();
-	response.setDataList(diagnosticTestCollections);
 	return response;
     }
 
@@ -776,5 +768,78 @@ public class PrescriptionApi {
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
+    }
+    
+    @Path(value = PathProxy.PrescriptionUrls.ADD_EDIT_DIAGNOSTIC_TEST)
+    @POST
+    public Response<DiagnosticTest> addEditDiagnosticTest(DiagnosticTest request) {
+	if (request == null) {
+	    logger.warn("Request Sent Is NULL");
+	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
+	}
+	DiagnosticTest diagnosticTest = prescriptionServices.addEditDiagnosticTest(request);
+	transnationalService.addResource(diagnosticTest.getId(), Resource.DIAGNOSTICTEST, false);
+	
+	SolrDiagnosticTestDocument solrDiagnosticTestDocument = new SolrDiagnosticTestDocument();
+	BeanUtil.map(diagnosticTest, solrDiagnosticTestDocument);
+	solrPrescriptionService.addEditDiagnosticTest(solrDiagnosticTestDocument);
+	Response<DiagnosticTest> response = new Response<DiagnosticTest>();
+	response.setData(diagnosticTest);
+	return response;
+    }
+
+    @Path(value = PathProxy.PrescriptionUrls.DELETE_DIAGNOSTIC_TEST)
+    @DELETE
+    public Response<Boolean> deleteDiagnosticTest(@PathParam(value = "diagnosticTestId") String diagnosticTestId, @PathParam(value = "locationId") String locationId,
+	    @PathParam(value = "hospitalId") String hospitalId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	if (StringUtils.isEmpty(diagnosticTestId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
+	    logger.warn("Diagnostic Test Id, Hospital Id, Location Id Cannot Be Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Diagnostic Test Id, Hospital Id, Location Id Cannot Be Empty");
+	}
+	Boolean labTestDeleteResponse = prescriptionServices.deleteDiagnosticTest(diagnosticTestId, hospitalId, locationId, discarded);
+	transnationalService.addResource(diagnosticTestId, Resource.DIAGNOSTICTEST, false);
+	solrPrescriptionService.deleteDiagnosticTest(diagnosticTestId, discarded);
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(labTestDeleteResponse);
+	return response;
+    }
+
+    @Path(value = PathProxy.PrescriptionUrls.DELETE_GLOBAL_DIAGNOSTIC_TEST)
+    @DELETE
+    public Response<Boolean> deleteDiagnosticTest(@PathParam(value = "diagnosticTestId") String diagnosticTestId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	if (StringUtils.isEmpty(diagnosticTestId)) {
+	    logger.warn("Diagnostic Test Id Cannot Be Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Diagnostic Test Id Cannot Be Empty");
+	}
+	Boolean labTestDeleteResponse = prescriptionServices.deleteDiagnosticTest(diagnosticTestId, discarded);
+	transnationalService.addResource(diagnosticTestId, Resource.DIAGNOSTICTEST, false);
+	solrPrescriptionService.deleteDiagnosticTest(diagnosticTestId, discarded);
+
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(labTestDeleteResponse);
+	return response;
+    }
+
+    @Path(value = PathProxy.PrescriptionUrls.GET_DIAGNOSTIC_TEST_BY_ID)
+    @GET
+    public Response<DiagnosticTest> getDiagnosticTest(@PathParam("diagnosticTestId") String diagnosticTestId) {
+	if (diagnosticTestId == null) {
+	    logger.error("Diagnostic Test Id Is NULL");
+	    throw new BusinessException(ServiceError.InvalidInput, "Ddiagnostic Test Id Is NULL");
+	}
+	DiagnosticTest diagnosticTest = prescriptionServices.getDiagnosticTest(diagnosticTestId);
+	Response<DiagnosticTest> response = new Response<DiagnosticTest>();
+	response.setData(diagnosticTest);
+	return response;
+    }
+
+    @Path(value = PathProxy.PrescriptionUrls.CHECK_PRESCRIPTION_EXISTS_FOR_PATIENT)
+    @GET
+    public Response<PrescriptionTestAndRecord> checkPrescriptionExists(@PathParam("uniqueId") String uniqueId, @PathParam("patientId") String patientId) {
+    	PrescriptionTestAndRecord dataResponse = prescriptionServices.checkPrescriptionExists(uniqueId, patientId);
+    	
+    	Response<PrescriptionTestAndRecord> response = new Response<PrescriptionTestAndRecord>();
+    	response.setData(dataResponse);
+    	return response;
     }
 }

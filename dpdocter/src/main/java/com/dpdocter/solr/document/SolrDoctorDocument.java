@@ -10,6 +10,7 @@ import org.springframework.data.solr.core.mapping.SolrDocument;
 
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.DoctorExperience;
+import com.dpdocter.enums.DoctorFacility;
 import com.dpdocter.solr.beans.DoctorLocation;
 import com.dpdocter.solr.beans.SolrWorkingSchedule;
 
@@ -54,6 +55,9 @@ public class SolrDoctorDocument extends DoctorLocation {
 
     @Field
     private List<DoctorExperience> experienceList;    
+    
+    @Field
+    private String facility;
     
     public String getId() {
 	return id;
@@ -175,12 +179,20 @@ public class SolrDoctorDocument extends DoctorLocation {
 		}
 	}
 
+	public String getFacility() {
+		return facility;
+	}
+
+	public void setFacility(String facility) {
+		this.facility = facility;
+	}
+
 	@Override
 	public String toString() {
 		return "SolrDoctorDocument [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", gender=" + gender
 				+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", imageUrl=" + imageUrl
 				+ ", consultationFee=" + consultationFee + ", workingSchedules=" + workingSchedules + ", specialities="
 				+ specialities + ", experience=" + experience + ", consultationFeeList=" + consultationFeeList
-				+ ", experienceList=" + experienceList + "]";
+				+ ", experienceList=" + experienceList + ", facility=" + facility + "]";
 	}
 }

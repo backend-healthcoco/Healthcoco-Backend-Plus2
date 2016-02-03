@@ -11,7 +11,7 @@ import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Speciality;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
-import com.dpdocter.request.DoctorAddEditIBSRequest;
+import com.dpdocter.request.DoctorAddEditFacilityRequest;
 import com.dpdocter.request.DoctorAppointmentNumbersAddEditRequest;
 import com.dpdocter.request.DoctorAppointmentSlotAddEditRequest;
 import com.dpdocter.request.DoctorConsultationFeeAddEditRequest;
@@ -83,6 +83,6 @@ public interface DoctorProfileService {
 
     DoctorMultipleDataAddEditResponse addEditMultipleData(DoctorMultipleDataAddEditRequest request);
 
-    Boolean addEditIBS(DoctorAddEditIBSRequest request);
+    Boolean addEditFacility(DoctorAddEditFacilityRequest request);
 
 }
