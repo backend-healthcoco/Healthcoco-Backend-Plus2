@@ -37,10 +37,12 @@ public interface PatientRepository extends MongoRepository<PatientCollection, St
     List<PatientCollection> findByUserIdDoctorId(Collection<String> patientIds, String doctorId, Sort sort);
 
     @Query("{'userId': {'$in': ?0}, 'doctorId':?1,'locationId': ?2,'hospitalId': ?3}")
-    List<PatientCollection> findByUserIdDoctorIdLocationIdHospitalId(Collection<String> patientIds, String doctorId, String locationId, String hospitalId, Pageable pageRequest);
+    List<PatientCollection> findByUserIdDoctorIdLocationIdHospitalId(Collection<String> patientIds, String doctorId, String locationId, String hospitalId,
+	    Pageable pageRequest);
 
     @Query("{'userId': {'$in': ?0}, 'doctorId':?1,'locationId': ?2,'hospitalId': ?3}")
-    List<PatientCollection> findByUserIdDoctorIdLocationIdHospitalId(Collection<String> patientIds, String doctorId, String locationId, String hospitalId, Sort sort);
+    List<PatientCollection> findByUserIdDoctorIdLocationIdHospitalId(Collection<String> patientIds, String doctorId, String locationId, String hospitalId,
+	    Sort sort);
 
     @Query("{'userId': {'$in': ?0}, 'doctorId':?1}")
     List<PatientCollection> findByUserIdDoctorId(Collection<String> patientIds, String doctorId, Pageable pageRequest);
@@ -59,15 +61,19 @@ public interface PatientRepository extends MongoRepository<PatientCollection, St
     // sort);
 
     @Query(value = "{'doctorId':?0, 'locationId':?1, 'registrationDate' : {'$gt' : ?2, '$lt' : ?3}}", count = true)
-	Integer findTodaysRegisteredPatient(String doctorId, String locationId, Long from, Long to);
+    Integer findTodaysRegisteredPatient(String doctorId, String locationId, Long from, Long to);
 
     @Query(value = "{'doctorId':?0, 'locationId':?1, 'PID':?2}", count = true)
     Integer findPatientByPID(String doctorId, String locationId, String generatedId);
 
-//    @Query("{'userId': ?0, 'doctorId':?1,'locationId': ?2,'hospitalId': ?3}")
-//	PatientCollection findByUserIdDoctorIdLocationIdHospitalId(String patientId, String doctorId, String locationId, String hospitalId, Pageable pageRequest);
-//
-//    @Query("{'userId': ?0, 'doctorId':?1,'locationId': ?2,'hospitalId': ?3}")
-//	PatientCollection findByUserIdDoctorIdLocationIdHospitalId(String patientId, String doctorId, String locationId, String hospitalId, Sort sort);
+    // @Query("{'userId': ?0, 'doctorId':?1,'locationId': ?2,'hospitalId': ?3}")
+    // PatientCollection findByUserIdDoctorIdLocationIdHospitalId(String
+    // patientId, String doctorId, String locationId, String hospitalId,
+    // Pageable pageRequest);
+    //
+    // @Query("{'userId': ?0, 'doctorId':?1,'locationId': ?2,'hospitalId': ?3}")
+    // PatientCollection findByUserIdDoctorIdLocationIdHospitalId(String
+    // patientId, String doctorId, String locationId, String hospitalId, Sort
+    // sort);
 
 }

@@ -36,17 +36,16 @@ public class DoctorAddEditFacilityRequest {
 	this.locationId = locationId;
     }
 
-	public DoctorFacility getFacility() {
-		return facility;
-	}
+    public DoctorFacility getFacility() {
+	return facility;
+    }
 
-	public void setFacility(DoctorFacility facility) {
-		this.facility = facility;
-	}
+    public void setFacility(DoctorFacility facility) {
+	this.facility = facility;
+    }
 
-	@Override
-	public String toString() {
-		return "DoctorAddEditFacilityRequest [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", facility=" + facility + "]";
-	}
+    @Override
+    public String toString() {
+	return "DoctorAddEditFacilityRequest [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", facility=" + facility + "]";
+    }
 }

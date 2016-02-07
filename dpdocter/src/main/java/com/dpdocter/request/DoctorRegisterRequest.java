@@ -37,7 +37,7 @@ public class DoctorRegisterRequest {
     }
 
     public String getEmailAddress() {
-    	return emailAddress!= null ? emailAddress.toLowerCase() : emailAddress;
+	return emailAddress != null ? emailAddress.toLowerCase() : emailAddress;
     }
 
     public void setEmailAddress(String emailAddress) {

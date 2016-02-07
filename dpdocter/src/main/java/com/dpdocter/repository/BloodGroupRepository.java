@@ -12,10 +12,10 @@ import com.dpdocter.collections.BloodGroupCollection;
 
 public interface BloodGroupRepository extends MongoRepository<BloodGroupCollection, String> {
 
-	@Query("{'updatedTime': {'$gt': ?0}}")
-	List<BloodGroupCollection> find(Date date, Pageable pageRequest);
+    @Query("{'updatedTime': {'$gt': ?0}}")
+    List<BloodGroupCollection> find(Date date, Pageable pageRequest);
 
-	@Query("{'updatedTime': {'$gt': ?0}}")
-	List<BloodGroupCollection> find(Date date, Sort sort);
+    @Query("{'updatedTime': {'$gt': ?0}}")
+    List<BloodGroupCollection> find(Date date, Sort sort);
 
 }

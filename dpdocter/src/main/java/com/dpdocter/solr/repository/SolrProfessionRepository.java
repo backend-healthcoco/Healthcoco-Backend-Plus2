@@ -12,16 +12,16 @@ import com.dpdocter.solr.document.SolrProfessionDocument;
 
 public interface SolrProfessionRepository extends SolrCrudRepository<SolrProfessionDocument, String> {
 
-	@Query("updatedTime: {?0 TO *}")
-	List<SolrProfessionDocument> find(Date date, Pageable pageable);
+    @Query("updatedTime: {?0 TO *}")
+    List<SolrProfessionDocument> find(Date date, Pageable pageable);
 
-	@Query("updatedTime: {?0 TO *}")
-	List<SolrProfessionDocument> find(Date date, Sort sort);
+    @Query("updatedTime: {?0 TO *}")
+    List<SolrProfessionDocument> find(Date date, Sort sort);
 
-	@Query("updatedTime: {?0 TO *} AND profession: ?1*")
-	List<SolrProfessionDocument> find(Date date, String searchTerm, Pageable pageable);
+    @Query("updatedTime: {?0 TO *} AND profession: ?1*")
+    List<SolrProfessionDocument> find(Date date, String searchTerm, Pageable pageable);
 
-	@Query("updatedTime: {?0 TO *} AND profession: ?1*")
-	List<SolrProfessionDocument> find(Date date, String searchTerm, Sort sort);
+    @Query("updatedTime: {?0 TO *} AND profession: ?1*")
+    List<SolrProfessionDocument> find(Date date, String searchTerm, Sort sort);
 
 }

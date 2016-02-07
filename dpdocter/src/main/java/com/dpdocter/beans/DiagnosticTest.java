@@ -2,7 +2,7 @@ package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
 
-public class DiagnosticTest extends GenericCollection{
+public class DiagnosticTest extends GenericCollection {
 
     private String id;
 
@@ -40,33 +40,33 @@ public class DiagnosticTest extends GenericCollection{
 	this.description = description;
     }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
 
-	public String getHospitalId() {
-		return hospitalId;
-	}
+    public String getHospitalId() {
+	return hospitalId;
+    }
 
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
 
-	public Boolean getDiscarded() {
-		return discarded;
-	}
+    public Boolean getDiscarded() {
+	return discarded;
+    }
 
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
 
-	@Override
-	public String toString() {
-		return "DiagnosticTest [id=" + id + ", testName=" + testName + ", description=" + description + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + "]";
-	}
+    @Override
+    public String toString() {
+	return "DiagnosticTest [id=" + id + ", testName=" + testName + ", description=" + description + ", locationId=" + locationId + ", hospitalId="
+		+ hospitalId + ", discarded=" + discarded + "]";
+    }
 }

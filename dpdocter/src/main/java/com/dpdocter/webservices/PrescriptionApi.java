@@ -56,7 +56,6 @@ import com.dpdocter.solr.document.SolrDiagnosticTestDocument;
 import com.dpdocter.solr.document.SolrDrugDocument;
 import com.dpdocter.solr.document.SolrLabTestDocument;
 import com.dpdocter.solr.services.SolrPrescriptionService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -460,8 +459,9 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_PATIENT_ID)
     @GET
-    public Response<Prescription> getPrescriptionByPatientId(@PathParam("patientId") String patientId, @QueryParam("page") int page, @QueryParam("size") int size,
-	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    public Response<Prescription> getPrescriptionByPatientId(@PathParam("patientId") String patientId, @QueryParam("page") int page,
+	    @QueryParam("size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
+	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 
 	List<Prescription> prescriptions = null;
 
@@ -476,9 +476,9 @@ public class PrescriptionApi {
     @GET
     public Response<Integer> getPrescriptionCount(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
-	
-    Boolean isOTPVerified = otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId);	
-    Integer prescriptionCount = prescriptionServices.getPrescriptionCount(doctorId, patientId, locationId, hospitalId, isOTPVerified);
+
+	Boolean isOTPVerified = otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId);
+	Integer prescriptionCount = prescriptionServices.getPrescriptionCount(doctorId, patientId, locationId, hospitalId, isOTPVerified);
 	Response<Integer> response = new Response<Integer>();
 	response.setData(prescriptionCount);
 	return response;
@@ -769,7 +769,7 @@ public class PrescriptionApi {
 	response.setData(true);
 	return response;
     }
-    
+
     @Path(value = PathProxy.PrescriptionUrls.ADD_EDIT_DIAGNOSTIC_TEST)
     @POST
     public Response<DiagnosticTest> addEditDiagnosticTest(DiagnosticTest request) {
@@ -779,7 +779,7 @@ public class PrescriptionApi {
 	}
 	DiagnosticTest diagnosticTest = prescriptionServices.addEditDiagnosticTest(request);
 	transnationalService.addResource(diagnosticTest.getId(), Resource.DIAGNOSTICTEST, false);
-	
+
 	SolrDiagnosticTestDocument solrDiagnosticTestDocument = new SolrDiagnosticTestDocument();
 	BeanUtil.map(diagnosticTest, solrDiagnosticTestDocument);
 	solrPrescriptionService.addEditDiagnosticTest(solrDiagnosticTestDocument);
@@ -790,8 +790,9 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DIAGNOSTIC_TEST)
     @DELETE
-    public Response<Boolean> deleteDiagnosticTest(@PathParam(value = "diagnosticTestId") String diagnosticTestId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    public Response<Boolean> deleteDiagnosticTest(@PathParam(value = "diagnosticTestId") String diagnosticTestId,
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(diagnosticTestId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
 	    logger.warn("Diagnostic Test Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Diagnostic Test Id, Hospital Id, Location Id Cannot Be Empty");
@@ -806,7 +807,8 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_GLOBAL_DIAGNOSTIC_TEST)
     @DELETE
-    public Response<Boolean> deleteDiagnosticTest(@PathParam(value = "diagnosticTestId") String diagnosticTestId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    public Response<Boolean> deleteDiagnosticTest(@PathParam(value = "diagnosticTestId") String diagnosticTestId,
+	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(diagnosticTestId)) {
 	    logger.warn("Diagnostic Test Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Diagnostic Test Id Cannot Be Empty");
@@ -836,10 +838,10 @@ public class PrescriptionApi {
     @Path(value = PathProxy.PrescriptionUrls.CHECK_PRESCRIPTION_EXISTS_FOR_PATIENT)
     @GET
     public Response<PrescriptionTestAndRecord> checkPrescriptionExists(@PathParam("uniqueId") String uniqueId, @PathParam("patientId") String patientId) {
-    	PrescriptionTestAndRecord dataResponse = prescriptionServices.checkPrescriptionExists(uniqueId, patientId);
-    	
-    	Response<PrescriptionTestAndRecord> response = new Response<PrescriptionTestAndRecord>();
-    	response.setData(dataResponse);
-    	return response;
+	PrescriptionTestAndRecord dataResponse = prescriptionServices.checkPrescriptionExists(uniqueId, patientId);
+
+	Response<PrescriptionTestAndRecord> response = new Response<PrescriptionTestAndRecord>();
+	response.setData(dataResponse);
+	return response;
     }
 }

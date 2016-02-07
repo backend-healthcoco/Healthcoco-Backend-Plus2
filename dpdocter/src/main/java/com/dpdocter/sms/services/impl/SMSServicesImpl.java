@@ -83,7 +83,7 @@ public class SMSServicesImpl implements SMSServices {
 
     @Autowired
     private UserRepository userRepository;
-    
+
     @Autowired
     private SMSFormatRepository sMSFormatRepository;
 
@@ -131,7 +131,7 @@ public class SMSServicesImpl implements SMSServices {
 		    smsTrackDetail.setResponseId(responseId);
 		}
 	    }
-	    
+
 	    if (save)
 		smsTrackRepository.save(smsTrackDetail);
 	} catch (Exception e) {
@@ -374,8 +374,8 @@ public class SMSServicesImpl implements SMSServices {
     }
 
     @Override
-    public SMSTrackDetail createSMSTrackDetail(String doctorId, String locationId, String hospitalId, String patientId, String patientName,
-    		String message, String mobileNumber, String type) {
+    public SMSTrackDetail createSMSTrackDetail(String doctorId, String locationId, String hospitalId, String patientId, String patientName, String message,
+	    String mobileNumber, String type) {
 	SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 	try {
 	    smsTrackDetail.setDoctorId(doctorId);
@@ -404,44 +404,45 @@ public class SMSServicesImpl implements SMSServices {
 	return smsTrackDetail;
     }
 
-	@Override
-	public SMSFormat addSmsFormat(SMSFormat request) {
-		SMSFormat response = null;
-		SMSFormatCollection smsFormatCollection = null;
-		try {
-			smsFormatCollection = sMSFormatRepository.find(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getType().getType());
-		    if (smsFormatCollection == null) {
-		    	smsFormatCollection = new SMSFormatCollection();
-		    	BeanUtil.map(request, smsFormatCollection);
-		    	smsFormatCollection.setCreatedTime(new Date());
-		    }else{
-		    	smsFormatCollection.setContent(request.getContent());
-		    	smsFormatCollection.setUpdatedTime(new Date());
-		    }
-		    smsFormatCollection = sMSFormatRepository.save(smsFormatCollection);
-		    response = new SMSFormat();
-			BeanUtil.map(smsFormatCollection, response);
-		} catch (BusinessException e) {
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Forbidden, "Error while Adding/Editing Sms Format");
-		}
-		return response;
+    @Override
+    public SMSFormat addSmsFormat(SMSFormat request) {
+	SMSFormat response = null;
+	SMSFormatCollection smsFormatCollection = null;
+	try {
+	    smsFormatCollection = sMSFormatRepository
+		    .find(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getType().getType());
+	    if (smsFormatCollection == null) {
+		smsFormatCollection = new SMSFormatCollection();
+		BeanUtil.map(request, smsFormatCollection);
+		smsFormatCollection.setCreatedTime(new Date());
+	    } else {
+		smsFormatCollection.setContent(request.getContent());
+		smsFormatCollection.setUpdatedTime(new Date());
+	    }
+	    smsFormatCollection = sMSFormatRepository.save(smsFormatCollection);
+	    response = new SMSFormat();
+	    BeanUtil.map(smsFormatCollection, response);
+	} catch (BusinessException e) {
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Forbidden, "Error while Adding/Editing Sms Format");
 	}
+	return response;
+    }
 
-	@Override
-	public List<SMSFormat> getSmsFormat(String doctorId, String locationId, String hospitalId) {
-		List<SMSFormat> response = null;
-		List<SMSFormatCollection> smsFormatCollections = null;
-		try {
-			smsFormatCollections = sMSFormatRepository.find(doctorId, locationId, hospitalId);
-			if(smsFormatCollections != null){
-			    response = new ArrayList<SMSFormat>();
-				BeanUtil.map(smsFormatCollections, response);
-			}
-		} catch (BusinessException e) {
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Forbidden, "Error while Adding/Editing Sms Format");
-		}
-		return response;
+    @Override
+    public List<SMSFormat> getSmsFormat(String doctorId, String locationId, String hospitalId) {
+	List<SMSFormat> response = null;
+	List<SMSFormatCollection> smsFormatCollections = null;
+	try {
+	    smsFormatCollections = sMSFormatRepository.find(doctorId, locationId, hospitalId);
+	    if (smsFormatCollections != null) {
+		response = new ArrayList<SMSFormat>();
+		BeanUtil.map(smsFormatCollections, response);
+	    }
+	} catch (BusinessException e) {
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Forbidden, "Error while Adding/Editing Sms Format");
 	}
+	return response;
+    }
 }

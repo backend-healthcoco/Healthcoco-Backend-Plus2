@@ -7,77 +7,77 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.enums.FeedbackType;
 
 @Document(collection = "feedback_cl")
-public class FeedbackCollection extends GenericCollection{
+public class FeedbackCollection extends GenericCollection {
 
-	@Id
-	private String id;
-	
-	@Field
-	private FeedbackType type;
-	
-	@Field
-	private String doctorName;
-	
-	@Field
-	private String landmarkLocality;
-	
-	@Field
-	private String city;
-	
-	@Field
-	private String description;
+    @Id
+    private String id;
 
-	public String getId() {
-		return id;
-	}
+    @Field
+    private FeedbackType type;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    @Field
+    private String doctorName;
 
-	public FeedbackType getType() {
-		return type;
-	}
+    @Field
+    private String landmarkLocality;
 
-	public void setType(FeedbackType type) {
-		this.type = type;
-	}
+    @Field
+    private String city;
 
-	public String getDoctorName() {
-		return doctorName;
-	}
+    @Field
+    private String description;
 
-	public void setDoctorName(String doctorName) {
-		this.doctorName = doctorName;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public String getLandmarkLocality() {
-		return landmarkLocality;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public void setLandmarkLocality(String landmarkLocality) {
-		this.landmarkLocality = landmarkLocality;
-	}
+    public FeedbackType getType() {
+	return type;
+    }
 
-	public String getCity() {
-		return city;
-	}
+    public void setType(FeedbackType type) {
+	this.type = type;
+    }
 
-	public void setCity(String city) {
-		this.city = city;
-	}
+    public String getDoctorName() {
+	return doctorName;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public void setDoctorName(String doctorName) {
+	this.doctorName = doctorName;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public String getLandmarkLocality() {
+	return landmarkLocality;
+    }
 
-	@Override
-	public String toString() {
-		return "FeedbackCollection [id=" + id + ", type=" + type + ", doctorName=" + doctorName + ", landmarkLocality="
-				+ landmarkLocality + ", city=" + city + ", description=" + description + "]";
-	}
+    public void setLandmarkLocality(String landmarkLocality) {
+	this.landmarkLocality = landmarkLocality;
+    }
+
+    public String getCity() {
+	return city;
+    }
+
+    public void setCity(String city) {
+	this.city = city;
+    }
+
+    public String getDescription() {
+	return description;
+    }
+
+    public void setDescription(String description) {
+	this.description = description;
+    }
+
+    @Override
+    public String toString() {
+	return "FeedbackCollection [id=" + id + ", type=" + type + ", doctorName=" + doctorName + ", landmarkLocality=" + landmarkLocality + ", city=" + city
+		+ ", description=" + description + "]";
+    }
 }

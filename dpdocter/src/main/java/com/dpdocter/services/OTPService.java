@@ -16,8 +16,8 @@ public interface OTPService {
 
     Boolean checkOTPVerified(String doctorId, String locationId, String hospitalId, String patientId);
 
-	boolean isNonVerifiedOTPValid(Date createdTime);
+    boolean isNonVerifiedOTPValid(Date createdTime);
 
-	boolean isOTPValid(Date createdTime);
+    boolean isOTPValid(Date createdTime);
 
 }

@@ -2,15 +2,15 @@ package com.dpdocter.enums;
 
 public enum FeedbackType {
 
-	HELP_US("HELP_US"), REFERRER("REFERRER");
-	
-	private String type;
+    HELP_US("HELP_US"), REFERRER("REFERRER");
 
-	private FeedbackType(String type) {
-		this.type = type;
-	}
+    private String type;
 
-	public String getType() {
-		return type;
-	}
+    private FeedbackType(String type) {
+	this.type = type;
+    }
+
+    public String getType() {
+	return type;
+    }
 }

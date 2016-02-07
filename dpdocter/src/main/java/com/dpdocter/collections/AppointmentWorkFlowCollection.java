@@ -10,12 +10,12 @@ import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.enums.AppointmentState;
 
 @Document(collection = "appointment_work_flow_cl")
-public class AppointmentWorkFlowCollection extends GenericCollection{
+public class AppointmentWorkFlowCollection extends GenericCollection {
 
-	@Id
+    @Id
     private String id;
 
-	@Field
+    @Field
     private String appointmentId;
 
     @Field
@@ -27,49 +27,48 @@ public class AppointmentWorkFlowCollection extends GenericCollection{
     @Field
     private Date date;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getAppointmentId() {
-		return appointmentId;
-	}
+    public String getAppointmentId() {
+	return appointmentId;
+    }
 
-	public void setAppointmentId(String appointmentId) {
-		this.appointmentId = appointmentId;
-	}
+    public void setAppointmentId(String appointmentId) {
+	this.appointmentId = appointmentId;
+    }
 
-	public WorkingHours getTime() {
-		return time;
-	}
+    public WorkingHours getTime() {
+	return time;
+    }
 
-	public void setTime(WorkingHours time) {
-		this.time = time;
-	}
+    public void setTime(WorkingHours time) {
+	this.time = time;
+    }
 
-	public AppointmentState getState() {
-		return state;
-	}
+    public AppointmentState getState() {
+	return state;
+    }
 
-	public void setState(AppointmentState state) {
-		this.state = state;
-	}
+    public void setState(AppointmentState state) {
+	this.state = state;
+    }
 
-	public Date getDate() {
-		return date;
-	}
+    public Date getDate() {
+	return date;
+    }
 
-	public void setDate(Date date) {
-		this.date = date;
-	}
+    public void setDate(Date date) {
+	this.date = date;
+    }
 
-	@Override
-	public String toString() {
-		return "AppointmentWorkFlowCollection [id=" + id + ", appointmentId=" + appointmentId + ", time=" + time
-				+ ", state=" + state + ", date=" + date + "]";
-	}
+    @Override
+    public String toString() {
+	return "AppointmentWorkFlowCollection [id=" + id + ", appointmentId=" + appointmentId + ", time=" + time + ", state=" + state + ", date=" + date + "]";
+    }
 }

@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.collections.AddressCollection;
@@ -81,7 +80,7 @@ import com.dpdocter.solr.services.SolrPrescriptionService;
 import com.dpdocter.solr.services.SolrRegistrationService;
 
 @Service
-public class TransactionalManagementServiceImpl implements TransactionalManagementService{
+public class TransactionalManagementServiceImpl implements TransactionalManagementService {
 
     private static Logger logger = Logger.getLogger(TransactionalManagementServiceImpl.class.getName());
 
@@ -135,41 +134,41 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
     @Autowired
     private CountryRepository countryRepository;
-    
+
     @Autowired
     private StateRepository stateRepository;
-    
+
     @Autowired
     private CityRepository cityRepository;
-    
+
     @Autowired
     private LandmarkLocalityRepository landmarkLocalityRepository;
-    
+
     @Autowired
     private DoctorRepository doctorRepository;
-    
+
     @Autowired
     private LocationRepository locationRepository;
-    
+
     @Autowired
     private UserLocationRepository userLocationRepository;
-    
+
     @Autowired
     private DoctorClinicProfileRepository doctorClinicProfileRepository;
-    
+
     @Autowired
     private SolrClinicalNotesService solrClinicalNotesService;
-    
+
     @Autowired
     private ReferenceRepository referenceRepository;
-    
+
     @Autowired
     private OTPRepository otpRepository;
 
     @Autowired
     private OTPService otpService;
 
-//    @Scheduled(fixedDelay = 1800000)
+    // @Scheduled(fixedDelay = 1800000)
     @Override
     public void checkResources() {
 	System.out.println(">>> Scheduled test service <<<");
@@ -178,58 +177,58 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	    transactionalCollections = transnationalRepositiory.findByIsCached(false);
 	    if (transactionalCollections != null) {
 		for (TransactionalCollection transactionalCollection : transactionalCollections) {
-			if(transactionalCollection.getResourceId() != null)
-		    switch (transactionalCollection.getResource()) {
+		    if (transactionalCollection.getResourceId() != null)
+			switch (transactionalCollection.getResource()) {
 
-		    case PATIENT:
-			checkPatient(transactionalCollection.getResourceId());
-			break;
-		    case DRUG:
-			checkDrug(transactionalCollection.getResourceId());
-			break;
-		    case LABTEST:
-			checkLabTest(transactionalCollection.getResourceId());
-			break;
-		    case COMPLAINT:
-			checkComplaint(transactionalCollection.getResourceId());
-			break;
-		    case DIAGNOSIS:
-			checkDiagnosis(transactionalCollection.getResourceId());
-			break;
-		    case DIAGRAM:
-			checkDiagrams(transactionalCollection.getResourceId());
-			break;
-		    case INVESTIGATION:
-			checkInvestigation(transactionalCollection.getResourceId());
-			break;
-		    case NOTES:
-			checkNotes(transactionalCollection.getResourceId());
-			break;
-		    case OBSERVATION:
-			checkObservation(transactionalCollection.getResourceId());
-			break;
-		    case COUNTRY:
-				checkCountry(transactionalCollection.getResourceId());
-			break;
-		    case STATE:
-				checkState(transactionalCollection.getResourceId());
-			break;
-		    case CITY:
-				checkCity(transactionalCollection.getResourceId());
-			break;
-		    case LANDMARKLOCALITY:
-				checkLandmarkLocality(transactionalCollection.getResourceId());
-			break;
-		    case DOCTOR:
-				checkDoctor(transactionalCollection.getResourceId());
-			break;
-		    case LOCATION:
-				checkLocation(transactionalCollection.getResourceId());
-			break;
-				
-		    default:
-			break;
-		    }
+			case PATIENT:
+			    checkPatient(transactionalCollection.getResourceId());
+			    break;
+			case DRUG:
+			    checkDrug(transactionalCollection.getResourceId());
+			    break;
+			case LABTEST:
+			    checkLabTest(transactionalCollection.getResourceId());
+			    break;
+			case COMPLAINT:
+			    checkComplaint(transactionalCollection.getResourceId());
+			    break;
+			case DIAGNOSIS:
+			    checkDiagnosis(transactionalCollection.getResourceId());
+			    break;
+			case DIAGRAM:
+			    checkDiagrams(transactionalCollection.getResourceId());
+			    break;
+			case INVESTIGATION:
+			    checkInvestigation(transactionalCollection.getResourceId());
+			    break;
+			case NOTES:
+			    checkNotes(transactionalCollection.getResourceId());
+			    break;
+			case OBSERVATION:
+			    checkObservation(transactionalCollection.getResourceId());
+			    break;
+			case COUNTRY:
+			    checkCountry(transactionalCollection.getResourceId());
+			    break;
+			case STATE:
+			    checkState(transactionalCollection.getResourceId());
+			    break;
+			case CITY:
+			    checkCity(transactionalCollection.getResourceId());
+			    break;
+			case LANDMARKLOCALITY:
+			    checkLandmarkLocality(transactionalCollection.getResourceId());
+			    break;
+			case DOCTOR:
+			    checkDoctor(transactionalCollection.getResourceId());
+			    break;
+			case LOCATION:
+			    checkLocation(transactionalCollection.getResourceId());
+			    break;
+
+			default:
+			    break;
+			}
 		}
 	    }
 	    checkOTP();
@@ -238,31 +237,31 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	    logger.error(e);
 	}
     }
-    
-    public void checkOTP(){
-    	try {
-    		List<OTPCollection> otpCollections = otpRepository.findNonExpiredOtp(OTPState.EXPIRED.getState());
-    		if(otpCollections != null){
-    			for(OTPCollection otpCollection : otpCollections){
-    				if(otpCollection.getState().equals(OTPState.VERIFIED)){
-    					if(!otpService.isOTPValid(otpCollection.getCreatedTime())){
-    						otpCollection.setState(OTPState.EXPIRED);
-    					}
-    				}else if(otpCollection.getState().equals(OTPState.NOTVERIFIED)){
-    					if(!otpService.isNonVerifiedOTPValid(otpCollection.getCreatedTime())){
-    						otpCollection.setState(OTPState.EXPIRED);
-    					}
-    				}
-    				otpRepository.save(otpCollection);
-    			}
-    		}
-    	} catch (Exception e) {
-    	    e.printStackTrace();
-    	    logger.error(e);
-    	}
+
+    public void checkOTP() {
+	try {
+	    List<OTPCollection> otpCollections = otpRepository.findNonExpiredOtp(OTPState.EXPIRED.getState());
+	    if (otpCollections != null) {
+		for (OTPCollection otpCollection : otpCollections) {
+		    if (otpCollection.getState().equals(OTPState.VERIFIED)) {
+			if (!otpService.isOTPValid(otpCollection.getCreatedTime())) {
+			    otpCollection.setState(OTPState.EXPIRED);
+			}
+		    } else if (otpCollection.getState().equals(OTPState.NOTVERIFIED)) {
+			if (!otpService.isNonVerifiedOTPValid(otpCollection.getCreatedTime())) {
+			    otpCollection.setState(OTPState.EXPIRED);
+			}
+		    }
+		    otpRepository.save(otpCollection);
+		}
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	}
     }
-    
-	@Override
+
+    @Override
     public void addResource(String resourceId, Resource resource, boolean isCached) {
 	TransactionalCollection transactionalCollection = null;
 	try {
@@ -273,8 +272,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		transactionalCollection.setResource(resource);
 		transactionalCollection.setIsCached(isCached);
 		transnationalRepositiory.save(transactionalCollection);
-	    }
-	    else {
+	    } else {
 		transactionalCollection.setIsCached(isCached);
 		transnationalRepositiory.save(transactionalCollection);
 	    }
@@ -291,33 +289,40 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	    UserCollection userCollection = userRepository.findOne(id);
 	    List<PatientCollection> patientCollections = patientRepository.findByUserId(id);
 	    if (userCollection != null && patientCollections != null) {
-	    	for(PatientCollection patientCollection : patientCollections){
-	    		PatientAdmissionCollection patientAdmissionCollection = patientAdmissionRepository.findByUserIdAndDoctorId(id, patientCollection.getDoctorId());
-	    		AddressCollection addressCollection = null;
-	    		if (patientCollection.getAddressId() != null)
-	    		    addressCollection = addressRepository.findOne(patientCollection.getAddressId());
-	    		SolrPatientDocument patientDocument = new SolrPatientDocument();
+		for (PatientCollection patientCollection : patientCollections) {
+		    PatientAdmissionCollection patientAdmissionCollection = patientAdmissionRepository.findByUserIdAndDoctorId(id,
+			    patientCollection.getDoctorId());
+		    AddressCollection addressCollection = null;
+		    if (patientCollection.getAddressId() != null)
+			addressCollection = addressRepository.findOne(patientCollection.getAddressId());
+		    SolrPatientDocument patientDocument = new SolrPatientDocument();
 
-	    		if (patientCollection.getDob() != null) {
-	    		    patientDocument.setDays(patientCollection.getDob().getDays() + "");
-	    		    patientDocument.setMonths(patientCollection.getDob().getMonths() + "");
-	    		    patientDocument.setYears(patientCollection.getDob().getYears() + "");
-	    		}
-	    		BeanUtil.map(userCollection, patientDocument);
-	    		if (patientCollection != null)BeanUtil.map(patientCollection, patientDocument);
-	    		if (patientAdmissionCollection != null)BeanUtil.map(patientAdmissionCollection, patientDocument);
-	    		if (addressCollection != null)BeanUtil.map(addressCollection, patientDocument);
+		    if (patientCollection.getDob() != null) {
+			patientDocument.setDays(patientCollection.getDob().getDays() + "");
+			patientDocument.setMonths(patientCollection.getDob().getMonths() + "");
+			patientDocument.setYears(patientCollection.getDob().getYears() + "");
+		    }
+		    BeanUtil.map(userCollection, patientDocument);
+		    if (patientCollection != null)
+			BeanUtil.map(patientCollection, patientDocument);
+		    if (patientAdmissionCollection != null)
+			BeanUtil.map(patientAdmissionCollection, patientDocument);
+		    if (addressCollection != null)
+			BeanUtil.map(addressCollection, patientDocument);
 
-	    		if (patientCollection != null)patientDocument.setId(patientCollection.getId());
-	    		if (patientAdmissionCollection != null){
-	    			if(patientAdmissionCollection.getReferredBy() != null){
-	    				ReferencesCollection referencesCollection = referenceRepository.findOne(patientAdmissionCollection.getReferredBy());
-	    				if(referencesCollection != null)patientDocument.setReferredBy(referencesCollection.getReference());
-	    			}
-	    			}
+		    if (patientCollection != null)
+			patientDocument.setId(patientCollection.getId());
+		    if (patientAdmissionCollection != null) {
+			if (patientAdmissionCollection.getReferredBy() != null) {
+			    ReferencesCollection referencesCollection = referenceRepository.findOne(patientAdmissionCollection.getReferredBy());
+			    if (referencesCollection != null)
+				patientDocument.setReferredBy(referencesCollection.getReference());
+			}
+		    }
 
-	    		if (patientCollection != null)solrRegistrationService.editPatient(patientDocument);
-	    	}
+		    if (patientCollection != null)
+			solrRegistrationService.editPatient(patientDocument);
+		}
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -448,105 +453,110 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	    logger.error(e);
 	}
     }
-    
+
     @Override
     public void checkLocation(String resourceId) {
-    	try {
-    	    LocationCollection locationCollection = locationRepository.findOne(resourceId);
-    	    if (locationCollection != null) {
-    		DoctorLocation doctorLocation = new DoctorLocation();
-    		BeanUtil.map(locationCollection, doctorLocation);
-    		doctorLocation.setLocationId(locationCollection.getId());
-    		doctorLocation.setLocationPhoneNumber(locationCollection.getMobileNumber());
-    		solrRegistrationService.editLocation(doctorLocation);
-    	    }
-    	} catch (Exception e) {
-    	    e.printStackTrace();
-    	    logger.error(e);
-    	}	
+	try {
+	    LocationCollection locationCollection = locationRepository.findOne(resourceId);
+	    if (locationCollection != null) {
+		DoctorLocation doctorLocation = new DoctorLocation();
+		BeanUtil.map(locationCollection, doctorLocation);
+		doctorLocation.setLocationId(locationCollection.getId());
+		doctorLocation.setLocationPhoneNumber(locationCollection.getMobileNumber());
+		solrRegistrationService.editLocation(doctorLocation);
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
 	}
-    
+    }
+
     @Override
     public void checkDoctor(String resourceId) {
-		try {
-		    DoctorCollection doctorCollection = doctorRepository.findByUserId(resourceId);
-		    UserCollection userCollection = userRepository.findOne(resourceId);
-		    if(doctorCollection != null && userCollection != null){
-		    	List<UserLocationCollection> userLocationCollections = userLocationRepository.findByUserId(resourceId);
-			    for(UserLocationCollection collection : userLocationCollections){
-			    	LocationCollection locationCollection = locationRepository.findOne(collection.getLocationId());
-			    	DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(collection.getId());
-			    	SolrDoctorDocument doctorDocument = new SolrDoctorDocument();
-			    	if(locationCollection != null)BeanUtil.map(locationCollection, doctorDocument);
-			    	if(userCollection != null)BeanUtil.map(userCollection, doctorDocument);
-			    	if(doctorCollection != null)BeanUtil.map(doctorCollection, doctorDocument);
-			    	if(clinicProfileCollection != null)BeanUtil.map(clinicProfileCollection, doctorDocument);
-			    	else {
-			    		doctorDocument.setWorkingSchedules(null);
-			    	}
-			    	if(locationCollection != null)doctorDocument.setLocationId(locationCollection.getId());
-			    	solrRegistrationService.addDoctor(doctorDocument);
-			    }
+	try {
+	    DoctorCollection doctorCollection = doctorRepository.findByUserId(resourceId);
+	    UserCollection userCollection = userRepository.findOne(resourceId);
+	    if (doctorCollection != null && userCollection != null) {
+		List<UserLocationCollection> userLocationCollections = userLocationRepository.findByUserId(resourceId);
+		for (UserLocationCollection collection : userLocationCollections) {
+		    LocationCollection locationCollection = locationRepository.findOne(collection.getLocationId());
+		    DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(collection.getId());
+		    SolrDoctorDocument doctorDocument = new SolrDoctorDocument();
+		    if (locationCollection != null)
+			BeanUtil.map(locationCollection, doctorDocument);
+		    if (userCollection != null)
+			BeanUtil.map(userCollection, doctorDocument);
+		    if (doctorCollection != null)
+			BeanUtil.map(doctorCollection, doctorDocument);
+		    if (clinicProfileCollection != null)
+			BeanUtil.map(clinicProfileCollection, doctorDocument);
+		    else {
+			doctorDocument.setWorkingSchedules(null);
 		    }
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
+		    if (locationCollection != null)
+			doctorDocument.setLocationId(locationCollection.getId());
+		    solrRegistrationService.addDoctor(doctorDocument);
 		}
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
 	}
+    }
 
-	private void checkLandmarkLocality(String resourceId) {
-		try {
-		    LandmarkLocalityCollection landmarkLocalityCollection = landmarkLocalityRepository.findOne(resourceId);
-		    if (landmarkLocalityCollection != null) {
-			SolrLocalityLandmarkDocument solrLocalityLandmarkDocument = new SolrLocalityLandmarkDocument();
-			BeanUtil.map(landmarkLocalityCollection, solrLocalityLandmarkDocument);
-			solrCityService.addLocalityLandmark(solrLocalityLandmarkDocument);
-		    }
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		}
+    private void checkLandmarkLocality(String resourceId) {
+	try {
+	    LandmarkLocalityCollection landmarkLocalityCollection = landmarkLocalityRepository.findOne(resourceId);
+	    if (landmarkLocalityCollection != null) {
+		SolrLocalityLandmarkDocument solrLocalityLandmarkDocument = new SolrLocalityLandmarkDocument();
+		BeanUtil.map(landmarkLocalityCollection, solrLocalityLandmarkDocument);
+		solrCityService.addLocalityLandmark(solrLocalityLandmarkDocument);
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
 	}
+    }
 
-	private void checkCity(String resourceId) {
-		try {
-		    CityCollection cityCollection = cityRepository.findOne(resourceId);
-		    if (cityCollection != null) {
-			SolrCityDocument solrCityDocument = new SolrCityDocument();
-			BeanUtil.map(cityCollection, solrCityDocument);
-			solrCityService.addCities(solrCityDocument);
-		    }
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		}
+    private void checkCity(String resourceId) {
+	try {
+	    CityCollection cityCollection = cityRepository.findOne(resourceId);
+	    if (cityCollection != null) {
+		SolrCityDocument solrCityDocument = new SolrCityDocument();
+		BeanUtil.map(cityCollection, solrCityDocument);
+		solrCityService.addCities(solrCityDocument);
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
 	}
+    }
 
-	private void checkState(String resourceId) {
-		try {
-		    StateCollection stateCollection = stateRepository.findOne(resourceId);
-		    if (stateCollection != null) {
-			SolrStateDocument solrStateDocument = new SolrStateDocument();
-			BeanUtil.map(stateCollection, solrStateDocument);
-			solrCityService.addState(solrStateDocument);
-		    }
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		}
+    private void checkState(String resourceId) {
+	try {
+	    StateCollection stateCollection = stateRepository.findOne(resourceId);
+	    if (stateCollection != null) {
+		SolrStateDocument solrStateDocument = new SolrStateDocument();
+		BeanUtil.map(stateCollection, solrStateDocument);
+		solrCityService.addState(solrStateDocument);
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
 	}
+    }
 
-	private void checkCountry(String resourceId) {
-		try {
-		    CountryCollection countryCollection = countryRepository.findOne(resourceId);
-		    if (countryCollection != null) {
-			SolrCountryDocument solrCountryDocument = new SolrCountryDocument();
-			BeanUtil.map(countryCollection, solrCountryDocument);
-			solrCityService.addCountry(solrCountryDocument);
-		    }
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		}
+    private void checkCountry(String resourceId) {
+	try {
+	    CountryCollection countryCollection = countryRepository.findOne(resourceId);
+	    if (countryCollection != null) {
+		SolrCountryDocument solrCountryDocument = new SolrCountryDocument();
+		BeanUtil.map(countryCollection, solrCountryDocument);
+		solrCityService.addCountry(solrCountryDocument);
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
 	}
+    }
 }

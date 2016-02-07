@@ -9,5 +9,5 @@ import com.dpdocter.request.LoginRequest;
 public interface LoginService {
     LoginResponse login(LoginRequest request, UriInfo uriInfo);
 
-	LoginResponse loginPatient(LoginPatientRequest request, UriInfo uriInfo);
+    LoginResponse loginPatient(LoginPatientRequest request, UriInfo uriInfo);
 }

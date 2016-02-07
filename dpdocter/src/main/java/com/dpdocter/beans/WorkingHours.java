@@ -5,7 +5,7 @@ public class WorkingHours {
 
     private Integer to;
 
-	public Integer getFrom() {
+    public Integer getFrom() {
 	return from;
     }
 

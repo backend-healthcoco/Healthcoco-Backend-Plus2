@@ -34,7 +34,7 @@ public class Patient {
     private Boolean isDataAvailableWithOtherDoctor = false;
 
     private Boolean isPatientOTPVerified = false;
-    
+
     public String getPatientId() {
 	return patientId;
     }
@@ -148,29 +148,27 @@ public class Patient {
     }
 
     public Boolean getIsDataAvailableWithOtherDoctor() {
-		return isDataAvailableWithOtherDoctor;
-	}
+	return isDataAvailableWithOtherDoctor;
+    }
 
-	public void setIsDataAvailableWithOtherDoctor(Boolean isDataAvailableWithOtherDoctor) {
-		this.isDataAvailableWithOtherDoctor = isDataAvailableWithOtherDoctor;
-	}
+    public void setIsDataAvailableWithOtherDoctor(Boolean isDataAvailableWithOtherDoctor) {
+	this.isDataAvailableWithOtherDoctor = isDataAvailableWithOtherDoctor;
+    }
 
-	public Boolean getIsPatientOTPVerified() {
-		return isPatientOTPVerified;
-	}
+    public Boolean getIsPatientOTPVerified() {
+	return isPatientOTPVerified;
+    }
 
-	public void setIsPatientOTPVerified(Boolean isPatientOTPVerified) {
-		this.isPatientOTPVerified = isPatientOTPVerified;
-	}
+    public void setIsPatientOTPVerified(Boolean isPatientOTPVerified) {
+	this.isPatientOTPVerified = isPatientOTPVerified;
+    }
 
-	@Override
-	public String toString() {
-		return "Patient [patientId=" + patientId + ", bloodGroup=" + bloodGroup + ", profession=" + profession
-				+ ", relations=" + relations + ", emailAddress=" + emailAddress + ", doctorId=" + doctorId
-				+ ", addressId=" + addressId + ", secMobile=" + secMobile + ", adhaarId=" + adhaarId
-				+ ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId + ", insuranceId="
-				+ insuranceId + ", insuranceName=" + insuranceName + ", notes=" + notes
-				+ ", isDataAvailableWithOtherDoctor=" + isDataAvailableWithOtherDoctor + ", isPatientOTPVerified="
-				+ isPatientOTPVerified + "]";
-	}
+    @Override
+    public String toString() {
+	return "Patient [patientId=" + patientId + ", bloodGroup=" + bloodGroup + ", profession=" + profession + ", relations=" + relations + ", emailAddress="
+		+ emailAddress + ", doctorId=" + doctorId + ", addressId=" + addressId + ", secMobile=" + secMobile + ", adhaarId=" + adhaarId
+		+ ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName="
+		+ insuranceName + ", notes=" + notes + ", isDataAvailableWithOtherDoctor=" + isDataAvailableWithOtherDoctor + ", isPatientOTPVerified="
+		+ isPatientOTPVerified + "]";
+    }
 }

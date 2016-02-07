@@ -123,16 +123,16 @@ public interface PrescriptionServices {
 
     List<DiagnosticTestCollection> getDiagnosticTest();
 
-	List<Prescription> getPrescriptions(String patientId, int page, int size, String updatedTime, Boolean discarded);
+    List<Prescription> getPrescriptions(String patientId, int page, int size, String updatedTime, Boolean discarded);
 
-	DiagnosticTest addEditDiagnosticTest(DiagnosticTest request);
+    DiagnosticTest addEditDiagnosticTest(DiagnosticTest request);
 
-	DiagnosticTest getDiagnosticTest(String diagnosticTestId);
+    DiagnosticTest getDiagnosticTest(String diagnosticTestId);
 
-	Boolean deleteDiagnosticTest(String diagnosticTestId, Boolean discarded);
+    Boolean deleteDiagnosticTest(String diagnosticTestId, Boolean discarded);
 
-	Boolean deleteDiagnosticTest(String diagnosticTestId, String hospitalId, String locationId, Boolean discarded);
+    Boolean deleteDiagnosticTest(String diagnosticTestId, String hospitalId, String locationId, Boolean discarded);
 
-	PrescriptionTestAndRecord checkPrescriptionExists(String uniqueId, String patientId);
+    PrescriptionTestAndRecord checkPrescriptionExists(String uniqueId, String patientId);
 
 }

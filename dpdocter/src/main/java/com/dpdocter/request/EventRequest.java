@@ -16,7 +16,7 @@ public class EventRequest {
     private String description;
 
     private String locationId;
-    
+
     private String doctorId;
 
     private WorkingHours time;
@@ -25,82 +25,81 @@ public class EventRequest {
 
     private Date date;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public AppointmentState getState() {
-		return state;
-	}
+    public AppointmentState getState() {
+	return state;
+    }
 
-	public void setState(AppointmentState state) {
-		this.state = state;
-	}
+    public void setState(AppointmentState state) {
+	this.state = state;
+    }
 
-	public String getSubject() {
-		return subject;
-	}
+    public String getSubject() {
+	return subject;
+    }
 
-	public void setSubject(String subject) {
-		this.subject = subject;
-	}
+    public void setSubject(String subject) {
+	this.subject = subject;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+	return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+	this.description = description;
+    }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
 
-	public String getDoctorId() {
-		return doctorId;
-	}
+    public String getDoctorId() {
+	return doctorId;
+    }
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
+    }
 
-	public WorkingHours getTime() {
-		return time;
-	}
+    public WorkingHours getTime() {
+	return time;
+    }
 
-	public void setTime(WorkingHours time) {
-		this.time = time;
-	}
+    public void setTime(WorkingHours time) {
+	this.time = time;
+    }
 
-	public Boolean getIsCalenderBlocked() {
-		return isCalenderBlocked;
-	}
+    public Boolean getIsCalenderBlocked() {
+	return isCalenderBlocked;
+    }
 
-	public void setIsCalenderBlocked(Boolean isCalenderBlocked) {
-		this.isCalenderBlocked = isCalenderBlocked;
-	}
+    public void setIsCalenderBlocked(Boolean isCalenderBlocked) {
+	this.isCalenderBlocked = isCalenderBlocked;
+    }
 
-	public Date getDate() {
-		return date;
-	}
+    public Date getDate() {
+	return date;
+    }
 
-	public void setDate(Date date) {
-		this.date = date;
-	}
+    public void setDate(Date date) {
+	this.date = date;
+    }
 
-	@Override
-	public String toString() {
-		return "EventRequest [id=" + id + ", state=" + state + ", subject=" + subject + ", description=" + description
-				+ ", locationId=" + locationId + ", doctorId=" + doctorId + ", time=" + time + ", isCalenderBlocked="
-				+ isCalenderBlocked + ", date=" + date + "]";
-	}
+    @Override
+    public String toString() {
+	return "EventRequest [id=" + id + ", state=" + state + ", subject=" + subject + ", description=" + description + ", locationId=" + locationId
+		+ ", doctorId=" + doctorId + ", time=" + time + ", isCalenderBlocked=" + isCalenderBlocked + ", date=" + date + "]";
+    }
 }

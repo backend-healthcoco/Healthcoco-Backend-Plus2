@@ -32,16 +32,16 @@ public class TokenCollection extends GenericCollection {
 	this.isUsed = isUsed;
     }
 
-	public String getResourceId() {
-		return resourceId;
-	}
+    public String getResourceId() {
+	return resourceId;
+    }
 
-	public void setResourceId(String resourceId) {
-		this.resourceId = resourceId;
-	}
+    public void setResourceId(String resourceId) {
+	this.resourceId = resourceId;
+    }
 
-	@Override
-	public String toString() {
-		return "TokenCollection [id=" + id + ", isUsed=" + isUsed + ", resourceId=" + resourceId + "]";
-	}
+    @Override
+    public String toString() {
+	return "TokenCollection [id=" + id + ", isUsed=" + isUsed + ", resourceId=" + resourceId + "]";
+    }
 }

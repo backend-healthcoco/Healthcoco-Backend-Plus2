@@ -40,16 +40,16 @@ public class SolrNotesDocument {
     public void setId(String id) {
 	this.id = id;
     }
-    
+
     public String getNote() {
-		return note;
-	}
+	return note;
+    }
 
-	public void setNote(String note) {
-		this.note = note;
-	}
+    public void setNote(String note) {
+	this.note = note;
+    }
 
-	public String getDoctorId() {
+    public String getDoctorId() {
 	if (doctorId == null) {
 	    return "";
 	}
@@ -110,10 +110,9 @@ public class SolrNotesDocument {
 	this.updatedTime = updatedTime;
     }
 
-	@Override
-	public String toString() {
-		return "SolrNotesDocument [id=" + id + ", note=" + note + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", updatedTime="
-				+ updatedTime + "]";
-	}
+    @Override
+    public String toString() {
+	return "SolrNotesDocument [id=" + id + ", note=" + note + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+		+ ", discarded=" + discarded + ", updatedTime=" + updatedTime + "]";
+    }
 }

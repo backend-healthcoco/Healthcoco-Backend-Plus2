@@ -3,7 +3,7 @@ package com.dpdocter.beans;
 public class PatientDetails {
 
     private Boolean showName;
-    
+
     private Boolean showPID;
 
     private Boolean showMobileNumber;
@@ -11,17 +11,17 @@ public class PatientDetails {
     private Boolean showDOB;
 
     private Boolean showGender;
-    
+
     private Boolean showReferedBy;
-    
+
     private Boolean showDate;
-    
+
     private Boolean showBloodGroup;
-    
+
     private Boolean showResourceId;
 
     private PrintSettingsText style;
-    
+
     public Boolean getShowName() {
 	return showName;
     }
@@ -54,60 +54,59 @@ public class PatientDetails {
 	this.showGender = showGender;
     }
 
-	public Boolean getShowReferedBy() {
-		return showReferedBy;
-	}
+    public Boolean getShowReferedBy() {
+	return showReferedBy;
+    }
 
-	public void setShowReferedBy(Boolean showReferedBy) {
-		this.showReferedBy = showReferedBy;
-	}
+    public void setShowReferedBy(Boolean showReferedBy) {
+	this.showReferedBy = showReferedBy;
+    }
 
-	public Boolean getShowDate() {
-		return showDate;
-	}
+    public Boolean getShowDate() {
+	return showDate;
+    }
 
-	public void setShowDate(Boolean showDate) {
-		this.showDate = showDate;
-	}
+    public void setShowDate(Boolean showDate) {
+	this.showDate = showDate;
+    }
 
-	public Boolean getShowBloodGroup() {
-		return showBloodGroup;
-	}
+    public Boolean getShowBloodGroup() {
+	return showBloodGroup;
+    }
 
-	public void setShowBloodGroup(Boolean showBloodGroup) {
-		this.showBloodGroup = showBloodGroup;
-	}
+    public void setShowBloodGroup(Boolean showBloodGroup) {
+	this.showBloodGroup = showBloodGroup;
+    }
 
-	public Boolean getShowResourceId() {
-		return showResourceId;
-	}
+    public Boolean getShowResourceId() {
+	return showResourceId;
+    }
 
-	public void setShowResourceId(Boolean showResourceId) {
-		this.showResourceId = showResourceId;
-	}
+    public void setShowResourceId(Boolean showResourceId) {
+	this.showResourceId = showResourceId;
+    }
 
-	public Boolean getShowPID() {
-		return showPID;
-	}
+    public Boolean getShowPID() {
+	return showPID;
+    }
 
-	public void setShowPID(Boolean showPID) {
-		this.showPID = showPID;
-	}
+    public void setShowPID(Boolean showPID) {
+	this.showPID = showPID;
+    }
 
-	public PrintSettingsText getStyle() {
-		return style;
-	}
+    public PrintSettingsText getStyle() {
+	return style;
+    }
 
-	public void setStyle(PrintSettingsText style) {
-		this.style = style;
-	}
+    public void setStyle(PrintSettingsText style) {
+	this.style = style;
+    }
 
-	@Override
-	public String toString() {
-		return "PatientDetails [showName=" + showName + ", showPID=" + showPID + ", showMobileNumber="
-				+ showMobileNumber + ", showDOB=" + showDOB + ", showGender=" + showGender + ", showReferedBy="
-				+ showReferedBy + ", showDate=" + showDate + ", showBloodGroup=" + showBloodGroup + ", showResourceId="
-				+ showResourceId + ", style=" + style + "]";
-	}
+    @Override
+    public String toString() {
+	return "PatientDetails [showName=" + showName + ", showPID=" + showPID + ", showMobileNumber=" + showMobileNumber + ", showDOB=" + showDOB
+		+ ", showGender=" + showGender + ", showReferedBy=" + showReferedBy + ", showDate=" + showDate + ", showBloodGroup=" + showBloodGroup
+		+ ", showResourceId=" + showResourceId + ", style=" + style + "]";
+    }
 
 }

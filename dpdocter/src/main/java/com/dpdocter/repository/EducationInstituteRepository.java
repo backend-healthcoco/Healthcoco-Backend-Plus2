@@ -14,10 +14,10 @@ import com.dpdocter.collections.EducationInstituteCollection;
 public interface EducationInstituteRepository extends MongoRepository<EducationInstituteCollection, String>,
 	PagingAndSortingRepository<EducationInstituteCollection, String> {
 
-	@Query("{'updatedTime': {'$gt': ?0}}")
-	List<EducationInstituteCollection> find(Date date, Pageable pageRequest);
+    @Query("{'updatedTime': {'$gt': ?0}}")
+    List<EducationInstituteCollection> find(Date date, Pageable pageRequest);
 
-	@Query("{'updatedTime': {'$gt': ?0}}")
-	List<EducationInstituteCollection> find(Date date, Sort sort);
+    @Query("{'updatedTime': {'$gt': ?0}}")
+    List<EducationInstituteCollection> find(Date date, Sort sort);
 
 }

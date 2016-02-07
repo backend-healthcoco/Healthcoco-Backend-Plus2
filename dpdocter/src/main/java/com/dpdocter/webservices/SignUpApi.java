@@ -37,7 +37,6 @@ import com.dpdocter.services.SignUpService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrDoctorDocument;
 import com.dpdocter.solr.services.SolrRegistrationService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -89,17 +88,20 @@ public class SignUpApi {
 	    }
 	    transnationalService.addResource(doctorSignUp.getUser().getId(), Resource.DOCTOR, false);
 	    solrRegistrationService.addDoctor(getSolrDoctorDocument(doctorSignUp));
-	    
-//	    if(doctorSignUp.getHospital() != null){
-//	    	if(doctorSignUp.getHospital().getLocationsAndAccessControl() != null && !doctorSignUp.getHospital().getLocationsAndAccessControl().isEmpty()){
-//	    		for(LocationAndAccessControl location : doctorSignUp.getHospital().getLocationsAndAccessControl()){
-//	    			transnationalService.addResource(location.getId(), Resource.LOCATION, false);
-//	    		    solrRegistrationService.addLocation(getSolrLocationDocument(location));
-//	    		}
-//	    	}
-//	    }
-	    
-	    
+
+	    // if(doctorSignUp.getHospital() != null){
+	    // if(doctorSignUp.getHospital().getLocationsAndAccessControl() !=
+	    // null &&
+	    // !doctorSignUp.getHospital().getLocationsAndAccessControl().isEmpty()){
+	    // for(LocationAndAccessControl location :
+	    // doctorSignUp.getHospital().getLocationsAndAccessControl()){
+	    // transnationalService.addResource(location.getId(),
+	    // Resource.LOCATION, false);
+	    // solrRegistrationService.addLocation(getSolrLocationDocument(location));
+	    // }
+	    // }
+	    // }
+
 	}
 
 	Response<DoctorSignUp> response = new Response<DoctorSignUp>();
@@ -129,8 +131,9 @@ public class SignUpApi {
 		    doctorSignUp.getHospital().setHospitalImageUrl(getFinalImageURL(doctorSignUp.getHospital().getHospitalImageUrl()));
 		}
 	    }
-//	    transnationalService.addResource(doctorSignUp.getUser().getId(), Resource.DOCTOR, false);
-//	    solrRegistrationService.addDoctor(getSolrDoctorDocument(doctorSignUp));
+	    // transnationalService.addResource(doctorSignUp.getUser().getId(),
+	    // Resource.DOCTOR, false);
+	    // solrRegistrationService.addDoctor(getSolrDoctorDocument(doctorSignUp));
 	}
 	Response<DoctorSignUp> response = new Response<DoctorSignUp>();
 	response.setData(doctorSignUp);
@@ -188,15 +191,16 @@ public class SignUpApi {
 	response.setData(user);
 	return response;
     }
-    
+
     /**
-     * This API signup patient into DB.
-     * It contains a flag isNewPatientNeedToBeCreated which indicates that a new patient signup need to be done or not.
-     * When new patient is created then unlock only that new patient only.Rest of the patients will be locked.
-     * When patient signup is done (for already registered from doc.)
-     *  with 80% match then unlock all the patients with that mobile number.
-     *  
-     * @param PatientSignupRequestMobile 
+     * This API signup patient into DB. It contains a flag
+     * isNewPatientNeedToBeCreated which indicates that a new patient signup
+     * need to be done or not. When new patient is created then unlock only that
+     * new patient only.Rest of the patients will be locked. When patient signup
+     * is done (for already registered from doc.) with 80% match then unlock all
+     * the patients with that mobile number.
+     * 
+     * @param PatientSignupRequestMobile
      * @return User List
      */
     @Path(value = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE)
@@ -207,47 +211,48 @@ public class SignUpApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request send is NULL");
 	}
 	List<User> users = new ArrayList<>();
-	
-	if(request.isNewPatientNeedToBeCreated()){
-		User user = signUpService.signupNewPatient(request);
-		users.add(user);
-	}else{
-		users = signUpService.signupAlreadyRegisteredPatient(request);
+
+	if (request.isNewPatientNeedToBeCreated()) {
+	    User user = signUpService.signupNewPatient(request);
+	    users.add(user);
+	} else {
+	    users = signUpService.signupAlreadyRegisteredPatient(request);
 	}
-	for(User user : users){
-		    if (user.getImageUrl() != null) {
-			user.setImageUrl(getFinalImageURL(user.getImageUrl()));
-		    }
-		    if (user.getThumbnailUrl() != null) {
-			user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
-		}
+	for (User user : users) {
+	    if (user.getImageUrl() != null) {
+		user.setImageUrl(getFinalImageURL(user.getImageUrl()));
+	    }
+	    if (user.getThumbnailUrl() != null) {
+		user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
+	    }
 	}
 	Response<User> response = new Response<User>();
 	response.setDataList(users);
 	return response;
     }
-    
+
     /**
-     * This API will take name and mobile num and flag (to verify or unlock) as i/p 
-     * and return true or false based on 80 % match of name.POST API.In case of unlock
-     *  it will unlock the user.In case of verify only return true or false ,no unlock 
-     *  in this case.Also while unlock check 80% match for only lock patients.
+     * This API will take name and mobile num and flag (to verify or unlock) as
+     * i/p and return true or false based on 80 % match of name.POST API.In case
+     * of unlock it will unlock the user.In case of verify only return true or
+     * false ,no unlock in this case.Also while unlock check 80% match for only
+     * lock patients.
      */
     @Path(value = PathProxy.SignUpUrls.VERIFY_UNLOCK_PATIENT)
     @POST
     public Response<Boolean> verifyOrUnlockPatient(VerifyUnlockPatientRequest request) {
-		boolean flag = false;
-		if((request.getVerifyOrUnlock().getFlag()).equals(FlagEnum.VERIFY.getFlag())){
-			flag = signUpService.verifyPatientBasedOn80PercentMatchOfName(request.getName(), request.getMobileNumber());
-		}else if ((request.getVerifyOrUnlock().getFlag()).equals(FlagEnum.UNLOCK.getFlag())){
-			flag = signUpService.unlockPatientBasedOn80PercentMatch(request.getName(), request.getMobileNumber());
-		}
-    	Response<Boolean> flagResponse = new Response<Boolean>();
-    	flagResponse.setData(flag);
-    	return flagResponse;
-    	
+	boolean flag = false;
+	if ((request.getVerifyOrUnlock().getFlag()).equals(FlagEnum.VERIFY.getFlag())) {
+	    flag = signUpService.verifyPatientBasedOn80PercentMatchOfName(request.getName(), request.getMobileNumber());
+	} else if ((request.getVerifyOrUnlock().getFlag()).equals(FlagEnum.UNLOCK.getFlag())) {
+	    flag = signUpService.unlockPatientBasedOn80PercentMatch(request.getName(), request.getMobileNumber());
+	}
+	Response<Boolean> flagResponse = new Response<Boolean>();
+	flagResponse.setData(flag);
+	return flagResponse;
+
     }
-    	
+
     @Path(value = PathProxy.SignUpUrls.PATIENT_PROFILE_PIC_CHANGE)
     @POST
     public Response<User> patientProfilePicChange(PatientProfilePicChangeRequest request) {
@@ -280,8 +285,8 @@ public class SignUpApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	String response = signUpService.verifyUser(tokenId);
-	
-	return  response;
+
+	return response;
     }
 
     @Path(value = PathProxy.SignUpUrls.ACTIVATE_USER)
@@ -359,11 +364,11 @@ public class SignUpApi {
 	    BeanUtil.map(doctor.getUser(), solrDoctorDocument);
 	    solrDoctorDocument.setUserId(doctor.getUser().getId());
 	    List<String> specialiazation = new ArrayList<String>();
-	    if (doctor.getHospital() != null &&  doctor.getHospital().getLocationsAndAccessControl() != null) {
-		for (LocationAndAccessControl locationAndAccessControl : doctor.getHospital().getLocationsAndAccessControl()) { 
-			specialiazation.addAll(locationAndAccessControl.getSpecialization());
-			BeanUtil.map(locationAndAccessControl, solrDoctorDocument);
-			solrDoctorDocument.setLocationId(locationAndAccessControl.getId());
+	    if (doctor.getHospital() != null && doctor.getHospital().getLocationsAndAccessControl() != null) {
+		for (LocationAndAccessControl locationAndAccessControl : doctor.getHospital().getLocationsAndAccessControl()) {
+		    specialiazation.addAll(locationAndAccessControl.getSpecialization());
+		    BeanUtil.map(locationAndAccessControl, solrDoctorDocument);
+		    solrDoctorDocument.setLocationId(locationAndAccessControl.getId());
 		}
 	    }
 	    solrDoctorDocument.setSpecialization(specialiazation);
@@ -373,13 +378,14 @@ public class SignUpApi {
 	return solrDoctorDocument;
     }
 
-//     private SolrLocationDocument getSolrLocationDocument(LocationAndAccessControl location) {
-//    	 SolrLocationDocument solrLocationDocument = new SolrLocationDocument();
-//     try {
-//    	 BeanUtil.map(location, solrLocationDocument);
-//     } catch (Exception e) {
-//     e.printStackTrace();
-//     }
-//     return solrLocationDocuments;
-//     }
+    // private SolrLocationDocument
+    // getSolrLocationDocument(LocationAndAccessControl location) {
+    // SolrLocationDocument solrLocationDocument = new SolrLocationDocument();
+    // try {
+    // BeanUtil.map(location, solrLocationDocument);
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
+    // return solrLocationDocuments;
+    // }
 }

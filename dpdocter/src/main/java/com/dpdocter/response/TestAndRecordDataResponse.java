@@ -4,33 +4,33 @@ import com.dpdocter.beans.LabTest;
 
 public class TestAndRecordDataResponse {
 
-	private LabTest labTest;
-	
-	private String recordId;
+    private LabTest labTest;
 
-	public TestAndRecordDataResponse(LabTest labTest, String recordId) {
-		this.labTest = labTest;
-		this.recordId = recordId;
-	}
+    private String recordId;
 
-	public LabTest getLabTest() {
-		return labTest;
-	}
+    public TestAndRecordDataResponse(LabTest labTest, String recordId) {
+	this.labTest = labTest;
+	this.recordId = recordId;
+    }
 
-	public void setLabTest(LabTest labTest) {
-		this.labTest = labTest;
-	}
+    public LabTest getLabTest() {
+	return labTest;
+    }
 
-	public String getRecordId() {
-		return recordId;
-	}
+    public void setLabTest(LabTest labTest) {
+	this.labTest = labTest;
+    }
 
-	public void setRecordId(String recordId) {
-		this.recordId = recordId;
-	}
+    public String getRecordId() {
+	return recordId;
+    }
 
-	@Override
-	public String toString() {
-		return "TestAndRecordDataResponse [labTest=" + labTest + ", recordId=" + recordId + "]";
-	}	
+    public void setRecordId(String recordId) {
+	this.recordId = recordId;
+    }
+
+    @Override
+    public String toString() {
+	return "TestAndRecordDataResponse [labTest=" + labTest + ", recordId=" + recordId + "]";
+    }
 }

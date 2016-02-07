@@ -2,16 +2,16 @@ package com.dpdocter.enums;
 
 public enum AppointmentState {
 
-	CONFIRM("CONFIRM"), NEW("NEW"), CANCEL("CANCEL"), RESCHEDULE("RESCHEDULE");
-	
-	private String state;
+    CONFIRM("CONFIRM"), NEW("NEW"), CANCEL("CANCEL"), RESCHEDULE("RESCHEDULE");
 
-	public String getState() {
-		return state;
-	}
+    private String state;
 
-	private AppointmentState(String state) {
-		this.state = state;
-	}
-	
+    public String getState() {
+	return state;
+    }
+
+    private AppointmentState(String state) {
+	this.state = state;
+    }
+
 }

@@ -38,8 +38,8 @@ public class LoginResponse {
 	this.isTempPassword = isTempPassword;
     }
 
-	@Override
-	public String toString() {
-		return "LoginResponse [user=" + user + ", hospitals=" + hospitals + ", isTempPassword=" + isTempPassword + "]";
-	}
+    @Override
+    public String toString() {
+	return "LoginResponse [user=" + user + ", hospitals=" + hospitals + ", isTempPassword=" + isTempPassword + "]";
+    }
 }

@@ -2,15 +2,15 @@ package com.dpdocter.enums;
 
 public enum DoctorFacility {
 
-	IBS("IBS"),CALL("CALL"),BOOK("BOOK");
-	
-	private String type;
+    IBS("IBS"), CALL("CALL"), BOOK("BOOK");
 
-	private DoctorFacility(String type) {
-		this.type = type;
-	}
+    private String type;
 
-	public String getType() {
-		return type;
-	}
+    private DoctorFacility(String type) {
+	this.type = type;
+    }
+
+    public String getType() {
+	return type;
+    }
 }

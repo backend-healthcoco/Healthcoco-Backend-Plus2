@@ -43,7 +43,7 @@ public class DoctorSignupHandheldContinueRequest {
     private String streetAddress;
 
     private String registerNumber;
-    
+
     public String getUserId() {
 	return userId;
     }
@@ -188,23 +188,21 @@ public class DoctorSignupHandheldContinueRequest {
 	this.streetAddress = streetAddress;
     }
 
-	public String getRegisterNumber() {
-		return registerNumber;
-	}
+    public String getRegisterNumber() {
+	return registerNumber;
+    }
 
-	public void setRegisterNumber(String registerNumber) {
-		this.registerNumber = registerNumber;
-	}
+    public void setRegisterNumber(String registerNumber) {
+	this.registerNumber = registerNumber;
+    }
 
-	@Override
-	public String toString() {
-		return "DoctorSignupHandheldContinueRequest [userId=" + userId + ", specialization=" + specialization
-				+ ", hospitalName=" + hospitalName + ", hospitalPhoneNumber=" + hospitalPhoneNumber
-				+ ", hospitalImageUrl=" + hospitalImageUrl + ", hospitalDescription=" + hospitalDescription
-				+ ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city
-				+ ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl="
-				+ websiteUrl + ", locationImageUrl=" + locationImageUrl + ", hospitalId=" + hospitalId + ", latitude="
-				+ latitude + ", longitude=" + longitude + ", streetAddress=" + streetAddress + ", registerNumber="
-				+ registerNumber + "]";
-	}
+    @Override
+    public String toString() {
+	return "DoctorSignupHandheldContinueRequest [userId=" + userId + ", specialization=" + specialization + ", hospitalName=" + hospitalName
+		+ ", hospitalPhoneNumber=" + hospitalPhoneNumber + ", hospitalImageUrl=" + hospitalImageUrl + ", hospitalDescription=" + hospitalDescription
+		+ ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city + ", locationPhoneNumber="
+		+ locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", locationImageUrl=" + locationImageUrl
+		+ ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude=" + longitude + ", streetAddress=" + streetAddress
+		+ ", registerNumber=" + registerNumber + "]";
+    }
 }

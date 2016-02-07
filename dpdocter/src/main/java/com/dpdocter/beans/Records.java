@@ -6,7 +6,7 @@ public class Records extends GenericCollection {
     private String id;
 
     private String uniqueId;
-    
+
     private String doctorId;
 
     private String locationId;
@@ -137,70 +137,68 @@ public class Records extends GenericCollection {
 	this.patientId = patientId;
     }
 
-	public String getUploadedByLocation() {
-		return uploadedByLocation;
-	}
+    public String getUploadedByLocation() {
+	return uploadedByLocation;
+    }
 
-	public void setUploadedByLocation(String uploadedByLocation) {
-		this.uploadedByLocation = uploadedByLocation;
-	}
+    public void setUploadedByLocation(String uploadedByLocation) {
+	this.uploadedByLocation = uploadedByLocation;
+    }
 
-	public String getUniqueId() {
-		return uniqueId;
-	}
+    public String getUniqueId() {
+	return uniqueId;
+    }
 
-	public void setUniqueId(String uniqueId) {
-		this.uniqueId = uniqueId;
-	}
+    public void setUniqueId(String uniqueId) {
+	this.uniqueId = uniqueId;
+    }
 
-	public String getPrescriptionId() {
-		return prescriptionId;
-	}
+    public String getPrescriptionId() {
+	return prescriptionId;
+    }
 
-	public void setPrescriptionId(String prescriptionId) {
-		this.prescriptionId = prescriptionId;
-	}
+    public void setPrescriptionId(String prescriptionId) {
+	this.prescriptionId = prescriptionId;
+    }
 
-	public String getPrescribedByDoctorId() {
-		return prescribedByDoctorId;
-	}
+    public String getPrescribedByDoctorId() {
+	return prescribedByDoctorId;
+    }
 
-	public void setPrescribedByDoctorId(String prescribedByDoctorId) {
-		this.prescribedByDoctorId = prescribedByDoctorId;
-	}
+    public void setPrescribedByDoctorId(String prescribedByDoctorId) {
+	this.prescribedByDoctorId = prescribedByDoctorId;
+    }
 
-	public String getPrescribedByLocationId() {
-		return prescribedByLocationId;
-	}
+    public String getPrescribedByLocationId() {
+	return prescribedByLocationId;
+    }
 
-	public void setPrescribedByLocationId(String prescribedByLocationId) {
-		this.prescribedByLocationId = prescribedByLocationId;
-	}
+    public void setPrescribedByLocationId(String prescribedByLocationId) {
+	this.prescribedByLocationId = prescribedByLocationId;
+    }
 
-	public String getPrescribedByHospitalId() {
-		return prescribedByHospitalId;
-	}
+    public String getPrescribedByHospitalId() {
+	return prescribedByHospitalId;
+    }
 
-	public void setPrescribedByHospitalId(String prescribedByHospitalId) {
-		this.prescribedByHospitalId = prescribedByHospitalId;
-	}
+    public void setPrescribedByHospitalId(String prescribedByHospitalId) {
+	this.prescribedByHospitalId = prescribedByHospitalId;
+    }
 
-	public String getTestId() {
-		return testId;
-	}
+    public String getTestId() {
+	return testId;
+    }
 
-	public void setTestId(String testId) {
-		this.testId = testId;
-	}
+    public void setTestId(String testId) {
+	this.testId = testId;
+    }
 
-	@Override
-	public String toString() {
-		return "Records [id=" + id + ", uniqueId=" + uniqueId + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", recordsUrl=" + recordsUrl
-				+ ", recordsLable=" + recordsLable + ", recordsType=" + recordsType + ", description=" + description
-				+ ", inHistory=" + inHistory + ", discarded=" + discarded + ", uploadedByLocation=" + uploadedByLocation
-				+ ", visitId=" + visitId + ", prescriptionId=" + prescriptionId + ", prescribedByDoctorId="
-				+ prescribedByDoctorId + ", prescribedByLocationId=" + prescribedByLocationId
-				+ ", prescribedByHospitalId=" + prescribedByHospitalId + ", testId=" + testId + "]";
-	}
+    @Override
+    public String toString() {
+	return "Records [id=" + id + ", uniqueId=" + uniqueId + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+		+ ", patientId=" + patientId + ", recordsUrl=" + recordsUrl + ", recordsLable=" + recordsLable + ", recordsType=" + recordsType
+		+ ", description=" + description + ", inHistory=" + inHistory + ", discarded=" + discarded + ", uploadedByLocation=" + uploadedByLocation
+		+ ", visitId=" + visitId + ", prescriptionId=" + prescriptionId + ", prescribedByDoctorId=" + prescribedByDoctorId
+		+ ", prescribedByLocationId=" + prescribedByLocationId + ", prescribedByHospitalId=" + prescribedByHospitalId + ", testId=" + testId + "]";
+    }
 }

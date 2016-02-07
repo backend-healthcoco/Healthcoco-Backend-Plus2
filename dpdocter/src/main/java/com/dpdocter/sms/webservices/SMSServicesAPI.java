@@ -29,7 +29,6 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.SMSResponse;
 import com.dpdocter.sms.services.SMSServices;
 import com.dpdocter.webservices.PathProxy;
-
 import common.util.web.Response;
 
 @Component
@@ -118,21 +117,22 @@ public class SMSServicesAPI {
 	response.setData(true);
 	return response;
     }
-    
+
     /**
-     * SMS Content : Pass whichever option is selected as string : PATIENT_NAME, DOCTOR_NAME, APPOINTMENT_ID ,DATE_TIME ,CLINIC_NAME,CLINIC_CONTACT_NUMBER
+     * SMS Content : Pass whichever option is selected as string : PATIENT_NAME,
+     * DOCTOR_NAME, APPOINTMENT_ID ,DATE_TIME ,CLINIC_NAME,CLINIC_CONTACT_NUMBER
      */
-    
+
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path(value = PathProxy.SMSUrls.ADD_EDIT_SMS_FORMAT)
     @POST
     public Response<SMSFormat> addSmsFormat(SMSFormat request) {
-    	if (request == null) {
-    	    logger.warn("Invalid Input");
-    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-    	}
-    	SMSFormat smsFormat = smsServices.addSmsFormat(request);
+	if (request == null) {
+	    logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	}
+	SMSFormat smsFormat = smsServices.addSmsFormat(request);
 	Response<SMSFormat> response = new Response<SMSFormat>();
 	response.setData(smsFormat);
 	return response;
@@ -143,8 +143,8 @@ public class SMSServicesAPI {
     @Path(value = PathProxy.SMSUrls.GET_SMS_FORMAT)
     @GET
     public Response<SMSFormat> getSmsFormat(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-    		@PathParam(value = "hospitalId") String hospitalId) {
-    	List<SMSFormat> smsFormat = smsServices.getSmsFormat(doctorId, locationId, hospitalId);
+	    @PathParam(value = "hospitalId") String hospitalId) {
+	List<SMSFormat> smsFormat = smsServices.getSmsFormat(doctorId, locationId, hospitalId);
 	Response<SMSFormat> response = new Response<SMSFormat>();
 	response.setDataList(smsFormat);
 	return response;

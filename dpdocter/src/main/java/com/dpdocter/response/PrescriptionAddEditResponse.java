@@ -2,7 +2,6 @@ package com.dpdocter.response;
 
 import java.util.List;
 
-import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.collections.GenericCollection;
 
@@ -10,7 +9,7 @@ public class PrescriptionAddEditResponse extends GenericCollection {
     private String id;
 
     private String uniqueId;
-    
+
     private String name;
 
     private String doctorId;
@@ -121,27 +120,26 @@ public class PrescriptionAddEditResponse extends GenericCollection {
 	this.advice = advice;
     }
 
-	public String getUniqueId() {
-		return uniqueId;
-	}
+    public String getUniqueId() {
+	return uniqueId;
+    }
 
-	public void setUniqueId(String uniqueId) {
-		this.uniqueId = uniqueId;
-	}
+    public void setUniqueId(String uniqueId) {
+	this.uniqueId = uniqueId;
+    }
 
-	public List<TestAndRecordDataResponse> getTestsAndRecords() {
-		return testsAndRecords;
-	}
+    public List<TestAndRecordDataResponse> getTestsAndRecords() {
+	return testsAndRecords;
+    }
 
-	public void setTestsAndRecords(List<TestAndRecordDataResponse> testsAndRecords) {
-		this.testsAndRecords = testsAndRecords;
-	}
+    public void setTestsAndRecords(List<TestAndRecordDataResponse> testsAndRecords) {
+	this.testsAndRecords = testsAndRecords;
+    }
 
-	@Override
-	public String toString() {
-		return "PrescriptionAddEditResponse [id=" + id + ", uniqueId=" + uniqueId + ", name=" + name + ", doctorId="
-				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", items=" + items
-				+ ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + ", discarded=" + discarded
-				+ ", visitId=" + visitId + ", testsAndRecords=" + testsAndRecords + ", advice=" + advice + "]";
-	}
+    @Override
+    public String toString() {
+	return "PrescriptionAddEditResponse [id=" + id + ", uniqueId=" + uniqueId + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId
+		+ ", hospitalId=" + hospitalId + ", items=" + items + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + ", discarded="
+		+ discarded + ", visitId=" + visitId + ", testsAndRecords=" + testsAndRecords + ", advice=" + advice + "]";
+    }
 }

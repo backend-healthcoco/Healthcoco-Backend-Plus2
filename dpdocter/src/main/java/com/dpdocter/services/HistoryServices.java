@@ -30,6 +30,8 @@ public interface HistoryServices {
 
     boolean addPrescriptionToHistory(String prescriptionId, String patientId, String doctorId, String hospitalId, String locationId);
 
+    boolean addPatientTreatmentToHistory(String treatmentId, String patientId, String doctorId, String hospitalId, String locationId);
+
     boolean assignMedicalHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId);
 
     boolean assignFamilyHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId);
@@ -41,6 +43,8 @@ public interface HistoryServices {
     boolean removeClinicalNotes(String clinicalNotesId, String patientId, String doctorId, String hospitalId, String locationId);
 
     boolean removePrescription(String prescriptionId, String patientId, String doctorId, String hospitalId, String locationId);
+
+    boolean removePatientTreatment(String treatmentId, String patientId, String doctorId, String hospitalId, String locationId);
 
     boolean removeMedicalHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId);
 
@@ -68,6 +72,6 @@ public interface HistoryServices {
 
     List<HistoryDetailsResponse> getMultipleData(String patientId, String doctorId, String hospitalId, String locationId, String updatedTime, Boolean inHistory);
 
-	List<HistoryDetailsResponse> getPatientHistory(String patientId, List<String> historyFilter, int page, int size, String updatedTime);
+    List<HistoryDetailsResponse> getPatientHistory(String patientId, List<String> historyFilter, int page, int size, String updatedTime);
 
 }

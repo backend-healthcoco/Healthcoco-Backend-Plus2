@@ -25,8 +25,8 @@ public class WorkingSchedule {
 	this.workingHours = workingHours;
     }
 
-	@Override
-	public String toString() {
-		return "WorkingSchedule [workingDay=" + workingDay + ", workingHours=" + workingHours + "]";
-	}
+    @Override
+    public String toString() {
+	return "WorkingSchedule [workingDay=" + workingDay + ", workingHours=" + workingHours + "]";
+    }
 }

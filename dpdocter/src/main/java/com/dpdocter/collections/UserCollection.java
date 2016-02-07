@@ -2,14 +2,12 @@ package com.dpdocter.collections;
 
 import java.util.Date;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.DOB;
 import com.dpdocter.enums.UserState;
 
 @Document(collection = "user_cl")
@@ -128,8 +126,10 @@ public class UserCollection extends GenericCollection {
     }
 
     public void setFirstName(String firstName) {
-    	if(firstName!=null)	this.firstName = WordUtils.capitalize(firstName.toLowerCase());
-        else this.firstName = firstName;
+	if (firstName != null)
+	    this.firstName = WordUtils.capitalize(firstName.toLowerCase());
+	else
+	    this.firstName = firstName;
     }
 
     public String getLastName() {
@@ -236,14 +236,12 @@ public class UserCollection extends GenericCollection {
 	this.signedUp = signedUp;
     }
 
-	@Override
-	public String toString() {
-		return "UserCollection [id=" + id + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName
-				+ ", middleName=" + middleName + ", userName=" + userName + ", password=" + password + ", emailAddress="
-				+ emailAddress + ", mobileNumber=" + mobileNumber + ", imageUrl=" + imageUrl + ", thumbnailUrl="
-				+ thumbnailUrl + ", isActive=" + isActive + ", isTempPassword=" + isTempPassword + ", isVerified="
-				+ isVerified + ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl
-				+ ", colorCode=" + colorCode + ", userState=" + userState + ", lastSession=" + lastSession
-				+ ", signedUp=" + signedUp + "]";
-	}
+    @Override
+    public String toString() {
+	return "UserCollection [id=" + id + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName
+		+ ", userName=" + userName + ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", imageUrl="
+		+ imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", isActive=" + isActive + ", isTempPassword=" + isTempPassword + ", isVerified=" + isVerified
+		+ ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", colorCode=" + colorCode + ", userState="
+		+ userState + ", lastSession=" + lastSession + ", signedUp=" + signedUp + "]";
+    }
 }

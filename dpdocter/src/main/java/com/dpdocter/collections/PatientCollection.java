@@ -236,8 +236,10 @@ public class PatientCollection extends GenericCollection {
     }
 
     public void setFirstName(String firstName) {
-    if(firstName!=null)	this.firstName = WordUtils.capitalize(firstName.toLowerCase());
-    else this.firstName = firstName;
+	if (firstName != null)
+	    this.firstName = WordUtils.capitalize(firstName.toLowerCase());
+	else
+	    this.firstName = firstName;
     }
 
     public String getGender() {

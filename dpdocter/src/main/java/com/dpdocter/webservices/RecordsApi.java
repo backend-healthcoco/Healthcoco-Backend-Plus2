@@ -41,7 +41,6 @@ import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.RecordsService;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -76,9 +75,9 @@ public class RecordsApi {
 
 	// patient track
 	if (records != null) {
-		Records visitRecord = new Records();
-		BeanUtil.map(records, visitRecord);
-		visitRecord.setPrescriptionId(null);
+	    Records visitRecord = new Records();
+	    BeanUtil.map(records, visitRecord);
+	    visitRecord.setPrescriptionId(null);
 	    records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
 	    String visitId = patientTrackService.addRecord(visitRecord, VisitedFor.REPORTS, request.getVisitId());
 	    records.setVisitId(visitId);
@@ -109,7 +108,7 @@ public class RecordsApi {
 	}
 	request.setIsOTPVerified(otpService.checkOTPVerified(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId()));
 	List<Records> records = recordsService.searchRecords(request, uriInfo);
-	
+
 	Response<Records> response = new Response<Records>();
 	response.setDataList(records);
 	return response;
@@ -117,8 +116,8 @@ public class RecordsApi {
 
     @Path(value = PathProxy.RecordsUrls.GET_RECORDS_PATIENT_ID)
     @GET
-    public Response<Records> getRecordsByPatientId(@PathParam("patientId") String patientId, @QueryParam("page") int page, @QueryParam("size") int size, 
-    	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    public Response<Records> getRecordsByPatientId(@PathParam("patientId") String patientId, @QueryParam("page") int page, @QueryParam("size") int size,
+	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (DPDoctorUtils.anyStringEmpty(patientId)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Patient Id Cannot Be Empty");
 	}
@@ -135,7 +134,7 @@ public class RecordsApi {
     @GET
     public Response<Integer> getRecordCount(@PathParam("doctorId") String doctorId, @PathParam("patientId") String patientId,
 	    @PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
-    Boolean isOTPVerified = otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId);
+	Boolean isOTPVerified = otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId);
 	Integer recordCount = recordsService.getRecordCount(doctorId, patientId, locationId, hospitalId, isOTPVerified);
 	Response<Integer> response = new Response<Integer>();
 	response.setData(recordCount);
@@ -262,19 +261,18 @@ public class RecordsApi {
 	response.setData(true);
 	return response;
     }
-    
+
     @POST
     @Path(value = PathProxy.RecordsUrls.ADD_RECORDS_MULTIPART)
-    @Consumes({MediaType.MULTIPART_FORM_DATA})
-    public Response<Records> addRecordsMultipart(@FormDataParam("file") FormDataBodyPart file, 
-    		@FormDataParam("data") RecordsAddRequestMultipart request) {
+    @Consumes({ MediaType.MULTIPART_FORM_DATA })
+    public Response<Records> addRecordsMultipart(@FormDataParam("file") FormDataBodyPart file, @FormDataParam("data") RecordsAddRequestMultipart request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 
 	Records records = recordsService.addRecordsMultipart(file, request);
 
-	// patient track 
+	// patient track
 	if (records != null) {
 	    records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
 	    String visitId = patientTrackService.addRecord(records, VisitedFor.REPORTS, request.getVisitId());

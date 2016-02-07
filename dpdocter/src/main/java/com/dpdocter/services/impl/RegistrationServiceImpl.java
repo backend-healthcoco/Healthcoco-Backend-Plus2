@@ -122,7 +122,6 @@ import com.dpdocter.services.OTPService;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.sms.services.SMSServices;
 import com.dpdocter.solr.document.SolrDoctorDocument;
-
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -204,19 +203,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Autowired
     private LocationServices locationServices;
-    
+
     @Autowired
     private PrescriptionRepository prescriptionRepository;
-    
+
     @Autowired
     private ClinicalNotesRepository clinicalNotesRepository;
-    
+
     @Autowired
     private RecordsRepository recordsRepository;
-    
+
     @Autowired
     private FeedbackRepository feedbackRepository;
-    
+
     @Autowired
     private MongoTemplate mongoTemplate;
 
@@ -309,14 +308,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	    patientCollection.setCreatedTime(createdTime);
 	    patientCollection.setPID(patientIdGenerator(request.getDoctorId(), request.getLocationId(), request.getHospitalId()));
-	    
+
 	    if (addressCollection != null) {
 		patientCollection.setAddressId(addressCollection.getId());
 	    }
-	    
-	    if(!DPDoctorUtils.anyStringEmpty(request.getProfession())){
-	    	ProfessionCollection professionCollection = professionRepository.findOne(request.getProfession());
-	    	if(professionCollection != null)patientCollection.setProfession(professionCollection.getProfession());
+
+	    if (!DPDoctorUtils.anyStringEmpty(request.getProfession())) {
+		ProfessionCollection professionCollection = professionRepository.findOne(request.getProfession());
+		if (professionCollection != null)
+		    patientCollection.setProfession(professionCollection.getProfession());
 	    }
 	    patientCollection.setNotes(request.getNotes());
 	    patientCollection = patientRepository.save(patientCollection);
@@ -383,14 +383,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    BeanUtil.map(patientCollection, patient);
 	    patient.setPatientId(patientCollection.getId());
 
-	    Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(patientCollection.getDoctorId(), userCollection.getId(), patientCollection.getHospitalId(), patientCollection.getLocationId());
-	    Integer clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(patientCollection.getDoctorId(), userCollection.getId(), patientCollection.getHospitalId(), patientCollection.getLocationId());
-	    Integer recordsCount = recordsRepository.getRecordsForOtherDoctors(patientCollection.getDoctorId(), userCollection.getId(), patientCollection.getHospitalId(), patientCollection.getLocationId());
-	    
-	    if ((prescriptionCount != null && prescriptionCount > 0) || (clinicalNotesCount != null && clinicalNotesCount > 0) || (recordsCount != null && recordsCount > 0))
-	    	patient.setIsDataAvailableWithOtherDoctor(true);
-	    
-	    patient.setIsPatientOTPVerified(otpService.checkOTPVerified(patientCollection.getDoctorId(), patientCollection.getLocationId(), patientCollection.getHospitalId(), userCollection.getId()));
+	    Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(patientCollection.getDoctorId(), userCollection.getId(),
+		    patientCollection.getHospitalId(), patientCollection.getLocationId());
+	    Integer clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(patientCollection.getDoctorId(), userCollection.getId(),
+		    patientCollection.getHospitalId(), patientCollection.getLocationId());
+	    Integer recordsCount = recordsRepository.getRecordsForOtherDoctors(patientCollection.getDoctorId(), userCollection.getId(),
+		    patientCollection.getHospitalId(), patientCollection.getLocationId());
+
+	    if ((prescriptionCount != null && prescriptionCount > 0) || (clinicalNotesCount != null && clinicalNotesCount > 0)
+		    || (recordsCount != null && recordsCount > 0))
+		patient.setIsDataAvailableWithOtherDoctor(true);
+
+	    patient.setIsPatientOTPVerified(otpService.checkOTPVerified(patientCollection.getDoctorId(), patientCollection.getLocationId(),
+		    patientCollection.getHospitalId(), userCollection.getId()));
 
 	    registeredPatientDetails.setPatient(patient);
 	    registeredPatientDetails.setDob(patientCollection.getDob());
@@ -465,208 +470,214 @@ public class RegistrationServiceImpl implements RegistrationService {
 		addressCollection = addressRepository.save(addressCollection);
 	    }
 	    // save Patient Info
-	    if(DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())){
-    	    UserCollection userCollection = userRepository.findOne(request.getUserId());
-    	    if (userCollection == null) {
-    		logger.error("Incorrect User Id");
-    		throw new BusinessException(ServiceError.InvalidInput, "Incorrect User Id");
-    	    }
-    	    BeanUtil.map(userCollection, registeredPatientDetails);
-    	    if (request.getImage() != null) {
-    		String path = "profile-images";
-    		// save image
-    		request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
-    		String imageUrl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
-    		userCollection.setImageUrl(imageUrl);
-    		registeredPatientDetails.setImageUrl(imageUrl);
-    	    }
-    	    
-    	    userCollection.setEmailAddress(request.getEmailAddress());
-    	    userCollection = userRepository.save(userCollection);
-    	    patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(request.getUserId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId());
-    	    if(patientCollection == null){
-    	    	patientCollection = new PatientCollection();
-    			BeanUtil.map(request, patientCollection);
-    			patientCollection.setUserId(userCollection.getId());
-    			patientCollection.setDoctorId(null);
-    			patientCollection.setLocationId(null);
-    			patientCollection.setHospitalId(null);
-    			patientCollection.setCreatedTime(new Date());
-    	    }else{
-    	    	patientCollection.setBloodGroup(request.getBloodGroup());
-    	    	patientCollection.setGender(request.getGender());
-    	    	patientCollection.setEmailAddress(request.getEmailAddress());
-    	    }
-    	    patientCollection = patientRepository.save(patientCollection);
-    	    
-    	    Patient patient = new Patient();
-    	    BeanUtil.map(patientCollection, patient);
-    	    patient.setPatientId(patientCollection.getId());
-    	    registeredPatientDetails.setPatient(patient);
-    	    registeredPatientDetails.setDob(patientCollection.getDob());
-    	    registeredPatientDetails.setUserId(userCollection.getId());
-    	    registeredPatientDetails.setGender(patientCollection.getGender());
-    	    registeredPatientDetails.setPID(patientCollection.getPID());
-    	    registeredPatientDetails.setDoctorId(patientCollection.getDoctorId());
-    	    registeredPatientDetails.setLocationId(patientCollection.getLocationId());
-    	    registeredPatientDetails.setHospitalId(patientCollection.getHospitalId());
-    	    registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
-    	    
-    	    Address address = new Address();
-    	    if (addressCollection != null) {
-    		BeanUtil.map(addressCollection, address);
-    		registeredPatientDetails.setAddress(address);
-    	    }
-	    }else{
-	    	patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(request.getUserId(), request.getDoctorId(),
-	    		    request.getLocationId(), request.getHospitalId());
-	    	    if (patientCollection != null) {
-	    		String patientId = patientCollection.getId();
+	    if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
+		UserCollection userCollection = userRepository.findOne(request.getUserId());
+		if (userCollection == null) {
+		    logger.error("Incorrect User Id");
+		    throw new BusinessException(ServiceError.InvalidInput, "Incorrect User Id");
+		}
+		BeanUtil.map(userCollection, registeredPatientDetails);
+		if (request.getImage() != null) {
+		    String path = "profile-images";
+		    // save image
+		    request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
+		    String imageUrl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
+		    userCollection.setImageUrl(imageUrl);
+		    registeredPatientDetails.setImageUrl(imageUrl);
+		}
 
-	    		BeanUtil.map(request, patientCollection);
-	    		patientCollection.setId(patientId);
-	    		patientCollection.setUpdatedTime(new Date());
-	    	    } else {
-	    		patientCollection = new PatientCollection();
-	    		patientCollection.setCreatedTime(new Date());
-	    		BeanUtil.map(request, patientCollection);
-	    		patientCollection.setRegistrationDate(request.getDateOfVisit());
-	    	    }
-	    	    if (addressCollection != null) {
-	    		patientCollection.setAddressId(addressCollection.getId());
-	    	    }
-	    	    patientCollection.setRelations(request.getRelations());
-	    	    patientCollection.setNotes(request.getNotes());
-	    	    
-	    	    if (!DPDoctorUtils.anyStringEmpty(patientCollection.getPID())) {
-	    		patientCollection.setPID(patientCollection.getPID());
-	    	    } else {
-	    		patientCollection.setPID(patientIdGenerator(request.getDoctorId(), request.getLocationId(), request.getHospitalId()));
-	    	    }
-	    	    if(!DPDoctorUtils.anyStringEmpty(request.getProfession())){
-	    	    	ProfessionCollection professionCollection = professionRepository.findOne(request.getProfession());
-	    	    	if(professionCollection != null)patientCollection.setProfession(professionCollection.getProfession());
-	    	    }
-	    	    patientCollection = patientRepository.save(patientCollection);
+		userCollection.setEmailAddress(request.getEmailAddress());
+		userCollection = userRepository.save(userCollection);
+		patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(request.getUserId(), request.getDoctorId(),
+			request.getLocationId(), request.getHospitalId());
+		if (patientCollection == null) {
+		    patientCollection = new PatientCollection();
+		    BeanUtil.map(request, patientCollection);
+		    patientCollection.setUserId(userCollection.getId());
+		    patientCollection.setDoctorId(null);
+		    patientCollection.setLocationId(null);
+		    patientCollection.setHospitalId(null);
+		    patientCollection.setCreatedTime(new Date());
+		} else {
+		    patientCollection.setBloodGroup(request.getBloodGroup());
+		    patientCollection.setGender(request.getGender());
+		    patientCollection.setEmailAddress(request.getEmailAddress());
+		}
+		patientCollection = patientRepository.save(patientCollection);
 
-	    	    ReferencesCollection referencesCollection = null;
-	    	    if (request.getReferredBy() != null) {
-	    		if (request.getReferredBy().getId() != null) {
-	    		    referencesCollection = referrenceRepository.findOne(request.getReferredBy().getId());
-	    		}
-	    		if (referencesCollection == null) {
-	    		    referencesCollection = new ReferencesCollection();
-	    		    BeanUtil.map(request.getReferredBy(), referencesCollection);
-	    		    BeanUtil.map(request, referencesCollection);
-	    		    referencesCollection.setId(null);
-	    		    referencesCollection.setDoctorId(request.getDoctorId());
-	    		    referencesCollection.setHospitalId(request.getHospitalId());
-	    		    referencesCollection.setLocationId(request.getLocationId());
-	    		    referencesCollection = referrenceRepository.save(referencesCollection);
-	    		}
-	    	    }
-	    	    // save patient admission
-	    	    PatientAdmissionCollection patientAdmissionCollection = null;
-	    	    patientAdmissionCollection = patientAdmissionRepository.findByPatientIdAndDoctorId(patientCollection.getUserId(), request.getDoctorId());
-	    	    if (patientAdmissionCollection == null) {
-	    		patientAdmissionCollection = new PatientAdmissionCollection();
-	    		BeanUtil.map(request, patientAdmissionCollection);
-	    		patientAdmissionCollection.setUserId(request.getUserId());
-	    		patientAdmissionCollection.setPatientId(patientCollection.getUserId());
-	    		patientAdmissionCollection.setCreatedTime(new Date());
-	    	    }
+		Patient patient = new Patient();
+		BeanUtil.map(patientCollection, patient);
+		patient.setPatientId(patientCollection.getId());
+		registeredPatientDetails.setPatient(patient);
+		registeredPatientDetails.setDob(patientCollection.getDob());
+		registeredPatientDetails.setUserId(userCollection.getId());
+		registeredPatientDetails.setGender(patientCollection.getGender());
+		registeredPatientDetails.setPID(patientCollection.getPID());
+		registeredPatientDetails.setDoctorId(patientCollection.getDoctorId());
+		registeredPatientDetails.setLocationId(patientCollection.getLocationId());
+		registeredPatientDetails.setHospitalId(patientCollection.getHospitalId());
+		registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
 
-	    	    if (referencesCollection != null)
-	    		patientAdmissionCollection.setReferredBy(referencesCollection.getId());
-	    	    patientAdmissionCollection = patientAdmissionRepository.save(patientAdmissionCollection);
+		Address address = new Address();
+		if (addressCollection != null) {
+		    BeanUtil.map(addressCollection, address);
+		    registeredPatientDetails.setAddress(address);
+		}
+	    } else {
+		patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(request.getUserId(), request.getDoctorId(),
+			request.getLocationId(), request.getHospitalId());
+		if (patientCollection != null) {
+		    String patientId = patientCollection.getId();
 
-	    	    // assign groups
-	    	    if (request.getGroups() != null) {
-	    		List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getUserId());
-	    		if (patientGroupCollections != null) {
-	    		    for (PatientGroupCollection patientGroupCollection : patientGroupCollections) {
-	    			patientGroupRepository.delete(patientGroupCollection);
-	    		    }
-	    		}
-	    		for (String group : request.getGroups()) {
-	    		    PatientGroupCollection patientGroupCollection = new PatientGroupCollection();
-	    		    patientGroupCollection.setGroupId(group);
-	    		    patientGroupCollection.setPatientId(patientCollection.getUserId());
-	    		    patientGroupCollection.setCreatedTime(new Date());
-	    		    patientGroupRepository.save(patientGroupCollection);
-	    		}
+		    BeanUtil.map(request, patientCollection);
+		    patientCollection.setId(patientId);
+		    patientCollection.setUpdatedTime(new Date());
+		} else {
+		    patientCollection = new PatientCollection();
+		    patientCollection.setCreatedTime(new Date());
+		    BeanUtil.map(request, patientCollection);
+		    patientCollection.setRegistrationDate(request.getDateOfVisit());
+		}
+		if (addressCollection != null) {
+		    patientCollection.setAddressId(addressCollection.getId());
+		}
+		patientCollection.setRelations(request.getRelations());
+		patientCollection.setNotes(request.getNotes());
 
-	    	    }
-	    	    // add into doctor contact
-	    	    if (request.getDoctorId() != null) {
-	    		DoctorContactCollection doctorContactCollection = null;
-	    		doctorContactCollection = doctorContactsRepository.findByDoctorIdAndContactId(request.getDoctorId(), patientCollection.getUserId());
-	    		if (doctorContactCollection == null) {
-	    		    doctorContactCollection = new DoctorContactCollection();
-	    		    doctorContactCollection.setCreatedTime(new Date());
-	    		    doctorContactCollection.setDoctorId(request.getDoctorId());
-	    		    doctorContactCollection.setContactId(patientCollection.getUserId());
-	    		    doctorContactsRepository.save(doctorContactCollection);
-	    		}
+		if (!DPDoctorUtils.anyStringEmpty(patientCollection.getPID())) {
+		    patientCollection.setPID(patientCollection.getPID());
+		} else {
+		    patientCollection.setPID(patientIdGenerator(request.getDoctorId(), request.getLocationId(), request.getHospitalId()));
+		}
+		if (!DPDoctorUtils.anyStringEmpty(request.getProfession())) {
+		    ProfessionCollection professionCollection = professionRepository.findOne(request.getProfession());
+		    if (professionCollection != null)
+			patientCollection.setProfession(professionCollection.getProfession());
+		}
+		patientCollection = patientRepository.save(patientCollection);
 
-	    	    }
-	    	    UserCollection userCollection = userRepository.findOne(request.getUserId());
-	    	    if (userCollection == null) {
-	    		logger.error("Incorrect User Id");
-	    		throw new BusinessException(ServiceError.InvalidInput, "Incorrect User Id");
-	    	    }
-	    	    /*registeredPatientDetails = new RegisteredPatientDetails();*/
-	    	    BeanUtil.map(userCollection, registeredPatientDetails);
-	    	    if (request.getImage() != null) {
-	    		String path = "profile-images";
-	    		// save image
-	    		request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
-	    		String imageUrl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
-	    		userCollection.setImageUrl(imageUrl);
-	    		registeredPatientDetails.setImageUrl(imageUrl);
-	    		userCollection = userRepository.save(userCollection);
-	    	    }
-	    	    registeredPatientDetails.setUserId(userCollection.getId());
-	    	    Patient patient = new Patient();
-	    	    BeanUtil.map(patientCollection, patient);
-	    	    patient.setPatientId(patientCollection.getId());
+		ReferencesCollection referencesCollection = null;
+		if (request.getReferredBy() != null) {
+		    if (request.getReferredBy().getId() != null) {
+			referencesCollection = referrenceRepository.findOne(request.getReferredBy().getId());
+		    }
+		    if (referencesCollection == null) {
+			referencesCollection = new ReferencesCollection();
+			BeanUtil.map(request.getReferredBy(), referencesCollection);
+			BeanUtil.map(request, referencesCollection);
+			referencesCollection.setId(null);
+			referencesCollection.setDoctorId(request.getDoctorId());
+			referencesCollection.setHospitalId(request.getHospitalId());
+			referencesCollection.setLocationId(request.getLocationId());
+			referencesCollection = referrenceRepository.save(referencesCollection);
+		    }
+		}
+		// save patient admission
+		PatientAdmissionCollection patientAdmissionCollection = null;
+		patientAdmissionCollection = patientAdmissionRepository.findByPatientIdAndDoctorId(patientCollection.getUserId(), request.getDoctorId());
+		if (patientAdmissionCollection == null) {
+		    patientAdmissionCollection = new PatientAdmissionCollection();
+		    BeanUtil.map(request, patientAdmissionCollection);
+		    patientAdmissionCollection.setUserId(request.getUserId());
+		    patientAdmissionCollection.setPatientId(patientCollection.getUserId());
+		    patientAdmissionCollection.setCreatedTime(new Date());
+		}
 
-	    	    Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(patientCollection.getDoctorId(), userCollection.getId(), patientCollection.getHospitalId(), patientCollection.getLocationId());
-	    	    Integer clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(patientCollection.getDoctorId(), userCollection.getId(), patientCollection.getHospitalId(), patientCollection.getLocationId());
-	    	    Integer recordsCount = recordsRepository.getRecordsForOtherDoctors(patientCollection.getDoctorId(), userCollection.getId(), patientCollection.getHospitalId(), patientCollection.getLocationId());
-	    	    
-	    	    if ((prescriptionCount != null && prescriptionCount > 0) || (clinicalNotesCount != null && clinicalNotesCount > 0) || (recordsCount != null && recordsCount > 0))
-	    	    	patient.setIsDataAvailableWithOtherDoctor(true);
-	    	    
-	    	    patient.setIsPatientOTPVerified(otpService.checkOTPVerified(patientCollection.getDoctorId(), patientCollection.getLocationId(), patientCollection.getHospitalId(), userCollection.getId()));
+		if (referencesCollection != null)
+		    patientAdmissionCollection.setReferredBy(referencesCollection.getId());
+		patientAdmissionCollection = patientAdmissionRepository.save(patientAdmissionCollection);
 
+		// assign groups
+		if (request.getGroups() != null) {
+		    List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getUserId());
+		    if (patientGroupCollections != null) {
+			for (PatientGroupCollection patientGroupCollection : patientGroupCollections) {
+			    patientGroupRepository.delete(patientGroupCollection);
+			}
+		    }
+		    for (String group : request.getGroups()) {
+			PatientGroupCollection patientGroupCollection = new PatientGroupCollection();
+			patientGroupCollection.setGroupId(group);
+			patientGroupCollection.setPatientId(patientCollection.getUserId());
+			patientGroupCollection.setCreatedTime(new Date());
+			patientGroupRepository.save(patientGroupCollection);
+		    }
 
-	    	    registeredPatientDetails.setPatient(patient);
-	    	    registeredPatientDetails.setDob(patientCollection.getDob());
-	    	    registeredPatientDetails.setGender(patientCollection.getGender());
-	    	    registeredPatientDetails.setPID(patientCollection.getPID());
-	    	    registeredPatientDetails.setDoctorId(patientCollection.getDoctorId());
-	    	    registeredPatientDetails.setLocationId(patientCollection.getLocationId());
-	    	    registeredPatientDetails.setHospitalId(patientCollection.getHospitalId());
-	    	    registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
-	    	    if (referencesCollection != null) {
-	    		Reference reference = new Reference();
-	    		BeanUtil.map(referencesCollection, reference);
-	    		registeredPatientDetails.setReferredBy(reference);
-	    	    }
-	    	    Address address = new Address();
-	    	    if (addressCollection != null) {
-	    		BeanUtil.map(addressCollection, address);
-	    		registeredPatientDetails.setAddress(address);
-	    	    }
-	    	    if(request.getGroups() != null){
-	    	    	groupCollections = (List<GroupCollection>) groupRepository.findAll(request.getGroups());
-	    		    groups = new ArrayList<Group>();
-	    		    BeanUtil.map(groupCollections, groups);
-	    		    registeredPatientDetails.setGroups(groups);
-	    	    }
+		}
+		// add into doctor contact
+		if (request.getDoctorId() != null) {
+		    DoctorContactCollection doctorContactCollection = null;
+		    doctorContactCollection = doctorContactsRepository.findByDoctorIdAndContactId(request.getDoctorId(), patientCollection.getUserId());
+		    if (doctorContactCollection == null) {
+			doctorContactCollection = new DoctorContactCollection();
+			doctorContactCollection.setCreatedTime(new Date());
+			doctorContactCollection.setDoctorId(request.getDoctorId());
+			doctorContactCollection.setContactId(patientCollection.getUserId());
+			doctorContactsRepository.save(doctorContactCollection);
+		    }
+
+		}
+		UserCollection userCollection = userRepository.findOne(request.getUserId());
+		if (userCollection == null) {
+		    logger.error("Incorrect User Id");
+		    throw new BusinessException(ServiceError.InvalidInput, "Incorrect User Id");
+		}
+		/*registeredPatientDetails = new RegisteredPatientDetails();*/
+		BeanUtil.map(userCollection, registeredPatientDetails);
+		if (request.getImage() != null) {
+		    String path = "profile-images";
+		    // save image
+		    request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
+		    String imageUrl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
+		    userCollection.setImageUrl(imageUrl);
+		    registeredPatientDetails.setImageUrl(imageUrl);
+		    userCollection = userRepository.save(userCollection);
+		}
+		registeredPatientDetails.setUserId(userCollection.getId());
+		Patient patient = new Patient();
+		BeanUtil.map(patientCollection, patient);
+		patient.setPatientId(patientCollection.getId());
+
+		Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(patientCollection.getDoctorId(), userCollection.getId(),
+			patientCollection.getHospitalId(), patientCollection.getLocationId());
+		Integer clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(patientCollection.getDoctorId(),
+			userCollection.getId(), patientCollection.getHospitalId(), patientCollection.getLocationId());
+		Integer recordsCount = recordsRepository.getRecordsForOtherDoctors(patientCollection.getDoctorId(), userCollection.getId(),
+			patientCollection.getHospitalId(), patientCollection.getLocationId());
+
+		if ((prescriptionCount != null && prescriptionCount > 0) || (clinicalNotesCount != null && clinicalNotesCount > 0)
+			|| (recordsCount != null && recordsCount > 0))
+		    patient.setIsDataAvailableWithOtherDoctor(true);
+
+		patient.setIsPatientOTPVerified(otpService.checkOTPVerified(patientCollection.getDoctorId(), patientCollection.getLocationId(),
+			patientCollection.getHospitalId(), userCollection.getId()));
+
+		registeredPatientDetails.setPatient(patient);
+		registeredPatientDetails.setDob(patientCollection.getDob());
+		registeredPatientDetails.setGender(patientCollection.getGender());
+		registeredPatientDetails.setPID(patientCollection.getPID());
+		registeredPatientDetails.setDoctorId(patientCollection.getDoctorId());
+		registeredPatientDetails.setLocationId(patientCollection.getLocationId());
+		registeredPatientDetails.setHospitalId(patientCollection.getHospitalId());
+		registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
+		if (referencesCollection != null) {
+		    Reference reference = new Reference();
+		    BeanUtil.map(referencesCollection, reference);
+		    registeredPatientDetails.setReferredBy(reference);
+		}
+		Address address = new Address();
+		if (addressCollection != null) {
+		    BeanUtil.map(addressCollection, address);
+		    registeredPatientDetails.setAddress(address);
+		}
+		if (request.getGroups() != null) {
+		    groupCollections = (List<GroupCollection>) groupRepository.findAll(request.getGroups());
+		    groups = new ArrayList<Group>();
+		    BeanUtil.map(groupCollections, groups);
+		    registeredPatientDetails.setGroups(groups);
+		}
 	    }
-	    } catch (Exception e) {
+	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
@@ -677,13 +688,13 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Override
     public void checkPatientCount(String mobileNumber) {
 
-    int count = 0;	
+	int count = 0;
 	List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
 	if (userCollections != null && !userCollections.isEmpty()) {
-		for(UserCollection userCollection : userCollections){
-			if(!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress()))
-				count++;
-		}
+	    for (UserCollection userCollection : userCollections) {
+		if (!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress()))
+		    count++;
+	    }
 	    if (count >= Integer.parseInt(patientCount)) {
 		logger.warn("Only Nine patients can register with same mobile number");
 		throw new BusinessException(ServiceError.NoRecord, "Only Nine patients can register with same mobile number");
@@ -699,29 +710,31 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    if (userCollections != null) {
 		users = new ArrayList<User>();
 		for (UserCollection userCollection : userCollections) {
-			if(!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress())){
-			    User user = new User();
-			    BeanUtil.map(userCollection, user);
-			    if (locationId != null && hospitalId != null) {
-				List<PatientCollection> patientCollections = patientRepository.findByUserId(userCollection.getId());
-				boolean isPartOfClinic = false;
-				if (patientCollections != null) {
-				    for(PatientCollection patientCollection : patientCollections){
-				    	if (patientCollection.getDoctorId() != null && patientCollection.getLocationId() != null && patientCollection.getHospitalId() != null) {
-							if (patientCollection.getDoctorId().equals(doctorId) && patientCollection.getLocationId().equals(locationId) && patientCollection.getHospitalId().equals(hospitalId)) {
-							    isPartOfClinic = true;
-							    break;
-							} 
-				    	}
+		    if (!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress())) {
+			User user = new User();
+			BeanUtil.map(userCollection, user);
+			if (locationId != null && hospitalId != null) {
+			    List<PatientCollection> patientCollections = patientRepository.findByUserId(userCollection.getId());
+			    boolean isPartOfClinic = false;
+			    if (patientCollections != null) {
+				for (PatientCollection patientCollection : patientCollections) {
+				    if (patientCollection.getDoctorId() != null && patientCollection.getLocationId() != null
+					    && patientCollection.getHospitalId() != null) {
+					if (patientCollection.getDoctorId().equals(doctorId) && patientCollection.getLocationId().equals(locationId)
+						&& patientCollection.getHospitalId().equals(hospitalId)) {
+					    isPartOfClinic = true;
+					    break;
+					}
 				    }
 				}
-				user.setIsPartOfClinic(isPartOfClinic);
 			    }
-			    users.add(user);
+			    user.setIsPartOfClinic(isPartOfClinic);
 			}
-			}
-		
-	  }
+			users.add(user);
+		    }
+		}
+
+	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
@@ -744,17 +757,18 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    if (userCollection != null) {
 		PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userId, doctorId, locationId, hospitalId);
 		if (patientCollection != null) {
-			PatientAdmissionCollection patientAdmissionCollection = patientAdmissionRepository.findByPatientIdAndDoctorId(userCollection.getId(), doctorId);
-			Reference reference = null;
-			if(patientAdmissionCollection != null){
-				if(patientAdmissionCollection.getReferredBy() != null){
-					ReferencesCollection referencesCollection = referrenceRepository.findOne(patientAdmissionCollection.getReferredBy());
-					if(referencesCollection != null){
-						reference = new Reference();
-						BeanUtil.map(referencesCollection, reference);
-					}
-				}
+		    PatientAdmissionCollection patientAdmissionCollection = patientAdmissionRepository.findByPatientIdAndDoctorId(userCollection.getId(),
+			    doctorId);
+		    Reference reference = null;
+		    if (patientAdmissionCollection != null) {
+			if (patientAdmissionCollection.getReferredBy() != null) {
+			    ReferencesCollection referencesCollection = referrenceRepository.findOne(patientAdmissionCollection.getReferredBy());
+			    if (referencesCollection != null) {
+				reference = new Reference();
+				BeanUtil.map(referencesCollection, reference);
+			    }
 			}
+		    }
 		    AddressCollection addressCollection = new AddressCollection();
 		    if (patientCollection.getAddressId() != null) {
 			addressCollection = addressRepository.findOne(patientCollection.getAddressId());
@@ -771,14 +785,18 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    BeanUtil.map(patientCollection, patient);
 		    patient.setPatientId(patientCollection.getId());
 
-		    Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(doctorId, userCollection.getId(), hospitalId, locationId);
-		    Integer clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(doctorId, userCollection.getId(), hospitalId, locationId);
+		    Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(doctorId, userCollection.getId(), hospitalId,
+			    locationId);
+		    Integer clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(doctorId, userCollection.getId(), hospitalId,
+			    locationId);
 		    Integer recordsCount = recordsRepository.getRecordsForOtherDoctors(doctorId, userCollection.getId(), hospitalId, locationId);
-		    
-		    if ((prescriptionCount != null && prescriptionCount > 0) || (clinicalNotesCount != null && clinicalNotesCount > 0) || (recordsCount != null && recordsCount > 0))
-		    	patient.setIsDataAvailableWithOtherDoctor(true);
 
-		    patient.setIsPatientOTPVerified(otpService.checkOTPVerified(patientCollection.getDoctorId(), patientCollection.getLocationId(), patientCollection.getHospitalId(), userCollection.getId()));
+		    if ((prescriptionCount != null && prescriptionCount > 0) || (clinicalNotesCount != null && clinicalNotesCount > 0)
+			    || (recordsCount != null && recordsCount > 0))
+			patient.setIsDataAvailableWithOtherDoctor(true);
+
+		    patient.setIsPatientOTPVerified(otpService.checkOTPVerified(patientCollection.getDoctorId(), patientCollection.getLocationId(),
+			    patientCollection.getHospitalId(), userCollection.getId()));
 		    registeredPatientDetails.setPatient(patient);
 		    Address address = new Address();
 		    BeanUtil.map(addressCollection, address);
@@ -808,10 +826,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    BeanUtil.map(reference, referrencesCollection);
 	    if (referrencesCollection.getId() == null) {
 		referrencesCollection.setCreatedTime(new Date());
-		if(reference.getDoctorId() != null){
-			UserCollection userCollection = userRepository.findOne(reference.getDoctorId());
+		if (reference.getDoctorId() != null) {
+		    UserCollection userCollection = userRepository.findOne(reference.getDoctorId());
 		    if (userCollection != null) {
-		    	referrencesCollection.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());
+			referrencesCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+				+ userCollection.getFirstName());
 		    }
 		}
 	    }
@@ -992,7 +1011,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    int currentYear = localCalendar.get(Calendar.YEAR);
 
 	    DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
-    	DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
+	    DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
 	    List<PatientCollection> patientCollections = patientRepository.findTodaysRegisteredPatient(doctorId, locationId, hospitalId, start, end);
 	    int patientCount = 0;
 	    if (CollectionUtils.isNotEmpty(patientCollections)) {
@@ -1013,8 +1032,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 		generatedId = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay) + DPDoctorUtils.getPrefixedNumber(currentMonth)
 			+ DPDoctorUtils.getPrefixedNumber(currentYear % 100) + DPDoctorUtils.getPrefixedNumber(patientCounter + patientCount + 1);
-		System.out.println(patientCount+ ""+ generatedId);
-//		updatePatientInitialAndCounter(doctorId, locationId, patientInitial, patientCounter + 1);
+		System.out.println(patientCount + "" + generatedId);
+		// updatePatientInitialAndCounter(doctorId, locationId,
+		// patientInitial, patientCounter + 1);
 	    } else {
 		logger.warn("Doctor Id and Location Id does not match.");
 		throw new BusinessException(ServiceError.NoRecord, "Doctor Id and Location Id does not match.");
@@ -1053,26 +1073,27 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     public String updatePatientInitialAndCounter(String doctorId, String locationId, String patientInitial, int patientCounter) {
-    	String response = null;
+	String response = null;
 	try {
 	    UserLocationCollection userLocation = userLocationRepository.findByUserIdAndLocationId(doctorId, locationId);
 	    if (userLocation != null) {
-	    	
-	    response = checkIfPatientInitialAndCounterExist(doctorId, locationId, patientInitial, patientCounter);	
-	    if(response == null){
-	    	DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocation.getId());
-			if (clinicProfileCollection == null) clinicProfileCollection = new DoctorClinicProfileCollection();
-			clinicProfileCollection.setLocationId(userLocation.getId());
-			clinicProfileCollection.setPatientInitial(patientInitial);
-			clinicProfileCollection.setPatientCounter(patientCounter);
-			clinicProfileCollection = doctorClinicProfileRepository.save(clinicProfileCollection);
-			response = "true";
-		    } 
-	    }else {
-			logger.warn("Doctor Id and Location Id does not match.");
-			throw new BusinessException(ServiceError.NoRecord, "Doctor Id and Location Id does not match.");
+
+		response = checkIfPatientInitialAndCounterExist(doctorId, locationId, patientInitial, patientCounter);
+		if (response == null) {
+		    DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocation.getId());
+		    if (clinicProfileCollection == null)
+			clinicProfileCollection = new DoctorClinicProfileCollection();
+		    clinicProfileCollection.setLocationId(userLocation.getId());
+		    clinicProfileCollection.setPatientInitial(patientInitial);
+		    clinicProfileCollection.setPatientCounter(patientCounter);
+		    clinicProfileCollection = doctorClinicProfileRepository.save(clinicProfileCollection);
+		    response = "true";
+		}
+	    } else {
+		logger.warn("Doctor Id and Location Id does not match.");
+		throw new BusinessException(ServiceError.NoRecord, "Doctor Id and Location Id does not match.");
 	    }
-		
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error While Updating Patient Initial and Counter");
@@ -1082,42 +1103,39 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     private String checkIfPatientInitialAndCounterExist(String doctorId, String locationId, String patientInitial, int patientCounter) {
-    	String response = null;
-    	try {
-    	Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+	String response = null;
+	try {
+	    Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 	    int currentDay = localCalendar.get(Calendar.DATE);
 	    int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 	    int currentYear = localCalendar.get(Calendar.YEAR);
 
-		String date = DPDoctorUtils.getPrefixedNumber(currentDay) + DPDoctorUtils.getPrefixedNumber(currentMonth)
-		+ DPDoctorUtils.getPrefixedNumber(currentYear % 100);
-		String generatedId = patientInitial +  date ;
+	    String date = DPDoctorUtils.getPrefixedNumber(currentDay) + DPDoctorUtils.getPrefixedNumber(currentMonth)
+		    + DPDoctorUtils.getPrefixedNumber(currentYear % 100);
+	    String generatedId = patientInitial + date;
 
+	    Criteria criteria = new Criteria("doctorId").is(doctorId).and("locationId").is(locationId).and("PID").regex(generatedId + ".*");
 
-		Criteria criteria = new Criteria("doctorId").is(doctorId).and("locationId").is(locationId).and("PID").regex(generatedId+".*");
-			
-		Aggregation	aggregation = Aggregation.newAggregation(
-					Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), 
-					Aggregation.limit(1));
+	    Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+		    Aggregation.limit(1));
 
-		AggregationResults<PatientCollection> groupResults = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientCollection.class);
+	    AggregationResults<PatientCollection> groupResults = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientCollection.class);
 	    List<PatientCollection> results = groupResults.getMappedResults();
 	    String PID = results.get(0).getPID();
-	    PID = PID.substring((patientInitial+date).length());
-		if(patientCounter <= Integer.parseInt(PID)){
-			response = "Patient already exist for Prefix: "+patientInitial+ " , Date: "+ date+ " Id Number: "+patientCounter+". Please enter Id greater than "+PID;
-		}
-		else{
-			
-		}
-	    }
-    	catch (Exception e) {
-			e.printStackTrace();
-		}
-		return response;
-	}
+	    PID = PID.substring((patientInitial + date).length());
+	    if (patientCounter <= Integer.parseInt(PID)) {
+		response = "Patient already exist for Prefix: " + patientInitial + " , Date: " + date + " Id Number: " + patientCounter
+			+ ". Please enter Id greater than " + PID;
+	    } else {
 
-	@Override
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+	return response;
+    }
+
+    @Override
     public Location getClinicDetails(String clinicId) {
 	Location location = null;
 	LocationCollection locationCollection = null;
@@ -1147,13 +1165,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    if (locationCollection != null)
 		BeanUtil.map(request, locationCollection);
 	    BeanUtil.map(request, locationCollection);
-	    List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(
-	    		(locationCollection.getLocationName() != null ? locationCollection.getLocationName() : "" )+
-	    		(locationCollection.getStreetAddress()!= null ? locationCollection.getStreetAddress() : "" )+
-	    		(locationCollection.getCity()!= null ? locationCollection.getCity() : "")+
-	    		(locationCollection.getState() != null ? locationCollection.getState() : "")+
-	    		(locationCollection.getCountry() != null ? locationCollection.getCountry() : ""));
-	    
+	    List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation((locationCollection.getLocationName() != null ? locationCollection
+		    .getLocationName() : "")
+		    + (locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() : "")
+		    + (locationCollection.getCity() != null ? locationCollection.getCity() : "")
+		    + (locationCollection.getState() != null ? locationCollection.getState() : "")
+		    + (locationCollection.getCountry() != null ? locationCollection.getCountry() : ""));
+
 	    if (geocodedLocations != null && !geocodedLocations.isEmpty())
 		BeanUtil.map(geocodedLocations.get(0), locationCollection);
 
@@ -1177,16 +1195,16 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    locationCollection = locationRepository.findOne(request.getId());
 	    if (locationCollection != null)
 		BeanUtil.map(request, locationCollection);
-	    List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(
-	    		(locationCollection.getLocationName() != null ? locationCollection.getLocationName() : "" )+
-	    		(locationCollection.getStreetAddress()!= null ? locationCollection.getStreetAddress() : "" )+
-	    		(locationCollection.getCity()!= null ? locationCollection.getCity() : "")+
-	    		(locationCollection.getState() != null ? locationCollection.getState() : "")+
-	    		(locationCollection.getCountry() != null ? locationCollection.getCountry() : ""));
-	    
+	    List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation((locationCollection.getLocationName() != null ? locationCollection
+		    .getLocationName() : "")
+		    + (locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() : "")
+		    + (locationCollection.getCity() != null ? locationCollection.getCity() : "")
+		    + (locationCollection.getState() != null ? locationCollection.getState() : "")
+		    + (locationCollection.getCountry() != null ? locationCollection.getCountry() : ""));
+
 	    if (geocodedLocations != null && !geocodedLocations.isEmpty())
 		BeanUtil.map(geocodedLocations.get(0), locationCollection);
-	    
+
 	    locationCollection = locationRepository.save(locationCollection);
 	    response = new ClinicAddress();
 	    BeanUtil.map(locationCollection, response);
@@ -1260,11 +1278,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	List<BloodGroup> bloodGroups = null;
 	try {
-		long updateTimeStamp = Long.parseLong(updatedTime);
-		
+	    long updateTimeStamp = Long.parseLong(updatedTime);
+
 	    List<BloodGroupCollection> bloodGroupCollections = null;
-	    if(size > 0)bloodGroupCollections = bloodGroupRepository.find(new Date(updateTimeStamp), new PageRequest(page, size, Direction.DESC, "updateTime"));
-	    else bloodGroupCollections = bloodGroupRepository.find(new Date(updateTimeStamp), new Sort(Direction.DESC, "updateTime"));
+	    if (size > 0)
+		bloodGroupCollections = bloodGroupRepository.find(new Date(updateTimeStamp), new PageRequest(page, size, Direction.DESC, "updateTime"));
+	    else
+		bloodGroupCollections = bloodGroupRepository.find(new Date(updateTimeStamp), new Sort(Direction.DESC, "updateTime"));
 	    if (bloodGroupCollections != null) {
 		bloodGroups = new ArrayList<BloodGroup>();
 		BeanUtil.map(bloodGroupCollections, bloodGroups);
@@ -1299,10 +1319,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 	List<Profession> professions = null;
 	List<ProfessionCollection> professionCollections = null;
 	try {
-		long updateTimeStamp = Long.parseLong(updatedTime);
-		
-	    if(size > 0)professionCollections = professionRepository.find(new Date(updateTimeStamp), new PageRequest(page, size, Direction.DESC, "updateTime"));
-	    else professionCollections = professionRepository.find(new Date(updateTimeStamp), new Sort(Direction.DESC, "updateTime"));
+	    long updateTimeStamp = Long.parseLong(updatedTime);
+
+	    if (size > 0)
+		professionCollections = professionRepository.find(new Date(updateTimeStamp), new PageRequest(page, size, Direction.DESC, "updateTime"));
+	    else
+		professionCollections = professionRepository.find(new Date(updateTimeStamp), new Sort(Direction.DESC, "updateTime"));
 	    if (professionCollections != null) {
 		professions = new ArrayList<Profession>();
 		BeanUtil.map(professionCollections, professions);
@@ -1822,119 +1844,119 @@ public class RegistrationServiceImpl implements RegistrationService {
 	return solrDoctorDocument;
     }
 
-	@Override
-	public void deleteRole(String roleId, Boolean discarded) {
-		try {
-		    RoleCollection roleCollection = roleRepository.findOne(roleId);
-		    if (roleCollection != null) {
-		    	roleCollection.setDiscarded(discarded);
-		    	roleCollection = roleRepository.save(roleCollection);
-		    }
-		    } catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
-		}
+    @Override
+    public void deleteRole(String roleId, Boolean discarded) {
+	try {
+	    RoleCollection roleCollection = roleRepository.findOne(roleId);
+	    if (roleCollection != null) {
+		roleCollection.setDiscarded(discarded);
+		roleCollection = roleRepository.save(roleCollection);
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
+    }
 
-	@Override
-	public void deleteUser(String userId, String locationId, Boolean discarded) {
-		try {
-		    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(userId, locationId);
-		    if (userLocationCollection != null) {
-		    	userLocationCollection.setDiscarded(discarded);
-		    	userLocationRepository.save(userLocationCollection);
-		    }
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
-		}
+    @Override
+    public void deleteUser(String userId, String locationId, Boolean discarded) {
+	try {
+	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(userId, locationId);
+	    if (userLocationCollection != null) {
+		userLocationCollection.setDiscarded(discarded);
+		userLocationRepository.save(userLocationCollection);
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
+    }
 
-	@Override
-	public ClinicLabProperties updateLabProperties(ClinicLabProperties request) {
-		ClinicLabProperties response = null;
-		LocationCollection locationCollection = null;
-		try {
-		    locationCollection = locationRepository.findOne(request.getId());
-		    if (locationCollection != null){
-		    	locationCollection.setIsLab(request.getIsLab());
-		    	if(request.getIsLab()){
-		    		locationCollection.setIsHomeServiceAvailable(request.getIsHomeServiceAvailable());
-		    		locationCollection.setIsNABLAccredited(request.getIsNABLAccredited());
-		    		locationCollection.setIsNABLAccredited(request.getIsNABLAccredited());
-		    	}
-		    	else{
-		    		locationCollection.setIsHomeServiceAvailable(false);
-		    		locationCollection.setIsNABLAccredited(false);
-		    		locationCollection.setIsNABLAccredited(false);
-		    	}
-		    	locationCollection = locationRepository.save(locationCollection);
-		    	response = new ClinicLabProperties();
-		    	BeanUtil.map(locationCollection, response);
-		    }
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e + " Error While Updating Clinic IsLab");
-		    throw new BusinessException(ServiceError.Forbidden, "Error While Updating Clinic IsLab");
+    @Override
+    public ClinicLabProperties updateLabProperties(ClinicLabProperties request) {
+	ClinicLabProperties response = null;
+	LocationCollection locationCollection = null;
+	try {
+	    locationCollection = locationRepository.findOne(request.getId());
+	    if (locationCollection != null) {
+		locationCollection.setIsLab(request.getIsLab());
+		if (request.getIsLab()) {
+		    locationCollection.setIsHomeServiceAvailable(request.getIsHomeServiceAvailable());
+		    locationCollection.setIsNABLAccredited(request.getIsNABLAccredited());
+		    locationCollection.setIsNABLAccredited(request.getIsNABLAccredited());
+		} else {
+		    locationCollection.setIsHomeServiceAvailable(false);
+		    locationCollection.setIsNABLAccredited(false);
+		    locationCollection.setIsNABLAccredited(false);
 		}
-		return response;
+		locationCollection = locationRepository.save(locationCollection);
+		response = new ClinicLabProperties();
+		BeanUtil.map(locationCollection, response);
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e + " Error While Updating Clinic IsLab");
+	    throw new BusinessException(ServiceError.Forbidden, "Error While Updating Clinic IsLab");
 	}
+	return response;
+    }
 
-	@Override
-	public Feedback addFeedback(Feedback request) {
-		Feedback response = new Feedback();
-		try {
-			FeedbackCollection feedbackCollection = new FeedbackCollection();
-		    BeanUtil.map(request, feedbackCollection);
-		    feedbackCollection.setCreatedTime(new Date());
-		    feedbackCollection = feedbackRepository.save(feedbackCollection);
-		    BeanUtil.map(feedbackCollection, response);
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Forbidden, "Error while adding feedback");
-		}
-		return response;
+    @Override
+    public Feedback addFeedback(Feedback request) {
+	Feedback response = new Feedback();
+	try {
+	    FeedbackCollection feedbackCollection = new FeedbackCollection();
+	    BeanUtil.map(request, feedbackCollection);
+	    feedbackCollection.setCreatedTime(new Date());
+	    feedbackCollection = feedbackRepository.save(feedbackCollection);
+	    BeanUtil.map(feedbackCollection, response);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Forbidden, "Error while adding feedback");
 	}
+	return response;
+    }
 
-	@Override
-	public ClinicProfile updateClinicProfileHandheld(ClinicProfileHandheld request) {
-		ClinicProfile response = null;
-		LocationCollection locationCollection = null;
-		try {
-		    locationCollection = locationRepository.findOne(request.getId());
-		    if (locationCollection != null)
-			BeanUtil.map(request, locationCollection);
-		    locationCollection = locationRepository.save(locationCollection);
-		    response = new ClinicProfile();
-		    BeanUtil.map(locationCollection, response);
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e + " Error While Updating Clinic Details");
-		    throw new BusinessException(ServiceError.Forbidden, "Error While Updating Clinic Details");
-		}
-		return response;
+    @Override
+    public ClinicProfile updateClinicProfileHandheld(ClinicProfileHandheld request) {
+	ClinicProfile response = null;
+	LocationCollection locationCollection = null;
+	try {
+	    locationCollection = locationRepository.findOne(request.getId());
+	    if (locationCollection != null)
+		BeanUtil.map(request, locationCollection);
+	    locationCollection = locationRepository.save(locationCollection);
+	    response = new ClinicProfile();
+	    BeanUtil.map(locationCollection, response);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e + " Error While Updating Clinic Details");
+	    throw new BusinessException(ServiceError.Forbidden, "Error While Updating Clinic Details");
 	}
+	return response;
+    }
 
-	@Override
-	public PatientStatusResponse getPatientStatus(String patientId, String doctorId, String locationId,	String hospitalId) {
-		PatientStatusResponse response = new PatientStatusResponse();
-		try {
-			Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(doctorId, patientId, hospitalId, locationId);
-			Integer clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(doctorId, patientId, hospitalId, locationId);
-			Integer recordsCount = recordsRepository.getRecordsForOtherDoctors(doctorId, patientId, hospitalId, locationId);
-	    
-	    if ((prescriptionCount != null && prescriptionCount > 0) || (clinicalNotesCount != null && clinicalNotesCount > 0) || (recordsCount != null && recordsCount > 0))
-	    	response.setIsDataAvailableWithOtherDoctor(true);
-	    
+    @Override
+    public PatientStatusResponse getPatientStatus(String patientId, String doctorId, String locationId, String hospitalId) {
+	PatientStatusResponse response = new PatientStatusResponse();
+	try {
+	    Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(doctorId, patientId, hospitalId, locationId);
+	    Integer clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(doctorId, patientId, hospitalId, locationId);
+	    Integer recordsCount = recordsRepository.getRecordsForOtherDoctors(doctorId, patientId, hospitalId, locationId);
+
+	    if ((prescriptionCount != null && prescriptionCount > 0) || (clinicalNotesCount != null && clinicalNotesCount > 0)
+		    || (recordsCount != null && recordsCount > 0))
+		response.setIsDataAvailableWithOtherDoctor(true);
+
 	    response.setIsPatientOTPVerified(otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId));
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e + " Error While getting status");
-		    throw new BusinessException(ServiceError.Forbidden, "Error While getting status");
-		}
-		return response;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e + " Error While getting status");
+	    throw new BusinessException(ServiceError.Forbidden, "Error While getting status");
 	}
+	return response;
+    }
 }

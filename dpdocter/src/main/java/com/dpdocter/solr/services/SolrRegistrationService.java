@@ -50,14 +50,14 @@ public interface SolrRegistrationService {
 
     void addEditMultipleData(DoctorMultipleDataAddEditResponse addEditNameResponse);
 
-	void updateClinicProfile(ClinicProfile clinicProfileUpdateResponse);
+    void updateClinicProfile(ClinicProfile clinicProfileUpdateResponse);
 
-	void updateClinicAddress(ClinicAddress clinicAddressUpdateResponse);
+    void updateClinicAddress(ClinicAddress clinicAddressUpdateResponse);
 
-	void updateClinicSpecialization(ClinicSpecialization clinicSpecializationUpdateResponse);
+    void updateClinicSpecialization(ClinicSpecialization clinicSpecializationUpdateResponse);
 
-	void updateLabProperties(ClinicLabProperties clinicLabProperties);
+    void updateLabProperties(ClinicLabProperties clinicLabProperties);
 
-	void editLocation(DoctorLocation doctorLocation);
+    void editLocation(DoctorLocation doctorLocation);
 
 }

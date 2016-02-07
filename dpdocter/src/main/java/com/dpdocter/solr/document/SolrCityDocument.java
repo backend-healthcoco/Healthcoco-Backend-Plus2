@@ -66,42 +66,41 @@ public class SolrCityDocument {
 	this.description = description;
     }
 
-	public String getStateId() {
-		return stateId;
-	}
+    public String getStateId() {
+	return stateId;
+    }
 
-	public void setStateId(String stateId) {
-		this.stateId = stateId;
-	}
+    public void setStateId(String stateId) {
+	this.stateId = stateId;
+    }
 
-	public GeoLocation getGeoLocation() {
-		return geoLocation;
-	}
+    public GeoLocation getGeoLocation() {
+	return geoLocation;
+    }
 
-	public void setGeoLocation(GeoLocation geoLocation) {
-		this.geoLocation = geoLocation;
-	}
+    public void setGeoLocation(GeoLocation geoLocation) {
+	this.geoLocation = geoLocation;
+    }
 
-	public double getLatitude() {
-		return latitude;
-	}
+    public double getLatitude() {
+	return latitude;
+    }
 
-	public void setLatitude(double latitude) {
-		this.latitude = latitude;
-	}
+    public void setLatitude(double latitude) {
+	this.latitude = latitude;
+    }
 
-	public double getLongitude() {
-		return longitude;
-	}
+    public double getLongitude() {
+	return longitude;
+    }
 
-	public void setLongitude(double longitude) {
-		this.longitude = longitude;
-	}
+    public void setLongitude(double longitude) {
+	this.longitude = longitude;
+    }
 
-	@Override
-	public String toString() {
-		return "SolrCityDocument [id=" + id + ", city=" + city + ", isActivated=" + isActivated + ", description="
-				+ description + ", stateId=" + stateId + ", geoLocation=" + geoLocation + ", latitude=" + latitude
-				+ ", longitude=" + longitude + "]";
-	}
+    @Override
+    public String toString() {
+	return "SolrCityDocument [id=" + id + ", city=" + city + ", isActivated=" + isActivated + ", description=" + description + ", stateId=" + stateId
+		+ ", geoLocation=" + geoLocation + ", latitude=" + latitude + ", longitude=" + longitude + "]";
+    }
 }

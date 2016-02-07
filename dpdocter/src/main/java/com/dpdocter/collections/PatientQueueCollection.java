@@ -9,10 +9,10 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document(collection = "patient_queue_cl")
 public class PatientQueueCollection extends GenericCollection {
 
-	@Id
+    @Id
     private String id;
 
-	@Field
+    @Field
     private String doctorId;
 
     @Field
@@ -39,91 +39,90 @@ public class PatientQueueCollection extends GenericCollection {
     @Field
     private Boolean discarded = false;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getDoctorId() {
-		return doctorId;
-	}
+    public String getDoctorId() {
+	return doctorId;
+    }
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
+    }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
 
-	public String getHospitalId() {
-		return hospitalId;
-	}
+    public String getHospitalId() {
+	return hospitalId;
+    }
 
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
 
-	public String getPatientId() {
-		return patientId;
-	}
+    public String getPatientId() {
+	return patientId;
+    }
 
-	public void setPatientId(String patientId) {
-		this.patientId = patientId;
-	}
+    public void setPatientId(String patientId) {
+	this.patientId = patientId;
+    }
 
-	public Date getDate() {
-		return date;
-	}
+    public Date getDate() {
+	return date;
+    }
 
-	public void setDate(Date date) {
-		this.date = date;
-	}
+    public void setDate(Date date) {
+	this.date = date;
+    }
 
-	public Integer getSequenceNo() {
-		return sequenceNo;
-	}
+    public Integer getSequenceNo() {
+	return sequenceNo;
+    }
 
-	public void setSequenceNo(Integer sequenceNo) {
-		this.sequenceNo = sequenceNo;
-	}
+    public void setSequenceNo(Integer sequenceNo) {
+	this.sequenceNo = sequenceNo;
+    }
 
-	public Integer getStartTime() {
-		return startTime;
-	}
+    public Integer getStartTime() {
+	return startTime;
+    }
 
-	public void setStartTime(Integer startTime) {
-		this.startTime = startTime;
-	}
+    public void setStartTime(Integer startTime) {
+	this.startTime = startTime;
+    }
 
-	public String getAppointmentId() {
-		return appointmentId;
-	}
+    public String getAppointmentId() {
+	return appointmentId;
+    }
 
-	public void setAppointmentId(String appointmentId) {
-		this.appointmentId = appointmentId;
-	}
+    public void setAppointmentId(String appointmentId) {
+	this.appointmentId = appointmentId;
+    }
 
-	public Boolean getDiscarded() {
-		return discarded;
-	}
+    public Boolean getDiscarded() {
+	return discarded;
+    }
 
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
 
-	@Override
-	public String toString() {
-		return "PatientQueueCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", date=" + date + ", startTime="
-				+ startTime + ", sequenceNo=" + sequenceNo + ", appointmentId=" + appointmentId + ", discarded="
-				+ discarded + "]";
-	}
+    @Override
+    public String toString() {
+	return "PatientQueueCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId="
+		+ patientId + ", date=" + date + ", startTime=" + startTime + ", sequenceNo=" + sequenceNo + ", appointmentId=" + appointmentId
+		+ ", discarded=" + discarded + "]";
+    }
 }

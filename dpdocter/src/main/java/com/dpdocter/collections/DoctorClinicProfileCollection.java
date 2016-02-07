@@ -104,19 +104,18 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	this.workingSchedules = workingSchedules;
     }
 
-	public DoctorFacility getFacility() {
-		return facility;
-	}
+    public DoctorFacility getFacility() {
+	return facility;
+    }
 
-	public void setFacility(DoctorFacility facility) {
-		this.facility = facility;
-	}
+    public void setFacility(DoctorFacility facility) {
+	this.facility = facility;
+    }
 
-	@Override
-	public String toString() {
-		return "DoctorClinicProfileCollection [id=" + id + ", locationId=" + locationId + ", patientInitial="
-				+ patientInitial + ", patientCounter=" + patientCounter + ", appointmentBookingNumber="
-				+ appointmentBookingNumber + ", consultationFee=" + consultationFee + ", appointmentSlot="
-				+ appointmentSlot + ", workingSchedules=" + workingSchedules + ", facility=" + facility + "]";
-	}
+    @Override
+    public String toString() {
+	return "DoctorClinicProfileCollection [id=" + id + ", locationId=" + locationId + ", patientInitial=" + patientInitial + ", patientCounter="
+		+ patientCounter + ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee=" + consultationFee + ", appointmentSlot="
+		+ appointmentSlot + ", workingSchedules=" + workingSchedules + ", facility=" + facility + "]";
+    }
 }

@@ -79,17 +79,17 @@ public class SMSTrackDetail extends GenericCollection {
 	this.responseId = responseId;
     }
 
-	public String getType() {
-		return type;
-	}
+    public String getType() {
+	return type;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public void setType(String type) {
+	this.type = type;
+    }
 
-	@Override
-	public String toString() {
-		return "SMSTrackDetail [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + ", smsDetails=" + smsDetails + ", type=" + type + ", responseId=" + responseId + "]";
-	}
+    @Override
+    public String toString() {
+	return "SMSTrackDetail [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", smsDetails="
+		+ smsDetails + ", type=" + type + ", responseId=" + responseId + "]";
+    }
 }

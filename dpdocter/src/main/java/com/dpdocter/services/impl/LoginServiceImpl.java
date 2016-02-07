@@ -101,13 +101,13 @@ public class LoginServiceImpl implements LoginService {
 	     * hospital admin. For patient send user details.
 	     */
 	    if (userCollection.getUserState() != null && userCollection.getUserState().equals(UserState.USERSTATEINCOMPLETE)) {
-			response = new LoginResponse();
-			user.setEmailAddress(user.getUserName());
-			response.setUser(user);
-			return response;
-		 }
+		response = new LoginResponse();
+		user.setEmailAddress(user.getUserName());
+		response.setUser(user);
+		return response;
+	    }
 	    List<UserRoleCollection> userRoleCollections = userRoleRepository.findByUserId(userCollection.getId());
-	    
+
 	    for (UserRoleCollection userRoleCollection : userRoleCollections) {
 		RoleCollection roleCollection = roleRepository.findOne(userRoleCollection.getRoleId());
 		if (roleCollection.getRole().equalsIgnoreCase(RoleEnum.PATIENT.getRole())
@@ -160,23 +160,25 @@ public class LoginServiceImpl implements LoginService {
 			    locationAndAccessControl.setLogoUrl(getFinalImageURL(locationAndAccessControl.getLogoUrl(), uriInfo));
 			    locationAndAccessControl.setLogoThumbnailUrl(getFinalImageURL(locationAndAccessControl.getLogoThumbnailUrl(), uriInfo));
 			    locationAndAccessControl.setImages(getFinalClinicImages(locationAndAccessControl.getImages(), uriInfo));
-			    
+
 			    List<Role> roles = null;
-			    for(UserRoleCollection collection : userRoleCollections){
-			    	RoleCollection roleCollection2 = roleRepository.find(collection.getRoleId(), locationCollection.getId(), locationCollection.getHospitalId());
-			    	if(roleCollection2 != null){
-			    		AccessControl accessControl = accessControlServices.getAccessControls(roleCollection2.getId(), locationCollection.getId(),
-							    locationCollection.getHospitalId());
-						
-						Role role = new Role();
-						BeanUtil.map(roleCollection2, role);
-						role.setAccessModules(accessControl.getAccessModules());
-						
-						if(roles == null) roles = new ArrayList<Role>();
-						roles.add(role);
-			    	}
+			    for (UserRoleCollection collection : userRoleCollections) {
+				RoleCollection roleCollection2 = roleRepository.find(collection.getRoleId(), locationCollection.getId(),
+					locationCollection.getHospitalId());
+				if (roleCollection2 != null) {
+				    AccessControl accessControl = accessControlServices.getAccessControls(roleCollection2.getId(), locationCollection.getId(),
+					    locationCollection.getHospitalId());
+
+				    Role role = new Role();
+				    BeanUtil.map(roleCollection2, role);
+				    role.setAccessModules(accessControl.getAccessModules());
+
+				    if (roles == null)
+					roles = new ArrayList<Role>();
+				    roles.add(role);
+				}
 			    }
-			   
+
 			    locationAndAccessControl.setRoles(roles);
 
 			    if (!checkHospitalId.containsKey(locationCollection.getHospitalId())) {
@@ -197,7 +199,7 @@ public class LoginServiceImpl implements LoginService {
 			user.setEmailAddress(user.getUserName());
 			response.setUser(user);
 			response.setHospitals(hospitals);
-			
+
 		    }
 		    break;
 		}
@@ -235,50 +237,50 @@ public class LoginServiceImpl implements LoginService {
 	return clinicImages;
     }
 
-	@Override
-	public LoginResponse loginPatient(LoginPatientRequest request, UriInfo uriInfo) {
-		LoginResponse response = null;
-		try {
-		    /**
-		     * Check if user exist.
-		     */
-		    UserCollection userCollection = userRepository.findByPasswordAndMobileNumberIgnoreCase(request.getPassword(), request.getMobileNumber());
-		    if (userCollection == null) {
-			logger.warn("Invalid mobile Number and Password");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid mobile Number and Password");
-		    }
+    @Override
+    public LoginResponse loginPatient(LoginPatientRequest request, UriInfo uriInfo) {
+	LoginResponse response = null;
+	try {
+	    /**
+	     * Check if user exist.
+	     */
+	    UserCollection userCollection = userRepository.findByPasswordAndMobileNumberIgnoreCase(request.getPassword(), request.getMobileNumber());
+	    if (userCollection == null) {
+		logger.warn("Invalid mobile Number and Password");
+		throw new BusinessException(ServiceError.InvalidInput, "Invalid mobile Number and Password");
+	    }
 
-		    User user = new User();
-		    BeanUtil.map(userCollection, user);
+	    User user = new User();
+	    BeanUtil.map(userCollection, user);
 
-		    if (userCollection.getUserState() != null && userCollection.getUserState().equals(UserState.USERSTATEINCOMPLETE)) {
-				response = new LoginResponse();
-				user.setEmailAddress(user.getUserName());
-				response.setUser(user);
-				return response;
-			 }
-		    List<UserRoleCollection> userRoleCollections = userRoleRepository.findByUserId(userCollection.getId());
-		    
-		    for (UserRoleCollection userRoleCollection : userRoleCollections) {
-			RoleCollection roleCollection = roleRepository.findOne(userRoleCollection.getRoleId());
-			if (roleCollection.getRole().equalsIgnoreCase(RoleEnum.PATIENT.getRole())) {
-			    userCollection.setLastSession(new Date());
-			    userCollection = userRepository.save(userCollection);
-
-			    response = new LoginResponse();
-			    response.setUser(user);
-			    response.setIsTempPassword(userCollection.getIsTempPassword());
-			    return response;
-			} 
-		    }
-		} catch (BusinessException be) {
-		    logger.error(be);
-		    throw be;
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e + " Error occured while login");
-		    throw new BusinessException(ServiceError.Forbidden, "Error occured while login");
-		}
+	    if (userCollection.getUserState() != null && userCollection.getUserState().equals(UserState.USERSTATEINCOMPLETE)) {
+		response = new LoginResponse();
+		user.setEmailAddress(user.getUserName());
+		response.setUser(user);
 		return response;
+	    }
+	    List<UserRoleCollection> userRoleCollections = userRoleRepository.findByUserId(userCollection.getId());
+
+	    for (UserRoleCollection userRoleCollection : userRoleCollections) {
+		RoleCollection roleCollection = roleRepository.findOne(userRoleCollection.getRoleId());
+		if (roleCollection.getRole().equalsIgnoreCase(RoleEnum.PATIENT.getRole())) {
+		    userCollection.setLastSession(new Date());
+		    userCollection = userRepository.save(userCollection);
+
+		    response = new LoginResponse();
+		    response.setUser(user);
+		    response.setIsTempPassword(userCollection.getIsTempPassword());
+		    return response;
+		}
+	    }
+	} catch (BusinessException be) {
+	    logger.error(be);
+	    throw be;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e + " Error occured while login");
+	    throw new BusinessException(ServiceError.Forbidden, "Error occured while login");
 	}
+	return response;
+    }
 }

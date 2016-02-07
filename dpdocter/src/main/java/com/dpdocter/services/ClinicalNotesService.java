@@ -4,8 +4,6 @@ import java.util.List;
 
 import javax.ws.rs.core.UriInfo;
 
-import org.springframework.data.mongodb.repository.Query;
-
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.Diagnoses;
@@ -64,6 +62,6 @@ public interface ClinicalNotesService {
 
     MailAttachment getClinicalNotesMailData(String clinicalNotesId, String doctorId, String locationId, String hospitalId, UriInfo uriInfo);
 
-	List<ClinicalNotes> getClinicalNotes(String patientId, int page, int size, String updatedTime, Boolean discarded);
+    List<ClinicalNotes> getClinicalNotes(String patientId, int page, int size, String updatedTime, Boolean discarded);
 
 }

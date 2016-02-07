@@ -12,10 +12,10 @@ import com.dpdocter.collections.ProfessionCollection;
 
 public interface ProfessionRepository extends MongoRepository<ProfessionCollection, String> {
 
-	@Query("{'updatedTime': {'$gt': ?0}}")
-	List<ProfessionCollection> find(Date date, Pageable pageRequest);
+    @Query("{'updatedTime': {'$gt': ?0}}")
+    List<ProfessionCollection> find(Date date, Pageable pageRequest);
 
-	@Query("{'updatedTime': {'$gt': ?0}}")
-	List<ProfessionCollection> find(Date date, Sort sort);
+    @Query("{'updatedTime': {'$gt': ?0}}")
+    List<ProfessionCollection> find(Date date, Sort sort);
 
 }

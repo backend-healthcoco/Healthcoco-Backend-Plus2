@@ -12,16 +12,16 @@ import com.dpdocter.solr.document.SolrEducationQualificationDocument;
 
 public interface SolrEducationQualificationRepository extends SolrCrudRepository<SolrEducationQualificationDocument, String> {
 
-	@Query("updatedTime: {?0 TO *}")
-	List<SolrEducationQualificationDocument> find(Date date, Pageable pageable);
+    @Query("updatedTime: {?0 TO *}")
+    List<SolrEducationQualificationDocument> find(Date date, Pageable pageable);
 
-	@Query("updatedTime: {?0 TO *}")
-	List<SolrEducationQualificationDocument> find(Date date, Sort sort);
+    @Query("updatedTime: {?0 TO *}")
+    List<SolrEducationQualificationDocument> find(Date date, Sort sort);
 
-	@Query("updatedTime: {?0 TO *} AND name: ?1*")
-	List<SolrEducationQualificationDocument> find(Date date, String searchTerm, Pageable pageable);
+    @Query("updatedTime: {?0 TO *} AND name: ?1*")
+    List<SolrEducationQualificationDocument> find(Date date, String searchTerm, Pageable pageable);
 
-	@Query("updatedTime: {?0 TO *} AND name: ?1*")
-	List<SolrEducationQualificationDocument> find(Date date, String searchTerm, Sort sort);
+    @Query("updatedTime: {?0 TO *} AND name: ?1*")
+    List<SolrEducationQualificationDocument> find(Date date, String searchTerm, Sort sort);
 
 }

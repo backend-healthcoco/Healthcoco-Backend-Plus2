@@ -13,5 +13,5 @@ public interface OTPRepository extends MongoRepository<OTPCollection, String>, P
     OTPCollection findOne(String mobileNumber, String otpNumber, String generatorId);
 
     @Query("{'state' : {'$ne' : ?0}}")
-	List<OTPCollection> findNonExpiredOtp(String expired);
+    List<OTPCollection> findNonExpiredOtp(String expired);
 }

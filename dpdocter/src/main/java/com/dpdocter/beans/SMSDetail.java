@@ -18,22 +18,22 @@ public class SMSDetail {
     private String deliveredTime;
 
     public String getUserId() {
-		return userId;
-	}
+	return userId;
+    }
 
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
+    public void setUserId(String userId) {
+	this.userId = userId;
+    }
 
-	public String getUserName() {
-		return userName;
-	}
+    public String getUserName() {
+	return userName;
+    }
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
+    public void setUserName(String userName) {
+	this.userName = userName;
+    }
 
-	public SMS getSms() {
+    public SMS getSms() {
 	return sms;
     }
 
@@ -65,9 +65,9 @@ public class SMSDetail {
 	this.deliveredTime = deliveredTime;
     }
 
-	@Override
-	public String toString() {
-		return "SMSDetail [userId=" + userId + ", userName=" + userName + ", sms=" + sms + ", deliveryStatus="
-				+ deliveryStatus + ", sentTime=" + sentTime + ", deliveredTime=" + deliveredTime + "]";
-	}
+    @Override
+    public String toString() {
+	return "SMSDetail [userId=" + userId + ", userName=" + userName + ", sms=" + sms + ", deliveryStatus=" + deliveryStatus + ", sentTime=" + sentTime
+		+ ", deliveredTime=" + deliveredTime + "]";
+    }
 }

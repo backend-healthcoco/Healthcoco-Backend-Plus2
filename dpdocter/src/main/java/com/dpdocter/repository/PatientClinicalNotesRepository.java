@@ -32,15 +32,15 @@ public interface PatientClinicalNotesRepository extends MongoRepository<PatientC
     Integer findCount(String patientId, List<String> clinicalNotesIds);
 
     @Query(value = "{'patientId': ?0, 'clinicalNotesId': ?1}")
-	PatientClinicalNotesCollection findByPatientIdClinicalNotesId(String patientId, String id);
+    PatientClinicalNotesCollection findByPatientIdClinicalNotesId(String patientId, String id);
 
     @Query("{'patientId': ?0, 'discarded': {$in: ?1}, 'updatedTime': {'$gt': ?2}}")
-	List<PatientClinicalNotesCollection> findByPatientId(String patientId, boolean[] discards, Date date, Pageable pageRequest);
+    List<PatientClinicalNotesCollection> findByPatientId(String patientId, boolean[] discards, Date date, Pageable pageRequest);
 
     @Query("{'patientId': ?0, 'discarded': {$in: ?1}, 'updatedTime': {'$gt': ?2}}")
-	List<PatientClinicalNotesCollection> findByPatientId(String patientId, boolean[] discards, Date date, Sort sort);
+    List<PatientClinicalNotesCollection> findByPatientId(String patientId, boolean[] discards, Date date, Sort sort);
 
     @Query(value = "{'patientId': ?0}", count = true)
-	Integer findCount(String patientId);
+    Integer findCount(String patientId);
 
 }

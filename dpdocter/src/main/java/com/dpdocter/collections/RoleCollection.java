@@ -21,21 +21,21 @@ public class RoleCollection extends GenericCollection {
 
     @Field
     private String hospitalId;
-    
+
     @Field
     private Boolean discarded = false;
 
     public RoleCollection(String role, String locationId, String hospitalId) {
-		this.role = role;
-		this.locationId = locationId;
-		this.hospitalId = hospitalId;
-	}
+	this.role = role;
+	this.locationId = locationId;
+	this.hospitalId = hospitalId;
+    }
 
-	public RoleCollection() {
-		// TODO Auto-generated constructor stub
-	}
+    public RoleCollection() {
+	// TODO Auto-generated constructor stub
+    }
 
-	public String getId() {
+    public String getId() {
 	return id;
     }
 
@@ -75,18 +75,18 @@ public class RoleCollection extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
-	public Boolean getDiscarded() {
-		return discarded;
-	}
+    public Boolean getDiscarded() {
+	return discarded;
+    }
 
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
 
-	@Override
-	public String toString() {
-		return "RoleCollection [id=" + id + ", role=" + role + ", description=" + description + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + "]";
-	}
+    @Override
+    public String toString() {
+	return "RoleCollection [id=" + id + ", role=" + role + ", description=" + description + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+		+ ", discarded=" + discarded + "]";
+    }
 
 }

@@ -78,28 +78,27 @@ public class ClinicProfile {
 	this.landmarkDetails = landmarkDetails;
     }
 
-	public String getMobileNumber() {
-		return mobileNumber;
-	}
+    public String getMobileNumber() {
+	return mobileNumber;
+    }
 
-	public void setMobileNumber(String mobileNumber) {
-		this.mobileNumber = mobileNumber;
-	}
+    public void setMobileNumber(String mobileNumber) {
+	this.mobileNumber = mobileNumber;
+    }
 
-	public List<String> getAlternateNumbers() {
-		return alternateNumbers;
-	}
+    public List<String> getAlternateNumbers() {
+	return alternateNumbers;
+    }
 
-	public void setAlternateNumbers(List<String> alternateNumbers) {
-		this.alternateNumbers = alternateNumbers;
-	}
+    public void setAlternateNumbers(List<String> alternateNumbers) {
+	this.alternateNumbers = alternateNumbers;
+    }
 
-	@Override
-	public String toString() {
-		return "ClinicProfile [id=" + id + ", locationName=" + locationName + ", tagLine=" + tagLine
-				+ ", specialization=" + specialization + ", locationEmailAddress=" + locationEmailAddress
-				+ ", websiteUrl=" + websiteUrl + ", landmarkDetails=" + landmarkDetails + ", mobileNumber="
-				+ mobileNumber + ", alternateNumbers=" + alternateNumbers + "]";
-	}
+    @Override
+    public String toString() {
+	return "ClinicProfile [id=" + id + ", locationName=" + locationName + ", tagLine=" + tagLine + ", specialization=" + specialization
+		+ ", locationEmailAddress=" + locationEmailAddress + ", websiteUrl=" + websiteUrl + ", landmarkDetails=" + landmarkDetails + ", mobileNumber="
+		+ mobileNumber + ", alternateNumbers=" + alternateNumbers + "]";
+    }
 
 }

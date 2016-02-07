@@ -31,10 +31,12 @@ public interface PatientVisitRepository extends MongoRepository<PatientVisitColl
     List<PatientVisitCollection> find(String doctorId, String patientId, List<VisitedFor> visitedFors, Date date, Sort sort);
 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'patientId': ?3, 'visitedFor': {$in : ?4}, 'updatedTime' : {'$gt' : ?5}}")
-    List<PatientVisitCollection> find(String doctorId, String locationId, String hospitalId, String patientId, List<VisitedFor> visitedFors, Date date, Pageable pageable);
+    List<PatientVisitCollection> find(String doctorId, String locationId, String hospitalId, String patientId, List<VisitedFor> visitedFors, Date date,
+	    Pageable pageable);
 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'patientId': ?3, 'visitedFor': {$in : ?4}, 'updatedTime' : {'$gt' : ?5}}")
-    List<PatientVisitCollection> find(String doctorId, String locationId, String hospitalId, String patientId, List<VisitedFor> visitedFors, Date date, Sort sort);
+    List<PatientVisitCollection> find(String doctorId, String locationId, String hospitalId, String patientId, List<VisitedFor> visitedFors, Date date,
+	    Sort sort);
 
     @Query("{'patientId' : ?0, 'visitedFor': {$in : ?1}, 'updatedTime' : {'$gt' : ?2}}")
     List<PatientVisitCollection> find(String patientId, List<VisitedFor> visitedFors, Date date, Pageable pageable);
@@ -58,6 +60,6 @@ public interface PatientVisitRepository extends MongoRepository<PatientVisitColl
     Integer getVisitCount(List<String> patientIds, String doctorId, String hospitalId, String locationId);
 
     @Query(value = "{'patientId': ?0, 'visitedFor': {$in : ?1}, 'discarded': ?2}", count = true)
-	Integer getVisitCount(String patientId, List<VisitedFor> visitedFors, boolean discarded);
+    Integer getVisitCount(String patientId, List<VisitedFor> visitedFors, boolean discarded);
 
 }

@@ -16,17 +16,17 @@ public interface SolrSpecialityRepository extends SolrCrudRepository<SolrSpecial
     List<SolrSpecialityDocument> findAll(String speciality);
 
     @Query("{'id': {'$in': ?0}}")
-	List<SolrSpecialityDocument> findByIds(Collection<String> specialityIds);
+    List<SolrSpecialityDocument> findByIds(Collection<String> specialityIds);
 
     @Query("updatedTime: {?0 TO *}")
-	List<SolrSpecialityDocument> find(Date date, Pageable pageable);
+    List<SolrSpecialityDocument> find(Date date, Pageable pageable);
 
     @Query("updatedTime: {?0 TO *}")
-	List<SolrSpecialityDocument> find(Date date, Sort sort);
+    List<SolrSpecialityDocument> find(Date date, Sort sort);
 
     @Query("updatedTime: {?0 TO *} AND speciality: ?1*")
-	List<SolrSpecialityDocument> find(Date date, String searchTerm, Pageable pageable);
+    List<SolrSpecialityDocument> find(Date date, String searchTerm, Pageable pageable);
 
     @Query("updatedTime: {?0 TO *} AND speciality: ?1*")
-	List<SolrSpecialityDocument> find(Date date, String searchTerm, Sort sort);
+    List<SolrSpecialityDocument> find(Date date, String searchTerm, Sort sort);
 }

@@ -6,7 +6,7 @@ public class User {
     private String id;
 
     private String title;
-    
+
     private String firstName;
 
     private String userName;
@@ -139,20 +139,18 @@ public class User {
 	this.userState = userState;
     }
 
-	public String getTitle() {
-		return title;
-	}
+    public String getTitle() {
+	return title;
+    }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public void setTitle(String title) {
+	this.title = title;
+    }
 
-	@Override
-	public String toString() {
-		return "User [id=" + id + ", title=" + title + ", firstName=" + firstName + ", userName=" + userName
-				+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob="
-				+ dob + ", secPhoneNumber=" + secPhoneNumber + ", isPartOfClinic=" + isPartOfClinic + ", imageUrl="
-				+ imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", colorCode=" + colorCode + ", userState=" + userState
-				+ "]";
-	}
+    @Override
+    public String toString() {
+	return "User [id=" + id + ", title=" + title + ", firstName=" + firstName + ", userName=" + userName + ", emailAddress=" + emailAddress
+		+ ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob=" + dob + ", secPhoneNumber=" + secPhoneNumber + ", isPartOfClinic="
+		+ isPartOfClinic + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", colorCode=" + colorCode + ", userState=" + userState + "]";
+    }
 }

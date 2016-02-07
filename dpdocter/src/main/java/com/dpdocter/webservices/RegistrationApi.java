@@ -54,7 +54,6 @@ import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrPatientDocument;
 import com.dpdocter.solr.services.SolrRegistrationService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -131,7 +130,7 @@ public class RegistrationApi {
     @Path(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM)
     @GET
     public Response<User> getExistingPatients(@PathParam("mobileNumber") String mobileNumber, @PathParam("doctorId") String doctorId,
-    		@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+	    @PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
 	if (mobileNumber == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.Mobile Number is null");
 	}
@@ -173,11 +172,11 @@ public class RegistrationApi {
     @Path(value = PathProxy.RegistrationUrls.GET_PATIENT_PROFILE)
     @GET
     public Response<RegisteredPatientDetails> getPatientProfile(@PathParam("userId") String userId, @QueryParam("doctorId") String doctorId,
-    		@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId) {
+	    @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId) {
 	if (userId == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.userId is null");
 	}
-	
+
 	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 
 	RegisteredPatientDetails registeredPatientDetails = registrationService.getPatientProfileByUserId(userId, doctorId, locationId, hospitalId);
@@ -309,7 +308,7 @@ public class RegistrationApi {
 	ClinicProfile clinicProfileUpdateResponse = registrationService.updateClinicProfile(request);
 	transnationalService.addResource(clinicProfileUpdateResponse.getId(), Resource.LOCATION, false);
 	if (clinicProfileUpdateResponse != null)
-		solrRegistrationService.updateClinicProfile(clinicProfileUpdateResponse);
+	    solrRegistrationService.updateClinicProfile(clinicProfileUpdateResponse);
 	Response<ClinicProfile> response = new Response<ClinicProfile>();
 	response.setData(clinicProfileUpdateResponse);
 	return response;
@@ -324,12 +323,12 @@ public class RegistrationApi {
 	ClinicProfile clinicProfileUpdateResponse = registrationService.updateClinicProfileHandheld(request);
 	transnationalService.addResource(clinicProfileUpdateResponse.getId(), Resource.LOCATION, false);
 	if (clinicProfileUpdateResponse != null)
-		solrRegistrationService.updateClinicProfile(clinicProfileUpdateResponse);
+	    solrRegistrationService.updateClinicProfile(clinicProfileUpdateResponse);
 	Response<ClinicProfile> response = new Response<ClinicProfile>();
 	response.setData(clinicProfileUpdateResponse);
 	return response;
     }
-    
+
     @Path(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_ADDRESS)
     @POST
     public Response<ClinicAddress> updateClinicAddress(ClinicAddress request) {
@@ -339,8 +338,8 @@ public class RegistrationApi {
 	ClinicAddress clinicAddressUpdateResponse = registrationService.updateClinicAddress(request);
 	transnationalService.addResource(clinicAddressUpdateResponse.getId(), Resource.LOCATION, false);
 	if (clinicAddressUpdateResponse != null)
-		solrRegistrationService.updateClinicAddress(clinicAddressUpdateResponse);
-	
+	    solrRegistrationService.updateClinicAddress(clinicAddressUpdateResponse);
+
 	Response<ClinicAddress> response = new Response<ClinicAddress>();
 	response.setData(clinicAddressUpdateResponse);
 	return response;
@@ -366,7 +365,8 @@ public class RegistrationApi {
 	}
 	ClinicSpecialization clinicSpecializationUpdateResponse = registrationService.updateClinicSpecialization(request);
 	transnationalService.addResource(clinicSpecializationUpdateResponse.getId(), Resource.LOCATION, false);
-	if (clinicSpecializationUpdateResponse != null)	solrRegistrationService.updateClinicSpecialization(clinicSpecializationUpdateResponse);
+	if (clinicSpecializationUpdateResponse != null)
+	    solrRegistrationService.updateClinicSpecialization(clinicSpecializationUpdateResponse);
 	Response<ClinicSpecialization> response = new Response<ClinicSpecialization>();
 	response.setData(clinicSpecializationUpdateResponse);
 	return response;
@@ -375,19 +375,19 @@ public class RegistrationApi {
     @Path(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_LAB_PROPERTIES)
     @POST
     public Response<ClinicLabProperties> updateLabProperties(ClinicLabProperties request) {
-    if (request == null) {
-    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
-    	}
-    ClinicLabProperties clinicLabProperties = registrationService.updateLabProperties(request);
-    if(clinicLabProperties != null){
-    	transnationalService.addResource(request.getId(), Resource.LOCATION, false);
-    	solrRegistrationService.updateLabProperties(clinicLabProperties);
-    }
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
+	}
+	ClinicLabProperties clinicLabProperties = registrationService.updateLabProperties(request);
+	if (clinicLabProperties != null) {
+	    transnationalService.addResource(request.getId(), Resource.LOCATION, false);
+	    solrRegistrationService.updateLabProperties(clinicLabProperties);
+	}
 	Response<ClinicLabProperties> response = new Response<ClinicLabProperties>();
 	response.setData(clinicLabProperties);
 	return response;
     }
-    
+
     @Path(value = PathProxy.RegistrationUrls.CHANGE_CLINIC_LOGO)
     @POST
     public Response<ClinicLogo> changeClinicLogo(ClinicLogoAddRequest request) {
@@ -463,7 +463,8 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.GET_BLOOD_GROUP)
     @GET
-    public Response<BloodGroup> getBloodGroup(@QueryParam("page") int page, @QueryParam("size") int size, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+    public Response<BloodGroup> getBloodGroup(@QueryParam("page") int page, @QueryParam("size") int size,
+	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
 	List<BloodGroup> bloodGroupResponse = registrationService.getBloodGroup(page, size, updatedTime);
 	Response<BloodGroup> response = new Response<BloodGroup>();
 	response.setDataList(bloodGroupResponse);
@@ -484,7 +485,8 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.GET_PROFESSION)
     @GET
-    public Response<Profession> getProfession(@QueryParam("page") int page, @QueryParam("size") int size, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+    public Response<Profession> getProfession(@QueryParam("page") int page, @QueryParam("size") int size,
+	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
 
 	List<Profession> professionResponse = registrationService.getProfession(page, size, updatedTime);
 	Response<Profession> response = new Response<Profession>();
@@ -529,8 +531,10 @@ public class RegistrationApi {
 		BeanUtil.map(patient.getPatient(), solrPatientDocument);
 	    }
 	    BeanUtil.map(patient, solrPatientDocument);
-	    if (patient.getPatient() != null) solrPatientDocument.setId(patient.getPatient().getPatientId());
-	    if(patient.getReferredBy() != null)solrPatientDocument.setReferredBy(patient.getReferredBy().getReference());
+	    if (patient.getPatient() != null)
+		solrPatientDocument.setId(patient.getPatient().getPatientId());
+	    if (patient.getReferredBy() != null)
+		solrPatientDocument.setReferredBy(patient.getReferredBy().getReference());
 
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -581,35 +585,34 @@ public class RegistrationApi {
 	response.setDataList(professionResponse);
 	return response;
     }
-    
+
     @Path(value = PathProxy.RegistrationUrls.DELETE_ROLE)
     @DELETE
-    public Response<Boolean> deleteRole(@PathParam(value = "roleId") String roleId,
-	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-    	registrationService.deleteRole(roleId, discarded);
+    public Response<Boolean> deleteRole(@PathParam(value = "roleId") String roleId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	registrationService.deleteRole(roleId, discarded);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
     }
-    
+
     @Path(value = PathProxy.RegistrationUrls.DELETE_USER)
     @DELETE
     public Response<Boolean> deleteUser(@PathParam(value = "userId") String userId, @PathParam(value = "locationId") String locationId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-    	registrationService.deleteUser(userId, locationId, discarded);
+	registrationService.deleteUser(userId, locationId, discarded);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
     }
-    
+
     @Path(value = PathProxy.RegistrationUrls.ADD_FEEDBACK)
     @POST
     public Response<Feedback> addFeedback(Feedback request) {
-    if (request == null) {
-    	 logger.warn("Request send  is NULL");
-    	 throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
-    }
-    Feedback feedback = registrationService.addFeedback(request);
+	if (request == null) {
+	    logger.warn("Request send  is NULL");
+	    throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
+	}
+	Feedback feedback = registrationService.addFeedback(request);
 	Response<Feedback> response = new Response<Feedback>();
 	response.setData(feedback);
 	return response;
@@ -619,7 +622,7 @@ public class RegistrationApi {
     @GET
     public Response<PatientStatusResponse> getPatientStatus(@PathParam("patientId") String patientId, @PathParam("doctorId") String doctorId,
 	    @PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
-	
+
 	Response<PatientStatusResponse> response = new Response<PatientStatusResponse>();
 
 	PatientStatusResponse patientStatusResponse = registrationService.getPatientStatus(patientId, doctorId, locationId, hospitalId);

@@ -12,10 +12,10 @@ import com.dpdocter.collections.SpecialityCollection;
 
 public interface SpecialityRepository extends MongoRepository<SpecialityCollection, String> {
 
-	@Query("{'updatedTime': {'$gt': ?0}}")
-	List<SpecialityCollection> find(Date date, Pageable pageRequest);
+    @Query("{'updatedTime': {'$gt': ?0}}")
+    List<SpecialityCollection> find(Date date, Pageable pageRequest);
 
-	@Query("{'updatedTime': {'$gt': ?0}}")
-	List<SpecialityCollection> find(Date date, Sort sort);
+    @Query("{'updatedTime': {'$gt': ?0}}")
+    List<SpecialityCollection> find(Date date, Sort sort);
 
 }

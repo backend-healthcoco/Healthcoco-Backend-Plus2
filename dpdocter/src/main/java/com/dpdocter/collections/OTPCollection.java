@@ -48,26 +48,26 @@ public class OTPCollection extends GenericCollection {
 	this.mobileNumber = mobileNumber;
     }
 
-	public OTPState getState() {
-		return state;
-	}
+    public OTPState getState() {
+	return state;
+    }
 
-	public void setState(OTPState state) {
-		this.state = state;
-	}
+    public void setState(OTPState state) {
+	this.state = state;
+    }
 
-	public String getGeneratorId() {
-		return generatorId;
-	}
+    public String getGeneratorId() {
+	return generatorId;
+    }
 
-	public void setGeneratorId(String generatorId) {
-		this.generatorId = generatorId;
-	}
+    public void setGeneratorId(String generatorId) {
+	this.generatorId = generatorId;
+    }
 
-	@Override
-	public String toString() {
-		return "OTPCollection [id=" + id + ", otpNumber=" + otpNumber + ", mobileNumber=" + mobileNumber
-				+ ", generatorId=" + generatorId + ", state=" + state + "]";
-	}
+    @Override
+    public String toString() {
+	return "OTPCollection [id=" + id + ", otpNumber=" + otpNumber + ", mobileNumber=" + mobileNumber + ", generatorId=" + generatorId + ", state=" + state
+		+ "]";
+    }
 
 }

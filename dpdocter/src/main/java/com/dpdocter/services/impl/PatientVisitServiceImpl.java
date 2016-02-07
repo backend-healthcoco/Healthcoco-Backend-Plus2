@@ -31,7 +31,6 @@ import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.DrugDirection;
-import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.PatientDetails;
@@ -98,7 +97,6 @@ import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.RecordsService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -205,7 +203,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		patientTrackCollection.setUniqueId(DPDoctorUtils.generateRandomId());
 		UserCollection userCollection = userRepository.findOne(patientTrackCollection.getDoctorId());
 		if (userCollection != null) {
-		    patientTrackCollection.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());
+		    patientTrackCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+			    + userCollection.getFirstName());
 		}
 	    }
 
@@ -275,7 +274,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		}
 		if (userCollection != null) {
 		    if (userCollection.getFirstName() != null) {
-			patientTrackCollection.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());
+			patientTrackCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+				+ userCollection.getFirstName());
 		    }
 		}
 
@@ -466,34 +466,35 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	List<PatientVisitCollection> patientVisitCollections = null;
 	try {
 
-		List<VisitedFor> visitedFors = new ArrayList<VisitedFor>();
-		visitedFors.add(VisitedFor.CLINICAL_NOTES);
-		visitedFors.add(VisitedFor.PRESCRIPTION);
-		visitedFors.add(VisitedFor.REPORTS);
-	    
+	    List<VisitedFor> visitedFors = new ArrayList<VisitedFor>();
+	    visitedFors.add(VisitedFor.CLINICAL_NOTES);
+	    visitedFors.add(VisitedFor.PRESCRIPTION);
+	    visitedFors.add(VisitedFor.REPORTS);
+
 	    long createdTimestamp = Long.parseLong(updatedTime);
 	    if (!isOTPVerified) {
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
-			patientVisitCollections = patientVisitRepository.find(doctorId, patientId, visitedFors, new Date(createdTimestamp), new PageRequest(page, size,
-				Direction.DESC, "updatedTime"));
+			patientVisitCollections = patientVisitRepository.find(doctorId, patientId, visitedFors, new Date(createdTimestamp), new PageRequest(
+				page, size, Direction.DESC, "updatedTime"));
 		    else
-			patientVisitCollections = patientVisitRepository.find(doctorId, patientId, visitedFors, new Date(createdTimestamp), new Sort(Sort.Direction.DESC,
-				"updatedTime"));
+			patientVisitCollections = patientVisitRepository.find(doctorId, patientId, visitedFors, new Date(createdTimestamp), new Sort(
+				Sort.Direction.DESC, "updatedTime"));
 		} else {
 		    if (size > 0)
-			patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, visitedFors, new Date(createdTimestamp),
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, visitedFors, new Date(
+				createdTimestamp), new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, visitedFors,new Date(createdTimestamp),
-				new Sort(Sort.Direction.DESC, "updatedTime"));
+			patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, visitedFors, new Date(
+				createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
 		}
 	    } else {
 		if (size > 0)
-		    patientVisitCollections = patientVisitRepository.find(patientId, visitedFors, new Date(createdTimestamp), new PageRequest(page, size, Direction.DESC,
-			    "updatedTime"));
+		    patientVisitCollections = patientVisitRepository.find(patientId, visitedFors, new Date(createdTimestamp), new PageRequest(page, size,
+			    Direction.DESC, "updatedTime"));
 		else
-		    patientVisitCollections = patientVisitRepository.find(patientId, visitedFors, new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+		    patientVisitCollections = patientVisitRepository.find(patientId, visitedFors, new Date(createdTimestamp), new Sort(Sort.Direction.DESC,
+			    "updatedTime"));
 	    }
 	    if (patientVisitCollections != null) {
 		response = new ArrayList<PatientVisitResponse>();
@@ -560,31 +561,33 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    patientVisitCollection = patientVisitRepository.findOne(visitId);
 
 	    if (patientVisitCollection != null) {
-	    	 PatientAdmissionCollection patientAdmission = patientAdmissionRepository.findByPatientIdAndDoctorId(patientVisitCollection.getPatientId(),
-	 			    patientVisitCollection.getDoctorId());
-	 		    PatientCollection patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientVisitCollection.getPatientId(), patientVisitCollection.getDoctorId(), patientVisitCollection.getLocationId(), patientVisitCollection.getHospitalId());
-	 		    UserCollection user = userRepository.findOne(patientVisitCollection.getPatientId());
+		PatientAdmissionCollection patientAdmission = patientAdmissionRepository.findByPatientIdAndDoctorId(patientVisitCollection.getPatientId(),
+			patientVisitCollection.getDoctorId());
+		PatientCollection patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientVisitCollection.getPatientId(),
+			patientVisitCollection.getDoctorId(), patientVisitCollection.getLocationId(), patientVisitCollection.getHospitalId());
+		UserCollection user = userRepository.findOne(patientVisitCollection.getPatientId());
 
-	    	String patientName = "", dob = "", gender = "", mobileNumber = "", refferedBy ="", pid="", date="", resourceId="";
-			if(patientAdmission != null && patientAdmission.getReferredBy() != null){
-				ReferencesCollection referencesCollection = referenceRepository.findOne(patientAdmission.getReferredBy());
-				if(referencesCollection != null)refferedBy = referencesCollection.getReference();
-			}
-			patientName = "Patient Name: " + (user != null ? user.getFirstName() : "--") + "<br>";
-			dob = "Patient Age: " + ((patient != null && patient.getDob() != null) ? (patient.getDob().getAge() + " years") : "--") + "<br>";
-			gender = "Patient Gender: " + (patient != null ? patient.getGender() : "--") + "<br>";
-			mobileNumber = "Mobile Number: " + (user != null ? user.getMobileNumber() : "--") + "<br>";
-			pid= "Patient Id: " + (patient != null ? patient.getPID() : "--") + "<br>";
-			refferedBy = "Reffered By: "+ (refferedBy != "" ? refferedBy : "--") + "<br>";
-			date = "Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date())+"<br>";
-			resourceId = "ClinicalNotesId: " + (patientVisitCollection.getUniqueId() != null ? patientVisitCollection.getUniqueId() : "--") + "<br>";
-			PrintSettingsCollection printSettings = printSettingsRepository.getSettings(patientVisitCollection.getDoctorId(), patientVisitCollection.getLocationId(), patientVisitCollection.getHospitalId(),
-					ComponentType.ALL.getType());
-			
-			parameters.put("printSettingsId", printSettings != null ? printSettings.getId() :"");
+		String patientName = "", dob = "", gender = "", mobileNumber = "", refferedBy = "", pid = "", date = "", resourceId = "";
+		if (patientAdmission != null && patientAdmission.getReferredBy() != null) {
+		    ReferencesCollection referencesCollection = referenceRepository.findOne(patientAdmission.getReferredBy());
+		    if (referencesCollection != null)
+			refferedBy = referencesCollection.getReference();
+		}
+		patientName = "Patient Name: " + (user != null ? user.getFirstName() : "--") + "<br>";
+		dob = "Patient Age: " + ((patient != null && patient.getDob() != null) ? (patient.getDob().getAge() + " years") : "--") + "<br>";
+		gender = "Patient Gender: " + (patient != null ? patient.getGender() : "--") + "<br>";
+		mobileNumber = "Mobile Number: " + (user != null ? user.getMobileNumber() : "--") + "<br>";
+		pid = "Patient Id: " + (patient != null ? patient.getPID() : "--") + "<br>";
+		refferedBy = "Reffered By: " + (refferedBy != "" ? refferedBy : "--") + "<br>";
+		date = "Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()) + "<br>";
+		resourceId = "ClinicalNotesId: " + (patientVisitCollection.getUniqueId() != null ? patientVisitCollection.getUniqueId() : "--") + "<br>";
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(patientVisitCollection.getDoctorId(),
+			patientVisitCollection.getLocationId(), patientVisitCollection.getHospitalId(), ComponentType.ALL.getType());
 
-			if(printSettings != null){
-		   
+		parameters.put("printSettingsId", printSettings != null ? printSettings.getId() : "");
+
+		if (printSettings != null) {
+
 		    String headerLeftText = "", headerRightText = "", footerBottomText = "";
 		    if (printSettings != null) {
 			if (printSettings.getHeaderSetup() != null) {
@@ -592,9 +595,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 				boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
 				String text = str.getText();
-				if (isItalic)text = "<i>" + text + "</i>";
-				if (isBold)text = "<b>" + text + "</b>";
-				
+				if (isItalic)
+				    text = "<i>" + text + "</i>";
+				if (isBold)
+				    text = "<b>" + text + "</b>";
+
 				if (headerLeftText.isEmpty())
 				    headerLeftText = "<span style='font-size:" + str.getFontSize() + ";'>" + text + "</span>";
 				else
@@ -605,8 +610,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 				boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
 				String text = str.getText();
-				if (isItalic)text = "<i>" + text + "</i>";
-				if (isBold)text = "<b>" + text + "</b>";
+				if (isItalic)
+				    text = "<i>" + text + "</i>";
+				if (isBold)
+				    text = "<b>" + text + "</b>";
 
 				if (headerRightText.isEmpty())
 				    headerRightText = "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
@@ -621,8 +628,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				    boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 				    boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
 				    String text = str.getText();
-				    if (isItalic)text = "<i>" + text + "</i>";
-					if (isBold)text = "<b>" + text + "</b>";
+				    if (isItalic)
+					text = "<i>" + text + "</i>";
+				    if (isBold)
+					text = "<b>" + text + "</b>";
 
 				    if (footerBottomText.isEmpty())
 					footerBottomText = "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
@@ -631,43 +640,57 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				}
 			}
 			String logoURL = getFinalImageURL(printSettings.getClinicLogoUrl(), uriInfo);
-		    parameters.put("logoURL", new File(logoURL).exists()?logoURL:"");	
-		    
-		    if(printSettings.getHeaderSetup() != null && printSettings.getHeaderSetup().getPatientDetails() != null && printSettings.getHeaderSetup().getPatientDetails().getStyle() != null){
-				PatientDetails patientDetails = printSettings.getHeaderSetup().getPatientDetails();
-				boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), patientDetails.getStyle().getFontStyle());
-				boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), patientDetails.getStyle().getFontStyle());
-				String fontSize = patientDetails.getStyle().getFontSize();
-				if((fontSize!= null) && (!fontSize.equalsIgnoreCase("10pt") || !fontSize.equalsIgnoreCase("11pt") || !fontSize.equalsIgnoreCase("12pt")	|| !fontSize.equalsIgnoreCase("13pt") || !fontSize.equalsIgnoreCase("14pt") || !fontSize.equalsIgnoreCase("15pt")))
-					fontSize = "10pt";
-				
-				if (isItalic){
-					patientName = "<i>" + patientName + "</i>";pid = "<i>" + pid + "</i>";dob = "<i>" + dob + "</i>";
-					gender = "<i>" + gender + "</i>";mobileNumber = "<i>" + mobileNumber + "</i>";refferedBy = "<i>" + refferedBy + "</i>";
-					date = "<i>" + date + "</i>";resourceId = "<i>" + resourceId + "</i>";
-				}
-				if (isBold){
-					patientName = "<b>" + patientName + "</b>";pid = "<b>" + pid + "</b>";dob = "<b>" + dob + "</b>";
-					gender = "<b>" + gender + "</b>";mobileNumber = "<b>" + mobileNumber + "</b>";refferedBy = "<b>" + refferedBy + "</b>";
-					date = "<b>" + date + "</b>";resourceId = "<b>" + resourceId + "</b>";
-				}
-				patientName = "<span style='font-size:" + fontSize + "'>" + patientName + "</span>";pid = "<span style='font-size:" + fontSize + "'>" + pid + "</span>";
-				dob = "<span style='font-size:" + fontSize + "'>" + dob + "</span>";
-				gender = "<span style='font-size:" + fontSize + "'>" + gender + "</span>";
-				mobileNumber = "<span style='font-size:" + fontSize + "'>" + mobileNumber + "</span>";
-				refferedBy = "<span style='font-size:" + fontSize + "'>" + refferedBy + "</span>";
-				date = "<span style='font-size:" + fontSize + "'>" + date + "</span>";
-				resourceId = "<span style='font-size:" + fontSize + "'>" + resourceId + "</span>";
+			parameters.put("logoURL", new File(logoURL).exists() ? logoURL : "");
+
+			if (printSettings.getHeaderSetup() != null && printSettings.getHeaderSetup().getPatientDetails() != null
+				&& printSettings.getHeaderSetup().getPatientDetails().getStyle() != null) {
+			    PatientDetails patientDetails = printSettings.getHeaderSetup().getPatientDetails();
+			    boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), patientDetails.getStyle().getFontStyle());
+			    boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), patientDetails.getStyle().getFontStyle());
+			    String fontSize = patientDetails.getStyle().getFontSize();
+			    if ((fontSize != null)
+				    && (!fontSize.equalsIgnoreCase("10pt") || !fontSize.equalsIgnoreCase("11pt") || !fontSize.equalsIgnoreCase("12pt")
+					    || !fontSize.equalsIgnoreCase("13pt") || !fontSize.equalsIgnoreCase("14pt") || !fontSize.equalsIgnoreCase("15pt")))
+				fontSize = "10pt";
+
+			    if (isItalic) {
+				patientName = "<i>" + patientName + "</i>";
+				pid = "<i>" + pid + "</i>";
+				dob = "<i>" + dob + "</i>";
+				gender = "<i>" + gender + "</i>";
+				mobileNumber = "<i>" + mobileNumber + "</i>";
+				refferedBy = "<i>" + refferedBy + "</i>";
+				date = "<i>" + date + "</i>";
+				resourceId = "<i>" + resourceId + "</i>";
+			    }
+			    if (isBold) {
+				patientName = "<b>" + patientName + "</b>";
+				pid = "<b>" + pid + "</b>";
+				dob = "<b>" + dob + "</b>";
+				gender = "<b>" + gender + "</b>";
+				mobileNumber = "<b>" + mobileNumber + "</b>";
+				refferedBy = "<b>" + refferedBy + "</b>";
+				date = "<b>" + date + "</b>";
+				resourceId = "<b>" + resourceId + "</b>";
+			    }
+			    patientName = "<span style='font-size:" + fontSize + "'>" + patientName + "</span>";
+			    pid = "<span style='font-size:" + fontSize + "'>" + pid + "</span>";
+			    dob = "<span style='font-size:" + fontSize + "'>" + dob + "</span>";
+			    gender = "<span style='font-size:" + fontSize + "'>" + gender + "</span>";
+			    mobileNumber = "<span style='font-size:" + fontSize + "'>" + mobileNumber + "</span>";
+			    refferedBy = "<span style='font-size:" + fontSize + "'>" + refferedBy + "</span>";
+			    date = "<span style='font-size:" + fontSize + "'>" + date + "</span>";
+			    resourceId = "<span style='font-size:" + fontSize + "'>" + resourceId + "</span>";
+			}
 		    }
-		    }
-		    
+
 		    UserCollection doctorUser = userRepository.findOne(patientVisitCollection.getDoctorId());
 		    if (doctorUser != null)
 			parameters.put("footerSignature", doctorUser.getTitle() + " " + doctorUser.getFirstName());
-		    
+
 		    parameters.put("patientLeftText", patientName + pid + dob + gender);
-			parameters.put("patientRightText",mobileNumber+ refferedBy+date+resourceId);
-			parameters.put("headerLeftText", headerLeftText);
+		    parameters.put("patientRightText", mobileNumber + refferedBy + date + resourceId);
+		    parameters.put("headerLeftText", headerLeftText);
 		    parameters.put("headerRightText", headerRightText);
 		    parameters.put("footerBottomText", footerBottomText);
 
@@ -877,20 +900,21 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    if (prescriptionCollection != null) {
 		prescriptionItemsObj.put("advice", prescriptionCollection.getAdvice() != null ? prescriptionCollection.getAdvice() : "----");
 		if (prescriptionCollection.getTests() != null && !prescriptionCollection.getTests().isEmpty()) {
-		    String labTest = "";  int i = 1;
+		    String labTest = "";
+		    int i = 1;
 		    for (TestAndRecordData tests : prescriptionCollection.getTests()) {
-		    	LabTestCollection labTestCollection = labTestRepository.findOne(tests.getLabTestId());
+			LabTestCollection labTestCollection = labTestRepository.findOne(tests.getLabTestId());
 			if (labTestCollection.getTestId() != null) {
-				DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(labTestCollection.getTestId());
-				if(diagnosticTestCollection != null){
-				    labTest = labTest + i + ") " + diagnosticTestCollection.getTestName() + "<br>";
-				    i++;	
-				}
+			    DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(labTestCollection.getTestId());
+			    if (diagnosticTestCollection != null) {
+				labTest = labTest + i + ") " + diagnosticTestCollection.getTestName() + "<br>";
+				i++;
+			    }
 			}
 		    }
 		    prescriptionItemsObj.put("labTest", labTest);
 		} else {
-			prescriptionItemsObj.put("labTest", null);
+		    prescriptionItemsObj.put("labTest", null);
 		}
 		if (prescriptionCollection.getDoctorId() != null && prescriptionCollection.getHospitalId() != null
 			&& prescriptionCollection.getLocationId() != null) {
@@ -1076,33 +1100,34 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	List<PatientVisit> response = null;
 	List<PatientVisitCollection> patientVisitCollections = null;
 	try {
-		List<VisitedFor> visitedFors = new ArrayList<VisitedFor>();
-		visitedFors.add(VisitedFor.CLINICAL_NOTES);
-		visitedFors.add(VisitedFor.PRESCRIPTION);
-		visitedFors.add(VisitedFor.REPORTS);
+	    List<VisitedFor> visitedFors = new ArrayList<VisitedFor>();
+	    visitedFors.add(VisitedFor.CLINICAL_NOTES);
+	    visitedFors.add(VisitedFor.PRESCRIPTION);
+	    visitedFors.add(VisitedFor.REPORTS);
 	    long createdTimestamp = Long.parseLong(updatedTime);
 	    if (!isOTPVerified) {
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
-			patientVisitCollections = patientVisitRepository.find(doctorId, patientId, visitedFors, new Date(createdTimestamp), new PageRequest(page, size,
-				Direction.DESC, "updatedTime"));
+			patientVisitCollections = patientVisitRepository.find(doctorId, patientId, visitedFors, new Date(createdTimestamp), new PageRequest(
+				page, size, Direction.DESC, "updatedTime"));
 		    else
-			patientVisitCollections = patientVisitRepository.find(doctorId, patientId, visitedFors, new Date(createdTimestamp), new Sort(Sort.Direction.DESC,
-				"updatedTime"));
+			patientVisitCollections = patientVisitRepository.find(doctorId, patientId, visitedFors, new Date(createdTimestamp), new Sort(
+				Sort.Direction.DESC, "updatedTime"));
 		} else {
 		    if (size > 0)
-			patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, visitedFors, new Date(createdTimestamp),
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, visitedFors, new Date(
+				createdTimestamp), new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, visitedFors, new Date(createdTimestamp),
-				new Sort(Sort.Direction.DESC, "updatedTime"));
+			patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, visitedFors, new Date(
+				createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
 		}
 	    } else {
 		if (size > 0)
-		    patientVisitCollections = patientVisitRepository.find(patientId, visitedFors, new Date(createdTimestamp), new PageRequest(page, size, Direction.DESC,
-			    "updatedTime"));
+		    patientVisitCollections = patientVisitRepository.find(patientId, visitedFors, new Date(createdTimestamp), new PageRequest(page, size,
+			    Direction.DESC, "updatedTime"));
 		else
-		    patientVisitCollections = patientVisitRepository.find(patientId, visitedFors, new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+		    patientVisitCollections = patientVisitRepository.find(patientId, visitedFors, new Date(createdTimestamp), new Sort(Sort.Direction.DESC,
+			    "updatedTime"));
 	    }
 	    if (patientVisitCollections != null) {
 		response = new ArrayList<PatientVisit>();
@@ -1160,14 +1185,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     public int getVisitCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified) {
 	Integer visitCount = 0;
 	try {
-		List<VisitedFor> visitedFors = new ArrayList<VisitedFor>();
-		visitedFors.add(VisitedFor.CLINICAL_NOTES);
-		visitedFors.add(VisitedFor.PRESCRIPTION);
-		visitedFors.add(VisitedFor.REPORTS);
-	    if(isOTPVerified)
-	    	visitCount = patientVisitRepository.getVisitCount(patientId, visitedFors, false);
+	    List<VisitedFor> visitedFors = new ArrayList<VisitedFor>();
+	    visitedFors.add(VisitedFor.CLINICAL_NOTES);
+	    visitedFors.add(VisitedFor.PRESCRIPTION);
+	    visitedFors.add(VisitedFor.REPORTS);
+	    if (isOTPVerified)
+		visitCount = patientVisitRepository.getVisitCount(patientId, visitedFors, false);
 	    else
-	    	visitCount = patientVisitRepository.getVisitCount(doctorId, patientId, hospitalId, locationId, visitedFors, false);
+		visitCount = patientVisitRepository.getVisitCount(doctorId, patientId, hospitalId, locationId, visitedFors, false);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error while getting Visits Count");

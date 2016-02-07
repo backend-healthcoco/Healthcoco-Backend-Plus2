@@ -6,8 +6,8 @@ import com.dpdocter.beans.Role;
 
 public class ClinicDoctorResponse {
 
-	private String userId;
-	
+    private String userId;
+
     private String firstName;
 
     private Role role;
@@ -17,16 +17,16 @@ public class ClinicDoctorResponse {
     private Date lastSession;
 
     private Boolean discarded = false;
-    
+
     public String getUserId() {
-		return userId;
-	}
+	return userId;
+    }
 
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
+    public void setUserId(String userId) {
+	this.userId = userId;
+    }
 
-	public String getFirstName() {
+    public String getFirstName() {
 	return firstName;
     }
 
@@ -58,18 +58,18 @@ public class ClinicDoctorResponse {
 	this.lastSession = lastSession;
     }
 
-	public Boolean getDiscarded() {
-		return discarded;
-	}
+    public Boolean getDiscarded() {
+	return discarded;
+    }
 
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
 
-	@Override
-	public String toString() {
-		return "ClinicDoctorResponse [userId=" + userId + ", firstName=" + firstName + ", role=" + role
-				+ ", isActivate=" + isActivate + ", lastSession=" + lastSession + ", discarded=" + discarded + "]";
-	}
+    @Override
+    public String toString() {
+	return "ClinicDoctorResponse [userId=" + userId + ", firstName=" + firstName + ", role=" + role + ", isActivate=" + isActivate + ", lastSession="
+		+ lastSession + ", discarded=" + discarded + "]";
+    }
 
 }

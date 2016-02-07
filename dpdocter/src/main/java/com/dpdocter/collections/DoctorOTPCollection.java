@@ -35,25 +35,24 @@ public class DoctorOTPCollection extends GenericCollection {
 	this.otpId = otpId;
     }
 
-	public String getUserLocationId() {
-		return userLocationId;
-	}
+    public String getUserLocationId() {
+	return userLocationId;
+    }
 
-	public void setUserLocationId(String userLocationId) {
-		this.userLocationId = userLocationId;
-	}
+    public void setUserLocationId(String userLocationId) {
+	this.userLocationId = userLocationId;
+    }
 
-	public String getPatientId() {
-		return patientId;
-	}
+    public String getPatientId() {
+	return patientId;
+    }
 
-	public void setPatientId(String patientId) {
-		this.patientId = patientId;
-	}
+    public void setPatientId(String patientId) {
+	this.patientId = patientId;
+    }
 
-	@Override
-	public String toString() {
-		return "DoctorOTPCollection [id=" + id + ", otpId=" + otpId + ", userLocationId=" + userLocationId
-				+ ", patientId=" + patientId + "]";
-	}
+    @Override
+    public String toString() {
+	return "DoctorOTPCollection [id=" + id + ", otpId=" + otpId + ", userLocationId=" + userLocationId + ", patientId=" + patientId + "]";
+    }
 }

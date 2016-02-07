@@ -235,12 +235,13 @@ public class DoctorProfile {
 
     @Override
     public String toString() {
-	return "DoctorProfile [id=" + id + ", userId=" + userId + ", title=" + title + ", firstName=" + firstName + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl=" + imageUrl
-		+ ", thumbnailUrl=" + thumbnailUrl + ", dob=" + dob + ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl
-		+ ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses=" + otherEmailAddresses + ", experience=" + experience + ", education="
-		+ education + ", specialities=" + specialities + ", achievements=" + achievements + ", professionalStatement=" + professionalStatement
-		+ ", registrationDetails=" + registrationDetails + ", experienceDetails=" + experienceDetails + ", professionalMemberships="
-		+ professionalMemberships + ", clinicProfile=" + clinicProfile + "]";
+	return "DoctorProfile [id=" + id + ", userId=" + userId + ", title=" + title + ", firstName=" + firstName + ", emailAddress=" + emailAddress
+		+ ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", dob=" + dob
+		+ ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", additionalNumbers=" + additionalNumbers
+		+ ", otherEmailAddresses=" + otherEmailAddresses + ", experience=" + experience + ", education=" + education + ", specialities=" + specialities
+		+ ", achievements=" + achievements + ", professionalStatement=" + professionalStatement + ", registrationDetails=" + registrationDetails
+		+ ", experienceDetails=" + experienceDetails + ", professionalMemberships=" + professionalMemberships + ", clinicProfile=" + clinicProfile
+		+ "]";
     }
 
 }

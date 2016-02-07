@@ -6,7 +6,7 @@ import com.dpdocter.solr.beans.SolrLabTest;
 
 public class LabResponse {
 
-	private String locationId;
+    private String locationId;
 
     private String locationName;
 
@@ -41,201 +41,198 @@ public class LabResponse {
     private List<String> specialization;
 
     private Boolean isLab = false;
-    
+
     private Boolean isOnlineReportsAvailable = false;
-    
+
     private Boolean isNABLAccredited = false;
-    
+
     private Boolean isHomeServiceAvailable = false;
 
-    private SolrLabTest labTest ;
-    
-	public String getLocationId() {
-		return locationId;
-	}
+    private SolrLabTest labTest;
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	public String getLocationName() {
-		return locationName;
-	}
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
 
-	public void setLocationName(String locationName) {
-		this.locationName = locationName;
-	}
+    public String getLocationName() {
+	return locationName;
+    }
 
-	public String getCountry() {
-		return country;
-	}
+    public void setLocationName(String locationName) {
+	this.locationName = locationName;
+    }
 
-	public void setCountry(String country) {
-		this.country = country;
-	}
+    public String getCountry() {
+	return country;
+    }
 
-	public String getState() {
-		return state;
-	}
+    public void setCountry(String country) {
+	this.country = country;
+    }
 
-	public void setState(String state) {
-		this.state = state;
-	}
+    public String getState() {
+	return state;
+    }
 
-	public String getCity() {
-		return city;
-	}
+    public void setState(String state) {
+	this.state = state;
+    }
 
-	public void setCity(String city) {
-		this.city = city;
-	}
+    public String getCity() {
+	return city;
+    }
 
-	public String getLocationPhoneNumber() {
-		return locationPhoneNumber;
-	}
+    public void setCity(String city) {
+	this.city = city;
+    }
 
-	public void setLocationPhoneNumber(String locationPhoneNumber) {
-		this.locationPhoneNumber = locationPhoneNumber;
-	}
+    public String getLocationPhoneNumber() {
+	return locationPhoneNumber;
+    }
 
-	public String getPostalCode() {
-		return postalCode;
-	}
+    public void setLocationPhoneNumber(String locationPhoneNumber) {
+	this.locationPhoneNumber = locationPhoneNumber;
+    }
 
-	public void setPostalCode(String postalCode) {
-		this.postalCode = postalCode;
-	}
+    public String getPostalCode() {
+	return postalCode;
+    }
 
-	public String getWebsiteUrl() {
-		return websiteUrl;
-	}
+    public void setPostalCode(String postalCode) {
+	this.postalCode = postalCode;
+    }
 
-	public void setWebsiteUrl(String websiteUrl) {
-		this.websiteUrl = websiteUrl;
-	}
+    public String getWebsiteUrl() {
+	return websiteUrl;
+    }
 
-	public Double getLatitude() {
-		return latitude;
-	}
+    public void setWebsiteUrl(String websiteUrl) {
+	this.websiteUrl = websiteUrl;
+    }
 
-	public void setLatitude(Double latitude) {
-		this.latitude = latitude;
-	}
+    public Double getLatitude() {
+	return latitude;
+    }
 
-	public Double getLongitude() {
-		return longitude;
-	}
+    public void setLatitude(Double latitude) {
+	this.latitude = latitude;
+    }
 
-	public void setLongitude(Double longitude) {
-		this.longitude = longitude;
-	}
+    public Double getLongitude() {
+	return longitude;
+    }
 
-	public String getLandmarkDetails() {
-		return landmarkDetails;
-	}
+    public void setLongitude(Double longitude) {
+	this.longitude = longitude;
+    }
 
-	public void setLandmarkDetails(String landmarkDetails) {
-		this.landmarkDetails = landmarkDetails;
-	}
+    public String getLandmarkDetails() {
+	return landmarkDetails;
+    }
 
-	public String getLocationEmailAddress() {
-		return locationEmailAddress;
-	}
+    public void setLandmarkDetails(String landmarkDetails) {
+	this.landmarkDetails = landmarkDetails;
+    }
 
-	public void setLocationEmailAddress(String locationEmailAddress) {
-		this.locationEmailAddress = locationEmailAddress;
-	}
+    public String getLocationEmailAddress() {
+	return locationEmailAddress;
+    }
 
-	public String getStreetAddress() {
-		return streetAddress;
-	}
+    public void setLocationEmailAddress(String locationEmailAddress) {
+	this.locationEmailAddress = locationEmailAddress;
+    }
 
-	public void setStreetAddress(String streetAddress) {
-		this.streetAddress = streetAddress;
-	}
+    public String getStreetAddress() {
+	return streetAddress;
+    }
 
-	public String getLocality() {
-		return locality;
-	}
+    public void setStreetAddress(String streetAddress) {
+	this.streetAddress = streetAddress;
+    }
 
-	public void setLocality(String locality) {
-		this.locality = locality;
-	}
+    public String getLocality() {
+	return locality;
+    }
 
-	public String getMobileNumber() {
-		return mobileNumber;
-	}
+    public void setLocality(String locality) {
+	this.locality = locality;
+    }
 
-	public void setMobileNumber(String mobileNumber) {
-		this.mobileNumber = mobileNumber;
-	}
+    public String getMobileNumber() {
+	return mobileNumber;
+    }
 
-	public String getAlternateNumber() {
-		return alternateNumber;
-	}
+    public void setMobileNumber(String mobileNumber) {
+	this.mobileNumber = mobileNumber;
+    }
 
-	public void setAlternateNumber(String alternateNumber) {
-		this.alternateNumber = alternateNumber;
-	}
+    public String getAlternateNumber() {
+	return alternateNumber;
+    }
 
-	public List<String> getSpecialization() {
-		return specialization;
-	}
+    public void setAlternateNumber(String alternateNumber) {
+	this.alternateNumber = alternateNumber;
+    }
 
-	public void setSpecialization(List<String> specialization) {
-		this.specialization = specialization;
-	}
+    public List<String> getSpecialization() {
+	return specialization;
+    }
 
-	public Boolean getIsLab() {
-		return isLab;
-	}
+    public void setSpecialization(List<String> specialization) {
+	this.specialization = specialization;
+    }
 
-	public void setIsLab(Boolean isLab) {
-		this.isLab = isLab;
-	}
+    public Boolean getIsLab() {
+	return isLab;
+    }
 
-	public Boolean getIsOnlineReportsAvailable() {
-		return isOnlineReportsAvailable;
-	}
+    public void setIsLab(Boolean isLab) {
+	this.isLab = isLab;
+    }
 
-	public void setIsOnlineReportsAvailable(Boolean isOnlineReportsAvailable) {
-		this.isOnlineReportsAvailable = isOnlineReportsAvailable;
-	}
+    public Boolean getIsOnlineReportsAvailable() {
+	return isOnlineReportsAvailable;
+    }
 
-	public Boolean getIsNABLAccredited() {
-		return isNABLAccredited;
-	}
+    public void setIsOnlineReportsAvailable(Boolean isOnlineReportsAvailable) {
+	this.isOnlineReportsAvailable = isOnlineReportsAvailable;
+    }
 
-	public void setIsNABLAccredited(Boolean isNABLAccredited) {
-		this.isNABLAccredited = isNABLAccredited;
-	}
+    public Boolean getIsNABLAccredited() {
+	return isNABLAccredited;
+    }
 
-	public Boolean getIsHomeServiceAvailable() {
-		return isHomeServiceAvailable;
-	}
+    public void setIsNABLAccredited(Boolean isNABLAccredited) {
+	this.isNABLAccredited = isNABLAccredited;
+    }
 
-	public void setIsHomeServiceAvailable(Boolean isHomeServiceAvailable) {
-		this.isHomeServiceAvailable = isHomeServiceAvailable;
-	}
+    public Boolean getIsHomeServiceAvailable() {
+	return isHomeServiceAvailable;
+    }
 
-	public SolrLabTest getLabTest() {
-		return labTest;
-	}
+    public void setIsHomeServiceAvailable(Boolean isHomeServiceAvailable) {
+	this.isHomeServiceAvailable = isHomeServiceAvailable;
+    }
 
-	public void setLabTest(SolrLabTest labTest) {
-		this.labTest = labTest;
-	}
+    public SolrLabTest getLabTest() {
+	return labTest;
+    }
 
-	@Override
-	public String toString() {
-		return "LabResponse [locationId=" + locationId + ", locationName=" + locationName + ", country=" + country
-				+ ", state=" + state + ", city=" + city + ", locationPhoneNumber=" + locationPhoneNumber
-				+ ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", latitude=" + latitude
-				+ ", longitude=" + longitude + ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress="
-				+ locationEmailAddress + ", streetAddress=" + streetAddress + ", locality=" + locality
-				+ ", mobileNumber=" + mobileNumber + ", alternateNumber=" + alternateNumber + ", specialization="
-				+ specialization + ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable
-				+ ", isNABLAccredited=" + isNABLAccredited + ", isHomeServiceAvailable=" + isHomeServiceAvailable
-				+ ", labTest=" + labTest + "]";
-	}
+    public void setLabTest(SolrLabTest labTest) {
+	this.labTest = labTest;
+    }
+
+    @Override
+    public String toString() {
+	return "LabResponse [locationId=" + locationId + ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city
+		+ ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", latitude=" + latitude
+		+ ", longitude=" + longitude + ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress=" + locationEmailAddress + ", streetAddress="
+		+ streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber + ", alternateNumber=" + alternateNumber + ", specialization="
+		+ specialization + ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
+		+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", labTest=" + labTest + "]";
+    }
 }

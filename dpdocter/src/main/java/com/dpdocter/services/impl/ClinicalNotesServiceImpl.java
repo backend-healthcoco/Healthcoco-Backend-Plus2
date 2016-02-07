@@ -92,7 +92,6 @@ import com.dpdocter.solr.document.SolrObservationsDocument;
 import com.dpdocter.solr.services.SolrClinicalNotesService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -157,8 +156,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     @Autowired
     private PatientVisitRepository patientVisitRepository;
 
-     @Autowired
-     private ReferenceRepository referenceRepository;
+    @Autowired
+    private ReferenceRepository referenceRepository;
 
     @Value(value = "${IMAGE_URL_ROOT_PATH}")
     private String imageUrlRootPath;
@@ -304,7 +303,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    clinicalNotesCollection.setCreatedTime(createdTime);
 	    UserCollection userCollection = userRepository.findOne(clinicalNotesCollection.getDoctorId());
 	    if (userCollection != null) {
-		clinicalNotesCollection.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());
+		clinicalNotesCollection
+			.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
 	    }
 	    clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
 
@@ -332,13 +332,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    List<Diagnoses> diagnoses = IteratorUtils.toList(diagnosisRepository.findAll(diagnosisIds).iterator());
 	    List<Notes> notes = IteratorUtils.toList(notesRepository.findAll(noteIds).iterator());
 	    List<DiagramsCollection> diagramsCollections = IteratorUtils.toList(diagramsRepository.findAll(diagramIds).iterator());
-	    List<Diagram>  diagrams = new ArrayList<Diagram>();
-	    if(diagramsCollections!= null){
-	    	for(DiagramsCollection collection : diagramsCollections){
-	    		Diagram diagram = new Diagram();
-		    	BeanUtil.map(collection, diagram);
-		    	diagrams.add(diagram);
-	    	}
+	    List<Diagram> diagrams = new ArrayList<Diagram>();
+	    if (diagramsCollections != null) {
+		for (DiagramsCollection collection : diagramsCollections) {
+		    Diagram diagram = new Diagram();
+		    BeanUtil.map(collection, diagram);
+		    diagrams.add(diagram);
+		}
 	    }
 	    clinicalNotes.setComplaints(complaints);
 	    clinicalNotes.setInvestigations(investigations);
@@ -625,11 +625,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    patientClinicalNotesCollection.setClinicalNotesId(clinicalNotesCollection.getId());
 		    patientClinicalNotesCollection.setPatientId(request.getPatientId());
 		    patientClinicalNotesRepository.save(patientClinicalNotesCollection);
-		}
-		else{
-			PatientClinicalNotesCollection patientClinicalNotesCollection = patientClinicalNotesRepository.findByPatientIdClinicalNotesId(request.getPatientId(),clinicalNotesCollection.getId());
-			patientClinicalNotesCollection.setUpdatedTime(new Date());
-			patientClinicalNotesRepository.save(patientClinicalNotesCollection);
+		} else {
+		    PatientClinicalNotesCollection patientClinicalNotesCollection = patientClinicalNotesRepository.findByPatientIdClinicalNotesId(
+			    request.getPatientId(), clinicalNotesCollection.getId());
+		    patientClinicalNotesCollection.setUpdatedTime(new Date());
+		    patientClinicalNotesRepository.save(patientClinicalNotesCollection);
 		}
 
 	    }
@@ -644,13 +644,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    List<Diagnoses> diagnoses = IteratorUtils.toList(diagnosisRepository.findAll(diagnosisIds).iterator());
 	    List<Notes> notes = IteratorUtils.toList(notesRepository.findAll(noteIds).iterator());
 	    List<DiagramsCollection> diagramsCollections = IteratorUtils.toList(diagramsRepository.findAll(diagramIds).iterator());
-	    List<Diagram>  diagrams = new ArrayList<Diagram>();
-	    if(diagramsCollections!= null){
-	    	for(DiagramsCollection collection : diagramsCollections){
-	    		Diagram diagram = new Diagram();
-		    	BeanUtil.map(collection, diagram);
-		    	diagrams.add(diagram);
-	    	}
+	    List<Diagram> diagrams = new ArrayList<Diagram>();
+	    if (diagramsCollections != null) {
+		for (DiagramsCollection collection : diagramsCollections) {
+		    Diagram diagram = new Diagram();
+		    BeanUtil.map(collection, diagram);
+		    diagrams.add(diagram);
+		}
 	    }
 
 	    clinicalNotes.setComplaints(complaints);
@@ -710,8 +710,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, discards, new Date(createdTimeStamp),
 			new PageRequest(page, size, Direction.DESC, "updatedTime"));
 	    else
-		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, discards, new Date(createdTimeStamp),
-			new Sort(Sort.Direction.DESC, "updatedTime"));
+		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, discards, new Date(createdTimeStamp), new Sort(
+			Sort.Direction.DESC, "updatedTime"));
 
 	    if (patientClinicalNotesCollections != null) {
 		@SuppressWarnings("unchecked")
@@ -721,11 +721,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		for (String clinicalNotesId : clinicalNotesIds) {
 		    ClinicalNotes clinicalNotes = getNotesById(clinicalNotesId);
 		    if (clinicalNotes != null) {
-		    	clinicalNotes.setPatientId(patientId);
-		    if (!inHistory)
-				    clinicalNotesList.add(clinicalNotes);
+			clinicalNotes.setPatientId(patientId);
+			if (!inHistory)
+			    clinicalNotesList.add(clinicalNotes);
 			else if (clinicalNotes.isInHistory())
-				    clinicalNotesList.add(clinicalNotes);
+			    clinicalNotesList.add(clinicalNotes);
 		    }
 		}
 	    } else {
@@ -1144,13 +1144,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	List<ClinicalNotesCollection> clinicalNotesCollections = null;
 	Integer clinicalNotesCount = 0;
 	try {
-	    if(isOTPVerified){
-	    	clinicalNotesCount = patientClinicalNotesRepository.findCount(patientId);
-	    }else{
-	    	clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(doctorId, hospitalId, locationId);
-		    @SuppressWarnings("unchecked")
-		    List<String> clinicalNotesIds = (List<String>) CollectionUtils.collect(clinicalNotesCollections, new BeanToPropertyValueTransformer("id"));
-		    clinicalNotesCount = patientClinicalNotesRepository.findCount(patientId, clinicalNotesIds);
+	    if (isOTPVerified) {
+		clinicalNotesCount = patientClinicalNotesRepository.findCount(patientId);
+	    } else {
+		clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(doctorId, hospitalId, locationId);
+		@SuppressWarnings("unchecked")
+		List<String> clinicalNotesIds = (List<String>) CollectionUtils.collect(clinicalNotesCollections, new BeanToPropertyValueTransformer("id"));
+		clinicalNotesCount = patientClinicalNotesRepository.findCount(patientId, clinicalNotesIds);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -2170,40 +2170,46 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    throw new BusinessException(ServiceError.NotFound, "Clinical Notes Id, doctorId, location Id, hospital Id does not match");
 		}
 
-		String patientName = "", dob = "", gender = "", mobileNumber = "", refferedBy ="", pid="", date="", resourceId="";
-		if(patientAdmission != null && patientAdmission.getReferredBy() != null){
-			ReferencesCollection referencesCollection = referenceRepository.findOne(patientAdmission.getReferredBy());
-			if(referencesCollection != null)refferedBy = referencesCollection.getReference();
+		String patientName = "", dob = "", gender = "", mobileNumber = "", refferedBy = "", pid = "", date = "", resourceId = "";
+		if (patientAdmission != null && patientAdmission.getReferredBy() != null) {
+		    ReferencesCollection referencesCollection = referenceRepository.findOne(patientAdmission.getReferredBy());
+		    if (referencesCollection != null)
+			refferedBy = referencesCollection.getReference();
 		}
 		patientName = "Patient Name: " + (user != null ? user.getFirstName() : "--") + "<br>";
 		dob = "Patient Age: " + ((patient != null && patient.getDob() != null) ? (patient.getDob().getAge() + " years") : "--") + "<br>";
 		gender = "Patient Gender: " + (patient != null ? patient.getGender() : "--") + "<br>";
 		mobileNumber = "Mobile Number: " + (user != null ? user.getMobileNumber() : "--") + "<br>";
-		pid= "Patient Id: " + (patient != null ? patient.getPID() : "--") + "<br>";
-		refferedBy = "Reffered By: "+ (refferedBy != "" ? refferedBy : "--") + "<br>";
-		date = "Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date())+"<br>";
+		pid = "Patient Id: " + (patient != null ? patient.getPID() : "--") + "<br>";
+		refferedBy = "Reffered By: " + (refferedBy != "" ? refferedBy : "--") + "<br>";
+		date = "Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()) + "<br>";
 		resourceId = "ClinicalNotesId: " + (clinicalNotesCollection.getUniqueId() != null ? clinicalNotesCollection.getUniqueId() : "--") + "<br>";
-		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(doctorId, locationId, hospitalId, ComponentType.CLINICAL_NOTES.getType());
-		
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(doctorId, locationId, hospitalId,
+			ComponentType.CLINICAL_NOTES.getType());
+
 		if (printSettings == null) {
 		    printSettings = printSettingsRepository.getSettings(doctorId, locationId, hospitalId, ComponentType.ALL.getType());
-		}    
+		}
 
-		parameters.put("printSettingsId", printSettings != null ? printSettings.getId() :"");
+		parameters.put("printSettingsId", printSettings != null ? printSettings.getId() : "");
 		String headerLeftText = "", headerRightText = "", footerBottomText = "";
 		if (printSettings != null) {
 		    if (printSettings.getHeaderSetup() != null) {
 			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()) {
 
-				if((str.getFontSize()!= null) && (!str.getFontSize().equalsIgnoreCase("10pt") || !str.getFontSize().equalsIgnoreCase("11pt") || !str.getFontSize().equalsIgnoreCase("12pt")
-						|| !str.getFontSize().equalsIgnoreCase("13pt") || !str.getFontSize().equalsIgnoreCase("14pt") || !str.getFontSize().equalsIgnoreCase("15pt")))
-					str.setFontSize("10pt");
-				
+			    if ((str.getFontSize() != null)
+				    && (!str.getFontSize().equalsIgnoreCase("10pt") || !str.getFontSize().equalsIgnoreCase("11pt")
+					    || !str.getFontSize().equalsIgnoreCase("12pt") || !str.getFontSize().equalsIgnoreCase("13pt")
+					    || !str.getFontSize().equalsIgnoreCase("14pt") || !str.getFontSize().equalsIgnoreCase("15pt")))
+				str.setFontSize("10pt");
+
 			    boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 			    boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
 			    String text = str.getText();
-			    if (isItalic)text = "<i>" + text + "</i>";
-				if (isBold)text = "<b>" + text + "</b>";
+			    if (isItalic)
+				text = "<i>" + text + "</i>";
+			    if (isBold)
+				text = "<b>" + text + "</b>";
 
 			    if (headerLeftText.isEmpty())
 				headerLeftText = "<span style='font-size:" + str.getFontSize() + ";'>" + text + "</span>";
@@ -2212,14 +2218,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 
 			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText()) {
-				if((str.getFontSize()!= null) && (!str.getFontSize().equalsIgnoreCase("10pt") || !str.getFontSize().equalsIgnoreCase("11pt") || !str.getFontSize().equalsIgnoreCase("12pt")
-						|| !str.getFontSize().equalsIgnoreCase("13pt") || !str.getFontSize().equalsIgnoreCase("14pt") || !str.getFontSize().equalsIgnoreCase("15pt")))
-					str.setFontSize("10pt");
+			    if ((str.getFontSize() != null)
+				    && (!str.getFontSize().equalsIgnoreCase("10pt") || !str.getFontSize().equalsIgnoreCase("11pt")
+					    || !str.getFontSize().equalsIgnoreCase("12pt") || !str.getFontSize().equalsIgnoreCase("13pt")
+					    || !str.getFontSize().equalsIgnoreCase("14pt") || !str.getFontSize().equalsIgnoreCase("15pt")))
+				str.setFontSize("10pt");
 			    boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 			    boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
 			    String text = str.getText();
-			    if (isItalic)text = "<i>" + text + "</i>";
-				if (isBold)text = "<b>" + text + "</b>";
+			    if (isItalic)
+				text = "<i>" + text + "</i>";
+			    if (isBold)
+				text = "<b>" + text + "</b>";
 
 			    if (headerRightText.isEmpty())
 				headerRightText = "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
@@ -2231,59 +2241,77 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    if (printSettings.getFooterSetup() != null) {
 			if (printSettings.getFooterSetup().getCustomFooter())
 			    for (PrintSettingsText str : printSettings.getFooterSetup().getBottomText()) {
-			     if((str.getFontSize()!= null) && (!str.getFontSize().equalsIgnoreCase("10pt") || !str.getFontSize().equalsIgnoreCase("11pt") || !str.getFontSize().equalsIgnoreCase("12pt")
-							|| !str.getFontSize().equalsIgnoreCase("13pt") || !str.getFontSize().equalsIgnoreCase("14pt") || !str.getFontSize().equalsIgnoreCase("15pt")))
-						str.setFontSize("10pt");
-			    	
+				if ((str.getFontSize() != null)
+					&& (!str.getFontSize().equalsIgnoreCase("10pt") || !str.getFontSize().equalsIgnoreCase("11pt")
+						|| !str.getFontSize().equalsIgnoreCase("12pt") || !str.getFontSize().equalsIgnoreCase("13pt")
+						|| !str.getFontSize().equalsIgnoreCase("14pt") || !str.getFontSize().equalsIgnoreCase("15pt")))
+				    str.setFontSize("10pt");
+
 				boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 				boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
 				String text = str.getText();
-				if (isItalic)text = "<i>" + text + "</i>";
-				if (isBold)text = "<b>" + text + "</b>";
-				
+				if (isItalic)
+				    text = "<i>" + text + "</i>";
+				if (isBold)
+				    text = "<b>" + text + "</b>";
+
 				if (footerBottomText.isEmpty())
 				    footerBottomText = "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 				else
 				    footerBottomText = footerBottomText + "" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 			    }
 			String logoURL = getFinalImageURL(printSettings.getClinicLogoUrl(), uriInfo);
-		    parameters.put("logoURL", new File(logoURL).exists()?logoURL:"");
-		    
-		    if(printSettings.getHeaderSetup() != null && printSettings.getHeaderSetup().getPatientDetails() != null && printSettings.getHeaderSetup().getPatientDetails().getStyle() != null){
-				PatientDetails patientDetails = printSettings.getHeaderSetup().getPatientDetails();
-				boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), patientDetails.getStyle().getFontStyle());
-				boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), patientDetails.getStyle().getFontStyle());
-				String fontSize = patientDetails.getStyle().getFontSize();
-				if((fontSize!= null) && (!fontSize.equalsIgnoreCase("10pt") || !fontSize.equalsIgnoreCase("11pt") || !fontSize.equalsIgnoreCase("12pt")	|| !fontSize.equalsIgnoreCase("13pt") || !fontSize.equalsIgnoreCase("14pt") || !fontSize.equalsIgnoreCase("15pt")))
-					fontSize = "10pt";
-				
-				if (isItalic){
-					patientName = "<i>" + patientName + "</i>";pid = "<i>" + pid + "</i>";dob = "<i>" + dob + "</i>";
-					gender = "<i>" + gender + "</i>";mobileNumber = "<i>" + mobileNumber + "</i>";refferedBy = "<i>" + refferedBy + "</i>";
-					date = "<i>" + date + "</i>";resourceId = "<i>" + resourceId + "</i>";
-				}
-				if (isBold){
-					patientName = "<b>" + patientName + "</b>";pid = "<b>" + pid + "</b>";dob = "<b>" + dob + "</b>";
-					gender = "<b>" + gender + "</b>";mobileNumber = "<b>" + mobileNumber + "</b>";refferedBy = "<b>" + refferedBy + "</b>";
-					date = "<b>" + date + "</b>";resourceId = "<b>" + resourceId + "</b>";
-				}
-				patientName = "<span style='font-size:" + fontSize + "'>" + patientName + "</span>";pid = "<span style='font-size:" + fontSize + "'>" + pid + "</span>";
-				dob = "<span style='font-size:" + fontSize + "'>" + dob + "</span>";
-				gender = "<span style='font-size:" + fontSize + "'>" + gender + "</span>";
-				mobileNumber = "<span style='font-size:" + fontSize + "'>" + mobileNumber + "</span>";
-				refferedBy = "<span style='font-size:" + fontSize + "'>" + refferedBy + "</span>";
-				date = "<span style='font-size:" + fontSize + "'>" + date + "</span>";
-				resourceId = "<span style='font-size:" + fontSize + "'>" + resourceId + "</span>";
+			parameters.put("logoURL", new File(logoURL).exists() ? logoURL : "");
+
+			if (printSettings.getHeaderSetup() != null && printSettings.getHeaderSetup().getPatientDetails() != null
+				&& printSettings.getHeaderSetup().getPatientDetails().getStyle() != null) {
+			    PatientDetails patientDetails = printSettings.getHeaderSetup().getPatientDetails();
+			    boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), patientDetails.getStyle().getFontStyle());
+			    boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), patientDetails.getStyle().getFontStyle());
+			    String fontSize = patientDetails.getStyle().getFontSize();
+			    if ((fontSize != null)
+				    && (!fontSize.equalsIgnoreCase("10pt") || !fontSize.equalsIgnoreCase("11pt") || !fontSize.equalsIgnoreCase("12pt")
+					    || !fontSize.equalsIgnoreCase("13pt") || !fontSize.equalsIgnoreCase("14pt") || !fontSize.equalsIgnoreCase("15pt")))
+				fontSize = "10pt";
+
+			    if (isItalic) {
+				patientName = "<i>" + patientName + "</i>";
+				pid = "<i>" + pid + "</i>";
+				dob = "<i>" + dob + "</i>";
+				gender = "<i>" + gender + "</i>";
+				mobileNumber = "<i>" + mobileNumber + "</i>";
+				refferedBy = "<i>" + refferedBy + "</i>";
+				date = "<i>" + date + "</i>";
+				resourceId = "<i>" + resourceId + "</i>";
+			    }
+			    if (isBold) {
+				patientName = "<b>" + patientName + "</b>";
+				pid = "<b>" + pid + "</b>";
+				dob = "<b>" + dob + "</b>";
+				gender = "<b>" + gender + "</b>";
+				mobileNumber = "<b>" + mobileNumber + "</b>";
+				refferedBy = "<b>" + refferedBy + "</b>";
+				date = "<b>" + date + "</b>";
+				resourceId = "<b>" + resourceId + "</b>";
+			    }
+			    patientName = "<span style='font-size:" + fontSize + "'>" + patientName + "</span>";
+			    pid = "<span style='font-size:" + fontSize + "'>" + pid + "</span>";
+			    dob = "<span style='font-size:" + fontSize + "'>" + dob + "</span>";
+			    gender = "<span style='font-size:" + fontSize + "'>" + gender + "</span>";
+			    mobileNumber = "<span style='font-size:" + fontSize + "'>" + mobileNumber + "</span>";
+			    refferedBy = "<span style='font-size:" + fontSize + "'>" + refferedBy + "</span>";
+			    date = "<span style='font-size:" + fontSize + "'>" + date + "</span>";
+			    resourceId = "<span style='font-size:" + fontSize + "'>" + resourceId + "</span>";
+			}
 		    }
 		}
-	}  
-	
-		 UserCollection doctorUser = userRepository.findOne(doctorId);
-			if (doctorUser != null)
-			    parameters.put("footerSignature", doctorUser.getTitle() + " " + doctorUser.getFirstName());
-		
+
+		UserCollection doctorUser = userRepository.findOne(doctorId);
+		if (doctorUser != null)
+		    parameters.put("footerSignature", doctorUser.getTitle() + " " + doctorUser.getFirstName());
+
 		parameters.put("patientLeftText", patientName + pid + dob + gender);
-		parameters.put("patientRightText",mobileNumber+ refferedBy+date+resourceId);
+		parameters.put("patientRightText", mobileNumber + refferedBy + date + resourceId);
 		parameters.put("headerLeftText", headerLeftText);
 		parameters.put("headerRightText", headerRightText);
 		parameters.put("footerBottomText", footerBottomText);
@@ -2335,45 +2363,45 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return false;
     }
 
-	@Override
-	public List<ClinicalNotes> getClinicalNotes(String patientId, int page, int size, String updatedTime, Boolean discarded) {
-		List<ClinicalNotes> clinicalNotesList = null;
-		List<PatientClinicalNotesCollection> patientClinicalNotesCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
-		try {
-		    if (discarded)
-			discards[1] = true;
+    @Override
+    public List<ClinicalNotes> getClinicalNotes(String patientId, int page, int size, String updatedTime, Boolean discarded) {
+	List<ClinicalNotes> clinicalNotesList = null;
+	List<PatientClinicalNotesCollection> patientClinicalNotesCollections = null;
+	boolean[] discards = new boolean[2];
+	discards[0] = false;
+	try {
+	    if (discarded)
+		discards[1] = true;
 
-		    long createdTimeStamp = Long.parseLong(updatedTime);
-		    if (size > 0)
-			patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, discards, new Date(createdTimeStamp),
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
-		    else
-			patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, discards, new Date(createdTimeStamp),
-				new Sort(Sort.Direction.DESC, "updatedTime"));
+	    long createdTimeStamp = Long.parseLong(updatedTime);
+	    if (size > 0)
+		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, discards, new Date(createdTimeStamp),
+			new PageRequest(page, size, Direction.DESC, "updatedTime"));
+	    else
+		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, discards, new Date(createdTimeStamp), new Sort(
+			Sort.Direction.DESC, "updatedTime"));
 
-		    if (patientClinicalNotesCollections != null) {
-			@SuppressWarnings("unchecked")
-			Collection<String> clinicalNotesIds = CollectionUtils.collect(patientClinicalNotesCollections, new BeanToPropertyValueTransformer(
-				"clinicalNotesId"));
-			clinicalNotesList = new ArrayList<ClinicalNotes>();
-			for (String clinicalNotesId : clinicalNotesIds) {
-			    ClinicalNotes clinicalNotes = getNotesById(clinicalNotesId);
-			    if (clinicalNotes != null) {
-				clinicalNotes.setPatientId(patientId);
-				clinicalNotesList.add(clinicalNotes);
-			    }
-			}
-		    } else {
-			logger.warn("No Clinical Notes found for patient Id : " + patientId);
-			throw new BusinessException(ServiceError.NoRecord, "No Clinical Notes found for patient Id : " + patientId);
+	    if (patientClinicalNotesCollections != null) {
+		@SuppressWarnings("unchecked")
+		Collection<String> clinicalNotesIds = CollectionUtils.collect(patientClinicalNotesCollections, new BeanToPropertyValueTransformer(
+			"clinicalNotesId"));
+		clinicalNotesList = new ArrayList<ClinicalNotes>();
+		for (String clinicalNotesId : clinicalNotesIds) {
+		    ClinicalNotes clinicalNotes = getNotesById(clinicalNotesId);
+		    if (clinicalNotes != null) {
+			clinicalNotes.setPatientId(patientId);
+			clinicalNotesList.add(clinicalNotes);
 		    }
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 		}
-		return clinicalNotesList;
+	    } else {
+		logger.warn("No Clinical Notes found for patient Id : " + patientId);
+		throw new BusinessException(ServiceError.NoRecord, "No Clinical Notes found for patient Id : " + patientId);
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	}
+	return clinicalNotesList;
+    }
 }

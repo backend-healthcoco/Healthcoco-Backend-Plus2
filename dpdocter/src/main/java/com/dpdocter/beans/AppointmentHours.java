@@ -2,19 +2,19 @@ package com.dpdocter.beans;
 
 public class AppointmentHours {
 
-	private float from;
+    private float from;
 
     private float to;
 
     public AppointmentHours() {
-	}
+    }
 
-	public AppointmentHours(float from, float to) {
-		this.from = from;
-		this.to = to;
-	}
+    public AppointmentHours(float from, float to) {
+	this.from = from;
+	this.to = to;
+    }
 
-	public float getFrom() {
+    public float getFrom() {
 	return from;
     }
 

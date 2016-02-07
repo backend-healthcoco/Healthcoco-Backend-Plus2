@@ -30,38 +30,38 @@ public interface AppointmentService {
 
     Clinic getClinic(String locationId);
 
-    List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,	String to, int page, int size);
+    List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from, String to, int page, int size);
 
     List<Appointment> getPatientAppointments(String locationId, String doctorId, String patientId, String from, String to, int page, int size);
 
     Country addCountry(Country request);
 
-	State addState(State request);
+    State addState(State request);
 
-	Lab getLab(String locationId);
+    Lab getLab(String locationId);
 
-	List<Country> getCountries();
+    List<Country> getCountries();
 
-	List<State> getStates();
+    List<State> getStates();
 
     List<Slot> getTimeSlots(String doctorId, String locationId, Date date);
 
-	Appointment addAppointment(AppointmentRequest request);
+    Appointment addAppointment(AppointmentRequest request);
 
-	Appointment updateAppointment(AppointmentRequest request);
+    Appointment updateAppointment(AppointmentRequest request);
 
-	Appointment addEvent(EventRequest request);
+    Appointment addEvent(EventRequest request);
 
-	Appointment updateEvent(EventRequest request);
+    Appointment updateEvent(EventRequest request);
 
-	Boolean sendReminder(String appointmentId);
+    Boolean sendReminder(String appointmentId);
 
-	void importMaster();
+    void importMaster();
 
-	List<PatientQueue> addPatientInQueue(PatientQueueAddEditRequest request);
+    List<PatientQueue> addPatientInQueue(PatientQueueAddEditRequest request);
 
-	List<PatientQueue> rearrangePatientInQueue(String doctorId, String locationId, String hospitalId, String patientId, String appointmentId, int sequenceNo);
+    List<PatientQueue> rearrangePatientInQueue(String doctorId, String locationId, String hospitalId, String patientId, String appointmentId, int sequenceNo);
 
-	List<PatientQueue> getPatientQueue(String doctorId, String locationId, String hospitalId);
+    List<PatientQueue> getPatientQueue(String doctorId, String locationId, String hospitalId);
 
 }

@@ -2,7 +2,7 @@ package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
 
-public class Speciality extends GenericCollection{
+public class Speciality extends GenericCollection {
     private String id;
 
     private String speciality;

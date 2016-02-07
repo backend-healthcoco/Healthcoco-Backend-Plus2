@@ -279,16 +279,14 @@ public class PatientRegistrationRequest {
 	this.image = image;
     }
 
-	@Override
-	public String toString() {
-		return "PatientRegistrationRequest [userId=" + userId + ", firstName=" + firstName + ", mobileNumber="
-				+ mobileNumber + ", gender=" + gender + ", dob=" + dob + ", image=" + image + ", emailAddress="
-				+ emailAddress + ", groups=" + groups + ", bloodGroup=" + bloodGroup + ", profession=" + profession
-				+ ", relations=" + relations + ", secMobile=" + secMobile + ", adhaarId=" + adhaarId
-				+ ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId + ", insuranceId="
-				+ insuranceId + ", insuranceName=" + insuranceName + ", notes=" + notes + ", address=" + address
-				+ ", dateOfVisit=" + dateOfVisit + ", pastHistoryId=" + pastHistoryId + ", medicalHistoryId="
-				+ medicalHistoryId + ", patientNumber=" + patientNumber + ", referredBy=" + referredBy + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId + "]";
-	}
+    @Override
+    public String toString() {
+	return "PatientRegistrationRequest [userId=" + userId + ", firstName=" + firstName + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob="
+		+ dob + ", image=" + image + ", emailAddress=" + emailAddress + ", groups=" + groups + ", bloodGroup=" + bloodGroup + ", profession="
+		+ profession + ", relations=" + relations + ", secMobile=" + secMobile + ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber
+		+ ", drivingLicenseId=" + drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName=" + insuranceName + ", notes=" + notes
+		+ ", address=" + address + ", dateOfVisit=" + dateOfVisit + ", pastHistoryId=" + pastHistoryId + ", medicalHistoryId=" + medicalHistoryId
+		+ ", patientNumber=" + patientNumber + ", referredBy=" + referredBy + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+		+ ", doctorId=" + doctorId + "]";
+    }
 }

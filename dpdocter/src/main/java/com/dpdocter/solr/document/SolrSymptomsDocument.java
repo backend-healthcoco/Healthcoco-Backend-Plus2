@@ -7,42 +7,42 @@ import org.springframework.data.solr.core.mapping.SolrDocument;
 @SolrDocument(solrCoreName = "symptoms")
 public class SolrSymptomsDocument {
 
-		@Id
-	    @Field
-	    private String id;
+    @Id
+    @Field
+    private String id;
 
-	    @Field
-	    private String specialityId;
-	    
-	    @Field
-	    private String symptom;
+    @Field
+    private String specialityId;
 
-		public String getId() {
-			return id;
-		}
+    @Field
+    private String symptom;
 
-		public void setId(String id) {
-			this.id = id;
-		}
+    public String getId() {
+	return id;
+    }
 
-		public String getSpecialityId() {
-			return specialityId;
-		}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-		public void setSpecialityId(String specialityId) {
-			this.specialityId = specialityId;
-		}
+    public String getSpecialityId() {
+	return specialityId;
+    }
 
-		public String getSymptom() {
-			return symptom;
-		}
+    public void setSpecialityId(String specialityId) {
+	this.specialityId = specialityId;
+    }
 
-		public void setSymptom(String symptom) {
-			this.symptom = symptom;
-		}
+    public String getSymptom() {
+	return symptom;
+    }
 
-		@Override
-		public String toString() {
-			return "SolrSymptomsDocument [id=" + id + ", specialityId=" + specialityId + ", symptom=" + symptom + "]";
-		}
+    public void setSymptom(String symptom) {
+	this.symptom = symptom;
+    }
+
+    @Override
+    public String toString() {
+	return "SolrSymptomsDocument [id=" + id + ", specialityId=" + specialityId + ", symptom=" + symptom + "]";
+    }
 }

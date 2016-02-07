@@ -5,10 +5,8 @@ public class PatientSignupRequestMobile {
 
     private String password;
 
-
     private String mobileNumber;
-    
-    
+
     private boolean isNewPatientNeedToBeCreated;
 
     public String getName() {
@@ -27,7 +25,6 @@ public class PatientSignupRequestMobile {
 	this.password = password;
     }
 
-
     public String getMobileNumber() {
 	return mobileNumber;
     }
@@ -35,27 +32,19 @@ public class PatientSignupRequestMobile {
     public void setMobileNumber(String mobileNumber) {
 	this.mobileNumber = mobileNumber;
     }
-    
-    
 
-	public boolean isNewPatientNeedToBeCreated() {
-		return isNewPatientNeedToBeCreated;
-	}
+    public boolean isNewPatientNeedToBeCreated() {
+	return isNewPatientNeedToBeCreated;
+    }
 
-	public void setNewPatientNeedToBeCreated(boolean isNewPatientNeedToBeCreated) {
-		this.isNewPatientNeedToBeCreated = isNewPatientNeedToBeCreated;
-	}
+    public void setNewPatientNeedToBeCreated(boolean isNewPatientNeedToBeCreated) {
+	this.isNewPatientNeedToBeCreated = isNewPatientNeedToBeCreated;
+    }
 
-	@Override
-	public String toString() {
-		return "PatientSignupRequestMobile [name=" + name + ", password="
-				+ password + ", mobileNumber=" + mobileNumber
-				+ ", isNewPatientNeedToBeCreated="
-				+ isNewPatientNeedToBeCreated + "]";
-	}
-
-	
-
-    
+    @Override
+    public String toString() {
+	return "PatientSignupRequestMobile [name=" + name + ", password=" + password + ", mobileNumber=" + mobileNumber + ", isNewPatientNeedToBeCreated="
+		+ isNewPatientNeedToBeCreated + "]";
+    }
 
 }

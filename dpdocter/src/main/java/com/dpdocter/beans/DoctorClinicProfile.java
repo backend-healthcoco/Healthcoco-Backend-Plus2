@@ -145,54 +145,52 @@ public class DoctorClinicProfile {
 	this.locationName = locationName;
     }
 
-	public String getCountry() {
-		return country;
-	}
+    public String getCountry() {
+	return country;
+    }
 
-	public void setCountry(String country) {
-		this.country = country;
-	}
+    public void setCountry(String country) {
+	this.country = country;
+    }
 
-	public String getState() {
-		return state;
-	}
+    public String getState() {
+	return state;
+    }
 
-	public void setState(String state) {
-		this.state = state;
-	}
+    public void setState(String state) {
+	this.state = state;
+    }
 
-	public String getCity() {
-		return city;
-	}
+    public String getCity() {
+	return city;
+    }
 
-	public void setCity(String city) {
-		this.city = city;
-	}
+    public void setCity(String city) {
+	this.city = city;
+    }
 
-	public String getPostalCode() {
-		return postalCode;
-	}
+    public String getPostalCode() {
+	return postalCode;
+    }
 
-	public void setPostalCode(String postalCode) {
-		this.postalCode = postalCode;
-	}
+    public void setPostalCode(String postalCode) {
+	this.postalCode = postalCode;
+    }
 
-	public DoctorFacility getFacility() {
-		return facility;
-	}
+    public DoctorFacility getFacility() {
+	return facility;
+    }
 
-	public void setFacility(DoctorFacility facility) {
-		this.facility = facility;
-	}
+    public void setFacility(DoctorFacility facility) {
+	this.facility = facility;
+    }
 
-	@Override
-	public String toString() {
-		return "DoctorClinicProfile [id=" + id + ", locationId=" + locationId + ", clinicAddress=" + clinicAddress
-				+ ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city
-				+ ", postalCode=" + postalCode + ", patientInitial=" + patientInitial + ", patientCounter="
-				+ patientCounter + ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee="
-				+ consultationFee + ", appointmentSlot=" + appointmentSlot + ", workingSchedules=" + workingSchedules
-				+ ", facility=" + facility + ", images=" + images + ", logoUrl=" + logoUrl + ", logoThumbnailUrl="
-				+ logoThumbnailUrl + "]";
-	}
+    @Override
+    public String toString() {
+	return "DoctorClinicProfile [id=" + id + ", locationId=" + locationId + ", clinicAddress=" + clinicAddress + ", locationName=" + locationName
+		+ ", country=" + country + ", state=" + state + ", city=" + city + ", postalCode=" + postalCode + ", patientInitial=" + patientInitial
+		+ ", patientCounter=" + patientCounter + ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee=" + consultationFee
+		+ ", appointmentSlot=" + appointmentSlot + ", workingSchedules=" + workingSchedules + ", facility=" + facility + ", images=" + images
+		+ ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + "]";
+    }
 }

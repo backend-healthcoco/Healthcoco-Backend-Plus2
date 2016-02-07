@@ -15,7 +15,7 @@ public class AppointmentRequest {
     private String doctorId;
 
     private String locationId;
-    
+
     private String hospitalId;
 
     private String patientId;
@@ -33,24 +33,24 @@ public class AppointmentRequest {
     private Boolean notifyDoctorBySms;
 
     private Boolean notifyDoctorByEmail;
- 
+
     public String getAppointmentId() {
-		return appointmentId;
-	}
+	return appointmentId;
+    }
 
-	public void setAppointmentId(String appointmentId) {
-		this.appointmentId = appointmentId;
-	}
+    public void setAppointmentId(String appointmentId) {
+	this.appointmentId = appointmentId;
+    }
 
-	public AppointmentState getState() {
-		return state;
-	}
+    public AppointmentState getState() {
+	return state;
+    }
 
-	public void setState(AppointmentState state) {
-		this.state = state;
-	}
+    public void setState(AppointmentState state) {
+	this.state = state;
+    }
 
-	public String getDoctorId() {
+    public String getDoctorId() {
 	return doctorId;
     }
 
@@ -90,60 +90,59 @@ public class AppointmentRequest {
 	this.date = date;
     }
 
-	public AppointmentCreatedBy getCreatedBy() {
-		return createdBy;
-	}
+    public AppointmentCreatedBy getCreatedBy() {
+	return createdBy;
+    }
 
-	public void setCreatedBy(AppointmentCreatedBy createdBy) {
-		this.createdBy = createdBy;
-	}
+    public void setCreatedBy(AppointmentCreatedBy createdBy) {
+	this.createdBy = createdBy;
+    }
 
-	public Boolean getNotifyPatientBySms() {
-		return notifyPatientBySms;
-	}
+    public Boolean getNotifyPatientBySms() {
+	return notifyPatientBySms;
+    }
 
-	public void setNotifyPatientBySms(Boolean notifyPatientBySms) {
-		this.notifyPatientBySms = notifyPatientBySms;
-	}
+    public void setNotifyPatientBySms(Boolean notifyPatientBySms) {
+	this.notifyPatientBySms = notifyPatientBySms;
+    }
 
-	public Boolean getNotifyPatientByEmail() {
-		return notifyPatientByEmail;
-	}
+    public Boolean getNotifyPatientByEmail() {
+	return notifyPatientByEmail;
+    }
 
-	public void setNotifyPatientByEmail(Boolean notifyPatientByEmail) {
-		this.notifyPatientByEmail = notifyPatientByEmail;
-	}
+    public void setNotifyPatientByEmail(Boolean notifyPatientByEmail) {
+	this.notifyPatientByEmail = notifyPatientByEmail;
+    }
 
-	public Boolean getNotifyDoctorBySms() {
-		return notifyDoctorBySms;
-	}
+    public Boolean getNotifyDoctorBySms() {
+	return notifyDoctorBySms;
+    }
 
-	public void setNotifyDoctorBySms(Boolean notifyDoctorBySms) {
-		this.notifyDoctorBySms = notifyDoctorBySms;
-	}
+    public void setNotifyDoctorBySms(Boolean notifyDoctorBySms) {
+	this.notifyDoctorBySms = notifyDoctorBySms;
+    }
 
-	public Boolean getNotifyDoctorByEmail() {
-		return notifyDoctorByEmail;
-	}
+    public Boolean getNotifyDoctorByEmail() {
+	return notifyDoctorByEmail;
+    }
 
-	public void setNotifyDoctorByEmail(Boolean notifyDoctorByEmail) {
-		this.notifyDoctorByEmail = notifyDoctorByEmail;
-	}
+    public void setNotifyDoctorByEmail(Boolean notifyDoctorByEmail) {
+	this.notifyDoctorByEmail = notifyDoctorByEmail;
+    }
 
-	public String getHospitalId() {
-		return hospitalId;
-	}
+    public String getHospitalId() {
+	return hospitalId;
+    }
 
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
 
-	@Override
-	public String toString() {
-		return "AppointmentRequest [appointmentId=" + appointmentId + ", state=" + state + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", time="
-				+ time + ", date=" + date + ", createdBy=" + createdBy + ", notifyPatientBySms=" + notifyPatientBySms
-				+ ", notifyPatientByEmail=" + notifyPatientByEmail + ", notifyDoctorBySms=" + notifyDoctorBySms
-				+ ", notifyDoctorByEmail=" + notifyDoctorByEmail + "]";
-	}
+    @Override
+    public String toString() {
+	return "AppointmentRequest [appointmentId=" + appointmentId + ", state=" + state + ", doctorId=" + doctorId + ", locationId=" + locationId
+		+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", time=" + time + ", date=" + date + ", createdBy=" + createdBy
+		+ ", notifyPatientBySms=" + notifyPatientBySms + ", notifyPatientByEmail=" + notifyPatientByEmail + ", notifyDoctorBySms=" + notifyDoctorBySms
+		+ ", notifyDoctorByEmail=" + notifyDoctorByEmail + "]";
+    }
 }

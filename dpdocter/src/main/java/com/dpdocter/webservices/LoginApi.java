@@ -20,7 +20,6 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.LoginPatientRequest;
 import com.dpdocter.request.LoginRequest;
 import com.dpdocter.services.LoginService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -101,7 +100,7 @@ public class LoginApi {
 	    response.setData(loginResponse);
 	return response;
     }
-    
+
     private String getFinalImageURL(String imageURL) {
 	if (imageURL != null) {
 	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);

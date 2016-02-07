@@ -12,10 +12,10 @@ import com.dpdocter.collections.MedicalCouncilCollection;
 
 public interface MedicalCouncilRepository extends MongoRepository<MedicalCouncilCollection, String> {
 
-	@Query("{'updatedTime': {'$gt': ?0}}")
-	List<MedicalCouncilCollection> find(Date date, Pageable pageRequest);
-	
-	@Query("{'updatedTime': {'$gt': ?0}}")
-	List<MedicalCouncilCollection> find(Date date, Sort sort);
+    @Query("{'updatedTime': {'$gt': ?0}}")
+    List<MedicalCouncilCollection> find(Date date, Pageable pageRequest);
+
+    @Query("{'updatedTime': {'$gt': ?0}}")
+    List<MedicalCouncilCollection> find(Date date, Sort sort);
 
 }

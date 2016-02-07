@@ -84,13 +84,13 @@ public class DPDoctorUtils {
 	return bigInt.toString(16);
     }
 
-    public static String generateRandomId(){
-    	char[] chars = "ABSDEFGHIJKLMNOPQRSTUVWXYZ1234567890".toCharArray();
-    	Random r = new Random(System.currentTimeMillis());
-    	char[] id = new char[8];
-    	for (int i = 0;  i < 8;  i++) {
-    	    id[i] = chars[r.nextInt(chars.length)];
-    	}
-    	return "H"+new String(id);
+    public static String generateRandomId() {
+	char[] chars = "ABSDEFGHIJKLMNOPQRSTUVWXYZ1234567890".toCharArray();
+	Random r = new Random(System.currentTimeMillis());
+	char[] id = new char[8];
+	for (int i = 0; i < 8; i++) {
+	    id[i] = chars[r.nextInt(chars.length)];
+	}
+	return "H" + new String(id);
     }
 }

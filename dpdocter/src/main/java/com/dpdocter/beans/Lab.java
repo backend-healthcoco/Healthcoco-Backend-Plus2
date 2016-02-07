@@ -14,50 +14,48 @@ public class Lab {
 
     private List<LabTest> labTests;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public Hospital getHospital() {
-		return hospital;
-	}
+    public Hospital getHospital() {
+	return hospital;
+    }
 
-	public void setHospital(Hospital hospital) {
-		this.hospital = hospital;
-	}
+    public void setHospital(Hospital hospital) {
+	this.hospital = hospital;
+    }
 
-	public Location getLocation() {
-		return location;
-	}
+    public Location getLocation() {
+	return location;
+    }
 
-	public void setLocation(Location location) {
-		this.location = location;
-	}
+    public void setLocation(Location location) {
+	this.location = location;
+    }
 
-	public List<Doctor> getDoctors() {
-		return doctors;
-	}
+    public List<Doctor> getDoctors() {
+	return doctors;
+    }
 
-	public void setDoctors(List<Doctor> doctors) {
-		this.doctors = doctors;
-	}
+    public void setDoctors(List<Doctor> doctors) {
+	this.doctors = doctors;
+    }
 
-	public List<LabTest> getLabTests() {
-		return labTests;
-	}
+    public List<LabTest> getLabTests() {
+	return labTests;
+    }
 
-	public void setLabTests(List<LabTest> labTests) {
-		this.labTests = labTests;
-	}
+    public void setLabTests(List<LabTest> labTests) {
+	this.labTests = labTests;
+    }
 
-	@Override
-	public String toString() {
-		return "Lab [id=" + id + ", hospital=" + hospital + ", location=" + location + ", doctors=" + doctors
-				+ ", labTests=" + labTests + "]";
-	}
+    @Override
+    public String toString() {
+	return "Lab [id=" + id + ", hospital=" + hospital + ", location=" + location + ", doctors=" + doctors + ", labTests=" + labTests + "]";
+    }
 }
-

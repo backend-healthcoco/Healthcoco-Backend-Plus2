@@ -1,13 +1,11 @@
 package com.dpdocter.collections;
 
-import java.util.Date;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "diagnostic_test_cl")
-public class DiagnosticTestCollection extends GenericCollection{
+public class DiagnosticTestCollection extends GenericCollection {
 
     @Id
     private String id;
@@ -51,34 +49,34 @@ public class DiagnosticTestCollection extends GenericCollection{
 	this.description = description;
     }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
 
-	public String getHospitalId() {
-		return hospitalId;
-	}
+    public String getHospitalId() {
+	return hospitalId;
+    }
 
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
 
-	public Boolean getDiscarded() {
-		return discarded;
-	}
+    public Boolean getDiscarded() {
+	return discarded;
+    }
 
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
 
-	@Override
-	public String toString() {
-		return "DiagnosticTestCollection [id=" + id + ", testName=" + testName + ", description=" + description
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + "]";
-	}
+    @Override
+    public String toString() {
+	return "DiagnosticTestCollection [id=" + id + ", testName=" + testName + ", description=" + description + ", locationId=" + locationId
+		+ ", hospitalId=" + hospitalId + ", discarded=" + discarded + "]";
+    }
 
 }

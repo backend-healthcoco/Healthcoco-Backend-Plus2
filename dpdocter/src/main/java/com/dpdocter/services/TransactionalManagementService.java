@@ -4,7 +4,7 @@ import com.dpdocter.enums.Resource;
 
 public interface TransactionalManagementService {
 
-	void addResource(String resourceId, Resource resource, boolean isCached);
+    void addResource(String resourceId, Resource resource, boolean isCached);
 
     void checkPatient(String id);
 
@@ -24,10 +24,10 @@ public interface TransactionalManagementService {
 
     void checkDiagrams(String id);
 
-	void checkResources();
+    void checkResources();
 
-	void checkLocation(String resourceId);
+    void checkLocation(String resourceId);
 
-	void checkDoctor(String resourceId);
+    void checkDoctor(String resourceId);
 
 }

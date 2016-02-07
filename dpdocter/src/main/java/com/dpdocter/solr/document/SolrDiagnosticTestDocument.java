@@ -9,11 +9,11 @@ import org.springframework.data.solr.core.mapping.SolrDocument;
 @SolrDocument(solrCoreName = "diagnosticTests")
 public class SolrDiagnosticTestDocument {
 
-	@Id
+    @Id
     @Field
     private String id;
 
-	@Field
+    @Field
     private String testName;
 
     @Field
@@ -31,67 +31,66 @@ public class SolrDiagnosticTestDocument {
     @Field
     private Date updatedTime = new Date();
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getTestName() {
-		return testName;
-	}
+    public String getTestName() {
+	return testName;
+    }
 
-	public void setTestName(String testName) {
-		this.testName = testName;
-	}
+    public void setTestName(String testName) {
+	this.testName = testName;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+	return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+	this.description = description;
+    }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
 
-	public String getHospitalId() {
-		return hospitalId;
-	}
+    public String getHospitalId() {
+	return hospitalId;
+    }
 
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
 
-	public Boolean getDiscarded() {
-		return discarded;
-	}
+    public Boolean getDiscarded() {
+	return discarded;
+    }
 
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
 
-	public Date getUpdatedTime() {
-		return updatedTime;
-	}
+    public Date getUpdatedTime() {
+	return updatedTime;
+    }
 
-	public void setUpdatedTime(Date updatedTime) {
-		this.updatedTime = updatedTime;
-	}
+    public void setUpdatedTime(Date updatedTime) {
+	this.updatedTime = updatedTime;
+    }
 
-	@Override
-	public String toString() {
-		return "SolrDiagnosticTestDocument [id=" + id + ", testName=" + testName + ", description=" + description
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
-				+ ", updatedTime=" + updatedTime + "]";
-	}
+    @Override
+    public String toString() {
+	return "SolrDiagnosticTestDocument [id=" + id + ", testName=" + testName + ", description=" + description + ", locationId=" + locationId
+		+ ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", updatedTime=" + updatedTime + "]";
+    }
 
 }

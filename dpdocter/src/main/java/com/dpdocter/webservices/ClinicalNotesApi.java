@@ -48,7 +48,6 @@ import com.dpdocter.solr.document.SolrInvestigationsDocument;
 import com.dpdocter.solr.document.SolrNotesDocument;
 import com.dpdocter.solr.document.SolrObservationsDocument;
 import com.dpdocter.solr.services.SolrClinicalNotesService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -175,23 +174,23 @@ public class ClinicalNotesApi {
     @Path(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_PATIENT_ID)
     @GET
     public Response<ClinicalNotes> getNotes(@PathParam(value = "patientId") String patientId, @QueryParam("page") int page, @QueryParam("size") int size,
-	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,  @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
-	
-    	List<ClinicalNotes> clinicalNotes = null;
-    	    clinicalNotes = clinicalNotesService.getClinicalNotes(patientId, page, size, updatedTime, discarded);
-    	
-    	if (clinicalNotes != null && !clinicalNotes.isEmpty()) {
-    	    for (ClinicalNotes clinicalNote : clinicalNotes) {
-    		if (clinicalNote.getDiagrams() != null && !clinicalNote.getDiagrams().isEmpty()) {
-    		    clinicalNote.setDiagrams(getFinalDiagrams(clinicalNote.getDiagrams()));
-    		}
-    	    }
-    	}
-    	Response<ClinicalNotes> response = new Response<ClinicalNotes>();
-    	response.setDataList(clinicalNotes);
-    	return response;
+	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
+
+	List<ClinicalNotes> clinicalNotes = null;
+	clinicalNotes = clinicalNotesService.getClinicalNotes(patientId, page, size, updatedTime, discarded);
+
+	if (clinicalNotes != null && !clinicalNotes.isEmpty()) {
+	    for (ClinicalNotes clinicalNote : clinicalNotes) {
+		if (clinicalNote.getDiagrams() != null && !clinicalNote.getDiagrams().isEmpty()) {
+		    clinicalNote.setDiagrams(getFinalDiagrams(clinicalNote.getDiagrams()));
+		}
+	    }
+	}
+	Response<ClinicalNotes> response = new Response<ClinicalNotes>();
+	response.setDataList(clinicalNotes);
+	return response;
     }
-    
+
     @Path(value = PathProxy.ClinicalNotesUrls.ADD_COMPLAINT)
     @POST
     public Response<Complaint> addComplaint(Complaint request) {

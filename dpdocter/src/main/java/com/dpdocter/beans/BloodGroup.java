@@ -2,7 +2,7 @@ package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
 
-public class BloodGroup extends GenericCollection{
+public class BloodGroup extends GenericCollection {
 
     private String id;
 

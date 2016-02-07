@@ -21,10 +21,11 @@ public interface SMSServices {
 
     void deleteNumber(String mobileNumber);
 
-    SMSTrackDetail createSMSTrackDetail(String doctorId, String locationId, String hospitalId, String patientId, String patientName, String message, String mobileNumber, String type);
+    SMSTrackDetail createSMSTrackDetail(String doctorId, String locationId, String hospitalId, String patientId, String patientName, String message,
+	    String mobileNumber, String type);
 
-	SMSFormat addSmsFormat(SMSFormat request);
+    SMSFormat addSmsFormat(SMSFormat request);
 
-	List<SMSFormat> getSmsFormat(String doctorId, String locationId, String hospitalId);
+    List<SMSFormat> getSmsFormat(String doctorId, String locationId, String hospitalId);
 
 }

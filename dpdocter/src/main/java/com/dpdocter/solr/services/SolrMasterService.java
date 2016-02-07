@@ -14,22 +14,24 @@ import com.dpdocter.response.DiseaseListResponse;
 
 public interface SolrMasterService {
 
-	List<Reference> searchReference(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
+    List<Reference> searchReference(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+	    Boolean discarded, String searchTerm);
 
-	List<DiseaseListResponse> searchDisease(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
+    List<DiseaseListResponse> searchDisease(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+	    Boolean discarded, String searchTerm);
 
-	List<BloodGroup> searchBloodGroup(String searchTerm, String updatedTime, int page, int size);
+    List<BloodGroup> searchBloodGroup(String searchTerm, String updatedTime, int page, int size);
 
-	List<Profession> searchProfession(String searchTerm, String updatedTime, int page, int size);
+    List<Profession> searchProfession(String searchTerm, String updatedTime, int page, int size);
 
-	List<ProfessionalMembership> searchProfessionalMembership(String searchTerm, String updatedTime, int page, int size);
+    List<ProfessionalMembership> searchProfessionalMembership(String searchTerm, String updatedTime, int page, int size);
 
-	List<EducationInstitute> searchEducationInstitute(String searchTerm, String updatedTime, int page, int size);
+    List<EducationInstitute> searchEducationInstitute(String searchTerm, String updatedTime, int page, int size);
 
-	List<EducationQualification> searchEducationQualification(String searchTerm, String updatedTime, int page, int size);
+    List<EducationQualification> searchEducationQualification(String searchTerm, String updatedTime, int page, int size);
 
-	List<MedicalCouncil> searchMedicalCouncil(String searchTerm, String updatedTime, int page, int size);
+    List<MedicalCouncil> searchMedicalCouncil(String searchTerm, String updatedTime, int page, int size);
 
-	List<Speciality> searchSpeciality(String searchTerm, String updatedTime, int page, int size);
+    List<Speciality> searchSpeciality(String searchTerm, String updatedTime, int page, int size);
 
 }

@@ -10,7 +10,6 @@ import org.springframework.data.solr.core.mapping.SolrDocument;
 
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.DoctorExperience;
-import com.dpdocter.enums.DoctorFacility;
 import com.dpdocter.solr.beans.DoctorLocation;
 import com.dpdocter.solr.beans.SolrWorkingSchedule;
 
@@ -54,11 +53,11 @@ public class SolrDoctorDocument extends DoctorLocation {
     private List<ConsultationFee> consultationFeeList;
 
     @Field
-    private List<DoctorExperience> experienceList;    
-    
+    private List<DoctorExperience> experienceList;
+
     @Field
     private String facility;
-    
+
     public String getId() {
 	return id;
     }
@@ -92,14 +91,14 @@ public class SolrDoctorDocument extends DoctorLocation {
     }
 
     public String getMobileNumber() {
-		return mobileNumber;
-	}
+	return mobileNumber;
+    }
 
-	public void setMobileNumber(String mobileNumber) {
-		this.mobileNumber = mobileNumber;
-	}
+    public void setMobileNumber(String mobileNumber) {
+	this.mobileNumber = mobileNumber;
+    }
 
-	public String getImageUrl() {
+    public String getImageUrl() {
 	return imageUrl;
     }
 
@@ -113,10 +112,10 @@ public class SolrDoctorDocument extends DoctorLocation {
 
     public void setConsultationFee(ConsultationFee consultationFee) {
 	this.consultationFee = consultationFee;
-	if(consultationFee != null){
-		List<ConsultationFee> consultationFees = new ArrayList<ConsultationFee>();
-		consultationFees.add(consultationFee);
-		this.consultationFeeList = consultationFees;
+	if (consultationFee != null) {
+	    List<ConsultationFee> consultationFees = new ArrayList<ConsultationFee>();
+	    consultationFees.add(consultationFee);
+	    this.consultationFeeList = consultationFees;
 	}
     }
 
@@ -150,49 +149,48 @@ public class SolrDoctorDocument extends DoctorLocation {
 
     public void setExperience(DoctorExperience experience) {
 	this.experience = experience;
-	if(experience != null){
-		List<DoctorExperience> experiences = new ArrayList<DoctorExperience>();
-		experiences.add(experience);
-		this.experienceList = experiences;
+	if (experience != null) {
+	    List<DoctorExperience> experiences = new ArrayList<DoctorExperience>();
+	    experiences.add(experience);
+	    this.experienceList = experiences;
 	}
     }
 
-	public List<ConsultationFee> getConsultationFeeList() {
-		return consultationFeeList;
-	}
+    public List<ConsultationFee> getConsultationFeeList() {
+	return consultationFeeList;
+    }
 
-	public void setConsultationFeeList(List<ConsultationFee> consultationFeeList) {
-		this.consultationFeeList = consultationFeeList;
-		if(consultationFeeList != null && !consultationFeeList.isEmpty()){
-			this.consultationFee = consultationFeeList.get(0);
-		}
+    public void setConsultationFeeList(List<ConsultationFee> consultationFeeList) {
+	this.consultationFeeList = consultationFeeList;
+	if (consultationFeeList != null && !consultationFeeList.isEmpty()) {
+	    this.consultationFee = consultationFeeList.get(0);
 	}
+    }
 
-	public List<DoctorExperience> getExperienceList() {
-		return experienceList;
-	}
+    public List<DoctorExperience> getExperienceList() {
+	return experienceList;
+    }
 
-	public void setExperienceList(List<DoctorExperience> experienceList) {
-		this.experienceList = experienceList;
-		if(experienceList != null && !experienceList.isEmpty()){
-			this.experience = experienceList.get(0);
-		}
+    public void setExperienceList(List<DoctorExperience> experienceList) {
+	this.experienceList = experienceList;
+	if (experienceList != null && !experienceList.isEmpty()) {
+	    this.experience = experienceList.get(0);
 	}
+    }
 
-	public String getFacility() {
-		return facility;
-	}
+    public String getFacility() {
+	return facility;
+    }
 
-	public void setFacility(String facility) {
-		this.facility = facility;
-	}
+    public void setFacility(String facility) {
+	this.facility = facility;
+    }
 
-	@Override
-	public String toString() {
-		return "SolrDoctorDocument [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", gender=" + gender
-				+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", imageUrl=" + imageUrl
-				+ ", consultationFee=" + consultationFee + ", workingSchedules=" + workingSchedules + ", specialities="
-				+ specialities + ", experience=" + experience + ", consultationFeeList=" + consultationFeeList
-				+ ", experienceList=" + experienceList + ", facility=" + facility + "]";
-	}
+    @Override
+    public String toString() {
+	return "SolrDoctorDocument [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", gender=" + gender + ", emailAddress=" + emailAddress
+		+ ", mobileNumber=" + mobileNumber + ", imageUrl=" + imageUrl + ", consultationFee=" + consultationFee + ", workingSchedules="
+		+ workingSchedules + ", specialities=" + specialities + ", experience=" + experience + ", consultationFeeList=" + consultationFeeList
+		+ ", experienceList=" + experienceList + ", facility=" + facility + "]";
+    }
 }

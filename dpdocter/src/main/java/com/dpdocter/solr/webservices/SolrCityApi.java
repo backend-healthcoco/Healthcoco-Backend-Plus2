@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.solr.beans.SolrCityLandmarkLocalityResponse;
 import com.dpdocter.solr.services.SolrCityService;
 import com.dpdocter.webservices.PathProxy;
-
 import common.util.web.Response;
 
 @Component

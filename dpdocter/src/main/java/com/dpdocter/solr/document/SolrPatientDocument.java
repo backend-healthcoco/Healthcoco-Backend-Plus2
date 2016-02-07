@@ -130,18 +130,19 @@ public class SolrPatientDocument {
 
     public void setFirstName(String firstName) {
 	this.firstName = firstName;
-	if(firstName != null)setFirstNameWithoutSpace(firstName);
+	if (firstName != null)
+	    setFirstNameWithoutSpace(firstName);
     }
 
     public String getFirstNameWithoutSpace() {
-		return firstNameWithoutSpace;
-	}
+	return firstNameWithoutSpace;
+    }
 
-	public void setFirstNameWithoutSpace(String firstNameWithoutSpace) {
-		this.firstNameWithoutSpace = firstNameWithoutSpace.replaceAll("\\s+","");
-	}
+    public void setFirstNameWithoutSpace(String firstNameWithoutSpace) {
+	this.firstNameWithoutSpace = firstNameWithoutSpace.replaceAll("\\s+", "");
+    }
 
-	public String getGender() {
+    public String getGender() {
 	return gender;
     }
 
@@ -309,16 +310,13 @@ public class SolrPatientDocument {
 	this.thumbnailUrl = thumbnailUrl;
     }
 
-	@Override
-	public String toString() {
-		return "SolrPatientDocument [id=" + id + ", userId=" + userId + ", PID=" + PID + ", userName=" + userName
-				+ ", firstName=" + firstName + ", firstNameWithoutSpace=" + firstNameWithoutSpace + ", gender=" + gender
-				+ ", bloodGroup=" + bloodGroup + ", emailAddress=" + emailAddress + ", days=" + days + ", months="
-				+ months + ", years=" + years + ", dob=" + dob + ", city=" + city + ", locality=" + locality
-				+ ", postalCode=" + postalCode + ", mobileNumber=" + mobileNumber + ", profession=" + profession
-				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", referredBy=" + referredBy + ", createdTime=" + createdTime + ", imageUrl=" + imageUrl
-				+ ", thumbnailUrl=" + thumbnailUrl + ", colorCode=" + colorCode + ", registrationDate="
-				+ registrationDate + "]";
-	}
+    @Override
+    public String toString() {
+	return "SolrPatientDocument [id=" + id + ", userId=" + userId + ", PID=" + PID + ", userName=" + userName + ", firstName=" + firstName
+		+ ", firstNameWithoutSpace=" + firstNameWithoutSpace + ", gender=" + gender + ", bloodGroup=" + bloodGroup + ", emailAddress=" + emailAddress
+		+ ", days=" + days + ", months=" + months + ", years=" + years + ", dob=" + dob + ", city=" + city + ", locality=" + locality + ", postalCode="
+		+ postalCode + ", mobileNumber=" + mobileNumber + ", profession=" + profession + ", doctorId=" + doctorId + ", locationId=" + locationId
+		+ ", hospitalId=" + hospitalId + ", referredBy=" + referredBy + ", createdTime=" + createdTime + ", imageUrl=" + imageUrl + ", thumbnailUrl="
+		+ thumbnailUrl + ", colorCode=" + colorCode + ", registrationDate=" + registrationDate + "]";
+    }
 }

@@ -19,7 +19,6 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.ForgotUsernamePasswordRequest;
 import com.dpdocter.services.ForgotPasswordService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -33,7 +32,7 @@ public class ForgotPasswordApi {
 
     @Autowired
     private ForgotPasswordService forgotPasswordService;
-    
+
     @Context
     private UriInfo uriInfo;
 
@@ -66,8 +65,8 @@ public class ForgotPasswordApi {
     @Path(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PATIENT)
     @GET
     public Response<Boolean> resetPasswordPatient(@PathParam(value = "mobileNumber") String mobileNumber, @PathParam(value = "password") String password) {
-	
-    Boolean isReset = forgotPasswordService.resetPasswordPatient(mobileNumber, password);
+
+	Boolean isReset = forgotPasswordService.resetPasswordPatient(mobileNumber, password);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(isReset);
 	return response;
@@ -89,16 +88,16 @@ public class ForgotPasswordApi {
     @Path(value = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED)
     @POST
     public Response<String> checkLinkIsAlreadyUsed(@FormParam(value = "userId") String userId) {
-    if (DPDoctorUtils.anyStringEmpty(userId)) {
-    	    logger.warn("Invalid Input");
-    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-    }
-    String string = forgotPasswordService.checkLinkIsAlreadyUsed(userId);
+	if (DPDoctorUtils.anyStringEmpty(userId)) {
+	    logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	}
+	String string = forgotPasswordService.checkLinkIsAlreadyUsed(userId);
 	Response<String> response = new Response<String>();
 	response.setData(string);
 	return response;
     }
-    
+
     @Path(value = PathProxy.ForgotPasswordUrls.FORGOT_USERNAME)
     @POST
     public Response<Boolean> forgotUsername(ForgotUsernamePasswordRequest request) {
@@ -111,6 +110,5 @@ public class ForgotPasswordApi {
 	response.setData(flag);
 	return response;
     }
-    
 
 }

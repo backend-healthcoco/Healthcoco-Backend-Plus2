@@ -16,7 +16,7 @@ public class PatientVisitCollection extends GenericCollection {
 
     @Field
     private String uniqueId;
-    
+
     @Field
     private String patientId;
 
@@ -145,21 +145,19 @@ public class PatientVisitCollection extends GenericCollection {
 	this.discarded = discarded;
     }
 
-	public String getUniqueId() {
-		return uniqueId;
-	}
+    public String getUniqueId() {
+	return uniqueId;
+    }
 
-	public void setUniqueId(String uniqueId) {
-		this.uniqueId = uniqueId;
-	}
+    public void setUniqueId(String uniqueId) {
+	this.uniqueId = uniqueId;
+    }
 
-	@Override
-	public String toString() {
-		return "PatientVisitCollection [id=" + id + ", uniqueId=" + uniqueId + ", patientId=" + patientId
-				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", visitedTime=" + visitedTime + ", visitedFor=" + visitedFor + ", total=" + total
-				+ ", prescriptionId=" + prescriptionId + ", clinicalNotesId=" + clinicalNotesId + ", recordId="
-				+ recordId + ", discarded=" + discarded + "]";
-	}
+    @Override
+    public String toString() {
+	return "PatientVisitCollection [id=" + id + ", uniqueId=" + uniqueId + ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId="
+		+ locationId + ", hospitalId=" + hospitalId + ", visitedTime=" + visitedTime + ", visitedFor=" + visitedFor + ", total=" + total
+		+ ", prescriptionId=" + prescriptionId + ", clinicalNotesId=" + clinicalNotesId + ", recordId=" + recordId + ", discarded=" + discarded + "]";
+    }
 
 }

@@ -41,14 +41,14 @@ public class Prescription extends GenericCollection {
     }
 
     public String getUniqueId() {
-		return uniqueId;
-	}
+	return uniqueId;
+    }
 
-	public void setUniqueId(String uniqueId) {
-		this.uniqueId = uniqueId;
-	}
+    public void setUniqueId(String uniqueId) {
+	this.uniqueId = uniqueId;
+    }
 
-	public String getName() {
+    public String getName() {
 	return name;
     }
 
@@ -120,27 +120,26 @@ public class Prescription extends GenericCollection {
 	this.visitId = visitId;
     }
 
-	public String getPatientId() {
-		return patientId;
-	}
+    public String getPatientId() {
+	return patientId;
+    }
 
-	public void setPatientId(String patientId) {
-		this.patientId = patientId;
-	}
+    public void setPatientId(String patientId) {
+	this.patientId = patientId;
+    }
 
-	public List<TestAndRecordDataResponse> getTests() {
-		return tests;
-	}
+    public List<TestAndRecordDataResponse> getTests() {
+	return tests;
+    }
 
-	public void setTests(List<TestAndRecordDataResponse> tests) {
-		this.tests = tests;
-	}
+    public void setTests(List<TestAndRecordDataResponse> tests) {
+	this.tests = tests;
+    }
 
-	@Override
-	public String toString() {
-		return "Prescription [id=" + id + ", uniqueId=" + uniqueId + ", name=" + name + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", items=" + items + ", inHistory="
-				+ inHistory + ", discarded=" + discarded + ", tests=" + tests + ", advice=" + advice + ", visitId="
-				+ visitId + ", patientId=" + patientId + "]";
-	}
+    @Override
+    public String toString() {
+	return "Prescription [id=" + id + ", uniqueId=" + uniqueId + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId
+		+ ", hospitalId=" + hospitalId + ", items=" + items + ", inHistory=" + inHistory + ", discarded=" + discarded + ", tests=" + tests
+		+ ", advice=" + advice + ", visitId=" + visitId + ", patientId=" + patientId + "]";
+    }
 }

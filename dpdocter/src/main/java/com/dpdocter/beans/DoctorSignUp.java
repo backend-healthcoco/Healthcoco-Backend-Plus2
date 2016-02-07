@@ -21,9 +21,10 @@ public class DoctorSignUp {
     public void setHospital(Hospital hospital) {
 	this.hospital = hospital;
     }
-	@Override
-	public String toString() {
-		return "DoctorSignUp [user=" + user + ", hospital=" + hospital + "]";
-	}
+
+    @Override
+    public String toString() {
+	return "DoctorSignUp [user=" + user + ", hospital=" + hospital + "]";
+    }
 
 }

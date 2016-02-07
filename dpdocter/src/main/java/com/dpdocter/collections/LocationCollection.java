@@ -86,16 +86,16 @@ public class LocationCollection extends GenericCollection {
 
     @Field
     private Boolean isLab = false;
-    
+
     @Field
     private Boolean isOnlineReportsAvailable = false;
-    
+
     @Field
     private Boolean isNABLAccredited = false;
-    
+
     @Field
     private Boolean isHomeServiceAvailable = false;
-    
+
     public String getId() {
 	return id;
     }
@@ -288,50 +288,47 @@ public class LocationCollection extends GenericCollection {
 	this.logoThumbnailUrl = logoThumbnailUrl;
     }
 
-	public Boolean getIsLab() {
-		return isLab;
-	}
+    public Boolean getIsLab() {
+	return isLab;
+    }
 
-	public void setIsLab(Boolean isLab) {
-		this.isLab = isLab;
-	}
+    public void setIsLab(Boolean isLab) {
+	this.isLab = isLab;
+    }
 
-	public Boolean getIsOnlineReportsAvailable() {
-		return isOnlineReportsAvailable;
-	}
+    public Boolean getIsOnlineReportsAvailable() {
+	return isOnlineReportsAvailable;
+    }
 
-	public void setIsOnlineReportsAvailable(Boolean isOnlineReportsAvailable) {
-		this.isOnlineReportsAvailable = isOnlineReportsAvailable;
-	}
+    public void setIsOnlineReportsAvailable(Boolean isOnlineReportsAvailable) {
+	this.isOnlineReportsAvailable = isOnlineReportsAvailable;
+    }
 
-	public Boolean getIsNABLAccredited() {
-		return isNABLAccredited;
-	}
+    public Boolean getIsNABLAccredited() {
+	return isNABLAccredited;
+    }
 
-	public void setIsNABLAccredited(Boolean isNABLAccredited) {
-		this.isNABLAccredited = isNABLAccredited;
-	}
+    public void setIsNABLAccredited(Boolean isNABLAccredited) {
+	this.isNABLAccredited = isNABLAccredited;
+    }
 
-	public Boolean getIsHomeServiceAvailable() {
-		return isHomeServiceAvailable;
-	}
+    public Boolean getIsHomeServiceAvailable() {
+	return isHomeServiceAvailable;
+    }
 
-	public void setIsHomeServiceAvailable(Boolean isHomeServiceAvailable) {
-		this.isHomeServiceAvailable = isHomeServiceAvailable;
-	}
+    public void setIsHomeServiceAvailable(Boolean isHomeServiceAvailable) {
+	this.isHomeServiceAvailable = isHomeServiceAvailable;
+    }
 
-	@Override
-	public String toString() {
-		return "LocationCollection [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state="
-				+ state + ", city=" + city + ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode="
-				+ postalCode + ", websiteUrl=" + websiteUrl + ", images=" + images + ", logoUrl=" + logoUrl
-				+ ", logoThumbnailUrl=" + logoThumbnailUrl + ", hospitalId=" + hospitalId + ", latitude=" + latitude
-				+ ", longitude=" + longitude + ", tagLine=" + tagLine + ", landmarkDetails=" + landmarkDetails
-				+ ", locationEmailAddress=" + locationEmailAddress + ", specialization=" + specialization
-				+ ", streetAddress=" + streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber
-				+ ", alternateNumbers=" + alternateNumbers + ", workingSchedules=" + workingSchedules
-				+ ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + ", isLab=" + isLab
-				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
-				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + "]";
-	}
+    @Override
+    public String toString() {
+	return "LocationCollection [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city
+		+ ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", images=" + images
+		+ ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude="
+		+ longitude + ", tagLine=" + tagLine + ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress=" + locationEmailAddress
+		+ ", specialization=" + specialization + ", streetAddress=" + streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber
+		+ ", alternateNumbers=" + alternateNumbers + ", workingSchedules=" + workingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen
+		+ ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
+		+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + "]";
+    }
 }

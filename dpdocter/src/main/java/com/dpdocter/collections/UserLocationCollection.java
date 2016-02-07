@@ -69,17 +69,17 @@ public class UserLocationCollection extends GenericCollection {
 	this.isVerified = isVerified;
     }
 
-	public Boolean getDiscarded() {
-		return discarded;
-	}
+    public Boolean getDiscarded() {
+	return discarded;
+    }
 
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
 
-	@Override
-	public String toString() {
-		return "UserLocationCollection [id=" + id + ", userId=" + userId + ", locationId=" + locationId
-				+ ", isActivate=" + isActivate + ", isVerified=" + isVerified + ", discarded=" + discarded + "]";
-	}
+    @Override
+    public String toString() {
+	return "UserLocationCollection [id=" + id + ", userId=" + userId + ", locationId=" + locationId + ", isActivate=" + isActivate + ", isVerified="
+		+ isVerified + ", discarded=" + discarded + "]";
+    }
 }

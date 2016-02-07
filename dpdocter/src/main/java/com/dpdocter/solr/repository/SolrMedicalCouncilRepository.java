@@ -12,16 +12,16 @@ import com.dpdocter.solr.document.SolrMedicalCouncilDocument;
 
 public interface SolrMedicalCouncilRepository extends SolrCrudRepository<SolrMedicalCouncilDocument, String> {
 
-	@Query("updatedTime: {?0 TO *}")
-	List<SolrMedicalCouncilDocument> find(Date date, Pageable pageable);
+    @Query("updatedTime: {?0 TO *}")
+    List<SolrMedicalCouncilDocument> find(Date date, Pageable pageable);
 
-	@Query("updatedTime: {?0 TO *}")
-	List<SolrMedicalCouncilDocument> find(Date date, Sort sort);
+    @Query("updatedTime: {?0 TO *}")
+    List<SolrMedicalCouncilDocument> find(Date date, Sort sort);
 
-	@Query("updatedTime: {?0 TO *} AND medicalCouncil: ?1*")
-	List<SolrMedicalCouncilDocument> find(Date date, String searchTerm, Pageable pageable);
+    @Query("updatedTime: {?0 TO *} AND medicalCouncil: ?1*")
+    List<SolrMedicalCouncilDocument> find(Date date, String searchTerm, Pageable pageable);
 
-	@Query("updatedTime: {?0 TO *} AND medicalCouncil: ?1*")
-	List<SolrMedicalCouncilDocument> find(Date date, String searchTerm, Sort sort);
+    @Query("updatedTime: {?0 TO *} AND medicalCouncil: ?1*")
+    List<SolrMedicalCouncilDocument> find(Date date, String searchTerm, Sort sort);
 
 }

@@ -1,7 +1,6 @@
 package com.dpdocter.services;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.List;
 
 import javax.ws.rs.core.UriInfo;
@@ -57,6 +56,6 @@ public interface RecordsService {
 
     List<Records> getRecordsByPatientId(String patientId, int page, int size, String updatedTime, Boolean discarded, UriInfo uriInfo);
 
-	Records addRecordsMultipart(FormDataBodyPart file, RecordsAddRequestMultipart request);
+    Records addRecordsMultipart(FormDataBodyPart file, RecordsAddRequestMultipart request);
 
 }

@@ -43,15 +43,15 @@ public interface PrescriptionRepository extends MongoRepository<PrescriptionColl
     Integer getPrescriptionCountForOtherDoctors(String doctorId, String id, String hospitalId, String locationId);
 
     @Query("{'patientId' : ?0, 'updatedTime' : {'$gt' : ?1}, 'discarded' : {$in: ?2}}")
-	List<PrescriptionCollection> getPrescription(String patientId, Date date, boolean[] discards, Pageable pageRequest);
+    List<PrescriptionCollection> getPrescription(String patientId, Date date, boolean[] discards, Pageable pageRequest);
 
     @Query("{'patientId' : ?0, 'updatedTime' : {'$gt' : ?1}, 'discarded' : {$in: ?2}}")
-	List<PrescriptionCollection> getPrescription(String patientId, Date date, boolean[] discards, Sort sort);
+    List<PrescriptionCollection> getPrescription(String patientId, Date date, boolean[] discards, Sort sort);
 
     @Query(value = "{'patientId': ?0, 'discarded' : ?1}", count = true)
-	Integer getPrescriptionCount(String patientId, boolean discarded);
+    Integer getPrescriptionCount(String patientId, boolean discarded);
 
     @Query("{'uniqueId' : ?0, 'patientId' : ?1}")
-	PrescriptionCollection findByUniqueIdAndPatientId(String uniqueId, String patientId);
+    PrescriptionCollection findByUniqueIdAndPatientId(String uniqueId, String patientId);
 
 }

@@ -17,67 +17,66 @@ public class PatientQueue {
     private String sequenceNo;
 
     private String appointmentId;
-    
-	public String getDoctorId() {
-		return doctorId;
-	}
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
+    public String getDoctorId() {
+	return doctorId;
+    }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	public String getHospitalId() {
-		return hospitalId;
-	}
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
 
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
+    public String getHospitalId() {
+	return hospitalId;
+    }
 
-	public PatientCard getPatient() {
-		return patient;
-	}
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
 
-	public void setPatient(PatientCard patient) {
-		this.patient = patient;
-	}
+    public PatientCard getPatient() {
+	return patient;
+    }
 
-	public Date getDate() {
-		return date;
-	}
+    public void setPatient(PatientCard patient) {
+	this.patient = patient;
+    }
 
-	public void setDate(Date date) {
-		this.date = date;
-	}
+    public Date getDate() {
+	return date;
+    }
 
-	public String getSequenceNo() {
-		return sequenceNo;
-	}
+    public void setDate(Date date) {
+	this.date = date;
+    }
 
-	public void setSequenceNo(String sequenceNo) {
-		this.sequenceNo = sequenceNo;
-	}
+    public String getSequenceNo() {
+	return sequenceNo;
+    }
 
-	public String getAppointmentId() {
-		return appointmentId;
-	}
+    public void setSequenceNo(String sequenceNo) {
+	this.sequenceNo = sequenceNo;
+    }
 
-	public void setAppointmentId(String appointmentId) {
-		this.appointmentId = appointmentId;
-	}
+    public String getAppointmentId() {
+	return appointmentId;
+    }
 
-	@Override
-	public String toString() {
-		return "PatientQueue [doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", patient=" + patient + ", date=" + date + ", sequenceNo=" + sequenceNo + ", appointmentId="
-				+ appointmentId + "]";
-	}
+    public void setAppointmentId(String appointmentId) {
+	this.appointmentId = appointmentId;
+    }
+
+    @Override
+    public String toString() {
+	return "PatientQueue [doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patient=" + patient + ", date=" + date
+		+ ", sequenceNo=" + sequenceNo + ", appointmentId=" + appointmentId + "]";
+    }
 }

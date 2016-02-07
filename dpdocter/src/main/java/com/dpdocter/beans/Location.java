@@ -56,13 +56,13 @@ public class Location {
     private boolean isTwentyFourSevenOpen;
 
     private Boolean isLab = false;
-    
+
     private Boolean isOnlineReportsAvailable = false;
-    
+
     private Boolean isNABLAccredited = false;
-    
+
     private Boolean isHomeServiceAvailable = false;
-    
+
     public String getId() {
 	return id;
     }
@@ -247,58 +247,55 @@ public class Location {
 	this.logoThumbnailUrl = logoThumbnailUrl;
     }
 
-	public Boolean getIsLab() {
-		return isLab;
-	}
+    public Boolean getIsLab() {
+	return isLab;
+    }
 
-	public void setIsLab(Boolean isLab) {
-		this.isLab = isLab;
-	}
+    public void setIsLab(Boolean isLab) {
+	this.isLab = isLab;
+    }
 
-	public Boolean getIsOnlineReportsAvailable() {
-		return isOnlineReportsAvailable;
-	}
+    public Boolean getIsOnlineReportsAvailable() {
+	return isOnlineReportsAvailable;
+    }
 
-	public void setIsOnlineReportsAvailable(Boolean isOnlineReportsAvailable) {
-		this.isOnlineReportsAvailable = isOnlineReportsAvailable;
-	}
+    public void setIsOnlineReportsAvailable(Boolean isOnlineReportsAvailable) {
+	this.isOnlineReportsAvailable = isOnlineReportsAvailable;
+    }
 
-	public Boolean getIsNABLAccredited() {
-		return isNABLAccredited;
-	}
+    public Boolean getIsNABLAccredited() {
+	return isNABLAccredited;
+    }
 
-	public void setIsNABLAccredited(Boolean isNABLAccredited) {
-		this.isNABLAccredited = isNABLAccredited;
-	}
+    public void setIsNABLAccredited(Boolean isNABLAccredited) {
+	this.isNABLAccredited = isNABLAccredited;
+    }
 
-	public Boolean getIsHomeServiceAvailable() {
-		return isHomeServiceAvailable;
-	}
+    public Boolean getIsHomeServiceAvailable() {
+	return isHomeServiceAvailable;
+    }
 
-	public void setIsHomeServiceAvailable(Boolean isHomeServiceAvailable) {
-		this.isHomeServiceAvailable = isHomeServiceAvailable;
-	}
+    public void setIsHomeServiceAvailable(Boolean isHomeServiceAvailable) {
+	this.isHomeServiceAvailable = isHomeServiceAvailable;
+    }
 
-	public List<String> getAlternateNumbers() {
-		return alternateNumbers;
-	}
+    public List<String> getAlternateNumbers() {
+	return alternateNumbers;
+    }
 
-	public void setAlternateNumbers(List<String> alternateNumbers) {
-		this.alternateNumbers = alternateNumbers;
-	}
+    public void setAlternateNumbers(List<String> alternateNumbers) {
+	this.alternateNumbers = alternateNumbers;
+    }
 
-	@Override
-	public String toString() {
-		return "Location [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state
-				+ ", city=" + city + ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode
-				+ ", websiteUrl=" + websiteUrl + ", images=" + images + ", logoUrl=" + logoUrl + ", logoThumbnailUrl="
-				+ logoThumbnailUrl + ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude="
-				+ longitude + ", tagLine=" + tagLine + ", landmarkDetails=" + landmarkDetails
-				+ ", locationEmailAddress=" + locationEmailAddress + ", specialization=" + specialization
-				+ ", streetAddress=" + streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber
-				+ ", alternateNumbers=" + alternateNumbers + ", workingSchedules=" + workingSchedules
-				+ ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + ", isLab=" + isLab
-				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
-				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + "]";
-	}
+    @Override
+    public String toString() {
+	return "Location [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city
+		+ ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", images=" + images
+		+ ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude="
+		+ longitude + ", tagLine=" + tagLine + ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress=" + locationEmailAddress
+		+ ", specialization=" + specialization + ", streetAddress=" + streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber
+		+ ", alternateNumbers=" + alternateNumbers + ", workingSchedules=" + workingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen
+		+ ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
+		+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + "]";
+    }
 }

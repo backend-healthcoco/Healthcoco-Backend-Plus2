@@ -66,16 +66,16 @@ public class DoctorLocation {
 
     @Field
     private Boolean isLab = false;
-    
+
     @Field
     private Boolean isOnlineReportsAvailable = false;
-    
+
     @Field
     private Boolean isNABLAccredited = false;
-    
+
     @Field
     private Boolean isHomeServiceAvailable = false;
-    
+
     public String getLocationName() {
 	return locationName;
     }
@@ -181,14 +181,14 @@ public class DoctorLocation {
     }
 
     public String getLocationMobileNumber() {
-		return locationMobileNumber;
-	}
+	return locationMobileNumber;
+    }
 
-	public void setLocationMobileNumber(String locationMobileNumber) {
-		this.locationMobileNumber = locationMobileNumber;
-	}
+    public void setLocationMobileNumber(String locationMobileNumber) {
+	this.locationMobileNumber = locationMobileNumber;
+    }
 
-	public String getAlternateNumber() {
+    public String getAlternateNumber() {
 	return alternateNumber;
     }
 
@@ -212,64 +212,62 @@ public class DoctorLocation {
 	this.specialization = specialization;
     }
 
-	public GeoLocation getGeoLocation() {
-		return geoLocation;
-	}
+    public GeoLocation getGeoLocation() {
+	return geoLocation;
+    }
 
-	public void setGeoLocation(GeoLocation geoLocation) {
-		this.geoLocation = geoLocation;
-	}
+    public void setGeoLocation(GeoLocation geoLocation) {
+	this.geoLocation = geoLocation;
+    }
 
-	public Boolean getIsLab() {
-		return isLab;
-	}
+    public Boolean getIsLab() {
+	return isLab;
+    }
 
-	public void setIsLab(Boolean isLab) {
-		this.isLab = isLab;
-	}
+    public void setIsLab(Boolean isLab) {
+	this.isLab = isLab;
+    }
 
-	public Boolean getIsOnlineReportsAvailable() {
-		return isOnlineReportsAvailable;
-	}
+    public Boolean getIsOnlineReportsAvailable() {
+	return isOnlineReportsAvailable;
+    }
 
-	public void setIsOnlineReportsAvailable(Boolean isOnlineReportsAvailable) {
-		this.isOnlineReportsAvailable = isOnlineReportsAvailable;
-	}
+    public void setIsOnlineReportsAvailable(Boolean isOnlineReportsAvailable) {
+	this.isOnlineReportsAvailable = isOnlineReportsAvailable;
+    }
 
-	public Boolean getIsNABLAccredited() {
-		return isNABLAccredited;
-	}
+    public Boolean getIsNABLAccredited() {
+	return isNABLAccredited;
+    }
 
-	public void setIsNABLAccredited(Boolean isNABLAccredited) {
-		this.isNABLAccredited = isNABLAccredited;
-	}
+    public void setIsNABLAccredited(Boolean isNABLAccredited) {
+	this.isNABLAccredited = isNABLAccredited;
+    }
 
-	public Boolean getIsHomeServiceAvailable() {
-		return isHomeServiceAvailable;
-	}
+    public Boolean getIsHomeServiceAvailable() {
+	return isHomeServiceAvailable;
+    }
 
-	public void setIsHomeServiceAvailable(Boolean isHomeServiceAvailable) {
-		this.isHomeServiceAvailable = isHomeServiceAvailable;
-	}
+    public void setIsHomeServiceAvailable(Boolean isHomeServiceAvailable) {
+	this.isHomeServiceAvailable = isHomeServiceAvailable;
+    }
 
-	public String getHospitalId() {
-		return hospitalId;
-	}
+    public String getHospitalId() {
+	return hospitalId;
+    }
 
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
 
-	@Override
-	public String toString() {
-		return "DoctorLocation [locationId=" + locationId + ", hospitalId=" + hospitalId + ", locationName="
-				+ locationName + ", country=" + country + ", state=" + state + ", city=" + city
-				+ ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl="
-				+ websiteUrl + ", geoLocation=" + geoLocation + ", latitude=" + latitude + ", longitude=" + longitude
-				+ ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress=" + locationEmailAddress
-				+ ", streetAddress=" + streetAddress + ", locality=" + locality + ", locationMobileNumber="
-				+ locationMobileNumber + ", alternateNumber=" + alternateNumber + ", specialization=" + specialization
-				+ ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited="
-				+ isNABLAccredited + ", isHomeServiceAvailable=" + isHomeServiceAvailable + "]";
-	}
+    @Override
+    public String toString() {
+	return "DoctorLocation [locationId=" + locationId + ", hospitalId=" + hospitalId + ", locationName=" + locationName + ", country=" + country
+		+ ", state=" + state + ", city=" + city + ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl="
+		+ websiteUrl + ", geoLocation=" + geoLocation + ", latitude=" + latitude + ", longitude=" + longitude + ", landmarkDetails=" + landmarkDetails
+		+ ", locationEmailAddress=" + locationEmailAddress + ", streetAddress=" + streetAddress + ", locality=" + locality + ", locationMobileNumber="
+		+ locationMobileNumber + ", alternateNumber=" + alternateNumber + ", specialization=" + specialization + ", isLab=" + isLab
+		+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited + ", isHomeServiceAvailable="
+		+ isHomeServiceAvailable + "]";
+    }
 }

@@ -53,7 +53,6 @@ import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.services.DoctorProfileService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.services.SolrRegistrationService;
-
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -88,7 +87,8 @@ public class DoctorProfileApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Cannot Be null");
 	}
 	Boolean addEditNameResponse = doctorProfileService.addEditName(request);
-	if (addEditNameResponse)transnationalService.checkDoctor(request.getDoctorId());
+	if (addEditNameResponse)
+	    transnationalService.checkDoctor(request.getDoctorId());
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditNameResponse);
 	return response;
@@ -102,7 +102,8 @@ public class DoctorProfileApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Experience Request Is Empty");
 	}
 	DoctorExperience experienceResponse = doctorProfileService.addEditExperience(request);
-	if (experienceResponse != null)	transnationalService.checkDoctor(request.getDoctorId());
+	if (experienceResponse != null)
+	    transnationalService.checkDoctor(request.getDoctorId());
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -149,7 +150,8 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.GET_MEDICAL_COUNCILS)
     @GET
-    public Response<MedicalCouncil> getMedicalCouncils(@QueryParam("page") int page, @QueryParam("size") int size, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+    public Response<MedicalCouncil> getMedicalCouncils(@QueryParam("page") int page, @QueryParam("size") int size,
+	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
 	List<MedicalCouncil> medicalCouncils = doctorProfileService.getMedicalCouncils(page, size, updatedTime);
 	Response<MedicalCouncil> response = new Response<MedicalCouncil>();
 	response.setDataList(medicalCouncils);
@@ -165,7 +167,8 @@ public class DoctorProfileApi {
 	}
 	List<String> specialityResponse = doctorProfileService.addEditSpeciality(request);
 	request.setSpeciality(specialityResponse);
-	if (specialityResponse != null)	transnationalService.checkDoctor(request.getDoctorId());
+	if (specialityResponse != null)
+	    transnationalService.checkDoctor(request.getDoctorId());
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -232,7 +235,8 @@ public class DoctorProfileApi {
 	}
 	String addEditProfilePictureResponse = doctorProfileService.addEditProfilePicture(request);
 	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
-	if (addEditProfilePictureResponse != null)	transnationalService.checkDoctor(request.getDoctorId());
+	if (addEditProfilePictureResponse != null)
+	    transnationalService.checkDoctor(request.getDoctorId());
 	addEditProfilePictureResponse = getFinalImageURL(addEditProfilePictureResponse);
 	Response<String> response = new Response<String>();
 	response.setData(addEditProfilePictureResponse);
@@ -321,7 +325,8 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.GET_PROFESSIONAL_MEMBERSHIPS)
     @GET
-    public Response<ProfessionalMembership> getProfessionalMemberships(@QueryParam("page") int page, @QueryParam("size") int size, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+    public Response<ProfessionalMembership> getProfessionalMemberships(@QueryParam("page") int page, @QueryParam("size") int size,
+	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
 	List<ProfessionalMembership> professionalMemberships = doctorProfileService.getProfessionalMemberships(page, size, updatedTime);
 	Response<ProfessionalMembership> response = new Response<ProfessionalMembership>();
 	response.setDataList(professionalMemberships);
@@ -356,7 +361,8 @@ public class DoctorProfileApi {
 	}
 	Boolean addEditVisitingTimeResponse = doctorProfileService.addEditVisitingTime(request);
 	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
-	if (addEditVisitingTimeResponse)transnationalService.checkDoctor(request.getDoctorId());
+	if (addEditVisitingTimeResponse)
+	    transnationalService.checkDoctor(request.getDoctorId());
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditVisitingTimeResponse);
 	return response;
@@ -374,7 +380,8 @@ public class DoctorProfileApi {
 	}
 	Boolean addEditConsultationFeeResponse = doctorProfileService.addEditConsultationFee(request);
 	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
-	if (addEditConsultationFeeResponse)transnationalService.checkDoctor(request.getDoctorId());
+	if (addEditConsultationFeeResponse)
+	    transnationalService.checkDoctor(request.getDoctorId());
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditConsultationFeeResponse);
 	return response;
@@ -391,7 +398,7 @@ public class DoctorProfileApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, LocationId Is Empty");
 	}
 	Boolean addEditAppointmentSlotResponse = doctorProfileService.addEditAppointmentSlot(request);
-	
+
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditAppointmentSlotResponse);
 	return response;
@@ -410,7 +417,8 @@ public class DoctorProfileApi {
 
 	Boolean addEditGeneralInfoResponse = doctorProfileService.addEditGeneralInfo(request);
 	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
-	if (addEditGeneralInfoResponse)transnationalService.checkDoctor(request.getDoctorId());
+	if (addEditGeneralInfoResponse)
+	    transnationalService.checkDoctor(request.getDoctorId());
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditGeneralInfoResponse);
 	return response;
@@ -426,7 +434,8 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.GET_SPECIALITIES)
     @GET
-    public Response<Speciality> getSpeciality(@QueryParam("page") int page, @QueryParam("size") int size, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+    public Response<Speciality> getSpeciality(@QueryParam("page") int page, @QueryParam("size") int size,
+	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
 	List<Speciality> specialities = doctorProfileService.getSpecialities(page, size, updatedTime);
 	Response<Speciality> response = new Response<Speciality>();
 	response.setDataList(specialities);
@@ -435,7 +444,8 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.GET_EDUCATION_INSTITUTES)
     @GET
-    public Response<EducationInstitute> getEducationInstitutes(@QueryParam("page") int page, @QueryParam("size") int size, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+    public Response<EducationInstitute> getEducationInstitutes(@QueryParam("page") int page, @QueryParam("size") int size,
+	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
 	List<EducationInstitute> educationInstitutes = doctorProfileService.getEducationInstitutes(page, size, updatedTime);
 	Response<EducationInstitute> response = new Response<EducationInstitute>();
 	response.setDataList(educationInstitutes);
@@ -444,7 +454,8 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.GET_EDUCATION_QUALIFICATIONS)
     @GET
-    public Response<EducationQualification> getEducationQualifications(@QueryParam("page") int page, @QueryParam("size") int size, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+    public Response<EducationQualification> getEducationQualifications(@QueryParam("page") int page, @QueryParam("size") int size,
+	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
 	List<EducationQualification> qualifications = doctorProfileService.getEducationQualifications(page, size, updatedTime);
 	Response<EducationQualification> response = new Response<EducationQualification>();
 	response.setDataList(qualifications);
@@ -460,7 +471,8 @@ public class DoctorProfileApi {
 	}
 	DoctorMultipleDataAddEditResponse addEditNameResponse = doctorProfileService.addEditMultipleData(request);
 	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
-	if (addEditNameResponse != null)transnationalService.checkDoctor(request.getDoctorId());
+	if (addEditNameResponse != null)
+	    transnationalService.checkDoctor(request.getDoctorId());
 	addEditNameResponse.setCoverImageUrl(getFinalImageURL(addEditNameResponse.getCoverImageUrl()));
 	addEditNameResponse.setProfileImageUrl(getFinalImageURL(addEditNameResponse.getProfileImageUrl()));
 	addEditNameResponse.setThumbnailCoverImageUrl(getFinalImageURL(addEditNameResponse.getThumbnailCoverImageUrl()));

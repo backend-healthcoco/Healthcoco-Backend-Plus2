@@ -46,7 +46,7 @@ public class PatientCard {
     private Boolean isDataAvailableWithOtherDoctor = false;
 
     private Boolean isPatientOTPVerified = false;
-    
+
     public String getId() {
 	return id;
     }
@@ -207,32 +207,30 @@ public class PatientCard {
 	this.thumbnailUrl = thumbnailUrl;
     }
 
-	public Boolean getIsDataAvailableWithOtherDoctor() {
-		return isDataAvailableWithOtherDoctor;
-	}
+    public Boolean getIsDataAvailableWithOtherDoctor() {
+	return isDataAvailableWithOtherDoctor;
+    }
 
-	public void setIsDataAvailableWithOtherDoctor(Boolean isDataAvailableWithOtherDoctor) {
-		this.isDataAvailableWithOtherDoctor = isDataAvailableWithOtherDoctor;
-	}
+    public void setIsDataAvailableWithOtherDoctor(Boolean isDataAvailableWithOtherDoctor) {
+	this.isDataAvailableWithOtherDoctor = isDataAvailableWithOtherDoctor;
+    }
 
-	public Boolean getIsPatientOTPVerified() {
-		return isPatientOTPVerified;
-	}
+    public Boolean getIsPatientOTPVerified() {
+	return isPatientOTPVerified;
+    }
 
-	public void setIsPatientOTPVerified(Boolean isPatientOTPVerified) {
-		this.isPatientOTPVerified = isPatientOTPVerified;
-	}
+    public void setIsPatientOTPVerified(Boolean isPatientOTPVerified) {
+	this.isPatientOTPVerified = isPatientOTPVerified;
+    }
 
-	@Override
-	public String toString() {
-		return "PatientCard [id=" + id + ", firstName=" + firstName + ", userName=" + userName + ", emailAddress="
-				+ emailAddress + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", bloodGroup="
-				+ bloodGroup + ", PID=" + PID + ", gender=" + gender + ", mobileNumber=" + mobileNumber
-				+ ", secPhoneNumber=" + secPhoneNumber + ", dob=" + dob + ", count=" + count + ", dateOfVisit="
-				+ dateOfVisit + ", groups=" + groups + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", doctorSepecificPatientId=" + doctorSepecificPatientId
-				+ ", colorCode=" + colorCode + ", isDataAvailableWithOtherDoctor=" + isDataAvailableWithOtherDoctor
-				+ ", isPatientOTPVerified=" + isPatientOTPVerified + "]";
-	}
+    @Override
+    public String toString() {
+	return "PatientCard [id=" + id + ", firstName=" + firstName + ", userName=" + userName + ", emailAddress=" + emailAddress + ", imageUrl=" + imageUrl
+		+ ", thumbnailUrl=" + thumbnailUrl + ", bloodGroup=" + bloodGroup + ", PID=" + PID + ", gender=" + gender + ", mobileNumber=" + mobileNumber
+		+ ", secPhoneNumber=" + secPhoneNumber + ", dob=" + dob + ", count=" + count + ", dateOfVisit=" + dateOfVisit + ", groups=" + groups
+		+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorSepecificPatientId="
+		+ doctorSepecificPatientId + ", colorCode=" + colorCode + ", isDataAvailableWithOtherDoctor=" + isDataAvailableWithOtherDoctor
+		+ ", isPatientOTPVerified=" + isPatientOTPVerified + "]";
+    }
 
 }

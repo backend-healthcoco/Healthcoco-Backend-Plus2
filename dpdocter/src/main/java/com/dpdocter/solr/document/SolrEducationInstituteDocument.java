@@ -9,7 +9,7 @@ import org.springframework.data.solr.core.mapping.SolrDocument;
 @SolrDocument(solrCoreName = "educationInstitutes")
 public class SolrEducationInstituteDocument {
 
-	@Id
+    @Id
     private String id;
 
     @Field
@@ -18,32 +18,32 @@ public class SolrEducationInstituteDocument {
     @Field
     private Date updatedTime = new Date();
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+	return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+	this.name = name;
+    }
 
-	public Date getUpdatedTime() {
-		return updatedTime;
-	}
+    public Date getUpdatedTime() {
+	return updatedTime;
+    }
 
-	public void setUpdatedTime(Date updatedTime) {
-		this.updatedTime = updatedTime;
-	}
+    public void setUpdatedTime(Date updatedTime) {
+	this.updatedTime = updatedTime;
+    }
 
-	@Override
-	public String toString() {
-		return "SolrEducationInstituteDocument [id=" + id + ", name=" + name + ", updatedTime=" + updatedTime + "]";
-	}
+    @Override
+    public String toString() {
+	return "SolrEducationInstituteDocument [id=" + id + ", name=" + name + ", updatedTime=" + updatedTime + "]";
+    }
 }

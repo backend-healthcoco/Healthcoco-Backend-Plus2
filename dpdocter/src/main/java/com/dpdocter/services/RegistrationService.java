@@ -95,16 +95,16 @@ public interface RegistrationService {
 
     List<ClinicDoctorResponse> getDoctors(int page, int size, String locationId, String hospitalId, String updatedTime);
 
-	void deleteRole(String roleId, Boolean discarded);
+    void deleteRole(String roleId, Boolean discarded);
 
-	void deleteUser(String userId, String locationId, Boolean discarded);
+    void deleteUser(String userId, String locationId, Boolean discarded);
 
-	ClinicLabProperties updateLabProperties(ClinicLabProperties request);
+    ClinicLabProperties updateLabProperties(ClinicLabProperties request);
 
-	Feedback addFeedback(Feedback request);
+    Feedback addFeedback(Feedback request);
 
-	ClinicProfile updateClinicProfileHandheld(ClinicProfileHandheld request);
+    ClinicProfile updateClinicProfileHandheld(ClinicProfileHandheld request);
 
-	PatientStatusResponse getPatientStatus(String patientId, String doctorId, String locationId, String hospitalId);
+    PatientStatusResponse getPatientStatus(String patientId, String doctorId, String locationId, String hospitalId);
 
 }

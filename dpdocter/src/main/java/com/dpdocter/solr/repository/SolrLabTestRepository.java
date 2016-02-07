@@ -32,7 +32,8 @@ public interface SolrLabTestRepository extends SolrCrudRepository<SolrLabTestDoc
     List<SolrLabTestDocument> getCustomGlobalLabTests(String locationId, String hospitalId, Date date, boolean discarded, Pageable pageRequest);
 
     @Query("(locationId:*?0* AND hospitalId:*?1* AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false) AND testId:{$in: ?4}) OR (((locationId: null OR locationId: \"\") AND (hospitalId: null OR hospitalId: \"\") AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false) AND testId:{$in: ?4})")
-    List<SolrLabTestDocument> getCustomGlobalLabTests(String locationId, String hospitalId, Date date, boolean discarded, Collection<String> testIds, Pageable pageRequest);
+    List<SolrLabTestDocument> getCustomGlobalLabTests(String locationId, String hospitalId, Date date, boolean discarded, Collection<String> testIds,
+	    Pageable pageRequest);
 
     @Query("(locationId:*?0* AND hospitalId:*?1* AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false) AND testId:{$in: ?4}) OR (((locationId: null OR locationId: \"\") AND (hospitalId: null OR hospitalId: \"\") AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false) AND testId:{$in: ?4})")
     List<SolrLabTestDocument> getCustomGlobalLabTests(String locationId, String hospitalId, Date date, boolean discarded, Collection<String> testIds, Sort sort);
@@ -56,12 +57,13 @@ public interface SolrLabTestRepository extends SolrCrudRepository<SolrLabTestDoc
     List<SolrLabTestDocument> getCustomLabTests(String locationId, String hospitalId, Date date, boolean discarded, Sort sort);
 
     @Query("locationId:*?0* AND hospitalId:*?1* AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false) AND testName:{$in: ?4}")
-    List<SolrLabTestDocument> getCustomLabTests(String locationId, String hospitalId, Date date, boolean discarded, Collection<String> testIds, Pageable pageRequest);
+    List<SolrLabTestDocument> getCustomLabTests(String locationId, String hospitalId, Date date, boolean discarded, Collection<String> testIds,
+	    Pageable pageRequest);
 
     @Query("locationId:*?0* AND hospitalId:*?1* AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false) AND testId:{$in: ?4}")
     List<SolrLabTestDocument> getCustomLabTests(String locationId, String hospitalId, Date date, boolean discarded, Collection<String> testIds, Sort sort);
 
     @Query("testId: ?0")
-	List<SolrLabTestDocument> findByTestId(String testId);
+    List<SolrLabTestDocument> findByTestId(String testId);
 
 }

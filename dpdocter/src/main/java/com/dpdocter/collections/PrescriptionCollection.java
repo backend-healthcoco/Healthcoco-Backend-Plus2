@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.TestAndRecordData;
 
@@ -16,7 +15,7 @@ public class PrescriptionCollection extends GenericCollection {
 
     @Field
     private String uniqueId;
-    
+
     @Field
     private String name;
 
@@ -59,14 +58,14 @@ public class PrescriptionCollection extends GenericCollection {
     }
 
     public String getUniqueId() {
-		return uniqueId;
-	}
+	return uniqueId;
+    }
 
-	public void setUniqueId(String uniqueId) {
-		this.uniqueId = uniqueId;
-	}
+    public void setUniqueId(String uniqueId) {
+	this.uniqueId = uniqueId;
+    }
 
-	public String getName() {
+    public String getName() {
 	return name;
     }
 
@@ -138,27 +137,26 @@ public class PrescriptionCollection extends GenericCollection {
 	this.inHistory = inHistory;
     }
 
-	public List<TestAndRecordData> getTests() {
-		return tests;
-	}
+    public List<TestAndRecordData> getTests() {
+	return tests;
+    }
 
-	public void setTests(List<TestAndRecordData> tests) {
-		this.tests = tests;
-	}
+    public void setTests(List<TestAndRecordData> tests) {
+	this.tests = tests;
+    }
 
-	public String getAdvice() {
-		return advice;
-	}
+    public String getAdvice() {
+	return advice;
+    }
 
-	public void setAdvice(String advice) {
-		this.advice = advice;
-	}
+    public void setAdvice(String advice) {
+	this.advice = advice;
+    }
 
-	@Override
-	public String toString() {
-		return "PrescriptionCollection [id=" + id + ", uniqueId=" + uniqueId + ", name=" + name + ", doctorId="
-				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
-				+ ", items=" + items + ", tests=" + tests + ", patientId=" + patientId + ", prescriptionCode="
-				+ prescriptionCode + ", inHistory=" + inHistory + ", advice=" + advice + "]";
-	}
+    @Override
+    public String toString() {
+	return "PrescriptionCollection [id=" + id + ", uniqueId=" + uniqueId + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId
+		+ ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", items=" + items + ", tests=" + tests + ", patientId=" + patientId
+		+ ", prescriptionCode=" + prescriptionCode + ", inHistory=" + inHistory + ", advice=" + advice + "]";
+    }
 }

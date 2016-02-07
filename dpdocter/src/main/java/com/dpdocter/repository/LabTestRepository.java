@@ -38,9 +38,9 @@ public interface LabTestRepository extends MongoRepository<LabTestCollection, St
     List<LabTestCollection> getCustomGlobalLabTests(String hospitalId, String locationId, Date date, boolean[] discards, Sort sort);
 
     @Query("{'testName': ?0}")
-	List<LabTestCollection> findByTestName(String testName);
+    List<LabTestCollection> findByTestName(String testName);
 
     @Query("{'locationId': ?0}")
-	List<LabTestCollection> findByLocationId(String id);
+    List<LabTestCollection> findByLocationId(String id);
 
 }

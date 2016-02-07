@@ -9,9 +9,9 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.enums.SMSFormatType;
 
 @Document(collection = "sms_format_cl")
-public class SMSFormatCollection extends GenericCollection{
+public class SMSFormatCollection extends GenericCollection {
 
-	@Id
+    @Id
     private String id;
 
     @Field
@@ -28,59 +28,59 @@ public class SMSFormatCollection extends GenericCollection{
 
     @Field
     private List<String> content;
-    
-	public String getId() {
-		return id;
-	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public String getDoctorId() {
-		return doctorId;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
+    public String getDoctorId() {
+	return doctorId;
+    }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	public String getHospitalId() {
-		return hospitalId;
-	}
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
 
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
+    public String getHospitalId() {
+	return hospitalId;
+    }
 
-	public SMSFormatType getType() {
-		return type;
-	}
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
 
-	public void setType(SMSFormatType type) {
-		this.type = type;
-	}
+    public SMSFormatType getType() {
+	return type;
+    }
 
-	public List<String> getContent() {
-		return content;
-	}
+    public void setType(SMSFormatType type) {
+	this.type = type;
+    }
 
-	public void setContent(List<String> content) {
-		this.content = content;
-	}
+    public List<String> getContent() {
+	return content;
+    }
 
-	@Override
-	public String toString() {
-		return "SMSFormatCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", type=" + type + ", content=" + content + "]";
-	}
+    public void setContent(List<String> content) {
+	this.content = content;
+    }
+
+    @Override
+    public String toString() {
+	return "SMSFormatCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", type=" + type
+		+ ", content=" + content + "]";
+    }
 
 }

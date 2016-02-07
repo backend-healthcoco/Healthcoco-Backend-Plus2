@@ -23,7 +23,6 @@ import com.dpdocter.solr.repository.SolrCountryRepository;
 import com.dpdocter.solr.repository.SolrLocalityLandmarkRepository;
 import com.dpdocter.solr.repository.SolrStateRepository;
 import com.dpdocter.solr.services.SolrCityService;
-
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -43,7 +42,7 @@ public class SolrCityServiceImpl implements SolrCityService {
 
     @Autowired
     private SolrStateRepository solrStateRepository;
-    
+
     @Override
     public boolean addCountry(SolrCountryDocument solrCountry) {
 	boolean response = false;
@@ -166,14 +165,15 @@ public class SolrCityServiceImpl implements SolrCityService {
 		    SolrCityDocument city = solrCityRepository.findOne(document.getCityId());
 		    SolrCityLandmarkLocalityResponse landmark = new SolrCityLandmarkLocalityResponse();
 		    BeanUtil.map(document, landmark);
-		    if (city != null){
-		    	landmark.setCity(city.getCity());
-		    	SolrStateDocument state = solrStateRepository.findOne(city.getStateId());
-			    if(state != null){
-			    	landmark.setState(state.getState());
-			    	SolrCountryDocument country = solrCountryRepository.findOne(state.getCountryId());
-			    	if(country != null) landmark.setCountry(country.getCountry());
-			    }
+		    if (city != null) {
+			landmark.setCity(city.getCity());
+			SolrStateDocument state = solrStateRepository.findOne(city.getStateId());
+			if (state != null) {
+			    landmark.setState(state.getState());
+			    SolrCountryDocument country = solrCountryRepository.findOne(state.getCountryId());
+			    if (country != null)
+				landmark.setCountry(country.getCountry());
+			}
 		    }
 		    response.add(landmark);
 		}
@@ -183,29 +183,31 @@ public class SolrCityServiceImpl implements SolrCityService {
 		    SolrCityDocument city = solrCityRepository.findOne(document.getCityId());
 		    SolrCityLandmarkLocalityResponse locality = new SolrCityLandmarkLocalityResponse();
 		    BeanUtil.map(document, locality);
-		    if (city != null){
-		    	locality.setCity(city.getCity());
-		    	SolrStateDocument state = solrStateRepository.findOne(city.getStateId());
-			    if(state != null){
-			    	locality.setState(state.getState());
-			    	SolrCountryDocument country = solrCountryRepository.findOne(state.getCountryId());
-			    	if(country != null) locality.setCountry(country.getCountry());
-			    }
+		    if (city != null) {
+			locality.setCity(city.getCity());
+			SolrStateDocument state = solrStateRepository.findOne(city.getStateId());
+			if (state != null) {
+			    locality.setState(state.getState());
+			    SolrCountryDocument country = solrCountryRepository.findOne(state.getCountryId());
+			    if (country != null)
+				locality.setCountry(country.getCountry());
+			}
 		    }
 		    response.add(locality);
 		}
 	    }
 	    if (cities != null && !cities.isEmpty()) {
 		for (SolrCityDocument document : cities) {
-			SolrCityLandmarkLocalityResponse city = new SolrCityLandmarkLocalityResponse();
+		    SolrCityLandmarkLocalityResponse city = new SolrCityLandmarkLocalityResponse();
 		    BeanUtil.map(document, city);
-		    if (city != null){
-		    	SolrStateDocument state = solrStateRepository.findOne(document.getStateId());
-			    if(state != null){
-			    	city.setState(state.getState());
-			    	SolrCountryDocument country = solrCountryRepository.findOne(state.getCountryId());
-			    	if(country != null) city.setCountry(country.getCountry());
-			    }
+		    if (city != null) {
+			SolrStateDocument state = solrStateRepository.findOne(document.getStateId());
+			if (state != null) {
+			    city.setState(state.getState());
+			    SolrCountryDocument country = solrCountryRepository.findOne(state.getCountryId());
+			    if (country != null)
+				city.setCountry(country.getCountry());
+			}
 		    }
 		    response.add(city);
 		}
@@ -219,16 +221,16 @@ public class SolrCityServiceImpl implements SolrCityService {
 	return response;
     }
 
-	@Override
-	public boolean addState(SolrStateDocument solrState) {
-		boolean response = false;
-		try {
-		    solrStateRepository.save(solrState);
-		    transnationalService.addResource(solrState.getId(), Resource.STATE, true);
-		    response = true;
-		} catch (Exception e) {
-		    e.printStackTrace();
-		}
-		return response;
+    @Override
+    public boolean addState(SolrStateDocument solrState) {
+	boolean response = false;
+	try {
+	    solrStateRepository.save(solrState);
+	    transnationalService.addResource(solrState.getId(), Resource.STATE, true);
+	    response = true;
+	} catch (Exception e) {
+	    e.printStackTrace();
 	}
+	return response;
+    }
 }

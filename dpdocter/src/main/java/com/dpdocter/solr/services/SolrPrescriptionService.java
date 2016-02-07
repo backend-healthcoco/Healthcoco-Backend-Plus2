@@ -20,14 +20,17 @@ public interface SolrPrescriptionService {
 
     boolean deleteLabTest(String labTestId, Boolean discarded);
 
-    List<SolrDrugDocument> searchDrug(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
+    List<SolrDrugDocument> searchDrug(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+	    Boolean discarded, String searchTerm);
 
-    List<SolrLabTestDocument> searchLabTest(String range, int page, int size, String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
+    List<SolrLabTestDocument> searchLabTest(String range, int page, int size, String locationId, String hospitalId, String updatedTime, Boolean discarded,
+	    String searchTerm);
 
-	Boolean addEditDiagnosticTest(SolrDiagnosticTestDocument solrDiagnosticTestDocument);
+    Boolean addEditDiagnosticTest(SolrDiagnosticTestDocument solrDiagnosticTestDocument);
 
-	boolean deleteDiagnosticTest(String diagnosticTestId, Boolean discarded);
+    boolean deleteDiagnosticTest(String diagnosticTestId, Boolean discarded);
 
-	List<SolrDiagnosticTestDocument> searchDiagnosticTest(String range, int page, int size, String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
+    List<SolrDiagnosticTestDocument> searchDiagnosticTest(String range, int page, int size, String locationId, String hospitalId, String updatedTime,
+	    Boolean discarded, String searchTerm);
 
 }

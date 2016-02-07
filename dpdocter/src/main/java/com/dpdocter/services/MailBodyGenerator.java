@@ -17,11 +17,11 @@ public interface MailBodyGenerator {
 
     public String generateIssueTrackEmailBody(String userName, String firstName, String middleName, String lastName);
 
-	public String generateResetPasswordSuccessEmailBody(String emailAddress, String firstName, UriInfo uriInfo);
+    public String generateResetPasswordSuccessEmailBody(String emailAddress, String firstName, UriInfo uriInfo);
 
-	public String generateRecordsShareOtpBeforeVerificationEmailBody(String emailAddress, String firstName,	String doctorName, UriInfo uriInfo);
+    public String generateRecordsShareOtpBeforeVerificationEmailBody(String emailAddress, String firstName, String doctorName, UriInfo uriInfo);
 
-	public String generateRecordsShareOtpAfterVerificationEmailBody(String emailAddress, String firstName, String doctorName, UriInfo uriInfo);
+    public String generateRecordsShareOtpAfterVerificationEmailBody(String emailAddress, String firstName, String doctorName, UriInfo uriInfo);
 
-	public String generateRecordsUploadedEmailBody(String userName, String firstName, String middleName, String lastName);
+    public String generateRecordsUploadedEmailBody(String userName, String firstName, String middleName, String lastName);
 }

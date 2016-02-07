@@ -4,8 +4,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.DiagnosticTest;
-
 @Document(collection = "lab_test_cl")
 public class LabTestCollection extends GenericCollection {
 
@@ -36,14 +34,14 @@ public class LabTestCollection extends GenericCollection {
     }
 
     public String getTestId() {
-		return testId;
-	}
+	return testId;
+    }
 
-	public void setTestId(String testId) {
-		this.testId = testId;
-	}
+    public void setTestId(String testId) {
+	this.testId = testId;
+    }
 
-	public String getLocationId() {
+    public String getLocationId() {
 	return locationId;
     }
 
@@ -75,10 +73,10 @@ public class LabTestCollection extends GenericCollection {
 	this.discarded = discarded;
     }
 
-	@Override
-	public String toString() {
-		return "LabTestCollection [id=" + id + ", testId=" + testId + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + ", cost=" + cost + ", discarded=" + discarded + "]";
-	}
+    @Override
+    public String toString() {
+	return "LabTestCollection [id=" + id + ", testId=" + testId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", cost=" + cost
+		+ ", discarded=" + discarded + "]";
+    }
 
 }
