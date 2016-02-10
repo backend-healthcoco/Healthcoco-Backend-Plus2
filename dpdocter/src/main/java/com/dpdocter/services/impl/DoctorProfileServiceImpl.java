@@ -68,6 +68,7 @@ import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
 import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.services.DoctorProfileService;
 import com.dpdocter.services.FileManager;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -220,8 +221,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	try {
 	    long updatedTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
-		medicalCouncilCollections = medicalCouncilRepository.find(new Date(updatedTimeStamp), new PageRequest(page, size, Sort.Direction.DESC,
-			"updatedTime"));
+		medicalCouncilCollections = medicalCouncilRepository.find(new Date(updatedTimeStamp),
+			new PageRequest(page, size, Sort.Direction.DESC, "updatedTime"));
 	    else
 		medicalCouncilCollections = medicalCouncilRepository.find(new Date(updatedTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
 	    medicalCouncils = new ArrayList<MedicalCouncil>();
@@ -418,19 +419,19 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		List<UserLocationCollection> userLocationCollections = userLocationRepository.findByUserId(userCollection.getId());
 		for (Iterator<UserLocationCollection> iterator = userLocationCollections.iterator(); iterator.hasNext();) {
 		    UserLocationCollection userLocationCollection = iterator.next();
-		    DoctorClinicProfileCollection doctorClinicCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
+		    DoctorClinicProfileCollection doctorClinicCollection = doctorClinicProfileRepository
+			    .findByLocationId(userLocationCollection.getLocationId());
 		    if (doctorClinicCollection != null)
 			BeanUtil.map(doctorClinicCollection, doctorClinic);
 
 		    locationCollection = locationRepository.findOne(doctorClinic.getLocationId());
-		    String address = locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() + ", " : ""
-			    + locationCollection.getCity() != null ? locationCollection.getCity() + ", "
-			    : "" + locationCollection.getState() != null ? locationCollection.getState() : "" + locationCollection.getState() != null
-				    && locationCollection.getPostalCode() != null ? " - "
-				    : "" + locationCollection.getPostalCode() != null ? locationCollection.getPostalCode() + ", " : ""
-					    + locationCollection.getState() != null
-					    && locationCollection.getPostalCode() == null ? ", "
-					    : "" + locationCollection.getCountry() != null ? locationCollection.getCountry() : "";
+		    String address = locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() + ", "
+			    : "" + locationCollection.getCity() != null ? locationCollection.getCity() + ", "
+				    : "" + locationCollection.getState() != null ? locationCollection.getState()
+					    : "" + locationCollection.getState() != null && locationCollection.getPostalCode() != null ? " - "
+						    : "" + locationCollection.getPostalCode() != null ? locationCollection.getPostalCode() + ", "
+							    : "" + locationCollection.getState() != null && locationCollection.getPostalCode() == null ? ", "
+								    : "" + locationCollection.getCountry() != null ? locationCollection.getCountry() : "";
 
 		    doctorClinic.setLocationName(locationCollection.getLocationName());
 		    doctorClinic.setClinicAddress(address);
@@ -453,14 +454,13 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			BeanUtil.map(doctorClinicCollection, doctorClinic);
 
 		    locationCollection = locationRepository.findOne(locationId);
-		    String address = locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() + ", " : ""
-			    + locationCollection.getCity() != null ? locationCollection.getCity() + ", "
-			    : "" + locationCollection.getState() != null ? locationCollection.getState() : "" + locationCollection.getState() != null
-				    && locationCollection.getPostalCode() != null ? " - "
-				    : "" + locationCollection.getPostalCode() != null ? locationCollection.getPostalCode() + ", " : ""
-					    + locationCollection.getState() != null
-					    && locationCollection.getPostalCode() == null ? ", "
-					    : "" + locationCollection.getCountry() != null ? locationCollection.getCountry() : "";
+		    String address = locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() + ", "
+			    : "" + locationCollection.getCity() != null ? locationCollection.getCity() + ", "
+				    : "" + locationCollection.getState() != null ? locationCollection.getState()
+					    : "" + locationCollection.getState() != null && locationCollection.getPostalCode() != null ? " - "
+						    : "" + locationCollection.getPostalCode() != null ? locationCollection.getPostalCode() + ", "
+							    : "" + locationCollection.getState() != null && locationCollection.getPostalCode() == null ? ", "
+								    : "" + locationCollection.getCountry() != null ? locationCollection.getCountry() : "";
 
 		    doctorClinic.setLocationId(locationId);
 		    doctorClinic.setClinicAddress(address);
@@ -548,11 +548,11 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	try {
 	    long updatedTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
-		professionalMembershipCollections = professionalMembershipRepository.find(new Date(updatedTimeStamp), new PageRequest(page, size,
-			Sort.Direction.DESC, "updatedTime"));
+		professionalMembershipCollections = professionalMembershipRepository.find(new Date(updatedTimeStamp),
+			new PageRequest(page, size, Sort.Direction.DESC, "updatedTime"));
 	    else
-		professionalMembershipCollections = professionalMembershipRepository.find(new Date(updatedTimeStamp), new Sort(Sort.Direction.DESC,
-			"updatedTime"));
+		professionalMembershipCollections = professionalMembershipRepository.find(new Date(updatedTimeStamp),
+			new Sort(Sort.Direction.DESC, "updatedTime"));
 	    professionalMemberships = new ArrayList<ProfessionalMembership>();
 	    BeanUtil.map(professionalMembershipCollections, professionalMemberships);
 	} catch (Exception e) {
@@ -738,8 +738,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 	    long updatedTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
-		specialitiesCollections = specialityRepository
-			.find(new Date(updatedTimeStamp), new PageRequest(page, size, Sort.Direction.DESC, "updatedTime"));
+		specialitiesCollections = specialityRepository.find(new Date(updatedTimeStamp),
+			new PageRequest(page, size, Sort.Direction.DESC, "updatedTime"));
 	    else
 		specialitiesCollections = specialityRepository.find(new Date(updatedTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
 	    specialities = new ArrayList<Speciality>();
@@ -759,8 +759,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	try {
 	    long updatedTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
-		educationInstituteCollections = educationInstituteRepository.find(new Date(updatedTimeStamp), new PageRequest(page, size, Sort.Direction.DESC,
-			"updatedTime"));
+		educationInstituteCollections = educationInstituteRepository.find(new Date(updatedTimeStamp),
+			new PageRequest(page, size, Sort.Direction.DESC, "updatedTime"));
 	    else
 		educationInstituteCollections = educationInstituteRepository.find(new Date(updatedTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
 
@@ -781,8 +781,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	try {
 	    long updatedTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
-		qualificationCollections = educationQualificationRepository.find(new Date(updatedTimeStamp), new PageRequest(page, size, Sort.Direction.DESC,
-			"updatedTime"));
+		qualificationCollections = educationQualificationRepository.find(new Date(updatedTimeStamp),
+			new PageRequest(page, size, Sort.Direction.DESC, "updatedTime"));
 	    else
 		qualificationCollections = educationQualificationRepository.find(new Date(updatedTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
 	    qualifications = new ArrayList<EducationQualification>();

@@ -13,8 +13,8 @@ import org.springframework.stereotype.Repository;
 import com.dpdocter.collections.PatientClinicalNotesCollection;
 
 @Repository
-public interface PatientClinicalNotesRepository extends MongoRepository<PatientClinicalNotesCollection, String>,
-	PagingAndSortingRepository<PatientClinicalNotesCollection, String> {
+public interface PatientClinicalNotesRepository
+	extends MongoRepository<PatientClinicalNotesCollection, String>, PagingAndSortingRepository<PatientClinicalNotesCollection, String> {
 
     @Query("{'clinicalNotesId': ?0}")
     List<PatientClinicalNotesCollection> findByClinicalNotesId(String clinicalNotesId);

@@ -89,10 +89,10 @@ public interface SolrDiagramsRepository extends SolrCrudRepository<SolrDiagramsD
     public List<SolrDiagramsDocument> findCustomDiagrams(String doctorId, Date date, Boolean discarded, String searchTerm, Sort sort);
 
     @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false) AND (speciality:?5* OR tags:?5*)")
-    public List<SolrDiagramsDocument> findCustomDiagrams(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded,
-	    String searchTerm, Pageable pageRequest);
+    public List<SolrDiagramsDocument> findCustomDiagrams(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded, String searchTerm,
+	    Pageable pageRequest);
 
     @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false) AND (speciality:?5* OR tags:?5*)")
-    public List<SolrDiagramsDocument> findCustomDiagrams(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded,
-	    String searchTerm, Sort sort);
+    public List<SolrDiagramsDocument> findCustomDiagrams(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded, String searchTerm,
+	    Sort sort);
 }

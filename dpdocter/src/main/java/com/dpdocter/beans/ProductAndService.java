@@ -75,8 +75,8 @@ public class ProductAndService {
 
     @Override
     public String toString() {
-	return "ProductAndService [id=" + id + ", name=" + name + ", cost=" + cost + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ ", doctorId=" + doctorId + ", specialityIds=" + specialityIds + "]";
+	return "ProductAndService [id=" + id + ", name=" + name + ", cost=" + cost + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId="
+		+ doctorId + ", specialityIds=" + specialityIds + "]";
     }
 
 }

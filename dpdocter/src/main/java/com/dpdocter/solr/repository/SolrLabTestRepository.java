@@ -36,7 +36,8 @@ public interface SolrLabTestRepository extends SolrCrudRepository<SolrLabTestDoc
 	    Pageable pageRequest);
 
     @Query("(locationId:*?0* AND hospitalId:*?1* AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false) AND testId:{$in: ?4}) OR (((locationId: null OR locationId: \"\") AND (hospitalId: null OR hospitalId: \"\") AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false) AND testId:{$in: ?4})")
-    List<SolrLabTestDocument> getCustomGlobalLabTests(String locationId, String hospitalId, Date date, boolean discarded, Collection<String> testIds, Sort sort);
+    List<SolrLabTestDocument> getCustomGlobalLabTests(String locationId, String hospitalId, Date date, boolean discarded, Collection<String> testIds,
+	    Sort sort);
 
     @Query("(locationId: null OR locationId: \"\") AND (hospitalId: null OR hospitalId: \"\") AND updatedTime: {?0 TO *} AND ( discarded: ?1 OR discarded:false)")
     List<SolrLabTestDocument> getGlobalLabTests(Date date, Boolean discarded, Pageable pageRequest);

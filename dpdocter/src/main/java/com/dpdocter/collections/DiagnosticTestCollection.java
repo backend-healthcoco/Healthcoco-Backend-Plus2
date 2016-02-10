@@ -75,8 +75,8 @@ public class DiagnosticTestCollection extends GenericCollection {
 
     @Override
     public String toString() {
-	return "DiagnosticTestCollection [id=" + id + ", testName=" + testName + ", description=" + description + ", locationId=" + locationId
-		+ ", hospitalId=" + hospitalId + ", discarded=" + discarded + "]";
+	return "DiagnosticTestCollection [id=" + id + ", testName=" + testName + ", description=" + description + ", locationId=" + locationId + ", hospitalId="
+		+ hospitalId + ", discarded=" + discarded + "]";
     }
 
 }

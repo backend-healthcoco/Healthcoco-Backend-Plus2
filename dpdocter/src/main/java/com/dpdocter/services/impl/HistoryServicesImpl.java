@@ -587,8 +587,8 @@ public class HistoryServicesImpl implements HistoryServices {
 	    historyCollection = historyRepository.findHistory(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
 		@SuppressWarnings("unchecked")
-		List<String> reports = (List<String>) CollectionUtils
-			.collect(historyCollection.getGeneralRecords(), new BeanToPropertyValueTransformer("data"));
+		List<String> reports = (List<String>) CollectionUtils.collect(historyCollection.getGeneralRecords(),
+			new BeanToPropertyValueTransformer("data"));
 		if (reports != null) {
 		    if (reports.contains(reportId)) {
 			historyCollection.getGeneralRecords().remove(reports.indexOf(reportId));
@@ -633,8 +633,8 @@ public class HistoryServicesImpl implements HistoryServices {
 	    historyCollection = historyRepository.findHistory(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
 		@SuppressWarnings("unchecked")
-		List<String> clinicalNotes = (List<String>) CollectionUtils.collect(historyCollection.getGeneralRecords(), new BeanToPropertyValueTransformer(
-			"data"));
+		List<String> clinicalNotes = (List<String>) CollectionUtils.collect(historyCollection.getGeneralRecords(),
+			new BeanToPropertyValueTransformer("data"));
 		if (clinicalNotes != null) {
 		    if (clinicalNotes.contains(clinicalNotesId)) {
 			historyCollection.getGeneralRecords().remove(clinicalNotes.indexOf(clinicalNotesId));
@@ -652,8 +652,8 @@ public class HistoryServicesImpl implements HistoryServices {
 			    clinicalNotesCollection.setUpdatedTime(new Date());
 			    clinicalNotesRepository.save(clinicalNotesCollection);
 
-			    PatientClinicalNotesCollection patientClinicalNotesCollection = patientClinicalNotesRepository.findByPatientIdClinicalNotesId(
-				    patientId, clinicalNotesId);
+			    PatientClinicalNotesCollection patientClinicalNotesCollection = patientClinicalNotesRepository
+				    .findByPatientIdClinicalNotesId(patientId, clinicalNotesId);
 			    if (patientClinicalNotesCollection != null) {
 				patientClinicalNotesCollection.setUpdatedTime(new Date());
 				patientClinicalNotesRepository.save(patientClinicalNotesCollection);
@@ -687,8 +687,8 @@ public class HistoryServicesImpl implements HistoryServices {
 	    historyCollection = historyRepository.findHistory(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
 		@SuppressWarnings("unchecked")
-		List<String> prescriptions = (List<String>) CollectionUtils.collect(historyCollection.getGeneralRecords(), new BeanToPropertyValueTransformer(
-			"data"));
+		List<String> prescriptions = (List<String>) CollectionUtils.collect(historyCollection.getGeneralRecords(),
+			new BeanToPropertyValueTransformer("data"));
 		if (prescriptions != null) {
 		    if (prescriptions.contains(prescriptionId)) {
 			historyCollection.getGeneralRecords().remove(prescriptions.indexOf(prescriptionId));
@@ -847,11 +847,11 @@ public class HistoryServicesImpl implements HistoryServices {
 	    else {
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
-			diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, new Date(createdTimeStamp), discards, new PageRequest(page, size,
-				Direction.DESC, "updatedTime"));
+			diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, new Date(createdTimeStamp), discards,
+				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, new Date(createdTimeStamp), discards, new Sort(
-				Sort.Direction.DESC, "updatedTime"));
+			diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, new Date(createdTimeStamp), discards,
+				new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
 		    if (size > 0)
 			diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
@@ -891,8 +891,8 @@ public class HistoryServicesImpl implements HistoryServices {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 
 	    if (size > 0)
-		diseasesCollections = diseasesRepository.findGlobalDiseases(new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC,
-			"updatedTime"));
+		diseasesCollections = diseasesRepository.findGlobalDiseases(new Date(createdTimeStamp), discards,
+			new PageRequest(page, size, Direction.DESC, "updatedTime"));
 	    else
 		diseasesCollections = diseasesRepository.findGlobalDiseases(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
 
@@ -928,19 +928,19 @@ public class HistoryServicesImpl implements HistoryServices {
 
 	    if (doctorId == null) {
 		if (size > 0)
-		    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(new Date(createdTimeStamp), discards, new PageRequest(page, size,
-			    Direction.DESC, "updatedTime"));
+		    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(new Date(createdTimeStamp), discards,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC,
-			    "updatedTime"));
+		    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(new Date(createdTimeStamp), discards,
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    } else {
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
-			diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, new Date(createdTimeStamp), discards, new PageRequest(page,
-				size, Direction.DESC, "updatedTime"));
+			diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, new Date(createdTimeStamp), discards,
+				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, new Date(createdTimeStamp), discards, new Sort(
-				Sort.Direction.DESC, "updatedTime"));
+			diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, new Date(createdTimeStamp), discards,
+				new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
 		    if (size > 0)
 			diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
@@ -984,39 +984,31 @@ public class HistoryServicesImpl implements HistoryServices {
 		matchForFilter = Aggregation.match(Criteria.where("generalRecords.dataType").in(historyFilter));
 		if (size > 0)
 		    aggregation = Aggregation.newAggregation(
-			    Aggregation.match(Criteria
-				    .where("patientId")
-				    .is(patientId)
-				    .andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
-					    Criteria.where("hospitalId").is(hospitalId), Criteria.where("updatedTime").gte(new Date(createdTime)))),
+			    Aggregation.match(Criteria.where("patientId").is(patientId).andOperator(Criteria.where("doctorId").is(doctorId),
+				    Criteria.where("locationId").is(locationId), Criteria.where("hospitalId").is(hospitalId),
+				    Criteria.where("updatedTime").gte(new Date(createdTime)))),
 			    Aggregation.unwind("generalRecords"), matchForFilter, Aggregation.skip(page * size), Aggregation.limit(size),
 			    Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 		else
 		    aggregation = Aggregation.newAggregation(
-			    Aggregation.match(Criteria
-				    .where("patientId")
-				    .is(patientId)
-				    .andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
-					    Criteria.where("hospitalId").is(hospitalId), Criteria.where("updatedTime").gte(new Date(createdTime)))),
+			    Aggregation.match(Criteria.where("patientId").is(patientId).andOperator(Criteria.where("doctorId").is(doctorId),
+				    Criteria.where("locationId").is(locationId), Criteria.where("hospitalId").is(hospitalId),
+				    Criteria.where("updatedTime").gte(new Date(createdTime)))),
 			    Aggregation.unwind("generalRecords"), matchForFilter, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 	    } else {
 		if (size > 0)
 		    aggregation = Aggregation.newAggregation(
-			    Aggregation.match(Criteria
-				    .where("patientId")
-				    .is(patientId)
-				    .andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
-					    Criteria.where("hospitalId").is(hospitalId), Criteria.where("updatedTime").gte(new Date(createdTime)))),
+			    Aggregation.match(Criteria.where("patientId").is(patientId).andOperator(Criteria.where("doctorId").is(doctorId),
+				    Criteria.where("locationId").is(locationId), Criteria.where("hospitalId").is(hospitalId),
+				    Criteria.where("updatedTime").gte(new Date(createdTime)))),
 			    Aggregation.unwind("generalRecords"), Aggregation.skip(page * size), Aggregation.limit(size),
 			    Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 		else
 		    aggregation = Aggregation.newAggregation(
-			    Aggregation.match(Criteria
-				    .where("patientId")
-				    .is(patientId)
-				    .andOperator(Criteria.where("doctorId").is(doctorId), Criteria.where("locationId").is(locationId),
-					    Criteria.where("hospitalId").is(hospitalId), Criteria.where("updatedTime").gte(new Date(createdTime)))),
+			    Aggregation.match(Criteria.where("patientId").is(patientId).andOperator(Criteria.where("doctorId").is(doctorId),
+				    Criteria.where("locationId").is(locationId), Criteria.where("hospitalId").is(hospitalId),
+				    Criteria.where("updatedTime").gte(new Date(createdTime)))),
 			    Aggregation.unwind("generalRecords"), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 	    }

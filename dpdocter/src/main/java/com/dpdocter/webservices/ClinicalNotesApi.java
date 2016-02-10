@@ -48,6 +48,7 @@ import com.dpdocter.solr.document.SolrInvestigationsDocument;
 import com.dpdocter.solr.document.SolrNotesDocument;
 import com.dpdocter.solr.document.SolrObservationsDocument;
 import com.dpdocter.solr.services.SolrClinicalNotesService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -150,8 +151,8 @@ public class ClinicalNotesApi {
 		otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), discarded);
     }
 
-    private Response<ClinicalNotes> getAllNotes(int page, int size, String doctorId, String locationId, String hospitalId, String patientId,
-	    String updatedTime, Boolean isOTPVerified, Boolean discarded) {
+    private Response<ClinicalNotes> getAllNotes(int page, int size, String doctorId, String locationId, String hospitalId, String patientId, String updatedTime,
+	    Boolean isOTPVerified, Boolean discarded) {
 	List<ClinicalNotes> clinicalNotes = null;
 	if (isOTPVerified) {
 	    clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithVerifiedOTP(page, size, patientId, updatedTime, discarded, false);

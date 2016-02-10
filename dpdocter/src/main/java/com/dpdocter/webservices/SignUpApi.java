@@ -37,6 +37,7 @@ import com.dpdocter.services.SignUpService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrDoctorDocument;
 import com.dpdocter.solr.services.SolrRegistrationService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 

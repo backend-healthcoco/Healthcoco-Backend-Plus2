@@ -139,7 +139,7 @@ public class Prescription extends GenericCollection {
     @Override
     public String toString() {
 	return "Prescription [id=" + id + ", uniqueId=" + uniqueId + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId
-		+ ", hospitalId=" + hospitalId + ", items=" + items + ", inHistory=" + inHistory + ", discarded=" + discarded + ", tests=" + tests
-		+ ", advice=" + advice + ", visitId=" + visitId + ", patientId=" + patientId + "]";
+		+ ", hospitalId=" + hospitalId + ", items=" + items + ", inHistory=" + inHistory + ", discarded=" + discarded + ", tests=" + tests + ", advice="
+		+ advice + ", visitId=" + visitId + ", patientId=" + patientId + "]";
     }
 }

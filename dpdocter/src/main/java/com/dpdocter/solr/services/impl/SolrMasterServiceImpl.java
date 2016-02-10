@@ -43,6 +43,7 @@ import com.dpdocter.solr.repository.SolrProfessionalMembershipRepository;
 import com.dpdocter.solr.repository.SolrReferenceRepository;
 import com.dpdocter.solr.repository.SolrSpecialityRepository;
 import com.dpdocter.solr.services.SolrMasterService;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -111,18 +112,18 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		if (size > 0)
-		    referenceDocuments = solrReferenceRepository.findGlobal(new Date(createdTimeStamp), discarded, new PageRequest(page, size, Direction.DESC,
-			    "updatedTime"));
+		    referenceDocuments = solrReferenceRepository.findGlobal(new Date(createdTimeStamp), discarded,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    referenceDocuments = solrReferenceRepository
-			    .findGlobal(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+		    referenceDocuments = solrReferenceRepository.findGlobal(new Date(createdTimeStamp), discarded,
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    } else {
 		if (size > 0)
-		    referenceDocuments = solrReferenceRepository.findGlobal(new Date(createdTimeStamp), discarded, searchTerm, new PageRequest(page, size,
-			    Direction.DESC, "updatedTime"));
+		    referenceDocuments = solrReferenceRepository.findGlobal(new Date(createdTimeStamp), discarded, searchTerm,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    referenceDocuments = solrReferenceRepository.findGlobal(new Date(createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC,
-			    "updatedTime"));
+		    referenceDocuments = solrReferenceRepository.findGlobal(new Date(createdTimeStamp), discarded, searchTerm,
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    }
 	    if (referenceDocuments != null) {
 		response = new ArrayList<Reference>();
@@ -148,11 +149,11 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 		if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		    if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			if (size > 0)
-			    referenceDocuments = solrReferenceRepository.findCustom(doctorId, new Date(createdTimeStamp), discarded, new PageRequest(page,
-				    size, Direction.DESC, "updatedTime"));
+			    referenceDocuments = solrReferenceRepository.findCustom(doctorId, new Date(createdTimeStamp), discarded,
+				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    referenceDocuments = solrReferenceRepository.findCustom(doctorId, new Date(createdTimeStamp), discarded, new Sort(
-				    Sort.Direction.DESC, "updatedTime"));
+			    referenceDocuments = solrReferenceRepository.findCustom(doctorId, new Date(createdTimeStamp), discarded,
+				    new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
 			    referenceDocuments = solrReferenceRepository.findCustom(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discarded,
@@ -167,8 +168,8 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 			    referenceDocuments = solrReferenceRepository.findCustom(doctorId, new Date(createdTimeStamp), discarded, searchTerm,
 				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    referenceDocuments = solrReferenceRepository.findCustom(doctorId, new Date(createdTimeStamp), discarded, searchTerm, new Sort(
-				    Sort.Direction.DESC, "updatedTime"));
+			    referenceDocuments = solrReferenceRepository.findCustom(doctorId, new Date(createdTimeStamp), discarded, searchTerm,
+				    new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
 			    referenceDocuments = solrReferenceRepository.findCustom(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discarded,
@@ -200,19 +201,19 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 	    if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 		    if (size > 0)
-			referenceDocuments = solrReferenceRepository.findCustomGlobal(new Date(createdTimeStamp), discarded, new PageRequest(page, size,
-				Direction.DESC, "updatedTime"));
+			referenceDocuments = solrReferenceRepository.findCustomGlobal(new Date(createdTimeStamp), discarded,
+				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			referenceDocuments = solrReferenceRepository.findCustomGlobal(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC,
-				"updatedTime"));
+			referenceDocuments = solrReferenceRepository.findCustomGlobal(new Date(createdTimeStamp), discarded,
+				new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
 		    if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			if (size > 0)
-			    referenceDocuments = solrReferenceRepository.findCustomGlobal(doctorId, new Date(createdTimeStamp), discarded, new PageRequest(
-				    page, size, Direction.DESC, "updatedTime"));
+			    referenceDocuments = solrReferenceRepository.findCustomGlobal(doctorId, new Date(createdTimeStamp), discarded,
+				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    referenceDocuments = solrReferenceRepository.findCustomGlobal(doctorId, new Date(createdTimeStamp), discarded, new Sort(
-				    Sort.Direction.DESC, "updatedTime"));
+			    referenceDocuments = solrReferenceRepository.findCustomGlobal(doctorId, new Date(createdTimeStamp), discarded,
+				    new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
 			    referenceDocuments = solrReferenceRepository.findCustomGlobal(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
@@ -225,11 +226,11 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 	    } else {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 		    if (size > 0)
-			referenceDocuments = solrReferenceRepository.findCustomGlobal(new Date(createdTimeStamp), discarded, searchTerm, new PageRequest(page,
-				size, Direction.DESC, "updatedTime"));
+			referenceDocuments = solrReferenceRepository.findCustomGlobal(new Date(createdTimeStamp), discarded, searchTerm,
+				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			referenceDocuments = solrReferenceRepository.findCustomGlobal(new Date(createdTimeStamp), discarded, searchTerm, new Sort(
-				Sort.Direction.DESC, "updatedTime"));
+			referenceDocuments = solrReferenceRepository.findCustomGlobal(new Date(createdTimeStamp), discarded, searchTerm,
+				new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
 		    if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			if (size > 0)
@@ -294,11 +295,11 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 		if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		    if (locationId == null && hospitalId == null) {
 			if (size > 0)
-			    diseasesDocuments = solrDiseaseRepository.findCustomDiseases(doctorId, new Date(createdTimeStamp), discarded, new PageRequest(page,
-				    size, Direction.DESC, "updatedTime"));
+			    diseasesDocuments = solrDiseaseRepository.findCustomDiseases(doctorId, new Date(createdTimeStamp), discarded,
+				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    diseasesDocuments = solrDiseaseRepository.findCustomDiseases(doctorId, new Date(createdTimeStamp), discarded, new Sort(
-				    Sort.Direction.DESC, "updatedTime"));
+			    diseasesDocuments = solrDiseaseRepository.findCustomDiseases(doctorId, new Date(createdTimeStamp), discarded,
+				    new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
 			    diseasesDocuments = solrDiseaseRepository.findCustomDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
@@ -313,8 +314,8 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 			    diseasesDocuments = solrDiseaseRepository.findCustomDiseases(doctorId, new Date(createdTimeStamp), discarded, searchTerm,
 				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    diseasesDocuments = solrDiseaseRepository.findCustomDiseases(doctorId, new Date(createdTimeStamp), discarded, searchTerm, new Sort(
-				    Sort.Direction.DESC, "updatedTime"));
+			    diseasesDocuments = solrDiseaseRepository.findCustomDiseases(doctorId, new Date(createdTimeStamp), discarded, searchTerm,
+				    new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
 			    diseasesDocuments = solrDiseaseRepository.findCustomDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
@@ -351,18 +352,18 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 
 	    if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		if (size > 0)
-		    diseasesDocuments = solrDiseaseRepository.findGlobalDiseases(new Date(createdTimeStamp), discarded, new PageRequest(page, size,
-			    Direction.DESC, "updatedTime"));
+		    diseasesDocuments = solrDiseaseRepository.findGlobalDiseases(new Date(createdTimeStamp), discarded,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    diseasesDocuments = solrDiseaseRepository.findGlobalDiseases(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC,
-			    "updatedTime"));
+		    diseasesDocuments = solrDiseaseRepository.findGlobalDiseases(new Date(createdTimeStamp), discarded,
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    } else {
 		if (size > 0)
-		    diseasesDocuments = solrDiseaseRepository.findGlobalDiseases(new Date(createdTimeStamp), discarded, searchTerm, new PageRequest(page, size,
-			    Direction.DESC, "updatedTime"));
+		    diseasesDocuments = solrDiseaseRepository.findGlobalDiseases(new Date(createdTimeStamp), discarded, searchTerm,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    diseasesDocuments = solrDiseaseRepository.findGlobalDiseases(new Date(createdTimeStamp), discarded, searchTerm, new Sort(
-			    Sort.Direction.DESC, "updatedTime"));
+		    diseasesDocuments = solrDiseaseRepository.findGlobalDiseases(new Date(createdTimeStamp), discarded, searchTerm,
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    }
 
 	    if (diseasesDocuments != null) {
@@ -393,19 +394,19 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 	    if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		if (doctorId == null) {
 		    if (size > 0)
-			diseasesDocuments = solrDiseaseRepository.findCustomGlobalDiseases(new Date(createdTimeStamp), discarded, new PageRequest(page, size,
-				Direction.DESC, "updatedTime"));
+			diseasesDocuments = solrDiseaseRepository.findCustomGlobalDiseases(new Date(createdTimeStamp), discarded,
+				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			diseasesDocuments = solrDiseaseRepository.findCustomGlobalDiseases(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC,
-				"updatedTime"));
+			diseasesDocuments = solrDiseaseRepository.findCustomGlobalDiseases(new Date(createdTimeStamp), discarded,
+				new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
 		    if (locationId == null && hospitalId == null) {
 			if (size > 0)
 			    diseasesDocuments = solrDiseaseRepository.findCustomGlobalDiseases(doctorId, new Date(createdTimeStamp), discarded,
 				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    diseasesDocuments = solrDiseaseRepository.findCustomGlobalDiseases(doctorId, new Date(createdTimeStamp), discarded, new Sort(
-				    Sort.Direction.DESC, "updatedTime"));
+			    diseasesDocuments = solrDiseaseRepository.findCustomGlobalDiseases(doctorId, new Date(createdTimeStamp), discarded,
+				    new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
 			    diseasesDocuments = solrDiseaseRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
@@ -418,11 +419,11 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 	    } else {
 		if (doctorId == null) {
 		    if (size > 0)
-			diseasesDocuments = solrDiseaseRepository.findCustomGlobalDiseases(new Date(createdTimeStamp), discarded, searchTerm, new PageRequest(
-				page, size, Direction.DESC, "updatedTime"));
+			diseasesDocuments = solrDiseaseRepository.findCustomGlobalDiseases(new Date(createdTimeStamp), discarded, searchTerm,
+				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			diseasesDocuments = solrDiseaseRepository.findCustomGlobalDiseases(new Date(createdTimeStamp), discarded, searchTerm, new Sort(
-				Sort.Direction.DESC, "updatedTime"));
+			diseasesDocuments = solrDiseaseRepository.findCustomGlobalDiseases(new Date(createdTimeStamp), discarded, searchTerm,
+				new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
 		    if (locationId == null && hospitalId == null) {
 			if (size > 0)
@@ -472,8 +473,8 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 		    bloodGroupDocuments = solrBloodGroupRepository.find(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
 	    } else {
 		if (size > 0)
-		    bloodGroupDocuments = solrBloodGroupRepository.find(new Date(createdTimeStamp), searchTerm, new PageRequest(page, size, Direction.DESC,
-			    "updatedTime"));
+		    bloodGroupDocuments = solrBloodGroupRepository.find(new Date(createdTimeStamp), searchTerm,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
 		    bloodGroupDocuments = solrBloodGroupRepository.find(new Date(createdTimeStamp), searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
 	    }
@@ -502,8 +503,8 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 		    professionDocuments = solrProfessionRepository.find(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
 	    } else {
 		if (size > 0)
-		    professionDocuments = solrProfessionRepository.find(new Date(createdTimeStamp), searchTerm, new PageRequest(page, size, Direction.DESC,
-			    "updatedTime"));
+		    professionDocuments = solrProfessionRepository.find(new Date(createdTimeStamp), searchTerm,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
 		    professionDocuments = solrProfessionRepository.find(new Date(createdTimeStamp), searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
 	    }
@@ -527,18 +528,18 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		if (size > 0)
-		    professionalMembershipDocuments = solrProfessionalMembershipRepository.find(new Date(createdTimeStamp), new PageRequest(page, size,
-			    Direction.DESC, "updatedTime"));
+		    professionalMembershipDocuments = solrProfessionalMembershipRepository.find(new Date(createdTimeStamp),
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    professionalMembershipDocuments = solrProfessionalMembershipRepository.find(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
-			    "updatedTime"));
+		    professionalMembershipDocuments = solrProfessionalMembershipRepository.find(new Date(createdTimeStamp),
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    } else {
 		if (size > 0)
-		    professionalMembershipDocuments = solrProfessionalMembershipRepository.find(new Date(createdTimeStamp), searchTerm, new PageRequest(page,
-			    size, Direction.DESC, "updatedTime"));
+		    professionalMembershipDocuments = solrProfessionalMembershipRepository.find(new Date(createdTimeStamp), searchTerm,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    professionalMembershipDocuments = solrProfessionalMembershipRepository.find(new Date(createdTimeStamp), searchTerm, new Sort(
-			    Sort.Direction.DESC, "updatedTime"));
+		    professionalMembershipDocuments = solrProfessionalMembershipRepository.find(new Date(createdTimeStamp), searchTerm,
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    }
 	    if (professionalMembershipDocuments != null) {
 		response = new ArrayList<ProfessionalMembership>();
@@ -560,18 +561,18 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		if (size > 0)
-		    educationInstituteDocuments = solrEducationInstituteRepository.find(new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC,
-			    "updatedTime"));
+		    educationInstituteDocuments = solrEducationInstituteRepository.find(new Date(createdTimeStamp),
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
 		    educationInstituteDocuments = solrEducationInstituteRepository.find(new Date(createdTimeStamp),
 			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    } else {
 		if (size > 0)
-		    educationInstituteDocuments = solrEducationInstituteRepository.find(new Date(createdTimeStamp), searchTerm, new PageRequest(page, size,
-			    Direction.DESC, "updatedTime"));
+		    educationInstituteDocuments = solrEducationInstituteRepository.find(new Date(createdTimeStamp), searchTerm,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    educationInstituteDocuments = solrEducationInstituteRepository.find(new Date(createdTimeStamp), searchTerm, new Sort(Sort.Direction.DESC,
-			    "updatedTime"));
+		    educationInstituteDocuments = solrEducationInstituteRepository.find(new Date(createdTimeStamp), searchTerm,
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    }
 	    if (educationInstituteDocuments != null) {
 		response = new ArrayList<EducationInstitute>();
@@ -593,18 +594,18 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		if (size > 0)
-		    educationQualificationDocuments = solrEducationQualificationRepository.find(new Date(createdTimeStamp), new PageRequest(page, size,
-			    Direction.DESC, "updatedTime"));
+		    educationQualificationDocuments = solrEducationQualificationRepository.find(new Date(createdTimeStamp),
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    educationQualificationDocuments = solrEducationQualificationRepository.find(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
-			    "updatedTime"));
+		    educationQualificationDocuments = solrEducationQualificationRepository.find(new Date(createdTimeStamp),
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    } else {
 		if (size > 0)
-		    educationQualificationDocuments = solrEducationQualificationRepository.find(new Date(createdTimeStamp), searchTerm, new PageRequest(page,
-			    size, Direction.DESC, "updatedTime"));
+		    educationQualificationDocuments = solrEducationQualificationRepository.find(new Date(createdTimeStamp), searchTerm,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    educationQualificationDocuments = solrEducationQualificationRepository.find(new Date(createdTimeStamp), searchTerm, new Sort(
-			    Sort.Direction.DESC, "updatedTime"));
+		    educationQualificationDocuments = solrEducationQualificationRepository.find(new Date(createdTimeStamp), searchTerm,
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    }
 	    if (educationQualificationDocuments != null) {
 		response = new ArrayList<EducationQualification>();
@@ -626,17 +627,17 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		if (size > 0)
-		    medicalCouncilDocuments = solrMedicalCouncilRepository.find(new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC,
-			    "updatedTime"));
+		    medicalCouncilDocuments = solrMedicalCouncilRepository.find(new Date(createdTimeStamp),
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
 		    medicalCouncilDocuments = solrMedicalCouncilRepository.find(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
 	    } else {
 		if (size > 0)
-		    medicalCouncilDocuments = solrMedicalCouncilRepository.find(new Date(createdTimeStamp), searchTerm, new PageRequest(page, size,
-			    Direction.DESC, "updatedTime"));
+		    medicalCouncilDocuments = solrMedicalCouncilRepository.find(new Date(createdTimeStamp), searchTerm,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    medicalCouncilDocuments = solrMedicalCouncilRepository.find(new Date(createdTimeStamp), searchTerm, new Sort(Sort.Direction.DESC,
-			    "updatedTime"));
+		    medicalCouncilDocuments = solrMedicalCouncilRepository.find(new Date(createdTimeStamp), searchTerm,
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    }
 	    if (medicalCouncilDocuments != null) {
 		response = new ArrayList<MedicalCouncil>();
@@ -663,8 +664,8 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 		    specialityDocuments = solrSpecialityRepository.find(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
 	    } else {
 		if (size > 0)
-		    specialityDocuments = solrSpecialityRepository.find(new Date(createdTimeStamp), searchTerm, new PageRequest(page, size, Direction.DESC,
-			    "updatedTime"));
+		    specialityDocuments = solrSpecialityRepository.find(new Date(createdTimeStamp), searchTerm,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
 		    specialityDocuments = solrSpecialityRepository.find(new Date(createdTimeStamp), searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
 	    }

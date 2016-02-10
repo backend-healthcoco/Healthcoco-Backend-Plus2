@@ -21,20 +21,20 @@ public interface HistoryRepository extends MongoRepository<HistoryCollection, St
 
     /*@Query(value = "{'patientId': ?0}", fields = "{ 'prescriptions' : 0, 'clinicalNotes' : 0}")
     List<HistoryCollection> findByPatientIdFilterByReports(String patientId);
-
+    
     @Query(value = "{'patientId':?0}", fields = "{ 'prescriptions' : 0, 'reports' : 0}")
     List<HistoryCollection> findByPatientIdFilterByClinicalNotes(String patientId);
-
+    
     @Query(value = "{'patientId':?0}", fields = "{ 'clinicalNotes' : 0, 'reports' : 0}")
     List<HistoryCollection> findByPatientIdFilterByPrescriptions(String patientId);*/
 
     /*@Query(value = "{'doctorId':?0,'locationId':?1,'hospitalId':?2,'patientId':?3}", fields = "{ 'prescriptions' : 0, 'clinicalNotes' : 0}")
     HistoryCollection findByDoctorIdLocationIdHospitalIdAndPatientIdFilterByReports(String doctorId, String locationId, String hospitalId, String patientId);
-
+    
     @Query(value = "{'doctorId':?0,'locationId':?1,'hospitalId':?2,'patientId':?3}", fields = "{ 'prescriptions' : 0, 'reports' : 0}")
     HistoryCollection findByDoctorIdLocationIdHospitalIdAndPatientIdFilterByClinicalNotes(String doctorId, String locationId, String hospitalId,
         String patientId);
-
+    
     @Query(value = "{'doctorId': ?0,'locationId': ?1,'hospitalId': ?2,'patientId': ?3}", fields = "{ 'clinicalNotes' : 0, 'reports' : 0}")
     HistoryCollection findByDoctorIdLocationIdHospitalIdAndPatientIdFilterByPrescriptions(String doctorId, String locationId, String hospitalId,
         String patientId);*/

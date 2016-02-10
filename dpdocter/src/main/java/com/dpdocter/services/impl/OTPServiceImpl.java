@@ -31,6 +31,7 @@ import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.sms.services.SMSServices;
+
 import common.util.web.LoginUtils;
 
 @Service
@@ -135,8 +136,8 @@ public class OTPServiceImpl implements OTPService {
 	    UserCollection patient = userRepository.findOne(patientId);
 	    if (userCollection != null && patient != null && userLocationCollection != null) {
 		String doctorName = (userCollection.getTitle() != null ? userCollection.getTitle() : "") + " " + userCollection.getFirstName();
-		List<DoctorOTPCollection> doctorOTPCollection = doctorOTPRepository.find(userLocationCollection.getId(), patientId, new PageRequest(0, 1,
-			new Sort(Sort.Direction.DESC, "createdTime")));
+		List<DoctorOTPCollection> doctorOTPCollection = doctorOTPRepository.find(userLocationCollection.getId(), patientId,
+			new PageRequest(0, 1, new Sort(Sort.Direction.DESC, "createdTime")));
 		if (doctorOTPCollection != null) {
 		    OTPCollection otpCollection = otpRepository.findOne(doctorOTPCollection.get(0).getOtpId());
 		    if (otpCollection != null) {
@@ -176,8 +177,8 @@ public class OTPServiceImpl implements OTPService {
 	try {
 	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(doctorId, locationId);
 	    if (userLocationCollection != null) {
-		List<DoctorOTPCollection> doctorOTPCollection = doctorOTPRepository.find(userLocationCollection.getId(), patientId, new PageRequest(0, 1,
-			new Sort(Sort.Direction.DESC, "createdTime")));
+		List<DoctorOTPCollection> doctorOTPCollection = doctorOTPRepository.find(userLocationCollection.getId(), patientId,
+			new PageRequest(0, 1, new Sort(Sort.Direction.DESC, "createdTime")));
 		if (doctorOTPCollection != null && !doctorOTPCollection.isEmpty() && doctorOTPCollection.size() > 0) {
 		    OTPCollection otpCollection = otpRepository.findOne(doctorOTPCollection.get(0).getOtpId());
 		    if (otpCollection != null && otpCollection.getState().equals(OTPState.VERIFIED)) {
@@ -209,8 +210,9 @@ public class OTPServiceImpl implements OTPService {
 	String OTP = null;
 	try {
 	    OTP = LoginUtils.generateOTP();
-	    SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(null, null, null, null, null, "Your Healthcoco account verification number is: "
-		    + OTP + ".Enter this in our app to confirm your Healthcoco account.", mobileNumber, "OTPVerification");
+	    SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(null, null, null, null, null,
+		    "Your Healthcoco account verification number is: " + OTP + ".Enter this in our app to confirm your Healthcoco account.", mobileNumber,
+		    "OTPVerification");
 	    sMSServices.sendSMS(smsTrackDetail, false);
 
 	    OTPCollection otpCollection = new OTPCollection();

@@ -56,14 +56,6 @@ public class DPDoctorUtils {
 	return result;
     }
 
-    public static String getFinalImageURL(String imageURL) {
-	DPDoctorUtils dpDoctorUtils = DPDoctorUtils.getInstance();
-	UriInfo uriInfo = dpDoctorUtils.uriInfo;
-	String imageUrlRootPath = dpDoctorUtils.imageUrlRootPath;
-	String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-	return finalImageURL;
-    }
-
     public static String formatAsSolrDate(Date date) {
 	DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 	df.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -93,4 +85,5 @@ public class DPDoctorUtils {
 	}
 	return "H" + new String(id);
     }
+
 }

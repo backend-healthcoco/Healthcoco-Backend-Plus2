@@ -11,8 +11,8 @@ import org.springframework.stereotype.Repository;
 import com.dpdocter.collections.PatientAdmissionCollection;
 
 @Repository
-public interface PatientAdmissionRepository extends MongoRepository<PatientAdmissionCollection, String>,
-	PagingAndSortingRepository<PatientAdmissionCollection, String> {
+public interface PatientAdmissionRepository
+	extends MongoRepository<PatientAdmissionCollection, String>, PagingAndSortingRepository<PatientAdmissionCollection, String> {
 
     @Query("{'userId':?0}")
     PatientAdmissionCollection findByUserId(String userId);

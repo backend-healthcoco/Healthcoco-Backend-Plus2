@@ -114,7 +114,7 @@ public class Drug {
     @Override
     public String toString() {
 	return "Drug [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", description=" + description + ", strength=" + strength
-		+ ", genericId=" + genericId + ", drugCode=" + drugCode + ", discarded=" + discarded + ", companyName=" + companyName + ", packSize="
-		+ packSize + ", MRP=" + MRP + "]";
+		+ ", genericId=" + genericId + ", drugCode=" + drugCode + ", discarded=" + discarded + ", companyName=" + companyName + ", packSize=" + packSize
+		+ ", MRP=" + MRP + "]";
     }
 }

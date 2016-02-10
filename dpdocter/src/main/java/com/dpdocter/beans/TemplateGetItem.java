@@ -57,8 +57,8 @@ public class TemplateGetItem {
 
     @Override
     public String toString() {
-	return "TemplateGetItem [drug=" + drug + ", duration=" + duration + ", dosage=" + dosage + ", direction=" + direction + ", instructions="
-		+ instructions + "]";
+	return "TemplateGetItem [drug=" + drug + ", duration=" + duration + ", dosage=" + dosage + ", direction=" + direction + ", instructions=" + instructions
+		+ "]";
     }
 
 }

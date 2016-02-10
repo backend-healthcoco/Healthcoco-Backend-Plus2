@@ -294,12 +294,12 @@ public class SignUpServiceImpl implements SignUpService {
 	    // save location for hospital
 	    LocationCollection locationCollection = new LocationCollection();
 	    BeanUtil.map(request, locationCollection);
-	    List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation((locationCollection.getLocationName() != null ? locationCollection
-		    .getLocationName() : "")
-		    + (locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() : "")
-		    + (locationCollection.getCity() != null ? locationCollection.getCity() : "")
-		    + (locationCollection.getState() != null ? locationCollection.getState() : "")
-		    + (locationCollection.getCountry() != null ? locationCollection.getCountry() : ""));
+	    List<GeocodedLocation> geocodedLocations = locationServices
+		    .geocodeLocation((locationCollection.getLocationName() != null ? locationCollection.getLocationName() : "")
+			    + (locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() : "")
+			    + (locationCollection.getCity() != null ? locationCollection.getCity() : "")
+			    + (locationCollection.getState() != null ? locationCollection.getState() : "")
+			    + (locationCollection.getCountry() != null ? locationCollection.getCountry() : ""));
 
 	    if (geocodedLocations != null && !geocodedLocations.isEmpty())
 		BeanUtil.map(geocodedLocations.get(0), locationCollection);
@@ -913,11 +913,11 @@ public class SignUpServiceImpl implements SignUpService {
     		userCollection.setCreatedTime(new Date());
     		userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
     		userCollection = userRepository.save(userCollection);
-
+    
     		// assign roles
     		UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), roleCollection.getId());
     		userRoleRepository.save(userRoleCollection);
-
+    
     		// save Patient Info
     		PatientCollection patientCollection = new PatientCollection();
     		BeanUtil.map(request, patientCollection);
@@ -925,7 +925,7 @@ public class SignUpServiceImpl implements SignUpService {
     		patientCollection.setUserId(userCollection.getId());
     		patientCollection.setCreatedTime(new Date());
     		patientCollection = patientRepository.save(patientCollection);
-
+    
     		user = new User();
     		BeanUtil.map(userCollection, user);
     	    }
@@ -934,7 +934,7 @@ public class SignUpServiceImpl implements SignUpService {
     	logger.error("Mobile Number Cannot Be Empty!");
     	throw new BusinessException(ServiceError.NotAcceptable, "Mobile Number Cannot Be Empty!");
         }
-
+    
     } catch (BusinessException be) {
         logger.warn(be);
         throw be;

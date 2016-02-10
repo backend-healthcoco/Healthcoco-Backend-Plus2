@@ -15,6 +15,7 @@ import com.dpdocter.beans.AccessControl;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.services.AccessControlServices;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -28,8 +29,8 @@ public class AccessControlAPI {
 
     @Path(value = PathProxy.AccessControlUrls.GET_ACCESS_CONTROLS)
     @GET
-    public Response<AccessControl> getAccessControls(@PathParam(value = "roleOrUserId") String roleOrUserId,
-	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
+    public Response<AccessControl> getAccessControls(@PathParam(value = "roleOrUserId") String roleOrUserId, @PathParam(value = "locationId") String locationId,
+	    @PathParam(value = "hospitalId") String hospitalId) {
 	if (DPDoctorUtils.anyStringEmpty(roleOrUserId, locationId, hospitalId)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Role Or User Id, Location Id and Hospital Id Cannot Be Empty!");
 	}

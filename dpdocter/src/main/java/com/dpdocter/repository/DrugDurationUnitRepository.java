@@ -11,8 +11,8 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.dpdocter.collections.DrugDurationUnitCollection;
 
-public interface DrugDurationUnitRepository extends MongoRepository<DrugDurationUnitCollection, String>,
-	PagingAndSortingRepository<DrugDurationUnitCollection, String> {
+public interface DrugDurationUnitRepository
+	extends MongoRepository<DrugDurationUnitCollection, String>, PagingAndSortingRepository<DrugDurationUnitCollection, String> {
 
     @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
     List<DrugDurationUnitCollection> getGlobalDrugDurationUnit(Date date, boolean[] discards, Pageable pageable);

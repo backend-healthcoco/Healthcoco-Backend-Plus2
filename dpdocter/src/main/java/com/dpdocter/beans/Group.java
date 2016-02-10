@@ -85,8 +85,8 @@ public class Group extends GenericCollection {
 
     @Override
     public String toString() {
-	return "Group [id=" + id + ", name=" + name + ", description=" + description + ", doctorId=" + doctorId + ", locationId=" + locationId
-		+ ", hospitalId=" + hospitalId + ", count=" + count + ", discarded=" + discarded + "]";
+	return "Group [id=" + id + ", name=" + name + ", description=" + description + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+		+ hospitalId + ", count=" + count + ", discarded=" + discarded + "]";
     }
 
 }

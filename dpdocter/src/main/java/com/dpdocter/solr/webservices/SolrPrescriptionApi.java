@@ -19,6 +19,7 @@ import com.dpdocter.solr.document.SolrDrugDocument;
 import com.dpdocter.solr.document.SolrLabTestDocument;
 import com.dpdocter.solr.services.SolrPrescriptionService;
 import com.dpdocter.webservices.PathProxy;
+
 import common.util.web.Response;
 
 @Component

@@ -26,7 +26,8 @@ public interface ComplaintRepository extends MongoRepository<ComplaintCollection
     List<ComplaintCollection> findCustomComplaints(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards, Sort sort);
 
     @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gt': ?3},'discarded': {$in: ?4}}]}")
-    List<ComplaintCollection> findCustomGlobalComplaints(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards, Pageable pageable);
+    List<ComplaintCollection> findCustomGlobalComplaints(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards,
+	    Pageable pageable);
 
     @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gt': ?3},'discarded': {$in: ?4}}]}")
     List<ComplaintCollection> findCustomGlobalComplaints(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards, Sort sort);

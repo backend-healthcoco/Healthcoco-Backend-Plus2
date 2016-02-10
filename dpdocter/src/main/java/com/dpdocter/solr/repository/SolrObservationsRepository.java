@@ -77,7 +77,8 @@ public interface SolrObservationsRepository extends SolrCrudRepository<SolrObser
 	    Pageable pageRequest);
 
     @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false)")
-    public List<SolrObservationsDocument> findCustomObservations(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded, Sort sort);
+    public List<SolrObservationsDocument> findCustomObservations(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded,
+	    Sort sort);
 
     @Query("doctorId:*?0* AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false) AND observation:?3*")
     public List<SolrObservationsDocument> findCustomObservations(String doctorId, Date date, Boolean discarded, String searchTerm, Pageable pageRequest);

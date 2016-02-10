@@ -49,6 +49,7 @@ import com.dpdocter.solr.repository.SolrPatientRepository;
 import com.dpdocter.solr.response.SolrPatientResponse;
 import com.dpdocter.solr.response.SolrPatientResponseDetails;
 import com.dpdocter.solr.services.SolrRegistrationService;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -184,9 +185,8 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 
 	    solrTemplate.setSolrCore("patients");
 	    if (request.getSize() > 0)
-		patients = solrTemplate.queryForPage(
-			query.setPageRequest(new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "createdTime")), SolrPatientDocument.class)
-			.getContent();
+		patients = solrTemplate.queryForPage(query.setPageRequest(new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "createdTime")),
+			SolrPatientDocument.class).getContent();
 	    else
 		patients = solrTemplate.queryForPage(query.addSort(new Sort(Sort.Direction.DESC, "createdTime")), SolrPatientDocument.class).getContent();
 
@@ -232,8 +232,8 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 			    advancedCriteria = new Criteria("days").is(Integer.parseInt(dob[1])).and("months").is(Integer.parseInt(dob[0])).and("years")
 				    .is(Integer.parseInt(dob[2]));
 			} else {
-			    advancedCriteria = advancedCriteria.and("days").is(Integer.parseInt(dob[1])).and("months").is(Integer.parseInt(dob[0]))
-				    .and("years").is(Integer.parseInt(dob[2]));
+			    advancedCriteria = advancedCriteria.and("days").is(Integer.parseInt(dob[1])).and("months").is(Integer.parseInt(dob[0])).and("years")
+				    .is(Integer.parseInt(dob[2]));
 			}
 		    } else if (searchType.equalsIgnoreCase(AdvancedSearchType.REGISTRATION_DATE.getSearchType())) {
 			String[] dob = searchValue.split("/");

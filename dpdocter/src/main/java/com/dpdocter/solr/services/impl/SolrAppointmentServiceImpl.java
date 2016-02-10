@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
+
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +37,7 @@ import com.dpdocter.solr.repository.SolrSpecialityRepository;
 import com.dpdocter.solr.repository.SolrSymptomsRepository;
 import com.dpdocter.solr.response.LabResponse;
 import com.dpdocter.solr.services.SolrAppointmentService;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -58,6 +62,9 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 
     @Autowired
     private SolrSymptomsRepository solrSymptomRepository;
+
+    @Context
+    private UriInfo uriInfo;
 
     @Override
     public boolean addLocation(List<SolrLocationDocument> request) {

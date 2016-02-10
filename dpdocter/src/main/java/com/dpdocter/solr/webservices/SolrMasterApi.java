@@ -25,6 +25,7 @@ import com.dpdocter.beans.Speciality;
 import com.dpdocter.response.DiseaseListResponse;
 import com.dpdocter.solr.services.SolrMasterService;
 import com.dpdocter.webservices.PathProxy;
+
 import common.util.web.Response;
 
 @Component

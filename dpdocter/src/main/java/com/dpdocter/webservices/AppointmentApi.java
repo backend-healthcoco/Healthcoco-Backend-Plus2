@@ -41,6 +41,7 @@ import com.dpdocter.solr.document.SolrCountryDocument;
 import com.dpdocter.solr.document.SolrLocalityLandmarkDocument;
 import com.dpdocter.solr.document.SolrStateDocument;
 import com.dpdocter.solr.services.SolrCityService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 

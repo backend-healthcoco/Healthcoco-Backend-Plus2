@@ -260,11 +260,11 @@ public class SMSServicesImpl implements SMSServices {
 			smsTrackCollections = smsTrackRepository.findAll(new Sort(Sort.Direction.DESC, "sentTime"));
 		} else {
 		    if (size > 0)
-			smsTrackCollections = smsTrackRepository.findByLocationHospitalPatientId(locationId, hospitalId, patientId, new PageRequest(page, size,
-				Direction.DESC, "sentTime"));
+			smsTrackCollections = smsTrackRepository.findByLocationHospitalPatientId(locationId, hospitalId, patientId,
+				new PageRequest(page, size, Direction.DESC, "sentTime"));
 		    else
-			smsTrackCollections = smsTrackRepository.findByLocationHospitalPatientId(locationId, hospitalId, patientId, new Sort(
-				Sort.Direction.DESC, "sentTime"));
+			smsTrackCollections = smsTrackRepository.findByLocationHospitalPatientId(locationId, hospitalId, patientId,
+				new Sort(Sort.Direction.DESC, "sentTime"));
 		}
 	    } else {
 		if (locationId == null && hospitalId == null) {
@@ -274,11 +274,11 @@ public class SMSServicesImpl implements SMSServices {
 			smsTrackCollections = smsTrackRepository.findAll(doctorId, patientId, new Sort(Sort.Direction.DESC, "sentTime"));
 		} else {
 		    if (size > 0)
-			smsTrackCollections = smsTrackRepository.findAll(doctorId, locationId, hospitalId, patientId, new PageRequest(page, size,
-				Direction.DESC, "sentTime"));
+			smsTrackCollections = smsTrackRepository.findAll(doctorId, locationId, hospitalId, patientId,
+				new PageRequest(page, size, Direction.DESC, "sentTime"));
 		    else
-			smsTrackCollections = smsTrackRepository
-				.findAll(doctorId, locationId, hospitalId, patientId, new Sort(Sort.Direction.DESC, "sentTime"));
+			smsTrackCollections = smsTrackRepository.findAll(doctorId, locationId, hospitalId, patientId,
+				new Sort(Sort.Direction.DESC, "sentTime"));
 		}
 	    }
 
@@ -409,8 +409,8 @@ public class SMSServicesImpl implements SMSServices {
 	SMSFormat response = null;
 	SMSFormatCollection smsFormatCollection = null;
 	try {
-	    smsFormatCollection = sMSFormatRepository
-		    .find(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getType().getType());
+	    smsFormatCollection = sMSFormatRepository.find(request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
+		    request.getType().getType());
 	    if (smsFormatCollection == null) {
 		smsFormatCollection = new SMSFormatCollection();
 		BeanUtil.map(request, smsFormatCollection);

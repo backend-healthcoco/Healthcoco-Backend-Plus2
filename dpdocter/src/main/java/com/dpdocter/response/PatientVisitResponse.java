@@ -124,7 +124,7 @@ public class PatientVisitResponse extends GenericCollection {
     @Override
     public String toString() {
 	return "PatientVisitResponse [id=" + id + ", uniqueId=" + uniqueId + ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId="
-		+ locationId + ", hospitalId=" + hospitalId + ", visitedTime=" + visitedTime + ", visitedFor=" + visitedFor + ", prescriptions="
-		+ prescriptions + ", clinicalNotes=" + clinicalNotes + ", records=" + records + "]";
+		+ locationId + ", hospitalId=" + hospitalId + ", visitedTime=" + visitedTime + ", visitedFor=" + visitedFor + ", prescriptions=" + prescriptions
+		+ ", clinicalNotes=" + clinicalNotes + ", records=" + records + "]";
     }
 }

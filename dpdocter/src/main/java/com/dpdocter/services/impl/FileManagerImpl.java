@@ -57,10 +57,10 @@ public class FileManagerImpl implements FileManager {
 	BufferedImage img = new BufferedImage(120, 120, BufferedImage.TYPE_INT_RGB);
 	try {
 	    img.createGraphics()
-		    .drawImage(
-			    ImageIO.read(
-				    new File(imageResource + File.separator + path + File.separator + fileDetails.getFileName() + "."
-					    + fileDetails.getFileExtension())).getScaledInstance(120, 120, Image.SCALE_SMOOTH), 0, 0, null);
+		    .drawImage(ImageIO
+			    .read(new File(
+				    imageResource + File.separator + path + File.separator + fileDetails.getFileName() + "." + fileDetails.getFileExtension()))
+			    .getScaledInstance(120, 120, Image.SCALE_SMOOTH), 0, 0, null);
 
 	    String fileName = fileDetails.getFileName() + "_thumb." + fileDetails.getFileExtension();
 	    createDirIfNotExist(imageResource + File.separator + path);

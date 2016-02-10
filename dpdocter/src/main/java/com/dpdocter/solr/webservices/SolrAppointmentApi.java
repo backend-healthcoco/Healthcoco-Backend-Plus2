@@ -22,6 +22,7 @@ import com.dpdocter.solr.document.SolrSpecialityDocument;
 import com.dpdocter.solr.response.LabResponse;
 import com.dpdocter.solr.services.SolrAppointmentService;
 import com.dpdocter.webservices.PathProxy;
+
 import common.util.web.Response;
 
 @Component
@@ -54,8 +55,8 @@ public class SolrAppointmentApi {
 	    @QueryParam("maxTime") String maxTime, @MatrixParam("days") List<String> days, @QueryParam("gender") String gender,
 	    @QueryParam("minExperience") String minExperience, @QueryParam("maxExperience") String maxExperience) {
 
-	List<SolrDoctorDocument> doctors = solrAppointmentService.getDoctors(city, location, latitude, longitude, speciality, symptom, booking, calling,
-		minFee, maxFee, minTime, maxTime, days, gender, minExperience, maxExperience);
+	List<SolrDoctorDocument> doctors = solrAppointmentService.getDoctors(city, location, latitude, longitude, speciality, symptom, booking, calling, minFee,
+		maxFee, minTime, maxTime, days, gender, minExperience, maxExperience);
 
 	Response<SolrDoctorDocument> response = new Response<SolrDoctorDocument>();
 	response.setDataList(doctors);

@@ -29,6 +29,7 @@ import com.dpdocter.solr.repository.SolrInvestigationsRepository;
 import com.dpdocter.solr.repository.SolrNotesRepository;
 import com.dpdocter.solr.repository.SolrObservationsRepository;
 import com.dpdocter.solr.services.SolrClinicalNotesService;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -516,18 +517,18 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    if (doctorId == null) {
 		if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		    if (size > 0)
-			complaintCollections = solrComplaintsRepository.findCustomGlobalComplaints(new Date(createdTimeStamp), discarded, new PageRequest(page,
-				size, Direction.DESC, "updatedTime"));
+			complaintCollections = solrComplaintsRepository.findCustomGlobalComplaints(new Date(createdTimeStamp), discarded,
+				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			complaintCollections = solrComplaintsRepository.findCustomGlobalComplaints(new Date(createdTimeStamp), discarded, new Sort(
-				Sort.Direction.DESC, "updatedTime"));
+			complaintCollections = solrComplaintsRepository.findCustomGlobalComplaints(new Date(createdTimeStamp), discarded,
+				new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
 		    if (size > 0)
 			complaintCollections = solrComplaintsRepository.findCustomGlobalComplaints(new Date(createdTimeStamp), discarded, searchTerm,
 				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			complaintCollections = solrComplaintsRepository.findCustomGlobalComplaints(new Date(createdTimeStamp), discarded, searchTerm, new Sort(
-				Sort.Direction.DESC, "updatedTime"));
+			complaintCollections = solrComplaintsRepository.findCustomGlobalComplaints(new Date(createdTimeStamp), discarded, searchTerm,
+				new Sort(Sort.Direction.DESC, "updatedTime"));
 		}
 	    } else {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
@@ -549,18 +550,18 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 		} else {
 		    if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 			if (size > 0)
-			    complaintCollections = solrComplaintsRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId, new Date(
-				    createdTimeStamp), discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    complaintCollections = solrComplaintsRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId,
+				    new Date(createdTimeStamp), discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    complaintCollections = solrComplaintsRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId, new Date(
-				    createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+			    complaintCollections = solrComplaintsRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId,
+				    new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
-			    complaintCollections = solrComplaintsRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId, new Date(
-				    createdTimeStamp), discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    complaintCollections = solrComplaintsRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId,
+				    new Date(createdTimeStamp), discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    complaintCollections = solrComplaintsRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId, new Date(
-				    createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
+			    complaintCollections = solrComplaintsRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId,
+				    new Date(createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
 		    }
 		}
 	    }
@@ -580,18 +581,18 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		if (size > 0)
-		    complaintCollections = solrComplaintsRepository.findGlobalComplaints(new Date(createdTimeStamp), discarded, new PageRequest(page, size,
-			    Direction.DESC, "updatedTime"));
+		    complaintCollections = solrComplaintsRepository.findGlobalComplaints(new Date(createdTimeStamp), discarded,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    complaintCollections = solrComplaintsRepository.findGlobalComplaints(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC,
-			    "updatedTime"));
+		    complaintCollections = solrComplaintsRepository.findGlobalComplaints(new Date(createdTimeStamp), discarded,
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    } else {
 		if (size > 0)
-		    complaintCollections = solrComplaintsRepository.findGlobalComplaints(new Date(createdTimeStamp), discarded, searchTerm, new PageRequest(
-			    page, size, Direction.DESC, "updatedTime"));
+		    complaintCollections = solrComplaintsRepository.findGlobalComplaints(new Date(createdTimeStamp), discarded, searchTerm,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    complaintCollections = solrComplaintsRepository.findGlobalComplaints(new Date(createdTimeStamp), discarded, searchTerm, new Sort(
-			    Sort.Direction.DESC, "updatedTime"));
+		    complaintCollections = solrComplaintsRepository.findGlobalComplaints(new Date(createdTimeStamp), discarded, searchTerm,
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    }
 
 	} catch (Exception e) {
@@ -619,8 +620,8 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 			    complaintCollections = solrComplaintsRepository.findCustomComplaints(doctorId, new Date(createdTimeStamp), discarded,
 				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    complaintCollections = solrComplaintsRepository.findCustomComplaints(doctorId, new Date(createdTimeStamp), discarded, new Sort(
-				    Sort.Direction.DESC, "updatedTime"));
+			    complaintCollections = solrComplaintsRepository.findCustomComplaints(doctorId, new Date(createdTimeStamp), discarded,
+				    new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
 			    complaintCollections = solrComplaintsRepository.findCustomComplaints(doctorId, new Date(createdTimeStamp), discarded, searchTerm,
@@ -664,18 +665,18 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    if (doctorId == null) {
 		if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		    if (size > 0)
-			diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(new Date(createdTimeStamp), discarded, new PageRequest(page, size,
-				Direction.DESC, "updatedTime"));
+			diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(new Date(createdTimeStamp), discarded,
+				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(new Date(createdTimeStamp), discarded, new Sort(
-				Sort.Direction.DESC, "updatedTime"));
+			diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(new Date(createdTimeStamp), discarded,
+				new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
 		    if (size > 0)
 			diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(new Date(createdTimeStamp), discarded, searchTerm,
 				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(new Date(createdTimeStamp), discarded, searchTerm, new Sort(
-				Sort.Direction.DESC, "updatedTime"));
+			diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(new Date(createdTimeStamp), discarded, searchTerm,
+				new Sort(Sort.Direction.DESC, "updatedTime"));
 		}
 	    } else {
 		if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
@@ -684,8 +685,8 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 			    diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(doctorId, new Date(createdTimeStamp), discarded,
 				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(doctorId, new Date(createdTimeStamp), discarded, new Sort(
-				    Sort.Direction.DESC, "updatedTime"));
+			    diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(doctorId, new Date(createdTimeStamp), discarded,
+				    new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
 			    diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
@@ -726,18 +727,18 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		if (size > 0)
-		    diagramCollections = solrDiagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discarded, new PageRequest(page, size,
-			    Direction.DESC, "updatedTime"));
+		    diagramCollections = solrDiagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discarded,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    diagramCollections = solrDiagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC,
-			    "updatedTime"));
+		    diagramCollections = solrDiagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discarded,
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    } else {
 		if (size > 0)
-		    diagramCollections = solrDiagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discarded, searchTerm, new PageRequest(page,
-			    size, Direction.DESC, "updatedTime"));
+		    diagramCollections = solrDiagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discarded, searchTerm,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    diagramCollections = solrDiagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discarded, searchTerm, new Sort(
-			    Sort.Direction.DESC, "updatedTime"));
+		    diagramCollections = solrDiagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discarded, searchTerm,
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -758,11 +759,11 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 		if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		    if (locationId == null && hospitalId == null) {
 			if (size > 0)
-			    diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId, new Date(createdTimeStamp), discarded, new PageRequest(
-				    page, size, Direction.DESC, "updatedTime"));
+			    diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId, new Date(createdTimeStamp), discarded,
+				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId, new Date(createdTimeStamp), discarded, new Sort(
-				    Sort.Direction.DESC, "updatedTime"));
+			    diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId, new Date(createdTimeStamp), discarded,
+				    new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
 			    diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
@@ -830,11 +831,11 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 				    discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
-			    investigationsCollections = solrInvestigationsRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId, new Date(
-				    createdTimeStamp), discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    investigationsCollections = solrInvestigationsRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId,
+				    new Date(createdTimeStamp), discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    investigationsCollections = solrInvestigationsRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId, new Date(
-				    createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+			    investigationsCollections = solrInvestigationsRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId,
+				    new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
 		    }
 		} else {
 		    if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
@@ -846,11 +847,11 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 				    discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
-			    investigationsCollections = solrInvestigationsRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId, new Date(
-				    createdTimeStamp), discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    investigationsCollections = solrInvestigationsRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId,
+				    new Date(createdTimeStamp), discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    investigationsCollections = solrInvestigationsRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId, new Date(
-				    createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
+			    investigationsCollections = solrInvestigationsRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId,
+				    new Date(createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
 		    }
 		}
 	    }
@@ -868,11 +869,11 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		if (size > 0)
-		    investigationsCollections = solrInvestigationsRepository.findGlobalInvestigations(new Date(createdTimeStamp), discarded, new PageRequest(
-			    page, size, Direction.DESC, "updatedTime"));
+		    investigationsCollections = solrInvestigationsRepository.findGlobalInvestigations(new Date(createdTimeStamp), discarded,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    investigationsCollections = solrInvestigationsRepository.findGlobalInvestigations(new Date(createdTimeStamp), discarded, new Sort(
-			    Sort.Direction.DESC, "updatedTime"));
+		    investigationsCollections = solrInvestigationsRepository.findGlobalInvestigations(new Date(createdTimeStamp), discarded,
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    } else {
 		if (size > 0)
 		    investigationsCollections = solrInvestigationsRepository.findGlobalInvestigations(new Date(createdTimeStamp), discarded, searchTerm,
@@ -909,11 +910,11 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 				    new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
-			    investigationsCollections = solrInvestigationsRepository.findCustomInvestigations(doctorId, locationId, hospitalId, new Date(
-				    createdTimeStamp), discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    investigationsCollections = solrInvestigationsRepository.findCustomInvestigations(doctorId, locationId, hospitalId,
+				    new Date(createdTimeStamp), discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    investigationsCollections = solrInvestigationsRepository.findCustomInvestigations(doctorId, locationId, hospitalId, new Date(
-				    createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+			    investigationsCollections = solrInvestigationsRepository.findCustomInvestigations(doctorId, locationId, hospitalId,
+				    new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
 		    }
 		} else {
 		    if (locationId == null && hospitalId == null) {
@@ -925,11 +926,11 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 				    searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
-			    investigationsCollections = solrInvestigationsRepository.findCustomInvestigations(doctorId, locationId, hospitalId, new Date(
-				    createdTimeStamp), discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    investigationsCollections = solrInvestigationsRepository.findCustomInvestigations(doctorId, locationId, hospitalId,
+				    new Date(createdTimeStamp), discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    investigationsCollections = solrInvestigationsRepository.findCustomInvestigations(doctorId, locationId, hospitalId, new Date(
-				    createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
+			    investigationsCollections = solrInvestigationsRepository.findCustomInvestigations(doctorId, locationId, hospitalId,
+				    new Date(createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
 		    }
 		}
 	    }
@@ -952,8 +953,8 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 			observationCollections = solrObservationsRepository.findCustomGlobalObservations(new Date(createdTimeStamp), discarded,
 				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			observationCollections = solrObservationsRepository.findCustomGlobalObservations(new Date(createdTimeStamp), discarded, new Sort(
-				Sort.Direction.DESC, "updatedTime"));
+			observationCollections = solrObservationsRepository.findCustomGlobalObservations(new Date(createdTimeStamp), discarded,
+				new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
 		    if (size > 0)
 			observationCollections = solrObservationsRepository.findCustomGlobalObservations(new Date(createdTimeStamp), discarded, searchTerm,
@@ -973,11 +974,11 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 				    new Sort(Sort.Direction.DESC, "createdTime"));
 		    } else {
 			if (size > 0)
-			    observationCollections = solrObservationsRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId, new Date(
-				    createdTimeStamp), discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    observationCollections = solrObservationsRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId,
+				    new Date(createdTimeStamp), discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    observationCollections = solrObservationsRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId, new Date(
-				    createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "createdTime"));
+			    observationCollections = solrObservationsRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId,
+				    new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "createdTime"));
 
 		    }
 		} else {
@@ -990,11 +991,11 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 				    searchTerm, new Sort(Sort.Direction.DESC, "createdTime"));
 		    } else {
 			if (size > 0)
-			    observationCollections = solrObservationsRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId, new Date(
-				    createdTimeStamp), discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    observationCollections = solrObservationsRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId,
+				    new Date(createdTimeStamp), discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    observationCollections = solrObservationsRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId, new Date(
-				    createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "createdTime"));
+			    observationCollections = solrObservationsRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId,
+				    new Date(createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "createdTime"));
 
 		    }
 		}
@@ -1015,18 +1016,18 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		if (size > 0)
-		    observationCollections = solrObservationsRepository.findGlobalObservations(new Date(createdTimeStamp), discarded, new PageRequest(page,
-			    size, Direction.DESC, "updatedTime"));
+		    observationCollections = solrObservationsRepository.findGlobalObservations(new Date(createdTimeStamp), discarded,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    observationCollections = solrObservationsRepository.findGlobalObservations(new Date(createdTimeStamp), discarded, new Sort(
-			    Sort.Direction.DESC, "updatedTime"));
+		    observationCollections = solrObservationsRepository.findGlobalObservations(new Date(createdTimeStamp), discarded,
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    } else {
 		if (size > 0)
 		    observationCollections = solrObservationsRepository.findGlobalObservations(new Date(createdTimeStamp), discarded, searchTerm,
 			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    observationCollections = solrObservationsRepository.findGlobalObservations(new Date(createdTimeStamp), discarded, searchTerm, new Sort(
-			    Sort.Direction.DESC, "updatedTime"));
+		    observationCollections = solrObservationsRepository.findGlobalObservations(new Date(createdTimeStamp), discarded, searchTerm,
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 
 	    }
 	} catch (Exception e) {
@@ -1056,11 +1057,11 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 				    new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
-			    observationCollections = solrObservationsRepository.findCustomObservations(doctorId, locationId, hospitalId, new Date(
-				    createdTimeStamp), discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    observationCollections = solrObservationsRepository.findCustomObservations(doctorId, locationId, hospitalId,
+				    new Date(createdTimeStamp), discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    observationCollections = solrObservationsRepository.findCustomObservations(doctorId, locationId, hospitalId, new Date(
-				    createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+			    observationCollections = solrObservationsRepository.findCustomObservations(doctorId, locationId, hospitalId,
+				    new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
 		    }
 		} else {
 		    if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
@@ -1072,11 +1073,11 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 				    searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
-			    observationCollections = solrObservationsRepository.findCustomObservations(doctorId, locationId, hospitalId, new Date(
-				    createdTimeStamp), discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    observationCollections = solrObservationsRepository.findCustomObservations(doctorId, locationId, hospitalId,
+				    new Date(createdTimeStamp), discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    observationCollections = solrObservationsRepository.findCustomObservations(doctorId, locationId, hospitalId, new Date(
-				    createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
+			    observationCollections = solrObservationsRepository.findCustomObservations(doctorId, locationId, hospitalId,
+				    new Date(createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
 		    }
 		}
 	    }
@@ -1097,18 +1098,18 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    if (doctorId == null) {
 		if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		    if (size > 0)
-			diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(new Date(createdTimeStamp), discarded, new PageRequest(page,
-				size, Direction.DESC, "updatedTime"));
+			diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(new Date(createdTimeStamp), discarded,
+				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(new Date(createdTimeStamp), discarded, new Sort(
-				Sort.Direction.DESC, "updatedTime"));
+			diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(new Date(createdTimeStamp), discarded,
+				new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
 		    if (size > 0)
 			diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(new Date(createdTimeStamp), discarded, searchTerm,
 				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(new Date(createdTimeStamp), discarded, searchTerm, new Sort(
-				Sort.Direction.DESC, "updatedTime"));
+			diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(new Date(createdTimeStamp), discarded, searchTerm,
+				new Sort(Sort.Direction.DESC, "updatedTime"));
 
 		}
 	    } else {
@@ -1118,16 +1119,16 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 			    diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(doctorId, new Date(createdTimeStamp), discarded,
 				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(doctorId, new Date(createdTimeStamp), discarded, new Sort(
-				    Sort.Direction.DESC, "createdTime"));
+			    diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(doctorId, new Date(createdTimeStamp), discarded,
+				    new Sort(Sort.Direction.DESC, "createdTime"));
 
 		    } else {
 			if (size > 0)
-			    diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(doctorId, locationId, hospitalId, new Date(
-				    createdTimeStamp), discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(doctorId, locationId, hospitalId,
+				    new Date(createdTimeStamp), discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(doctorId, locationId, hospitalId, new Date(
-				    createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+			    diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(doctorId, locationId, hospitalId,
+				    new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
 		    }
 		} else {
 		    if (locationId == null && hospitalId == null) {
@@ -1140,11 +1141,11 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 
 		    } else {
 			if (size > 0)
-			    diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(doctorId, locationId, hospitalId, new Date(
-				    createdTimeStamp), discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(doctorId, locationId, hospitalId,
+				    new Date(createdTimeStamp), discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(doctorId, locationId, hospitalId, new Date(
-				    createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
+			    diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(doctorId, locationId, hospitalId,
+				    new Date(createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
 		    }
 		}
 	    }
@@ -1162,18 +1163,18 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		if (size > 0)
-		    diagnosisCollections = solrDiagnosesRepository.findGlobalDiagnosis(new Date(createdTimeStamp), discarded, new PageRequest(page, size,
-			    Direction.DESC, "updatedTime"));
+		    diagnosisCollections = solrDiagnosesRepository.findGlobalDiagnosis(new Date(createdTimeStamp), discarded,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    diagnosisCollections = solrDiagnosesRepository.findGlobalDiagnosis(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC,
-			    "updatedTime"));
+		    diagnosisCollections = solrDiagnosesRepository.findGlobalDiagnosis(new Date(createdTimeStamp), discarded,
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    } else {
 		if (size > 0)
-		    diagnosisCollections = solrDiagnosesRepository.findGlobalDiagnosis(new Date(createdTimeStamp), discarded, searchTerm, new PageRequest(page,
-			    size, Direction.DESC, "updatedTime"));
+		    diagnosisCollections = solrDiagnosesRepository.findGlobalDiagnosis(new Date(createdTimeStamp), discarded, searchTerm,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    diagnosisCollections = solrDiagnosesRepository.findGlobalDiagnosis(new Date(createdTimeStamp), discarded, searchTerm, new Sort(
-			    Sort.Direction.DESC, "updatedTime"));
+		    diagnosisCollections = solrDiagnosesRepository.findGlobalDiagnosis(new Date(createdTimeStamp), discarded, searchTerm,
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1198,8 +1199,8 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 			    diagnosisCollections = solrDiagnosesRepository.findCustomDiagnosis(doctorId, new Date(createdTimeStamp), discarded,
 				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    diagnosisCollections = solrDiagnosesRepository.findCustomDiagnosis(doctorId, new Date(createdTimeStamp), discarded, new Sort(
-				    Sort.Direction.DESC, "updatedTime"));
+			    diagnosisCollections = solrDiagnosesRepository.findCustomDiagnosis(doctorId, new Date(createdTimeStamp), discarded,
+				    new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
 			    diagnosisCollections = solrDiagnosesRepository.findCustomDiagnosis(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
@@ -1244,28 +1245,28 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    if (doctorId == null) {
 		if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		    if (size > 0)
-			notesCollections = solrNotesRepository.findCustomGlobalNotes(new Date(createdTimeStamp), discarded, new PageRequest(page, size,
-				Direction.DESC, "updatedTime"));
+			notesCollections = solrNotesRepository.findCustomGlobalNotes(new Date(createdTimeStamp), discarded,
+				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			notesCollections = solrNotesRepository.findCustomGlobalNotes(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC,
-				"updatedTime"));
+			notesCollections = solrNotesRepository.findCustomGlobalNotes(new Date(createdTimeStamp), discarded,
+				new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
 		    if (size > 0)
-			notesCollections = solrNotesRepository.findCustomGlobalNotes(new Date(createdTimeStamp), discarded, searchTerm, new PageRequest(page,
-				size, Direction.DESC, "updatedTime"));
+			notesCollections = solrNotesRepository.findCustomGlobalNotes(new Date(createdTimeStamp), discarded, searchTerm,
+				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			notesCollections = solrNotesRepository.findCustomGlobalNotes(new Date(createdTimeStamp), discarded, searchTerm, new Sort(
-				Sort.Direction.DESC, "updatedTime"));
+			notesCollections = solrNotesRepository.findCustomGlobalNotes(new Date(createdTimeStamp), discarded, searchTerm,
+				new Sort(Sort.Direction.DESC, "updatedTime"));
 		}
 	    } else {
 		if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		    if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			if (size > 0)
-			    notesCollections = solrNotesRepository.findCustomGlobalNotes(doctorId, new Date(createdTimeStamp), discarded, new PageRequest(page,
-				    size, Direction.DESC, "updatedTime"));
+			    notesCollections = solrNotesRepository.findCustomGlobalNotes(doctorId, new Date(createdTimeStamp), discarded,
+				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    notesCollections = solrNotesRepository.findCustomGlobalNotes(doctorId, new Date(createdTimeStamp), discarded, new Sort(
-				    Sort.Direction.DESC, "updatedTime"));
+			    notesCollections = solrNotesRepository.findCustomGlobalNotes(doctorId, new Date(createdTimeStamp), discarded,
+				    new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
 			    notesCollections = solrNotesRepository.findCustomGlobalNotes(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
@@ -1280,8 +1281,8 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 			    notesCollections = solrNotesRepository.findCustomGlobalNotes(doctorId, new Date(createdTimeStamp), discarded, searchTerm,
 				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    notesCollections = solrNotesRepository.findCustomGlobalNotes(doctorId, new Date(createdTimeStamp), discarded, searchTerm, new Sort(
-				    Sort.Direction.DESC, "updatedTime"));
+			    notesCollections = solrNotesRepository.findCustomGlobalNotes(doctorId, new Date(createdTimeStamp), discarded, searchTerm,
+				    new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
 			    notesCollections = solrNotesRepository.findCustomGlobalNotes(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
@@ -1307,17 +1308,17 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		if (size > 0)
-		    notesCollections = solrNotesRepository.findGlobalNotes(new Date(createdTimeStamp), discarded, new PageRequest(page, size, Direction.DESC,
-			    "updatedTime"));
+		    notesCollections = solrNotesRepository.findGlobalNotes(new Date(createdTimeStamp), discarded,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
 		    notesCollections = solrNotesRepository.findGlobalNotes(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
 	    } else {
 		if (size > 0)
-		    notesCollections = solrNotesRepository.findGlobalNotes(new Date(createdTimeStamp), discarded, searchTerm, new PageRequest(page, size,
-			    Direction.DESC, "updatedTime"));
+		    notesCollections = solrNotesRepository.findGlobalNotes(new Date(createdTimeStamp), discarded, searchTerm,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    notesCollections = solrNotesRepository.findGlobalNotes(new Date(createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC,
-			    "updatedTime"));
+		    notesCollections = solrNotesRepository.findGlobalNotes(new Date(createdTimeStamp), discarded, searchTerm,
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 
 	    }
 	} catch (Exception e) {
@@ -1340,11 +1341,11 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 		if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		    if (locationId == null && hospitalId == null) {
 			if (size > 0)
-			    notesCollections = solrNotesRepository.findCustomNotes(doctorId, new Date(createdTimeStamp), discarded, new PageRequest(page, size,
-				    Direction.DESC, "updatedTime"));
+			    notesCollections = solrNotesRepository.findCustomNotes(doctorId, new Date(createdTimeStamp), discarded,
+				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    notesCollections = solrNotesRepository.findCustomNotes(doctorId, new Date(createdTimeStamp), discarded, new Sort(
-				    Sort.Direction.DESC, "updatedTime"));
+			    notesCollections = solrNotesRepository.findCustomNotes(doctorId, new Date(createdTimeStamp), discarded,
+				    new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
 			    notesCollections = solrNotesRepository.findCustomNotes(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discarded,
@@ -1360,8 +1361,8 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 			    notesCollections = solrNotesRepository.findCustomNotes(doctorId, new Date(createdTimeStamp), discarded, searchTerm,
 				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    notesCollections = solrNotesRepository.findCustomNotes(doctorId, new Date(createdTimeStamp), discarded, searchTerm, new Sort(
-				    Sort.Direction.DESC, "updatedTime"));
+			    notesCollections = solrNotesRepository.findCustomNotes(doctorId, new Date(createdTimeStamp), discarded, searchTerm,
+				    new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
 			    notesCollections = solrNotesRepository.findCustomNotes(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discarded,

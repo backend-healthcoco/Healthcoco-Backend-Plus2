@@ -20,7 +20,8 @@ public interface DrugDosageRepository extends MongoRepository<DrugDosageCollecti
     List<DrugDosageCollection> getCustomDrugDosage(String doctorId, String hospitalId, String locationId, Date date, boolean[] discards, Pageable pageable);
 
     @Query("{'$or': [{'doctorId': ?0,  'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gt': ?3},'discarded': {$in: ?4}}]}")
-    List<DrugDosageCollection> getCustomGlobalDrugDosage(String doctorId, String hospitalId, String locationId, Date date, boolean[] discards, Pageable pageable);
+    List<DrugDosageCollection> getCustomGlobalDrugDosage(String doctorId, String hospitalId, String locationId, Date date, boolean[] discards,
+	    Pageable pageable);
 
     @Query("{'doctorId': ?0, 'updatedTime': {'$gt': ?1},'discarded': {$in: ?2}}")
     List<DrugDosageCollection> getCustomDrugDosage(String doctorId, Date date, boolean[] discards, Pageable pageable);

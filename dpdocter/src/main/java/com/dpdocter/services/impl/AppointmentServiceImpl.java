@@ -96,6 +96,7 @@ import com.dpdocter.solr.document.SolrCityDocument;
 import com.dpdocter.solr.document.SolrCountryDocument;
 import com.dpdocter.solr.document.SolrStateDocument;
 import com.dpdocter.solr.services.SolrCityService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.DateAndTimeUtility;
 
@@ -190,8 +191,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    CityCollection cityCollection = new CityCollection();
 	    BeanUtil.map(city, cityCollection);
 	    StateCollection stateCollection = stateRepository.findOne(city.getStateId());
-	    List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(city.getCity() + " "
-		    + (stateCollection != null ? stateCollection.getState() : ""));
+	    List<GeocodedLocation> geocodedLocations = locationServices
+		    .geocodeLocation(city.getCity() + " " + (stateCollection != null ? stateCollection.getState() : ""));
 
 	    if (geocodedLocations != null && !geocodedLocations.isEmpty())
 		BeanUtil.map(geocodedLocations.get(0), cityCollection);
@@ -269,10 +270,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    if (stateCollection != null) {
 		countryCollection = countryRepository.findOne(stateCollection.getCountryId());
 	    }
-	    List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(landmarkLocality.getLandmark() != null ? landmarkLocality.getLandmark()
-		    + " " : "" + landmarkLocality.getLocality() != null ? landmarkLocality.getLocality() + " "
-		    : "" + cityCollection.getCity() != null ? cityCollection.getCity() + " " : "" + stateCollection != null ? stateCollection.getState() : ""
-			    + countryCollection != null ? countryCollection.getCountry() : "");
+	    List<GeocodedLocation> geocodedLocations = locationServices
+		    .geocodeLocation(landmarkLocality.getLandmark() != null ? landmarkLocality.getLandmark() + " "
+			    : "" + landmarkLocality.getLocality() != null ? landmarkLocality.getLocality() + " "
+				    : "" + cityCollection.getCity() != null ? cityCollection.getCity() + " "
+					    : "" + stateCollection != null ? stateCollection.getState()
+						    : "" + countryCollection != null ? countryCollection.getCountry() : "");
 
 	    if (geocodedLocations != null && !geocodedLocations.isEmpty())
 		BeanUtil.map(geocodedLocations.get(0), landmarkLocalityCollection);
@@ -314,8 +317,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    UserLocationCollection userLocationCollection = iterator.next();
 		    DoctorCollection doctorCollection = doctorRepository.findByUserId(userLocationCollection.getUserId());
 		    UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
-		    DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection
-			    .getLocationId());
+		    DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
+			    .findByLocationId(userLocationCollection.getLocationId());
 
 		    if (doctorCollection != null) {
 			Doctor doctor = new Doctor();
@@ -363,15 +366,17 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 			appointmentCollection.setState(request.getState());
 
-			String patientName = patient.getFirstName() != null ? patient.getFirstName().split(" ")[0] : "", appointmentId = appointmentCollection
-				.getAppointmentId(), dateTime = new SimpleDateFormat("MMM dd,yyyy").format(appointmentCollection.getDate()) + " "
-				+ String.format("%02d:%02d", appointmentCollection.getTime().getFrom() / 60, appointmentCollection.getTime().getFrom() % 60), doctorName = userCollection
-				.getTitle() + " " + userCollection.getFirstName(), clinicName = locationCollection.getLocationName(), clinicContactNum = locationCollection
-				.getLocationPhoneNumber() != null ? locationCollection.getLocationPhoneNumber() : "";
+			String patientName = patient.getFirstName() != null ? patient.getFirstName().split(" ")[0] : "",
+				appointmentId = appointmentCollection.getAppointmentId(),
+				dateTime = new SimpleDateFormat("MMM dd,yyyy").format(appointmentCollection.getDate()) + " "
+					+ String.format("%02d:%02d", appointmentCollection.getTime().getFrom() / 60,
+						appointmentCollection.getTime().getFrom() % 60),
+				doctorName = userCollection.getTitle() + " " + userCollection.getFirstName(), clinicName = locationCollection.getLocationName(),
+				clinicContactNum = locationCollection.getLocationPhoneNumber() != null ? locationCollection.getLocationPhoneNumber() : "";
 
 			if (request.getState().getState().equals(AppointmentState.CANCEL.getState())) {
-			    AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository.findByAppointmentId(request
-				    .getAppointmentId());
+			    AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository
+				    .findByAppointmentId(request.getAppointmentId());
 			    if (bookedSlotCollection != null)
 				appointmentBookedSlotRepository.delete(bookedSlotCollection);
 			} else {
@@ -381,8 +386,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    if (request.getState().getState().equals(AppointmentState.RESCHEDULE.getState())) {
 				appointmentCollection.setIsReschduled(true);
 				appointmentCollection.setState(AppointmentState.NEW);
-				AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository.findByAppointmentId(request
-					.getAppointmentId());
+				AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository
+					.findByAppointmentId(request.getAppointmentId());
 				if (bookedSlotCollection != null) {
 				    bookedSlotCollection.setDate(appointmentCollection.getDate());
 				    bookedSlotCollection.setTime(appointmentCollection.getTime());
@@ -482,11 +487,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    appointmentCollection.setCreatedTime(new Date());
 		    appointmentCollection.setAppointmentId(DPDoctorUtils.generateRandomId());
 
-		    String patientName = patient.getFirstName() != null ? patient.getFirstName().split(" ")[0] : "", appointmentId = appointmentCollection
-			    .getAppointmentId(), dateTime = new SimpleDateFormat("MMM dd,yyyy").format(appointmentCollection.getDate()) + " "
-			    + String.format("%02d:%02d", appointmentCollection.getTime().getFrom() / 60, appointmentCollection.getTime().getFrom() % 60), doctorName = userCollection
-			    .getTitle() + " " + userCollection.getFirstName(), clinicName = locationCollection.getLocationName(), clinicContactNum = locationCollection
-			    .getLocationPhoneNumber() != null ? locationCollection.getLocationPhoneNumber() : "";
+		    String patientName = patient.getFirstName() != null ? patient.getFirstName().split(" ")[0] : "",
+			    appointmentId = appointmentCollection.getAppointmentId(),
+			    dateTime = new SimpleDateFormat("MMM dd,yyyy").format(appointmentCollection.getDate()) + " "
+				    + String.format("%02d:%02d", appointmentCollection.getTime().getFrom() / 60,
+					    appointmentCollection.getTime().getFrom() % 60),
+			    doctorName = userCollection.getTitle() + " " + userCollection.getFirstName(), clinicName = locationCollection.getLocationName(),
+			    clinicContactNum = locationCollection.getLocationPhoneNumber() != null ? locationCollection.getLocationPhoneNumber() : "";
 
 		    if (request.getCreatedBy().equals(AppointmentCreatedBy.DOCTOR)) {
 			appointmentCollection.setState(AppointmentState.CONFIRM);
@@ -805,8 +812,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    StateCollection stateCollection = new StateCollection();
 	    BeanUtil.map(state, stateCollection);
 	    CountryCollection countryCollection = countryRepository.findOne(state.getCountryId());
-	    List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(state.getState() + " "
-		    + (countryCollection != null ? countryCollection.getCountry() : ""));
+	    List<GeocodedLocation> geocodedLocations = locationServices
+		    .geocodeLocation(state.getState() + " " + (countryCollection != null ? countryCollection.getCountry() : ""));
 
 	    if (geocodedLocations != null && !geocodedLocations.isEmpty())
 		BeanUtil.map(geocodedLocations.get(0), stateCollection);
@@ -850,8 +857,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    UserLocationCollection userLocationCollection = iterator.next();
 		    DoctorCollection doctorCollection = doctorRepository.findByUserId(userLocationCollection.getUserId());
 		    UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
-		    DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection
-			    .getLocationId());
+		    DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
+			    .findByLocationId(userLocationCollection.getLocationId());
 
 		    if (doctorCollection != null) {
 			Doctor doctor = new Doctor();
@@ -979,8 +986,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    appointmentCollection.setState(AppointmentState.CONFIRM);
 		    appointmentCollection.setType(AppointmentType.EVENT);
 		    appointmentCollection.setCreatedTime(new Date());
-		    appointmentCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
-			    + userCollection.getFirstName());
+		    appointmentCollection
+			    .setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
 		    appointmentCollection.setId(null);
 		    appointmentCollection = appointmentRepository.save(appointmentCollection);
 
@@ -1031,8 +1038,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    appointmentCollection.setState(request.getState());
 
 		    if (request.getState().equals(AppointmentState.CANCEL)) {
-			AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository.findByAppointmentId(appointmentCollection
-				.getAppointmentId());
+			AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository
+				.findByAppointmentId(appointmentCollection.getAppointmentId());
 			if (bookedSlotCollection != null)
 			    appointmentBookedSlotRepository.delete(bookedSlotCollection);
 		    } else {
@@ -1042,8 +1049,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (request.getState().equals(AppointmentState.RESCHEDULE)) {
 			    appointmentCollection.setIsReschduled(true);
 			    appointmentCollection.setState(AppointmentState.CONFIRM);
-			    AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository.findByAppointmentId(appointmentCollection
-				    .getAppointmentId());
+			    AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository
+				    .findByAppointmentId(appointmentCollection.getAppointmentId());
 			    if (bookedSlotCollection != null) {
 				if (appointmentCollection.getIsCalenderBlocked()) {
 				    bookedSlotCollection.setDate(appointmentCollection.getDate());
@@ -1086,10 +1093,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    UserCollection patient = userRepository.findOne(appointmentCollection.getPatientId());
 		    LocationCollection locationCollection = locationRepository.findOne(appointmentCollection.getLocationId());
 		    if (userCollection != null && locationCollection != null && patient != null) {
-			String patientName = patient.getFirstName(), dateTime = appointmentCollection.getDate() + " "
-				+ String.format("%02d:%02d", appointmentCollection.getTime().getFrom() / 60, appointmentCollection.getTime().getFrom() % 60), doctorName = userCollection
-				.getTitle() + " " + userCollection.getFirstName(), clinicName = locationCollection.getLocationName(), clinicContactNum = locationCollection
-				.getLocationPhoneNumber() != null ? locationCollection.getLocationPhoneNumber() : "";
+			String patientName = patient.getFirstName(),
+				dateTime = appointmentCollection.getDate() + " "
+					+ String.format("%02d:%02d", appointmentCollection.getTime().getFrom() / 60,
+						appointmentCollection.getTime().getFrom() % 60),
+				doctorName = userCollection.getTitle() + " " + userCollection.getFirstName(), clinicName = locationCollection.getLocationName(),
+				clinicContactNum = locationCollection.getLocationPhoneNumber() != null ? locationCollection.getLocationPhoneNumber() : "";
 			sendMsg(SMSFormatType.APPOINTMENT_REMINDER_TO_PATIENT.getType(), appointmentCollection.getDoctorId(),
 				appointmentCollection.getLocationId(), appointmentCollection.getHospitalId(), appointmentCollection.getPatientId(),
 				patient.getMobileNumber(), patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum);
@@ -1236,8 +1245,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
 	    DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
 
-	    List<PatientQueueCollection> patientQueueCollections = patientQueueRepository.find(doctorId, locationId, hospitalId, start, end, false, new Sort(
-		    Direction.DESC, "sequenceNo"));
+	    List<PatientQueueCollection> patientQueueCollections = patientQueueRepository.find(doctorId, locationId, hospitalId, start, end, false,
+		    new Sort(Direction.DESC, "sequenceNo"));
 	    if (patientQueueCollections != null) {
 		response = new ArrayList<PatientQueue>();
 		for (PatientQueueCollection collection : patientQueueCollections) {
@@ -1372,8 +1381,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 			UserCollection userCollection = userRepository.findOne(collection.getPatientId());
 			if (userCollection != null)
 			    BeanUtil.map(userCollection, patientCard);
-			PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(collection.getPatientId(),
-				doctorId, locationId, hospitalId);
+			PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(collection.getPatientId(), doctorId,
+				locationId, hospitalId);
 			if (patientCollection != null)
 			    BeanUtil.map(patientCollection, patientCard);
 			patientQueue.setPatient(patientCard);

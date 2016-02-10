@@ -112,9 +112,9 @@ public class DrugAddEditResponse extends GenericCollection {
 
     @Override
     public String toString() {
-	return "DrugAddEditResponse [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", description=" + description + ", strength="
-		+ strength + ", genericNames=" + genericNames + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId
-		+ ", drugCode=" + drugCode + "]";
+	return "DrugAddEditResponse [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", description=" + description + ", strength=" + strength
+		+ ", genericNames=" + genericNames + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", drugCode="
+		+ drugCode + "]";
     }
 
 }

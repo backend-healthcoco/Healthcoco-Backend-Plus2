@@ -35,6 +35,7 @@ import com.dpdocter.request.ImportContactsRequest;
 import com.dpdocter.request.PatientGroupAddEditRequest;
 import com.dpdocter.services.ContactsService;
 import com.dpdocter.services.PatientVisitService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -128,7 +129,8 @@ public class ContactsApi {
     @GET
     public Response<RegisteredPatientDetails> getDoctorContactsHandheld(@QueryParam(value = "doctorId") String doctorId,
 	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
-	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
+	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 
 	return doctorContactsHandheld(doctorId, locationId, hospitalId, updatedTime, discarded);
     }

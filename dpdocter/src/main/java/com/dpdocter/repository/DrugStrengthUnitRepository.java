@@ -12,8 +12,8 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.dpdocter.collections.DrugStrengthUnitCollection;
 
-public interface DrugStrengthUnitRepository extends MongoRepository<DrugStrengthUnitCollection, String>,
-	PagingAndSortingRepository<DrugStrengthUnitCollection, String> {
+public interface DrugStrengthUnitRepository
+	extends MongoRepository<DrugStrengthUnitCollection, String>, PagingAndSortingRepository<DrugStrengthUnitCollection, String> {
 
     @Query("{'doctorId': null}")
     List<DrugStrengthUnitCollection> getGlobalDrugStrengthUnit(Sort sort);
@@ -105,7 +105,8 @@ public interface DrugStrengthUnitRepository extends MongoRepository<DrugStrength
     List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, String hospitalId, String locationId, Pageable pageable);
 
     @Query("{'$or': [{'doctorId': ?0,  'hospitalId': ?1, 'locationId': ?2, 'discarded': ?3},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'discarded': ?3}]}")
-    List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, String hospitalId, String locationId, boolean discarded, Pageable pageable);
+    List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, String hospitalId, String locationId, boolean discarded,
+	    Pageable pageable);
 
     @Query("{'$or': [{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gt': ?3}} , {'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gt': ?3}}]}")
     List<DrugStrengthUnitCollection> getCustomGlobalDrugStrengthUnit(String doctorId, String hospitalId, String locationId, Date date, Pageable pageable);

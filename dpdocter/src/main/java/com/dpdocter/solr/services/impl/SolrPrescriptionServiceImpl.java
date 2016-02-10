@@ -26,6 +26,7 @@ import com.dpdocter.solr.repository.SolrDiagnosticTestRepository;
 import com.dpdocter.solr.repository.SolrDrugRepository;
 import com.dpdocter.solr.repository.SolrLabTestRepository;
 import com.dpdocter.solr.services.SolrPrescriptionService;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -184,28 +185,28 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	    if (doctorId == null) {
 		if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		    if (size > 0)
-			solrDrugDocument = solrDrugRepository.getCustomGlobalDrugs(new Date(createdTimeStamp), discarded, new PageRequest(page, size,
-				Direction.DESC, "updatedTime"));
+			solrDrugDocument = solrDrugRepository.getCustomGlobalDrugs(new Date(createdTimeStamp), discarded,
+				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			solrDrugDocument = solrDrugRepository.getCustomGlobalDrugs(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC,
-				"updatedTime"));
+			solrDrugDocument = solrDrugRepository.getCustomGlobalDrugs(new Date(createdTimeStamp), discarded,
+				new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
 		    if (size > 0)
-			solrDrugDocument = solrDrugRepository.getCustomGlobalDrugs(new Date(createdTimeStamp), discarded, searchTerm, new PageRequest(page,
-				size, Direction.DESC, "updatedTime"));
+			solrDrugDocument = solrDrugRepository.getCustomGlobalDrugs(new Date(createdTimeStamp), discarded, searchTerm,
+				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			solrDrugDocument = solrDrugRepository.getCustomGlobalDrugs(new Date(createdTimeStamp), discarded, searchTerm, new Sort(
-				Sort.Direction.DESC, "updatedTime"));
+			solrDrugDocument = solrDrugRepository.getCustomGlobalDrugs(new Date(createdTimeStamp), discarded, searchTerm,
+				new Sort(Sort.Direction.DESC, "updatedTime"));
 		}
 	    } else {
 		if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		    if (locationId == null && hospitalId == null) {
 			if (size > 0)
-			    solrDrugDocument = solrDrugRepository.getCustomGlobalDrugs(doctorId, new Date(createdTimeStamp), discarded, new PageRequest(page,
-				    size, Direction.DESC, "updatedTime"));
+			    solrDrugDocument = solrDrugRepository.getCustomGlobalDrugs(doctorId, new Date(createdTimeStamp), discarded,
+				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    solrDrugDocument = solrDrugRepository.getCustomGlobalDrugs(doctorId, new Date(createdTimeStamp), discarded, new Sort(
-				    Sort.Direction.DESC, "updatedTime"));
+			    solrDrugDocument = solrDrugRepository.getCustomGlobalDrugs(doctorId, new Date(createdTimeStamp), discarded,
+				    new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
 			    solrDrugDocument = solrDrugRepository.getCustomGlobalDrugs(doctorId, hospitalId, locationId, new Date(createdTimeStamp), discarded,
@@ -220,8 +221,8 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 			    solrDrugDocument = solrDrugRepository.getCustomGlobalDrugs(doctorId, new Date(createdTimeStamp), discarded, searchTerm,
 				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    solrDrugDocument = solrDrugRepository.getCustomGlobalDrugs(doctorId, new Date(createdTimeStamp), discarded, searchTerm, new Sort(
-				    Sort.Direction.DESC, "updatedTime"));
+			    solrDrugDocument = solrDrugRepository.getCustomGlobalDrugs(doctorId, new Date(createdTimeStamp), discarded, searchTerm,
+				    new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
 			    solrDrugDocument = solrDrugRepository.getCustomGlobalDrugs(doctorId, hospitalId, locationId, new Date(createdTimeStamp), discarded,
@@ -246,19 +247,19 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		if (size > 0)
-		    SolrDrugDocuments = solrDrugRepository.getGlobalDrugs(new Date(createdTimeStamp), discarded, new PageRequest(page, size, Direction.DESC,
-			    "updatedTime"));
+		    SolrDrugDocuments = solrDrugRepository.getGlobalDrugs(new Date(createdTimeStamp), discarded,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 
 		else
 		    SolrDrugDocuments = solrDrugRepository.getGlobalDrugs(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
 	    } else {
 		if (size > 0)
-		    SolrDrugDocuments = solrDrugRepository.getGlobalDrugs(new Date(createdTimeStamp), discarded, searchTerm, new PageRequest(page, size,
-			    Direction.DESC, "updatedTime"));
+		    SolrDrugDocuments = solrDrugRepository.getGlobalDrugs(new Date(createdTimeStamp), discarded, searchTerm,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 
 		else
-		    SolrDrugDocuments = solrDrugRepository.getGlobalDrugs(new Date(createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC,
-			    "updatedTime"));
+		    SolrDrugDocuments = solrDrugRepository.getGlobalDrugs(new Date(createdTimeStamp), discarded, searchTerm,
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 
 	    }
 	} catch (Exception e) {
@@ -281,11 +282,11 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 		if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		    if (locationId == null && hospitalId == null) {
 			if (size > 0)
-			    SolrDrugDocuments = solrDrugRepository.getCustomDrugs(doctorId, new Date(createdTimeStamp), discarded, new PageRequest(page, size,
-				    Direction.DESC, "updatedTime"));
+			    SolrDrugDocuments = solrDrugRepository.getCustomDrugs(doctorId, new Date(createdTimeStamp), discarded,
+				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    SolrDrugDocuments = solrDrugRepository.getCustomDrugs(doctorId, new Date(createdTimeStamp), discarded, new Sort(
-				    Sort.Direction.DESC, "updatedTime"));
+			    SolrDrugDocuments = solrDrugRepository.getCustomDrugs(doctorId, new Date(createdTimeStamp), discarded,
+				    new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
 			    SolrDrugDocuments = solrDrugRepository.getCustomDrugs(doctorId, hospitalId, locationId, new Date(createdTimeStamp), discarded,
@@ -297,11 +298,11 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 		} else {
 		    if (locationId == null && hospitalId == null) {
 			if (size > 0)
-			    SolrDrugDocuments = solrDrugRepository.getCustomDrugs(doctorId, new Date(createdTimeStamp), discarded, searchTerm, new PageRequest(
-				    page, size, Direction.DESC, "updatedTime"));
+			    SolrDrugDocuments = solrDrugRepository.getCustomDrugs(doctorId, new Date(createdTimeStamp), discarded, searchTerm,
+				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    SolrDrugDocuments = solrDrugRepository.getCustomDrugs(doctorId, new Date(createdTimeStamp), discarded, searchTerm, new Sort(
-				    Sort.Direction.DESC, "updatedTime"));
+			    SolrDrugDocuments = solrDrugRepository.getCustomDrugs(doctorId, new Date(createdTimeStamp), discarded, searchTerm,
+				    new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
 			    SolrDrugDocuments = solrDrugRepository.getCustomDrugs(doctorId, hospitalId, locationId, new Date(createdTimeStamp), discarded,
@@ -346,24 +347,24 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		if (size > 0)
-		    labTestCollections = solrLabTestRepository.getGlobalLabTests(new Date(createdTimeStamp), discarded, new PageRequest(page, size,
-			    Direction.DESC, "updatedTime"));
+		    labTestCollections = solrLabTestRepository.getGlobalLabTests(new Date(createdTimeStamp), discarded,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 
 		else
-		    labTestCollections = solrLabTestRepository.getGlobalLabTests(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC,
-			    "updatedTime"));
+		    labTestCollections = solrLabTestRepository.getGlobalLabTests(new Date(createdTimeStamp), discarded,
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    } else {
 		List<SolrDiagnosticTestDocument> diagnosticTestCollections = solrDiagnosticTestRepository.findAll(searchTerm);
 		@SuppressWarnings("unchecked")
 		Collection<String> testIds = CollectionUtils.collect(diagnosticTestCollections, new BeanToPropertyValueTransformer("id"));
 
 		if (size > 0)
-		    labTestCollections = solrLabTestRepository.getGlobalLabTests(new Date(createdTimeStamp), discarded, testIds, new PageRequest(page, size,
-			    Direction.DESC, "updatedTime"));
+		    labTestCollections = solrLabTestRepository.getGlobalLabTests(new Date(createdTimeStamp), discarded, testIds,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 
 		else
-		    labTestCollections = solrLabTestRepository.getGlobalLabTests(new Date(createdTimeStamp), discarded, testIds, new Sort(Sort.Direction.DESC,
-			    "updatedTime"));
+		    labTestCollections = solrLabTestRepository.getGlobalLabTests(new Date(createdTimeStamp), discarded, testIds,
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    }
 
 	} catch (Exception e) {
@@ -387,8 +388,8 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 			labTestCollections = solrLabTestRepository.getCustomLabTests(locationId, hospitalId, new Date(createdTimeStamp), discarded,
 				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			labTestCollections = solrLabTestRepository.getCustomLabTests(locationId, hospitalId, new Date(createdTimeStamp), discarded, new Sort(
-				Sort.Direction.DESC, "updatedTime"));
+			labTestCollections = solrLabTestRepository.getCustomLabTests(locationId, hospitalId, new Date(createdTimeStamp), discarded,
+				new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
 		    List<SolrDiagnosticTestDocument> diagnosticTestCollections = solrDiagnosticTestRepository.findAll(searchTerm);
 		    @SuppressWarnings("unchecked")
@@ -419,11 +420,11 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	    if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
-			labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(new Date(createdTimeStamp), discarded, new PageRequest(page, size,
-				Direction.DESC, "updatedTime"));
+			labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(new Date(createdTimeStamp), discarded,
+				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC,
-				"updatedTime"));
+			labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(new Date(createdTimeStamp), discarded,
+				new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
 		    if (size > 0)
 			labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(locationId, hospitalId, new Date(createdTimeStamp), discarded,
@@ -438,11 +439,11 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 		Collection<String> testIds = CollectionUtils.collect(diagnosticTestCollections, new BeanToPropertyValueTransformer("id"));
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
-			labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(new Date(createdTimeStamp), discarded, testIds, new PageRequest(
-				page, size, Direction.DESC, "updatedTime"));
+			labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(new Date(createdTimeStamp), discarded, testIds,
+				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(new Date(createdTimeStamp), discarded, testIds, new Sort(
-				Sort.Direction.DESC, "updatedTime"));
+			labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(new Date(createdTimeStamp), discarded, testIds,
+				new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
 		    if (size > 0)
 			labTestCollections = solrLabTestRepository.getCustomGlobalLabTests(locationId, hospitalId, new Date(createdTimeStamp), discarded,
@@ -524,12 +525,12 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		if (size > 0)
-		    diagnosticTestCollections = solrDiagnosticTestRepository.getGlobalDiagnosticTests(new Date(createdTimeStamp), discarded, new PageRequest(
-			    page, size, Direction.DESC, "updatedTime"));
+		    diagnosticTestCollections = solrDiagnosticTestRepository.getGlobalDiagnosticTests(new Date(createdTimeStamp), discarded,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 
 		else
-		    diagnosticTestCollections = solrDiagnosticTestRepository.getGlobalDiagnosticTests(new Date(createdTimeStamp), discarded, new Sort(
-			    Sort.Direction.DESC, "updatedTime"));
+		    diagnosticTestCollections = solrDiagnosticTestRepository.getGlobalDiagnosticTests(new Date(createdTimeStamp), discarded,
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    } else {
 
 		if (size > 0)
@@ -597,11 +598,11 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 				new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
 		    if (size > 0)
-			diagnosticTestCollections = solrDiagnosticTestRepository.getCustomGlobalDiagnosticTests(locationId, hospitalId, new Date(
-				createdTimeStamp), discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			diagnosticTestCollections = solrDiagnosticTestRepository.getCustomGlobalDiagnosticTests(locationId, hospitalId,
+				new Date(createdTimeStamp), discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			diagnosticTestCollections = solrDiagnosticTestRepository.getCustomGlobalDiagnosticTests(locationId, hospitalId, new Date(
-				createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+			diagnosticTestCollections = solrDiagnosticTestRepository.getCustomGlobalDiagnosticTests(locationId, hospitalId,
+				new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
 		}
 	    } else {
 		if (locationId == null && hospitalId == null) {
@@ -613,11 +614,11 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 				searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
 		    if (size > 0)
-			diagnosticTestCollections = solrDiagnosticTestRepository.getCustomGlobalDiagnosticTests(locationId, hospitalId, new Date(
-				createdTimeStamp), discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			diagnosticTestCollections = solrDiagnosticTestRepository.getCustomGlobalDiagnosticTests(locationId, hospitalId,
+				new Date(createdTimeStamp), discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			diagnosticTestCollections = solrDiagnosticTestRepository.getCustomGlobalDiagnosticTests(locationId, hospitalId, new Date(
-				createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
+			diagnosticTestCollections = solrDiagnosticTestRepository.getCustomGlobalDiagnosticTests(locationId, hospitalId,
+				new Date(createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
 		}
 	    }
 	} catch (Exception e) {

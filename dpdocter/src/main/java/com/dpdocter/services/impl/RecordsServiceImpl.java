@@ -69,6 +69,7 @@ import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.RecordsService;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -322,8 +323,8 @@ public class RecordsServiceImpl implements RecordsService {
 	boolean[] discards = new boolean[2];
 	discards[0] = false;
 	try {
-	    boolean isOTPVerified = otpService
-		    .checkOTPVerified(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId());
+	    boolean isOTPVerified = otpService.checkOTPVerified(request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
+		    request.getPatientId());
 	    if (request.getDiscarded())
 		discards[1] = true;
 	    long createdTimeStamp = Long.parseLong(request.getUpdatedTime());
@@ -332,8 +333,8 @@ public class RecordsServiceImpl implements RecordsService {
 		List<RecordsTagsCollection> recordsTagsCollections = null;
 
 		if (request.getSize() > 0)
-		    recordsTagsCollections = recordsTagsRepository.findByTagsId(request.getTagId(), new PageRequest(request.getPage(), request.getSize(),
-			    Direction.DESC, "updatedTime"));
+		    recordsTagsCollections = recordsTagsRepository.findByTagsId(request.getTagId(),
+			    new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "updatedTime"));
 		else
 		    recordsTagsCollections = recordsTagsRepository.findByTagsId(request.getTagId(), new Sort(Sort.Direction.DESC, "updatedTime"));
 		@SuppressWarnings("unchecked")
@@ -345,17 +346,17 @@ public class RecordsServiceImpl implements RecordsService {
 
 		if (isOTPVerified) {
 		    if (request.getSize() > 0) {
-			recordsCollections = recordsRepository.findRecords(request.getPatientId(), new Date(createdTimeStamp), discards, new PageRequest(
-				request.getPage(), request.getSize(), Direction.DESC, "updatedTime"));
+			recordsCollections = recordsRepository.findRecords(request.getPatientId(), new Date(createdTimeStamp), discards,
+				new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "updatedTime"));
 		    } else {
-			recordsCollections = recordsRepository.findRecords(request.getPatientId(), new Date(createdTimeStamp), discards, new Sort(
-				Sort.Direction.DESC, "updatedTime"));
+			recordsCollections = recordsRepository.findRecords(request.getPatientId(), new Date(createdTimeStamp), discards,
+				new Sort(Sort.Direction.DESC, "updatedTime"));
 		    }
 		} else {
 		    if (request.getSize() > 0) {
-			recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(), request
-				.getHospitalId(), new Date(createdTimeStamp), discards, new PageRequest(request.getPage(), request.getSize(), Direction.DESC,
-				"updatedTime"));
+			recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), new Date(createdTimeStamp), discards,
+				new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "updatedTime"));
 		    } else {
 			recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
@@ -630,8 +631,8 @@ public class RecordsServiceImpl implements RecordsService {
 
 		UserCollection patientUserCollection = userRepository.findOne(recordsCollection.getPatientId());
 		if (patientUserCollection != null) {
-		    mailAttachment.setAttachmentName(patientUserCollection.getFirstName() + new Date() + "REPORTS."
-			    + FilenameUtils.getExtension(file.getFilename()));
+		    mailAttachment
+			    .setAttachmentName(patientUserCollection.getFirstName() + new Date() + "REPORTS." + FilenameUtils.getExtension(file.getFilename()));
 		} else {
 		    mailAttachment.setAttachmentName(new Date() + "REPORTS." + FilenameUtils.getExtension(file.getFilename()));
 		}
@@ -714,11 +715,11 @@ public class RecordsServiceImpl implements RecordsService {
 
 	    if (isOTPVerified) {
 		if (size > 0) {
-		    recordsCollections = recordsRepository.findRecords(patientId, new Date(createdTimeStamp), discards, inHistorys, new PageRequest(page, size,
-			    Direction.DESC, "updatedTime"));
+		    recordsCollections = recordsRepository.findRecords(patientId, new Date(createdTimeStamp), discards, inHistorys,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		} else {
-		    recordsCollections = recordsRepository.findRecords(patientId, new Date(createdTimeStamp), discards, inHistorys, new Sort(
-			    Sort.Direction.DESC, "updatedTime"));
+		    recordsCollections = recordsRepository.findRecords(patientId, new Date(createdTimeStamp), discards, inHistorys,
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 		}
 	    } else {
 		if (size > 0) {
@@ -759,11 +760,11 @@ public class RecordsServiceImpl implements RecordsService {
 	    if (discarded)
 		discards[1] = true;
 	    if (size > 0)
-		recordsCollections = recordsRepository.findRecordsByPatientId(patientId, new Date(updatedTimeLong), discards, new PageRequest(page, size,
-			Sort.Direction.DESC, "updatedTime"));
+		recordsCollections = recordsRepository.findRecordsByPatientId(patientId, new Date(updatedTimeLong), discards,
+			new PageRequest(page, size, Sort.Direction.DESC, "updatedTime"));
 	    else
-		recordsCollections = recordsRepository.findRecordsByPatientId(patientId, new Date(updatedTimeLong), discards, new Sort(Sort.Direction.DESC,
-			"updatedTime"));
+		recordsCollections = recordsRepository.findRecordsByPatientId(patientId, new Date(updatedTimeLong), discards,
+			new Sort(Sort.Direction.DESC, "updatedTime"));
 	    records = new ArrayList<Records>();
 	    for (RecordsCollection recordCollection : recordsCollections) {
 		Records record = new Records();

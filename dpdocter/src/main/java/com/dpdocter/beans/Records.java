@@ -198,7 +198,7 @@ public class Records extends GenericCollection {
 	return "Records [id=" + id + ", uniqueId=" + uniqueId + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 		+ ", patientId=" + patientId + ", recordsUrl=" + recordsUrl + ", recordsLable=" + recordsLable + ", recordsType=" + recordsType
 		+ ", description=" + description + ", inHistory=" + inHistory + ", discarded=" + discarded + ", uploadedByLocation=" + uploadedByLocation
-		+ ", visitId=" + visitId + ", prescriptionId=" + prescriptionId + ", prescribedByDoctorId=" + prescribedByDoctorId
-		+ ", prescribedByLocationId=" + prescribedByLocationId + ", prescribedByHospitalId=" + prescribedByHospitalId + ", testId=" + testId + "]";
+		+ ", visitId=" + visitId + ", prescriptionId=" + prescriptionId + ", prescribedByDoctorId=" + prescribedByDoctorId + ", prescribedByLocationId="
+		+ prescribedByLocationId + ", prescribedByHospitalId=" + prescribedByHospitalId + ", testId=" + testId + "]";
     }
 }

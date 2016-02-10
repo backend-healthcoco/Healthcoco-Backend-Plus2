@@ -41,6 +41,7 @@ import com.dpdocter.response.HistoryDetailsResponse;
 import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientVisitService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -115,8 +116,8 @@ public class HistoryApi {
 	    @QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 
-	List<DiseaseListResponse> diseaseListResponse = historyServices
-		.getDiseases(range, page, size, doctorId, hospitalId, locationId, updatedTime, discarded);
+	List<DiseaseListResponse> diseaseListResponse = historyServices.getDiseases(range, page, size, doctorId, hospitalId, locationId, updatedTime,
+		discarded);
 	Response<DiseaseListResponse> response = new Response<DiseaseListResponse>();
 	response.setDataList(diseaseListResponse);
 	return response;
@@ -257,9 +258,9 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.REMOVE_CLINICAL_NOTES)
     @GET
-    public Response<Boolean> removeClinicalNotes(@PathParam(value = "clinicalNotesId") String clinicalNotesId,
-	    @PathParam(value = "patientId") String patientId, @PathParam(value = "doctorId") String doctorId,
-	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
+    public Response<Boolean> removeClinicalNotes(@PathParam(value = "clinicalNotesId") String clinicalNotesId, @PathParam(value = "patientId") String patientId,
+	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+	    @PathParam(value = "hospitalId") String hospitalId) {
 	if (DPDoctorUtils.anyStringEmpty(clinicalNotesId, patientId, doctorId, hospitalId, locationId)) {
 	    logger.warn("Clinical Notes Id, Patient Id, Doctor Id, Hospital Id, Location Id");
 	    throw new BusinessException(ServiceError.InvalidInput, "Clinical Notes Id, Patient Id, Doctor Id, Hospital Id, Location Id");
@@ -469,9 +470,11 @@ public class HistoryApi {
     //
     // if (DPDoctorUtils.anyStringEmpty(visitId, patientId, doctorId,
     // hospitalId, locationId)) {
-    // logger.warn("Visits Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+    // logger.warn("Visits Id, Patient Id, Doctor Id, Hospital Id, Location Id
+    // Cannot Be Empty");
     // throw new BusinessException(ServiceError.InvalidInput,
-    // "Visits Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+    // "Visits Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be
+    // Empty");
     // }
     // boolean addClinicalNotesToHistoryResponse =
     // historyServices.addVisitsToHistory(visitId, patientId, doctorId,
@@ -492,9 +495,11 @@ public class HistoryApi {
     //
     // if (DPDoctorUtils.anyStringEmpty(visitId, patientId, doctorId,
     // hospitalId, locationId)) {
-    // logger.warn("Visits Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+    // logger.warn("Visits Id, Patient Id, Doctor Id, Hospital Id, Location Id
+    // Cannot Be Empty");
     // throw new BusinessException(ServiceError.InvalidInput,
-    // "Visits Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+    // "Visits Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be
+    // Empty");
     // }
     // boolean addClinicalNotesToHistoryResponse =
     // historyServices.removeVisits(visitId, patientId, doctorId, hospitalId,
@@ -526,7 +531,8 @@ public class HistoryApi {
     public Response<HistoryDetailsResponse> getMultipleData(@QueryParam(value = "doctorId") String doctorId,
 	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 	    @QueryParam(value = "patientId") String patientId, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
-	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @DefaultValue("true") @QueryParam(value = "inHistory") Boolean inHistory) {
+	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
+	    @DefaultValue("true") @QueryParam(value = "inHistory") Boolean inHistory) {
 
 	List<HistoryDetailsResponse> historyDetailsResponses = historyServices.getMultipleData(patientId, doctorId, hospitalId, locationId, updatedTime,
 		inHistory);

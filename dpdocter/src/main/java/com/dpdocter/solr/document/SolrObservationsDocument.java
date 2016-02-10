@@ -112,7 +112,7 @@ public class SolrObservationsDocument {
 
     @Override
     public String toString() {
-	return "SolrObservationsDocument [id=" + id + ", observation=" + observation + ", doctorId=" + doctorId + ", locationId=" + locationId
-		+ ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", updatedTime=" + updatedTime + "]";
+	return "SolrObservationsDocument [id=" + id + ", observation=" + observation + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+		+ hospitalId + ", discarded=" + discarded + ", updatedTime=" + updatedTime + "]";
     }
 }

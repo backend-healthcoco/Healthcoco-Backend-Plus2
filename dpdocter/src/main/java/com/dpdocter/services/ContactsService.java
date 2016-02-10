@@ -37,7 +37,7 @@ public interface ContactsService {
 
     List<Group> getAllGroups(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded);
 
-    DoctorContactsResponse getDoctorContactsSortedByName(String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
-	    int page, int size);
+    DoctorContactsResponse getDoctorContactsSortedByName(String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, int page,
+	    int size);
 
 }

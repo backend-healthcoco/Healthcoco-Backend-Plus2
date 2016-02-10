@@ -31,7 +31,8 @@ public interface InvestigationRepository extends MongoRepository<InvestigationCo
     List<InvestigationCollection> findCustomGlobalInvestigations(String doctorId, Date date, boolean[] discards, Pageable pageable);
 
     @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gt': ?3},'discarded': {$in: ?4}}]}")
-    List<InvestigationCollection> findCustomGlobalInvestigations(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards, Sort sort);
+    List<InvestigationCollection> findCustomGlobalInvestigations(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards,
+	    Sort sort);
 
     @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
     List<InvestigationCollection> findGlobalInvestigations(Date date, boolean[] discards, Sort sort);

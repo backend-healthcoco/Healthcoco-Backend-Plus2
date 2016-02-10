@@ -33,7 +33,8 @@ public interface SolrDrugRepository extends SolrCrudRepository<SolrDrugDocument,
     public List<SolrDrugDocument> getCustomGlobalDrugs(String doctorId, Date date, boolean discarded, Sort sort);
 
     @Query("(doctorId:*?0* AND hospitalId:*?1* AND locationId:*?2* AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false)) OR ((doctorId: null OR doctorId: \"\") AND (locationId: null OR locationId: \"\") AND (hospitalId: null OR hospitalId: \"\") AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false))")
-    public List<SolrDrugDocument> getCustomGlobalDrugs(String doctorId, String hospitalId, String locationId, Date date, boolean discarded, Pageable pageRequest);
+    public List<SolrDrugDocument> getCustomGlobalDrugs(String doctorId, String hospitalId, String locationId, Date date, boolean discarded,
+	    Pageable pageRequest);
 
     @Query("(doctorId:*?0* AND hospitalId:*?1* AND locationId:*?2* AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false)) OR ((doctorId: null OR doctorId: \"\") AND (locationId: null OR locationId: \"\") AND (hospitalId: null OR hospitalId: \"\") AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false))")
     public List<SolrDrugDocument> getCustomGlobalDrugs(String doctorId, String hospitalId, String locationId, Date date, boolean discarded, Sort sort);

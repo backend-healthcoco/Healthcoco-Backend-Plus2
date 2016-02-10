@@ -97,6 +97,7 @@ import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.RecordsService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -203,8 +204,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		patientTrackCollection.setUniqueId(DPDoctorUtils.generateRandomId());
 		UserCollection userCollection = userRepository.findOne(patientTrackCollection.getDoctorId());
 		if (userCollection != null) {
-		    patientTrackCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
-			    + userCollection.getFirstName());
+		    patientTrackCollection
+			    .setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
 		}
 	    }
 
@@ -274,8 +275,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		}
 		if (userCollection != null) {
 		    if (userCollection.getFirstName() != null) {
-			patientTrackCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
-				+ userCollection.getFirstName());
+			patientTrackCollection
+				.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
 		    }
 		}
 
@@ -306,15 +307,15 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    int totalSize = 0;
 	    if (size > 0)
 		aggregation = Aggregation.newAggregation(
-			Aggregation.match((Criteria.where("doctorId").is(doctorId).andOperator(Criteria.where("locationId").is(locationId)
-				.andOperator(Criteria.where("hospitalId").is(hospitalId))))),
+			Aggregation.match((Criteria.where("doctorId").is(doctorId)
+				.andOperator(Criteria.where("locationId").is(locationId).andOperator(Criteria.where("hospitalId").is(hospitalId))))),
 			Aggregation.group("patientId").max("visitedTime").as("visitedTime"), Aggregation.sort(new Sort(Sort.Direction.DESC, "visitedTime")),
 			Aggregation.skip((page) * size), Aggregation.limit(size));
 
 	    else
 		aggregation = Aggregation.newAggregation(
-			Aggregation.match((Criteria.where("doctorId").is(doctorId).andOperator(Criteria.where("locationId").is(locationId)
-				.andOperator(Criteria.where("hospitalId").is(hospitalId))))),
+			Aggregation.match((Criteria.where("doctorId").is(doctorId)
+				.andOperator(Criteria.where("locationId").is(locationId).andOperator(Criteria.where("hospitalId").is(hospitalId))))),
 			Aggregation.group("patientId").max("visitedTime").as("visitedTime"), Aggregation.sort(new Sort(Sort.Direction.DESC, "visitedTime")));
 
 	    AggregationResults<PatientVisit> groupResults = mongoTemplate.aggregate(aggregation, PatientVisitCollection.class, PatientVisit.class);
@@ -326,8 +327,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		List<PatientCard> patientCards = contactsService.getSpecifiedPatientCards(patientIds, doctorId, locationId, hospitalId);
 
 		Aggregation aggregationCount = Aggregation.newAggregation(
-			Aggregation.match((Criteria.where("doctorId").is(doctorId).andOperator(Criteria.where("locationId").is(locationId)
-				.andOperator(Criteria.where("hospitalId").is(hospitalId))))), Aggregation.group("patientId"));
+			Aggregation.match((Criteria.where("doctorId").is(doctorId)
+				.andOperator(Criteria.where("locationId").is(locationId).andOperator(Criteria.where("hospitalId").is(hospitalId))))),
+			Aggregation.group("patientId"));
 
 		groupResults = mongoTemplate.aggregate(aggregationCount, PatientVisitCollection.class, PatientVisit.class);
 		results = groupResults.getMappedResults();
@@ -356,8 +358,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		aggregation = Aggregation.newAggregation(Aggregation.match(matchCriteria), Aggregation.group("patientId").count().as("total"),
 			Aggregation.sort(Sort.Direction.DESC, "total"), Aggregation.skip(page * size), Aggregation.limit(size));
 	    } else {
-		aggregation = Aggregation.newAggregation(Aggregation.match(matchCriteria), Aggregation.group("patientId").count().as("total"), Aggregation
-			.project("total").and("patientId").previousOperation(), Aggregation.sort(Sort.Direction.DESC, "total"));
+		aggregation = Aggregation.newAggregation(Aggregation.match(matchCriteria), Aggregation.group("patientId").count().as("total"),
+			Aggregation.project("total").and("patientId").previousOperation(), Aggregation.sort(Sort.Direction.DESC, "total"));
 	    }
 
 	    Aggregation aggregationCount = Aggregation.newAggregation(Aggregation.match(matchCriteria), Aggregation.group("patientId").count().as("total"),
@@ -475,26 +477,26 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    if (!isOTPVerified) {
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
-			patientVisitCollections = patientVisitRepository.find(doctorId, patientId, visitedFors, new Date(createdTimestamp), new PageRequest(
-				page, size, Direction.DESC, "updatedTime"));
+			patientVisitCollections = patientVisitRepository.find(doctorId, patientId, visitedFors, new Date(createdTimestamp),
+				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			patientVisitCollections = patientVisitRepository.find(doctorId, patientId, visitedFors, new Date(createdTimestamp), new Sort(
-				Sort.Direction.DESC, "updatedTime"));
+			patientVisitCollections = patientVisitRepository.find(doctorId, patientId, visitedFors, new Date(createdTimestamp),
+				new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
 		    if (size > 0)
-			patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, visitedFors, new Date(
-				createdTimestamp), new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, visitedFors,
+				new Date(createdTimestamp), new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, visitedFors, new Date(
-				createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+			patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, visitedFors,
+				new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
 		}
 	    } else {
 		if (size > 0)
-		    patientVisitCollections = patientVisitRepository.find(patientId, visitedFors, new Date(createdTimestamp), new PageRequest(page, size,
-			    Direction.DESC, "updatedTime"));
+		    patientVisitCollections = patientVisitRepository.find(patientId, visitedFors, new Date(createdTimestamp),
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    patientVisitCollections = patientVisitRepository.find(patientId, visitedFors, new Date(createdTimestamp), new Sort(Sort.Direction.DESC,
-			    "updatedTime"));
+		    patientVisitCollections = patientVisitRepository.find(patientId, visitedFors, new Date(createdTimestamp),
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    }
 	    if (patientVisitCollections != null) {
 		response = new ArrayList<PatientVisitResponse>();
@@ -719,8 +721,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    parameters.put("clinicalNotes", clinicalNotes);
 
 		    parameters.put("visitId", patientVisitCollection.getId());
-		    String path = jasperReportService.createPDF(parameters, "mongo-multiple-data", layout, pageSize, margins, user.getFirstName() + new Date()
-			    + "CLINICALNOTES&PRESCRIPTION");
+		    String path = jasperReportService.createPDF(parameters, "mongo-multiple-data", layout, pageSize, margins,
+			    user.getFirstName() + new Date() + "CLINICALNOTES&PRESCRIPTION");
 		    if (user != null) {
 			emailTrackCollection.setPatientName(user.getFirstName());
 			emailTrackCollection.setPatientId(user.getId());
@@ -926,13 +928,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				String drugType = drug.getDrugType() != null ? (drug.getDrugType().getType() != null ? drug.getDrugType().getType() : "") : "";
 				String drugName = drug.getDrugName() != null ? drug.getDrugName() : "";
 				drugName = (drugType + drugName) == "" ? "----" : drugType + " " + drugName;
-				String durationValue = prescriptionItem.getDuration() != null ? (prescriptionItem.getDuration().getValue() != null ? prescriptionItem
-					.getDuration().getValue() : "")
-					: "";
-				String durationUnit = prescriptionItem.getDuration() != null ? (prescriptionItem.getDuration().getDurationUnit() != null ? prescriptionItem
-					.getDuration().getDurationUnit().getUnit()
-					: "")
-					: "";
+				String durationValue = prescriptionItem.getDuration() != null
+					? (prescriptionItem.getDuration().getValue() != null ? prescriptionItem.getDuration().getValue() : "") : "";
+				String durationUnit = prescriptionItem.getDuration() != null ? (prescriptionItem.getDuration().getDurationUnit() != null
+					? prescriptionItem.getDuration().getDurationUnit().getUnit() : "") : "";
 
 				String directions = "";
 				if (prescriptionItem.getDirection() != null)
@@ -949,8 +948,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				else
 				    duration = durationValue + " " + durationUnit;
 				PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
-					prescriptionItem.getDosage() != null ? prescriptionItem.getDosage() : "----", duration, directions.isEmpty() ? "----"
-						: directions, prescriptionItem.getInstructions() != null ? prescriptionItem.getInstructions() : "----");
+					prescriptionItem.getDosage() != null ? prescriptionItem.getDosage() : "----", duration,
+					directions.isEmpty() ? "----" : directions,
+					prescriptionItem.getInstructions() != null ? prescriptionItem.getInstructions() : "----");
 
 				prescriptionItems.add(prescriptionJasperDetails);
 			    }
@@ -1108,26 +1108,26 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    if (!isOTPVerified) {
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
-			patientVisitCollections = patientVisitRepository.find(doctorId, patientId, visitedFors, new Date(createdTimestamp), new PageRequest(
-				page, size, Direction.DESC, "updatedTime"));
+			patientVisitCollections = patientVisitRepository.find(doctorId, patientId, visitedFors, new Date(createdTimestamp),
+				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			patientVisitCollections = patientVisitRepository.find(doctorId, patientId, visitedFors, new Date(createdTimestamp), new Sort(
-				Sort.Direction.DESC, "updatedTime"));
+			patientVisitCollections = patientVisitRepository.find(doctorId, patientId, visitedFors, new Date(createdTimestamp),
+				new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
 		    if (size > 0)
-			patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, visitedFors, new Date(
-				createdTimestamp), new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, visitedFors,
+				new Date(createdTimestamp), new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, visitedFors, new Date(
-				createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+			patientVisitCollections = patientVisitRepository.find(doctorId, locationId, hospitalId, patientId, visitedFors,
+				new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "updatedTime"));
 		}
 	    } else {
 		if (size > 0)
-		    patientVisitCollections = patientVisitRepository.find(patientId, visitedFors, new Date(createdTimestamp), new PageRequest(page, size,
-			    Direction.DESC, "updatedTime"));
+		    patientVisitCollections = patientVisitRepository.find(patientId, visitedFors, new Date(createdTimestamp),
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    patientVisitCollections = patientVisitRepository.find(patientId, visitedFors, new Date(createdTimestamp), new Sort(Sort.Direction.DESC,
-			    "updatedTime"));
+		    patientVisitCollections = patientVisitRepository.find(patientId, visitedFors, new Date(createdTimestamp),
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    }
 	    if (patientVisitCollections != null) {
 		response = new ArrayList<PatientVisit>();

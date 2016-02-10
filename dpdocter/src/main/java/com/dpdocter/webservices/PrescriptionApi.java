@@ -56,6 +56,7 @@ import com.dpdocter.solr.document.SolrDiagnosticTestDocument;
 import com.dpdocter.solr.document.SolrDrugDocument;
 import com.dpdocter.solr.document.SolrLabTestDocument;
 import com.dpdocter.solr.services.SolrPrescriptionService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -344,10 +345,10 @@ public class PrescriptionApi {
 	return getTemplates(page, size, doctorId, hospitalId, locationId, updatedTime, discarded != null ? discarded : true);
     }
 
-    private Response<TemplateAddEditResponseDetails> getTemplates(int page, int size, String doctorId, String hospitalId, String locationId,
-	    String updatedTime, boolean discarded) {
-	List<TemplateAddEditResponseDetails> templates = prescriptionServices
-		.getTemplates(page, size, doctorId, hospitalId, locationId, updatedTime, discarded);
+    private Response<TemplateAddEditResponseDetails> getTemplates(int page, int size, String doctorId, String hospitalId, String locationId, String updatedTime,
+	    boolean discarded) {
+	List<TemplateAddEditResponseDetails> templates = prescriptionServices.getTemplates(page, size, doctorId, hospitalId, locationId, updatedTime,
+		discarded);
 	Response<TemplateAddEditResponseDetails> response = new Response<TemplateAddEditResponseDetails>();
 	response.setDataList(templates);
 	return response;
@@ -515,7 +516,8 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_TYPE)
     @DELETE
-    public Response<Boolean> deleteDrugType(@PathParam(value = "drugTypeId") String drugTypeId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    public Response<Boolean> deleteDrugType(@PathParam(value = "drugTypeId") String drugTypeId,
+	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(drugTypeId)) {
 	    logger.warn("Drug Type Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Type Id Cannot Be Empty");
@@ -543,7 +545,8 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_STRENGTH)
     @PUT
-    public Response<DrugStrengthAddEditResponse> editDrugStrength(@PathParam(value = "drugStrengthId") String drugStrengthId, DrugStrengthAddEditRequest request) {
+    public Response<DrugStrengthAddEditResponse> editDrugStrength(@PathParam(value = "drugStrengthId") String drugStrengthId,
+	    DrugStrengthAddEditRequest request) {
 	if (StringUtils.isEmpty(drugStrengthId) || request == null) {
 	    logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");

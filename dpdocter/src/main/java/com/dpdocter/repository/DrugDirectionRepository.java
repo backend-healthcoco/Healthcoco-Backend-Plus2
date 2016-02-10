@@ -20,7 +20,8 @@ public interface DrugDirectionRepository extends MongoRepository<DrugDirectionCo
     List<DrugDirectionCollection> getGlobalDrugDirection(Date date, boolean[] discards, Sort sort);
 
     @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gt': ?3},'discarded': {$in: ?4}}")
-    List<DrugDirectionCollection> getCustomDrugDirection(String doctorId, String hospitalId, String locationId, Date date, boolean[] discards, Pageable pageable);
+    List<DrugDirectionCollection> getCustomDrugDirection(String doctorId, String hospitalId, String locationId, Date date, boolean[] discards,
+	    Pageable pageable);
 
     @Query("{'$or': [{'doctorId': ?0,  'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gt': ?3},'discarded': {$in: ?4}}]}")
     List<DrugDirectionCollection> getCustomGlobalDrugDirection(String doctorId, String hospitalId, String locationId, Date date, boolean[] discards,

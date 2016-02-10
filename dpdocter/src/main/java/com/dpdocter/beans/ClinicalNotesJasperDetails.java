@@ -78,7 +78,7 @@ public class ClinicalNotesJasperDetails {
 
     @Override
     public String toString() {
-	return "ClinicalNotesJasperDetails [complaints=" + complaints + ", observations=" + observations + ", investigations=" + investigations
-		+ ", diagnosis=" + diagnosis + ", notes=" + notes + ", diagrams=" + diagrams + ", vitalSigns=" + vitalSigns + "]";
+	return "ClinicalNotesJasperDetails [complaints=" + complaints + ", observations=" + observations + ", investigations=" + investigations + ", diagnosis="
+		+ diagnosis + ", notes=" + notes + ", diagrams=" + diagrams + ", vitalSigns=" + vitalSigns + "]";
     }
 }

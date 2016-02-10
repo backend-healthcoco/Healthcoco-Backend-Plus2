@@ -182,8 +182,8 @@ public class DoctorCollection extends GenericCollection {
 
     @Override
     public String toString() {
-	return "DoctorCollection [id=" + id + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses=" + otherEmailAddresses + ", userId="
-		+ userId + ", experience=" + experience + ", education=" + education + ", specialities=" + specialities + ", achievements=" + achievements
+	return "DoctorCollection [id=" + id + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses=" + otherEmailAddresses + ", userId=" + userId
+		+ ", experience=" + experience + ", education=" + education + ", specialities=" + specialities + ", achievements=" + achievements
 		+ ", professionalStatement=" + professionalStatement + ", registrationDetails=" + registrationDetails + ", experienceDetails="
 		+ experienceDetails + ", professionalMemberships=" + professionalMemberships + ", registerNumber=" + registerNumber + ", gender=" + gender
 		+ ", dob=" + dob + "]";

@@ -14,7 +14,8 @@ import com.dpdocter.collections.DiagnosisCollection;
 public interface DiagnosisRepository extends MongoRepository<DiagnosisCollection, String>, PagingAndSortingRepository<DiagnosisCollection, String> {
 
     @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gt': ?3},'discarded': {$in: ?4}}]}")
-    List<DiagnosisCollection> findCustomGlobalDiagnosis(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards, Pageable pageable);
+    List<DiagnosisCollection> findCustomGlobalDiagnosis(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards,
+	    Pageable pageable);
 
     @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
     List<DiagnosisCollection> findGlobalDiagnosis(Date date, boolean[] discards, Pageable pageable);

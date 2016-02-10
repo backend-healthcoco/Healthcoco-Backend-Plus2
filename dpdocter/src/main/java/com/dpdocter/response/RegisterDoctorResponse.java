@@ -179,9 +179,9 @@ public class RegisterDoctorResponse {
 
     @Override
     public String toString() {
-	return "RegisterDoctorResponse [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName
-		+ ", userName=" + userName + ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender="
-		+ gender + ", dob=" + dob + ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl + ", specialization=" + specialization + ", locationId="
-		+ locationId + ", hospitalId=" + hospitalId + ", registerNumber=" + registerNumber + ", role=" + role + "]";
+	return "RegisterDoctorResponse [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", userName="
+		+ userName + ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob="
+		+ dob + ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl + ", specialization=" + specialization + ", locationId=" + locationId
+		+ ", hospitalId=" + hospitalId + ", registerNumber=" + registerNumber + ", role=" + role + "]";
     }
 }

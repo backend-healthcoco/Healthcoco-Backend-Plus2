@@ -201,8 +201,8 @@ public class DoctorSignupHandheldContinueRequest {
 	return "DoctorSignupHandheldContinueRequest [userId=" + userId + ", specialization=" + specialization + ", hospitalName=" + hospitalName
 		+ ", hospitalPhoneNumber=" + hospitalPhoneNumber + ", hospitalImageUrl=" + hospitalImageUrl + ", hospitalDescription=" + hospitalDescription
 		+ ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city + ", locationPhoneNumber="
-		+ locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", locationImageUrl=" + locationImageUrl
-		+ ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude=" + longitude + ", streetAddress=" + streetAddress
-		+ ", registerNumber=" + registerNumber + "]";
+		+ locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", locationImageUrl=" + locationImageUrl + ", hospitalId="
+		+ hospitalId + ", latitude=" + latitude + ", longitude=" + longitude + ", streetAddress=" + streetAddress + ", registerNumber=" + registerNumber
+		+ "]";
     }
 }

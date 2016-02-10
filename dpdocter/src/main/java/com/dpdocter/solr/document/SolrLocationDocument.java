@@ -199,8 +199,8 @@ public class SolrLocationDocument {
 	return "SolrLocationDocument [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city
 		+ ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", imageUrl=" + imageUrl
 		+ ", latitude=" + latitude + ", longitude=" + longitude + ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress="
-		+ locationEmailAddress + ", streetAddress=" + streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber
-		+ ", alternateNumber=" + alternateNumber + "]";
+		+ locationEmailAddress + ", streetAddress=" + streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber + ", alternateNumber="
+		+ alternateNumber + "]";
     }
 
 }

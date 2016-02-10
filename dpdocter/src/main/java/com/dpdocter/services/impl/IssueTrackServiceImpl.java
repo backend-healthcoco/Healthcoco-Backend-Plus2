@@ -23,6 +23,7 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.services.IssueTrackService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -104,19 +105,19 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 	    if (scope.isEmpty()) {
 		if (doctorId == null) {
 		    if (size > 0)
-			issueTrackCollections = issueTrackRepository.findAll(new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC,
-				"updatedTime"));
+			issueTrackCollections = issueTrackRepository.findAll(new Date(createdTimeStamp), discards,
+				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			issueTrackCollections = issueTrackRepository
-				.findAll(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
+			issueTrackCollections = issueTrackRepository.findAll(new Date(createdTimeStamp), discards,
+				new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
 		    if (locationId == null && hospitalId == null) {
 			if (size > 0)
-			    issueTrackCollections = issueTrackRepository.findAll(doctorId, new Date(createdTimeStamp), discards, new PageRequest(page, size,
-				    Direction.DESC, "updatedTime"));
+			    issueTrackCollections = issueTrackRepository.findAll(doctorId, new Date(createdTimeStamp), discards,
+				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    issueTrackCollections = issueTrackRepository.findAll(doctorId, new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC,
-				    "updatedTime"));
+			    issueTrackCollections = issueTrackRepository.findAll(doctorId, new Date(createdTimeStamp), discards,
+				    new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
 			    issueTrackCollections = issueTrackRepository.findAll(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
@@ -133,19 +134,19 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 		    status = status.toUpperCase();
 		    if (doctorId == null) {
 			if (size > 0)
-			    localCollection = issueTrackRepository.findByStatus(status, new Date(createdTimeStamp), discards, new PageRequest(page, size,
-				    Direction.DESC, "updatedTime"));
+			    localCollection = issueTrackRepository.findByStatus(status, new Date(createdTimeStamp), discards,
+				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    localCollection = issueTrackRepository.findByStatus(status, new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC,
-				    "updatedTime"));
+			    localCollection = issueTrackRepository.findByStatus(status, new Date(createdTimeStamp), discards,
+				    new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (locationId == null && hospitalId == null) {
 			    if (size > 0)
-				localCollection = issueTrackRepository.findAll(doctorId, status, new Date(createdTimeStamp), discards, new PageRequest(page,
-					size, Direction.DESC, "updatedTime"));
+				localCollection = issueTrackRepository.findAll(doctorId, status, new Date(createdTimeStamp), discards,
+					new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			    else
-				localCollection = issueTrackRepository.findAll(doctorId, status, new Date(createdTimeStamp), discards, new Sort(
-					Sort.Direction.DESC, "updatedTime"));
+				localCollection = issueTrackRepository.findAll(doctorId, status, new Date(createdTimeStamp), discards,
+					new Sort(Sort.Direction.DESC, "updatedTime"));
 			} else {
 			    if (size > 0)
 				localCollection = issueTrackRepository.findAll(doctorId, locationId, hospitalId, status, new Date(createdTimeStamp), discards,
@@ -182,7 +183,8 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 	try {
 	    issueTrackCollection = issueTrackRepository.findOne(issueId);
 	    if (issueTrackCollection != null) {
-		if (issueTrackCollection.getDoctorId() != null && issueTrackCollection.getHospitalId() != null && issueTrackCollection.getLocationId() != null) {
+		if (issueTrackCollection.getDoctorId() != null && issueTrackCollection.getHospitalId() != null
+			&& issueTrackCollection.getLocationId() != null) {
 		    if (issueTrackCollection.getDoctorId().equals(doctorId) && issueTrackCollection.getHospitalId().equals(hospitalId)
 			    && issueTrackCollection.getLocationId().equals(locationId)) {
 			if (issueTrackCollection.getStatus().equals(IssueStatus.COMPLETED)) {
@@ -252,7 +254,8 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 	try {
 	    IssueTrackCollection issueTrackCollection = issueTrackRepository.findOne(issueId);
 	    if (issueTrackCollection != null) {
-		if (issueTrackCollection.getDoctorId() != null && issueTrackCollection.getHospitalId() != null && issueTrackCollection.getLocationId() != null) {
+		if (issueTrackCollection.getDoctorId() != null && issueTrackCollection.getHospitalId() != null
+			&& issueTrackCollection.getLocationId() != null) {
 		    if (issueTrackCollection.getDoctorId().equals(doctorId) && issueTrackCollection.getHospitalId().equals(hospitalId)
 			    && issueTrackCollection.getLocationId().equals(locationId)) {
 			issueTrackCollection.setDiscarded(discarded);

@@ -30,6 +30,7 @@ import com.dpdocter.repository.ProductsAndServicesRepository;
 import com.dpdocter.response.PatientTreatmentResponse;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientTreatmentServices;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -201,8 +202,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		if (patientTreatment.getStatus() == null) {
 		    patientTreatment.setStatus(PatientTreatmentStatus.NOT_STARTED);
 		}
-		ProductsAndServicesCostCollection productsAndServicesCost = productsAndServicesCostRepository.findOne(
-			patientTreatment.getProductAndServiceId(), locationId, hospitalId, doctorId);
+		ProductsAndServicesCostCollection productsAndServicesCost = productsAndServicesCostRepository.findOne(patientTreatment.getProductAndServiceId(),
+			locationId, hospitalId, doctorId);
 		if (productsAndServicesCost != null) {
 		    patientTreatment.setCost(productsAndServicesCost.getCost());
 		    totalCost += productsAndServicesCost.getCost();
@@ -286,8 +287,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		}
 	    } else {
 		if (otpVerified) {
-		    patientTreatmentCollections = patientTreamentRepository.findAll(patientId, discards, new Date(Long.parseLong(updatedTime)), new Sort(
-			    Sort.Direction.DESC, "updatedTime"));
+		    patientTreatmentCollections = patientTreamentRepository.findAll(patientId, discards, new Date(Long.parseLong(updatedTime)),
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
 		    patientTreatmentCollections = patientTreamentRepository.findAll(patientId, locationId, hospitalId, doctorId, discards,
 			    new Date(Long.parseLong(updatedTime)), new Sort(Sort.Direction.DESC, "updatedTime"));

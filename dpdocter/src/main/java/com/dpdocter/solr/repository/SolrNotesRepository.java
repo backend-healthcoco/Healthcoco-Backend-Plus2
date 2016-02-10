@@ -46,12 +46,12 @@ public interface SolrNotesRepository extends SolrCrudRepository<SolrNotesDocumen
     public List<SolrNotesDocument> findCustomGlobalNotes(String doctorId, Date date, Boolean discarded, String searchTerm, Sort sort);
 
     @Query("(doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false) AND note:?5*) OR ((doctorId: null OR doctorId: \"\") AND (locationId: null OR locationId: \"\") AND (hospitalId: null OR hospitalId: \"\") AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false) AND note:?5*)")
-    public List<SolrNotesDocument> findCustomGlobalNotes(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded,
-	    String searchTerm, Pageable pageRequest);
+    public List<SolrNotesDocument> findCustomGlobalNotes(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded, String searchTerm,
+	    Pageable pageRequest);
 
     @Query("(doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false) AND note:?5*) OR ((doctorId: null OR doctorId: \"\") AND (locationId: null OR locationId: \"\") AND (hospitalId: null OR hospitalId: \"\") AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false) AND note:?5*)")
-    public List<SolrNotesDocument> findCustomGlobalNotes(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded,
-	    String searchTerm, Sort sort);
+    public List<SolrNotesDocument> findCustomGlobalNotes(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded, String searchTerm,
+	    Sort sort);
 
     @Query("(doctorId: null OR doctorId: \"\") AND updatedTime: {?0 TO *} AND ( discarded: ?1 OR discarded:false)")
     public List<SolrNotesDocument> findGlobalNotes(Date date, Boolean discarded, Pageable pageRequest);

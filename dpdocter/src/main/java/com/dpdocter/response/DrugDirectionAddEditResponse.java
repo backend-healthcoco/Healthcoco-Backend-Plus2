@@ -56,8 +56,8 @@ public class DrugDirectionAddEditResponse extends GenericCollection {
 
     @Override
     public String toString() {
-	return "DrugDirectionAddEditResponse [id=" + id + ", direction=" + direction + ", doctorId=" + doctorId + ", locationId=" + locationId
-		+ ", hospitalId=" + hospitalId + "]";
+	return "DrugDirectionAddEditResponse [id=" + id + ", direction=" + direction + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+		+ hospitalId + "]";
     }
 
 }

@@ -11,8 +11,8 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.dpdocter.collections.EducationInstituteCollection;
 
-public interface EducationInstituteRepository extends MongoRepository<EducationInstituteCollection, String>,
-	PagingAndSortingRepository<EducationInstituteCollection, String> {
+public interface EducationInstituteRepository
+	extends MongoRepository<EducationInstituteCollection, String>, PagingAndSortingRepository<EducationInstituteCollection, String> {
 
     @Query("{'updatedTime': {'$gt': ?0}}")
     List<EducationInstituteCollection> find(Date date, Pageable pageRequest);

@@ -22,6 +22,7 @@ import com.dpdocter.beans.IssueTrack;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.services.IssueTrackService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -74,8 +75,8 @@ public class IssueTrackApi {
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 	    @MatrixParam("scope") List<String> scope) {
 
-	List<IssueTrack> issueTrack = issueTrackService.getIssues(page, size, doctorId, locationId, hospitalId, updatedTime, discarded != null ? discarded
-		: true, scope);
+	List<IssueTrack> issueTrack = issueTrackService.getIssues(page, size, doctorId, locationId, hospitalId, updatedTime,
+		discarded != null ? discarded : true, scope);
 	Response<IssueTrack> response = new Response<IssueTrack>();
 	response.setDataList(issueTrack);
 

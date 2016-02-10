@@ -122,6 +122,7 @@ import com.dpdocter.services.OTPService;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.sms.services.SMSServices;
 import com.dpdocter.solr.document.SolrDoctorDocument;
+
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -829,8 +830,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 		if (reference.getDoctorId() != null) {
 		    UserCollection userCollection = userRepository.findOne(reference.getDoctorId());
 		    if (userCollection != null) {
-			referrencesCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
-				+ userCollection.getFirstName());
+			referrencesCollection
+				.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
 		    }
 		}
 	    }
@@ -905,8 +906,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 	try {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
-		referrencesCollections = referrenceRepository.findAll(new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC,
-			"updatedTime"));
+		referrencesCollections = referrenceRepository.findAll(new Date(createdTimeStamp), discards,
+			new PageRequest(page, size, Direction.DESC, "updatedTime"));
 	    else
 		referrencesCollections = referrenceRepository.findAll(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
 	    if (referrencesCollections != null) {
@@ -932,11 +933,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 		long createdTimeStamp = Long.parseLong(updatedTime);
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 		    if (size > 0)
-			referrencesCollections = referrenceRepository.findCustom(doctorId, new Date(createdTimeStamp), discards, new PageRequest(page, size,
-				Direction.DESC, "updatedTime"));
+			referrencesCollections = referrenceRepository.findCustom(doctorId, new Date(createdTimeStamp), discards,
+				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			referrencesCollections = referrenceRepository.findCustom(doctorId, new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC,
-				"updatedTime"));
+			referrencesCollections = referrenceRepository.findCustom(doctorId, new Date(createdTimeStamp), discards,
+				new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
 		    if (size > 0)
 			referrencesCollections = referrenceRepository.findCustom(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
@@ -966,19 +967,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 		if (size > 0)
-		    referrencesCollections = referrenceRepository.findCustomGlobal(new Date(createdTimeStamp), discards, new PageRequest(page, size,
-			    Direction.DESC, "updatedTime"));
+		    referrencesCollections = referrenceRepository.findCustomGlobal(new Date(createdTimeStamp), discards,
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    referrencesCollections = referrenceRepository.findCustomGlobal(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC,
-			    "updatedTime"));
+		    referrencesCollections = referrenceRepository.findCustomGlobal(new Date(createdTimeStamp), discards,
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    } else {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 		    if (size > 0)
-			referrencesCollections = referrenceRepository.findCustomGlobal(doctorId, new Date(createdTimeStamp), discards, new PageRequest(page,
-				size, Direction.DESC, "updatedTime"));
+			referrencesCollections = referrenceRepository.findCustomGlobal(doctorId, new Date(createdTimeStamp), discards,
+				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			referrencesCollections = referrenceRepository.findCustomGlobal(doctorId, new Date(createdTimeStamp), discards, new Sort(
-				Sort.Direction.DESC, "updatedTime"));
+			referrencesCollections = referrenceRepository.findCustomGlobal(doctorId, new Date(createdTimeStamp), discards,
+				new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
 		    if (size > 0)
 			referrencesCollections = referrenceRepository.findCustomGlobal(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
@@ -1165,12 +1166,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    if (locationCollection != null)
 		BeanUtil.map(request, locationCollection);
 	    BeanUtil.map(request, locationCollection);
-	    List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation((locationCollection.getLocationName() != null ? locationCollection
-		    .getLocationName() : "")
-		    + (locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() : "")
-		    + (locationCollection.getCity() != null ? locationCollection.getCity() : "")
-		    + (locationCollection.getState() != null ? locationCollection.getState() : "")
-		    + (locationCollection.getCountry() != null ? locationCollection.getCountry() : ""));
+	    List<GeocodedLocation> geocodedLocations = locationServices
+		    .geocodeLocation((locationCollection.getLocationName() != null ? locationCollection.getLocationName() : "")
+			    + (locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() : "")
+			    + (locationCollection.getCity() != null ? locationCollection.getCity() : "")
+			    + (locationCollection.getState() != null ? locationCollection.getState() : "")
+			    + (locationCollection.getCountry() != null ? locationCollection.getCountry() : ""));
 
 	    if (geocodedLocations != null && !geocodedLocations.isEmpty())
 		BeanUtil.map(geocodedLocations.get(0), locationCollection);
@@ -1195,12 +1196,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    locationCollection = locationRepository.findOne(request.getId());
 	    if (locationCollection != null)
 		BeanUtil.map(request, locationCollection);
-	    List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation((locationCollection.getLocationName() != null ? locationCollection
-		    .getLocationName() : "")
-		    + (locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() : "")
-		    + (locationCollection.getCity() != null ? locationCollection.getCity() : "")
-		    + (locationCollection.getState() != null ? locationCollection.getState() : "")
-		    + (locationCollection.getCountry() != null ? locationCollection.getCountry() : ""));
+	    List<GeocodedLocation> geocodedLocations = locationServices
+		    .geocodeLocation((locationCollection.getLocationName() != null ? locationCollection.getLocationName() : "")
+			    + (locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() : "")
+			    + (locationCollection.getCity() != null ? locationCollection.getCity() : "")
+			    + (locationCollection.getState() != null ? locationCollection.getState() : "")
+			    + (locationCollection.getCountry() != null ? locationCollection.getCountry() : ""));
 
 	    if (geocodedLocations != null && !geocodedLocations.isEmpty())
 		BeanUtil.map(geocodedLocations.get(0), locationCollection);
@@ -1711,11 +1712,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    roleCollections = roleRepository.findCustomGlobal(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
 	    } else {
 		if (size > 0)
-		    roleCollections = roleRepository.findCustomGlobal(locationId, hospitalId, new Date(createdTimeStamp), new PageRequest(page, size,
-			    Direction.DESC, "updatedTime"));
+		    roleCollections = roleRepository.findCustomGlobal(locationId, hospitalId, new Date(createdTimeStamp),
+			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    roleCollections = roleRepository.findCustomGlobal(locationId, hospitalId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC,
-			    "updatedTime"));
+		    roleCollections = roleRepository.findCustomGlobal(locationId, hospitalId, new Date(createdTimeStamp),
+			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    }
 	    if (roleCollections != null) {
 		response = new ArrayList<Role>();
@@ -1742,8 +1743,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 	try {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
-		roleCollections = roleRepository.findCustom(locationId, hospitalId, new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC,
-			"updatedTime"));
+		roleCollections = roleRepository.findCustom(locationId, hospitalId, new Date(createdTimeStamp),
+			new PageRequest(page, size, Direction.DESC, "updatedTime"));
 	    else
 		roleCollections = roleRepository.findCustom(locationId, hospitalId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
 

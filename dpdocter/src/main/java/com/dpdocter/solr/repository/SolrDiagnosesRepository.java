@@ -37,7 +37,8 @@ public interface SolrDiagnosesRepository extends SolrCrudRepository<SolrDiagnose
 	    Pageable pageRequest);
 
     @Query("(doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false)) OR ( (doctorId: null OR doctorId: \"\") AND (locationId: null OR locationId: \"\") AND (hospitalId: null OR hospitalId: \"\") AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false))")
-    public List<SolrDiagnosesDocument> findCustomGlobalDiagnosis(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded, Sort sort);
+    public List<SolrDiagnosesDocument> findCustomGlobalDiagnosis(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded,
+	    Sort sort);
 
     @Query("(doctorId:*?0* AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)  AND diagnosis:?3*) OR ((doctorId: null OR doctorId: \"\") AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)  AND diagnosis:?3*)")
     public List<SolrDiagnosesDocument> findCustomGlobalDiagnosis(String doctorId, Date date, Boolean discarded, String searchTerm, Pageable pageRequest);

@@ -54,6 +54,7 @@ import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrPatientDocument;
 import com.dpdocter.solr.services.SolrRegistrationService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -201,7 +202,8 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.DELETE_REFERRENCE)
     @DELETE
-    public Response<Boolean> deleteReferrence(@PathParam("referrenceId") String referrenceId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    public Response<Boolean> deleteReferrence(@PathParam("referrenceId") String referrenceId,
+	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (referrenceId == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.referrenceId is null");
 	}

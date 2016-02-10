@@ -124,8 +124,8 @@ public class PrintSettingsCollection extends GenericCollection {
 
     @Override
     public String toString() {
-	return "PrintSettingsCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ ", componentType=" + componentType + ", pageSetup=" + pageSetup + ", headerSetup=" + headerSetup + ", footerSetup=" + footerSetup
-		+ ", discarded=" + discarded + ", clinicLogoUrl=" + clinicLogoUrl + "]";
+	return "PrintSettingsCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", componentType="
+		+ componentType + ", pageSetup=" + pageSetup + ", headerSetup=" + headerSetup + ", footerSetup=" + footerSetup + ", discarded=" + discarded
+		+ ", clinicLogoUrl=" + clinicLogoUrl + "]";
     }
 }

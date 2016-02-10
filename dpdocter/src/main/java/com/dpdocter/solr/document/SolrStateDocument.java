@@ -100,7 +100,7 @@ public class SolrStateDocument {
 
     @Override
     public String toString() {
-	return "SolrStateDocument [id=" + id + ", state=" + state + ", isActivated=" + isActivated + ", description=" + description + ", countryId="
-		+ countryId + ", geoLocation=" + geoLocation + ", latitude=" + latitude + ", longitude=" + longitude + "]";
+	return "SolrStateDocument [id=" + id + ", state=" + state + ", isActivated=" + isActivated + ", description=" + description + ", countryId=" + countryId
+		+ ", geoLocation=" + geoLocation + ", latitude=" + latitude + ", longitude=" + longitude + "]";
     }
 }
