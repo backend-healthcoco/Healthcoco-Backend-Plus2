@@ -136,6 +136,9 @@ public class SignUpServiceImpl implements SignUpService {
     @Value(value = "${mail.signup.subject.activation}")
     private String signupSubject;
 
+    @Value(value = "${WEB_LINK}")
+    private String LOGIN_WEB_LINK;
+
     private final double NAME_MATCH_REQUIRED = 0.80;
 
     @Autowired
@@ -152,12 +155,15 @@ public class SignUpServiceImpl implements SignUpService {
     @Override
     public String verifyUser(String tokenId) {
 	try {
-	    String startText = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'><html><head><META http-equiv='Content-Type' content='text/html; charset=utf-8'></head><body>"
-		    + "<div><div style='margin-top:130px'><div style='padding:20px 30px;border-radius:3px;background-color:#fefefe;border:1px solid #f1f1f1;line-height:30px;margin-bottom:30px;font-family:&#39;Open Sans&#39;,sans-serif;margin:0px auto;min-width:200px;max-width:500px'>"
-		    + "<div align='center'><h2 style='font-size:20px;color:#2c3335;text-align:center;letter-spacing:1px'>Account Verification</h2><br><p style='color:#2c3335;font-size:15px;text-align:left'>";
+		String startText = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'><html><head><title>verification</title><meta charset='utf-8'>"+
+							"<meta name='viewport' content='width=device-width, initial-scale=1'><link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>"+ "</head><body>"
+				+"<div><div style='margin-top:130px'><div style='padding:20px 30px;border-radius:3px;background-color:#fefefe;border:1px solid #f1f1f1;line-height:30px;margin-bottom:30px;font-family:&#39;Open Sans&#39;,sans-serif;margin:0px auto;min-width:200px;max-width:500px'>"
+				+"<div align='center'><h2 style='font-size:20px;color:#2c3335;text-align:center;letter-spacing:1px'>Account Verification</h2><br><p style='color:#2c3335;font-size:15px;text-align:left'>";
 
-	    String endText = "</p><br><p style='color:#8a6d3b;font-size:15px;text-align:left'>lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum</p>"
-		    + "</div></div></div></div></body></html>";
+		String endText = "</p><br><p style='color:#8a6d3b;font-size:15px;text-align:left'>lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum</p>"
+						+"<br/><a href='"+LOGIN_WEB_LINK+"' style='border-radius: 3px;color: white;font-size: 15px;font-weight:bold;padding: 11px 7px;max-width: 200px;border: 1px #1373b5 solid;text-align: center;text-decoration: none;width: 200px;margin: 10px auto;display: block;background-color: #007ee6;'>"
+						+"Click here to Login</a>"
+						+"</div></div></div></div></body></html>";
 
 	    TokenCollection tokenCollection = tokenRepository.findOne(tokenId);
 	    if (tokenCollection == null || tokenCollection.getIsUsed()) {
@@ -169,6 +175,7 @@ public class SignUpServiceImpl implements SignUpService {
 		}
 		UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
 		userCollection.setIsVerified(true);
+		userCollection.setUserState(UserState.NOTACTIVATED);
 		userRepository.save(userCollection);
 
 		userLocationCollection.setIsVerified(true);
@@ -197,6 +204,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    userCollection = userRepository.findOne(userId);
 	    if (userCollection != null) {
 		userCollection.setIsActive(true);
+		userCollection.setUserState(UserState.USERSTATECOMPLETE);
 		userRepository.save(userCollection);
 		response = true;
 		if (userCollection.getMobileNumber() != null) {

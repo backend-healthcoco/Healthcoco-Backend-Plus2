@@ -29,9 +29,9 @@
         href="${link}" target="_blank">Verify now</a>
       </div>
 
-      <div style="float:left; width:65%; padding:0px 10px; word-wrap: break-word; word-break: break-all;">
+      <div style="float:left; width:60%; padding:0px 10px; word-wrap: break-word; word-break: break-all;">
         <p style="margin:20px 0px; line-height: 20px;">Alternatively, open the following url in your browser:<br>
-        <a href="${imageURL}" style="text-decoration:none; color:#0077b5;">${imageURL}</a><br><br>
+        <a href="${link}" style="text-decoration:none; color:#0077b5;">${link}</a><br><br>
 
         We will contact you shortly to complete your further verification process and get you started with Healthcoco+.
         <br><br>

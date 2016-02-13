@@ -7,7 +7,15 @@ public class DoctorExperience {
 
     private DoctorExperienceUnit period;
 
-    public String getExperience() {
+    public DoctorExperience() {
+	}
+
+	public DoctorExperience(String experience, DoctorExperienceUnit period) {
+		this.experience = experience;
+		this.period = period;
+	}
+
+	public String getExperience() {
 	return experience;
     }
 

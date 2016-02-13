@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.UriInfo;
-
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
@@ -78,11 +76,14 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     private AccessControlServices accessControlServices;
 
+    @Value(value = "${IMAGE_PATH}")
+    private String imagePath;
+
     /**
      * This method is used for login purpose.
      */
     @Override
-    public LoginResponse login(LoginRequest request, UriInfo uriInfo) {
+    public LoginResponse login(LoginRequest request) {
 	LoginResponse response = null;
 	try {
 	    /**
@@ -157,10 +158,10 @@ public class LoginServiceImpl implements LoginService {
 			    HospitalCollection hospitalCollection = null;
 			    LocationAndAccessControl locationAndAccessControl = new LocationAndAccessControl();
 			    BeanUtil.map(locationCollection, locationAndAccessControl);
-			    locationAndAccessControl.setLogoUrl(getFinalImageURL(locationAndAccessControl.getLogoUrl(), uriInfo));
-			    locationAndAccessControl.setLogoThumbnailUrl(getFinalImageURL(locationAndAccessControl.getLogoThumbnailUrl(), uriInfo));
-			    locationAndAccessControl.setImages(getFinalClinicImages(locationAndAccessControl.getImages(), uriInfo));
-
+			    locationAndAccessControl.setLogoUrl(getFinalImageURL(locationAndAccessControl.getLogoUrl()));
+			    locationAndAccessControl.setLogoThumbnailUrl(getFinalImageURL(locationAndAccessControl.getLogoThumbnailUrl()));
+			    locationAndAccessControl.setImages(getFinalClinicImages(locationAndAccessControl.getImages()));
+			    
 			    List<Role> roles = null;
 			    for (UserRoleCollection collection : userRoleCollections) {
 				RoleCollection roleCollection2 = roleRepository.find(collection.getRoleId(), locationCollection.getId(),
@@ -185,7 +186,7 @@ public class LoginServiceImpl implements LoginService {
 				hospitalCollection = hospitalRepository.findOne(locationCollection.getHospitalId());
 				Hospital hospital = new Hospital();
 				BeanUtil.map(hospitalCollection, hospital);
-				hospital.setHospitalImageUrl(getFinalImageURL(hospital.getHospitalImageUrl(), uriInfo));
+				hospital.setHospitalImageUrl(getFinalImageURL(hospital.getHospitalImageUrl()));
 				hospital.getLocationsAndAccessControl().add(locationAndAccessControl);
 				checkHospitalId.put(locationCollection.getHospitalId(), hospital);
 				hospitals.add(hospital);
@@ -215,41 +216,39 @@ public class LoginServiceImpl implements LoginService {
 	return response;
     }
 
-    private String getFinalImageURL(String imageURL, UriInfo uriInfo) {
+    private String getFinalImageURL(String imageURL) {
 	if (imageURL != null) {
-	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-	    return finalImageURL + imageURL;
+	    return imagePath + imageURL;
 	} else
 	    return null;
 
     }
 
-    private List<ClinicImage> getFinalClinicImages(List<ClinicImage> clinicImages, UriInfo uriInfo) {
+    private List<ClinicImage> getFinalClinicImages(List<ClinicImage> clinicImages) {
 	if (clinicImages != null && !clinicImages.isEmpty())
 	    for (ClinicImage clinicImage : clinicImages) {
 		if (clinicImage.getImageUrl() != null) {
-		    clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl(), uriInfo));
+		    clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl()));
 		}
 		if (clinicImage.getThumbnailUrl() != null) {
-		    clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl(), uriInfo));
+		    clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
 		}
 	    }
 	return clinicImages;
     }
 
-    @Override
-    public LoginResponse loginPatient(LoginPatientRequest request, UriInfo uriInfo) {
-	LoginResponse response = null;
-	try {
-	    /**
-	     * Check if user exist.
-	     */
-	    UserCollection userCollection = userRepository.findByPasswordAndMobileNumberIgnoreCase(request.getPassword(), request.getMobileNumber());
-	    if (userCollection == null) {
-		logger.warn("Invalid mobile Number and Password");
-		throw new BusinessException(ServiceError.InvalidInput, "Invalid mobile Number and Password");
-	    }
-
+	@Override
+	public LoginResponse loginPatient(LoginPatientRequest request) {
+		LoginResponse response = null;
+		try {
+		    /**
+		     * Check if user exist.
+		     */
+		    UserCollection userCollection = userRepository.findByPasswordAndMobileNumberIgnoreCase(request.getPassword(), request.getMobileNumber());
+		    if (userCollection == null) {
+			logger.warn("Invalid mobile Number and Password");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid mobile Number and Password");
+		    }
 	    User user = new User();
 	    BeanUtil.map(userCollection, user);
 

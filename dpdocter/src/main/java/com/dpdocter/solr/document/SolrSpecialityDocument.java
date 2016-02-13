@@ -13,6 +13,9 @@ public class SolrSpecialityDocument {
     @Field
     private String speciality;
 
+    @Field
+    private String code;
+
     public String getId() {
 	return id;
     }
@@ -29,9 +32,16 @@ public class SolrSpecialityDocument {
 	this.speciality = speciality;
     }
 
-    @Override
-    public String toString() {
-	return "SolrSpecialityDocument [id=" + id + ", speciality=" + speciality + "]";
-    }
+	public String getCode() {
+		return code;
+	}
 
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	@Override
+	public String toString() {
+		return "SolrSpecialityDocument [id=" + id + ", speciality=" + speciality + ", code=" + code + "]";
+	}
 }

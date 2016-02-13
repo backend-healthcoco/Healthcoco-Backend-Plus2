@@ -31,9 +31,12 @@ public class SolrDiagnosticTestDocument {
     @Field
     private Date updatedTime = new Date();
 
-    public String getId() {
-	return id;
-    }
+    @Field
+    private String code;
+
+	public String getId() {
+		return id;
+	}
 
     public void setId(String id) {
 	this.id = id;
@@ -87,10 +90,18 @@ public class SolrDiagnosticTestDocument {
 	this.updatedTime = updatedTime;
     }
 
-    @Override
-    public String toString() {
-	return "SolrDiagnosticTestDocument [id=" + id + ", testName=" + testName + ", description=" + description + ", locationId=" + locationId
-		+ ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", updatedTime=" + updatedTime + "]";
-    }
+	public String getCode() {
+		return code;
+	}
 
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	@Override
+	public String toString() {
+		return "SolrDiagnosticTestDocument [id=" + id + ", testName=" + testName + ", description=" + description
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ ", updatedTime=" + updatedTime + ", code=" + code + "]";
+	}
 }

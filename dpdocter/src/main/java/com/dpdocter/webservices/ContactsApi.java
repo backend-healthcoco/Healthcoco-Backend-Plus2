@@ -57,11 +57,11 @@ public class ContactsApi {
     @Autowired
     private PatientVisitService patientTrackService;
 
-    @Context
-    private UriInfo uriInfo;
+//    @Context
+//    private UriInfo uriInfo;
 
-    @Value(value = "${IMAGE_URL_ROOT_PATH}")
-    private String imageUrlRootPath;
+    @Value(value = "${IMAGE_PATH}")
+    private String imagePath;
 
     @POST
     public Response<DoctorContactsResponse> doctorContacts(GetDoctorContactsRequest request) {
@@ -265,8 +265,7 @@ public class ContactsApi {
 
     private String getFinalImageURL(String imageURL) {
 	if (imageURL != null) {
-	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-	    return finalImageURL + imageURL;
+	    return imagePath + imageURL;
 	} else
 	    return null;
     }

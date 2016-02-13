@@ -25,6 +25,9 @@ public class DiagnosticTestCollection extends GenericCollection {
     @Field
     private Boolean discarded = false;
 
+    @Field
+    private String code;
+
     public String getId() {
 	return id;
     }
@@ -73,10 +76,18 @@ public class DiagnosticTestCollection extends GenericCollection {
 	this.discarded = discarded;
     }
 
-    @Override
-    public String toString() {
-	return "DiagnosticTestCollection [id=" + id + ", testName=" + testName + ", description=" + description + ", locationId=" + locationId + ", hospitalId="
-		+ hospitalId + ", discarded=" + discarded + "]";
-    }
+	public String getCode() {
+		return code;
+	}
 
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	@Override
+	public String toString() {
+		return "DiagnosticTestCollection [id=" + id + ", testName=" + testName + ", description=" + description
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", code="
+				+ code + "]";
+	}
 }

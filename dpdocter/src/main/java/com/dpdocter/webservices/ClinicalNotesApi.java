@@ -75,11 +75,8 @@ public class ClinicalNotesApi {
     @Autowired
     private OTPService otpService;
 
-    @Context
-    private UriInfo uriInfo;
-
-    @Value(value = "${IMAGE_URL_ROOT_PATH}")
-    private String imageUrlRootPath;
+    @Value(value = "${IMAGE_PATH}")
+    private String imagePath;
 
     @Path(value = PathProxy.ClinicalNotesUrls.SAVE_CLINICAL_NOTE)
     @POST
@@ -429,7 +426,7 @@ public class ClinicalNotesApi {
 	    throw new BusinessException(ServiceError.InvalidInput,
 		    "Invalid Input. Clinical Notes Id, Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
 	}
-	clinicalNotesService.emailClinicalNotes(clinicalNotesId, doctorId, locationId, hospitalId, emailAddress, uriInfo);
+	clinicalNotesService.emailClinicalNotes(clinicalNotesId, doctorId, locationId, hospitalId, emailAddress);
 
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
@@ -447,8 +444,7 @@ public class ClinicalNotesApi {
 
     private String getFinalImageURL(String imageURL) {
 	if (imageURL != null) {
-	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-	    return finalImageURL + imageURL;
+	    return imagePath + imageURL;
 	} else
 	    return null;
 

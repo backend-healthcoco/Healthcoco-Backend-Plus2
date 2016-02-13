@@ -1054,7 +1054,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	try {
 	    UserLocationCollection userLocation = userLocationRepository.findByUserIdAndLocationId(doctorId, locationId);
 	    if (userLocation != null) {
-		DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocation.getLocationId());
+		DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocation.getId());
 		if (clinicProfileCollection != null) {
 		    patientInitialAndCounter = new PatientInitialAndCounter();
 		    BeanUtil.map(clinicProfileCollection, patientInitialAndCounter);

@@ -3,71 +3,102 @@ package com.dpdocter.beans;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.FeedbackType;
 
-public class Feedback extends GenericCollection {
+public class Feedback extends GenericCollection{
 
-    private String id;
+	private String id;
+	
+	private FeedbackType type;
+	
+	private String doctorId;
+	
+	private String locationId;
+	
+	private String hospitalId;
+	
+	private String description;
 
-    private FeedbackType type;
+	private String  deviceType;
+	
+	private String  deviceInfo;
+	
+	private String  isVisible;
 
-    private String doctorName;
+	public String getId() {
+		return id;
+	}
 
-    private String landmarkLocality;
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    private String city;
+	public FeedbackType getType() {
+		return type;
+	}
 
-    private String description;
+	public void setType(FeedbackType type) {
+		this.type = type;
+	}
 
-    public String getId() {
-	return id;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public FeedbackType getType() {
-	return type;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public void setType(FeedbackType type) {
-	this.type = type;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public String getDoctorName() {
-	return doctorName;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setDoctorName(String doctorName) {
-	this.doctorName = doctorName;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public String getLandmarkLocality() {
-	return landmarkLocality;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public void setLandmarkLocality(String landmarkLocality) {
-	this.landmarkLocality = landmarkLocality;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public String getCity() {
-	return city;
-    }
+	public String getDeviceType() {
+		return deviceType;
+	}
 
-    public void setCity(String city) {
-	this.city = city;
-    }
+	public void setDeviceType(String deviceType) {
+		this.deviceType = deviceType;
+	}
 
-    public String getDescription() {
-	return description;
-    }
+	public String getDeviceInfo() {
+		return deviceInfo;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setDeviceInfo(String deviceInfo) {
+		this.deviceInfo = deviceInfo;
+	}
 
-    @Override
-    public String toString() {
-	return "Feedback [id=" + id + ", type=" + type + ", doctorName=" + doctorName + ", landmarkLocality=" + landmarkLocality + ", city=" + city
-		+ ", description=" + description + "]";
-    }
+	public String getIsVisible() {
+		return isVisible;
+	}
+
+	public void setIsVisible(String isVisible) {
+		this.isVisible = isVisible;
+	}
+
+	@Override
+	public String toString() {
+		return "Feedback [id=" + id + ", type=" + type + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", description=" + description + ", deviceType=" + deviceType
+				+ ", deviceInfo=" + deviceInfo + ", isVisible=" + isVisible + "]";
+	}
 }

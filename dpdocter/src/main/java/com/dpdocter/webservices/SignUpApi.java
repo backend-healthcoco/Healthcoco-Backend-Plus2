@@ -61,8 +61,8 @@ public class SignUpApi {
     @Context
     private UriInfo uriInfo;
 
-    @Value(value = "${IMAGE_URL_ROOT_PATH}")
-    private String imageUrlRootPath;
+    @Value(value = "${IMAGE_PATH}")
+    private String imagePath;
 
     @Path(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP)
     @POST
@@ -354,8 +354,7 @@ public class SignUpApi {
     }
 
     private String getFinalImageURL(String imageURL) {
-	String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-	return finalImageURL + imageURL;
+	return imagePath + imageURL;
     }
 
     private SolrDoctorDocument getSolrDoctorDocument(DoctorSignUp doctor) {

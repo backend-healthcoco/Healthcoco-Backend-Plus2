@@ -13,11 +13,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,11 +54,8 @@ public class RecordsApi {
     @Autowired
     private PatientVisitService patientTrackService;
 
-    @Context
-    private UriInfo uriInfo;
-
-    @Value(value = "${IMAGE_URL_ROOT_PATH}")
-    private String imageUrlRootPath;
+    @Value(value = "${IMAGE_PATH}")
+    private String imagePath;
 
     @Autowired
     private OTPService otpService;
@@ -108,8 +103,8 @@ public class RecordsApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	request.setIsOTPVerified(otpService.checkOTPVerified(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId()));
-	List<Records> records = recordsService.searchRecords(request, uriInfo);
-
+	List<Records> records = recordsService.searchRecords(request);
+	
 	Response<Records> response = new Response<Records>();
 	response.setDataList(records);
 	return response;
@@ -123,7 +118,7 @@ public class RecordsApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Patient Id Cannot Be Empty");
 	}
 
-	List<Records> records = recordsService.getRecordsByPatientId(patientId, page, size, updatedTime, discarded, uriInfo);
+	List<Records> records = recordsService.getRecordsByPatientId(patientId, page, size, updatedTime, discarded);
 
 	Response<Records> response = new Response<Records>();
 	response.setDataList(records);
@@ -178,7 +173,7 @@ public class RecordsApi {
     public Response<Boolean> emailRecords(@PathParam("recordId") String recordId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @PathParam("emailAddress") String emailAddress) {
-	recordsService.emailRecordToPatient(recordId, doctorId, locationId, hospitalId, emailAddress, uriInfo);
+	recordsService.emailRecordToPatient(recordId, doctorId, locationId, hospitalId, emailAddress);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -245,8 +240,7 @@ public class RecordsApi {
 
     private String getFinalImageURL(String imageURL) {
 	if (imageURL != null) {
-	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-	    return finalImageURL + imageURL;
+	    return imagePath + imageURL;
 	} else
 	    return null;
     }

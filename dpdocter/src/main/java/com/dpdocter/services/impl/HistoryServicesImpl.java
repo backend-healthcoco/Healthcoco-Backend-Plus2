@@ -1401,7 +1401,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
-    public boolean mailMedicalData(MedicalData medicalData, UriInfo uriInfo) {
+    public boolean mailMedicalData(MedicalData medicalData) {
 	boolean response = false;
 	List<MailAttachment> mailAttachments = null;
 	try {
@@ -1414,13 +1414,13 @@ public class HistoryServicesImpl implements HistoryServices {
 	    for (MailData mailData : medicalData.getMailDataList()) {
 		switch (mailData.getMailType()) {
 		case CLINICAL_NOTE:
-		    mailAttachments.add(clinicalNotesService.getClinicalNotesMailData(mailData.getId(), doctorId, locationId, hospitalId, uriInfo));
+		    mailAttachments.add(clinicalNotesService.getClinicalNotesMailData(mailData.getId(), doctorId, locationId, hospitalId));
 		    break;
 		case PRESCRIPTION:
-		    mailAttachments.add(prescriptionServices.getPrescriptionMailData(mailData.getId(), doctorId, locationId, hospitalId, uriInfo));
+		    mailAttachments.add(prescriptionServices.getPrescriptionMailData(mailData.getId(), doctorId, locationId, hospitalId));
 		    break;
 		case REPORT:
-		    mailAttachments.add(recordsService.getRecordMailData(mailData.getId(), doctorId, locationId, hospitalId, uriInfo));
+		    mailAttachments.add(recordsService.getRecordMailData(mailData.getId(), doctorId, locationId, hospitalId));
 		    break;
 		}
 	    }

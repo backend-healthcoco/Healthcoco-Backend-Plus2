@@ -38,11 +38,11 @@ public class LoginApi {
     @Autowired
     private LoginService loginService;
 
-    @Context
-    private UriInfo uriInfo;
+//    @Context
+//    private UriInfo uriInfo;
 
-    @Value(value = "${IMAGE_URL_ROOT_PATH}")
-    private String imageUrlRootPath;
+    @Value(value = "${IMAGE_PATH}")
+    private String imagePath;
 
     @Path(value = PathProxy.LoginUrls.LOGIN_USER)
     @POST
@@ -51,7 +51,7 @@ public class LoginApi {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
-	LoginResponse loginResponse = loginService.login(request, uriInfo);
+	LoginResponse loginResponse = loginService.login(request);
 	if (loginResponse != null) {
 	    if (!DPDoctorUtils.anyStringEmpty(loginResponse.getUser().getImageUrl())) {
 		loginResponse.getUser().setImageUrl(getFinalImageURL(loginResponse.getUser().getImageUrl()));
@@ -80,7 +80,7 @@ public class LoginApi {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
-	LoginResponse loginResponse = loginService.loginPatient(request, uriInfo);
+	LoginResponse loginResponse = loginService.loginPatient(request);
 	if (loginResponse != null) {
 	    if (!DPDoctorUtils.anyStringEmpty(loginResponse.getUser().getImageUrl())) {
 		loginResponse.getUser().setImageUrl(getFinalImageURL(loginResponse.getUser().getImageUrl()));
@@ -104,8 +104,7 @@ public class LoginApi {
 
     private String getFinalImageURL(String imageURL) {
 	if (imageURL != null) {
-	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-	    return finalImageURL + imageURL;
+	    return imagePath + imageURL;
 	} else
 	    return null;
 

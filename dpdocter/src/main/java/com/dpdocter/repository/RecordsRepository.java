@@ -21,7 +21,7 @@ public interface RecordsRepository extends MongoRepository<RecordsCollection, St
     @Query("{'id':?0}")
     RecordsCollection findByRecordId(String recordId);
 
-    @Query(value = "{'$or': [{'doctorId': ?0, 'patientId': ?1, 'hospitalId':?2, 'locationId': ?3, 'discarded': ?4},{'prescribedByDoctorId': ?0, 'patientId': ?1, 'prescribedByHospitalId': ?2, 'prescribedByLocationId': ?3, 'discarded': {$in: ?4}}]}", count = true)
+    @Query(value ="{'$or': [{'doctorId': ?0, 'patientId': ?1, 'hospitalId':?2, 'locationId': ?3, 'discarded': ?4},{'prescribedByDoctorId': ?0, 'patientId': ?1, 'prescribedByHospitalId': ?2, 'prescribedByLocationId': ?3, 'discarded': ?4}]}", count = true)
     Integer getRecordCount(String doctorId, String patientId, String hospitalId, String locationId, boolean discarded);
 
     @Query("{'$or': [{'patientId': ?0, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3, 'updatedTime': {'$gt': ?4}, 'discarded': {$in: ?5}},{'patientId': ?0, 'prescribedByDoctorId': ?1, 'prescribedByLocationId': ?2, 'prescribedByHospitalId': ?3, 'updatedTime': {'$gt': ?4}, 'discarded': {$in: ?5}}]}")

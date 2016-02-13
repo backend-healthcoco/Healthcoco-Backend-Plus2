@@ -62,11 +62,8 @@ public class HistoryApi {
     @Autowired
     private OTPService otpService;
 
-    @Context
-    private UriInfo uriInfo;
-
-    @Value(value = "${IMAGE_URL_ROOT_PATH}")
-    private String imageUrlRootPath;
+    @Value(value = "${IMAGE_PATH}")
+    private String imagePath;
 
     @Path(value = PathProxy.HistoryUrls.ADD_DISEASE)
     @POST
@@ -452,7 +449,7 @@ public class HistoryApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Medical Data Cannot Be Empty");
 	}
 
-	boolean mailMedicalDataResponse = historyServices.mailMedicalData(medicalData, uriInfo);
+	boolean mailMedicalDataResponse = historyServices.mailMedicalData(medicalData);
 
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(mailMedicalDataResponse);
@@ -520,8 +517,7 @@ public class HistoryApi {
 
     private String getFinalImageURL(String imageURL) {
 	if (imageURL != null) {
-	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-	    return finalImageURL + imageURL;
+	    return imagePath + imageURL;
 	} else
 	    return null;
 

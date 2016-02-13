@@ -21,7 +21,7 @@ public interface RecordsService {
 
     void tagRecord(TagRecordRequest request);
 
-    List<Records> searchRecords(RecordsSearchRequest request, UriInfo uriInfo);
+    List<Records> searchRecords(RecordsSearchRequest request);
 
     List<Records> getRecords(int page, int size, String doctorId, String hospitalId, String locationId, String patientId, String updatedTime,
 	    boolean isOTPVerified, boolean discarded, boolean inHistory);
@@ -30,9 +30,9 @@ public interface RecordsService {
 
     Records getRecordById(String recordId);
 
-    void emailRecordToPatient(String recordId, String doctorId, String locationId, String hospitalId, String emailAddress, UriInfo uriInfo);
+    void emailRecordToPatient(String recordId, String doctorId, String locationId, String hospitalId, String emailAddress);
 
-    MailAttachment getRecordMailData(String recordId, String doctorId, String locationId, String hospitalId, UriInfo uriInfo);
+    MailAttachment getRecordMailData(String recordId, String doctorId, String locationId, String hospitalId);
 
     Tags addEditTag(Tags tags);
 
@@ -54,7 +54,7 @@ public interface RecordsService {
 
     void changeLabelAndDescription(String recordId, String label, String description);
 
-    List<Records> getRecordsByPatientId(String patientId, int page, int size, String updatedTime, Boolean discarded, UriInfo uriInfo);
+    List<Records> getRecordsByPatientId(String patientId, int page, int size, String updatedTime, Boolean discarded);
 
     Records addRecordsMultipart(FormDataBodyPart file, RecordsAddRequestMultipart request);
 

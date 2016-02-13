@@ -1,6 +1,5 @@
 package com.dpdocter.solr.document;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.solr.client.solrj.beans.Field;
@@ -9,7 +8,10 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.solr.core.mapping.SolrDocument;
 
 import com.dpdocter.beans.ConsultationFee;
+import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.DoctorExperience;
+import com.dpdocter.enums.Currency;
+import com.dpdocter.enums.DoctorExperienceUnit;
 import com.dpdocter.solr.beans.DoctorLocation;
 import com.dpdocter.solr.beans.SolrWorkingSchedule;
 
@@ -41,6 +43,12 @@ public class SolrDoctorDocument extends DoctorLocation {
     private ConsultationFee consultationFee;
 
     @Field
+    private int consultationFeeAmount;
+
+    @Field
+    private Currency consultationFeeCurrency;
+
+    @Field
     private List<SolrWorkingSchedule> workingSchedules;
 
     @Field
@@ -50,13 +58,42 @@ public class SolrDoctorDocument extends DoctorLocation {
     private DoctorExperience experience;
 
     @Field
-    private List<ConsultationFee> consultationFeeList;
+    private String experienceNum;
 
     @Field
-    private List<DoctorExperience> experienceList;
-
+    private DoctorExperienceUnit experiencePeriod;    
+    
     @Field
     private String facility;
+    
+    @Field
+    private Boolean isActive = false;
+
+    @Field
+    private Boolean isVerified = false;
+
+    @Field
+    private String coverImageUrl;
+
+    @Field
+    private String colorCode;
+
+    @Field
+    private String userState;
+
+    @Field
+    private String registerNumber;
+
+    @Field
+    private String days = "1";
+
+    @Field
+    private String months = "1";
+
+    @Field
+    private String years = "1";
+
+    private DOB dob;
 
     public String getId() {
 	return id;
@@ -107,15 +144,15 @@ public class SolrDoctorDocument extends DoctorLocation {
     }
 
     public ConsultationFee getConsultationFee() {
-	return consultationFee;
+    	this.consultationFee = new ConsultationFee(this.consultationFeeAmount, this.consultationFeeCurrency);
+	    return consultationFee;
     }
 
     public void setConsultationFee(ConsultationFee consultationFee) {
 	this.consultationFee = consultationFee;
-	if (consultationFee != null) {
-	    List<ConsultationFee> consultationFees = new ArrayList<ConsultationFee>();
-	    consultationFees.add(consultationFee);
-	    this.consultationFeeList = consultationFees;
+	if(consultationFee != null){
+		this.consultationFeeAmount = consultationFee.getAmount();
+		this.consultationFeeCurrency = consultationFee.getCurrency();
 	}
     }
 
@@ -144,53 +181,156 @@ public class SolrDoctorDocument extends DoctorLocation {
     }
 
     public DoctorExperience getExperience() {
-	return experience;
+    	this.experience = new DoctorExperience(this.experienceNum, this.experiencePeriod);
+	    return experience;
     }
 
     public void setExperience(DoctorExperience experience) {
 	this.experience = experience;
-	if (experience != null) {
-	    List<DoctorExperience> experiences = new ArrayList<DoctorExperience>();
-	    experiences.add(experience);
-	    this.experienceList = experiences;
+	if(experience != null){
+		this.experienceNum = experience.getExperience();
+		this.experiencePeriod = experience.getPeriod();
 	}
     }
 
-    public List<ConsultationFee> getConsultationFeeList() {
-	return consultationFeeList;
-    }
-
-    public void setConsultationFeeList(List<ConsultationFee> consultationFeeList) {
-	this.consultationFeeList = consultationFeeList;
-	if (consultationFeeList != null && !consultationFeeList.isEmpty()) {
-	    this.consultationFee = consultationFeeList.get(0);
+	public String getFacility() {
+		return facility;
 	}
-    }
 
-    public List<DoctorExperience> getExperienceList() {
-	return experienceList;
-    }
-
-    public void setExperienceList(List<DoctorExperience> experienceList) {
-	this.experienceList = experienceList;
-	if (experienceList != null && !experienceList.isEmpty()) {
-	    this.experience = experienceList.get(0);
+	public void setFacility(String facility) {
+		this.facility = facility;
 	}
-    }
 
-    public String getFacility() {
-	return facility;
-    }
+	public Boolean getIsActive() {
+		return isActive;
+	}
 
-    public void setFacility(String facility) {
-	this.facility = facility;
-    }
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
 
-    @Override
-    public String toString() {
-	return "SolrDoctorDocument [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", gender=" + gender + ", emailAddress=" + emailAddress
-		+ ", mobileNumber=" + mobileNumber + ", imageUrl=" + imageUrl + ", consultationFee=" + consultationFee + ", workingSchedules="
-		+ workingSchedules + ", specialities=" + specialities + ", experience=" + experience + ", consultationFeeList=" + consultationFeeList
-		+ ", experienceList=" + experienceList + ", facility=" + facility + "]";
-    }
+	public Boolean getIsVerified() {
+		return isVerified;
+	}
+
+	public void setIsVerified(Boolean isVerified) {
+		this.isVerified = isVerified;
+	}
+
+	public String getCoverImageUrl() {
+		return coverImageUrl;
+	}
+
+	public void setCoverImageUrl(String coverImageUrl) {
+		this.coverImageUrl = coverImageUrl;
+	}
+
+	public String getColorCode() {
+		return colorCode;
+	}
+
+	public void setColorCode(String colorCode) {
+		this.colorCode = colorCode;
+	}
+
+	public String getUserState() {
+		return userState;
+	}
+
+	public void setUserState(String userState) {
+		this.userState = userState;
+	}
+
+	public String getRegisterNumber() {
+		return registerNumber;
+	}
+
+	public void setRegisterNumber(String registerNumber) {
+		this.registerNumber = registerNumber;
+	}
+
+	public String getDays() {
+		return days;
+	}
+
+	public void setDays(String days) {
+		this.days = days;
+	}
+
+	public String getMonths() {
+		return months;
+	}
+
+	public void setMonths(String months) {
+		this.months = months;
+	}
+
+	public String getYears() {
+		return years;
+	}
+
+	public void setYears(String years) {
+		this.years = years;
+	}
+
+	public DOB getDob() {
+		return new DOB(Integer.parseInt(days), Integer.parseInt(months), Integer.parseInt(years));
+	}
+
+	public void setDob(DOB dob) {
+		this.dob = dob;
+	}
+
+	public int getConsultationFeeAmount() {
+		return consultationFeeAmount;
+	}
+
+	public void setConsultationFeeAmount(int consultationFeeAmount) {
+		this.consultationFeeAmount = consultationFeeAmount;
+		if(this.consultationFee != null)this.consultationFee.setAmount(consultationFeeAmount);
+		else this.consultationFee = new ConsultationFee(this.consultationFeeAmount, this.consultationFeeCurrency);
+	}
+
+	public Currency getConsultationFeeCurrency() {
+		return consultationFeeCurrency;
+	}
+
+	public void setConsultationFeeCurrency(Currency consultationFeeCurrency) {
+		this.consultationFeeCurrency = consultationFeeCurrency;
+		if(this.consultationFee != null)this.consultationFee.setCurrency(consultationFeeCurrency);
+		else this.consultationFee = new ConsultationFee(this.consultationFeeAmount, this.consultationFeeCurrency);
+	}
+
+	public String getExperienceNum() {
+		return experienceNum;
+	}
+
+	public void setExperienceNum(String experienceNum) {
+		this.experienceNum = experienceNum;
+		if(this.experience != null)this.experience.setExperience(experienceNum);
+		else this.experience = new DoctorExperience(this.experienceNum, this.experiencePeriod);
+	}
+
+	public DoctorExperienceUnit getExperiencePeriod() {
+		return experiencePeriod;
+	}
+
+	public void setExperiencePeriod(DoctorExperienceUnit experiencePeriod) {
+		this.experiencePeriod = experiencePeriod;
+		if(this.experience != null)this.experience.setPeriod(experiencePeriod);
+		else this.experience = new DoctorExperience(this.experienceNum, this.experiencePeriod);
+	}
+
+	@Override
+	public String toString() {
+		return "SolrDoctorDocument [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", gender=" + gender
+				+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", imageUrl=" + imageUrl
+				+ ", consultationFee=" + consultationFee + ", consultationFeeAmount=" + consultationFeeAmount
+				+ ", consultationFeeCurrency=" + consultationFeeCurrency + ", workingSchedules=" + workingSchedules
+				+ ", specialities=" + specialities + ", experience=" + experience + ", experienceNum=" + experienceNum
+				+ ", experiencePeriod=" + experiencePeriod + ", facility=" + facility + ", isActive=" + isActive
+				+ ", isVerified=" + isVerified + ", coverImageUrl=" + coverImageUrl + ", colorCode=" + colorCode
+				+ ", userState=" + userState + ", registerNumber=" + registerNumber + ", days=" + days + ", months="
+				+ months + ", years=" + years + ", dob=" + dob + "]";
+	}
 }

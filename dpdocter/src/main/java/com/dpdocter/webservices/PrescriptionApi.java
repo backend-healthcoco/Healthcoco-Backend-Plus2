@@ -80,9 +80,6 @@ public class PrescriptionApi {
     @Autowired
     private TransactionalManagementService transnationalService;
 
-    @Context
-    private UriInfo uriInfo;
-
     @Autowired
     private OTPService otpService;
 
@@ -738,7 +735,7 @@ public class PrescriptionApi {
 	    throw new BusinessException(ServiceError.InvalidInput,
 		    "Invalid Input. Prescription Id, Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
 	}
-	prescriptionServices.emailPrescription(prescriptionId, doctorId, locationId, hospitalId, emailAddress, uriInfo);
+	prescriptionServices.emailPrescription(prescriptionId, doctorId, locationId, hospitalId, emailAddress);
 
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);

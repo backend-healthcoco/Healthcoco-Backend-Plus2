@@ -74,11 +74,8 @@ public class DoctorProfileApi {
     @Autowired
     private TransactionalManagementService transnationalService;
 
-    @Context
-    private UriInfo uriInfo;
-
-    @Value(value = "${IMAGE_URL_ROOT_PATH}")
-    private String imageUrlRootPath;
+    @Value(value = "${IMAGE_PATH}")
+    private String imagePath;
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_NAME)
     @POST
@@ -427,8 +424,7 @@ public class DoctorProfileApi {
 
     private String getFinalImageURL(String imageURL) {
 	if (imageURL != null) {
-	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-	    return finalImageURL + imageURL;
+	    return imagePath+imageURL;
 	} else
 	    return null;
     }

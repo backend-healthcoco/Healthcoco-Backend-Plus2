@@ -1,0 +1,452 @@
+package com.dpdocter.solr.beans;
+
+import java.util.List;
+
+import org.apache.solr.client.solrj.beans.Field;
+import org.springframework.data.solr.core.geo.GeoLocation;
+
+import com.dpdocter.beans.ConsultationFee;
+import com.dpdocter.beans.DOB;
+import com.dpdocter.beans.DoctorExperience;
+
+public class SolrDoctor extends DoctorLocation{
+
+    private String userId;
+
+    private String firstName;
+
+    private String gender;
+
+    private String emailAddress;
+
+    private String mobileNumber;
+
+    private String imageUrl;
+
+    private ConsultationFee consultationFee;
+
+    private List<SolrWorkingSchedule> workingSchedules;
+
+    private List<String> specialities;
+
+    private DoctorExperience experience;
+    
+    private String facility;
+    
+    private Boolean isActive = false;
+
+    private Boolean isVerified = false;
+
+    private String coverImageUrl;
+
+    private String colorCode;
+
+    private String userState;
+
+    private DOB dob;
+    
+    private Double distance;
+
+    private String locationId;
+
+    private String hospitalId;
+
+    private String locationName;
+
+    private String country;
+
+    private String state;
+
+    private String city;
+
+    private String locationPhoneNumber;
+
+    private String postalCode;
+
+    private String websiteUrl;
+
+    private Double latitude;
+
+    private Double longitude;
+
+    private String landmarkDetails;
+
+    private String locationEmailAddress;
+
+    private String streetAddress;
+
+    private String locality;
+
+    private String locationMobileNumber;
+
+    private List<String> alternateNumbers;
+
+    private List<String> specialization;
+
+    private Boolean isLab = false;
+    
+    private Boolean isOnlineReportsAvailable = false;
+    
+    private Boolean isNABLAccredited = false;
+    
+    private Boolean isHomeServiceAvailable = false;
+    
+    private List<String> images;
+
+    private String logoUrl;
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	public ConsultationFee getConsultationFee() {
+		return consultationFee;
+	}
+
+	public void setConsultationFee(ConsultationFee consultationFee) {
+		this.consultationFee = consultationFee;
+	}
+
+	public List<SolrWorkingSchedule> getWorkingSchedules() {
+		return workingSchedules;
+	}
+
+	public void setWorkingSchedules(List<SolrWorkingSchedule> workingSchedules) {
+		this.workingSchedules = workingSchedules;
+	}
+
+	public List<String> getSpecialities() {
+		return specialities;
+	}
+
+	public void setSpecialities(List<String> specialities) {
+		this.specialities = specialities;
+	}
+
+	public DoctorExperience getExperience() {
+		return experience;
+	}
+
+	public void setExperience(DoctorExperience experience) {
+		this.experience = experience;
+	}
+
+	public String getFacility() {
+		return facility;
+	}
+
+	public void setFacility(String facility) {
+		this.facility = facility;
+	}
+
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
+
+	public Boolean getIsVerified() {
+		return isVerified;
+	}
+
+	public void setIsVerified(Boolean isVerified) {
+		this.isVerified = isVerified;
+	}
+
+	public String getCoverImageUrl() {
+		return coverImageUrl;
+	}
+
+	public void setCoverImageUrl(String coverImageUrl) {
+		this.coverImageUrl = coverImageUrl;
+	}
+
+	public String getColorCode() {
+		return colorCode;
+	}
+
+	public void setColorCode(String colorCode) {
+		this.colorCode = colorCode;
+	}
+
+	public String getUserState() {
+		return userState;
+	}
+
+	public void setUserState(String userState) {
+		this.userState = userState;
+	}
+
+	public DOB getDob() {
+		return dob;
+	}
+
+	public void setDob(DOB dob) {
+		this.dob = dob;
+	}
+
+	public Double getDistance() {
+		return distance;
+	}
+
+	public void setDistance(Double distance) {
+		this.distance = distance;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public String getLocationName() {
+		return locationName;
+	}
+
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getLocationPhoneNumber() {
+		return locationPhoneNumber;
+	}
+
+	public void setLocationPhoneNumber(String locationPhoneNumber) {
+		this.locationPhoneNumber = locationPhoneNumber;
+	}
+
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+
+	public String getWebsiteUrl() {
+		return websiteUrl;
+	}
+
+	public void setWebsiteUrl(String websiteUrl) {
+		this.websiteUrl = websiteUrl;
+	}
+
+	public Double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
+	}
+
+	public Double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(Double longitude) {
+		this.longitude = longitude;
+	}
+
+	public String getLandmarkDetails() {
+		return landmarkDetails;
+	}
+
+	public void setLandmarkDetails(String landmarkDetails) {
+		this.landmarkDetails = landmarkDetails;
+	}
+
+	public String getLocationEmailAddress() {
+		return locationEmailAddress;
+	}
+
+	public void setLocationEmailAddress(String locationEmailAddress) {
+		this.locationEmailAddress = locationEmailAddress;
+	}
+
+	public String getStreetAddress() {
+		return streetAddress;
+	}
+
+	public void setStreetAddress(String streetAddress) {
+		this.streetAddress = streetAddress;
+	}
+
+	public String getLocality() {
+		return locality;
+	}
+
+	public void setLocality(String locality) {
+		this.locality = locality;
+	}
+
+	public String getLocationMobileNumber() {
+		return locationMobileNumber;
+	}
+
+	public void setLocationMobileNumber(String locationMobileNumber) {
+		this.locationMobileNumber = locationMobileNumber;
+	}
+
+	public List<String> getAlternateNumbers() {
+		return alternateNumbers;
+	}
+
+	public void setAlternateNumbers(List<String> alternateNumbers) {
+		this.alternateNumbers = alternateNumbers;
+	}
+
+	public List<String> getSpecialization() {
+		return specialization;
+	}
+
+	public void setSpecialization(List<String> specialization) {
+		this.specialization = specialization;
+	}
+
+	public Boolean getIsLab() {
+		return isLab;
+	}
+
+	public void setIsLab(Boolean isLab) {
+		this.isLab = isLab;
+	}
+
+	public Boolean getIsOnlineReportsAvailable() {
+		return isOnlineReportsAvailable;
+	}
+
+	public void setIsOnlineReportsAvailable(Boolean isOnlineReportsAvailable) {
+		this.isOnlineReportsAvailable = isOnlineReportsAvailable;
+	}
+
+	public Boolean getIsNABLAccredited() {
+		return isNABLAccredited;
+	}
+
+	public void setIsNABLAccredited(Boolean isNABLAccredited) {
+		this.isNABLAccredited = isNABLAccredited;
+	}
+
+	public Boolean getIsHomeServiceAvailable() {
+		return isHomeServiceAvailable;
+	}
+
+	public void setIsHomeServiceAvailable(Boolean isHomeServiceAvailable) {
+		this.isHomeServiceAvailable = isHomeServiceAvailable;
+	}
+
+	public List<String> getImages() {
+		return images;
+	}
+
+	public void setImages(List<String> images) {
+		this.images = images;
+	}
+
+	public String getLogoUrl() {
+		return logoUrl;
+	}
+
+	public void setLogoUrl(String logoUrl) {
+		this.logoUrl = logoUrl;
+	}
+
+	@Override
+	public String toString() {
+		return "SolrDoctor [userId=" + userId + ", firstName=" + firstName + ", gender=" + gender + ", emailAddress="
+				+ emailAddress + ", mobileNumber=" + mobileNumber + ", imageUrl=" + imageUrl + ", consultationFee="
+				+ consultationFee + ", workingSchedules=" + workingSchedules + ", specialities=" + specialities
+				+ ", experience=" + experience + ", facility=" + facility + ", isActive=" + isActive + ", isVerified="
+				+ isVerified + ", coverImageUrl=" + coverImageUrl + ", colorCode=" + colorCode + ", userState="
+				+ userState + ", dob=" + dob + ", distance=" + distance + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", locationName=" + locationName + ", country=" + country + ", state=" + state
+				+ ", city=" + city + ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode
+				+ ", websiteUrl=" + websiteUrl + ", latitude=" + latitude + ", longitude=" + longitude
+				+ ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress=" + locationEmailAddress
+				+ ", streetAddress=" + streetAddress + ", locality=" + locality + ", locationMobileNumber="
+				+ locationMobileNumber + ", alternateNumbers=" + alternateNumbers + ", specialization=" + specialization
+				+ ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited="
+				+ isNABLAccredited + ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", images=" + images
+				+ ", logoUrl=" + logoUrl + "]";
+	}
+}

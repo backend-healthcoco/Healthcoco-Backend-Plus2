@@ -9,6 +9,8 @@ public class Speciality extends GenericCollection {
 
     private String superSpeciality;
 
+    private String code;
+
     public String getId() {
 	return id;
     }
@@ -33,8 +35,18 @@ public class Speciality extends GenericCollection {
 	this.superSpeciality = superSpeciality;
     }
 
-    @Override
-    public String toString() {
-	return "Speciality [id=" + id + ", speciality=" + speciality + ", superSpeciality=" + superSpeciality + "]";
-    }
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	@Override
+	public String toString() {
+		return "Speciality [id=" + id + ", speciality=" + speciality + ", superSpeciality=" + superSpeciality
+				+ ", code=" + code + "]";
+	}
+
 }

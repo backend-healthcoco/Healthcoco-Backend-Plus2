@@ -1,14 +1,11 @@
 package com.dpdocter.services.impl;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -62,6 +59,7 @@ import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.FONTSTYLE;
+import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.enums.VitalSignsUnit;
 import com.dpdocter.exceptions.BusinessException;
@@ -183,8 +181,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     @Autowired
     private ReferenceRepository referenceRepository;
 
-    @Value(value = "${IMAGE_URL_ROOT_PATH}")
-    private String imageUrlRootPath;
+    @Value(value = "${IMAGE_PATH}")
+    private String imagePath;
 
     @Override
     public String addRecord(Object details, VisitedFor visitedFor, String visitId) {
@@ -201,7 +199,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	    if (patientTrackCollection.getId() == null) {
 		patientTrackCollection.setCreatedTime(new Date());
-		patientTrackCollection.setUniqueId(DPDoctorUtils.generateRandomId());
+		patientTrackCollection.setUniqueId(UniqueIdInitial.VISITS.getInitial()+DPDoctorUtils.generateRandomId());
 		UserCollection userCollection = userRepository.findOne(patientTrackCollection.getDoctorId());
 		if (userCollection != null) {
 		    patientTrackCollection
@@ -269,7 +267,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		patientTrackCollection.setHospitalId(hospitalId);
 		patientTrackCollection.setVisitedTime(new Date());
 		patientTrackCollection.setCreatedTime(new Date());
-		patientTrackCollection.setUniqueId(DPDoctorUtils.generateRandomId());
+		patientTrackCollection.setUniqueId(UniqueIdInitial.VISITS.getInitial()+DPDoctorUtils.generateRandomId());
 		if (patientCollection != null) {
 		    patientTrackCollection.setPatientId(patientCollection.getUserId());
 		}
@@ -388,7 +386,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     }
 
     @Override
-    public PatientVisitResponse addMultipleData(AddMultipleDataRequest request, UriInfo uriInfo) {
+    public PatientVisitResponse addMultipleData(AddMultipleDataRequest request) {
 	PatientVisitResponse response = new PatientVisitResponse();
 	try {
 	    BeanUtil.map(request, response);
@@ -437,7 +435,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		Records records = recordsService.addRecord(request.getRecord());
 
 		if (records != null) {
-		    records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl(), uriInfo));
+		    records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
 		    String visitId = addRecord(records, VisitedFor.REPORTS, request.getVisitId());
 		    records.setVisitId(visitId);
 		    request.setVisitId(visitId);
@@ -463,7 +461,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
     @Override
     public List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId, int page, int size,
-	    Boolean isOTPVerified, String updatedTime, UriInfo uriInfo) {
+	    Boolean isOTPVerified, String updatedTime) {
 	List<PatientVisitResponse> response = null;
 	List<PatientVisitCollection> patientVisitCollections = null;
 	try {
@@ -516,7 +514,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			    ClinicalNotes clinicalNote = clinicalNotesService.getNotesById(clinicalNotesId);
 			    if (clinicalNote != null) {
 				if (clinicalNote.getDiagrams() != null && !clinicalNote.getDiagrams().isEmpty()) {
-				    clinicalNote.setDiagrams(getFinalDiagrams(clinicalNote.getDiagrams(), uriInfo));
+				    clinicalNote.setDiagrams(getFinalDiagrams(clinicalNote.getDiagrams()));
 				}
 				clinicalNotes.add(clinicalNote);
 			    }
@@ -528,7 +526,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			List<Records> records = recordsService.getRecordsByIds(patientVisitCollection.getRecordId());
 			if (records != null && !records.isEmpty()) {
 			    for (Records record : records) {
-				record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl(), uriInfo));
+				record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl()));
 			    }
 			}
 			patientVisitResponse.setRecords(records);
@@ -544,16 +542,15 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	return response;
     }
 
-    private String getFinalImageURL(String imageURL, UriInfo uriInfo) {
-	if (imageURL != null && uriInfo != null) {
-	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-	    return finalImageURL + imageURL;
+    private String getFinalImageURL(String imageURL) {
+	if (imageURL != null) {
+	    return imagePath + imageURL;
 	} else
 	    return null;
     }
 
     @Override
-    public Boolean email(String visitId, String emailAddress, UriInfo uriInfo) {
+    public Boolean email(String visitId, String emailAddress) {
 	PatientVisitCollection patientVisitCollection = null;
 	Map<String, Object> parameters = new HashMap<String, Object>();
 	MailAttachment mailAttachment = null;
@@ -563,34 +560,32 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    patientVisitCollection = patientVisitRepository.findOne(visitId);
 
 	    if (patientVisitCollection != null) {
-		PatientAdmissionCollection patientAdmission = patientAdmissionRepository.findByPatientIdAndDoctorId(patientVisitCollection.getPatientId(),
-			patientVisitCollection.getDoctorId());
-		PatientCollection patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientVisitCollection.getPatientId(),
-			patientVisitCollection.getDoctorId(), patientVisitCollection.getLocationId(), patientVisitCollection.getHospitalId());
-		UserCollection user = userRepository.findOne(patientVisitCollection.getPatientId());
+	    	 PatientAdmissionCollection patientAdmission = patientAdmissionRepository.findByPatientIdAndDoctorId(patientVisitCollection.getPatientId(),
+	 			    patientVisitCollection.getDoctorId());
+	 		    PatientCollection patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientVisitCollection.getPatientId(), patientVisitCollection.getDoctorId(), patientVisitCollection.getLocationId(), patientVisitCollection.getHospitalId());
+	 		    UserCollection user = userRepository.findOne(patientVisitCollection.getPatientId());
 
-		String patientName = "", dob = "", gender = "", mobileNumber = "", refferedBy = "", pid = "", date = "", resourceId = "";
-		if (patientAdmission != null && patientAdmission.getReferredBy() != null) {
-		    ReferencesCollection referencesCollection = referenceRepository.findOne(patientAdmission.getReferredBy());
-		    if (referencesCollection != null)
-			refferedBy = referencesCollection.getReference();
-		}
-		patientName = "Patient Name: " + (user != null ? user.getFirstName() : "--") + "<br>";
-		dob = "Patient Age: " + ((patient != null && patient.getDob() != null) ? (patient.getDob().getAge() + " years") : "--") + "<br>";
-		gender = "Patient Gender: " + (patient != null ? patient.getGender() : "--") + "<br>";
-		mobileNumber = "Mobile Number: " + (user != null ? user.getMobileNumber() : "--") + "<br>";
-		pid = "Patient Id: " + (patient != null ? patient.getPID() : "--") + "<br>";
-		refferedBy = "Reffered By: " + (refferedBy != "" ? refferedBy : "--") + "<br>";
-		date = "Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()) + "<br>";
-		resourceId = "ClinicalNotesId: " + (patientVisitCollection.getUniqueId() != null ? patientVisitCollection.getUniqueId() : "--") + "<br>";
-		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(patientVisitCollection.getDoctorId(),
-			patientVisitCollection.getLocationId(), patientVisitCollection.getHospitalId(), ComponentType.ALL.getType());
+	    	String patientName = "", dob = "", gender = "", mobileNumber = "", refferedBy ="", pid="", date="", resourceId="", logoURL="";
+			if(patientAdmission != null && patientAdmission.getReferredBy() != null){
+				ReferencesCollection referencesCollection = referenceRepository.findOne(patientAdmission.getReferredBy());
+				if(referencesCollection != null)refferedBy = referencesCollection.getReference();
+			}
+			patientName = "Patient Name: " + (user != null ? user.getFirstName() : "--") + "<br>";
+			dob = "Patient Age: " + ((patient != null && patient.getDob() != null) ? (patient.getDob().getAge() + " years") : "--") + "<br>";
+			gender = "Patient Gender: " + (patient != null ? patient.getGender() : "--") + "<br>";
+			mobileNumber = "Mobile Number: " + (user != null ? user.getMobileNumber() : "--") + "<br>";
+			pid= "Patient Id: " + (patient != null ? patient.getPID() : "--") + "<br>";
+			refferedBy = "Reffered By: "+ (refferedBy != "" ? refferedBy : "--") + "<br>";
+			date = "Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date())+"<br>";
+			resourceId = "ClinicalNotesId: " + (patientVisitCollection.getUniqueId() != null ? patientVisitCollection.getUniqueId() : "--") + "<br>";
+			PrintSettingsCollection printSettings = printSettingsRepository.getSettings(patientVisitCollection.getDoctorId(), patientVisitCollection.getLocationId(), patientVisitCollection.getHospitalId(),
+					ComponentType.ALL.getType());
+			
+			parameters.put("printSettingsId", printSettings != null ? printSettings.getId() :"");
 
-		parameters.put("printSettingsId", printSettings != null ? printSettings.getId() : "");
-
-		if (printSettings != null) {
-
-		    String headerLeftText = "", headerRightText = "", footerBottomText = "";
+			if(printSettings != null){
+		   
+			String headerLeftText = "", headerRightText = "", footerBottomText = "";
 		    if (printSettings != null) {
 			if (printSettings.getHeaderSetup() != null) {
 			    for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()) {
@@ -641,49 +636,34 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					footerBottomText = footerBottomText + "" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 				}
 			}
-			String logoURL = getFinalImageURL(printSettings.getClinicLogoUrl(), uriInfo);
-			parameters.put("logoURL", new File(logoURL).exists() ? logoURL : "");
-
-			if (printSettings.getHeaderSetup() != null && printSettings.getHeaderSetup().getPatientDetails() != null
-				&& printSettings.getHeaderSetup().getPatientDetails().getStyle() != null) {
-			    PatientDetails patientDetails = printSettings.getHeaderSetup().getPatientDetails();
-			    boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), patientDetails.getStyle().getFontStyle());
-			    boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), patientDetails.getStyle().getFontStyle());
-			    String fontSize = patientDetails.getStyle().getFontSize();
-			    if ((fontSize != null)
-				    && (!fontSize.equalsIgnoreCase("10pt") || !fontSize.equalsIgnoreCase("11pt") || !fontSize.equalsIgnoreCase("12pt")
-					    || !fontSize.equalsIgnoreCase("13pt") || !fontSize.equalsIgnoreCase("14pt") || !fontSize.equalsIgnoreCase("15pt")))
-				fontSize = "10pt";
-
-			    if (isItalic) {
-				patientName = "<i>" + patientName + "</i>";
-				pid = "<i>" + pid + "</i>";
-				dob = "<i>" + dob + "</i>";
-				gender = "<i>" + gender + "</i>";
-				mobileNumber = "<i>" + mobileNumber + "</i>";
-				refferedBy = "<i>" + refferedBy + "</i>";
-				date = "<i>" + date + "</i>";
-				resourceId = "<i>" + resourceId + "</i>";
-			    }
-			    if (isBold) {
-				patientName = "<b>" + patientName + "</b>";
-				pid = "<b>" + pid + "</b>";
-				dob = "<b>" + dob + "</b>";
-				gender = "<b>" + gender + "</b>";
-				mobileNumber = "<b>" + mobileNumber + "</b>";
-				refferedBy = "<b>" + refferedBy + "</b>";
-				date = "<b>" + date + "</b>";
-				resourceId = "<b>" + resourceId + "</b>";
-			    }
-			    patientName = "<span style='font-size:" + fontSize + "'>" + patientName + "</span>";
-			    pid = "<span style='font-size:" + fontSize + "'>" + pid + "</span>";
-			    dob = "<span style='font-size:" + fontSize + "'>" + dob + "</span>";
-			    gender = "<span style='font-size:" + fontSize + "'>" + gender + "</span>";
-			    mobileNumber = "<span style='font-size:" + fontSize + "'>" + mobileNumber + "</span>";
-			    refferedBy = "<span style='font-size:" + fontSize + "'>" + refferedBy + "</span>";
-			    date = "<span style='font-size:" + fontSize + "'>" + date + "</span>";
-			    resourceId = "<span style='font-size:" + fontSize + "'>" + resourceId + "</span>";
-			}
+			logoURL = getFinalImageURL(printSettings.getClinicLogoUrl());
+		    
+		    if(printSettings.getHeaderSetup() != null && printSettings.getHeaderSetup().getPatientDetails() != null && printSettings.getHeaderSetup().getPatientDetails().getStyle() != null){
+				PatientDetails patientDetails = printSettings.getHeaderSetup().getPatientDetails();
+				boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), patientDetails.getStyle().getFontStyle());
+				boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), patientDetails.getStyle().getFontStyle());
+				String fontSize = patientDetails.getStyle().getFontSize();
+				if((fontSize!= null) && (!fontSize.equalsIgnoreCase("10pt") || !fontSize.equalsIgnoreCase("11pt") || !fontSize.equalsIgnoreCase("12pt")	|| !fontSize.equalsIgnoreCase("13pt") || !fontSize.equalsIgnoreCase("14pt") || !fontSize.equalsIgnoreCase("15pt")))
+					fontSize = "10pt";
+				
+				if (isItalic){
+					patientName = "<i>" + patientName + "</i>";pid = "<i>" + pid + "</i>";dob = "<i>" + dob + "</i>";
+					gender = "<i>" + gender + "</i>";mobileNumber = "<i>" + mobileNumber + "</i>";refferedBy = "<i>" + refferedBy + "</i>";
+					date = "<i>" + date + "</i>";resourceId = "<i>" + resourceId + "</i>";
+				}
+				if (isBold){
+					patientName = "<b>" + patientName + "</b>";pid = "<b>" + pid + "</b>";dob = "<b>" + dob + "</b>";
+					gender = "<b>" + gender + "</b>";mobileNumber = "<b>" + mobileNumber + "</b>";refferedBy = "<b>" + refferedBy + "</b>";
+					date = "<b>" + date + "</b>";resourceId = "<b>" + resourceId + "</b>";
+				}
+				patientName = "<span style='font-size:" + fontSize + "'>" + patientName + "</span>";pid = "<span style='font-size:" + fontSize + "'>" + pid + "</span>";
+				dob = "<span style='font-size:" + fontSize + "'>" + dob + "</span>";
+				gender = "<span style='font-size:" + fontSize + "'>" + gender + "</span>";
+				mobileNumber = "<span style='font-size:" + fontSize + "'>" + mobileNumber + "</span>";
+				refferedBy = "<span style='font-size:" + fontSize + "'>" + refferedBy + "</span>";
+				date = "<span style='font-size:" + fontSize + "'>" + date + "</span>";
+				resourceId = "<span style='font-size:" + fontSize + "'>" + resourceId + "</span>";
+		    }
 		    }
 
 		    UserCollection doctorUser = userRepository.findOne(patientVisitCollection.getDoctorId());
@@ -695,7 +675,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    parameters.put("headerLeftText", headerLeftText);
 		    parameters.put("headerRightText", headerRightText);
 		    parameters.put("footerBottomText", footerBottomText);
-
+		    parameters.put("logoURL", logoURL);
 		    String layout = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 			    : "PORTRAIT";
 		    String pageSize = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
@@ -713,7 +693,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    List<ClinicalNotesJasperDetails> clinicalNotes = new ArrayList<ClinicalNotesJasperDetails>();
 		    if (patientVisitCollection.getPrescriptionId() != null) {
 			for (String clinicalNotesId : patientVisitCollection.getClinicalNotesId()) {
-			    ClinicalNotesJasperDetails clinicalJasperDetails = getClinicalNotesJasperDetails(clinicalNotesId, uriInfo);
+			    ClinicalNotesJasperDetails clinicalJasperDetails = getClinicalNotesJasperDetails(clinicalNotesId);
 			    clinicalNotes.add(clinicalJasperDetails);
 			}
 		    }
@@ -721,8 +701,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    parameters.put("clinicalNotes", clinicalNotes);
 
 		    parameters.put("visitId", patientVisitCollection.getId());
-		    String path = jasperReportService.createPDF(parameters, "mongo-multiple-data", layout, pageSize, margins,
-			    user.getFirstName() + new Date() + "CLINICALNOTES&PRESCRIPTION");
+		    String pdfName = (user!= null?user.getFirstName():"") + new SimpleDateFormat("dd-MM-yyyy").format(new Date())+ "VISITS";
+		    String path = jasperReportService.createPDF(parameters, "mongo-multiple-data", layout, pageSize, margins, pdfName.replaceAll("\\s+",""));
 		    if (user != null) {
 			emailTrackCollection.setPatientName(user.getFirstName());
 			emailTrackCollection.setPatientId(user.getId());
@@ -738,8 +718,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    if (patientVisitCollection.getRecordId() != null) {
 			for (String recordId : patientVisitCollection.getRecordId()) {
 			    Records record = recordsService.getRecordById(recordId);
-			    mailAttachment = recordsService.getRecordMailData(recordId, record.getDoctorId(), record.getLocationId(), record.getHospitalId(),
-				    uriInfo);
+			    mailAttachment = recordsService.getRecordMailData(recordId, record.getDoctorId(), record.getLocationId(), record.getHospitalId());
 			    if (mailAttachment != null)
 				mailAttachments.add(mailAttachment);
 			}
@@ -769,7 +748,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	return true;
     }
 
-    private ClinicalNotesJasperDetails getClinicalNotesJasperDetails(String clinicalNotesId, UriInfo uriInfo) {
+    private ClinicalNotesJasperDetails getClinicalNotesJasperDetails(String clinicalNotesId) {
 	ClinicalNotesCollection clinicalNotesCollection = null;
 	ClinicalNotesJasperDetails clinicalNotesJasperDetails = null;
 	try {
@@ -863,12 +842,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    clinicalNotesJasperDetails.setComplaints(complaints);
 
 		    List<DBObject> diagramIds = new ArrayList<DBObject>();
+		    if(clinicalNotesCollection.getDiagrams() != null)
 		    for (String diagramId : clinicalNotesCollection.getDiagrams()) {
 			DBObject diagram = new BasicDBObject();
 			DiagramsCollection diagramsCollection = diagramsRepository.findOne(diagramId);
 			if (diagramsCollection != null) {
 			    if (diagramsCollection.getDiagramUrl() != null) {
-				diagram.put("url", getFinalImageURL(diagramsCollection.getDiagramUrl(), uriInfo));
+				diagram.put("url", getFinalImageURL(diagramsCollection.getDiagramUrl()));
 			    }
 			    diagram.put("tags", diagramsCollection.getTags());
 			    diagramIds.add(diagram);
@@ -1043,7 +1023,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     }
 
     @Override
-    public PatientVisitResponse getVisit(String visitId, UriInfo uriInfo) {
+    public PatientVisitResponse getVisit(String visitId) {
 	PatientVisitResponse response = null;
 	try {
 	    PatientVisitCollection patientVisitCollection = patientVisitRepository.findOne(visitId);
@@ -1061,7 +1041,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			ClinicalNotes clinicalNote = clinicalNotesService.getNotesById(clinicalNotesId);
 			if (clinicalNote != null) {
 			    if (clinicalNote.getDiagrams() != null && !clinicalNote.getDiagrams().isEmpty()) {
-				clinicalNote.setDiagrams(getFinalDiagrams(clinicalNote.getDiagrams(), uriInfo));
+				clinicalNote.setDiagrams(getFinalDiagrams(clinicalNote.getDiagrams()));
 			    }
 			    clinicalNotes.add(clinicalNote);
 			}
@@ -1071,7 +1051,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    records = recordsService.getRecordsByIds(patientVisitCollection.getRecordId());
 		    if (records != null && !records.isEmpty()) {
 			for (Records record : records) {
-			    record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl(), uriInfo));
+			    record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl()));
 			}
 		    }
 		    records.addAll(records);
@@ -1172,10 +1152,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
     }
 
-    private List<Diagram> getFinalDiagrams(List<Diagram> diagrams, UriInfo uriInfo) {
+    private List<Diagram> getFinalDiagrams(List<Diagram> diagrams) {
 	for (Diagram diagram : diagrams) {
 	    if (diagram.getDiagramUrl() != null) {
-		diagram.setDiagramUrl(getFinalImageURL(diagram.getDiagramUrl(), uriInfo));
+		diagram.setDiagramUrl(getFinalImageURL(diagram.getDiagramUrl()));
 	    }
 	}
 	return diagrams;

@@ -81,8 +81,8 @@ public class RegistrationApi {
     @Context
     private UriInfo uriInfo;
 
-    @Value(value = "${IMAGE_URL_ROOT_PATH}")
-    private String imageUrlRootPath;
+    @Value(value = "${IMAGE_PATH}")
+    private String imagePath;
 
     @Path(value = PathProxy.RegistrationUrls.PATIENT_REGISTER)
     @POST
@@ -195,8 +195,11 @@ public class RegistrationApi {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
+	Reference reference = registrationService.addEditReference(request);
+	transnationalService.addResource(reference.getId(), Resource.REFERENCE, false);
+	solrRegistrationService.addEditReference(request.getId());
 	Response<Reference> response = new Response<Reference>();
-	response.setData(registrationService.addEditReference(request));
+	response.setData(reference);
 	return response;
     }
 
@@ -207,8 +210,11 @@ public class RegistrationApi {
 	if (referrenceId == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.referrenceId is null");
 	}
-	Response<Boolean> response = new Response<Boolean>();
 	registrationService.deleteReferrence(referrenceId, discarded);
+	transnationalService.addResource(referrenceId, Resource.REFERENCE, false);
+	solrRegistrationService.addEditReference(referrenceId);
+	
+	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
     }
@@ -309,8 +315,8 @@ public class RegistrationApi {
 	}
 	ClinicProfile clinicProfileUpdateResponse = registrationService.updateClinicProfile(request);
 	transnationalService.addResource(clinicProfileUpdateResponse.getId(), Resource.LOCATION, false);
-	if (clinicProfileUpdateResponse != null)
-	    solrRegistrationService.updateClinicProfile(clinicProfileUpdateResponse);
+
+	if (clinicProfileUpdateResponse != null)transnationalService.checkLocation(request.getId());
 	Response<ClinicProfile> response = new Response<ClinicProfile>();
 	response.setData(clinicProfileUpdateResponse);
 	return response;
@@ -324,8 +330,7 @@ public class RegistrationApi {
 	}
 	ClinicProfile clinicProfileUpdateResponse = registrationService.updateClinicProfileHandheld(request);
 	transnationalService.addResource(clinicProfileUpdateResponse.getId(), Resource.LOCATION, false);
-	if (clinicProfileUpdateResponse != null)
-	    solrRegistrationService.updateClinicProfile(clinicProfileUpdateResponse);
+	if (clinicProfileUpdateResponse != null)transnationalService.checkLocation(request.getId());
 	Response<ClinicProfile> response = new Response<ClinicProfile>();
 	response.setData(clinicProfileUpdateResponse);
 	return response;
@@ -339,9 +344,8 @@ public class RegistrationApi {
 	}
 	ClinicAddress clinicAddressUpdateResponse = registrationService.updateClinicAddress(request);
 	transnationalService.addResource(clinicAddressUpdateResponse.getId(), Resource.LOCATION, false);
-	if (clinicAddressUpdateResponse != null)
-	    solrRegistrationService.updateClinicAddress(clinicAddressUpdateResponse);
-
+	if (clinicAddressUpdateResponse != null)transnationalService.checkLocation(request.getId());
+	
 	Response<ClinicAddress> response = new Response<ClinicAddress>();
 	response.setData(clinicAddressUpdateResponse);
 	return response;
@@ -367,8 +371,7 @@ public class RegistrationApi {
 	}
 	ClinicSpecialization clinicSpecializationUpdateResponse = registrationService.updateClinicSpecialization(request);
 	transnationalService.addResource(clinicSpecializationUpdateResponse.getId(), Resource.LOCATION, false);
-	if (clinicSpecializationUpdateResponse != null)
-	    solrRegistrationService.updateClinicSpecialization(clinicSpecializationUpdateResponse);
+	if (clinicSpecializationUpdateResponse != null)	transnationalService.checkLocation(request.getId());
 	Response<ClinicSpecialization> response = new Response<ClinicSpecialization>();
 	response.setData(clinicSpecializationUpdateResponse);
 	return response;
@@ -377,14 +380,14 @@ public class RegistrationApi {
     @Path(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_LAB_PROPERTIES)
     @POST
     public Response<ClinicLabProperties> updateLabProperties(ClinicLabProperties request) {
-	if (request == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
-	}
-	ClinicLabProperties clinicLabProperties = registrationService.updateLabProperties(request);
-	if (clinicLabProperties != null) {
-	    transnationalService.addResource(request.getId(), Resource.LOCATION, false);
-	    solrRegistrationService.updateLabProperties(clinicLabProperties);
-	}
+    if (request == null) {
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
+    	}
+    ClinicLabProperties clinicLabProperties = registrationService.updateLabProperties(request);
+    if(clinicLabProperties != null){
+    	transnationalService.addResource(request.getId(), Resource.LOCATION, false);
+    	transnationalService.checkLocation(request.getId());
+    }
 	Response<ClinicLabProperties> response = new Response<ClinicLabProperties>();
 	response.setData(clinicLabProperties);
 	return response;
@@ -405,6 +408,7 @@ public class RegistrationApi {
 		clinicLogoResponse.setLogoThumbnailURL(getFinalImageURL(clinicLogoResponse.getLogoThumbnailURL()));
 	    }
 	}
+	transnationalService.checkLocation(request.getId());
 	Response<ClinicLogo> response = new Response<ClinicLogo>();
 	response.setData(clinicLogoResponse);
 	return response;
@@ -430,6 +434,7 @@ public class RegistrationApi {
 		    clinicalImage.setThumbnailUrl(getFinalImageURL(clinicalImage.getThumbnailUrl()));
 		}
 	    }
+	transnationalService.checkLocation(request.getId());
 	}
 	Response<ClinicImage> response = new Response<ClinicImage>();
 	response.setDataList(clinicImageResponse);
@@ -533,11 +538,8 @@ public class RegistrationApi {
 		BeanUtil.map(patient.getPatient(), solrPatientDocument);
 	    }
 	    BeanUtil.map(patient, solrPatientDocument);
-	    if (patient.getPatient() != null)
-		solrPatientDocument.setId(patient.getPatient().getPatientId());
-	    if (patient.getReferredBy() != null)
-		solrPatientDocument.setReferredBy(patient.getReferredBy().getReference());
-
+	    if (patient.getPatient() != null) solrPatientDocument.setId(patient.getPatient().getPatientId());
+	    if(patient.getReferredBy() != null)solrPatientDocument.setReferredBy(patient.getReferredBy().getId());
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}
@@ -546,8 +548,7 @@ public class RegistrationApi {
 
     private String getFinalImageURL(String imageURL) {
 	if (imageURL != null) {
-	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-	    return finalImageURL + imageURL;
+	    return imagePath + imageURL;
 	} else
 	    return null;
     }
@@ -601,7 +602,8 @@ public class RegistrationApi {
     @DELETE
     public Response<Boolean> deleteUser(@PathParam(value = "userId") String userId, @PathParam(value = "locationId") String locationId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-	registrationService.deleteUser(userId, locationId, discarded);
+    	registrationService.deleteUser(userId, locationId, discarded);
+    	transnationalService.checkDoctor(userId);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;

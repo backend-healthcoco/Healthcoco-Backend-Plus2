@@ -425,25 +425,27 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			BeanUtil.map(doctorClinicCollection, doctorClinic);
 
 		    locationCollection = locationRepository.findOne(doctorClinic.getLocationId());
-		    String address = locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() + ", "
-			    : "" + locationCollection.getCity() != null ? locationCollection.getCity() + ", "
-				    : "" + locationCollection.getState() != null ? locationCollection.getState()
-					    : "" + locationCollection.getState() != null && locationCollection.getPostalCode() != null ? " - "
-						    : "" + locationCollection.getPostalCode() != null ? locationCollection.getPostalCode() + ", "
-							    : "" + locationCollection.getState() != null && locationCollection.getPostalCode() == null ? ", "
-								    : "" + locationCollection.getCountry() != null ? locationCollection.getCountry() : "";
+		    if(locationCollection != null){
+			    String address = locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() + ", " : ""
+					    + locationCollection.getCity() != null ? locationCollection.getCity() + ", "
+					    : "" + locationCollection.getState() != null ? locationCollection.getState() : "" + locationCollection.getState() != null
+						    && locationCollection.getPostalCode() != null ? " - "
+						    : "" + locationCollection.getPostalCode() != null ? locationCollection.getPostalCode() + ", " : ""
+							    + locationCollection.getState() != null
+							    && locationCollection.getPostalCode() == null ? ", "
+							    : "" + locationCollection.getCountry() != null ? locationCollection.getCountry() : "";
 
-		    doctorClinic.setLocationName(locationCollection.getLocationName());
-		    doctorClinic.setClinicAddress(address);
-		    doctorClinic.setImages(locationCollection.getImages());
-		    doctorClinic.setLogoUrl(locationCollection.getLogoUrl());
-		    doctorClinic.setLogoThumbnailUrl(locationCollection.getLogoThumbnailUrl());
-		    doctorClinic.setCity(locationCollection.getCity());
-		    doctorClinic.setState(locationCollection.getState());
-		    doctorClinic.setCountry(locationCollection.getCountry());
-		    doctorClinic.setPostalCode(locationCollection.getPostalCode());
+				    doctorClinic.setLocationName(locationCollection.getLocationName());
+				    doctorClinic.setClinicAddress(address);
+				    doctorClinic.setImages(locationCollection.getImages());
+				    doctorClinic.setLogoUrl(locationCollection.getLogoUrl());
+				    doctorClinic.setLogoThumbnailUrl(locationCollection.getLogoThumbnailUrl());
+				    doctorClinic.setCity(locationCollection.getCity());
+				    doctorClinic.setState(locationCollection.getState());
+				    doctorClinic.setCountry(locationCollection.getCountry());
+				    doctorClinic.setPostalCode(locationCollection.getPostalCode());
+		    }
 		    clinicProfile.add(doctorClinic);
-
 		}
 	    } else {
 		UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(userCollection.getId(), locationId);
@@ -706,23 +708,23 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     @Override
     public Boolean addEditGeneralInfo(DoctorGeneralInfo request) {
 	boolean response = false;
+	DoctorClinicProfileCollection doctorClinicProfileCollection = null;
 	try {
-	    // if (request.getAppointmentBookingNumber() != null &&
-	    // !request.getAppointmentBookingNumber().isEmpty()) {
-	    DoctorAppointmentNumbersAddEditRequest appointmentNumbersAddEditRequest = new DoctorAppointmentNumbersAddEditRequest();
-	    BeanUtil.map(request, appointmentNumbersAddEditRequest);
-	    response = addEditAppointmentNumbers(appointmentNumbersAddEditRequest);
-	    // }
-	    // if (request.getAppointmentSlot() != null) {
-	    DoctorAppointmentSlotAddEditRequest appointmentSlotAddEditRequest = new DoctorAppointmentSlotAddEditRequest();
-	    BeanUtil.map(request, appointmentSlotAddEditRequest);
-	    response = addEditAppointmentSlot(appointmentSlotAddEditRequest);
-	    // }
-	    // if (request.getConsultationFee() != null) {
-	    DoctorConsultationFeeAddEditRequest consultationFeeAddEditRequest = new DoctorConsultationFeeAddEditRequest();
-	    BeanUtil.map(request, consultationFeeAddEditRequest);
-	    response = addEditConsultationFee(consultationFeeAddEditRequest);
-	    // }
+		 UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
+		    if (userLocationCollection != null) {
+			doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
+			if (doctorClinicProfileCollection == null) {
+			    doctorClinicProfileCollection = new DoctorClinicProfileCollection();
+			    doctorClinicProfileCollection.setLocationId(userLocationCollection.getId());
+			    doctorClinicProfileCollection.setCreatedTime(new Date());
+			}
+			doctorClinicProfileCollection.setAppointmentBookingNumber(request.getAppointmentBookingNumber());
+			doctorClinicProfileCollection.setConsultationFee(request.getConsultationFee());
+			doctorClinicProfileCollection.setAppointmentSlot(request.getAppointmentSlot());
+			doctorClinicProfileCollection.setFacility(request.getFacility());
+			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+			response = true;
+		    }
 	} catch (Exception e) {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Forbidden, "Error while adding or editing general info : " + e.getMessage());

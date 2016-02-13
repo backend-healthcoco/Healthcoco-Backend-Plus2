@@ -2,8 +2,6 @@ package com.dpdocter.services;
 
 import java.util.List;
 
-import javax.ws.rs.core.UriInfo;
-
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.MailAttachment;
@@ -103,9 +101,9 @@ public interface PrescriptionServices {
     List<Object> getPrescriptionItems(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded);
 
-    void emailPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String emailAddress, UriInfo uriInfo);
+    void emailPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String emailAddress);
 
-    MailAttachment getPrescriptionMailData(String prescriptionId, String doctorId, String locationId, String hospitalId, UriInfo uriInfo);
+    MailAttachment getPrescriptionMailData(String prescriptionId, String doctorId, String locationId, String hospitalId);
 
     void smsPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String mobileNumber);
 

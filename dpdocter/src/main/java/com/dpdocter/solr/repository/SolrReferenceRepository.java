@@ -87,4 +87,7 @@ public interface SolrReferenceRepository extends SolrCrudRepository<SolrReferenc
     List<SolrReferenceDocument> findCustomGlobal(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded, String searchTerm,
 	    Sort sort);
 
+	@Query("(doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND reference:?3) OR ( (doctorId: null OR doctorId: \"\") AND (locationId: null OR locationId: \"\") AND (hospitalId: null OR hospitalId: \"\") AND reference:?3)")
+	List<SolrReferenceDocument> findCustomGlobal(String doctorId, String locationId, String hospitalId, String searchTerm);
+
 }

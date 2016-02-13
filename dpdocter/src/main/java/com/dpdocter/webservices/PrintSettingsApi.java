@@ -41,11 +41,11 @@ public class PrintSettingsApi {
     @Autowired
     private PrintSettingsService printSettingsService;
 
-    @Context
-    private UriInfo uriInfo;
+//    @Context
+//    private UriInfo uriInfo;
 
-    @Value(value = "${IMAGE_URL_ROOT_PATH}")
-    private String imageUrlRootPath;
+    @Value(value = "${IMAGE_PATH}")
+    private String imagePath;
 
     @Path(value = PathProxy.PrintSettingsUrls.SAVE_SETTINGS_DEFAULT_DATA)
     @POST
@@ -126,8 +126,7 @@ public class PrintSettingsApi {
 
     private String getFinalImageURL(String imageURL) {
 	if (imageURL != null) {
-	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-	    return finalImageURL + imageURL;
+	    return imagePath + imageURL;
 	} else
 	    return null;
 

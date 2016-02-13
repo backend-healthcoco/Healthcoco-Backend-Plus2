@@ -34,7 +34,7 @@ public class ClinicImage {
 
     @Override
     public String toString() {
-	return "ClinicImage [imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", counter=" + counter + "]";
+	return "{imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", counter=" + counter + "}";
     }
 
 }

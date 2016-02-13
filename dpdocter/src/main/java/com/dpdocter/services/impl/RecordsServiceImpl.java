@@ -41,6 +41,7 @@ import com.dpdocter.collections.RecordsTagsCollection;
 import com.dpdocter.collections.TagsCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -125,11 +126,8 @@ public class RecordsServiceImpl implements RecordsService {
     @Autowired
     private PrescriptionRepository prescriptionRepository;
 
-    @Value(value = "${IMAGE_RESOURCE}")
-    private String imageResource;
-
-    @Value(value = "${IMAGE_URL_ROOT_PATH}")
-    private String imageUrlRootPath;
+    @Value(value = "${IMAGE_PATH}")
+    private String imagePath;
 
     @Autowired
     private PatientVisitRepository patientVisitRepository;
@@ -149,14 +147,14 @@ public class RecordsServiceImpl implements RecordsService {
 		// save image
 		String recordUrl = fileManager.saveImageAndReturnImageUrl(request.getFileDetails(), path);
 		String fileName = request.getFileDetails().getFileName() + "." + request.getFileDetails().getFileExtension();
-		String recordPath = imageResource + File.separator + path + File.separator + fileName;
+		String recordPath = path + File.separator + fileName;
 
 		recordsCollection.setRecordsUrl(recordUrl);
 		recordsCollection.setRecordsPath(recordPath);
 		recordsCollection.setRecordsLable(recordLabel);
 	    }
 	    recordsCollection.setCreatedTime(createdTime);
-	    recordsCollection.setUniqueId(DPDoctorUtils.generateRandomId());
+	    recordsCollection.setUniqueId(UniqueIdInitial.REPORTS.getInitial()+DPDoctorUtils.generateRandomId());
 	    UserCollection userCollection = userRepository.findOne(recordsCollection.getDoctorId());
 	    if (userCollection != null) {
 		recordsCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
@@ -222,7 +220,7 @@ public class RecordsServiceImpl implements RecordsService {
 		// save image
 		String recordUrl = fileManager.saveImageAndReturnImageUrl(request.getFileDetails(), path);
 		String fileName = request.getFileDetails().getFileName() + "." + request.getFileDetails().getFileExtension();
-		String recordPath = imageResource + File.separator + path + File.separator + fileName;
+		String recordPath =  path + File.separator + fileName;
 
 		recordsCollection.setRecordsUrl(recordUrl);
 		recordsCollection.setRecordsPath(recordPath);
@@ -285,9 +283,9 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public void emailRecordToPatient(String recordId, String doctorId, String locationId, String hospitalId, String emailAddress, UriInfo uriInfo) {
+    public void emailRecordToPatient(String recordId, String doctorId, String locationId, String hospitalId, String emailAddress) {
 	try {
-	    MailAttachment mailAttachment = createMailData(recordId, doctorId, locationId, hospitalId, uriInfo);
+	    MailAttachment mailAttachment = createMailData(recordId, doctorId, locationId, hospitalId);
 	    mailService.sendEmail(emailAddress, "Records", "PFA.", mailAttachment);
 	} catch (MessagingException e) {
 	    logger.error(e);
@@ -317,7 +315,7 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public List<Records> searchRecords(RecordsSearchRequest request, UriInfo uriInfo) {
+    public List<Records> searchRecords(RecordsSearchRequest request) {
 	List<Records> records = null;
 	List<RecordsCollection> recordsCollections = null;
 	boolean[] discards = new boolean[2];
@@ -370,7 +368,7 @@ public class RecordsServiceImpl implements RecordsService {
 		    PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(record.getId());
 		    if (patientVisitCollection != null)
 			record.setVisitId(patientVisitCollection.getId());
-		    record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl(), uriInfo));
+		    record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl()));
 		    records.add(record);
 		}
 	    }
@@ -615,17 +613,17 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public MailAttachment getRecordMailData(String recordId, String doctorId, String locationId, String hospitalId, UriInfo uriInfo) {
-	return createMailData(recordId, doctorId, locationId, hospitalId, uriInfo);
+    public MailAttachment getRecordMailData(String recordId, String doctorId, String locationId, String hospitalId) {
+	return createMailData(recordId, doctorId, locationId, hospitalId);
     }
 
-    private MailAttachment createMailData(String recordId, String doctorId, String locationId, String hospitalId, UriInfo uriInfo) {
+    private MailAttachment createMailData(String recordId, String doctorId, String locationId, String hospitalId) {
 	MailAttachment mailAttachment = null;
 	try {
 	    RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
 	    if (recordsCollection != null) {
 
-		FileSystemResource file = new FileSystemResource(imageResource + "/" + recordsCollection.getRecordsUrl());
+		FileSystemResource file = new FileSystemResource(imagePath + recordsCollection.getRecordsUrl());
 		mailAttachment = new MailAttachment();
 		mailAttachment.setFileSystemResource(file);
 
@@ -687,10 +685,9 @@ public class RecordsServiceImpl implements RecordsService {
 	}
     }
 
-    private String getFinalImageURL(String imageURL, UriInfo uriInfo) {
+    private String getFinalImageURL(String imageURL) {
 	if (imageURL != null) {
-	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-	    return finalImageURL + imageURL;
+	    return imagePath + imageURL;
 	} else
 	    return null;
     }
@@ -750,7 +747,7 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public List<Records> getRecordsByPatientId(String patientId, int page, int size, String updatedTime, Boolean discarded, UriInfo uriInfo) {
+    public List<Records> getRecordsByPatientId(String patientId, int page, int size, String updatedTime, Boolean discarded) {
 	List<Records> records = null;
 	List<RecordsCollection> recordsCollections = null;
 	boolean[] discards = new boolean[2];
@@ -772,7 +769,7 @@ public class RecordsServiceImpl implements RecordsService {
 		PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(record.getId());
 		if (patientVisitCollection != null)
 		    record.setVisitId(patientVisitCollection.getId());
-		record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl(), uriInfo));
+		record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl()));
 		records.add(record);
 	    }
 	} catch (Exception e) {
@@ -783,46 +780,46 @@ public class RecordsServiceImpl implements RecordsService {
 	return records;
     }
 
-    @Override
-    public Records addRecordsMultipart(FormDataBodyPart file, RecordsAddRequestMultipart request) {
-	try {
+	@Override
+	public Records addRecordsMultipart(FormDataBodyPart file, RecordsAddRequestMultipart request) {
+		try {
 
-	    Date createdTime = new Date();
+		    Date createdTime = new Date();
 
-	    RecordsCollection recordsCollection = new RecordsCollection();
-	    BeanUtil.map(request, recordsCollection);
-	    if (file != null) {
+		    RecordsCollection recordsCollection = new RecordsCollection();
+		    BeanUtil.map(request, recordsCollection);
+		    if (file != null) {
+		  
+			String recordLabel = request.getFileName();
+			String path = request.getPatientId() + File.separator + "records";
 
-		String recordLabel = request.getFileName();
-		String path = request.getPatientId() + File.separator + "records";
+			FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
+			String recordPath = path + File.separator;
+			writeToFile(file.getEntityAs(InputStream.class), recordPath);
+			
+			recordsCollection.setRecordsUrl(path+"/"+fileDetail.getFileName()+createdTime.getTime());
+			recordsCollection.setRecordsPath(recordPath+fileDetail.getFileName()+createdTime.getTime());
+			recordsCollection.setRecordsLable(recordLabel);
+		    }
+		    recordsCollection.setCreatedTime(createdTime);
+		    UserCollection userCollection = userRepository.findOne(recordsCollection.getDoctorId());
+		    if (userCollection != null) {
+			recordsCollection.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());
+		    }
+		    LocationCollection locationCollection = locationRepository.findOne(recordsCollection.getLocationId());
+		    if(locationCollection != null){
+		    	recordsCollection.setUploadedByLocation(locationCollection.getLocationName());
+		    }
+		    recordsCollection = recordsRepository.save(recordsCollection);
+		    Records records = new Records();
+		    BeanUtil.map(recordsCollection, records);
 
-		FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
-		String recordPath = imageResource + File.separator + path + File.separator;
-		writeToFile(file.getEntityAs(InputStream.class), recordPath);
-
-		recordsCollection.setRecordsUrl(path + "/" + fileDetail.getFileName() + createdTime.getTime());
-		recordsCollection.setRecordsPath(recordPath + fileDetail.getFileName() + createdTime.getTime());
-		recordsCollection.setRecordsLable(recordLabel);
-	    }
-	    recordsCollection.setCreatedTime(createdTime);
-	    UserCollection userCollection = userRepository.findOne(recordsCollection.getDoctorId());
-	    if (userCollection != null) {
-		recordsCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
-	    }
-	    LocationCollection locationCollection = locationRepository.findOne(recordsCollection.getLocationId());
-	    if (locationCollection != null) {
-		recordsCollection.setUploadedByLocation(locationCollection.getLocationName());
-	    }
-	    recordsCollection = recordsRepository.save(recordsCollection);
-	    Records records = new Records();
-	    BeanUtil.map(recordsCollection, records);
-
-	    return records;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
-	}
+		    return records;
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+		}
     }
 
     private void writeToFile(InputStream uploadedInputStream, String uploadedFileLocation) {

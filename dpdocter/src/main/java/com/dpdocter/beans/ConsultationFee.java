@@ -5,9 +5,17 @@ import com.dpdocter.enums.Currency;
 public class ConsultationFee {
     private int amount;
 
-    private Currency currency;
+    private Currency currency = Currency.INR;
 
-    public int getAmount() {
+    public ConsultationFee() {
+	}
+
+	public ConsultationFee(int amount, Currency currency) {
+		this.amount = amount;
+		this.currency = currency;
+	}
+
+	public int getAmount() {
 	return amount;
     }
 

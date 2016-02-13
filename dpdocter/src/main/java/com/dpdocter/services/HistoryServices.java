@@ -64,7 +64,7 @@ public interface HistoryServices {
 
     HistoryDetailsResponse getMedicalAndFamilyHistory(String patientId, String doctorId, String hospitalId, String locationId);
 
-    boolean mailMedicalData(MedicalData medicalData, UriInfo uriInfo);
+    boolean mailMedicalData(MedicalData medicalData);
 
     boolean addVisitsToHistory(String visitId, String patientId, String doctorId, String hospitalId, String locationId);
 

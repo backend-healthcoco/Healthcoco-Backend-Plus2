@@ -2,8 +2,6 @@ package com.dpdocter.services;
 
 import java.util.List;
 
-import javax.ws.rs.core.UriInfo;
-
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.PatientVisit;
 import com.dpdocter.enums.VisitedFor;
@@ -21,14 +19,14 @@ public interface PatientVisitService {
 
     DoctorContactsResponse mostVisited(String doctorId, String locationId, String hospitalId, int page, int size);
 
-    PatientVisitResponse addMultipleData(AddMultipleDataRequest request, UriInfo uriInfo);
+    PatientVisitResponse addMultipleData(AddMultipleDataRequest request);
 
-    PatientVisitResponse getVisit(String visitId, UriInfo uriInfo);
+    PatientVisitResponse getVisit(String visitId);
 
     List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId, int page, int size, Boolean isOTPVerified,
-	    String updatedTime, UriInfo uriInfo);
+	    String updatedTime);
 
-    Boolean email(String visitId, String emailAddress, UriInfo uriInfo);
+    Boolean email(String visitId, String emailAddress);
 
     Boolean deleteVisit(String visitId, Boolean discarded);
 

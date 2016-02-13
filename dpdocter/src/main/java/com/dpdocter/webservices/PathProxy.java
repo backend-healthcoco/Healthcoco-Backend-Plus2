@@ -192,10 +192,9 @@ public interface PathProxy {
 
     public static final String FORGOT_PASSWORD_BASE_URL = BASE_URL + "/forgotPassword";
 
-    public interface ForgotPasswordUrls {
-
-	public static final String CHECK_LINK_IS_ALREADY_USED = "/checkLink";
-
+    public interface ForgotPasswordUrls {    
+    public static final String CHECK_LINK_IS_ALREADY_USED = "/checkLink/{userId}";
+    	
 	public static final String FORGOT_PASSWORD_DOCTOR = "/forgotPasswordDoctor";
 
 	public static final String FORGOT_PASSWORD_PATIENT = "/forgotPasswordPatient";

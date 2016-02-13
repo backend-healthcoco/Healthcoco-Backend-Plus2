@@ -110,14 +110,25 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     @Override
     public Boolean forgotPasswordForPatient(ForgotUsernamePasswordRequest request, UriInfo uriInfo) {
 	Boolean flag = false;
+	Boolean isPatient = false;
 	try {
-	    UserCollection userCollection = null;
+	    List<UserCollection> userCollections = null;
 
-	    if (request.getUsername() != null) {
-		userCollection = userRepository.findByUserName(request.getMobileNumber());
+	    if (request.getMobileNumber() != null) {
+	    	userCollections = userRepository.findByMobileNumber(request.getMobileNumber());
 	    }
 
-	    if (userCollection != null) {
+	    if (userCollections != null) {
+	    	for(UserCollection userCollection : userCollections){
+	    		if(!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress())){
+	    			isPatient = true;
+	    			break;
+	    		}
+	    	}
+	    if(!isPatient){
+	    	logger.warn("No Patient Found");
+			throw new BusinessException(ServiceError.NoRecord, "No Patient Found");
+	    }
 		if (request.getMobileNumber() != null && !request.getMobileNumber().isEmpty()) {
 		    String OTP = LoginUtils.generateOTP();
 		    SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(null, null, null, null, null,
@@ -138,8 +149,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		    throw new BusinessException(ServiceError.InvalidInput, "Email address or mobile number should be provided");
 		}
 	    } else {
-		logger.warn("User not Found.");
-		throw new BusinessException(ServiceError.NoRecord, "User not Found.");
+		logger.warn("User not Found");
+		throw new BusinessException(ServiceError.NoRecord, "User not Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -223,38 +234,37 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     }
 
     @Override
-    public String resetPassword(String userId, String password, UriInfo uriInfo) {
+    public String resetPassword(ResetPasswordRequest request, UriInfo uriInfo) {
 	try {
-
-	    String startText = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'><html><head><META http-equiv='Content-Type' content='text/html; charset=utf-8'></head><body>"
-		    + "<div><div style='margin-top:130px'><div style='padding:20px 30px;border-radius:3px;background-color:#fefefe;border:1px solid #f1f1f1;line-height:30px;margin-bottom:30px;font-family:&#39;Open Sans&#39;,sans-serif;margin:0px auto;min-width:200px;max-width:500px'>"
-		    + "<div align='center'><h2 style='font-size:20px;color:#2c3335;text-align:center;letter-spacing:1px'>Reset Password</h2><br><p style='color:#2c3335;font-size:15px;text-align:left'>";
-
-	    String endText = "</p><br><p style='color:#8a6d3b;font-size:15px;text-align:left'>lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum</p>"
-		    + "</div></div></div></div></body></html>";
-
-	    TokenCollection tokenCollection = tokenRepository.findOne(userId);
-	    if (tokenCollection == null || tokenCollection.getIsUsed()) {
-		return startText + "Link is already Used" + endText;
-	    } else {
-		if (!isLinkValid(tokenCollection.getCreatedTime()))
-		    return startText + "Link is Expired" + endText;
-		UserCollection userCollection = userRepository.findOne(tokenCollection.getResourceId());
-		if (userCollection == null) {
-		    return startText + "Invalid Url." + endText;
-		}
-		userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(password));
-		userCollection.setIsTempPassword(false);
-		userRepository.save(userCollection);
-
-		tokenCollection.setIsUsed(true);
-		tokenRepository.save(tokenCollection);
-
-		String body = mailBodyGenerator.generateResetPasswordSuccessEmailBody(userCollection.getEmailAddress(), userCollection.getFirstName(), uriInfo);
-		mailService.sendEmail(userCollection.getEmailAddress(), resetPasswordSub, body, null);
-
-		return startText + "Password Changed Successfully" + endText;
-	    }
+//	    String startText = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'><html><head><META http-equiv='Content-Type' content='text/html; charset=utf-8'></head><body>"
+//						+"<div><div style='margin-top:130px'><div style='padding:20px 30px;border-radius:3px;background-color:#fefefe;border:1px solid #f1f1f1;line-height:30px;margin-bottom:30px;font-family:&#39;Open Sans&#39;,sans-serif;margin:0px auto;min-width:200px;max-width:500px'>"
+//						+"<div align='center'><h2 style='font-size:20px;color:#2c3335;text-align:center;letter-spacing:1px'>Reset Password</h2><br><p style='color:#2c3335;font-size:15px;text-align:left'>";
+//		
+//		String endText = "</p><br><p style='color:#8a6d3b;font-size:15px;text-align:left'>lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum</p>"
+//		        +"</div></div></div></div></body></html>";
+		
+		TokenCollection tokenCollection = tokenRepository.findOne(request.getUserId());
+		if (tokenCollection == null || tokenCollection.getIsUsed()) {
+			return "Link is already Used";
+		    } else {
+		    	if(!isLinkValid(tokenCollection.getCreatedTime()))
+					return "Link is Expired";
+		    	UserCollection userCollection = userRepository.findOne(tokenCollection.getResourceId());
+			if (userCollection == null) {
+			    return "Invalid Url.";
+			}
+			userCollection.setPassword(request.getPassword());
+			userCollection.setIsTempPassword(false);
+			userRepository.save(userCollection);
+			
+			tokenCollection.setIsUsed(true);
+			tokenRepository.save(tokenCollection);
+			
+			String body = mailBodyGenerator.generateResetPasswordSuccessEmailBody(userCollection.getEmailAddress(), userCollection.getFirstName(), uriInfo);
+			mailService.sendEmail(userCollection.getEmailAddress(), resetPasswordSub, body, null);
+			
+			return "Password Changed Successfully";
+		    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);

@@ -2,6 +2,8 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import com.dpdocter.enums.DoctorFacility;
+
 public class DoctorGeneralInfo {
     private String id;
 
@@ -15,6 +17,8 @@ public class DoctorGeneralInfo {
 
     private List<String> appointmentBookingNumber;
 
+    private DoctorFacility facility;
+    
     public String getId() {
 	return id;
     }
@@ -63,10 +67,18 @@ public class DoctorGeneralInfo {
 	this.appointmentBookingNumber = appointmentBookingNumber;
     }
 
-    @Override
-    public String toString() {
-	return "DoctorGeneralInfo [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", appointmentSlot=" + appointmentSlot
-		+ ", consultationFee=" + consultationFee + ", appointmentBookingNumber=" + appointmentBookingNumber + "]";
-    }
+	public DoctorFacility getFacility() {
+		return facility;
+	}
 
+	public void setFacility(DoctorFacility facility) {
+		this.facility = facility;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorGeneralInfo [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", appointmentSlot=" + appointmentSlot + ", consultationFee=" + consultationFee
+				+ ", appointmentBookingNumber=" + appointmentBookingNumber + ", facility=" + facility + "]";
+	}
 }

@@ -429,20 +429,27 @@ public class SMSServicesImpl implements SMSServices {
 	return response;
     }
 
-    @Override
-    public List<SMSFormat> getSmsFormat(String doctorId, String locationId, String hospitalId) {
-	List<SMSFormat> response = null;
-	List<SMSFormatCollection> smsFormatCollections = null;
-	try {
-	    smsFormatCollections = sMSFormatRepository.find(doctorId, locationId, hospitalId);
-	    if (smsFormatCollections != null) {
-		response = new ArrayList<SMSFormat>();
-		BeanUtil.map(smsFormatCollections, response);
-	    }
-	} catch (BusinessException e) {
-	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, "Error while Adding/Editing Sms Format");
-	}
+	@Override
+	public List<SMSFormat> getSmsFormat(String doctorId, String locationId, String hospitalId, String type) {
+		List<SMSFormat> response = null;
+		List<SMSFormatCollection> smsFormatCollections = null;
+		try {
+			if(type != null){
+				SMSFormatCollection smsFormatCollection = sMSFormatRepository.find(doctorId, locationId, hospitalId, type);
+				if(smsFormatCollection != null){
+					smsFormatCollections = new ArrayList<SMSFormatCollection>();
+					smsFormatCollections.add(smsFormatCollection);
+				}
+			}
+			else smsFormatCollections = sMSFormatRepository.find(doctorId, locationId, hospitalId);
+			if(smsFormatCollections != null){
+			    response = new ArrayList<SMSFormat>();
+				BeanUtil.map(smsFormatCollections, response);
+			}
+		} catch (BusinessException e) {
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Forbidden, "Error while Adding/Editing Sms Format");
+		}
 	return response;
     }
 }
