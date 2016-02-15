@@ -90,7 +90,7 @@ import com.dpdocter.request.EventRequest;
 import com.dpdocter.request.PatientQueueAddEditRequest;
 import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.LocationServices;
-import com.dpdocter.sms.services.SMSServices;
+import com.dpdocter.services.SMSServices;
 import com.dpdocter.solr.beans.Country;
 import com.dpdocter.solr.beans.State;
 import com.dpdocter.solr.document.SolrCityDocument;
@@ -318,7 +318,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    DoctorCollection doctorCollection = doctorRepository.findByUserId(userLocationCollection.getUserId());
 		    UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
 		    DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
-			    .findByLocationId(userLocationCollection.getLocationId());
+			    .findByLocationId(userLocationCollection.getId());
 
 		    if (doctorCollection != null) {
 			Doctor doctor = new Doctor();
@@ -330,6 +330,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (doctorClinicProfileCollection != null) {
 			    DoctorClinicProfile doctorClinicProfile = new DoctorClinicProfile();
 			    BeanUtil.map(doctorClinicProfileCollection, doctorClinicProfile);
+			    doctorClinicProfile.setLocationId(userLocationCollection.getLocationId());
+			    doctorClinicProfile.setDoctorId(userLocationCollection.getUserId());
 			    doctor.setDoctorClinicProfile(doctorClinicProfile);
 			}
 			doctors.add(doctor);
@@ -553,24 +555,31 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    SMS sms = new SMS();
 	    
 	    if(smsFormatCollection != null){
-	    		if(smsFormatCollection.getContent().contains(SMSContent.PATIENT_NAME.getContent()))
+	    		if(smsFormatCollection.getContent().contains(SMSContent.PATIENT_NAME.getContent()) && patientName != null && patientName != "")
 	    			 patientName = " "+patientName;
 	    		 else patientName = "";
-	    		 if(smsFormatCollection.getContent().contains(SMSContent.APPOINTMENT_ID.getContent()))
+	    		 if(smsFormatCollection.getContent().contains(SMSContent.APPOINTMENT_ID.getContent()) && appointmentId != null && appointmentId != "")
 	    			 appointmentId = " "+appointmentId;
 	    		 else appointmentId= "";
-	    		 if(smsFormatCollection.getContent().contains(SMSContent.DATE_TIME.getContent()))
+	    		 if(smsFormatCollection.getContent().contains(SMSContent.DATE_TIME.getContent()) && dateTime != null && dateTime != "")
 	    			 dateTime = " "+dateTime;
 	    		 else dateTime ="";
-	    		 if(smsFormatCollection.getContent().contains(SMSContent.DOCTOR_NAME.getContent()))
+	    		 if(smsFormatCollection.getContent().contains(SMSContent.DOCTOR_NAME.getContent()) && doctorName != null && doctorName != "")
 	    			 doctorName = " "+doctorName;
 	    		 else doctorName ="";
-	    		 if(smsFormatCollection.getContent().contains(SMSContent.CLINIC_NAME.getContent()));
+	    		 if(smsFormatCollection.getContent().contains(SMSContent.CLINIC_NAME.getContent()) && clinicName != null && clinicName != "");
 	    		 else clinicName ="";
-	    		 if(smsFormatCollection.getContent().equals(SMSContent.CLINIC_CONTACT_NUMBER.getContent()))
+	    		 if(smsFormatCollection.getContent().equals(SMSContent.CLINIC_CONTACT_NUMBER.getContent()) && clinicContactNum != null && clinicContactNum != "")
 	    			 clinicContactNum = " "+ clinicContactNum;
 	    		 else clinicContactNum = "";
 	    	}
+	    else{
+	    	if(patientName != null && patientName != "")patientName = " "+patientName;
+	    	if(appointmentId != null && appointmentId != "")appointmentId = " "+appointmentId;
+	    	if(dateTime != null && dateTime != "")dateTime = " "+dateTime;
+	    	if(doctorName != null && doctorName != "")doctorName = " "+doctorName;
+	    	if(clinicContactNum != null && clinicContactNum != "")clinicContactNum = " "+ clinicContactNum;
+	    }
 	    String text = "";
 	    switch (type) {
 		case "CONFIRMED_APPOINTMENT_TO_PATIENT" :{
@@ -814,6 +823,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 				if (doctorClinicProfileCollection != null) {
 				    DoctorClinicProfile doctorClinicProfile = new DoctorClinicProfile();
 				    BeanUtil.map(doctorClinicProfileCollection, doctorClinicProfile);
+				    doctorClinicProfile.setLocationId(userLocationCollection.getLocationId());
+				    doctorClinicProfile.setDoctorId(userLocationCollection.getUserId());
 				    doctor.setDoctorClinicProfile(doctorClinicProfile);
 				}
 				doctors.add(doctor);

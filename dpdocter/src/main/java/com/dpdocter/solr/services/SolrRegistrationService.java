@@ -1,14 +1,11 @@
 package com.dpdocter.solr.services;
 
-import javax.ws.rs.core.UriInfo;
-
 import com.dpdocter.beans.ClinicAddress;
 import com.dpdocter.beans.ClinicLabProperties;
 import com.dpdocter.beans.ClinicProfile;
 import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.DoctorExperience;
 import com.dpdocter.beans.DoctorGeneralInfo;
-import com.dpdocter.beans.Reference;
 import com.dpdocter.request.DoctorConsultationFeeAddEditRequest;
 import com.dpdocter.request.DoctorNameAddEditRequest;
 import com.dpdocter.request.DoctorSpecialityAddEditRequest;
@@ -27,9 +24,9 @@ public interface SolrRegistrationService {
 
     boolean deletePatient(String id);
 
-    SolrPatientResponseDetails searchPatient(String doctorId, String locationId, String hospitalId, String searchTerm, int page, int size, UriInfo uriInfo);
+    SolrPatientResponseDetails searchPatient(String doctorId, String locationId, String hospitalId, String searchTerm, int page, int size);
 
-    SolrPatientResponseDetails searchPatient(AdvancedSearch request, UriInfo uriInfo);
+    SolrPatientResponseDetails searchPatient(AdvancedSearch request);
 
     boolean addDoctor(SolrDoctorDocument request);
 

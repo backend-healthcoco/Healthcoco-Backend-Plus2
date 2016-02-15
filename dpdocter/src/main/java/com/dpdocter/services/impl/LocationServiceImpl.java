@@ -13,6 +13,7 @@ import com.dpdocter.services.LocationServices;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.model.GeocodingResult;
+import com.google.maps.model.LatLng;
 
 @Service
 public class LocationServiceImpl implements LocationServices {
@@ -26,6 +27,29 @@ public class LocationServiceImpl implements LocationServices {
 	GeocodingResult[] results = null;
 	try {
 	    results = GeocodingApi.geocode(context, address).await();
+	    if (results != null && results.length != 0) {
+		response = new ArrayList<GeocodedLocation>();
+		for (GeocodingResult result : results) {
+		    GeocodedLocation geocodedLocation = new GeocodedLocation();
+		    geocodedLocation.setFormattedAddress(result.formattedAddress);
+		    geocodedLocation.setLatitude(result.geometry.location.lat);
+		    geocodedLocation.setLongitude(result.geometry.location.lng);
+		    response.add(geocodedLocation);
+		}
+	    }
+	} catch (Exception e) {
+	    throw new BusinessException(ServiceError.Forbidden, "Couldn't Geocode the location");
+	}
+	return response;
+    }
+
+    @Override
+    public List<GeocodedLocation> geocodeTimeZone(Double latitude, Double longitude) {
+	List<GeocodedLocation> response = null;
+	GeoApiContext context = new GeoApiContext().setApiKey(GEOCODING_SERVICES_API_KEY);
+	GeocodingResult[] results = null;
+	try {
+	    results = GeocodingApi.newRequest(context).latlng(new LatLng(latitude, longitude)).await();
 	    if (results != null && results.length != 0) {
 		response = new ArrayList<GeocodedLocation>();
 		for (GeocodingResult result : results) {

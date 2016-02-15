@@ -33,7 +33,6 @@ public class DoctorLocation {
     @Field
     private String websiteUrl;
 
-    @SuppressWarnings("deprecation")
     @Field
     private GeoLocation geoLocation;
 
@@ -81,6 +80,12 @@ public class DoctorLocation {
 
     @Field
     private String logoUrl;
+
+    @Field
+    private Integer noOfReviews = 0;
+
+    @Field
+    private Integer noOfRecommenations = 0;
 
     public String getLocationName() {
 	return locationName;
@@ -282,6 +287,22 @@ public class DoctorLocation {
 		this.logoUrl = logoUrl;
 	}
 
+	public Integer getNoOfReviews() {
+		return noOfReviews;
+	}
+
+	public void setNoOfReviews(Integer noOfReviews) {
+		this.noOfReviews = noOfReviews;
+	}
+
+	public Integer getNoOfRecommenations() {
+		return noOfRecommenations;
+	}
+
+	public void setNoOfRecommenations(Integer noOfRecommenations) {
+		this.noOfRecommenations = noOfRecommenations;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorLocation [locationId=" + locationId + ", hospitalId=" + hospitalId + ", locationName="
@@ -293,6 +314,8 @@ public class DoctorLocation {
 				+ locationMobileNumber + ", alternateNumbers=" + alternateNumbers + ", specialization=" + specialization
 				+ ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited="
 				+ isNABLAccredited + ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", images=" + images
-				+ ", logoUrl=" + logoUrl + "]";
+				+ ", logoUrl=" + logoUrl + ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations
+				+ "]";
 	}
+
 }

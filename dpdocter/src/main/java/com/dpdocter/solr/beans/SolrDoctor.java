@@ -2,9 +2,6 @@ package com.dpdocter.solr.beans;
 
 import java.util.List;
 
-import org.apache.solr.client.solrj.beans.Field;
-import org.springframework.data.solr.core.geo.GeoLocation;
-
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.DoctorExperience;

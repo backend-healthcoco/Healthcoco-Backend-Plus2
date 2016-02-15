@@ -6,4 +6,6 @@ import com.dpdocter.beans.GeocodedLocation;
 
 public interface LocationServices {
     public List<GeocodedLocation> geocodeLocation(String address);
+
+	List<GeocodedLocation> geocodeTimeZone(Double latitude, Double longitude);
 }

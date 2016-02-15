@@ -1,4 +1,4 @@
-package com.dpdocter.sms.services.impl;
+package com.dpdocter.services.impl;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -47,11 +47,11 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.SMSFormatRepository;
+import com.dpdocter.repository.SMSTrackRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.DoctorSMSResponse;
 import com.dpdocter.response.SMSResponse;
-import com.dpdocter.sms.repository.SMSTrackRepository;
-import com.dpdocter.sms.services.SMSServices;
+import com.dpdocter.services.SMSServices;
 
 @Service
 public class SMSServicesImpl implements SMSServices {

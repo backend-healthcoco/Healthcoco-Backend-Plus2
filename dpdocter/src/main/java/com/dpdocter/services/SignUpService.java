@@ -47,4 +47,6 @@ public interface SignUpService {
     boolean unlockPatientBasedOn80PercentMatch(String name, String mobileNumber);
 
     boolean checkMobileNumberExistForPatient(String mobileNumber);
+
+	User adminSignUp(PatientSignUpRequest request);
 }

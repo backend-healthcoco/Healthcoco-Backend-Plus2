@@ -1,6 +1,7 @@
 package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.enums.AppType;
 import com.dpdocter.enums.FeedbackType;
 
 public class Feedback extends GenericCollection{
@@ -9,11 +10,15 @@ public class Feedback extends GenericCollection{
 	
 	private FeedbackType type;
 	
-	private String doctorId;
+	private AppType appType;
+
+    private String doctorId;
 	
 	private String locationId;
 	
 	private String hospitalId;
+	
+    private String userId;
 	
 	private String description;
 
@@ -21,7 +26,9 @@ public class Feedback extends GenericCollection{
 	
 	private String  deviceInfo;
 	
-	private String  isVisible;
+	private Boolean  isVisible = false;
+
+	private Boolean isRecommended = false;
 
 	public String getId() {
 		return id;
@@ -87,18 +94,43 @@ public class Feedback extends GenericCollection{
 		this.deviceInfo = deviceInfo;
 	}
 
-	public String getIsVisible() {
+	public AppType getAppType() {
+		return appType;
+	}
+
+	public void setAppType(AppType appType) {
+		this.appType = appType;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public Boolean getIsVisible() {
 		return isVisible;
 	}
 
-	public void setIsVisible(String isVisible) {
+	public void setIsVisible(Boolean isVisible) {
 		this.isVisible = isVisible;
+	}
+
+	public Boolean getIsRecommended() {
+		return isRecommended;
+	}
+
+	public void setIsRecommended(Boolean isRecommended) {
+		this.isRecommended = isRecommended;
 	}
 
 	@Override
 	public String toString() {
-		return "Feedback [id=" + id + ", type=" + type + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", description=" + description + ", deviceType=" + deviceType
-				+ ", deviceInfo=" + deviceInfo + ", isVisible=" + isVisible + "]";
+		return "Feedback [id=" + id + ", type=" + type + ", appType=" + appType + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", userId=" + userId
+				+ ", description=" + description + ", deviceType=" + deviceType + ", deviceInfo=" + deviceInfo
+				+ ", isVisible=" + isVisible + ", isRecommended=" + isRecommended + "]";
 	}
 }

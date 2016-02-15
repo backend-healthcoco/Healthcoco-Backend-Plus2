@@ -24,6 +24,7 @@ import com.dpdocter.beans.Role;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
@@ -35,6 +36,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
@@ -51,9 +53,6 @@ import com.dpdocter.services.LoginService;
 public class LoginServiceImpl implements LoginService {
 
     private static Logger logger = Logger.getLogger(LoginServiceImpl.class.getName());
-
-    @Value(value = "${IMAGE_URL_ROOT_PATH}")
-    private String imageUrlRootPath;
 
     @Autowired
     private UserRepository userRepository;
@@ -76,6 +75,9 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     private AccessControlServices accessControlServices;
 
+    @Autowired
+    private PatientRepository patientRepository;
+    
     @Value(value = "${IMAGE_PATH}")
     private String imagePath;
 
@@ -113,22 +115,25 @@ public class LoginServiceImpl implements LoginService {
 		RoleCollection roleCollection = roleRepository.findOne(userRoleCollection.getRoleId());
 		if (roleCollection.getRole().equalsIgnoreCase(RoleEnum.PATIENT.getRole())
 			|| roleCollection.getRole().equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole())) {
-		    if (!userCollection.getIsVerified()) {
-			logger.warn("This user is not verified");
-			throw new BusinessException(ServiceError.NotAuthorized, "This user is not verified");
-		    }
-		    if (!userCollection.getIsActive()) {
-			logger.warn("This user is not activated");
-			throw new BusinessException(ServiceError.NotAuthorized, "This user is not activated");
-		    }
-
-		    userCollection.setLastSession(new Date());
-		    userCollection = userRepository.save(userCollection);
-
-		    response = new LoginResponse();
-		    response.setUser(user);
-		    response.setIsTempPassword(userCollection.getIsTempPassword());
-		    return response;
+//		    if (!userCollection.getIsVerified()) {
+//			logger.warn("This user is not verified");
+//			throw new BusinessException(ServiceError.NotAuthorized, "This user is not verified");
+//		    }
+//		    if (!userCollection.getIsActive()) {
+//			logger.warn("This user is not activated");
+//			throw new BusinessException(ServiceError.NotAuthorized, "This user is not activated");
+//		    }
+//
+//		    userCollection.setLastSession(new Date());
+//		    userCollection = userRepository.save(userCollection);
+//
+//		    response = new LoginResponse();
+//		    response.setUser(user);
+//		    response.setIsTempPassword(userCollection.getIsTempPassword());
+//		    return response;
+			logger.warn("Invalid User");
+			throw new BusinessException(ServiceError.NotAuthorized, "Invalid User");
+			
 		} else {
 
 		    if (!userCollection.getIsVerified()) {
@@ -252,6 +257,8 @@ public class LoginServiceImpl implements LoginService {
 	    User user = new User();
 	    BeanUtil.map(userCollection, user);
 
+	    PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), null, null, null);
+	    if(patientCollection != null)user.setBloodGroup(patientCollection.getBloodGroup());
 	    if (userCollection.getUserState() != null && userCollection.getUserState().equals(UserState.USERSTATEINCOMPLETE)) {
 		response = new LoginResponse();
 		user.setEmailAddress(user.getUserName());
@@ -282,4 +289,36 @@ public class LoginServiceImpl implements LoginService {
 	}
 	return response;
     }
+
+	@Override
+	public User adminLogin(LoginPatientRequest request) {
+		User response = null;
+		try {
+		    UserCollection userCollection = userRepository.findByPasswordAndMobileNumberIgnoreCase(request.getPassword(), request.getMobileNumber());
+		    if (userCollection == null) {
+			logger.warn("Invalid mobile Number and Password");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid mobile Number and Password");
+		    }
+	    User user = new User();
+	    BeanUtil.map(userCollection, user);
+
+	    List<UserRoleCollection> userRoleCollections = userRoleRepository.findByUserId(userCollection.getId());
+
+	    for (UserRoleCollection userRoleCollection : userRoleCollections) {
+		RoleCollection roleCollection = roleRepository.findOne(userRoleCollection.getRoleId());
+		if (roleCollection.getRole().equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole())) {
+		    userCollection.setLastSession(new Date());
+		    userCollection = userRepository.save(userCollection);
+		    response = new User();
+		    BeanUtil.map(userCollection, response);
+		    return response;
+		}
+	    }
+	}catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e + " Error occured while login");
+	    throw new BusinessException(ServiceError.Forbidden, "Error occured while login");
+	}
+	return response;
+	}
 }

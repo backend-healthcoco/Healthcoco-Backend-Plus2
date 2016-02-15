@@ -12,10 +12,6 @@ public class DoctorSignupRequest {
     // user details
     private String firstName;
 
-    private String lastName;
-
-    private String middleName;
-
     private String userName;
 
     private String password;
@@ -86,22 +82,6 @@ public class DoctorSignupRequest {
 
     public void setFirstName(String firstName) {
 	this.firstName = firstName;
-    }
-
-    public String getLastName() {
-	return lastName;
-    }
-
-    public void setLastName(String lastName) {
-	this.lastName = lastName;
-    }
-
-    public String getMiddleName() {
-	return middleName;
-    }
-
-    public void setMiddleName(String middleName) {
-	this.middleName = middleName;
     }
 
     public String getUserName() {
@@ -306,7 +286,7 @@ public class DoctorSignupRequest {
 
     @Override
     public String toString() {
-	return "DoctorSignupRequest [firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", userName=" + userName
+	return "DoctorSignupRequest [firstName=" + firstName + ", userName=" + userName
 		+ ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", image=" + image + ", gender=" + gender
 		+ ", dob=" + dob + ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl + ", specialization=" + specialization + ", hospitalName="
 		+ hospitalName + ", hospitalPhoneNumber=" + hospitalPhoneNumber + ", hospitalImageUrl=" + hospitalImageUrl + ", hospitalDescription="

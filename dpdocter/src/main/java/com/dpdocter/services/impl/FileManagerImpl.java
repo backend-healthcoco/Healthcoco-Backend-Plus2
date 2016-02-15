@@ -4,7 +4,6 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
@@ -12,7 +11,6 @@ import java.net.URLConnection;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +21,6 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.simpleworkflow.flow.interceptors.FixedIntervalInvocationSchedule;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.services.FileManager;
 

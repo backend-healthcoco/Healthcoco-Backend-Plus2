@@ -95,6 +95,9 @@ public class SolrDoctorDocument extends DoctorLocation {
 
     private DOB dob;
 
+    @Transient
+    private Double distance;
+    
     public String getId() {
 	return id;
     }
@@ -321,6 +324,14 @@ public class SolrDoctorDocument extends DoctorLocation {
 		else this.experience = new DoctorExperience(this.experienceNum, this.experiencePeriod);
 	}
 
+	public Double getDistance() {
+		return distance;
+	}
+
+	public void setDistance(Double distance) {
+		this.distance = distance;
+	}
+
 	@Override
 	public String toString() {
 		return "SolrDoctorDocument [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", gender=" + gender
@@ -331,6 +342,7 @@ public class SolrDoctorDocument extends DoctorLocation {
 				+ ", experiencePeriod=" + experiencePeriod + ", facility=" + facility + ", isActive=" + isActive
 				+ ", isVerified=" + isVerified + ", coverImageUrl=" + coverImageUrl + ", colorCode=" + colorCode
 				+ ", userState=" + userState + ", registerNumber=" + registerNumber + ", days=" + days + ", months="
-				+ months + ", years=" + years + ", dob=" + dob + "]";
+				+ months + ", years=" + years + ", dob=" + dob + ", distance=" + distance + "]";
 	}
+
 }

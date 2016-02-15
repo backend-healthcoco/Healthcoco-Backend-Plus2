@@ -7,6 +7,8 @@ import com.dpdocter.enums.DoctorFacility;
 public class DoctorClinicProfile {
     private String id;
 
+    private String doctorId;
+    
     private String locationId;
 
     private String clinicAddress;
@@ -40,6 +42,10 @@ public class DoctorClinicProfile {
     private String logoUrl;
 
     private String logoThumbnailUrl;
+ 
+    private Integer noOfReviews = 0;
+
+    private Integer noOfRecommenations = 0;
 
     public String getId() {
 	return id;
@@ -185,12 +191,39 @@ public class DoctorClinicProfile {
 	this.facility = facility;
     }
 
-    @Override
-    public String toString() {
-	return "DoctorClinicProfile [id=" + id + ", locationId=" + locationId + ", clinicAddress=" + clinicAddress + ", locationName=" + locationName
-		+ ", country=" + country + ", state=" + state + ", city=" + city + ", postalCode=" + postalCode + ", patientInitial=" + patientInitial
-		+ ", patientCounter=" + patientCounter + ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee=" + consultationFee
-		+ ", appointmentSlot=" + appointmentSlot + ", workingSchedules=" + workingSchedules + ", facility=" + facility + ", images=" + images
-		+ ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + "]";
-    }
+	public Integer getNoOfReviews() {
+		return noOfReviews;
+	}
+
+	public void setNoOfReviews(Integer noOfReviews) {
+		this.noOfReviews = noOfReviews;
+	}
+
+	public Integer getNoOfRecommenations() {
+		return noOfRecommenations;
+	}
+
+	public void setNoOfRecommenations(Integer noOfRecommenations) {
+		this.noOfRecommenations = noOfRecommenations;
+	}
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorClinicProfile [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", clinicAddress=" + clinicAddress + ", locationName=" + locationName + ", country=" + country
+				+ ", state=" + state + ", city=" + city + ", postalCode=" + postalCode + ", patientInitial="
+				+ patientInitial + ", patientCounter=" + patientCounter + ", appointmentBookingNumber="
+				+ appointmentBookingNumber + ", consultationFee=" + consultationFee + ", appointmentSlot="
+				+ appointmentSlot + ", workingSchedules=" + workingSchedules + ", facility=" + facility + ", images="
+				+ images + ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + ", noOfReviews="
+				+ noOfReviews + ", noOfRecommenations=" + noOfRecommenations + "]";
+	}
 }

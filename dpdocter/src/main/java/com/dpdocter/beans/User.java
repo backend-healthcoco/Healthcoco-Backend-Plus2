@@ -19,6 +19,8 @@ public class User {
 
     private DOB dob;
 
+    private String bloodGroup;
+
     private String secPhoneNumber;
 
     private Boolean isPartOfClinic;
@@ -147,10 +149,20 @@ public class User {
 	this.title = title;
     }
 
-    @Override
-    public String toString() {
-	return "User [id=" + id + ", title=" + title + ", firstName=" + firstName + ", userName=" + userName + ", emailAddress=" + emailAddress
-		+ ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob=" + dob + ", secPhoneNumber=" + secPhoneNumber + ", isPartOfClinic="
-		+ isPartOfClinic + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", colorCode=" + colorCode + ", userState=" + userState + "]";
-    }
+	public String getBloodGroup() {
+		return bloodGroup;
+	}
+
+	public void setBloodGroup(String bloodGroup) {
+		this.bloodGroup = bloodGroup;
+	}
+
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", title=" + title + ", firstName=" + firstName + ", userName=" + userName
+				+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob="
+				+ dob + ", bloodGroup=" + bloodGroup + ", secPhoneNumber=" + secPhoneNumber + ", isPartOfClinic="
+				+ isPartOfClinic + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", colorCode="
+				+ colorCode + ", userState=" + userState + "]";
+	}
 }

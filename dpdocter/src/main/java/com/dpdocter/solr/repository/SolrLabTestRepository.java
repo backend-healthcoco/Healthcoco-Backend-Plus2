@@ -67,4 +67,7 @@ public interface SolrLabTestRepository extends SolrCrudRepository<SolrLabTestDoc
     @Query("testId: ?0")
     List<SolrLabTestDocument> findByTestId(String testId);
 
+    @Query("testId:{$in : ?0}")
+	List<SolrLabTestDocument> findByTestIds(Collection<String> testIds);
+
 }

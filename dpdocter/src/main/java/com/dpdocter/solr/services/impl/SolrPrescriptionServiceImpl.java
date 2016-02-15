@@ -14,10 +14,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.DiagnosticTest;
+import com.dpdocter.beans.LabTest;
 import com.dpdocter.enums.Range;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrDiagnosticTestDocument;
 import com.dpdocter.solr.document.SolrDrugDocument;
@@ -323,20 +326,37 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
     }
 
     @Override
-    public List<SolrLabTestDocument> searchLabTest(String range, int page, int size, String locationId, String hospitalId, String updatedTime,
+    public List<LabTest> searchLabTest(String range, int page, int size, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded, String searchTerm) {
-	List<SolrLabTestDocument> response = null;
+    List<LabTest> response = null;	
+	List<SolrLabTestDocument> labTestDocuments = null;
 	switch (Range.valueOf(range.toUpperCase())) {
 
 	case GLOBAL:
-	    response = getGlobalLabTests(page, size, updatedTime, discarded, searchTerm);
+		labTestDocuments = getGlobalLabTests(page, size, updatedTime, discarded, searchTerm);
 	    break;
 	case CUSTOM:
-	    response = getCustomLabTests(page, size, locationId, hospitalId, updatedTime, discarded, searchTerm);
+		labTestDocuments = getCustomLabTests(page, size, locationId, hospitalId, updatedTime, discarded, searchTerm);
 	    break;
 	case BOTH:
-	    response = getCustomGlobalLabTests(page, size, locationId, hospitalId, updatedTime, discarded, searchTerm);
+		labTestDocuments = getCustomGlobalLabTests(page, size, locationId, hospitalId, updatedTime, discarded, searchTerm);
 	    break;
+	}
+	if(labTestDocuments != null){
+		response = new ArrayList<LabTest>();
+		for(SolrLabTestDocument labTestDocument : labTestDocuments){
+			LabTest labTest  = new LabTest();
+			BeanUtil.map(labTestDocument, labTest);
+			if(labTestDocument.getTestId() != null){
+				SolrDiagnosticTestDocument diagnosticTestDocument = solrDiagnosticTestRepository.findOne(labTestDocument.getTestId());
+				if(diagnosticTestDocument != null){
+					DiagnosticTest test = new DiagnosticTest();
+					BeanUtil.map(diagnosticTestDocument, test);
+					labTest.setTest(test);
+				}
+			}
+			response.add(labTest);
+		}
 	}
 	return response;
     }

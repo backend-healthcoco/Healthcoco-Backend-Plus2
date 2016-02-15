@@ -10,9 +10,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +36,11 @@ import com.dpdocter.request.DoctorAppointmentNumbersAddEditRequest;
 import com.dpdocter.request.DoctorAppointmentSlotAddEditRequest;
 import com.dpdocter.request.DoctorConsultationFeeAddEditRequest;
 import com.dpdocter.request.DoctorContactAddEditRequest;
+import com.dpdocter.request.DoctorDOBAddEditRequest;
 import com.dpdocter.request.DoctorEducationAddEditRequest;
 import com.dpdocter.request.DoctorExperienceAddEditRequest;
 import com.dpdocter.request.DoctorExperienceDetailAddEditRequest;
+import com.dpdocter.request.DoctorGenderAddEditRequest;
 import com.dpdocter.request.DoctorMultipleDataAddEditRequest;
 import com.dpdocter.request.DoctorNameAddEditRequest;
 import com.dpdocter.request.DoctorProfessionalAddEditRequest;
@@ -86,7 +86,7 @@ public class DoctorProfileApi {
 	}
 	Boolean addEditNameResponse = doctorProfileService.addEditName(request);
 	if (addEditNameResponse)
-	    transnationalService.checkDoctor(request.getDoctorId());
+	    transnationalService.checkDoctor(request.getDoctorId(), null);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditNameResponse);
 	return response;
@@ -101,7 +101,7 @@ public class DoctorProfileApi {
 	}
 	DoctorExperience experienceResponse = doctorProfileService.addEditExperience(request);
 	if (experienceResponse != null)
-	    transnationalService.checkDoctor(request.getDoctorId());
+	    transnationalService.checkDoctor(request.getDoctorId(), null);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -166,7 +166,7 @@ public class DoctorProfileApi {
 	List<String> specialityResponse = doctorProfileService.addEditSpeciality(request);
 	request.setSpeciality(specialityResponse);
 	if (specialityResponse != null)
-	    transnationalService.checkDoctor(request.getDoctorId());
+	    transnationalService.checkDoctor(request.getDoctorId(), null);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -234,7 +234,7 @@ public class DoctorProfileApi {
 	String addEditProfilePictureResponse = doctorProfileService.addEditProfilePicture(request);
 	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
 	if (addEditProfilePictureResponse != null)
-	    transnationalService.checkDoctor(request.getDoctorId());
+	    transnationalService.checkDoctor(request.getDoctorId(), null);
 	addEditProfilePictureResponse = getFinalImageURL(addEditProfilePictureResponse);
 	Response<String> response = new Response<String>();
 	response.setData(addEditProfilePictureResponse);
@@ -360,7 +360,7 @@ public class DoctorProfileApi {
 	Boolean addEditVisitingTimeResponse = doctorProfileService.addEditVisitingTime(request);
 	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
 	if (addEditVisitingTimeResponse)
-	    transnationalService.checkDoctor(request.getDoctorId());
+	    transnationalService.checkDoctor(request.getDoctorId(), null);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditVisitingTimeResponse);
 	return response;
@@ -379,7 +379,7 @@ public class DoctorProfileApi {
 	Boolean addEditConsultationFeeResponse = doctorProfileService.addEditConsultationFee(request);
 	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
 	if (addEditConsultationFeeResponse)
-	    transnationalService.checkDoctor(request.getDoctorId());
+	    transnationalService.checkDoctor(request.getDoctorId(), null);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditConsultationFeeResponse);
 	return response;
@@ -416,7 +416,7 @@ public class DoctorProfileApi {
 	Boolean addEditGeneralInfoResponse = doctorProfileService.addEditGeneralInfo(request);
 	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
 	if (addEditGeneralInfoResponse)
-	    transnationalService.checkDoctor(request.getDoctorId());
+	    transnationalService.checkDoctor(request.getDoctorId(), null);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditGeneralInfoResponse);
 	return response;
@@ -469,7 +469,7 @@ public class DoctorProfileApi {
 	DoctorMultipleDataAddEditResponse addEditNameResponse = doctorProfileService.addEditMultipleData(request);
 	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
 	if (addEditNameResponse != null)
-	    transnationalService.checkDoctor(request.getDoctorId());
+	    transnationalService.checkDoctor(request.getDoctorId(), null);
 	addEditNameResponse.setCoverImageUrl(getFinalImageURL(addEditNameResponse.getCoverImageUrl()));
 	addEditNameResponse.setProfileImageUrl(getFinalImageURL(addEditNameResponse.getProfileImageUrl()));
 	addEditNameResponse.setThumbnailCoverImageUrl(getFinalImageURL(addEditNameResponse.getThumbnailCoverImageUrl()));
@@ -492,10 +492,40 @@ public class DoctorProfileApi {
 	}
 
 	Boolean addEditIBSResponse = doctorProfileService.addEditFacility(request);
-	transnationalService.checkDoctor(request.getDoctorId());
+	transnationalService.checkDoctor(request.getDoctorId(), null);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditIBSResponse);
 	return response;
 
+    }
+    
+    @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_GENDER)
+    @POST
+    public Response<Boolean> addEditGender(DoctorGenderAddEditRequest request) {
+	if (request == null) {
+	    logger.warn("Request Cannot Be null");
+	    throw new BusinessException(ServiceError.InvalidInput, "Request Cannot Be null");
+	}
+	Boolean addEditNameResponse = doctorProfileService.addEditGender(request);
+	if (addEditNameResponse)
+	    transnationalService.checkDoctor(request.getDoctorId(), null);
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(addEditNameResponse);
+	return response;
+    }
+    
+    @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_DOB)
+    @POST
+    public Response<Boolean> addEditDOB(DoctorDOBAddEditRequest request) {
+	if (request == null) {
+	    logger.warn("Request Cannot Be null");
+	    throw new BusinessException(ServiceError.InvalidInput, "Request Cannot Be null");
+	}
+	Boolean addEditNameResponse = doctorProfileService.addEditDOB(request);
+	if (addEditNameResponse)
+	    transnationalService.checkDoctor(request.getDoctorId(), null);
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(addEditNameResponse);
+	return response;
     }
 }

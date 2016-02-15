@@ -30,7 +30,7 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.OTPService;
-import com.dpdocter.sms.services.SMSServices;
+import com.dpdocter.services.SMSServices;
 
 import common.util.web.LoginUtils;
 

@@ -7,9 +7,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,11 +35,8 @@ public class SolrRegistrationApi {
     @Autowired
     private SolrRegistrationService solrRegistrationService;
 
-    @Context
-    private UriInfo uriInfo;
-
-    @Value(value = "${IMAGE_URL_ROOT_PATH}")
-    private String imageUrlRootPath;
+    @Value(value = "${IMAGE_PATH}")
+    private String imagePath;
 
     @Path(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT)
     @GET
@@ -53,7 +48,7 @@ public class SolrRegistrationApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Location Id, Hospital Id and Search Term Cannot Be Empty");
 	}
 
-	SolrPatientResponseDetails patients = solrRegistrationService.searchPatient(doctorId, locationId, hospitalId, searchTerm, page, size, uriInfo);
+	SolrPatientResponseDetails patients = solrRegistrationService.searchPatient(doctorId, locationId, hospitalId, searchTerm, page, size);
 
 	Response<SolrPatientResponseDetails> response = new Response<SolrPatientResponseDetails>();
 	response.setData(patients);
@@ -69,7 +64,7 @@ public class SolrRegistrationApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Search Request Cannot Be Empty");
 	}
 
-	SolrPatientResponseDetails patients = solrRegistrationService.searchPatient(request, uriInfo);
+	SolrPatientResponseDetails patients = solrRegistrationService.searchPatient(request);
 
 	Response<SolrPatientResponseDetails> response = new Response<SolrPatientResponseDetails>();
 	response.setData(patients);

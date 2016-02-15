@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.mail.MessagingException;
-import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;

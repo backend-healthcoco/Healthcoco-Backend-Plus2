@@ -64,6 +64,29 @@ public class SignUpApi {
     @Value(value = "${IMAGE_PATH}")
     private String imagePath;
 
+    @Path(value = PathProxy.SignUpUrls.ADMIN_SIGNUP)
+    @POST
+    public Response<User> adminSignup(PatientSignUpRequest request) {
+	if (request == null) {
+	    logger.warn("Request send  is NULL");
+	    throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
+	}
+
+	User user = signUpService.adminSignUp(request);
+	if (user != null) {
+		if (user.getImageUrl() != null) {
+			user.setImageUrl(getFinalImageURL(user.getImageUrl()));
+		}
+		if (user.getThumbnailUrl() != null) {
+			user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
+		}
+	}
+
+	Response<User> response = new Response<User>();
+	response.setData(user);
+	return response;
+    }
+
     @Path(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP)
     @POST
     public Response<DoctorSignUp> doctorSignup(DoctorSignupRequest request) {

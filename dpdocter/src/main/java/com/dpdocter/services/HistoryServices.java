@@ -2,8 +2,6 @@ package com.dpdocter.services;
 
 import java.util.List;
 
-import javax.ws.rs.core.UriInfo;
-
 import com.dpdocter.beans.MedicalData;
 import com.dpdocter.beans.MedicalHistoryHandler;
 import com.dpdocter.request.DiseaseAddEditRequest;

@@ -16,4 +16,7 @@ public interface SolrCityRepository extends SolrCrudRepository<SolrCityDocument,
 
     @Query("isActivated:true AND !geofilt sfield='geoLocation'  pt=?0,?1 d=10")
     List<SolrCityDocument> findByQueryAnnotation(double latitude, double longitude);
+
+    @Query("city:?0 AND isActivated:true")
+	SolrCityDocument findByName(String city);
 }

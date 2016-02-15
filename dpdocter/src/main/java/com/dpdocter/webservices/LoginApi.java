@@ -4,9 +4,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.LoginResponse;
+import com.dpdocter.beans.User;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.LoginPatientRequest;
@@ -38,11 +37,30 @@ public class LoginApi {
     @Autowired
     private LoginService loginService;
 
-//    @Context
-//    private UriInfo uriInfo;
-
     @Value(value = "${IMAGE_PATH}")
     private String imagePath;
+
+    @Path(value = PathProxy.LoginUrls.LOGIN_ADMIN)
+    @POST
+    public Response<User> adminLogin(LoginPatientRequest request) {
+	if (request == null) {
+	    logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	}
+	User loginResponse = loginService.adminLogin(request);
+	if (loginResponse != null) {
+	    if (!DPDoctorUtils.anyStringEmpty(loginResponse.getImageUrl())) {
+		loginResponse.setImageUrl(getFinalImageURL(loginResponse.getImageUrl()));
+	    }
+	    if (!DPDoctorUtils.anyStringEmpty(loginResponse.getThumbnailUrl())) {
+		loginResponse.setThumbnailUrl(getFinalImageURL(loginResponse.getThumbnailUrl()));
+	    }
+	}
+	Response<User> response = new Response<User>();
+	if (response != null)
+	    response.setData(loginResponse);
+	return response;
+    }
 
     @Path(value = PathProxy.LoginUrls.LOGIN_USER)
     @POST

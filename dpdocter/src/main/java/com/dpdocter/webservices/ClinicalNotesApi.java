@@ -12,9 +12,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -316,7 +314,7 @@ public class ClinicalNotesApi {
 	transnationalService.addResource(id, Resource.COMPLAINT, false);
 
 	solrClinicalNotesService.deleteComplaints(id, discarded);
-	transnationalService.addResource(id, Resource.COMPLAINT, true);
+	
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -330,7 +328,7 @@ public class ClinicalNotesApi {
 	clinicalNotesService.deleteObservation(id, doctorId, locationId, hospitalId, discarded);
 	transnationalService.addResource(id, Resource.OBSERVATION, false);
 	solrClinicalNotesService.deleteObservations(id, discarded);
-	transnationalService.addResource(id, Resource.OBSERVATION, true);
+	
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -344,7 +342,7 @@ public class ClinicalNotesApi {
 	clinicalNotesService.deleteInvestigation(id, doctorId, locationId, hospitalId, discarded);
 	transnationalService.addResource(id, Resource.INVESTIGATION, false);
 	solrClinicalNotesService.deleteInvestigations(id, discarded);
-	transnationalService.addResource(id, Resource.INVESTIGATION, true);
+	
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -358,7 +356,7 @@ public class ClinicalNotesApi {
 	clinicalNotesService.deleteDiagnosis(id, doctorId, locationId, hospitalId, discarded);
 	transnationalService.addResource(id, Resource.DIAGNOSIS, false);
 	solrClinicalNotesService.deleteDiagnoses(id, discarded);
-	transnationalService.addResource(id, Resource.DIAGNOSIS, true);
+	
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -372,7 +370,7 @@ public class ClinicalNotesApi {
 	clinicalNotesService.deleteNotes(id, doctorId, locationId, hospitalId, discarded);
 	transnationalService.addResource(id, Resource.NOTES, false);
 	solrClinicalNotesService.deleteNotes(id, discarded);
-	transnationalService.addResource(id, Resource.NOTES, true);
+	
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -386,7 +384,7 @@ public class ClinicalNotesApi {
 	clinicalNotesService.deleteDiagram(id, doctorId, locationId, hospitalId, discarded);
 	transnationalService.addResource(id, Resource.DIAGRAM, false);
 	solrClinicalNotesService.deleteDiagrams(id, discarded);
-	transnationalService.addResource(id, Resource.DIAGRAM, true);
+	
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -447,7 +445,6 @@ public class ClinicalNotesApi {
 	    return imagePath + imageURL;
 	} else
 	    return null;
-
     }
 
 }

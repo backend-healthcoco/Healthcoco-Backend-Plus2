@@ -23,6 +23,8 @@ public class DoctorProfile {
 
     private DOB dob;
 
+    private String colorCode;
+
     private String coverImageUrl;
 
     private String coverThumbnailImageUrl;
@@ -233,15 +235,24 @@ public class DoctorProfile {
 	this.coverThumbnailImageUrl = coverThumbnailImageUrl;
     }
 
-    @Override
-    public String toString() {
-	return "DoctorProfile [id=" + id + ", userId=" + userId + ", title=" + title + ", firstName=" + firstName + ", emailAddress=" + emailAddress
-		+ ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", dob=" + dob
-		+ ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", additionalNumbers=" + additionalNumbers
-		+ ", otherEmailAddresses=" + otherEmailAddresses + ", experience=" + experience + ", education=" + education + ", specialities=" + specialities
-		+ ", achievements=" + achievements + ", professionalStatement=" + professionalStatement + ", registrationDetails=" + registrationDetails
-		+ ", experienceDetails=" + experienceDetails + ", professionalMemberships=" + professionalMemberships + ", clinicProfile=" + clinicProfile
-		+ "]";
-    }
+	public String getColorCode() {
+		return colorCode;
+	}
 
+	public void setColorCode(String colorCode) {
+		this.colorCode = colorCode;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorProfile [id=" + id + ", userId=" + userId + ", title=" + title + ", firstName=" + firstName
+				+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender
+				+ ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", dob=" + dob + ", colorCode="
+				+ colorCode + ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl
+				+ ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses=" + otherEmailAddresses
+				+ ", experience=" + experience + ", education=" + education + ", specialities=" + specialities
+				+ ", achievements=" + achievements + ", professionalStatement=" + professionalStatement
+				+ ", registrationDetails=" + registrationDetails + ", experienceDetails=" + experienceDetails
+				+ ", professionalMemberships=" + professionalMemberships + ", clinicProfile=" + clinicProfile + "]";
+	}
 }

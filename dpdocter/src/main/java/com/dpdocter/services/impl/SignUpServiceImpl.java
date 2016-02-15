@@ -71,8 +71,8 @@ import com.dpdocter.services.GenerateUniqueUserNameService;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
+import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.SignUpService;
-import com.dpdocter.sms.services.SMSServices;
 
 /**
  * @author veeraj
@@ -1127,5 +1127,50 @@ public class SignUpServiceImpl implements SignUpService {
 	return users;
 
     }
+
+	@Override
+	public User adminSignUp(PatientSignUpRequest request) {
+		User user = null;
+		try {
+		    RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.SUPER_ADMIN.getRole());
+		    if (roleCollection == null) {
+			logger.warn("Role Collection in database is either empty or not defind properly");
+			throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defined properly");
+		    }
+		    
+		    UserCollection userCollection = new UserCollection();
+		    BeanUtil.map(request, userCollection);
+		    
+		    if (request.getImage() != null) {
+			String path = "profile-image";
+			request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
+			String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
+			userCollection.setImageUrl(imageurl);
+
+			String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
+			userCollection.setThumbnailUrl(thumbnailUrl);
+		    }
+		    userCollection.setIsVerified(true);
+		    userCollection.setIsActive(true);
+		    userCollection.setCreatedTime(new Date());
+		    userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
+		    userCollection = userRepository.save(userCollection);
+
+		    UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), roleCollection.getId());
+		    userRoleRepository.save(userRoleCollection);
+
+		    user = new User();
+		    BeanUtil.map(userCollection, user);
+		    // user.setPassword(null);
+		} catch (BusinessException be) {
+		    logger.warn(be);
+		    throw be;
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error occured while creating user");
+		    throw new BusinessException(ServiceError.Forbidden, "Error occured while creating user");
+		}
+		return user;
+	}
 
 }

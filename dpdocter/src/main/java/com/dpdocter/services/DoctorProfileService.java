@@ -16,9 +16,11 @@ import com.dpdocter.request.DoctorAppointmentNumbersAddEditRequest;
 import com.dpdocter.request.DoctorAppointmentSlotAddEditRequest;
 import com.dpdocter.request.DoctorConsultationFeeAddEditRequest;
 import com.dpdocter.request.DoctorContactAddEditRequest;
+import com.dpdocter.request.DoctorDOBAddEditRequest;
 import com.dpdocter.request.DoctorEducationAddEditRequest;
 import com.dpdocter.request.DoctorExperienceAddEditRequest;
 import com.dpdocter.request.DoctorExperienceDetailAddEditRequest;
+import com.dpdocter.request.DoctorGenderAddEditRequest;
 import com.dpdocter.request.DoctorMultipleDataAddEditRequest;
 import com.dpdocter.request.DoctorNameAddEditRequest;
 import com.dpdocter.request.DoctorProfessionalAddEditRequest;
@@ -84,5 +86,9 @@ public interface DoctorProfileService {
     DoctorMultipleDataAddEditResponse addEditMultipleData(DoctorMultipleDataAddEditRequest request);
 
     Boolean addEditFacility(DoctorAddEditFacilityRequest request);
+
+	Boolean addEditGender(DoctorGenderAddEditRequest request);
+
+	Boolean addEditDOB(DoctorDOBAddEditRequest request);
 
 }

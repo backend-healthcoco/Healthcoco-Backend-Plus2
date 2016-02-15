@@ -15,14 +15,15 @@ import org.springframework.data.solr.core.query.Criteria;
 import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.DiagnosticTest;
+import com.dpdocter.beans.LabTest;
 import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.solr.beans.AppointmentSearchResponse;
-import com.dpdocter.solr.beans.SolrDoctor;
-import com.dpdocter.solr.beans.SolrLabTest;
+import com.dpdocter.solr.document.SolrCityDocument;
 import com.dpdocter.solr.document.SolrDiagnosticTestDocument;
 import com.dpdocter.solr.document.SolrDoctorDocument;
 import com.dpdocter.solr.document.SolrLabTestDocument;
@@ -30,6 +31,7 @@ import com.dpdocter.solr.document.SolrLocationDocument;
 import com.dpdocter.solr.document.SolrSpecialityDocument;
 import com.dpdocter.solr.document.SolrSymptomsDocument;
 import com.dpdocter.solr.enums.AppointmentResponseType;
+import com.dpdocter.solr.repository.SolrCityRepository;
 import com.dpdocter.solr.repository.SolrDiagnosticTestRepository;
 import com.dpdocter.solr.repository.SolrDoctorRepository;
 import com.dpdocter.solr.repository.SolrLabTestRepository;
@@ -45,6 +47,9 @@ import common.util.web.DPDoctorUtils;
 public class SolrAppointmentServiceImpl implements SolrAppointmentService {
     @Autowired
     private SolrTemplate solrTemplate;
+
+    @Autowired
+    private SolrCityRepository solrCityRepository;
 
     @Autowired
     private SolrDoctorRepository solrDoctorRepository;
@@ -250,19 +255,24 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
     }
 
     @Override
-    public List<SolrDoctor> getDoctors(String city, String location, String latitude, String longitude, String speciality, String symptom, Boolean booking, Boolean calling,
+    public List<SolrDoctorDocument> getDoctors(String city, String location, String latitude, String longitude, String speciality, String symptom, Boolean booking, Boolean calling,
 	    String minFee, String maxFee, String minTime, String maxTime, List<String> days, String gender, String minExperience, String maxExperience) {
-	List<SolrDoctor> response = null;
 	List<SolrDoctorDocument> solrDoctorDocuments = null;
 	try {
 	    Criteria doctorSearchCriteria = null;
 	    
+	    if(DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)){
+	    	SolrCityDocument solrCityDocument = solrCityRepository.findByName(city);
+	    	if(solrCityDocument != null){
+	    		latitude = solrCityDocument.getLatitude()+"";
+	    		longitude = solrCityDocument.getLongitude()+"";
+	    	}
+	    }
+	    
 	    if(!DPDoctorUtils.anyStringEmpty(longitude, latitude)){
 	    	doctorSearchCriteria = Criteria.where("geoLocation").near(new Point(Double.parseDouble(latitude), Double.parseDouble(longitude)), new Distance(10));
 	    }
-	    else if(!DPDoctorUtils.anyStringEmpty(city)){
-	    	doctorSearchCriteria = Criteria.where("city").is(city);
-	    }
+	    
 	    if(doctorSearchCriteria == null){
 	    	doctorSearchCriteria = new Criteria();
 	    }
@@ -271,7 +281,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 	    }
 
 	    if (!DPDoctorUtils.anyStringEmpty(speciality)) {
-		doctorSearchCriteria = doctorSearchCriteria.or("specialities").is(speciality);
+		doctorSearchCriteria = doctorSearchCriteria.and("specialities").is(speciality);
 	    }
 
 	    if (!DPDoctorUtils.anyStringEmpty(symptom)) {
@@ -282,42 +292,42 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 //			
 //			@SuppressWarnings("unchecked")
 //		    Collection<String> specialities = CollectionUtils.collect(solrSpecialityDocuments, new BeanToPropertyValueTransformer("speciality"));
-			doctorSearchCriteria = doctorSearchCriteria.or("specialities").in(specialityIds);
+			doctorSearchCriteria = doctorSearchCriteria.and("specialities").in(specialityIds);
 		}
 	    
 	    if (DPDoctorUtils.anyStringEmpty(minFee, maxFee)) {
 		if (!DPDoctorUtils.anyStringEmpty(minFee))
-		    doctorSearchCriteria = doctorSearchCriteria.or("consultationFeeAmount").greaterThanEqual(minFee);
+		    doctorSearchCriteria = doctorSearchCriteria.and("consultationFeeAmount").greaterThanEqual(minFee);
 		if (!DPDoctorUtils.anyStringEmpty(maxFee))
-		    doctorSearchCriteria = doctorSearchCriteria.or("consultationFeeAmount").lessThanEqual(maxFee);
+		    doctorSearchCriteria = doctorSearchCriteria.and("consultationFeeAmount").lessThanEqual(maxFee);
 	    } else {
-		doctorSearchCriteria = doctorSearchCriteria.or("consultationFeeAmount").greaterThanEqual(minFee).lessThanEqual(maxFee);
+		doctorSearchCriteria = doctorSearchCriteria.and("consultationFeeAmount").greaterThanEqual(minFee).lessThanEqual(maxFee);
 	    }
 
 	    if (DPDoctorUtils.anyStringEmpty(minExperience, maxExperience)) {
 		if (!DPDoctorUtils.anyStringEmpty(minExperience))
-		    doctorSearchCriteria = doctorSearchCriteria.or("experienceNum").greaterThanEqual(minExperience);
+		    doctorSearchCriteria = doctorSearchCriteria.and("experienceNum").greaterThanEqual(minExperience);
 		if (!DPDoctorUtils.anyStringEmpty(maxExperience))
-		    doctorSearchCriteria = doctorSearchCriteria.or("experienceNum").lessThanEqual(maxExperience);
+		    doctorSearchCriteria = doctorSearchCriteria.and("experienceNum").lessThanEqual(maxExperience);
 	    } else {
-		doctorSearchCriteria = doctorSearchCriteria.or("experienceNum").greaterThanEqual(minExperience).lessThanEqual(maxExperience);
+		doctorSearchCriteria = doctorSearchCriteria.and("experienceNum").greaterThanEqual(minExperience).lessThanEqual(maxExperience);
 	    }
 
 	    if (!DPDoctorUtils.anyStringEmpty(gender)) {
-		doctorSearchCriteria = doctorSearchCriteria.or("gender").is(gender);
+		doctorSearchCriteria = doctorSearchCriteria.and("gender").is(gender);
 	    }
 
 	    if (DPDoctorUtils.anyStringEmpty(minTime, maxTime)) {
 		if (!DPDoctorUtils.anyStringEmpty(minTime))
-		    doctorSearchCriteria = doctorSearchCriteria.or("workingSchedules").greaterThanEqual(minTime);
+		    doctorSearchCriteria = doctorSearchCriteria.and("workingSchedules").greaterThanEqual(minTime);
 		if (!DPDoctorUtils.anyStringEmpty(maxTime))
-		    doctorSearchCriteria = doctorSearchCriteria.or("workingSchedules").lessThanEqual(maxTime);
+		    doctorSearchCriteria = doctorSearchCriteria.and("workingSchedules").lessThanEqual(maxTime);
 	    } else {
-		doctorSearchCriteria = doctorSearchCriteria.or("workingSchedules").greaterThanEqual(minTime).lessThanEqual(maxTime);
+		doctorSearchCriteria = doctorSearchCriteria.and("workingSchedules").greaterThanEqual(minTime).lessThanEqual(maxTime);
 	    }
 
 	    if (days != null && !days.isEmpty()) {
-		doctorSearchCriteria = doctorSearchCriteria.or("workingSchedules").in(days);
+		doctorSearchCriteria = doctorSearchCriteria.and("workingSchedules").in(days);
 	    }
 
 	    SimpleQuery query = new SimpleQuery(doctorSearchCriteria);
@@ -325,7 +335,6 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 
 	    solrDoctorDocuments = solrTemplate.queryForPage(query, SolrDoctorDocument.class).getContent();
 	    if(solrDoctorDocuments != null){
-	    	response = new ArrayList<SolrDoctor>();
 	    	for(SolrDoctorDocument doctorDocument : solrDoctorDocuments){
 	    		if(doctorDocument.getSpecialities() != null){
 	    			List<String> specialities = new ArrayList<>();
@@ -344,30 +353,31 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 	    			doctorDocument.setImages(images);
 	    		    }
 	    		    if (doctorDocument.getLogoUrl() != null)doctorDocument.setLogoUrl(getFinalImageURL(doctorDocument.getLogoUrl()));
-	    		    SolrDoctor doctor = new SolrDoctor();
-	    		    BeanUtil.map(doctorDocument, doctor);
+	    		    
 	    		    if(latitude != null && longitude != null && doctorDocument.getLatitude() != null && doctorDocument.getLongitude() != null){
-	    		    	doctor.setDistance(DPDoctorUtils.distance(Double.parseDouble(latitude), Double.parseDouble(longitude), doctorDocument.getLatitude(), doctorDocument.getLongitude(), "K"));
+	    		    	doctorDocument.setDistance(DPDoctorUtils.distance(Double.parseDouble(latitude), Double.parseDouble(longitude), doctorDocument.getLatitude(), doctorDocument.getLongitude(), "K"));
 	    		    }
-	    		    response.add(doctor);
+	    		    doctorDocument.getExperience();doctorDocument.getDob();doctorDocument.getConsultationFee();
 	  }
 	 }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Forbidden, "Error While Getting Doctor Details From Solr : " + e.getMessage());
 	}
-	return response;
+	return solrDoctorDocuments;
     }
 
 	@Override
-	public List<LabResponse> getLabs(String city, String location, String latitude, String longitude, String testId) {
+	public List<LabResponse> getLabs(String city, String location, String latitude, String longitude, String test) {
 		List<LabResponse> response = null;
 		List<SolrLabTestDocument> solrLabTestDocuments = null;
 		try {
-		    if (!DPDoctorUtils.anyStringEmpty(testId)) {
-		    	SolrDiagnosticTestDocument diagnosticTest = solrDiagnosticTestRepository.findOne(testId);
-		    	if(diagnosticTest != null){
-		    		solrLabTestDocuments = solrLabTestRepository.findByTestId(testId);
+		    if (!DPDoctorUtils.anyStringEmpty(test)) {
+		    	List<SolrDiagnosticTestDocument> diagnosticTests = solrDiagnosticTestRepository.findAll(test);
+		    	if(diagnosticTests != null){
+		    		@SuppressWarnings("unchecked")
+		    	    Collection<String> testIds = CollectionUtils.collect(diagnosticTests, new BeanToPropertyValueTransformer("id"));
+		    		solrLabTestDocuments = solrLabTestRepository.findByTestIds(testIds);
 			    	for(SolrLabTestDocument solrLabTestDocument : solrLabTestDocuments){
 			    		List<SolrDoctorDocument> doctorDocument = null;
 			    		if(!DPDoctorUtils.anyStringEmpty(longitude, latitude)){
@@ -382,11 +392,16 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 			    			for(SolrDoctorDocument document : doctorDocument){
 			    				LabResponse labResponse = new LabResponse();
 				    			BeanUtil.map(document, labResponse);
-				    			SolrLabTest solrLabTest = new SolrLabTest();
+				    		    LabTest solrLabTest = new LabTest();
 				    			BeanUtil.map(solrLabTestDocument, solrLabTest);
 				    			labResponse.setLabTest(solrLabTest);
 				    			if(labResponse.getLabTest() != null){
-				    				labResponse.getLabTest().setTestName(diagnosticTest.getTestName());
+				    				if(solrLabTestDocument.getTestId() != null){
+				    					SolrDiagnosticTestDocument testDocument = solrDiagnosticTestRepository.findOne(solrLabTest.getId());
+				    					DiagnosticTest diagnosticTest = new DiagnosticTest();
+				    					BeanUtil.map(testDocument, diagnosticTest);
+				    					labResponse.getLabTest().setTest(diagnosticTest);
+				    				}
 				    			}
 				    			if(response == null)response = new ArrayList<LabResponse>();
 				    			response.add(labResponse);

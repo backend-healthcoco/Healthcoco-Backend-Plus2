@@ -27,7 +27,6 @@ import com.dpdocter.collections.OTPCollection;
 import com.dpdocter.collections.ObservationCollection;
 import com.dpdocter.collections.PatientAdmissionCollection;
 import com.dpdocter.collections.PatientCollection;
-import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.StateCollection;
 import com.dpdocter.collections.TransactionalCollection;
 import com.dpdocter.collections.UserCollection;
@@ -223,7 +222,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			    checkLandmarkLocality(transactionalCollection.getResourceId());
 			    break;
 			case DOCTOR:
-			    checkDoctor(transactionalCollection.getResourceId());
+			    checkDoctor(transactionalCollection.getResourceId(), null);
 			    break;
 			case LOCATION:
 			    checkLocation(transactionalCollection.getResourceId());
@@ -474,12 +473,18 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	}
 
     @Override
-    public void checkDoctor(String resourceId) {
+    public void checkDoctor(String resourceId, String locationId) {
 		try {
 		    DoctorCollection doctorCollection = doctorRepository.findByUserId(resourceId);
 		    UserCollection userCollection = userRepository.findOne(resourceId);
 		    if(doctorCollection != null && userCollection != null){
-		    	List<UserLocationCollection> userLocationCollections = userLocationRepository.findByUserId(resourceId);
+		    	List<UserLocationCollection> userLocationCollections = null;
+		    	if(locationId == null) 	userLocationCollections = userLocationRepository.findByUserId(resourceId);
+		    	else{
+		    		UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(resourceId, locationId);
+		    		userLocationCollections = new ArrayList<UserLocationCollection>();
+		    		userLocationCollections.add(userLocationCollection);
+		    	}
 			    for(UserLocationCollection collection : userLocationCollections){
 			    	LocationCollection locationCollection = locationRepository.findOne(collection.getLocationId());
 			    	DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(collection.getId());

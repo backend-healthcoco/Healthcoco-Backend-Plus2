@@ -1,6 +1,5 @@
 package com.dpdocter.solr.webservices;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -10,9 +9,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriInfo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +19,6 @@ import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.solr.beans.AppointmentSearchResponse;
-import com.dpdocter.solr.beans.SolrDoctor;
 import com.dpdocter.solr.document.SolrDoctorDocument;
 import com.dpdocter.solr.document.SolrSpecialityDocument;
 import com.dpdocter.solr.response.LabResponse;
@@ -40,11 +36,8 @@ public class SolrAppointmentApi {
     @Autowired
     private SolrAppointmentService solrAppointmentService;
 
-    @Context
-    private UriInfo uriInfo;
-
-    @Value(value = "${IMAGE_URL_ROOT_PATH}")
-    private String imageUrlRootPath;
+    @Value(value = "${IMAGE_PATH}")
+    private String imagePath;
 
     @Path(value = PathProxy.SolrAppointmentUrls.SEARCH)
     @GET
@@ -60,17 +53,17 @@ public class SolrAppointmentApi {
 
     @Path(value = PathProxy.SolrAppointmentUrls.GET_DOCTORS)
     @GET
-    public Response<SolrDoctor> getDoctors(@QueryParam("city") String city, @QueryParam("location") String location,
+    public Response<SolrDoctorDocument> getDoctors(@QueryParam("city") String city, @QueryParam("location") String location,
     	@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
 	    @QueryParam("speciality") String speciality, @QueryParam("symptom") String symptom, @QueryParam("booking") Boolean booking,
 	    @QueryParam("calling") Boolean calling, @QueryParam("minFee") String minFee, @QueryParam("maxFee") String maxFee,
 	    @QueryParam("minTime") String minTime, @QueryParam("maxTime") String maxTime, @MatrixParam("days") List<String> days,
 	    @QueryParam("gender") String gender, @QueryParam("minExperience") String minExperience, @QueryParam("maxExperience") String maxExperience) {
 
-	List<SolrDoctor> doctors = solrAppointmentService.getDoctors(city, location, latitude, longitude, speciality, symptom, booking, calling, minFee, maxFee, minTime,
+	List<SolrDoctorDocument> doctors = solrAppointmentService.getDoctors(city, location, latitude, longitude, speciality, symptom, booking, calling, minFee, maxFee, minTime,
 		maxTime, days, gender, minExperience, maxExperience);
 
-	Response<SolrDoctor> response = new Response<SolrDoctor>();
+	Response<SolrDoctorDocument> response = new Response<SolrDoctorDocument>();
 	response.setDataList(doctors);
 	return response;
     }
@@ -78,9 +71,9 @@ public class SolrAppointmentApi {
     @Path(value = PathProxy.SolrAppointmentUrls.GET_LABS)
     @GET
     public Response<LabResponse> getLabs(@QueryParam("city") String city, @QueryParam("location") String location,
-	    @QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude, @QueryParam("testId") String testId) {
+	    @QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude, @QueryParam("test") String test) {
 
-	List<LabResponse> doctors = solrAppointmentService.getLabs(city, location, latitude, longitude, testId);
+	List<LabResponse> doctors = solrAppointmentService.getLabs(city, location, latitude, longitude, test);
 
 	if(doctors != null && !doctors.isEmpty()){
 		for(LabResponse doctorDocument : doctors){
@@ -119,8 +112,7 @@ public class SolrAppointmentApi {
     
     private String getFinalImageURL(String imageURL) {
 	if (imageURL != null) {
-	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-	    return finalImageURL + imageURL;
+	    return imagePath + imageURL;
 	} else
 	    return null;
 

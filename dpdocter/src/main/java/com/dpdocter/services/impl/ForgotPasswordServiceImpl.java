@@ -28,7 +28,7 @@ import com.dpdocter.response.ForgotPasswordResponse;
 import com.dpdocter.services.ForgotPasswordService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
-import com.dpdocter.sms.services.SMSServices;
+import com.dpdocter.services.SMSServices;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.LoginUtils;

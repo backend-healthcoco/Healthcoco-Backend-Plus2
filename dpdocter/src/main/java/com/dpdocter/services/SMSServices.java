@@ -1,4 +1,4 @@
-package com.dpdocter.sms.services;
+package com.dpdocter.services;
 
 import java.util.List;
 

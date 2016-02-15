@@ -6,8 +6,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import javax.ws.rs.core.UriInfo;
-
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
@@ -133,8 +131,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     }
 
     @Override
-    public SolrPatientResponseDetails searchPatient(String doctorId, String locationId, String hospitalId, String searchTerm, int page, int size,
-	    UriInfo uriInfo) {
+    public SolrPatientResponseDetails searchPatient(String doctorId, String locationId, String hospitalId, String searchTerm, int page, int size) {
 
 	List<SolrPatientDocument> patients = new ArrayList<SolrPatientDocument>();
 	List<SolrPatientResponse> patientsResponse = null;
@@ -166,8 +163,8 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 		for (SolrPatientDocument patient : patients) {
 		    SolrPatientResponse patientResponse = new SolrPatientResponse();
 
-		    patient.setImageUrl(getFinalImageURL(patient.getImageUrl(), uriInfo));
-		    patient.setThumbnailUrl(getFinalImageURL(patient.getThumbnailUrl(), uriInfo));
+		    patient.setImageUrl(getFinalImageURL(patient.getImageUrl()));
+		    patient.setThumbnailUrl(getFinalImageURL(patient.getThumbnailUrl()));
 
 		    BeanUtil.map(patient, patientResponse);
 		    SolrReferenceDocument referencesCollection = solrReferenceRepository.findOne(patient.getId());
@@ -187,7 +184,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     }
 
     @Override
-    public SolrPatientResponseDetails searchPatient(AdvancedSearch request, UriInfo uriInfo) {
+    public SolrPatientResponseDetails searchPatient(AdvancedSearch request) {
 	List<SolrPatientDocument> patients = null;
 	List<SolrPatientResponse> response = new ArrayList<SolrPatientResponse>();
 	SolrPatientResponseDetails responseDetails = null;
@@ -209,8 +206,8 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 			for (SolrPatientDocument patient : patients) {
 			    SolrPatientResponse patientResponse = new SolrPatientResponse();
 			    
-			    patient.setImageUrl(getFinalImageURL(patient.getImageUrl(), uriInfo));
-				patient.setThumbnailUrl(getFinalImageURL(patient.getThumbnailUrl(), uriInfo));
+			    patient.setImageUrl(getFinalImageURL(patient.getImageUrl()));
+				patient.setThumbnailUrl(getFinalImageURL(patient.getThumbnailUrl()));
 				
 			    BeanUtil.map(patient, patientResponse);
 			    SolrReferenceDocument referencesCollection = solrReferenceRepository.findOne(patient.getId());
@@ -686,7 +683,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	}
     }
 
-    private String getFinalImageURL(String imageURL, UriInfo uriInfo) {
+    private String getFinalImageURL(String imageURL) {
 	if (imageURL != null) {
 	    return imagePath + imageURL;
 	} else

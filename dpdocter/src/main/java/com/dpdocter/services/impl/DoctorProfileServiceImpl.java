@@ -54,9 +54,11 @@ import com.dpdocter.request.DoctorAppointmentNumbersAddEditRequest;
 import com.dpdocter.request.DoctorAppointmentSlotAddEditRequest;
 import com.dpdocter.request.DoctorConsultationFeeAddEditRequest;
 import com.dpdocter.request.DoctorContactAddEditRequest;
+import com.dpdocter.request.DoctorDOBAddEditRequest;
 import com.dpdocter.request.DoctorEducationAddEditRequest;
 import com.dpdocter.request.DoctorExperienceAddEditRequest;
 import com.dpdocter.request.DoctorExperienceDetailAddEditRequest;
+import com.dpdocter.request.DoctorGenderAddEditRequest;
 import com.dpdocter.request.DoctorMultipleDataAddEditRequest;
 import com.dpdocter.request.DoctorNameAddEditRequest;
 import com.dpdocter.request.DoctorProfessionalAddEditRequest;
@@ -419,12 +421,11 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		List<UserLocationCollection> userLocationCollections = userLocationRepository.findByUserId(userCollection.getId());
 		for (Iterator<UserLocationCollection> iterator = userLocationCollections.iterator(); iterator.hasNext();) {
 		    UserLocationCollection userLocationCollection = iterator.next();
-		    DoctorClinicProfileCollection doctorClinicCollection = doctorClinicProfileRepository
-			    .findByLocationId(userLocationCollection.getLocationId());
+		    DoctorClinicProfileCollection doctorClinicCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
 		    if (doctorClinicCollection != null)
 			BeanUtil.map(doctorClinicCollection, doctorClinic);
 
-		    locationCollection = locationRepository.findOne(doctorClinic.getLocationId());
+		    locationCollection = locationRepository.findOne(userLocationCollection.getLocationId());
 		    if(locationCollection != null){
 			    String address = locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() + ", " : ""
 					    + locationCollection.getCity() != null ? locationCollection.getCity() + ", "
@@ -445,6 +446,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				    doctorClinic.setCountry(locationCollection.getCountry());
 				    doctorClinic.setPostalCode(locationCollection.getPostalCode());
 		    }
+		    doctorClinic.setLocationId(userLocationCollection.getLocationId());
+		    doctorClinic.setDoctorId(doctorId);
 		    clinicProfile.add(doctorClinic);
 		}
 	    } else {
@@ -464,17 +467,17 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 							    : "" + locationCollection.getState() != null && locationCollection.getPostalCode() == null ? ", "
 								    : "" + locationCollection.getCountry() != null ? locationCollection.getCountry() : "";
 
-		    doctorClinic.setLocationId(locationId);
-		    doctorClinic.setClinicAddress(address);
-		    doctorClinic.setLocationName(locationCollection.getLocationName());
-		    doctorClinic.setImages(locationCollection.getImages());
-		    doctorClinic.setLogoUrl(locationCollection.getLogoUrl());
-		    doctorClinic.setLogoThumbnailUrl(locationCollection.getLogoThumbnailUrl());
-		    doctorClinic.setCity(locationCollection.getCity());
-		    doctorClinic.setState(locationCollection.getState());
-		    doctorClinic.setCountry(locationCollection.getCountry());
-		    doctorClinic.setPostalCode(locationCollection.getPostalCode());
-
+			doctorClinic.setLocationName(locationCollection.getLocationName());
+			doctorClinic.setClinicAddress(address);
+			doctorClinic.setImages(locationCollection.getImages());
+			doctorClinic.setLogoUrl(locationCollection.getLogoUrl());
+			doctorClinic.setLogoThumbnailUrl(locationCollection.getLogoThumbnailUrl());
+			doctorClinic.setCity(locationCollection.getCity());
+			doctorClinic.setState(locationCollection.getState());
+			doctorClinic.setCountry(locationCollection.getCountry());
+			doctorClinic.setPostalCode(locationCollection.getPostalCode());
+			doctorClinic.setLocationId(userLocationCollection.getLocationId());
+			doctorClinic.setDoctorId(userLocationCollection.getUserId());
 		    clinicProfile.add(doctorClinic);
 
 		}
@@ -614,7 +617,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
 		if (doctorClinicProfileCollection == null) {
 		    doctorClinicProfileCollection = new DoctorClinicProfileCollection();
-		    doctorClinicProfileCollection.setLocationId(userLocationCollection.getId());
+		    doctorClinicProfileCollection.setUserLocationId(userLocationCollection.getId());
 		    doctorClinicProfileCollection.setCreatedTime(new Date());
 		}
 		doctorClinicProfileCollection.setAppointmentBookingNumber(request.getAppointmentBookingNumber());
@@ -639,7 +642,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
 		if (doctorClinicProfileCollection == null) {
 		    doctorClinicProfileCollection = new DoctorClinicProfileCollection();
-		    doctorClinicProfileCollection.setLocationId(userLocationCollection.getId());
+		    doctorClinicProfileCollection.setUserLocationId(userLocationCollection.getId());
 		    doctorClinicProfileCollection.setCreatedTime(new Date());
 		}
 		doctorClinicProfileCollection.setWorkingSchedules(request.getWorkingSchedules());
@@ -664,7 +667,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
 		if (doctorClinicProfileCollection == null) {
 		    doctorClinicProfileCollection = new DoctorClinicProfileCollection();
-		    doctorClinicProfileCollection.setLocationId(userLocationCollection.getId());
+		    doctorClinicProfileCollection.setUserLocationId(userLocationCollection.getId());
 		    doctorClinicProfileCollection.setCreatedTime(new Date());
 		}
 		doctorClinicProfileCollection.setConsultationFee(request.getConsultationFee());
@@ -690,7 +693,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
 		if (doctorClinicProfileCollection == null) {
 		    doctorClinicProfileCollection = new DoctorClinicProfileCollection();
-		    doctorClinicProfileCollection.setLocationId(userLocationCollection.getId());
+		    doctorClinicProfileCollection.setUserLocationId(userLocationCollection.getId());
 		    doctorClinicProfileCollection.setCreatedTime(new Date());
 		}
 		doctorClinicProfileCollection.setAppointmentSlot(request.getAppointmentSlot());
@@ -715,7 +718,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
 			if (doctorClinicProfileCollection == null) {
 			    doctorClinicProfileCollection = new DoctorClinicProfileCollection();
-			    doctorClinicProfileCollection.setLocationId(userLocationCollection.getId());
+			    doctorClinicProfileCollection.setUserLocationId(userLocationCollection.getId());
 			    doctorClinicProfileCollection.setCreatedTime(new Date());
 			}
 			doctorClinicProfileCollection.setAppointmentBookingNumber(request.getAppointmentBookingNumber());
@@ -906,7 +909,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
 		if (doctorClinicProfileCollection == null) {
 		    doctorClinicProfileCollection = new DoctorClinicProfileCollection();
-		    doctorClinicProfileCollection.setLocationId(userLocationCollection.getId());
+		    doctorClinicProfileCollection.setUserLocationId(userLocationCollection.getId());
 		    doctorClinicProfileCollection.setCreatedTime(new Date());
 		} else {
 		    doctorClinicProfileCollection.setUpdatedTime(new Date());
@@ -923,4 +926,40 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	return response;
 
     }
+
+	@Override
+	public Boolean addEditGender(DoctorGenderAddEditRequest request) {
+		DoctorCollection doctorCollection = null;
+		Boolean response = false;
+		try {
+		    doctorCollection = doctorRepository.findByUserId(request.getDoctorId());
+		    doctorCollection.setGender(request.getGender());
+		    doctorRepository.save(doctorCollection);
+
+		    response = true;
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error Editing Doctor Gender");
+		    throw new BusinessException(ServiceError.Forbidden, "Error Editing Doctor Gender");
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean addEditDOB(DoctorDOBAddEditRequest request) {
+		DoctorCollection doctorCollection = null;
+		Boolean response = false;
+		try {
+		    doctorCollection = doctorRepository.findByUserId(request.getDoctorId());
+		    doctorCollection.setDob(request.getDob());
+		    doctorRepository.save(doctorCollection);
+
+		    response = true;
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error Editing Doctor Profile");
+		    throw new BusinessException(ServiceError.Forbidden, "Error Editing Doctor Profile");
+		}
+		return response;
+	}
 }

@@ -1,4 +1,4 @@
-package com.dpdocter.sms.webservices;
+package com.dpdocter.webservices;
 
 import java.io.IOException;
 import java.util.List;
@@ -27,8 +27,7 @@ import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.SMSResponse;
-import com.dpdocter.sms.services.SMSServices;
-import com.dpdocter.webservices.PathProxy;
+import com.dpdocter.services.SMSServices;
 
 import common.util.web.Response;
 

@@ -107,4 +107,6 @@ public interface RegistrationService {
 
     PatientStatusResponse getPatientStatus(String patientId, String doctorId, String locationId, String hospitalId);
 
+	Feedback visibleFeedback(String feedbackId, Boolean isVisible);
+
 }

@@ -1,4 +1,4 @@
-package com.dpdocter.sms.repository;
+package com.dpdocter.repository;
 
 import java.util.List;
 

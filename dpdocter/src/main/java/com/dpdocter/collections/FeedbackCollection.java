@@ -4,6 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.enums.AppType;
 import com.dpdocter.enums.FeedbackType;
 
 @Document(collection = "feedback_cl")
@@ -16,68 +17,136 @@ public class FeedbackCollection extends GenericCollection {
     private FeedbackType type;
 
     @Field
-    private String doctorName;
+    private AppType appType;
 
     @Field
-    private String landmarkLocality;
+    private String doctorId;
+	
+    @Field
+	private String locationId;
+	
+    @Field
+	private String hospitalId;
+	
+    @Field
+    private String userId;
+	
+    @Field
+	private String description;
 
     @Field
-    private String city;
+	private String  deviceType;
+	
+    @Field
+	private String  deviceInfo;
+	
+    @Field
+	private Boolean  isVisible = false;
 
     @Field
-    private String description;
+	private Boolean isRecommended = false;
 
-    public String getId() {
-	return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public FeedbackType getType() {
-	return type;
-    }
+	public FeedbackType getType() {
+		return type;
+	}
 
-    public void setType(FeedbackType type) {
-	this.type = type;
-    }
+	public void setType(FeedbackType type) {
+		this.type = type;
+	}
 
-    public String getDoctorName() {
-	return doctorName;
-    }
+	public AppType getAppType() {
+		return appType;
+	}
 
-    public void setDoctorName(String doctorName) {
-	this.doctorName = doctorName;
-    }
+	public void setAppType(AppType appType) {
+		this.appType = appType;
+	}
 
-    public String getLandmarkLocality() {
-	return landmarkLocality;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public void setLandmarkLocality(String landmarkLocality) {
-	this.landmarkLocality = landmarkLocality;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public String getCity() {
-	return city;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public void setCity(String city) {
-	this.city = city;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public String getDescription() {
-	return description;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    @Override
-    public String toString() {
-	return "FeedbackCollection [id=" + id + ", type=" + type + ", doctorName=" + doctorName + ", landmarkLocality=" + landmarkLocality + ", city=" + city
-		+ ", description=" + description + "]";
-    }
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getDeviceType() {
+		return deviceType;
+	}
+
+	public void setDeviceType(String deviceType) {
+		this.deviceType = deviceType;
+	}
+
+	public String getDeviceInfo() {
+		return deviceInfo;
+	}
+
+	public void setDeviceInfo(String deviceInfo) {
+		this.deviceInfo = deviceInfo;
+	}
+
+	public Boolean getIsVisible() {
+		return isVisible;
+	}
+
+	public void setIsVisible(Boolean isVisible) {
+		this.isVisible = isVisible;
+	}
+
+	public Boolean getIsRecommended() {
+		return isRecommended;
+	}
+
+	public void setIsRecommended(Boolean isRecommended) {
+		this.isRecommended = isRecommended;
+	}
+
+	@Override
+	public String toString() {
+		return "FeedbackCollection [id=" + id + ", type=" + type + ", appType=" + appType + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", userId=" + userId
+				+ ", description=" + description + ", deviceType=" + deviceType + ", deviceInfo=" + deviceInfo
+				+ ", isVisible=" + isVisible + ", isRecommended=" + isRecommended + "]";
+	}
 }

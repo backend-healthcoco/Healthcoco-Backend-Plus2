@@ -17,7 +17,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
     private String id;
 
     @Field
-    private String locationId;
+    private String userLocationId;
 
     @Field
     private String patientInitial = "P";
@@ -40,6 +40,12 @@ public class DoctorClinicProfileCollection extends GenericCollection {
     @Field
     private DoctorFacility facility = DoctorFacility.BOOK;
 
+    @Field
+    private Integer noOfReviews = 0;
+
+    @Field
+    private Integer noOfRecommenations = 0;
+
     public String getId() {
 	return id;
     }
@@ -48,15 +54,15 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	this.id = id;
     }
 
-    public String getLocationId() {
-	return locationId;
-    }
+    public String getUserLocationId() {
+		return userLocationId;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public void setUserLocationId(String userLocationId) {
+		this.userLocationId = userLocationId;
+	}
 
-    public String getPatientInitial() {
+	public String getPatientInitial() {
 	return patientInitial;
     }
 
@@ -112,10 +118,28 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	this.facility = facility;
     }
 
-    @Override
-    public String toString() {
-	return "DoctorClinicProfileCollection [id=" + id + ", locationId=" + locationId + ", patientInitial=" + patientInitial + ", patientCounter="
-		+ patientCounter + ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee=" + consultationFee + ", appointmentSlot="
-		+ appointmentSlot + ", workingSchedules=" + workingSchedules + ", facility=" + facility + "]";
-    }
+	public Integer getNoOfReviews() {
+		return noOfReviews;
+	}
+
+	public void setNoOfReviews(Integer noOfReviews) {
+		this.noOfReviews = noOfReviews;
+	}
+
+	public Integer getNoOfRecommenations() {
+		return noOfRecommenations;
+	}
+
+	public void setNoOfRecommenations(Integer noOfRecommenations) {
+		this.noOfRecommenations = noOfRecommenations;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorClinicProfileCollection [id=" + id + ", userLocationId=" + userLocationId + ", patientInitial="
+				+ patientInitial + ", patientCounter=" + patientCounter + ", appointmentBookingNumber="
+				+ appointmentBookingNumber + ", consultationFee=" + consultationFee + ", appointmentSlot="
+				+ appointmentSlot + ", workingSchedules=" + workingSchedules + ", facility=" + facility
+				+ ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + "]";
+	}
 }

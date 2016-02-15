@@ -3,6 +3,7 @@ package com.dpdocter.solr.response;
 import java.util.List;
 
 import com.dpdocter.beans.ClinicImage;
+import com.dpdocter.beans.LabTest;
 import com.dpdocter.solr.beans.SolrLabTest;
 
 public class LabResponse {
@@ -49,7 +50,7 @@ public class LabResponse {
 
     private Boolean isHomeServiceAvailable = false;
 
-    private SolrLabTest labTest ;
+    private LabTest labTest ;
     
     private List<ClinicImage> images;
 
@@ -219,11 +220,11 @@ public class LabResponse {
 		this.isHomeServiceAvailable = isHomeServiceAvailable;
 	}
 
-	public SolrLabTest getLabTest() {
+	public LabTest getLabTest() {
 		return labTest;
 	}
 
-	public void setLabTest(SolrLabTest labTest) {
+	public void setLabTest(LabTest labTest) {
 		this.labTest = labTest;
 	}
 

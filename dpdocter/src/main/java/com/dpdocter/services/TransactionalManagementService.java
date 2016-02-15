@@ -28,6 +28,6 @@ public interface TransactionalManagementService {
 
     void checkLocation(String resourceId);
 
-    void checkDoctor(String resourceId);
+    void checkDoctor(String resourceId, String locationId);
 
 }

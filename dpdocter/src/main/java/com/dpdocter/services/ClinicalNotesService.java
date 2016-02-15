@@ -2,8 +2,6 @@ package com.dpdocter.services;
 
 import java.util.List;
 
-import javax.ws.rs.core.UriInfo;
-
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.Diagnoses;

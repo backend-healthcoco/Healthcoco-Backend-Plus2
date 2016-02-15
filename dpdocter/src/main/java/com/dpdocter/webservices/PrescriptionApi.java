@@ -12,9 +12,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -193,6 +191,7 @@ public class PrescriptionApi {
 	transnationalService.addResource(labTestResponse.getId(), Resource.LABTEST, false);
 	SolrLabTestDocument solrLabTestDocument = new SolrLabTestDocument();
 	BeanUtil.map(labTestResponse, solrLabTestDocument);
+	if(labTestResponse.getTest()!= null)solrLabTestDocument.setTestId(labTestResponse.getTest().getId());
 	solrPrescriptionService.addLabTest(solrLabTestDocument);
 	Response<LabTest> response = new Response<LabTest>();
 	response.setData(labTestResponse);
@@ -211,6 +210,7 @@ public class PrescriptionApi {
 	transnationalService.addResource(labTestId, Resource.LABTEST, false);
 	SolrLabTestDocument solrLabTestDocument = new SolrLabTestDocument();
 	BeanUtil.map(labTestResponse, solrLabTestDocument);
+	if(labTestResponse.getTest()!= null)solrLabTestDocument.setTestId(labTestResponse.getTest().getId());
 	solrPrescriptionService.editLabTest(solrLabTestDocument);
 
 	Response<LabTest> response = new Response<LabTest>();

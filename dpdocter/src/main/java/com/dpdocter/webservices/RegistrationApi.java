@@ -515,8 +515,7 @@ public class RegistrationApi {
 	    doctorResponse = registrationService.registerExisitingUser(request);
 
 	transnationalService.addResource(doctorResponse.getUserId(), Resource.DOCTOR, false);
-	if (doctorResponse != null)
-	    solrRegistrationService.addDoctor(registrationService.getSolrDoctorDocument(doctorResponse));
+	if (doctorResponse != null)solrRegistrationService.addDoctor(registrationService.getSolrDoctorDocument(doctorResponse));
 	Response<RegisterDoctorResponse> response = new Response<RegisterDoctorResponse>();
 	response.setData(doctorResponse);
 	return response;
@@ -603,7 +602,7 @@ public class RegistrationApi {
     public Response<Boolean> deleteUser(@PathParam(value = "userId") String userId, @PathParam(value = "locationId") String locationId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
     	registrationService.deleteUser(userId, locationId, discarded);
-    	transnationalService.checkDoctor(userId);
+    	transnationalService.checkDoctor(userId, null);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -617,11 +616,23 @@ public class RegistrationApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
 	}
 	Feedback feedback = registrationService.addFeedback(request);
+	transnationalService.checkDoctor(request.getDoctorId(), feedback.getLocationId());
 	Response<Feedback> response = new Response<Feedback>();
 	response.setData(feedback);
 	return response;
     }
 
+    @Path(value = PathProxy.RegistrationUrls.VISIBLE_FEEDBACK)
+    @GET
+    public Response<Feedback> visibleFeedback(@PathParam("feedbackId") String feedbackId, @DefaultValue("true")  @QueryParam("isVisible") Boolean isVisible) {
+	
+    Feedback feedback = registrationService.visibleFeedback(feedbackId, isVisible);
+	transnationalService.checkDoctor(feedback.getDoctorId(), feedback.getLocationId());
+	Response<Feedback> response = new Response<Feedback>();
+	response.setData(feedback);
+	return response;
+    }
+    
     @Path(value = PathProxy.RegistrationUrls.GET_PATIENT_STATUS)
     @GET
     public Response<PatientStatusResponse> getPatientStatus(@PathParam("patientId") String patientId, @PathParam("doctorId") String doctorId,

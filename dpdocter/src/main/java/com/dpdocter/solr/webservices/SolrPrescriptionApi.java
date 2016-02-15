@@ -14,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.LabTest;
 import com.dpdocter.solr.document.SolrDiagnosticTestDocument;
 import com.dpdocter.solr.document.SolrDrugDocument;
 import com.dpdocter.solr.document.SolrLabTestDocument;
@@ -79,14 +80,14 @@ public class SolrPrescriptionApi {
 
     @Path(value = PathProxy.SolrPrescriptionUrls.SEARCH_LAB_TEST)
     @GET
-    public Response<SolrLabTestDocument> searchLabTest(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
+    public Response<LabTest> searchLabTest(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
 	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 	    @QueryParam(value = "searchTerm") String searchTerm) {
 
-	List<SolrLabTestDocument> labTests = solrPrescriptionService.searchLabTest(range, page, size, locationId, hospitalId, updatedTime, discarded,
+	List<LabTest> labTests = solrPrescriptionService.searchLabTest(range, page, size, locationId, hospitalId, updatedTime, discarded,
 		searchTerm);
-	Response<SolrLabTestDocument> response = new Response<SolrLabTestDocument>();
+	Response<LabTest> response = new Response<LabTest>();
 	response.setDataList(labTests);
 	return response;
     }

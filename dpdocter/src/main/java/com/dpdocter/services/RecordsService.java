@@ -3,8 +3,6 @@ package com.dpdocter.services;
 import java.io.File;
 import java.util.List;
 
-import javax.ws.rs.core.UriInfo;
-
 import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Records;

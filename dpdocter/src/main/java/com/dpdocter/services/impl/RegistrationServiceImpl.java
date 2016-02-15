@@ -75,6 +75,7 @@ import com.dpdocter.collections.UserLocationCollection;
 import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.enums.ColorCode;
 import com.dpdocter.enums.ColorCode.RandomEnum;
+import com.dpdocter.enums.FeedbackType;
 import com.dpdocter.enums.Range;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.Type;
@@ -120,7 +121,7 @@ import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.RegistrationService;
-import com.dpdocter.sms.services.SMSServices;
+import com.dpdocter.services.SMSServices;
 import com.dpdocter.solr.document.SolrDoctorDocument;
 
 import common.util.web.DPDoctorUtils;
@@ -282,6 +283,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 		request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
 		String imageUrl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 		userCollection.setImageUrl(imageUrl);
+		String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
+		userCollection.setThumbnailUrl(thumbnailUrl);
+
 	    }
 	    userCollection.setCreatedTime(createdTime);
 	    userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
@@ -633,6 +637,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    userCollection.setImageUrl(imageUrl);
 		    registeredPatientDetails.setImageUrl(imageUrl);
 		    userCollection = userRepository.save(userCollection);
+		    String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
+			userCollection.setThumbnailUrl(thumbnailUrl);
+			registeredPatientDetails.setThumbnailUrl(thumbnailUrl);
 		}
 		registeredPatientDetails.setUserId(userCollection.getId());
 		Patient patient = new Patient();
@@ -1025,7 +1032,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		if (clinicProfileCollection == null) {
 		    clinicProfileCollection = new DoctorClinicProfileCollection();
 		    clinicProfileCollection.setCreatedTime(new Date());
-		    clinicProfileCollection.setLocationId(userLocation.getId());
+		    clinicProfileCollection.setUserLocationId(userLocation.getId());
 		    doctorClinicProfileRepository.save(clinicProfileCollection);
 		}
 		String patientInitial = clinicProfileCollection.getPatientInitial();
@@ -1084,7 +1091,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocation.getId());
 		    if (clinicProfileCollection == null)
 			clinicProfileCollection = new DoctorClinicProfileCollection();
-		    clinicProfileCollection.setLocationId(userLocation.getId());
+		    clinicProfileCollection.setUserLocationId(userLocation.getId());
 		    clinicProfileCollection.setPatientInitial(patientInitial);
 		    clinicProfileCollection.setPatientCounter(patientCounter);
 		    clinicProfileCollection = doctorClinicProfileRepository.save(clinicProfileCollection);
@@ -1912,6 +1919,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    BeanUtil.map(request, feedbackCollection);
 	    feedbackCollection.setCreatedTime(new Date());
 	    feedbackCollection = feedbackRepository.save(feedbackCollection);
+	    if(feedbackCollection != null && feedbackCollection.getType().getType().equals(FeedbackType.FEEDBACK.getType())){
+	    	UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(feedbackCollection.getDoctorId(), feedbackCollection.getLocationId());
+		    if(userLocationCollection != null){
+		    	DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
+		    	if(doctorClinicProfileCollection != null){
+		    		if(feedbackCollection.getIsRecommended())doctorClinicProfileCollection.setNoOfRecommenations(doctorClinicProfileCollection.getNoOfRecommenations()+1);
+		    		else doctorClinicProfileCollection.setNoOfRecommenations(doctorClinicProfileCollection.getNoOfRecommenations()-1);
+		    		doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+		    	}
+		    }
+		    visibleFeedback(feedbackCollection.getId(), true);
+	    	feedbackCollection = feedbackRepository.findOne(feedbackCollection.getId());
+	    }
 	    BeanUtil.map(feedbackCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1960,4 +1980,33 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 	return response;
     }
+
+	@Override
+	public Feedback visibleFeedback(String feedbackId, Boolean isVisible) {
+		Feedback response = new Feedback();
+		try {
+		    FeedbackCollection feedbackCollection = feedbackRepository.findOne(feedbackId);
+		    if(feedbackCollection != null){
+		    	feedbackCollection.setUpdatedTime(new Date());
+		    	feedbackCollection.setIsVisible(isVisible);
+			    feedbackCollection = feedbackRepository.save(feedbackCollection);
+			    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(feedbackCollection.getDoctorId(), feedbackCollection.getLocationId());
+			    if(userLocationCollection != null){
+			    	DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
+			    	if(doctorClinicProfileCollection != null){
+			    		if(isVisible)doctorClinicProfileCollection.setNoOfReviews(doctorClinicProfileCollection.getNoOfReviews()+1);
+			    		else doctorClinicProfileCollection.setNoOfReviews(doctorClinicProfileCollection.getNoOfReviews()-1);
+			    		doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+			    	}
+			    	
+			    }
+			    BeanUtil.map(feedbackCollection, response);
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Forbidden, "Error while editing feedback");
+		}
+		return response;
+	}
 }

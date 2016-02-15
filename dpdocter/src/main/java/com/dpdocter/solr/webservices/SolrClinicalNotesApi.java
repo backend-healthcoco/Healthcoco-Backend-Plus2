@@ -9,9 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriInfo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,11 +35,8 @@ public class SolrClinicalNotesApi {
     // private static Logger logger =
     // Logger.getLogger(SolrClinicalNotesApi.class.getName());
 
-    @Context
-    private UriInfo uriInfo;
-
-    @Value(value = "${IMAGE_URL_ROOT_PATH}")
-    private String imageUrlRootPath;
+	@Value(value = "${IMAGE_PATH}")
+    private String imagePath;
 
     @Autowired
     private SolrClinicalNotesService solrClinicalNotesService;
@@ -337,8 +332,9 @@ public class SolrClinicalNotesApi {
     }
 
     private String getFinalImageURL(String imageURL) {
-	String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-	return finalImageURL + imageURL;
-    }
-
+    	if (imageURL != null) {
+    	    return imagePath + imageURL;
+    	} else
+    	    return null;
+        }
 }
