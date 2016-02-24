@@ -44,11 +44,14 @@ public class PrescriptionCollection extends GenericCollection {
     private String prescriptionCode;
 
     @Field
-    private boolean inHistory = false;
+    private Boolean inHistory = false;
 
     @Field
     private String advice;
 
+    @Field
+    private Boolean isFeedbackAvailable = false;
+    
     public String getId() {
 	return id;
     }
@@ -129,14 +132,6 @@ public class PrescriptionCollection extends GenericCollection {
 	this.prescriptionCode = prescriptionCode;
     }
 
-    public boolean isInHistory() {
-	return inHistory;
-    }
-
-    public void setInHistory(boolean inHistory) {
-	this.inHistory = inHistory;
-    }
-
     public List<TestAndRecordData> getTests() {
 	return tests;
     }
@@ -153,10 +148,28 @@ public class PrescriptionCollection extends GenericCollection {
 	this.advice = advice;
     }
 
-    @Override
-    public String toString() {
-	return "PrescriptionCollection [id=" + id + ", uniqueId=" + uniqueId + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId
-		+ ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", items=" + items + ", tests=" + tests + ", patientId=" + patientId
-		+ ", prescriptionCode=" + prescriptionCode + ", inHistory=" + inHistory + ", advice=" + advice + "]";
-    }
+	public Boolean getInHistory() {
+		return inHistory;
+	}
+
+	public void setInHistory(Boolean inHistory) {
+		this.inHistory = inHistory;
+	}
+
+	public Boolean getIsFeedbackAvailable() {
+		return isFeedbackAvailable;
+	}
+
+	public void setIsFeedbackAvailable(Boolean isFeedbackAvailable) {
+		this.isFeedbackAvailable = isFeedbackAvailable;
+	}
+
+	@Override
+	public String toString() {
+		return "PrescriptionCollection [id=" + id + ", uniqueId=" + uniqueId + ", name=" + name + ", doctorId="
+				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ ", items=" + items + ", tests=" + tests + ", patientId=" + patientId + ", prescriptionCode="
+				+ prescriptionCode + ", inHistory=" + inHistory + ", advice=" + advice + ", isFeedbackAvailable="
+				+ isFeedbackAvailable + "]";
+	}
 }

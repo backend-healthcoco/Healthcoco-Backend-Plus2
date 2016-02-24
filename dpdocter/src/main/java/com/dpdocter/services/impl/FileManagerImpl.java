@@ -3,8 +3,8 @@ package com.dpdocter.services.impl;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
 
@@ -19,22 +19,22 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.services.FileManager;
+import com.sun.jersey.multipart.FormDataBodyPart;
 
 @Service
 public class FileManagerImpl implements FileManager {
 
-    @Value(value = "${IMAGE_RESOURCE}")
-    private String imageResource;
+    @Value(value = "${IMAGE_PATH}")
+    private String imagePath;
 
      @Value(value = "${bucketName}")
      private String bucketName;
-
-    @Value(value = "${IMAGE_URL_ROOT_PATH}")
-    private String imageUrlRootPath;
 
     @Value(value = "${mail.aws.key.id}")
     private String AWS_KEY;
@@ -66,25 +66,12 @@ public class FileManagerImpl implements FileManager {
             s3client.putObject(new PutObjectRequest(bucketName, imageUrl, fis, metadata));
 
          } catch (AmazonServiceException ase) {
-            System.out.println("Caught an AmazonServiceException, which " +
-            		"means your request made it " +
-                    "to Amazon S3, but was rejected with an error response" +
-                    " for some reason.");
-            System.out.println("Error Message:    " + ase.getMessage());
-            System.out.println("HTTP Status Code: " + ase.getStatusCode());
-            System.out.println("AWS Error Code:   " + ase.getErrorCode());
-            System.out.println("Error Type:       " + ase.getErrorType());
-            System.out.println("Request ID:       " + ase.getRequestId());
+            System.out.println("Error Message:    " + ase.getMessage()+" HTTP Status Code: " + ase.getStatusCode()+" AWS Error Code:   " + ase.getErrorCode()+" Error Type:       " + ase.getErrorType()+" Request ID:       " + ase.getRequestId());
         } catch (AmazonClientException ace) {
-            System.out.println("Caught an AmazonClientException, which " +
-            		"means the client encountered " +
-                    "an internal error while trying to " +
-                    "communicate with S3, " +
-                    "such as not being able to access the network.");
+            System.out.println("Caught an AmazonClientException, which means the client encountered an internal error while trying to communicate with S3, such as not being able to access the network.");
             System.out.println("Error Message: " + ace.getMessage());
         }
-        return imageUrl;
-        
+        return imageUrl;        
 }
 
     @Override
@@ -92,21 +79,52 @@ public class FileManagerImpl implements FileManager {
 	String thumbnailUrl = "";
 	BufferedImage img = new BufferedImage(120, 120, BufferedImage.TYPE_INT_RGB);
 	try {
-	    img.createGraphics()
-		    .drawImage(ImageIO
-			    .read(new File(
-				    imageResource + File.separator + path + File.separator + fileDetails.getFileName() + "." + fileDetails.getFileExtension()))
-			    .getScaledInstance(120, 120, Image.SCALE_SMOOTH), 0, 0, null);
-
+		BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+        AmazonS3 s3client = new AmazonS3Client(credentials);
+                
+	    S3Object object = s3client.getObject(new GetObjectRequest(bucketName, path + File.separator + fileDetails.getFileName() + "." + fileDetails.getFileExtension()));
+	    InputStream objectData = object.getObjectContent();
+	    
+	    img.createGraphics().drawImage(ImageIO.read(objectData).getScaledInstance(120, 120, Image.SCALE_SMOOTH), 0, 0, null);
 	    String fileName = fileDetails.getFileName() + "_thumb." + fileDetails.getFileExtension();
-	    createDirIfNotExist(imageResource + File.separator + path);
-	    String filePath = imageResource + File.separator + path + File.separator + fileName;
-	    ImageIO.write(img, fileDetails.getFileExtension(), new File(filePath));
-
 	    thumbnailUrl = path + "/" + fileName;
-	} catch (IOException e) {
-	    e.printStackTrace();
-	}
+    	
+	    ByteArrayOutputStream outstream = new ByteArrayOutputStream();
+		ImageIO.write(img, fileDetails.getFileExtension(), outstream);
+		byte[] buffer = outstream.toByteArray();
+	    objectData = new ByteArrayInputStream(buffer);
+		
+        String contentType = URLConnection.guessContentTypeFromStream(objectData);
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentEncoding(fileDetails.getFileExtension());
+        metadata.setContentType(contentType);
+        s3client.putObject(new PutObjectRequest(bucketName, thumbnailUrl, objectData, metadata));
+        } catch (AmazonServiceException ase) {
+            System.out.println("Error Message: " + ase.getMessage()+" HTTP Status Code: " + ase.getStatusCode()+" AWS Error Code:   " + ase.getErrorCode()+" Error Type:       " + ase.getErrorType()+" Request ID:       " + ase.getRequestId());
+        } catch (AmazonClientException ace) {
+            System.out.println("Caught an AmazonClientException, which means the client encountered an internal error while trying to communicate with S3, such as not being able to access the network.");
+            System.out.println("Error Message: " + ace.getMessage());
+        }catch (Exception e) {
+            System.out.println("Error Message: " + e.getMessage());
+        }
 	return thumbnailUrl;
     }
+
+	@Override
+	public void saveRecord(FormDataBodyPart file, String recordPath) {
+		BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+        AmazonS3 s3client = new AmazonS3Client(credentials);
+        try {
+        	ObjectMetadata metadata = new ObjectMetadata();
+        	metadata.setContentEncoding(file.getContentDisposition().getType());
+        	metadata.setContentType(file.getMediaType().getType());
+            s3client.putObject(new PutObjectRequest(bucketName, recordPath, file.getEntityAs(InputStream.class), metadata));
+
+         } catch (AmazonServiceException ase) {
+            System.out.println("Error Message:    " + ase.getMessage()+" HTTP Status Code: " + ase.getStatusCode()+" AWS Error Code:   " + ase.getErrorCode()+" Error Type:       " + ase.getErrorType()+" Request ID:       " + ase.getRequestId());
+        } catch (AmazonClientException ace) {
+            System.out.println("Caught an AmazonClientException, which means the client encountered an internal error while trying to communicate with S3, such as not being able to access the network.");
+            System.out.println("Error Message: " + ace.getMessage());
+        }
+	}
 }

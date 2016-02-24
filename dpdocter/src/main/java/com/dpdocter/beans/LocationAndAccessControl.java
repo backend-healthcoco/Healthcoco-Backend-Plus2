@@ -52,6 +52,8 @@ public class LocationAndAccessControl {
 
     private boolean isTwentyFourSevenOpen;
 
+    private Boolean isClinic = true;
+    
     private Boolean isLab = false;
 
     private Boolean isOnlineReportsAvailable = false;
@@ -294,15 +296,26 @@ public class LocationAndAccessControl {
 	this.isHomeServiceAvailable = isHomeServiceAvailable;
     }
 
-    @Override
-    public String toString() {
-	return "LocationAndAccessControl [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city
-		+ ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", images=" + images
-		+ ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude="
-		+ longitude + ", tagLine=" + tagLine + ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress=" + locationEmailAddress
-		+ ", specialization=" + specialization + ", streetAddress=" + streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber
-		+ ", alternateNumber=" + alternateNumber + ", workingSchedules=" + workingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen
-		+ ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
-		+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", roles=" + roles + "]";
-    }
+	public Boolean getIsClinic() {
+		return isClinic;
+	}
+
+	public void setIsClinic(Boolean isClinic) {
+		this.isClinic = isClinic;
+	}
+
+	@Override
+	public String toString() {
+		return "LocationAndAccessControl [id=" + id + ", locationName=" + locationName + ", country=" + country
+				+ ", state=" + state + ", city=" + city + ", locationPhoneNumber=" + locationPhoneNumber
+				+ ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", images=" + images + ", logoUrl="
+				+ logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + ", hospitalId=" + hospitalId + ", latitude="
+				+ latitude + ", longitude=" + longitude + ", tagLine=" + tagLine + ", landmarkDetails="
+				+ landmarkDetails + ", locationEmailAddress=" + locationEmailAddress + ", specialization="
+				+ specialization + ", streetAddress=" + streetAddress + ", locality=" + locality + ", mobileNumber="
+				+ mobileNumber + ", alternateNumber=" + alternateNumber + ", workingSchedules=" + workingSchedules
+				+ ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + ", isClinic=" + isClinic + ", isLab=" + isLab
+				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
+				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", roles=" + roles + "]";
+	}
 }

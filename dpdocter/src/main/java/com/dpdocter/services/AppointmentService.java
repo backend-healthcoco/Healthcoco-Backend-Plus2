@@ -22,7 +22,7 @@ public interface AppointmentService {
 
     Boolean activateDeactivateCity(String cityId, boolean activate);
 
-    List<City> getCities();
+    List<City> getCities(String stateId);
 
     City getCity(String cityId);
 
@@ -42,7 +42,7 @@ public interface AppointmentService {
 
     List<Country> getCountries();
 
-    List<State> getStates();
+    List<State> getStates(String countryId);
 
     List<Slot> getTimeSlots(String doctorId, String locationId, Date date);
 

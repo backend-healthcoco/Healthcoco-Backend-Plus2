@@ -1,5 +1,7 @@
 package com.dpdocter.repository;
 
+import java.util.List;
+
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
@@ -9,5 +11,8 @@ public interface StateRepository extends MongoRepository<StateCollection, String
 
     @Query("{'state': ?0}")
     StateCollection findByName(String state);
+
+    @Query("{'countryId': ?0}")
+	List<StateCollection> findAll(String countryId);
 
 }

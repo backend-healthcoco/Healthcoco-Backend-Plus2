@@ -12,6 +12,8 @@ public class Feedback extends GenericCollection{
 	
 	private AppType appType;
 
+	private String resourceId;
+	
     private String doctorId;
 	
 	private String locationId;
@@ -20,7 +22,7 @@ public class Feedback extends GenericCollection{
 	
     private String userId;
 	
-	private String description;
+	private String explanation;
 
 	private String  deviceType;
 	
@@ -70,12 +72,12 @@ public class Feedback extends GenericCollection{
 		this.hospitalId = hospitalId;
 	}
 
-	public String getDescription() {
-		return description;
+	public String getExplanation() {
+		return explanation;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
 	}
 
 	public String getDeviceType() {
@@ -126,11 +128,19 @@ public class Feedback extends GenericCollection{
 		this.isRecommended = isRecommended;
 	}
 
+	public String getResourceId() {
+		return resourceId;
+	}
+
+	public void setResourceId(String resourceId) {
+		this.resourceId = resourceId;
+	}
+
 	@Override
 	public String toString() {
-		return "Feedback [id=" + id + ", type=" + type + ", appType=" + appType + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", userId=" + userId
-				+ ", description=" + description + ", deviceType=" + deviceType + ", deviceInfo=" + deviceInfo
+		return "Feedback [id=" + id + ", type=" + type + ", appType=" + appType + ", resourceId=" + resourceId
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", userId="
+				+ userId + ", explanation=" + explanation + ", deviceType=" + deviceType + ", deviceInfo=" + deviceInfo
 				+ ", isVisible=" + isVisible + ", isRecommended=" + isRecommended + "]";
 	}
 }

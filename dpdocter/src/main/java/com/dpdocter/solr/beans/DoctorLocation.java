@@ -64,6 +64,9 @@ public class DoctorLocation {
     private List<String> specialization;
 
     @Field
+    private Boolean isClinic = true;
+    
+    @Field
     private Boolean isLab = false;
 
     @Field
@@ -303,6 +306,14 @@ public class DoctorLocation {
 		this.noOfRecommenations = noOfRecommenations;
 	}
 
+	public Boolean getIsClinic() {
+		return isClinic;
+	}
+
+	public void setIsClinic(Boolean isClinic) {
+		this.isClinic = isClinic;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorLocation [locationId=" + locationId + ", hospitalId=" + hospitalId + ", locationName="
@@ -312,10 +323,9 @@ public class DoctorLocation {
 				+ ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress=" + locationEmailAddress
 				+ ", streetAddress=" + streetAddress + ", locality=" + locality + ", locationMobileNumber="
 				+ locationMobileNumber + ", alternateNumbers=" + alternateNumbers + ", specialization=" + specialization
-				+ ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited="
-				+ isNABLAccredited + ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", images=" + images
-				+ ", logoUrl=" + logoUrl + ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations
-				+ "]";
-	}
-
+				+ ", isClinic=" + isClinic + ", isLab=" + isLab + ", isOnlineReportsAvailable="
+				+ isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited + ", isHomeServiceAvailable="
+				+ isHomeServiceAvailable + ", images=" + images + ", logoUrl=" + logoUrl + ", noOfReviews="
+				+ noOfReviews + ", noOfRecommenations=" + noOfRecommenations + "]";
+	}	
 }

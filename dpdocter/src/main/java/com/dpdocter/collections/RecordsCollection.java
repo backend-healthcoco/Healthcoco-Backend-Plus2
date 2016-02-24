@@ -44,7 +44,7 @@ public class RecordsCollection extends GenericCollection {
     private Boolean discarded = false;
 
     @Field
-    private boolean inHistory = false;
+    private Boolean inHistory = false;
 
     @Field
     private String uploadedByLocation;
@@ -64,6 +64,9 @@ public class RecordsCollection extends GenericCollection {
     @Field
     private String testId;;
 
+    @Field
+    private Boolean isFeedbackAvailable = false;
+    
     public String getId() {
 	return id;
     }
@@ -152,14 +155,6 @@ public class RecordsCollection extends GenericCollection {
 	this.discarded = discarded;
     }
 
-    public boolean isInHistory() {
-	return inHistory;
-    }
-
-    public void setInHistory(boolean inHistory) {
-	this.inHistory = inHistory;
-    }
-
     public String getUploadedByLocation() {
 	return uploadedByLocation;
     }
@@ -216,12 +211,31 @@ public class RecordsCollection extends GenericCollection {
 	this.testId = testId;
     }
 
-    @Override
-    public String toString() {
-	return "RecordsCollection [id=" + id + ", uniqueId=" + uniqueId + ", recordsUrl=" + recordsUrl + ", recordsPath=" + recordsPath + ", recordsLable="
-		+ recordsLable + ", recordsType=" + recordsType + ", description=" + description + ", patientId=" + patientId + ", doctorId=" + doctorId
-		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", inHistory=" + inHistory
-		+ ", uploadedByLocation=" + uploadedByLocation + ", prescriptionId=" + prescriptionId + ", prescribedByDoctorId=" + prescribedByDoctorId
-		+ ", prescribedByLocationId=" + prescribedByLocationId + ", prescribedByHospitalId=" + prescribedByHospitalId + ", testId=" + testId + "]";
-    }
+	public Boolean getInHistory() {
+		return inHistory;
+	}
+
+	public void setInHistory(Boolean inHistory) {
+		this.inHistory = inHistory;
+	}
+
+	public Boolean getIsFeedbackAvailable() {
+		return isFeedbackAvailable;
+	}
+
+	public void setIsFeedbackAvailable(Boolean isFeedbackAvailable) {
+		this.isFeedbackAvailable = isFeedbackAvailable;
+	}
+
+	@Override
+	public String toString() {
+		return "RecordsCollection [id=" + id + ", uniqueId=" + uniqueId + ", recordsUrl=" + recordsUrl
+				+ ", recordsPath=" + recordsPath + ", recordsLable=" + recordsLable + ", recordsType=" + recordsType
+				+ ", description=" + description + ", patientId=" + patientId + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ ", inHistory=" + inHistory + ", uploadedByLocation=" + uploadedByLocation + ", prescriptionId="
+				+ prescriptionId + ", prescribedByDoctorId=" + prescribedByDoctorId + ", prescribedByLocationId="
+				+ prescribedByLocationId + ", prescribedByHospitalId=" + prescribedByHospitalId + ", testId=" + testId
+				+ ", isFeedbackAvailable=" + isFeedbackAvailable + "]";
+	}
 }

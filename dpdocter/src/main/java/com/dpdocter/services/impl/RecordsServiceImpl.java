@@ -25,6 +25,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
 import com.dpdocter.beans.Count;
 import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.MailAttachment;
@@ -128,6 +133,15 @@ public class RecordsServiceImpl implements RecordsService {
     @Value(value = "${IMAGE_PATH}")
     private String imagePath;
 
+    @Value(value = "${bucketName}")
+    private String bucketName;
+
+    @Value(value = "${mail.aws.key.id}")
+    private String AWS_KEY;
+
+    @Value(value = "${mail.aws.secret.key}")
+    private String AWS_SECRET_KEY;
+ 
     @Autowired
     private PatientVisitRepository patientVisitRepository;
 
@@ -142,7 +156,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    if (request.getFileDetails() != null) {
 		String recordLabel = request.getFileDetails().getFileName();
 		request.getFileDetails().setFileName(request.getFileDetails().getFileName() + createdTime.getTime());
-		String path = request.getPatientId() + File.separator + "records";
+		String path = "records" + File.separator + request.getPatientId();
 		// save image
 		String recordUrl = fileManager.saveImageAndReturnImageUrl(request.getFileDetails(), path);
 		String fileName = request.getFileDetails().getFileName() + "." + request.getFileDetails().getFileExtension();
@@ -186,9 +200,9 @@ public class RecordsServiceImpl implements RecordsService {
 		prescriptionCollection.setTests(tests);
 		prescriptionCollection.setUpdatedTime(new Date());
 		prescriptionRepository.save(prescriptionCollection);
-		String body = mailBodyGenerator.generateRecordsUploadedEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
-			userCollection.getMiddleName(), userCollection.getLastName());
-		mailService.sendEmail(userCollection.getEmailAddress(), "Records Uploaded", "Record is uploaded", null);
+//		String body = mailBodyGenerator.generateRecordsUploadedEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
+//			userCollection.getMiddleName(), userCollection.getLastName());
+//		mailService.sendEmail(userCollection.getEmailAddress(), "Records Uploaded", body, null);
 
 	    }
 
@@ -231,7 +245,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    recordsCollection.setCreatedBy(oldRecord.getCreatedBy());
 	    recordsCollection.setUploadedByLocation(oldRecord.getUploadedByLocation());
 	    recordsCollection.setDiscarded(oldRecord.getDiscarded());
-	    recordsCollection.setInHistory(oldRecord.isInHistory());
+	    recordsCollection.setInHistory(oldRecord.getInHistory());
 	    recordsCollection.setUniqueId(oldRecord.getUniqueId());
 	    recordsCollection.setPrescribedByDoctorId(oldRecord.getDoctorId());
 	    recordsCollection.setPrescribedByLocationId(oldRecord.getLocationId());
@@ -622,16 +636,20 @@ public class RecordsServiceImpl implements RecordsService {
 	    RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
 	    if (recordsCollection != null) {
 
-		FileSystemResource file = new FileSystemResource(imagePath + recordsCollection.getRecordsUrl());
-		mailAttachment = new MailAttachment();
-		mailAttachment.setFileSystemResource(file);
-
+	   	BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+	    AmazonS3 s3client = new AmazonS3Client(credentials);
+	                
+        S3Object object = s3client.getObject(new GetObjectRequest(bucketName, recordsCollection.getRecordsUrl()));
+		InputStream objectData = object.getObjectContent();
+		 
+		mailAttachment = new  MailAttachment();
+		mailAttachment.setFileSystemResource(null);
+		mailAttachment.setInputStream(objectData);
 		UserCollection patientUserCollection = userRepository.findOne(recordsCollection.getPatientId());
 		if (patientUserCollection != null) {
-		    mailAttachment
-			    .setAttachmentName(patientUserCollection.getFirstName() + new Date() + "REPORTS." + FilenameUtils.getExtension(file.getFilename()));
+		    mailAttachment.setAttachmentName(patientUserCollection.getFirstName() + new Date() + "REPORTS." + FilenameUtils.getExtension(recordsCollection.getRecordsUrl()));
 		} else {
-		    mailAttachment.setAttachmentName(new Date() + "REPORTS." + FilenameUtils.getExtension(file.getFilename()));
+		    mailAttachment.setAttachmentName(new Date() + "REPORTS." + FilenameUtils.getExtension(recordsCollection.getRecordsUrl()));
 		}
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 		emailTrackCollection.setDoctorId(recordsCollection.getDoctorId());
@@ -794,9 +812,9 @@ public class RecordsServiceImpl implements RecordsService {
 
 			FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
 			String recordPath = path + File.separator;
-			writeToFile(file.getEntityAs(InputStream.class), recordPath);
-			
-			recordsCollection.setRecordsUrl(path+"/"+fileDetail.getFileName()+createdTime.getTime());
+//			writeToFile(file.getEntityAs(InputStream.class), recordPath);
+			fileManager.saveRecord(file, recordPath);
+			recordsCollection.setRecordsUrl(recordPath+fileDetail.getFileName()+createdTime.getTime());
 			recordsCollection.setRecordsPath(recordPath+fileDetail.getFileName()+createdTime.getTime());
 			recordsCollection.setRecordsLable(recordLabel);
 		    }

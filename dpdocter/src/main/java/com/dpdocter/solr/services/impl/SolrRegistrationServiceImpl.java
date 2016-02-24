@@ -758,9 +758,11 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 		try {
 		    List<SolrDoctorDocument> doctorDocuments = solrDoctorRepository.findByLocationId(doctorLocation.getLocationId());
 		    for (SolrDoctorDocument doctorDocument : doctorDocuments) {
+		    	String id = doctorDocument.getId();
 				BeanUtil.map(doctorLocation, doctorDocument);
+				doctorDocument.setId(id);
 				if(doctorLocation.getLatitude() != null && doctorLocation.getLongitude() != null){
-					doctorLocation.setGeoLocation(new GeoLocation(doctorLocation.getLatitude(), doctorLocation.getLongitude()));
+					doctorDocument.setGeoLocation(new GeoLocation(doctorLocation.getLatitude(), doctorLocation.getLongitude()));
 			    }
 				solrDoctorRepository.save(doctorDocument);
 				transnationalService.addResource(doctorLocation.getLocationId(), Resource.LOCATION, true);

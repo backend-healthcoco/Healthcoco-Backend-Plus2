@@ -10,6 +10,10 @@ public class VitalSigns {
 
     private BloodPressure bloodPressure;
 
+    private String height;
+
+    private String weight;
+
     public String getPulse() {
 	return pulse;
     }
@@ -42,8 +46,25 @@ public class VitalSigns {
 	this.bloodPressure = bloodPressure;
     }
 
-    @Override
-    public String toString() {
-	return "VitalSigns [pulse=" + pulse + ", temperature=" + temperature + ", breathing=" + breathing + ", bloodPressure=" + bloodPressure + "]";
-    }
+	public String getHeight() {
+		return height;
+	}
+
+	public void setHeight(String height) {
+		this.height = height;
+	}
+
+	public String getWeight() {
+		return weight;
+	}
+
+	public void setWeight(String weight) {
+		this.weight = weight;
+	}
+
+	@Override
+	public String toString() {
+		return "VitalSigns [pulse=" + pulse + ", temperature=" + temperature + ", breathing=" + breathing
+				+ ", bloodPressure=" + bloodPressure + ", height=" + height + ", weight=" + weight + "]";
+	}
 }

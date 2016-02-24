@@ -20,9 +20,9 @@ public class Prescription extends GenericCollection {
 
     private List<PrescriptionItemDetail> items;
 
-    private boolean inHistory = false;
+    private Boolean inHistory = false;
 
-    private Boolean discarded;
+    private Boolean discarded = false;
 
     private List<TestAndRecordDataResponse> tests;
 
@@ -31,6 +31,8 @@ public class Prescription extends GenericCollection {
     private String visitId;
 
     private String patientId;
+
+    private Boolean isFeedbackAvailable = false;
 
     public String getId() {
 	return id;
@@ -62,14 +64,6 @@ public class Prescription extends GenericCollection {
 
     public void setItems(List<PrescriptionItemDetail> items) {
 	this.items = items;
-    }
-
-    public boolean isInHistory() {
-	return inHistory;
-    }
-
-    public void setInHistory(boolean inHistory) {
-	this.inHistory = inHistory;
     }
 
     public Boolean getDiscarded() {
@@ -136,10 +130,27 @@ public class Prescription extends GenericCollection {
 	this.tests = tests;
     }
 
-    @Override
-    public String toString() {
-	return "Prescription [id=" + id + ", uniqueId=" + uniqueId + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId
-		+ ", hospitalId=" + hospitalId + ", items=" + items + ", inHistory=" + inHistory + ", discarded=" + discarded + ", tests=" + tests + ", advice="
-		+ advice + ", visitId=" + visitId + ", patientId=" + patientId + "]";
-    }
+	public Boolean getInHistory() {
+		return inHistory;
+	}
+
+	public void setInHistory(Boolean inHistory) {
+		this.inHistory = inHistory;
+	}
+
+	public Boolean getIsFeedbackAvailable() {
+		return isFeedbackAvailable;
+	}
+
+	public void setIsFeedbackAvailable(Boolean isFeedbackAvailable) {
+		this.isFeedbackAvailable = isFeedbackAvailable;
+	}
+
+	@Override
+	public String toString() {
+		return "Prescription [id=" + id + ", uniqueId=" + uniqueId + ", name=" + name + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", items=" + items + ", inHistory="
+				+ inHistory + ", discarded=" + discarded + ", tests=" + tests + ", advice=" + advice + ", visitId="
+				+ visitId + ", patientId=" + patientId + ", isFeedbackAvailable=" + isFeedbackAvailable + "]";
+	}
 }

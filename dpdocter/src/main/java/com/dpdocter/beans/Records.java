@@ -23,7 +23,7 @@ public class Records extends GenericCollection {
 
     private String description;
 
-    private boolean inHistory = false;
+    private Boolean inHistory = false;
 
     private Boolean discarded = false;
 
@@ -41,6 +41,8 @@ public class Records extends GenericCollection {
 
     private String testId;;
 
+    private Boolean isFeedbackAvailable = false;
+    
     public String getId() {
 	return id;
     }
@@ -79,14 +81,6 @@ public class Records extends GenericCollection {
 
     public void setDescription(String description) {
 	this.description = description;
-    }
-
-    public boolean isInHistory() {
-	return inHistory;
-    }
-
-    public void setInHistory(boolean inHistory) {
-	this.inHistory = inHistory;
     }
 
     public Boolean getDiscarded() {
@@ -193,12 +187,31 @@ public class Records extends GenericCollection {
 	this.testId = testId;
     }
 
-    @Override
-    public String toString() {
-	return "Records [id=" + id + ", uniqueId=" + uniqueId + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ ", patientId=" + patientId + ", recordsUrl=" + recordsUrl + ", recordsLable=" + recordsLable + ", recordsType=" + recordsType
-		+ ", description=" + description + ", inHistory=" + inHistory + ", discarded=" + discarded + ", uploadedByLocation=" + uploadedByLocation
-		+ ", visitId=" + visitId + ", prescriptionId=" + prescriptionId + ", prescribedByDoctorId=" + prescribedByDoctorId + ", prescribedByLocationId="
-		+ prescribedByLocationId + ", prescribedByHospitalId=" + prescribedByHospitalId + ", testId=" + testId + "]";
-    }
+	public Boolean getInHistory() {
+		return inHistory;
+	}
+
+	public void setInHistory(Boolean inHistory) {
+		this.inHistory = inHistory;
+	}
+
+	public Boolean getIsFeedbackAvailable() {
+		return isFeedbackAvailable;
+	}
+
+	public void setIsFeedbackAvailable(Boolean isFeedbackAvailable) {
+		this.isFeedbackAvailable = isFeedbackAvailable;
+	}
+
+	@Override
+	public String toString() {
+		return "Records [id=" + id + ", uniqueId=" + uniqueId + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", recordsUrl=" + recordsUrl
+				+ ", recordsLable=" + recordsLable + ", recordsType=" + recordsType + ", description=" + description
+				+ ", inHistory=" + inHistory + ", discarded=" + discarded + ", uploadedByLocation=" + uploadedByLocation
+				+ ", visitId=" + visitId + ", prescriptionId=" + prescriptionId + ", prescribedByDoctorId="
+				+ prescribedByDoctorId + ", prescribedByLocationId=" + prescribedByLocationId
+				+ ", prescribedByHospitalId=" + prescribedByHospitalId + ", testId=" + testId + ", isFeedbackAvailable="
+				+ isFeedbackAvailable + "]";
+	}
 }

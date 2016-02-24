@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.collections.DoctorOTPCollection;
 import com.dpdocter.collections.OTPCollection;
+import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
@@ -24,6 +25,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.repository.DoctorOTPRepository;
 import com.dpdocter.repository.OTPRepository;
+import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.SMSFormatRepository;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
@@ -42,6 +44,9 @@ public class OTPServiceImpl implements OTPService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PatientRepository patientRepository;
+    
     @Autowired
     private UserLocationRepository userLocationRepository;
 
@@ -83,7 +88,7 @@ public class OTPServiceImpl implements OTPService {
 	    UserCollection userCollection = userRepository.findOne(doctorId);
 	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(doctorId, locationId);
 	    UserCollection patient = userRepository.findOne(patientId);
-
+	    PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientId, doctorId, locationId, hospitalId);
 	    if (userCollection != null && patient != null && userLocationCollection != null) {
 
 		String doctorName = (userCollection.getTitle() != null ? userCollection.getTitle() : "") + " " + userCollection.getFirstName();
@@ -109,10 +114,10 @@ public class OTPServiceImpl implements OTPService {
 			patient.getMobileNumber(), "OTPVerification");
 		sMSServices.sendSMS(smsTrackDetail, false);
 
-		if (patient.getEmailAddress() != null || !patient.getEmailAddress().isEmpty()) {
-		    String body = mailBodyGenerator.generateRecordsShareOtpBeforeVerificationEmailBody(patient.getEmailAddress(), patient.getFirstName(),
+		if (patientCollection != null && patientCollection.getEmailAddress() != null && !patientCollection.getEmailAddress().isEmpty()) {
+		    String body = mailBodyGenerator.generateRecordsShareOtpBeforeVerificationEmailBody(patientCollection.getEmailAddress(), patient.getFirstName(),
 			    doctorName, uriInfo);
-		    mailService.sendEmail(patient.getEmailAddress(), recordsShareOtpBeforeVerification, body, null);
+		    mailService.sendEmail(patientCollection.getEmailAddress(), recordsShareOtpBeforeVerification, body, null);
 		}
 	    } else {
 		logger.error("Invalid doctorId or patientId");
@@ -134,6 +139,7 @@ public class OTPServiceImpl implements OTPService {
 	    UserCollection userCollection = userRepository.findOne(doctorId);
 	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(doctorId, locationId);
 	    UserCollection patient = userRepository.findOne(patientId);
+	    PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientId, doctorId, locationId, hospitalId);
 	    if(userCollection != null && patient != null && userLocationCollection != null && patientId != null){
 	    	String doctorName=(userCollection.getTitle()!=null?userCollection.getTitle():"")+" "+userCollection.getFirstName();
 	    	List<DoctorOTPCollection> doctorOTPCollection = doctorOTPRepository.find(userLocationCollection.getId(), patientId, new PageRequest(0, 1, new Sort(Sort.Direction.DESC,"createdTime")));
@@ -145,10 +151,10 @@ public class OTPServiceImpl implements OTPService {
 				    otpCollection.setState(OTPState.VERIFIED);
 				    otpCollection = otpRepository.save(otpCollection);
 				    response = true;
-				    if(patient.getEmailAddress() != null || !patient.getEmailAddress().isEmpty()){
-				    	String body = mailBodyGenerator.generateRecordsShareOtpAfterVerificationEmailBody(patient.getEmailAddress(),patient.getFirstName(), 
+				    if(patientCollection !=null && patientCollection.getEmailAddress() != null && !patientCollection.getEmailAddress().isEmpty()){
+				    	String body = mailBodyGenerator.generateRecordsShareOtpAfterVerificationEmailBody(patientCollection.getEmailAddress(),patient.getFirstName(), 
 					    		doctorName, uriInfo);
-						mailService.sendEmail(patient.getEmailAddress(), recordsShareOtpAfterVerification+" "+userCollection.getFirstName(), body, null);
+						mailService.sendEmail(patientCollection.getEmailAddress(), recordsShareOtpAfterVerification+" "+userCollection.getFirstName(), body, null);
 				    }
 				} else {
 				    logger.error("OTP is expired");
@@ -256,5 +262,4 @@ public class OTPServiceImpl implements OTPService {
 	}
 	return response;
     }
-
 }

@@ -54,6 +54,7 @@ import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.AddressCollection;
+import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.BloodGroupCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
@@ -64,8 +65,10 @@ import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientAdmissionCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
+import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.ProfessionCollection;
+import com.dpdocter.collections.RecordsCollection;
 import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SMSTrackDetail;
@@ -83,6 +86,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.AddressRepository;
+import com.dpdocter.repository.AppointmentRepository;
 import com.dpdocter.repository.BloodGroupRepository;
 import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
@@ -214,6 +218,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Autowired
     private RecordsRepository recordsRepository;
+
+    @Autowired
+    private AppointmentRepository appointmentRepository;
 
     @Autowired
     private FeedbackRepository feedbackRepository;
@@ -489,6 +496,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    String imageUrl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 		    userCollection.setImageUrl(imageUrl);
 		    registeredPatientDetails.setImageUrl(imageUrl);
+			String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
+			userCollection.setThumbnailUrl(thumbnailUrl);
+			registeredPatientDetails.setThumbnailUrl(thumbnailUrl);
 		}
 
 		userCollection.setEmailAddress(request.getEmailAddress());
@@ -705,7 +715,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    }
 	    if (count >= Integer.parseInt(patientCount)) {
 		logger.warn("Only Nine patients can register with same mobile number");
-		throw new BusinessException(ServiceError.NoRecord, "Only Nine patients can register with same mobile number");
+		throw new BusinessException(ServiceError.NotAcceptable, "Only Nine patients can register with same mobile number");
 	    }
 	}
     }
@@ -1129,13 +1139,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	    AggregationResults<PatientCollection> groupResults = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientCollection.class);
 	    List<PatientCollection> results = groupResults.getMappedResults();
-	    String PID = results.get(0).getPID();
-	    PID = PID.substring((patientInitial + date).length());
-	    if (patientCounter <= Integer.parseInt(PID)) {
-		response = "Patient already exist for Prefix: " + patientInitial + " , Date: " + date + " Id Number: " + patientCounter
-			+ ". Please enter Id greater than " + PID;
-	    } else {
-
+	    if(results != null && !results.isEmpty()){
+		    String PID = results.get(0).getPID();
+		    PID = PID.substring((patientInitial + date).length());
+		    if (patientCounter <= Integer.parseInt(PID)) {
+			response = "Patient already exist for Prefix: " + patientInitial + " , Date: " + date + " Id Number: " + patientCounter
+				+ ". Please enter Id greater than " + PID;
+		    }
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1204,10 +1214,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    if (locationCollection != null)
 		BeanUtil.map(request, locationCollection);
 	    List<GeocodedLocation> geocodedLocations = locationServices
-		    .geocodeLocation((locationCollection.getLocationName() != null ? locationCollection.getLocationName() : "")
-			    + (locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() : "")
-			    + (locationCollection.getCity() != null ? locationCollection.getCity() : "")
-			    + (locationCollection.getState() != null ? locationCollection.getState() : "")
+		    .geocodeLocation((locationCollection.getLocationName() != null ? locationCollection.getLocationName() +" ": "")
+			    + (locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() +" ": "")
+			    + (locationCollection.getCity() != null ? locationCollection.getCity() +" ": "")
+			    + (locationCollection.getState() != null ? locationCollection.getState() +" ": "")
 			    + (locationCollection.getCountry() != null ? locationCollection.getCountry() : ""));
 
 	    if (geocodedLocations != null && !geocodedLocations.isEmpty())
@@ -1890,6 +1900,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    locationCollection = locationRepository.findOne(request.getId());
 	    if (locationCollection != null) {
 		locationCollection.setIsLab(request.getIsLab());
+		locationCollection.setIsClinic(request.getIsClinic());
 		if (request.getIsLab()) {
 		    locationCollection.setIsHomeServiceAvailable(request.getIsHomeServiceAvailable());
 		    locationCollection.setIsNABLAccredited(request.getIsNABLAccredited());
@@ -1919,7 +1930,31 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    BeanUtil.map(request, feedbackCollection);
 	    feedbackCollection.setCreatedTime(new Date());
 	    feedbackCollection = feedbackRepository.save(feedbackCollection);
-	    if(feedbackCollection != null && feedbackCollection.getType().getType().equals(FeedbackType.FEEDBACK.getType())){
+	    if(feedbackCollection != null && (feedbackCollection.getType().getType().equals(FeedbackType.APPOINTMENT.getType()) || feedbackCollection.getType().getType().equals(FeedbackType.PRESCRIPTION.getType()) || feedbackCollection.getType().getType().equals(FeedbackType.REPORT.getType()))){
+	    	if(feedbackCollection.getType().getType().equals(FeedbackType.PRESCRIPTION.getType()) && request.getResourceId() != null){
+	    		PrescriptionCollection prescriptionCollection = prescriptionRepository.findOne(request.getResourceId());
+	    		if(prescriptionCollection != null){
+	    			prescriptionCollection.setIsFeedbackAvailable(true);
+	    			prescriptionCollection.setUpdatedTime(new Date());
+	    			prescriptionRepository.save(prescriptionCollection);
+	    		}
+	    	}
+	    	if(feedbackCollection.getType().getType().equals(FeedbackType.APPOINTMENT.getType()) && request.getResourceId() != null){
+	    		AppointmentCollection appointmentCollection = appointmentRepository.findOne(request.getResourceId());
+	    		if(appointmentCollection != null){
+	    			appointmentCollection.setIsFeedbackAvailable(true);
+	    			appointmentCollection.setUpdatedTime(new Date());
+	    			appointmentRepository.save(appointmentCollection);
+	    		}
+	    	}
+	    	if(feedbackCollection.getType().getType().equals(FeedbackType.REPORT.getType()) && request.getResourceId() != null){
+	    		RecordsCollection recordsCollection = recordsRepository.findOne(request.getResourceId());
+	    		if(recordsCollection != null){
+	    			recordsCollection.setIsFeedbackAvailable(true);
+	    			recordsCollection.setUpdatedTime(new Date());
+	    			recordsRepository.save(recordsCollection);
+	    		}
+	    	}
 	    	UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(feedbackCollection.getDoctorId(), feedbackCollection.getLocationId());
 		    if(userLocationCollection != null){
 		    	DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
@@ -2006,6 +2041,34 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    e.printStackTrace();
 		    logger.error(e);
 		    throw new BusinessException(ServiceError.Forbidden, "Error while editing feedback");
+		}
+		return response;
+	}
+
+	@Override
+	public List<Feedback> getFeedback(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime) {
+		List<Feedback> response = null;
+		try {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+		    List<FeedbackCollection> feedbackCollection = null;
+		    if(DPDoctorUtils.anyStringEmpty(doctorId));
+		    else{
+		    	if(DPDoctorUtils.anyStringEmpty(locationId, hospitalId)){
+		    		if(size > 0)feedbackCollection = feedbackRepository.find(doctorId, true, new Date(createdTimeStamp), new PageRequest(page, size, Sort.Direction.DESC, "updatedTime"));
+		    		else feedbackCollection = feedbackRepository.find(doctorId, true, new Date(createdTimeStamp), new Sort(Direction.DESC, "updatedTime"));
+		    	}else{
+		    		if(size > 0)feedbackCollection = feedbackRepository.find(doctorId, locationId, hospitalId, true, new Date(createdTimeStamp), new PageRequest(page, size, Sort.Direction.DESC, "updatedTime"));
+		    		else feedbackCollection = feedbackRepository.find(doctorId, locationId, hospitalId, true, new Date(createdTimeStamp), new Sort(Direction.DESC, "updatedTime"));
+		    	}
+		    }		    
+		    if(feedbackCollection != null){
+		    	response = new ArrayList<Feedback>();
+		    	BeanUtil.map(feedbackCollection, response);
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Forbidden, "Error while getting feedback");
 		}
 		return response;
 	}

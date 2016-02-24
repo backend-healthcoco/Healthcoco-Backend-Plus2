@@ -67,14 +67,19 @@ public class MailServiceImpl implements MailService {
 	   	 Session session = Session.getInstance(new Properties()); 
 	   	 MimeMessage mimeMessage = new MimeMessage(session);
 	   	 mimeMessage.setSubject(subject); 
+	   	 
 	   	 MimeMultipart mimeMultipart = new MimeMultipart(); 
 	   	 BodyPart p = new MimeBodyPart(); 
 	   	 p.setContent(body, "text/html"); 
 	   	 mimeMultipart.addBodyPart(p); 
-	   	 
+	   	mimeMessage.setContent(mimeMultipart, "multipart/mixed");
 	   	 if(mailAttachment != null){
 	   		 mimeMessage.setFileName(mailAttachment.getAttachmentName());
-	      	 DataSource ds = new ByteArrayDataSource(new FileInputStream(mailAttachment.getFileSystemResource().getFile()), "application/octet-stream");
+	      	 DataSource ds;
+	      	 if(mailAttachment.getFileSystemResource() == null)
+	      		 ds = new ByteArrayDataSource(mailAttachment.getInputStream(), "application/octet-stream");
+	      	 else 
+	      		 ds = new ByteArrayDataSource(new FileInputStream(mailAttachment.getFileSystemResource().getFile()), "application/octet-stream");
 	      	 mimeMessage.setDataHandler(new DataHandler(ds));
 	   	 }
 	   		 

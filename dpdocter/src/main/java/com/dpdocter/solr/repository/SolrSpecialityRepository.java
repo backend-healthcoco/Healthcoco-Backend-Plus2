@@ -12,8 +12,8 @@ import org.springframework.data.solr.repository.SolrCrudRepository;
 import com.dpdocter.solr.document.SolrSpecialityDocument;
 
 public interface SolrSpecialityRepository extends SolrCrudRepository<SolrSpecialityDocument, String> {
-    @Query("speciality : ?0*")
-    List<SolrSpecialityDocument> findAll(String speciality);
+    @Query("speciality :?0*")
+    List<SolrSpecialityDocument> findByQueryAnnotation(String speciality);
 
     @Query("{'id': {'$in': ?0}}")
     List<SolrSpecialityDocument> findByIds(Collection<String> specialityIds);
@@ -24,7 +24,7 @@ public interface SolrSpecialityRepository extends SolrCrudRepository<SolrSpecial
     @Query("updatedTime: {?0 TO *}")
     List<SolrSpecialityDocument> find(Date date, Sort sort);
 
-    @Query("updatedTime: {?0 TO *} AND speciality: ?1*")
+    @Query("updatedTime: {?0 TO *} AND speciality:?1*")
     List<SolrSpecialityDocument> find(Date date, String searchTerm, Pageable pageable);
 
     @Query("updatedTime: {?0 TO *} AND speciality: ?1*")

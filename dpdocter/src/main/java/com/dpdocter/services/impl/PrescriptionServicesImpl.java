@@ -613,7 +613,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    prescriptionCollection.setCreatedBy(oldPrescription.getCreatedBy());
 	    prescriptionCollection.setCreatedTime(oldPrescription.getCreatedTime());
 	    prescriptionCollection.setDiscarded(oldPrescription.getDiscarded());
-	    prescriptionCollection.setInHistory(oldPrescription.isInHistory());
+	    prescriptionCollection.setInHistory(oldPrescription.getInHistory());
 	    prescriptionCollection.setUniqueId(oldPrescription.getUniqueId());
 	    if (prescriptionCollection.getItems() != null) {
 		for (PrescriptionItem item : prescriptionCollection.getItems()) {
@@ -815,6 +815,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
 		    if (prescriptionCollection.getItems() != null) {
 			Prescription prescription = new Prescription();
+			List<TestAndRecordData> tests = prescriptionCollection.getTests();
+			prescriptionCollection.setTests(null);
 			BeanUtil.map(prescriptionCollection, prescription);
 			List<PrescriptionItemDetail> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetail>();
 			for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
@@ -833,9 +835,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(prescription.getId());
 			if (patientVisitCollection != null) prescription.setVisitId(patientVisitCollection.getId());
 			
-			if(prescriptionCollection.getTests() != null && !prescriptionCollection.getTests().isEmpty()){
+			if(tests != null && !tests.isEmpty()){
 				List<TestAndRecordDataResponse> labTests = new ArrayList<TestAndRecordDataResponse>();
-			    	for(TestAndRecordData data : prescriptionCollection.getTests()){
+			    	for(TestAndRecordData data : tests){
 			    		LabTestCollection labTestCollection = labTestRepository.findOne(data.getLabTestId());
 			    		DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(labTestCollection.getTestId());
 			    		LabTest labTest = new LabTest();DiagnosticTest diagnosticTest = new DiagnosticTest();
@@ -878,6 +880,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
 		    if (prescriptionCollection.getItems() != null) {
 			Prescription prescription = new Prescription();
+			List<TestAndRecordData> tests = prescriptionCollection.getTests();
+			prescriptionCollection.setTests(null);
 			BeanUtil.map(prescriptionCollection, prescription);
 			List<PrescriptionItemDetail> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetail>();
 			for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
@@ -895,9 +899,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(prescription.getId());
 			if (patientVisitCollection != null)prescription.setVisitId(patientVisitCollection.getId());
 			
-			if(prescriptionCollection.getTests() != null && !prescriptionCollection.getTests().isEmpty()){
+			if(tests != null && !tests.isEmpty()){
 				List<TestAndRecordDataResponse> labTests = new ArrayList<TestAndRecordDataResponse>();
-			    	for(TestAndRecordData data : prescriptionCollection.getTests()){
+			    	for(TestAndRecordData data : tests){
 			    		LabTestCollection labTestCollection = labTestRepository.findOne(data.getLabTestId());
 			    		DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(labTestCollection.getTestId());
 			    		LabTest labTest = new LabTest();DiagnosticTest diagnosticTest = new DiagnosticTest();
@@ -1403,6 +1407,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    if (prescriptionCollections != null && !prescriptionCollections.isEmpty()) {
 		for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
 		    prescription = new Prescription();
+		    List<TestAndRecordData> tests = prescriptionCollection.getTests();
+			prescriptionCollection.setTests(null);
 		    BeanUtil.map(prescriptionCollection, prescription);
 		    if (prescriptionCollection.getItems() != null && !prescriptionCollection.getItems().isEmpty()) {
 			List<PrescriptionItemDetail> prescriptionItemDetails = new ArrayList<PrescriptionItemDetail>();
@@ -1420,7 +1426,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(prescription.getId());
 			if (patientVisitCollection != null)prescription.setVisitId(patientVisitCollection.getId());
 			
-			if(prescriptionCollection.getTests() != null && !prescriptionCollection.getTests().isEmpty()){
+			if(tests != null && !tests.isEmpty()){
 				List<TestAndRecordDataResponse> labTests = new ArrayList<TestAndRecordDataResponse>();
 			    	for(TestAndRecordData data : prescriptionCollection.getTests()){
 			    		LabTestCollection labTestCollection = labTestRepository.findOne(data.getLabTestId());

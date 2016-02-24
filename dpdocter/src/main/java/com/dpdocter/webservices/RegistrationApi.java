@@ -105,6 +105,7 @@ public class RegistrationApi {
 	    solrRegistrationService.editPatient(getSolrPatientDocument(registeredPatientDetails));
 	}
 	registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));
+	registeredPatientDetails.setThumbnailUrl(getFinalImageURL(registeredPatientDetails.getThumbnailUrl()));
 	response.setData(registeredPatientDetails);
 	return response;
     }
@@ -124,6 +125,7 @@ public class RegistrationApi {
 	solrRegistrationService.editPatient(getSolrPatientDocument(registeredPatientDetails));
 
 	registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));
+	registeredPatientDetails.setThumbnailUrl(getFinalImageURL(registeredPatientDetails.getThumbnailUrl()));
 	response.setData(registeredPatientDetails);
 	return response;
     }
@@ -642,6 +644,17 @@ public class RegistrationApi {
 
 	PatientStatusResponse patientStatusResponse = registrationService.getPatientStatus(patientId, doctorId, locationId, hospitalId);
 	response.setData(patientStatusResponse);
+	return response;
+    }
+
+    @Path(value = PathProxy.RegistrationUrls.GET_DOCTOR_FEEDBACK)
+    @GET
+    public Response<Feedback> getFeedback(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+    		@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+	
+	List<Feedback> feedbacks = registrationService.getFeedback(page, size, doctorId, locationId, hospitalId, updatedTime);
+	Response<Feedback> response = new Response<Feedback>();
+	response.setDataList(feedbacks);
 	return response;
     }
 

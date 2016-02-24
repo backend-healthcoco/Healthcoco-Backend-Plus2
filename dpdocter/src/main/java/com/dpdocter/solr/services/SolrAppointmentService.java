@@ -14,7 +14,7 @@ public interface SolrAppointmentService {
 
     boolean addSpeciality(List<SolrSpecialityDocument> request);
 
-    List<SolrDoctorDocument> getDoctors(String city, String location, String latitude, String longitude, String speciality, String symptom, Boolean booking, Boolean calling, String minFee,
+    List<SolrDoctorDocument> getDoctors(int page, int size, String city, String location, String latitude, String longitude, String speciality, String symptom, Boolean booking, Boolean calling, String minFee,
 	    String maxFee, String minTime, String maxTime, List<String> days, String gender, String minExperience, String maxExperience);
 
     List<AppointmentSearchResponse> search(String city, String location, String latitude, String longitude, String searchTerm);

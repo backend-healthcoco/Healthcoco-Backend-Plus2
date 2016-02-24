@@ -38,7 +38,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
     private List<WorkingSchedule> workingSchedules;
 
     @Field
-    private DoctorFacility facility = DoctorFacility.BOOK;
+    private DoctorFacility facility = DoctorFacility.CALL;
 
     @Field
     private Integer noOfReviews = 0;

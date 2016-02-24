@@ -85,6 +85,9 @@ public class LocationCollection extends GenericCollection {
     private boolean isTwentyFourSevenOpen;
 
     @Field
+    private Boolean isClinic = true;
+    
+    @Field
     private Boolean isLab = false;
 
     @Field
@@ -320,15 +323,26 @@ public class LocationCollection extends GenericCollection {
 	this.isHomeServiceAvailable = isHomeServiceAvailable;
     }
 
-    @Override
-    public String toString() {
-	return "LocationCollection [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city
-		+ ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", images=" + images
-		+ ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude="
-		+ longitude + ", tagLine=" + tagLine + ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress=" + locationEmailAddress
-		+ ", specialization=" + specialization + ", streetAddress=" + streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber
-		+ ", alternateNumbers=" + alternateNumbers + ", workingSchedules=" + workingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen
-		+ ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
-		+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + "]";
-    }
+	public Boolean getIsClinic() {
+		return isClinic;
+	}
+
+	public void setIsClinic(Boolean isClinic) {
+		this.isClinic = isClinic;
+	}
+
+	@Override
+	public String toString() {
+		return "LocationCollection [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state="
+				+ state + ", city=" + city + ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode="
+				+ postalCode + ", websiteUrl=" + websiteUrl + ", images=" + images + ", logoUrl=" + logoUrl
+				+ ", logoThumbnailUrl=" + logoThumbnailUrl + ", hospitalId=" + hospitalId + ", latitude=" + latitude
+				+ ", longitude=" + longitude + ", tagLine=" + tagLine + ", landmarkDetails=" + landmarkDetails
+				+ ", locationEmailAddress=" + locationEmailAddress + ", specialization=" + specialization
+				+ ", streetAddress=" + streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber
+				+ ", alternateNumbers=" + alternateNumbers + ", workingSchedules=" + workingSchedules
+				+ ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + ", isClinic=" + isClinic + ", isLab=" + isLab
+				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
+				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + "]";
+	}
 }

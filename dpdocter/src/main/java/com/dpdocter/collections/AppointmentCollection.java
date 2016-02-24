@@ -55,6 +55,9 @@ public class AppointmentCollection extends GenericCollection {
     @Field
     private Boolean isCalenderBlocked = false;
 
+    @Field
+    private Boolean isFeedbackAvailable = false;
+    
     public String getId() {
 	return id;
     }
@@ -167,10 +170,20 @@ public class AppointmentCollection extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
-    @Override
-    public String toString() {
-	return "AppointmentCollection [id=" + id + ", subject=" + subject + ", description=" + description + ", doctorId=" + doctorId + ", locationId="
-		+ locationId + ", hospitalId=" + hospitalId + ", appointmentId=" + appointmentId + ", time=" + time + ", patientId=" + patientId + ", state="
-		+ state + ", type=" + type + ", isReschduled=" + isReschduled + ", date=" + date + ", isCalenderBlocked=" + isCalenderBlocked + "]";
-    }
+	public Boolean getIsFeedbackAvailable() {
+		return isFeedbackAvailable;
+	}
+
+	public void setIsFeedbackAvailable(Boolean isFeedbackAvailable) {
+		this.isFeedbackAvailable = isFeedbackAvailable;
+	}
+
+	@Override
+	public String toString() {
+		return "AppointmentCollection [id=" + id + ", subject=" + subject + ", description=" + description
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", appointmentId=" + appointmentId + ", time=" + time + ", patientId=" + patientId + ", state="
+				+ state + ", type=" + type + ", isReschduled=" + isReschduled + ", date=" + date
+				+ ", isCalenderBlocked=" + isCalenderBlocked + ", isFeedbackAvailable=" + isFeedbackAvailable + "]";
+	}
 }

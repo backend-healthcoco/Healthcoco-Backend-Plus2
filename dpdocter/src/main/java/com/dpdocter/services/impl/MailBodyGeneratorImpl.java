@@ -30,8 +30,8 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
     @Autowired
     private VelocityEngine velocityEngine;
 
-    @Value(value = "${IMAGE_URL_ROOT_PATH}")
-    private String imageUrlRootPath;
+    @Value(value = "${IMAGE_PATH}")
+    private String imagePath;
 
     @Override
     public String generateActivationEmailBody(String userName, String fName, String mName, String lName, String tokenId, UriInfo uriInfo) throws Exception {
@@ -39,7 +39,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	Map<String, Object> model = new HashMap<String, Object>();
 	model.put("fName", fName);
 	model.put("link", uriInfo.getBaseUri() + link + tokenId);
-	model.put("imageURL", uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath)+"templatesImage/");
+	model.put("imageURL", imagePath+"templatesImage/");
 	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "mailTemplate.vm", "UTF-8", model);
 	return text;
     }
@@ -50,7 +50,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
     	model.put("fName", fName);
     	model.put("emailAddress", emailAddress);
     	model.put("link", RESET_PASSWORD_LINK + "?uid=" + userId);
-    	model.put("imageURL", uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath)+"templatesImage/");
+    	model.put("imageURL", imagePath+"templatesImage/");
     	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "forgotPasswordTemplate.vm", "UTF-8", model);
     	return text;
     }
@@ -86,7 +86,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		Map<String, Object> model = new HashMap<String, Object>();
     	model.put("fName", firstName);
     	model.put("link", RESET_PASSWORD_WEB_LINK);
-    	model.put("imageURL", uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath)+"templatesImage/");
+    	model.put("imageURL", imagePath+"templatesImage/");
     	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "resetPasswordSuccess.vm", "UTF-8", model);
     	return text;
 	}
@@ -96,7 +96,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		Map<String, Object> model = new HashMap<String, Object>();
     	model.put("fName", firstName);
     	model.put("doctorName", doctorName);
-    	model.put("imageURL", uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath)+"templatesImage/");
+    	model.put("imageURL", imagePath+"templatesImage/");
     	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "recordShareOtpBeforeVerificationTemplate.vm", "UTF-8", model);
     	return text;
     }
@@ -106,7 +106,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		Map<String, Object> model = new HashMap<String, Object>();
     	model.put("fName", firstName);
     	model.put("doctorName", doctorName);
-    	model.put("imageURL", uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath)+"templatesImage/");
+    	model.put("imageURL", imagePath+"templatesImage/");
     	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "recordShareOtpAfterVerificationTemplate.vm", "UTF-8", model);
     	return text;
 	}

@@ -36,6 +36,12 @@ public class Appointment extends GenericCollection {
 
     private Boolean isCalenderBlocked = false;
 
+    private Boolean isFeedbackAvailable = false;
+
+    private String doctorName;
+
+    private String locationName;
+
     public String getId() {
 	return id;
     }
@@ -148,10 +154,37 @@ public class Appointment extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
-    @Override
-    public String toString() {
-	return "Appointment [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", time=" + time
-		+ ", patient=" + patient + ", state=" + state + ", isReschduled=" + isReschduled + ", date=" + date + ", appointmentId=" + appointmentId
-		+ ", subject=" + subject + ", description=" + description + ", type=" + type + ", isCalenderBlocked=" + isCalenderBlocked + "]";
-    }
+	public Boolean getIsFeedbackAvailable() {
+		return isFeedbackAvailable;
+	}
+
+	public void setIsFeedbackAvailable(Boolean isFeedbackAvailable) {
+		this.isFeedbackAvailable = isFeedbackAvailable;
+	}
+
+	public String getDoctorName() {
+		return doctorName;
+	}
+
+	public void setDoctorName(String doctorName) {
+		this.doctorName = doctorName;
+	}
+
+	public String getLocationName() {
+		return locationName;
+	}
+
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
+	}
+
+	@Override
+	public String toString() {
+		return "Appointment [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", time=" + time + ", patient=" + patient + ", state=" + state + ", isReschduled="
+				+ isReschduled + ", date=" + date + ", appointmentId=" + appointmentId + ", subject=" + subject
+				+ ", description=" + description + ", type=" + type + ", isCalenderBlocked=" + isCalenderBlocked
+				+ ", isFeedbackAvailable=" + isFeedbackAvailable + ", doctorName=" + doctorName + ", locationName="
+				+ locationName + "]";
+	}
 }

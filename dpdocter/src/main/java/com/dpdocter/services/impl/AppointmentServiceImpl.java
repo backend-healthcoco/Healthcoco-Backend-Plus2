@@ -225,10 +225,12 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public List<City> getCities() {
+    public List<City> getCities(String stateId) {
 	List<City> response = new ArrayList<City>();
 	try {
-	    List<CityCollection> cities = cityRepository.findAll();
+	    List<CityCollection> cities = null;
+	    if(DPDoctorUtils.allStringsEmpty(stateId))cities = cityRepository.findAll();
+	    else cities = cityRepository.findAll(stateId);
 	    if (cities != null) {
 		BeanUtil.map(cities, response);
 	    }
@@ -708,9 +710,16 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    		patient = new PatientCard();
 			    	BeanUtil.map(userCollection, patient);
 		    	}		    	
-		    			    	
 		    	BeanUtil.map(collection, appointment);
 		    	appointment.setPatient(patient);
+		    	if(collection.getDoctorId() != null){
+		    		UserCollection doctor = userRepository.findOne(collection.getDoctorId());
+		    		if(doctor != null)appointment.setDoctorName(doctor.getFirstName());
+		    	}
+		    	if(collection.getLocationId() != null){
+		    		LocationCollection locationCollection = locationRepository.findOne(collection.getLocationId());
+		    		if(locationCollection != null)appointment.setLocationName(locationCollection.getLocationName());
+		    	}
 		    	response.add(appointment);
 		    }
 		}
@@ -749,8 +758,20 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    else appointmentCollections = mongoTemplate.find(query.with(new Sort(Direction.DESC, "date")), AppointmentCollection.class);
 			
 		    if (appointmentCollections != null) {
-			    response = new ArrayList<Appointment>();
-			    BeanUtil.map(appointmentCollections, response);
+			    response = new ArrayList<Appointment>();   
+			    for(AppointmentCollection collection : appointmentCollections){
+			    	Appointment appointment = new Appointment();
+			     	BeanUtil.map(collection, appointment);
+			    	if(collection.getDoctorId() != null){
+			    		UserCollection doctor = userRepository.findOne(collection.getDoctorId());
+			    		if(doctor != null)appointment.setDoctorName(doctor.getFirstName());
+			    	}
+			    	if(collection.getLocationId() != null){
+			    		LocationCollection locationCollection = locationRepository.findOne(collection.getLocationId());
+			    		if(locationCollection != null)appointment.setLocationName(locationCollection.getLocationName());
+			    	}
+			    	response.add(appointment);
+			    }
 			}
 		} catch (Exception e) {
 		    e.printStackTrace();
@@ -862,10 +883,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	@Override
-	public List<State> getStates() {
+	public List<State> getStates(String countryId) {
 		List<State> response = new ArrayList<State>();
 		try {
-		    List<StateCollection> states = stateRepository.findAll();
+		    List<StateCollection> states = null;
+		    if(DPDoctorUtils.anyStringEmpty(countryId))states = stateRepository.findAll();
+		    else states = stateRepository.findAll(countryId);
 		    if (states != null) {
 		    	BeanUtil.map(states, response);
 		    }

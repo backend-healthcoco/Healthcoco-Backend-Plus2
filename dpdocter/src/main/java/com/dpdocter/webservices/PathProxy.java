@@ -147,7 +147,9 @@ public interface PathProxy {
 	public static final String ADD_FEEDBACK = "/feedback/add";
 
 	public static final String VISIBLE_FEEDBACK = "/feedback/visible/{feedbackId}";
-	
+
+	public static final String GET_DOCTOR_FEEDBACK = "/feedback";
+
 	public static final String GET_PATIENT_STATUS = "/patientStatus/{patientId}/{doctorId}/{locationId}/{hospitalId}";
     }
 
@@ -577,6 +579,10 @@ public interface PathProxy {
 	public static final String ACTIVATE_DEACTIVATE_CITY = "/activateCity/{cityId}";
 
 	public static final String GET_CITY = "/cities";
+	
+	public static final String GET_COUNTRIES = "/countries";
+	
+	public static final String GET_STATES = "/states";
 
 	public static final String GET_CITY_ID = "/getCity/{cityId}";
 

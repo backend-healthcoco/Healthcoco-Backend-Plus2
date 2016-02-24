@@ -4,6 +4,8 @@ public class ClinicLabProperties {
 
     private String id;
 
+    private Boolean isClinic = true;
+    
     private Boolean isLab = false;
 
     private Boolean isOnlineReportsAvailable = false;
@@ -52,9 +54,18 @@ public class ClinicLabProperties {
 	this.isHomeServiceAvailable = isHomeServiceAvailable;
     }
 
-    @Override
-    public String toString() {
-	return "ClinicLabProperties [id=" + id + ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited="
-		+ isNABLAccredited + ", isHomeServiceAvailable=" + isHomeServiceAvailable + "]";
-    }
+	public Boolean getIsClinic() {
+		return isClinic;
+	}
+
+	public void setIsClinic(Boolean isClinic) {
+		this.isClinic = isClinic;
+	}
+
+	@Override
+	public String toString() {
+		return "ClinicLabProperties [id=" + id + ", isClinic=" + isClinic + ", isLab=" + isLab
+				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
+				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + "]";
+	}
 }

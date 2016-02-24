@@ -80,6 +80,8 @@ public class SolrDoctor extends DoctorLocation{
 
     private List<String> specialization;
 
+    private Boolean isClinic = true;
+    
     private Boolean isLab = false;
     
     private Boolean isOnlineReportsAvailable = false;
@@ -428,6 +430,14 @@ public class SolrDoctor extends DoctorLocation{
 		this.logoUrl = logoUrl;
 	}
 
+	public Boolean getIsClinic() {
+		return isClinic;
+	}
+
+	public void setIsClinic(Boolean isClinic) {
+		this.isClinic = isClinic;
+	}
+
 	@Override
 	public String toString() {
 		return "SolrDoctor [userId=" + userId + ", firstName=" + firstName + ", gender=" + gender + ", emailAddress="
@@ -442,8 +452,8 @@ public class SolrDoctor extends DoctorLocation{
 				+ ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress=" + locationEmailAddress
 				+ ", streetAddress=" + streetAddress + ", locality=" + locality + ", locationMobileNumber="
 				+ locationMobileNumber + ", alternateNumbers=" + alternateNumbers + ", specialization=" + specialization
-				+ ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited="
-				+ isNABLAccredited + ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", images=" + images
-				+ ", logoUrl=" + logoUrl + "]";
+				+ ", isClinic=" + isClinic + ", isLab=" + isLab + ", isOnlineReportsAvailable="
+				+ isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited + ", isHomeServiceAvailable="
+				+ isHomeServiceAvailable + ", images=" + images + ", logoUrl=" + logoUrl + "]";
 	}
 }

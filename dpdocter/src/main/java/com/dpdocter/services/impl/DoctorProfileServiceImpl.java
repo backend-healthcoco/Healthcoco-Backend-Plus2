@@ -422,8 +422,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		for (Iterator<UserLocationCollection> iterator = userLocationCollections.iterator(); iterator.hasNext();) {
 		    UserLocationCollection userLocationCollection = iterator.next();
 		    DoctorClinicProfileCollection doctorClinicCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
-		    if (doctorClinicCollection != null)
-			BeanUtil.map(doctorClinicCollection, doctorClinic);
+		    
 
 		    locationCollection = locationRepository.findOne(userLocationCollection.getLocationId());
 		    if(locationCollection != null){
@@ -436,16 +435,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 							    && locationCollection.getPostalCode() == null ? ", "
 							    : "" + locationCollection.getCountry() != null ? locationCollection.getCountry() : "";
 
-				    doctorClinic.setLocationName(locationCollection.getLocationName());
 				    doctorClinic.setClinicAddress(address);
-				    doctorClinic.setImages(locationCollection.getImages());
-				    doctorClinic.setLogoUrl(locationCollection.getLogoUrl());
-				    doctorClinic.setLogoThumbnailUrl(locationCollection.getLogoThumbnailUrl());
-				    doctorClinic.setCity(locationCollection.getCity());
-				    doctorClinic.setState(locationCollection.getState());
-				    doctorClinic.setCountry(locationCollection.getCountry());
-				    doctorClinic.setPostalCode(locationCollection.getPostalCode());
+				    BeanUtil.map(locationCollection, doctorClinic);
 		    }
+		    if (doctorClinicCollection != null)	BeanUtil.map(doctorClinicCollection, doctorClinic);
 		    doctorClinic.setLocationId(userLocationCollection.getLocationId());
 		    doctorClinic.setDoctorId(doctorId);
 		    clinicProfile.add(doctorClinic);
@@ -455,32 +448,24 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		if (userLocationCollection != null) {
 		    DoctorClinicProfileCollection doctorClinicCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
 
-		    if (doctorClinicCollection != null)
-			BeanUtil.map(doctorClinicCollection, doctorClinic);
-
 		    locationCollection = locationRepository.findOne(locationId);
-		    String address = locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() + ", "
-			    : "" + locationCollection.getCity() != null ? locationCollection.getCity() + ", "
-				    : "" + locationCollection.getState() != null ? locationCollection.getState()
-					    : "" + locationCollection.getState() != null && locationCollection.getPostalCode() != null ? " - "
-						    : "" + locationCollection.getPostalCode() != null ? locationCollection.getPostalCode() + ", "
-							    : "" + locationCollection.getState() != null && locationCollection.getPostalCode() == null ? ", "
-								    : "" + locationCollection.getCountry() != null ? locationCollection.getCountry() : "";
+		    if(locationCollection != null){
+		    	String address = locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() + ", "
+					    : "" + locationCollection.getCity() != null ? locationCollection.getCity() + ", "
+						    : "" + locationCollection.getState() != null ? locationCollection.getState()
+							    : "" + locationCollection.getState() != null && locationCollection.getPostalCode() != null ? " - "
+								    : "" + locationCollection.getPostalCode() != null ? locationCollection.getPostalCode() + ", "
+									    : "" + locationCollection.getState() != null && locationCollection.getPostalCode() == null ? ", "
+										    : "" + locationCollection.getCountry() != null ? locationCollection.getCountry() : "";
 
-			doctorClinic.setLocationName(locationCollection.getLocationName());
-			doctorClinic.setClinicAddress(address);
-			doctorClinic.setImages(locationCollection.getImages());
-			doctorClinic.setLogoUrl(locationCollection.getLogoUrl());
-			doctorClinic.setLogoThumbnailUrl(locationCollection.getLogoThumbnailUrl());
-			doctorClinic.setCity(locationCollection.getCity());
-			doctorClinic.setState(locationCollection.getState());
-			doctorClinic.setCountry(locationCollection.getCountry());
-			doctorClinic.setPostalCode(locationCollection.getPostalCode());
-			doctorClinic.setLocationId(userLocationCollection.getLocationId());
+					BeanUtil.map(locationCollection, doctorClinic);
+					doctorClinic.setClinicAddress(address);
+		    }
+		    doctorClinic.setLocationId(userLocationCollection.getLocationId());
 			doctorClinic.setDoctorId(userLocationCollection.getUserId());
 		    clinicProfile.add(doctorClinic);
-
-		}
+		    if (doctorClinicCollection != null)	BeanUtil.map(doctorClinicCollection, doctorClinic);
+	    }
 	    }
 	    doctorProfile = new DoctorProfile();
 	    BeanUtil.map(userCollection, doctorProfile);

@@ -971,14 +971,14 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
 			    observationCollections = solrObservationsRepository.findCustomGlobalObservations(doctorId, new Date(createdTimeStamp), discarded,
-				    new Sort(Sort.Direction.DESC, "createdTime"));
+				    new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
 			    observationCollections = solrObservationsRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId,
 				    new Date(createdTimeStamp), discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
 			    observationCollections = solrObservationsRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId,
-				    new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "createdTime"));
+				    new Date(createdTimeStamp), discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
 
 		    }
 		} else {
@@ -988,14 +988,14 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 				    searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
 			    observationCollections = solrObservationsRepository.findCustomGlobalObservations(doctorId, new Date(createdTimeStamp), discarded,
-				    searchTerm, new Sort(Sort.Direction.DESC, "createdTime"));
+				    searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
 			    observationCollections = solrObservationsRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId,
 				    new Date(createdTimeStamp), discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
 			    observationCollections = solrObservationsRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId,
-				    new Date(createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "createdTime"));
+				    new Date(createdTimeStamp), discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
 
 		    }
 		}
@@ -1120,7 +1120,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
 			    diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(doctorId, new Date(createdTimeStamp), discarded,
-				    new Sort(Sort.Direction.DESC, "createdTime"));
+				    new Sort(Sort.Direction.DESC, "updatedTime"));
 
 		    } else {
 			if (size > 0)
@@ -1137,7 +1137,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 				    searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
 			    diagnosisCollections = solrDiagnosesRepository.findCustomGlobalDiagnosis(doctorId, new Date(createdTimeStamp), discarded,
-				    searchTerm, new Sort(Sort.Direction.DESC, "createdTime"));
+				    searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
 
 		    } else {
 			if (size > 0)
@@ -1273,7 +1273,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 				    discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
 			    notesCollections = solrNotesRepository.findCustomGlobalNotes(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-				    discarded, new Sort(Sort.Direction.DESC, "createdTime"));
+				    discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
 		    }
 		} else {
 		    if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
@@ -1289,7 +1289,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 				    discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
 			    notesCollections = solrNotesRepository.findCustomGlobalNotes(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-				    discarded, searchTerm, new Sort(Sort.Direction.DESC, "createdTime"));
+				    discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
 		    }
 		}
 	    }

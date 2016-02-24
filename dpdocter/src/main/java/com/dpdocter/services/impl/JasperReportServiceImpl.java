@@ -47,7 +47,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 	    DefaultJasperReportsContext context = DefaultJasperReportsContext.getInstance();
 	    context.setValue("net.sf.jasperreports.extension.registry.factory.queryexecuters.mongodb",
 		    "com.jaspersoft.mongodb.query.MongoDbQueryExecuterExtensionsRegistryFactory");
-	    JRPropertiesUtil propertiesUtil = JRPropertiesUtil.getInstance(context);
+//	    JRPropertiesUtil propertiesUtil = JRPropertiesUtil.getInstance(context);
 
 	    JRProperties.setProperty("net.sf.jasperreports.query.executer.factory.MongoDbQuery", "com.jaspersoft.mongodb.query.MongoDbQueryExecuterFactory");
 	    JasperDesign design = JRXmlLoader.load(new File(REPORT_NAME + fileName + ".jrxml"));
