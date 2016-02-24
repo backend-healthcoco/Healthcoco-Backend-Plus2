@@ -15,7 +15,6 @@ import com.jaspersoft.mongodb.connection.MongoDbConnection;
 import ar.com.fdvs.dj.domain.constants.Page;
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -34,7 +33,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
     @Value(value = "${JASPER_TEMPLATES_RESOURCE}")
     private String REPORT_NAME;
-       
+
     @SuppressWarnings("deprecation")
     @Override
     public String createPDF(Map<String, Object> parameters, String fileName, String layout, String pageSize, String margins, String pdfName) {
@@ -47,7 +46,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 	    DefaultJasperReportsContext context = DefaultJasperReportsContext.getInstance();
 	    context.setValue("net.sf.jasperreports.extension.registry.factory.queryexecuters.mongodb",
 		    "com.jaspersoft.mongodb.query.MongoDbQueryExecuterExtensionsRegistryFactory");
-//	    JRPropertiesUtil propertiesUtil = JRPropertiesUtil.getInstance(context);
+	    // JRPropertiesUtil propertiesUtil =
+	    // JRPropertiesUtil.getInstance(context);
 
 	    JRProperties.setProperty("net.sf.jasperreports.query.executer.factory.MongoDbQuery", "com.jaspersoft.mongodb.query.MongoDbQueryExecuterFactory");
 	    JasperDesign design = JRXmlLoader.load(new File(REPORT_NAME + fileName + ".jrxml"));

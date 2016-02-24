@@ -35,7 +35,7 @@ public class SolrClinicalNotesApi {
     // private static Logger logger =
     // Logger.getLogger(SolrClinicalNotesApi.class.getName());
 
-	@Value(value = "${IMAGE_PATH}")
+    @Value(value = "${IMAGE_PATH}")
     private String imagePath;
 
     @Autowired
@@ -332,9 +332,9 @@ public class SolrClinicalNotesApi {
     }
 
     private String getFinalImageURL(String imageURL) {
-    	if (imageURL != null) {
-    	    return imagePath + imageURL;
-    	} else
-    	    return null;
-        }
+	if (imageURL != null) {
+	    return imagePath + imageURL;
+	} else
+	    return null;
+    }
 }

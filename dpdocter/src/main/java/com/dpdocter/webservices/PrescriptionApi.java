@@ -191,7 +191,8 @@ public class PrescriptionApi {
 	transnationalService.addResource(labTestResponse.getId(), Resource.LABTEST, false);
 	SolrLabTestDocument solrLabTestDocument = new SolrLabTestDocument();
 	BeanUtil.map(labTestResponse, solrLabTestDocument);
-	if(labTestResponse.getTest()!= null)solrLabTestDocument.setTestId(labTestResponse.getTest().getId());
+	if (labTestResponse.getTest() != null)
+	    solrLabTestDocument.setTestId(labTestResponse.getTest().getId());
 	solrPrescriptionService.addLabTest(solrLabTestDocument);
 	Response<LabTest> response = new Response<LabTest>();
 	response.setData(labTestResponse);
@@ -210,7 +211,8 @@ public class PrescriptionApi {
 	transnationalService.addResource(labTestId, Resource.LABTEST, false);
 	SolrLabTestDocument solrLabTestDocument = new SolrLabTestDocument();
 	BeanUtil.map(labTestResponse, solrLabTestDocument);
-	if(labTestResponse.getTest()!= null)solrLabTestDocument.setTestId(labTestResponse.getTest().getId());
+	if (labTestResponse.getTest() != null)
+	    solrLabTestDocument.setTestId(labTestResponse.getTest().getId());
 	solrPrescriptionService.editLabTest(solrLabTestDocument);
 
 	Response<LabTest> response = new Response<LabTest>();

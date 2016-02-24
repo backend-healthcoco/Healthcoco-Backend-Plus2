@@ -66,7 +66,7 @@ public class RecordsCollection extends GenericCollection {
 
     @Field
     private Boolean isFeedbackAvailable = false;
-    
+
     public String getId() {
 	return id;
     }
@@ -211,31 +211,29 @@ public class RecordsCollection extends GenericCollection {
 	this.testId = testId;
     }
 
-	public Boolean getInHistory() {
-		return inHistory;
-	}
+    public Boolean getInHistory() {
+	return inHistory;
+    }
 
-	public void setInHistory(Boolean inHistory) {
-		this.inHistory = inHistory;
-	}
+    public void setInHistory(Boolean inHistory) {
+	this.inHistory = inHistory;
+    }
 
-	public Boolean getIsFeedbackAvailable() {
-		return isFeedbackAvailable;
-	}
+    public Boolean getIsFeedbackAvailable() {
+	return isFeedbackAvailable;
+    }
 
-	public void setIsFeedbackAvailable(Boolean isFeedbackAvailable) {
-		this.isFeedbackAvailable = isFeedbackAvailable;
-	}
+    public void setIsFeedbackAvailable(Boolean isFeedbackAvailable) {
+	this.isFeedbackAvailable = isFeedbackAvailable;
+    }
 
-	@Override
-	public String toString() {
-		return "RecordsCollection [id=" + id + ", uniqueId=" + uniqueId + ", recordsUrl=" + recordsUrl
-				+ ", recordsPath=" + recordsPath + ", recordsLable=" + recordsLable + ", recordsType=" + recordsType
-				+ ", description=" + description + ", patientId=" + patientId + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
-				+ ", inHistory=" + inHistory + ", uploadedByLocation=" + uploadedByLocation + ", prescriptionId="
-				+ prescriptionId + ", prescribedByDoctorId=" + prescribedByDoctorId + ", prescribedByLocationId="
-				+ prescribedByLocationId + ", prescribedByHospitalId=" + prescribedByHospitalId + ", testId=" + testId
-				+ ", isFeedbackAvailable=" + isFeedbackAvailable + "]";
-	}
+    @Override
+    public String toString() {
+	return "RecordsCollection [id=" + id + ", uniqueId=" + uniqueId + ", recordsUrl=" + recordsUrl + ", recordsPath=" + recordsPath + ", recordsLable="
+		+ recordsLable + ", recordsType=" + recordsType + ", description=" + description + ", patientId=" + patientId + ", doctorId=" + doctorId
+		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", inHistory=" + inHistory
+		+ ", uploadedByLocation=" + uploadedByLocation + ", prescriptionId=" + prescriptionId + ", prescribedByDoctorId=" + prescribedByDoctorId
+		+ ", prescribedByLocationId=" + prescribedByLocationId + ", prescribedByHospitalId=" + prescribedByHospitalId + ", testId=" + testId
+		+ ", isFeedbackAvailable=" + isFeedbackAvailable + "]";
+    }
 }

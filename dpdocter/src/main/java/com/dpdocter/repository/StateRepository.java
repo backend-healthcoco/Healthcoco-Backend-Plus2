@@ -13,6 +13,6 @@ public interface StateRepository extends MongoRepository<StateCollection, String
     StateCollection findByName(String state);
 
     @Query("{'countryId': ?0}")
-	List<StateCollection> findAll(String countryId);
+    List<StateCollection> findAll(String countryId);
 
 }

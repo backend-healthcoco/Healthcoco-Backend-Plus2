@@ -49,7 +49,7 @@ public class MailServiceImpl implements MailService {
 
     @Value(value = "${mail.aws.secret.key}")
     private String AWS_SECRET_KEY;
-    
+
     /**
      * @param String
      *            to
@@ -63,73 +63,73 @@ public class MailServiceImpl implements MailService {
      */
     @Override
     public void sendEmail(String to, String subject, String body, MailAttachment mailAttachment) throws MessagingException {
-     try{
-	   	 Session session = Session.getInstance(new Properties()); 
-	   	 MimeMessage mimeMessage = new MimeMessage(session);
-	   	 mimeMessage.setSubject(subject); 
-	   	 
-	   	 MimeMultipart mimeMultipart = new MimeMultipart(); 
-	   	 BodyPart p = new MimeBodyPart(); 
-	   	 p.setContent(body, "text/html"); 
-	   	 mimeMultipart.addBodyPart(p); 
-	   	mimeMessage.setContent(mimeMultipart, "multipart/mixed");
-	   	 if(mailAttachment != null){
-	   		 mimeMessage.setFileName(mailAttachment.getAttachmentName());
-	      	 DataSource ds;
-	      	 if(mailAttachment.getFileSystemResource() == null)
-	      		 ds = new ByteArrayDataSource(mailAttachment.getInputStream(), "application/octet-stream");
-	      	 else 
-	      		 ds = new ByteArrayDataSource(new FileInputStream(mailAttachment.getFileSystemResource().getFile()), "application/octet-stream");
-	      	 mimeMessage.setDataHandler(new DataHandler(ds));
-	   	 }
-	   		 
-	   	 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	   	 mimeMessage.writeTo(outputStream);
-	   	 RawMessage rawMessage = new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
-	
-	   	 List<String> list = Arrays.asList(to);
-	   	 SendRawEmailRequest rawEmailRequest = new SendRawEmailRequest(rawMessage);
-	   	 rawEmailRequest.setDestinations(list);
-	   	 rawEmailRequest.setSource(FROM);
-	   	 BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
-	   	 new AmazonSimpleEmailServiceClient(credentials).sendRawEmail(rawEmailRequest); 
-        }catch (Exception ex) {
-            System.out.println("The email was not sent.");
-            System.out.println("Error message: " + ex.getMessage());
-        }
+	try {
+	    Session session = Session.getInstance(new Properties());
+	    MimeMessage mimeMessage = new MimeMessage(session);
+	    mimeMessage.setSubject(subject);
+
+	    MimeMultipart mimeMultipart = new MimeMultipart();
+	    BodyPart p = new MimeBodyPart();
+	    p.setContent(body, "text/html");
+	    mimeMultipart.addBodyPart(p);
+	    mimeMessage.setContent(mimeMultipart, "multipart/mixed");
+	    if (mailAttachment != null) {
+		mimeMessage.setFileName(mailAttachment.getAttachmentName());
+		DataSource ds;
+		if (mailAttachment.getFileSystemResource() == null)
+		    ds = new ByteArrayDataSource(mailAttachment.getInputStream(), "application/octet-stream");
+		else
+		    ds = new ByteArrayDataSource(new FileInputStream(mailAttachment.getFileSystemResource().getFile()), "application/octet-stream");
+		mimeMessage.setDataHandler(new DataHandler(ds));
+	    }
+
+	    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+	    mimeMessage.writeTo(outputStream);
+	    RawMessage rawMessage = new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
+
+	    List<String> list = Arrays.asList(to);
+	    SendRawEmailRequest rawEmailRequest = new SendRawEmailRequest(rawMessage);
+	    rawEmailRequest.setDestinations(list);
+	    rawEmailRequest.setSource(FROM);
+	    BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+	    new AmazonSimpleEmailServiceClient(credentials).sendRawEmail(rawEmailRequest);
+	} catch (Exception ex) {
+	    System.out.println("The email was not sent.");
+	    System.out.println("Error message: " + ex.getMessage());
+	}
     }
 
     @Override
     public void sendEmailMultiAttach(String to, String subject, String body, List<MailAttachment> mailAttachments) throws MessagingException {
-    	 try{
-    	   	 Session session = Session.getInstance(new Properties()); 
-    	   	 MimeMessage mimeMessage = new MimeMessage(session);
-    	   	 mimeMessage.setSubject(subject); 
-    	   	 MimeMultipart mimeMultipart = new MimeMultipart(); 
-    	   	 BodyPart p = new MimeBodyPart(); 
-    	   	 p.setContent(body, "text/html"); 
-    	   	 mimeMultipart.addBodyPart(p); 
+	try {
+	    Session session = Session.getInstance(new Properties());
+	    MimeMessage mimeMessage = new MimeMessage(session);
+	    mimeMessage.setSubject(subject);
+	    MimeMultipart mimeMultipart = new MimeMultipart();
+	    BodyPart p = new MimeBodyPart();
+	    p.setContent(body, "text/html");
+	    mimeMultipart.addBodyPart(p);
 
-    	   	if (mailAttachments != null && !mailAttachments.isEmpty()) {
-    		    for (MailAttachment mailAttachment : mailAttachments) {
-        		     mimeMessage.setFileName(mailAttachment.getAttachmentName());
-    		      	 DataSource ds = new ByteArrayDataSource(new FileInputStream(mailAttachment.getFileSystemResource().getFile()), "application/octet-stream");
-    		      	 mimeMessage.setDataHandler(new DataHandler(ds));
-    		    }
-    		}
-    	   	 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    	   	 mimeMessage.writeTo(outputStream);
-    	   	 RawMessage rawMessage = new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
-    	
-    	   	 List<String> list = Arrays.asList(to);
-    	   	 SendRawEmailRequest rawEmailRequest = new SendRawEmailRequest(rawMessage);
-    	   	 rawEmailRequest.setDestinations(list);
-    	   	 rawEmailRequest.setSource(FROM);
-    	   	 BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
-    	   	 new AmazonSimpleEmailServiceClient(credentials).sendRawEmail(rawEmailRequest); 
-            }catch (Exception ex) {
-                System.out.println("The email was not sent.");
-                System.out.println("Error message: " + ex.getMessage());
-            }
+	    if (mailAttachments != null && !mailAttachments.isEmpty()) {
+		for (MailAttachment mailAttachment : mailAttachments) {
+		    mimeMessage.setFileName(mailAttachment.getAttachmentName());
+		    DataSource ds = new ByteArrayDataSource(new FileInputStream(mailAttachment.getFileSystemResource().getFile()), "application/octet-stream");
+		    mimeMessage.setDataHandler(new DataHandler(ds));
+		}
+	    }
+	    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+	    mimeMessage.writeTo(outputStream);
+	    RawMessage rawMessage = new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
+
+	    List<String> list = Arrays.asList(to);
+	    SendRawEmailRequest rawEmailRequest = new SendRawEmailRequest(rawMessage);
+	    rawEmailRequest.setDestinations(list);
+	    rawEmailRequest.setSource(FROM);
+	    BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+	    new AmazonSimpleEmailServiceClient(credentials).sendRawEmail(rawEmailRequest);
+	} catch (Exception ex) {
+	    System.out.println("The email was not sent.");
+	    System.out.println("Error message: " + ex.getMessage());
+	}
     }
 }

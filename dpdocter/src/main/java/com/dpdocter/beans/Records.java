@@ -42,7 +42,7 @@ public class Records extends GenericCollection {
     private String testId;;
 
     private Boolean isFeedbackAvailable = false;
-    
+
     public String getId() {
 	return id;
     }
@@ -187,31 +187,29 @@ public class Records extends GenericCollection {
 	this.testId = testId;
     }
 
-	public Boolean getInHistory() {
-		return inHistory;
-	}
+    public Boolean getInHistory() {
+	return inHistory;
+    }
 
-	public void setInHistory(Boolean inHistory) {
-		this.inHistory = inHistory;
-	}
+    public void setInHistory(Boolean inHistory) {
+	this.inHistory = inHistory;
+    }
 
-	public Boolean getIsFeedbackAvailable() {
-		return isFeedbackAvailable;
-	}
+    public Boolean getIsFeedbackAvailable() {
+	return isFeedbackAvailable;
+    }
 
-	public void setIsFeedbackAvailable(Boolean isFeedbackAvailable) {
-		this.isFeedbackAvailable = isFeedbackAvailable;
-	}
+    public void setIsFeedbackAvailable(Boolean isFeedbackAvailable) {
+	this.isFeedbackAvailable = isFeedbackAvailable;
+    }
 
-	@Override
-	public String toString() {
-		return "Records [id=" + id + ", uniqueId=" + uniqueId + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", recordsUrl=" + recordsUrl
-				+ ", recordsLable=" + recordsLable + ", recordsType=" + recordsType + ", description=" + description
-				+ ", inHistory=" + inHistory + ", discarded=" + discarded + ", uploadedByLocation=" + uploadedByLocation
-				+ ", visitId=" + visitId + ", prescriptionId=" + prescriptionId + ", prescribedByDoctorId="
-				+ prescribedByDoctorId + ", prescribedByLocationId=" + prescribedByLocationId
-				+ ", prescribedByHospitalId=" + prescribedByHospitalId + ", testId=" + testId + ", isFeedbackAvailable="
-				+ isFeedbackAvailable + "]";
-	}
+    @Override
+    public String toString() {
+	return "Records [id=" + id + ", uniqueId=" + uniqueId + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+		+ ", patientId=" + patientId + ", recordsUrl=" + recordsUrl + ", recordsLable=" + recordsLable + ", recordsType=" + recordsType
+		+ ", description=" + description + ", inHistory=" + inHistory + ", discarded=" + discarded + ", uploadedByLocation=" + uploadedByLocation
+		+ ", visitId=" + visitId + ", prescriptionId=" + prescriptionId + ", prescribedByDoctorId=" + prescribedByDoctorId + ", prescribedByLocationId="
+		+ prescribedByLocationId + ", prescribedByHospitalId=" + prescribedByHospitalId + ", testId=" + testId + ", isFeedbackAvailable="
+		+ isFeedbackAvailable + "]";
+    }
 }

@@ -2,15 +2,15 @@ package com.dpdocter.enums;
 
 public enum UniqueIdInitial {
 
-	APPOINTMENT("H"),PRESCRIPTION("P"),REPORTS("R"),CLINICALNOTES("C"),VISITS("V");
-	
-	private String initial;
+    APPOINTMENT("H"), PRESCRIPTION("P"), REPORTS("R"), CLINICALNOTES("C"), VISITS("V");
 
-	private UniqueIdInitial(String initial) {
-		this.initial = initial;
-	}
+    private String initial;
 
-	public String getInitial() {
-		return initial;
-	}
+    private UniqueIdInitial(String initial) {
+	this.initial = initial;
+    }
+
+    public String getInitial() {
+	return initial;
+    }
 }

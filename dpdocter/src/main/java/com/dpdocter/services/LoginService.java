@@ -8,7 +8,7 @@ import com.dpdocter.request.LoginRequest;
 public interface LoginService {
     LoginResponse login(LoginRequest request);
 
-	LoginResponse loginPatient(LoginPatientRequest request);
+    LoginResponse loginPatient(LoginPatientRequest request);
 
-	User adminLogin(LoginPatientRequest request);
+    User adminLogin(LoginPatientRequest request);
 }

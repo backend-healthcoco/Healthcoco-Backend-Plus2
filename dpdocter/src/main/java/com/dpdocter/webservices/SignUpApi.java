@@ -74,12 +74,12 @@ public class SignUpApi {
 
 	User user = signUpService.adminSignUp(request);
 	if (user != null) {
-		if (user.getImageUrl() != null) {
-			user.setImageUrl(getFinalImageURL(user.getImageUrl()));
-		}
-		if (user.getThumbnailUrl() != null) {
-			user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
-		}
+	    if (user.getImageUrl() != null) {
+		user.setImageUrl(getFinalImageURL(user.getImageUrl()));
+	    }
+	    if (user.getThumbnailUrl() != null) {
+		user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
+	    }
 	}
 
 	Response<User> response = new Response<User>();
@@ -394,7 +394,7 @@ public class SignUpApi {
 		    solrDoctorDocument.setLocationId(locationAndAccessControl.getId());
 		}
 	    }
-	    solrDoctorDocument.setSpecialization(specialiazation);
+	    solrDoctorDocument.setSpecialities(specialiazation);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}

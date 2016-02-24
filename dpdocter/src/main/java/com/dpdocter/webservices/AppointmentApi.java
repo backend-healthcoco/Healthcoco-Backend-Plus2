@@ -147,19 +147,19 @@ public class AppointmentApi {
 	response.setDataList(countries);
 	return response;
     }
-    
+
     @Path(value = PathProxy.AppointmentUrls.GET_STATES)
     @GET
-    public Response<State> getStates(@QueryParam (value = "countryId") String countryId) {
+    public Response<State> getStates(@QueryParam(value = "countryId") String countryId) {
 	List<State> states = appointmentService.getStates(countryId);
 	Response<State> response = new Response<State>();
 	response.setDataList(states);
 	return response;
     }
-    
+
     @Path(value = PathProxy.AppointmentUrls.GET_CITY)
     @GET
-    public Response<City> getCities(@QueryParam (value = "stateId") String stateId) {
+    public Response<City> getCities(@QueryParam(value = "stateId") String stateId) {
 	List<City> cities = appointmentService.getCities(stateId);
 	Response<City> response = new Response<City>();
 	response.setDataList(cities);

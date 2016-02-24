@@ -18,5 +18,5 @@ public interface SolrCityRepository extends SolrCrudRepository<SolrCityDocument,
     List<SolrCityDocument> findByQueryAnnotation(double latitude, double longitude);
 
     @Query("city:?0 AND isActivated:true")
-	SolrCityDocument findByName(String city);
+    SolrCityDocument findByName(String city);
 }

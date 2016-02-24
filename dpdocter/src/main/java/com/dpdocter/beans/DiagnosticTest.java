@@ -66,17 +66,17 @@ public class DiagnosticTest extends GenericCollection {
 	this.discarded = discarded;
     }
 
-	public String getCode() {
-		return code;
-	}
+    public String getCode() {
+	return code;
+    }
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+    public void setCode(String code) {
+	this.code = code;
+    }
 
-	@Override
-	public String toString() {
-		return "DiagnosticTest [id=" + id + ", testName=" + testName + ", description=" + description + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", code=" + code + "]";
-	}
+    @Override
+    public String toString() {
+	return "DiagnosticTest [id=" + id + ", testName=" + testName + ", description=" + description + ", locationId=" + locationId + ", hospitalId="
+		+ hospitalId + ", discarded=" + discarded + ", code=" + code + "]";
+    }
 }

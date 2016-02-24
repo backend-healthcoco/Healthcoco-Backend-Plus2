@@ -77,7 +77,7 @@ public class LoginServiceImpl implements LoginService {
 
     @Autowired
     private PatientRepository patientRepository;
-    
+
     @Value(value = "${IMAGE_PATH}")
     private String imagePath;
 
@@ -115,25 +115,27 @@ public class LoginServiceImpl implements LoginService {
 		RoleCollection roleCollection = roleRepository.findOne(userRoleCollection.getRoleId());
 		if (roleCollection.getRole().equalsIgnoreCase(RoleEnum.PATIENT.getRole())
 			|| roleCollection.getRole().equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole())) {
-//		    if (!userCollection.getIsVerified()) {
-//			logger.warn("This user is not verified");
-//			throw new BusinessException(ServiceError.NotAuthorized, "This user is not verified");
-//		    }
-//		    if (!userCollection.getIsActive()) {
-//			logger.warn("This user is not activated");
-//			throw new BusinessException(ServiceError.NotAuthorized, "This user is not activated");
-//		    }
-//
-//		    userCollection.setLastSession(new Date());
-//		    userCollection = userRepository.save(userCollection);
-//
-//		    response = new LoginResponse();
-//		    response.setUser(user);
-//		    response.setIsTempPassword(userCollection.getIsTempPassword());
-//		    return response;
-			logger.warn("Invalid User");
-			throw new BusinessException(ServiceError.NotAuthorized, "Invalid User");
-			
+		    // if (!userCollection.getIsVerified()) {
+		    // logger.warn("This user is not verified");
+		    // throw new BusinessException(ServiceError.NotAuthorized,
+		    // "This user is not verified");
+		    // }
+		    // if (!userCollection.getIsActive()) {
+		    // logger.warn("This user is not activated");
+		    // throw new BusinessException(ServiceError.NotAuthorized,
+		    // "This user is not activated");
+		    // }
+		    //
+		    // userCollection.setLastSession(new Date());
+		    // userCollection = userRepository.save(userCollection);
+		    //
+		    // response = new LoginResponse();
+		    // response.setUser(user);
+		    // response.setIsTempPassword(userCollection.getIsTempPassword());
+		    // return response;
+		    logger.warn("Invalid User");
+		    throw new BusinessException(ServiceError.NotAuthorized, "Invalid User");
+
 		} else {
 
 		    if (!userCollection.getIsVerified()) {
@@ -166,7 +168,7 @@ public class LoginServiceImpl implements LoginService {
 			    locationAndAccessControl.setLogoUrl(getFinalImageURL(locationAndAccessControl.getLogoUrl()));
 			    locationAndAccessControl.setLogoThumbnailUrl(getFinalImageURL(locationAndAccessControl.getLogoThumbnailUrl()));
 			    locationAndAccessControl.setImages(getFinalClinicImages(locationAndAccessControl.getImages()));
-			    
+
 			    List<Role> roles = null;
 			    for (UserRoleCollection collection : userRoleCollections) {
 				RoleCollection roleCollection2 = roleRepository.find(collection.getRoleId(), locationCollection.getId(),
@@ -242,23 +244,24 @@ public class LoginServiceImpl implements LoginService {
 	return clinicImages;
     }
 
-	@Override
-	public LoginResponse loginPatient(LoginPatientRequest request) {
-		LoginResponse response = null;
-		try {
-		    /**
-		     * Check if user exist.
-		     */
-		    UserCollection userCollection = userRepository.findByPasswordAndMobileNumberIgnoreCase(request.getPassword(), request.getMobileNumber());
-		    if (userCollection == null) {
-			logger.warn("Invalid mobile Number and Password");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid mobile Number and Password");
-		    }
+    @Override
+    public LoginResponse loginPatient(LoginPatientRequest request) {
+	LoginResponse response = null;
+	try {
+	    /**
+	     * Check if user exist.
+	     */
+	    UserCollection userCollection = userRepository.findByPasswordAndMobileNumberIgnoreCase(request.getPassword(), request.getMobileNumber());
+	    if (userCollection == null) {
+		logger.warn("Invalid mobile Number and Password");
+		throw new BusinessException(ServiceError.InvalidInput, "Invalid mobile Number and Password");
+	    }
 	    User user = new User();
 	    BeanUtil.map(userCollection, user);
 
 	    PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), null, null, null);
-	    if(patientCollection != null)user.setBloodGroup(patientCollection.getBloodGroup());
+	    if (patientCollection != null)
+		user.setBloodGroup(patientCollection.getBloodGroup());
 	    if (userCollection.getUserState() != null && userCollection.getUserState().equals(UserState.USERSTATEINCOMPLETE)) {
 		response = new LoginResponse();
 		user.setEmailAddress(user.getUserName());
@@ -290,15 +293,15 @@ public class LoginServiceImpl implements LoginService {
 	return response;
     }
 
-	@Override
-	public User adminLogin(LoginPatientRequest request) {
-		User response = null;
-		try {
-		    UserCollection userCollection = userRepository.findByPasswordAndMobileNumberIgnoreCase(request.getPassword(), request.getMobileNumber());
-		    if (userCollection == null) {
-			logger.warn("Invalid mobile Number and Password");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid mobile Number and Password");
-		    }
+    @Override
+    public User adminLogin(LoginPatientRequest request) {
+	User response = null;
+	try {
+	    UserCollection userCollection = userRepository.findByPasswordAndMobileNumberIgnoreCase(request.getPassword(), request.getMobileNumber());
+	    if (userCollection == null) {
+		logger.warn("Invalid mobile Number and Password");
+		throw new BusinessException(ServiceError.InvalidInput, "Invalid mobile Number and Password");
+	    }
 	    User user = new User();
 	    BeanUtil.map(userCollection, user);
 
@@ -314,11 +317,11 @@ public class LoginServiceImpl implements LoginService {
 		    return response;
 		}
 	    }
-	}catch (Exception e) {
+	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while login");
 	    throw new BusinessException(ServiceError.Forbidden, "Error occured while login");
 	}
 	return response;
-	}
+    }
 }

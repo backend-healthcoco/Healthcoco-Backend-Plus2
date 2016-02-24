@@ -104,7 +104,7 @@ public class RecordsApi {
 	}
 	request.setIsOTPVerified(otpService.checkOTPVerified(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId()));
 	List<Records> records = recordsService.searchRecords(request);
-	
+
 	Response<Records> response = new Response<Records>();
 	response.setDataList(records);
 	return response;

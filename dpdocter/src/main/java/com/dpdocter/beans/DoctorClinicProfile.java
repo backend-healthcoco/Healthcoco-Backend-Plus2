@@ -8,11 +8,11 @@ public class DoctorClinicProfile {
     private String id;
 
     private String doctorId;
-    
+
     private String locationId;
 
     private String hospitalId;
-    
+
     private String clinicAddress;
 
     private String locationName;
@@ -48,13 +48,13 @@ public class DoctorClinicProfile {
     private String logoUrl;
 
     private String logoThumbnailUrl;
- 
+
     private Integer noOfReviews = 0;
 
     private Integer noOfRecommenations = 0;
 
     private Boolean isClinic = true;
-    
+
     private Boolean isLab = false;
 
     private Boolean isOnlineReportsAvailable = false;
@@ -207,106 +207,103 @@ public class DoctorClinicProfile {
 	this.facility = facility;
     }
 
-	public Integer getNoOfReviews() {
-		return noOfReviews;
-	}
+    public Integer getNoOfReviews() {
+	return noOfReviews;
+    }
 
-	public void setNoOfReviews(Integer noOfReviews) {
-		this.noOfReviews = noOfReviews;
-	}
+    public void setNoOfReviews(Integer noOfReviews) {
+	this.noOfReviews = noOfReviews;
+    }
 
-	public Integer getNoOfRecommenations() {
-		return noOfRecommenations;
-	}
+    public Integer getNoOfRecommenations() {
+	return noOfRecommenations;
+    }
 
-	public void setNoOfRecommenations(Integer noOfRecommenations) {
-		this.noOfRecommenations = noOfRecommenations;
-	}
+    public void setNoOfRecommenations(Integer noOfRecommenations) {
+	this.noOfRecommenations = noOfRecommenations;
+    }
 
-	public String getDoctorId() {
-		return doctorId;
-	}
+    public String getDoctorId() {
+	return doctorId;
+    }
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
+    }
 
-	public String getHospitalId() {
-		return hospitalId;
-	}
+    public String getHospitalId() {
+	return hospitalId;
+    }
 
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
 
-	public Double getLatitude() {
-		return latitude;
-	}
+    public Double getLatitude() {
+	return latitude;
+    }
 
-	public void setLatitude(Double latitude) {
-		this.latitude = latitude;
-	}
+    public void setLatitude(Double latitude) {
+	this.latitude = latitude;
+    }
 
-	public Double getLongitude() {
-		return longitude;
-	}
+    public Double getLongitude() {
+	return longitude;
+    }
 
-	public void setLongitude(Double longitude) {
-		this.longitude = longitude;
-	}
+    public void setLongitude(Double longitude) {
+	this.longitude = longitude;
+    }
 
-	public Boolean getIsLab() {
-		return isLab;
-	}
+    public Boolean getIsLab() {
+	return isLab;
+    }
 
-	public void setIsLab(Boolean isLab) {
-		this.isLab = isLab;
-	}
+    public void setIsLab(Boolean isLab) {
+	this.isLab = isLab;
+    }
 
-	public Boolean getIsOnlineReportsAvailable() {
-		return isOnlineReportsAvailable;
-	}
+    public Boolean getIsOnlineReportsAvailable() {
+	return isOnlineReportsAvailable;
+    }
 
-	public void setIsOnlineReportsAvailable(Boolean isOnlineReportsAvailable) {
-		this.isOnlineReportsAvailable = isOnlineReportsAvailable;
-	}
+    public void setIsOnlineReportsAvailable(Boolean isOnlineReportsAvailable) {
+	this.isOnlineReportsAvailable = isOnlineReportsAvailable;
+    }
 
-	public Boolean getIsNABLAccredited() {
-		return isNABLAccredited;
-	}
+    public Boolean getIsNABLAccredited() {
+	return isNABLAccredited;
+    }
 
-	public void setIsNABLAccredited(Boolean isNABLAccredited) {
-		this.isNABLAccredited = isNABLAccredited;
-	}
+    public void setIsNABLAccredited(Boolean isNABLAccredited) {
+	this.isNABLAccredited = isNABLAccredited;
+    }
 
-	public Boolean getIsHomeServiceAvailable() {
-		return isHomeServiceAvailable;
-	}
+    public Boolean getIsHomeServiceAvailable() {
+	return isHomeServiceAvailable;
+    }
 
-	public void setIsHomeServiceAvailable(Boolean isHomeServiceAvailable) {
-		this.isHomeServiceAvailable = isHomeServiceAvailable;
-	}
+    public void setIsHomeServiceAvailable(Boolean isHomeServiceAvailable) {
+	this.isHomeServiceAvailable = isHomeServiceAvailable;
+    }
 
-	public Boolean getIsClinic() {
-		return isClinic;
-	}
+    public Boolean getIsClinic() {
+	return isClinic;
+    }
 
-	public void setIsClinic(Boolean isClinic) {
-		this.isClinic = isClinic;
-	}
+    public void setIsClinic(Boolean isClinic) {
+	this.isClinic = isClinic;
+    }
 
-	@Override
-	public String toString() {
-		return "DoctorClinicProfile [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", clinicAddress=" + clinicAddress + ", locationName=" + locationName
-				+ ", country=" + country + ", state=" + state + ", city=" + city + ", postalCode=" + postalCode
-				+ ", latitude=" + latitude + ", longitude=" + longitude + ", patientInitial=" + patientInitial
-				+ ", patientCounter=" + patientCounter + ", appointmentBookingNumber=" + appointmentBookingNumber
-				+ ", consultationFee=" + consultationFee + ", appointmentSlot=" + appointmentSlot
-				+ ", workingSchedules=" + workingSchedules + ", facility=" + facility + ", images=" + images
-				+ ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + ", noOfReviews=" + noOfReviews
-				+ ", noOfRecommenations=" + noOfRecommenations + ", isClinic=" + isClinic + ", isLab=" + isLab
-				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
-				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + "]";
-	}
+    @Override
+    public String toString() {
+	return "DoctorClinicProfile [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", clinicAddress="
+		+ clinicAddress + ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city + ", postalCode="
+		+ postalCode + ", latitude=" + latitude + ", longitude=" + longitude + ", patientInitial=" + patientInitial + ", patientCounter="
+		+ patientCounter + ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee=" + consultationFee + ", appointmentSlot="
+		+ appointmentSlot + ", workingSchedules=" + workingSchedules + ", facility=" + facility + ", images=" + images + ", logoUrl=" + logoUrl
+		+ ", logoThumbnailUrl=" + logoThumbnailUrl + ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", isClinic="
+		+ isClinic + ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
+		+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + "]";
+    }
 }

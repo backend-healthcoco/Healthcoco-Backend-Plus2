@@ -58,6 +58,6 @@ public interface SolrRegistrationService {
 
     void editLocation(DoctorLocation doctorLocation);
 
-	void addEditReference(String id);
+    void addEditReference(String id);
 
 }

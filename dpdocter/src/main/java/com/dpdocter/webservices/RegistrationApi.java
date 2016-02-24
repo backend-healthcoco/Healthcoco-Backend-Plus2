@@ -215,7 +215,7 @@ public class RegistrationApi {
 	registrationService.deleteReferrence(referrenceId, discarded);
 	transnationalService.addResource(referrenceId, Resource.REFERENCE, false);
 	solrRegistrationService.addEditReference(referrenceId);
-	
+
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -318,7 +318,8 @@ public class RegistrationApi {
 	ClinicProfile clinicProfileUpdateResponse = registrationService.updateClinicProfile(request);
 	transnationalService.addResource(clinicProfileUpdateResponse.getId(), Resource.LOCATION, false);
 
-	if (clinicProfileUpdateResponse != null)transnationalService.checkLocation(request.getId());
+	if (clinicProfileUpdateResponse != null)
+	    transnationalService.checkLocation(request.getId());
 	Response<ClinicProfile> response = new Response<ClinicProfile>();
 	response.setData(clinicProfileUpdateResponse);
 	return response;
@@ -332,7 +333,8 @@ public class RegistrationApi {
 	}
 	ClinicProfile clinicProfileUpdateResponse = registrationService.updateClinicProfileHandheld(request);
 	transnationalService.addResource(clinicProfileUpdateResponse.getId(), Resource.LOCATION, false);
-	if (clinicProfileUpdateResponse != null)transnationalService.checkLocation(request.getId());
+	if (clinicProfileUpdateResponse != null)
+	    transnationalService.checkLocation(request.getId());
 	Response<ClinicProfile> response = new Response<ClinicProfile>();
 	response.setData(clinicProfileUpdateResponse);
 	return response;
@@ -346,8 +348,9 @@ public class RegistrationApi {
 	}
 	ClinicAddress clinicAddressUpdateResponse = registrationService.updateClinicAddress(request);
 	transnationalService.addResource(clinicAddressUpdateResponse.getId(), Resource.LOCATION, false);
-	if (clinicAddressUpdateResponse != null)transnationalService.checkLocation(request.getId());
-	
+	if (clinicAddressUpdateResponse != null)
+	    transnationalService.checkLocation(request.getId());
+
 	Response<ClinicAddress> response = new Response<ClinicAddress>();
 	response.setData(clinicAddressUpdateResponse);
 	return response;
@@ -373,7 +376,8 @@ public class RegistrationApi {
 	}
 	ClinicSpecialization clinicSpecializationUpdateResponse = registrationService.updateClinicSpecialization(request);
 	transnationalService.addResource(clinicSpecializationUpdateResponse.getId(), Resource.LOCATION, false);
-	if (clinicSpecializationUpdateResponse != null)	transnationalService.checkLocation(request.getId());
+	if (clinicSpecializationUpdateResponse != null)
+	    transnationalService.checkLocation(request.getId());
 	Response<ClinicSpecialization> response = new Response<ClinicSpecialization>();
 	response.setData(clinicSpecializationUpdateResponse);
 	return response;
@@ -382,14 +386,14 @@ public class RegistrationApi {
     @Path(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_LAB_PROPERTIES)
     @POST
     public Response<ClinicLabProperties> updateLabProperties(ClinicLabProperties request) {
-    if (request == null) {
-    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
-    	}
-    ClinicLabProperties clinicLabProperties = registrationService.updateLabProperties(request);
-    if(clinicLabProperties != null){
-    	transnationalService.addResource(request.getId(), Resource.LOCATION, false);
-    	transnationalService.checkLocation(request.getId());
-    }
+	if (request == null) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
+	}
+	ClinicLabProperties clinicLabProperties = registrationService.updateLabProperties(request);
+	if (clinicLabProperties != null) {
+	    transnationalService.addResource(request.getId(), Resource.LOCATION, false);
+	    transnationalService.checkLocation(request.getId());
+	}
 	Response<ClinicLabProperties> response = new Response<ClinicLabProperties>();
 	response.setData(clinicLabProperties);
 	return response;
@@ -436,7 +440,7 @@ public class RegistrationApi {
 		    clinicalImage.setThumbnailUrl(getFinalImageURL(clinicalImage.getThumbnailUrl()));
 		}
 	    }
-	transnationalService.checkLocation(request.getId());
+	    transnationalService.checkLocation(request.getId());
 	}
 	Response<ClinicImage> response = new Response<ClinicImage>();
 	response.setDataList(clinicImageResponse);
@@ -517,7 +521,8 @@ public class RegistrationApi {
 	    doctorResponse = registrationService.registerExisitingUser(request);
 
 	transnationalService.addResource(doctorResponse.getUserId(), Resource.DOCTOR, false);
-	if (doctorResponse != null)solrRegistrationService.addDoctor(registrationService.getSolrDoctorDocument(doctorResponse));
+	if (doctorResponse != null)
+	    solrRegistrationService.addDoctor(registrationService.getSolrDoctorDocument(doctorResponse));
 	Response<RegisterDoctorResponse> response = new Response<RegisterDoctorResponse>();
 	response.setData(doctorResponse);
 	return response;
@@ -539,8 +544,10 @@ public class RegistrationApi {
 		BeanUtil.map(patient.getPatient(), solrPatientDocument);
 	    }
 	    BeanUtil.map(patient, solrPatientDocument);
-	    if (patient.getPatient() != null) solrPatientDocument.setId(patient.getPatient().getPatientId());
-	    if(patient.getReferredBy() != null)solrPatientDocument.setReferredBy(patient.getReferredBy().getId());
+	    if (patient.getPatient() != null)
+		solrPatientDocument.setId(patient.getPatient().getPatientId());
+	    if (patient.getReferredBy() != null)
+		solrPatientDocument.setReferredBy(patient.getReferredBy().getId());
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}
@@ -603,8 +610,8 @@ public class RegistrationApi {
     @DELETE
     public Response<Boolean> deleteUser(@PathParam(value = "userId") String userId, @PathParam(value = "locationId") String locationId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-    	registrationService.deleteUser(userId, locationId, discarded);
-    	transnationalService.checkDoctor(userId, null);
+	registrationService.deleteUser(userId, locationId, discarded);
+	transnationalService.checkDoctor(userId, null);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -626,15 +633,15 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.VISIBLE_FEEDBACK)
     @GET
-    public Response<Feedback> visibleFeedback(@PathParam("feedbackId") String feedbackId, @DefaultValue("true")  @QueryParam("isVisible") Boolean isVisible) {
-	
-    Feedback feedback = registrationService.visibleFeedback(feedbackId, isVisible);
+    public Response<Feedback> visibleFeedback(@PathParam("feedbackId") String feedbackId, @DefaultValue("true") @QueryParam("isVisible") Boolean isVisible) {
+
+	Feedback feedback = registrationService.visibleFeedback(feedbackId, isVisible);
 	transnationalService.checkDoctor(feedback.getDoctorId(), feedback.getLocationId());
 	Response<Feedback> response = new Response<Feedback>();
 	response.setData(feedback);
 	return response;
     }
-    
+
     @Path(value = PathProxy.RegistrationUrls.GET_PATIENT_STATUS)
     @GET
     public Response<PatientStatusResponse> getPatientStatus(@PathParam("patientId") String patientId, @PathParam("doctorId") String doctorId,
@@ -649,9 +656,10 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.GET_DOCTOR_FEEDBACK)
     @GET
-    public Response<Feedback> getFeedback(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-    		@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
-	
+    public Response<Feedback> getFeedback(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
+	    @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+
 	List<Feedback> feedbacks = registrationService.getFeedback(page, size, doctorId, locationId, hospitalId, updatedTime);
 	Response<Feedback> response = new Response<Feedback>();
 	response.setDataList(feedbacks);

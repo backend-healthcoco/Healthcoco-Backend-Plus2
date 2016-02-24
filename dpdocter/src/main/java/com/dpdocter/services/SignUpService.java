@@ -48,5 +48,5 @@ public interface SignUpService {
 
     boolean checkMobileNumberExistForPatient(String mobileNumber);
 
-	User adminSignUp(PatientSignUpRequest request);
+    User adminSignUp(PatientSignUpRequest request);
 }

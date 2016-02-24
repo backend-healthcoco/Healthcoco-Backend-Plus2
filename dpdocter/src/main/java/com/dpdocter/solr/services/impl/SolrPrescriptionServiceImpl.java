@@ -326,37 +326,37 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
     }
 
     @Override
-    public List<LabTest> searchLabTest(String range, int page, int size, String locationId, String hospitalId, String updatedTime,
-	    Boolean discarded, String searchTerm) {
-    List<LabTest> response = null;	
+    public List<LabTest> searchLabTest(String range, int page, int size, String locationId, String hospitalId, String updatedTime, Boolean discarded,
+	    String searchTerm) {
+	List<LabTest> response = null;
 	List<SolrLabTestDocument> labTestDocuments = null;
 	switch (Range.valueOf(range.toUpperCase())) {
 
 	case GLOBAL:
-		labTestDocuments = getGlobalLabTests(page, size, updatedTime, discarded, searchTerm);
+	    labTestDocuments = getGlobalLabTests(page, size, updatedTime, discarded, searchTerm);
 	    break;
 	case CUSTOM:
-		labTestDocuments = getCustomLabTests(page, size, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	    labTestDocuments = getCustomLabTests(page, size, locationId, hospitalId, updatedTime, discarded, searchTerm);
 	    break;
 	case BOTH:
-		labTestDocuments = getCustomGlobalLabTests(page, size, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	    labTestDocuments = getCustomGlobalLabTests(page, size, locationId, hospitalId, updatedTime, discarded, searchTerm);
 	    break;
 	}
-	if(labTestDocuments != null){
-		response = new ArrayList<LabTest>();
-		for(SolrLabTestDocument labTestDocument : labTestDocuments){
-			LabTest labTest  = new LabTest();
-			BeanUtil.map(labTestDocument, labTest);
-			if(labTestDocument.getTestId() != null){
-				SolrDiagnosticTestDocument diagnosticTestDocument = solrDiagnosticTestRepository.findOne(labTestDocument.getTestId());
-				if(diagnosticTestDocument != null){
-					DiagnosticTest test = new DiagnosticTest();
-					BeanUtil.map(diagnosticTestDocument, test);
-					labTest.setTest(test);
-				}
-			}
-			response.add(labTest);
+	if (labTestDocuments != null) {
+	    response = new ArrayList<LabTest>();
+	    for (SolrLabTestDocument labTestDocument : labTestDocuments) {
+		LabTest labTest = new LabTest();
+		BeanUtil.map(labTestDocument, labTest);
+		if (labTestDocument.getTestId() != null) {
+		    SolrDiagnosticTestDocument diagnosticTestDocument = solrDiagnosticTestRepository.findOne(labTestDocument.getTestId());
+		    if (diagnosticTestDocument != null) {
+			DiagnosticTest test = new DiagnosticTest();
+			BeanUtil.map(diagnosticTestDocument, test);
+			labTest.setTest(test);
+		    }
 		}
+		response.add(labTest);
+	    }
 	}
 	return response;
     }

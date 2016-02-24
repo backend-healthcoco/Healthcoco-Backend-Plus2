@@ -424,7 +424,7 @@ public class DoctorProfileApi {
 
     private String getFinalImageURL(String imageURL) {
 	if (imageURL != null) {
-	    return imagePath+imageURL;
+	    return imagePath + imageURL;
 	} else
 	    return null;
     }
@@ -498,7 +498,7 @@ public class DoctorProfileApi {
 	return response;
 
     }
-    
+
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_GENDER)
     @POST
     public Response<Boolean> addEditGender(DoctorGenderAddEditRequest request) {
@@ -513,7 +513,7 @@ public class DoctorProfileApi {
 	response.setData(addEditNameResponse);
 	return response;
     }
-    
+
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_DOB)
     @POST
     public Response<Boolean> addEditDOB(DoctorDOBAddEditRequest request) {

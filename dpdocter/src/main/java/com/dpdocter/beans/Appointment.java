@@ -154,37 +154,35 @@ public class Appointment extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
-	public Boolean getIsFeedbackAvailable() {
-		return isFeedbackAvailable;
-	}
+    public Boolean getIsFeedbackAvailable() {
+	return isFeedbackAvailable;
+    }
 
-	public void setIsFeedbackAvailable(Boolean isFeedbackAvailable) {
-		this.isFeedbackAvailable = isFeedbackAvailable;
-	}
+    public void setIsFeedbackAvailable(Boolean isFeedbackAvailable) {
+	this.isFeedbackAvailable = isFeedbackAvailable;
+    }
 
-	public String getDoctorName() {
-		return doctorName;
-	}
+    public String getDoctorName() {
+	return doctorName;
+    }
 
-	public void setDoctorName(String doctorName) {
-		this.doctorName = doctorName;
-	}
+    public void setDoctorName(String doctorName) {
+	this.doctorName = doctorName;
+    }
 
-	public String getLocationName() {
-		return locationName;
-	}
+    public String getLocationName() {
+	return locationName;
+    }
 
-	public void setLocationName(String locationName) {
-		this.locationName = locationName;
-	}
+    public void setLocationName(String locationName) {
+	this.locationName = locationName;
+    }
 
-	@Override
-	public String toString() {
-		return "Appointment [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + ", time=" + time + ", patient=" + patient + ", state=" + state + ", isReschduled="
-				+ isReschduled + ", date=" + date + ", appointmentId=" + appointmentId + ", subject=" + subject
-				+ ", description=" + description + ", type=" + type + ", isCalenderBlocked=" + isCalenderBlocked
-				+ ", isFeedbackAvailable=" + isFeedbackAvailable + ", doctorName=" + doctorName + ", locationName="
-				+ locationName + "]";
-	}
+    @Override
+    public String toString() {
+	return "Appointment [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", time=" + time
+		+ ", patient=" + patient + ", state=" + state + ", isReschduled=" + isReschduled + ", date=" + date + ", appointmentId=" + appointmentId
+		+ ", subject=" + subject + ", description=" + description + ", type=" + type + ", isCalenderBlocked=" + isCalenderBlocked
+		+ ", isFeedbackAvailable=" + isFeedbackAvailable + ", doctorName=" + doctorName + ", locationName=" + locationName + "]";
+    }
 }

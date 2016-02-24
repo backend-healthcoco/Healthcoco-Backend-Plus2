@@ -149,20 +149,19 @@ public class User {
 	this.title = title;
     }
 
-	public String getBloodGroup() {
-		return bloodGroup;
-	}
+    public String getBloodGroup() {
+	return bloodGroup;
+    }
 
-	public void setBloodGroup(String bloodGroup) {
-		this.bloodGroup = bloodGroup;
-	}
+    public void setBloodGroup(String bloodGroup) {
+	this.bloodGroup = bloodGroup;
+    }
 
-	@Override
-	public String toString() {
-		return "User [id=" + id + ", title=" + title + ", firstName=" + firstName + ", userName=" + userName
-				+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob="
-				+ dob + ", bloodGroup=" + bloodGroup + ", secPhoneNumber=" + secPhoneNumber + ", isPartOfClinic="
-				+ isPartOfClinic + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", colorCode="
-				+ colorCode + ", userState=" + userState + "]";
-	}
+    @Override
+    public String toString() {
+	return "User [id=" + id + ", title=" + title + ", firstName=" + firstName + ", userName=" + userName + ", emailAddress=" + emailAddress
+		+ ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob=" + dob + ", bloodGroup=" + bloodGroup + ", secPhoneNumber=" + secPhoneNumber
+		+ ", isPartOfClinic=" + isPartOfClinic + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", colorCode=" + colorCode
+		+ ", userState=" + userState + "]";
+    }
 }

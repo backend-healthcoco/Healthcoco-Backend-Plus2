@@ -26,6 +26,6 @@ public interface SMSServices {
 
     SMSFormat addSmsFormat(SMSFormat request);
 
-	List<SMSFormat> getSmsFormat(String doctorId, String locationId, String hospitalId, String type);
+    List<SMSFormat> getSmsFormat(String doctorId, String locationId, String hospitalId, String type);
 
 }

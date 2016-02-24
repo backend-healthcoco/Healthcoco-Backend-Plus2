@@ -39,20 +39,20 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	Map<String, Object> model = new HashMap<String, Object>();
 	model.put("fName", fName);
 	model.put("link", uriInfo.getBaseUri() + link + tokenId);
-	model.put("imageURL", imagePath+"templatesImage/");
+	model.put("imageURL", imagePath + "templatesImage/");
 	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "mailTemplate.vm", "UTF-8", model);
 	return text;
     }
 
     @Override
     public String generateForgotPasswordEmailBody(String emailAddress, String fName, String mName, String lName, String userId, UriInfo uriInfo) {
-    	Map<String, Object> model = new HashMap<String, Object>();
-    	model.put("fName", fName);
-    	model.put("emailAddress", emailAddress);
-    	model.put("link", RESET_PASSWORD_LINK + "?uid=" + userId);
-    	model.put("imageURL", imagePath+"templatesImage/");
-    	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "forgotPasswordTemplate.vm", "UTF-8", model);
-    	return text;
+	Map<String, Object> model = new HashMap<String, Object>();
+	model.put("fName", fName);
+	model.put("emailAddress", emailAddress);
+	model.put("link", RESET_PASSWORD_LINK + "?uid=" + userId);
+	model.put("imageURL", imagePath + "templatesImage/");
+	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "forgotPasswordTemplate.vm", "UTF-8", model);
+	return text;
     }
 
     @Override
@@ -81,35 +81,35 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	return body.toString();
     }
 
-	@Override
-	public String generateResetPasswordSuccessEmailBody(String emailAddress, String firstName, UriInfo uriInfo) {
-		Map<String, Object> model = new HashMap<String, Object>();
-    	model.put("fName", firstName);
-    	model.put("link", RESET_PASSWORD_WEB_LINK);
-    	model.put("imageURL", imagePath+"templatesImage/");
-    	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "resetPasswordSuccess.vm", "UTF-8", model);
-    	return text;
-	}
-
-	@Override
-	public String generateRecordsShareOtpBeforeVerificationEmailBody(String emailAddress, String firstName,	String doctorName, UriInfo uriInfo) {
-		Map<String, Object> model = new HashMap<String, Object>();
-    	model.put("fName", firstName);
-    	model.put("doctorName", doctorName);
-    	model.put("imageURL", imagePath+"templatesImage/");
-    	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "recordShareOtpBeforeVerificationTemplate.vm", "UTF-8", model);
-    	return text;
+    @Override
+    public String generateResetPasswordSuccessEmailBody(String emailAddress, String firstName, UriInfo uriInfo) {
+	Map<String, Object> model = new HashMap<String, Object>();
+	model.put("fName", firstName);
+	model.put("link", RESET_PASSWORD_WEB_LINK);
+	model.put("imageURL", imagePath + "templatesImage/");
+	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "resetPasswordSuccess.vm", "UTF-8", model);
+	return text;
     }
 
-	@Override
-	public String generateRecordsShareOtpAfterVerificationEmailBody(String emailAddress, String firstName, String doctorName, UriInfo uriInfo) {
-		Map<String, Object> model = new HashMap<String, Object>();
-    	model.put("fName", firstName);
-    	model.put("doctorName", doctorName);
-    	model.put("imageURL", imagePath+"templatesImage/");
-    	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "recordShareOtpAfterVerificationTemplate.vm", "UTF-8", model);
-    	return text;
-	}
+    @Override
+    public String generateRecordsShareOtpBeforeVerificationEmailBody(String emailAddress, String firstName, String doctorName, UriInfo uriInfo) {
+	Map<String, Object> model = new HashMap<String, Object>();
+	model.put("fName", firstName);
+	model.put("doctorName", doctorName);
+	model.put("imageURL", imagePath + "templatesImage/");
+	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "recordShareOtpBeforeVerificationTemplate.vm", "UTF-8", model);
+	return text;
+    }
+
+    @Override
+    public String generateRecordsShareOtpAfterVerificationEmailBody(String emailAddress, String firstName, String doctorName, UriInfo uriInfo) {
+	Map<String, Object> model = new HashMap<String, Object>();
+	model.put("fName", firstName);
+	model.put("doctorName", doctorName);
+	model.put("imageURL", imagePath + "templatesImage/");
+	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "recordShareOtpAfterVerificationTemplate.vm", "UTF-8", model);
+	return text;
+    }
 
     @Override
     public String generateRecordsUploadedEmailBody(String userName, String firstName, String middleName, String lastName) {

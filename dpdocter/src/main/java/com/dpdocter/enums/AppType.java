@@ -2,9 +2,9 @@ package com.dpdocter.enums;
 
 public enum AppType {
 
-	HEALTHCOCO("HEALTHCOCO"), HEALTHCOCO_PLUS("HEALTHCOCO_PLUS");
-	
-	private String type;
+    HEALTHCOCO("HEALTHCOCO"), HEALTHCOCO_PLUS("HEALTHCOCO_PLUS");
+
+    private String type;
 
     private AppType(String type) {
 	this.type = type;

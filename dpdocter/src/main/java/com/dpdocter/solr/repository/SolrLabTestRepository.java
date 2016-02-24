@@ -68,6 +68,6 @@ public interface SolrLabTestRepository extends SolrCrudRepository<SolrLabTestDoc
     List<SolrLabTestDocument> findByTestId(String testId);
 
     @Query("testId:{$in : ?0}")
-	List<SolrLabTestDocument> findByTestIds(Collection<String> testIds);
+    List<SolrLabTestDocument> findByTestIds(Collection<String> testIds);
 
 }

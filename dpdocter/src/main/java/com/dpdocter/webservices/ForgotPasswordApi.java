@@ -89,11 +89,11 @@ public class ForgotPasswordApi {
     @Path(value = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED)
     @GET
     public Response<String> checkLinkIsAlreadyUsed(@PathParam(value = "userId") String userId) {
-    if (DPDoctorUtils.anyStringEmpty(userId)) {
-    	    logger.warn("Invalid Input");
-    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-    }
-    String string = forgotPasswordService.checkLinkIsAlreadyUsed(userId);
+	if (DPDoctorUtils.anyStringEmpty(userId)) {
+	    logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	}
+	String string = forgotPasswordService.checkLinkIsAlreadyUsed(userId);
 	Response<String> response = new Response<String>();
 	response.setData(string);
 	return response;

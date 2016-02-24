@@ -3,7 +3,6 @@ package com.dpdocter.repository;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -13,16 +12,16 @@ import com.dpdocter.collections.FeedbackCollection;
 
 public interface FeedbackRepository extends MongoRepository<FeedbackCollection, String> {
 
-	@Query("{'doctorId': ?0, 'isVisible': ?1, 'updatedTime': {'$gt': ?2}}")
-	List<FeedbackCollection> find(String doctorId, boolean isVisible, Date date, Pageable pageable);
+    @Query("{'doctorId': ?0, 'isVisible': ?1, 'updatedTime': {'$gt': ?2}}")
+    List<FeedbackCollection> find(String doctorId, boolean isVisible, Date date, Pageable pageable);
 
-	@Query("{'doctorId': ?0, 'isVisible': ?1, 'updatedTime': {'$gt': ?2}}")
-	List<FeedbackCollection> find(String doctorId, boolean isVisible, Date date, Sort sort);
+    @Query("{'doctorId': ?0, 'isVisible': ?1, 'updatedTime': {'$gt': ?2}}")
+    List<FeedbackCollection> find(String doctorId, boolean isVisible, Date date, Sort sort);
 
-	@Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'isVisible': ?3, 'updatedTime': {'$gt': ?4}}")
-	List<FeedbackCollection> find(String doctorId, String locationId, String hospitalId, boolean isVisible,	Date date, Pageable pageable);
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'isVisible': ?3, 'updatedTime': {'$gt': ?4}}")
+    List<FeedbackCollection> find(String doctorId, String locationId, String hospitalId, boolean isVisible, Date date, Pageable pageable);
 
-	@Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'isVisible': ?3, 'updatedTime': {'$gt': ?4}}")
-	List<FeedbackCollection> find(String doctorId, String locationId, String hospitalId, boolean isVisible, Date date, Sort sort);
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'isVisible': ?3, 'updatedTime': {'$gt': ?4}}")
+    List<FeedbackCollection> find(String doctorId, String locationId, String hospitalId, boolean isVisible, Date date, Sort sort);
 
 }

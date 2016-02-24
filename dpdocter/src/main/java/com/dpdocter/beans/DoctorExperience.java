@@ -8,14 +8,14 @@ public class DoctorExperience {
     private DoctorExperienceUnit period;
 
     public DoctorExperience() {
-	}
+    }
 
-	public DoctorExperience(String experience, DoctorExperienceUnit period) {
-		this.experience = experience;
-		this.period = period;
-	}
+    public DoctorExperience(String experience, DoctorExperienceUnit period) {
+	this.experience = experience;
+	this.period = period;
+    }
 
-	public String getExperience() {
+    public String getExperience() {
 	return experience;
     }
 

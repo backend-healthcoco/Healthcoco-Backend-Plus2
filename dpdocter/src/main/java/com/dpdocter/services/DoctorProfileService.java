@@ -87,8 +87,8 @@ public interface DoctorProfileService {
 
     Boolean addEditFacility(DoctorAddEditFacilityRequest request);
 
-	Boolean addEditGender(DoctorGenderAddEditRequest request);
+    Boolean addEditGender(DoctorGenderAddEditRequest request);
 
-	Boolean addEditDOB(DoctorDOBAddEditRequest request);
+    Boolean addEditDOB(DoctorDOBAddEditRequest request);
 
 }

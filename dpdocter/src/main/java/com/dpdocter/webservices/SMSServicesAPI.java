@@ -143,8 +143,8 @@ public class SMSServicesAPI {
     @Path(value = PathProxy.SMSUrls.GET_SMS_FORMAT)
     @GET
     public Response<SMSFormat> getSmsFormat(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-    		@PathParam(value = "hospitalId") String hospitalId, @QueryParam(value ="type") String type) {
-    	List<SMSFormat> smsFormat = smsServices.getSmsFormat(doctorId, locationId, hospitalId, type);
+	    @PathParam(value = "hospitalId") String hospitalId, @QueryParam(value = "type") String type) {
+	List<SMSFormat> smsFormat = smsServices.getSmsFormat(doctorId, locationId, hospitalId, type);
 	Response<SMSFormat> response = new Response<SMSFormat>();
 	response.setDataList(smsFormat);
 	return response;

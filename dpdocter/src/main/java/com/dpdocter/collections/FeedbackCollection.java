@@ -21,143 +21,142 @@ public class FeedbackCollection extends GenericCollection {
 
     @Field
     private String resourceId;
-	
+
     @Field
     private String doctorId;
-	
+
     @Field
-	private String locationId;
-	
+    private String locationId;
+
     @Field
-	private String hospitalId;
-	
+    private String hospitalId;
+
     @Field
     private String userId;
-	
-    @Field
-	private String explanation;
 
     @Field
-	private String  deviceType;
-	
-    @Field
-	private String  deviceInfo;
-	
-    @Field
-	private Boolean  isVisible = false;
+    private String explanation;
 
     @Field
-	private Boolean isRecommended = false;
+    private String deviceType;
 
-	public String getId() {
-		return id;
-	}
+    @Field
+    private String deviceInfo;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    @Field
+    private Boolean isVisible = false;
 
-	public FeedbackType getType() {
-		return type;
-	}
+    @Field
+    private Boolean isRecommended = false;
 
-	public void setType(FeedbackType type) {
-		this.type = type;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public AppType getAppType() {
-		return appType;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public void setAppType(AppType appType) {
-		this.appType = appType;
-	}
+    public FeedbackType getType() {
+	return type;
+    }
 
-	public String getDoctorId() {
-		return doctorId;
-	}
+    public void setType(FeedbackType type) {
+	this.type = type;
+    }
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
+    public AppType getAppType() {
+	return appType;
+    }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public void setAppType(AppType appType) {
+	this.appType = appType;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public String getDoctorId() {
+	return doctorId;
+    }
 
-	public String getHospitalId() {
-		return hospitalId;
-	}
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
+    }
 
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	public String getUserId() {
-		return userId;
-	}
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
 
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
+    public String getHospitalId() {
+	return hospitalId;
+    }
 
-	public String getExplanation() {
-		return explanation;
-	}
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
 
-	public void setExplanation(String explanation) {
-		this.explanation = explanation;
-	}
+    public String getUserId() {
+	return userId;
+    }
 
-	public String getDeviceType() {
-		return deviceType;
-	}
+    public void setUserId(String userId) {
+	this.userId = userId;
+    }
 
-	public void setDeviceType(String deviceType) {
-		this.deviceType = deviceType;
-	}
+    public String getExplanation() {
+	return explanation;
+    }
 
-	public String getDeviceInfo() {
-		return deviceInfo;
-	}
+    public void setExplanation(String explanation) {
+	this.explanation = explanation;
+    }
 
-	public void setDeviceInfo(String deviceInfo) {
-		this.deviceInfo = deviceInfo;
-	}
+    public String getDeviceType() {
+	return deviceType;
+    }
 
-	public Boolean getIsVisible() {
-		return isVisible;
-	}
+    public void setDeviceType(String deviceType) {
+	this.deviceType = deviceType;
+    }
 
-	public void setIsVisible(Boolean isVisible) {
-		this.isVisible = isVisible;
-	}
+    public String getDeviceInfo() {
+	return deviceInfo;
+    }
 
-	public Boolean getIsRecommended() {
-		return isRecommended;
-	}
+    public void setDeviceInfo(String deviceInfo) {
+	this.deviceInfo = deviceInfo;
+    }
 
-	public void setIsRecommended(Boolean isRecommended) {
-		this.isRecommended = isRecommended;
-	}
+    public Boolean getIsVisible() {
+	return isVisible;
+    }
 
-	public String getResourceId() {
-		return resourceId;
-	}
+    public void setIsVisible(Boolean isVisible) {
+	this.isVisible = isVisible;
+    }
 
-	public void setResourceId(String resourceId) {
-		this.resourceId = resourceId;
-	}
+    public Boolean getIsRecommended() {
+	return isRecommended;
+    }
 
-	@Override
-	public String toString() {
-		return "FeedbackCollection [id=" + id + ", type=" + type + ", appType=" + appType + ", resourceId=" + resourceId
-				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", userId="
-				+ userId + ", explanation=" + explanation + ", deviceType=" + deviceType + ", deviceInfo=" + deviceInfo
-				+ ", isVisible=" + isVisible + ", isRecommended=" + isRecommended + "]";
-	}
+    public void setIsRecommended(Boolean isRecommended) {
+	this.isRecommended = isRecommended;
+    }
+
+    public String getResourceId() {
+	return resourceId;
+    }
+
+    public void setResourceId(String resourceId) {
+	this.resourceId = resourceId;
+    }
+
+    @Override
+    public String toString() {
+	return "FeedbackCollection [id=" + id + ", type=" + type + ", appType=" + appType + ", resourceId=" + resourceId + ", doctorId=" + doctorId
+		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", userId=" + userId + ", explanation=" + explanation + ", deviceType="
+		+ deviceType + ", deviceInfo=" + deviceInfo + ", isVisible=" + isVisible + ", isRecommended=" + isRecommended + "]";
+    }
 }

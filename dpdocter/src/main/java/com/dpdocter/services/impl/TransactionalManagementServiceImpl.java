@@ -291,32 +291,38 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	    UserCollection userCollection = userRepository.findOne(id);
 	    List<PatientCollection> patientCollections = patientRepository.findByUserId(id);
 	    if (userCollection != null && patientCollections != null) {
-	    	for(PatientCollection patientCollection : patientCollections){
-	    		PatientAdmissionCollection patientAdmissionCollection = patientAdmissionRepository.findByUserIdAndDoctorId(id, patientCollection.getDoctorId());
-	    		AddressCollection addressCollection = null;
-	    		if (patientCollection.getAddressId() != null)
-	    		    addressCollection = addressRepository.findOne(patientCollection.getAddressId());
-	    		SolrPatientDocument patientDocument = new SolrPatientDocument();
+		for (PatientCollection patientCollection : patientCollections) {
+		    PatientAdmissionCollection patientAdmissionCollection = patientAdmissionRepository.findByUserIdAndDoctorId(id,
+			    patientCollection.getDoctorId());
+		    AddressCollection addressCollection = null;
+		    if (patientCollection.getAddressId() != null)
+			addressCollection = addressRepository.findOne(patientCollection.getAddressId());
+		    SolrPatientDocument patientDocument = new SolrPatientDocument();
 
-	    		if (patientCollection.getDob() != null) {
-	    		    patientDocument.setDays(patientCollection.getDob().getDays() + "");
-	    		    patientDocument.setMonths(patientCollection.getDob().getMonths() + "");
-	    		    patientDocument.setYears(patientCollection.getDob().getYears() + "");
-	    		}
-	    		BeanUtil.map(userCollection, patientDocument);
-	    		if (patientCollection != null)BeanUtil.map(patientCollection, patientDocument);
-	    		if (patientAdmissionCollection != null)BeanUtil.map(patientAdmissionCollection, patientDocument);
-	    		if (addressCollection != null)BeanUtil.map(addressCollection, patientDocument);
+		    if (patientCollection.getDob() != null) {
+			patientDocument.setDays(patientCollection.getDob().getDays() + "");
+			patientDocument.setMonths(patientCollection.getDob().getMonths() + "");
+			patientDocument.setYears(patientCollection.getDob().getYears() + "");
+		    }
+		    BeanUtil.map(userCollection, patientDocument);
+		    if (patientCollection != null)
+			BeanUtil.map(patientCollection, patientDocument);
+		    if (patientAdmissionCollection != null)
+			BeanUtil.map(patientAdmissionCollection, patientDocument);
+		    if (addressCollection != null)
+			BeanUtil.map(addressCollection, patientDocument);
 
-	    		if (patientCollection != null)patientDocument.setId(patientCollection.getId());
-	    		if (patientAdmissionCollection != null){
-	    			if(patientAdmissionCollection.getReferredBy() != null){
-	    				patientDocument.setReferredBy(patientAdmissionCollection.getReferredBy());
-	    			}
-	    			}
+		    if (patientCollection != null)
+			patientDocument.setId(patientCollection.getId());
+		    if (patientAdmissionCollection != null) {
+			if (patientAdmissionCollection.getReferredBy() != null) {
+			    patientDocument.setReferredBy(patientAdmissionCollection.getReferredBy());
+			}
+		    }
 
-	    		if (patientCollection != null)solrRegistrationService.editPatient(patientDocument);
-	    	}
+		    if (patientCollection != null)
+			solrRegistrationService.editPatient(patientDocument);
+		}
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -450,63 +456,69 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
     @Override
     public void checkLocation(String resourceId) {
-    	try {
-    	    LocationCollection locationCollection = locationRepository.findOne(resourceId);
-    	    if (locationCollection != null) {
-    	    DoctorLocation doctorLocation = new DoctorLocation();
-    		BeanUtil.map(locationCollection, doctorLocation);
-    		doctorLocation.setLocationId(locationCollection.getId());
-    		doctorLocation.setLocationPhoneNumber(locationCollection.getMobileNumber());
-    		if(locationCollection.getImages() != null && !locationCollection.getImages().isEmpty()){
-	    		List<String> images = new ArrayList<String>();
-	    		for(ClinicImage clinicImage : locationCollection.getImages()){
-	    			images.add(clinicImage.getImageUrl());
-	    		}
-	    		doctorLocation.setImages(images);
-	    	}
-    		solrRegistrationService.editLocation(doctorLocation);
-    	    }
-    	} catch (Exception e) {
-    	    e.printStackTrace();
-    	    logger.error(e);
-    	}	
+	try {
+	    LocationCollection locationCollection = locationRepository.findOne(resourceId);
+	    if (locationCollection != null) {
+		DoctorLocation doctorLocation = new DoctorLocation();
+		BeanUtil.map(locationCollection, doctorLocation);
+		doctorLocation.setLocationId(locationCollection.getId());
+		doctorLocation.setLocationPhoneNumber(locationCollection.getMobileNumber());
+		if (locationCollection.getImages() != null && !locationCollection.getImages().isEmpty()) {
+		    List<String> images = new ArrayList<String>();
+		    for (ClinicImage clinicImage : locationCollection.getImages()) {
+			images.add(clinicImage.getImageUrl());
+		    }
+		    doctorLocation.setImages(images);
+		}
+		solrRegistrationService.editLocation(doctorLocation);
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
 	}
+    }
 
     @Override
     public void checkDoctor(String resourceId, String locationId) {
-		try {
-		    DoctorCollection doctorCollection = doctorRepository.findByUserId(resourceId);
-		    UserCollection userCollection = userRepository.findOne(resourceId);
-		    if(doctorCollection != null && userCollection != null){
-		    	List<UserLocationCollection> userLocationCollections = null;
-		    	if(locationId == null) 	userLocationCollections = userLocationRepository.findByUserId(resourceId);
-		    	else{
-		    		UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(resourceId, locationId);
-		    		userLocationCollections = new ArrayList<UserLocationCollection>();
-		    		userLocationCollections.add(userLocationCollection);
-		    	}
-			    for(UserLocationCollection collection : userLocationCollections){
-			    	LocationCollection locationCollection = locationRepository.findOne(collection.getLocationId());
-			    	DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(collection.getId());
-			    	SolrDoctorDocument doctorDocument = new SolrDoctorDocument();
-			    	if(locationCollection != null)BeanUtil.map(locationCollection, doctorDocument);
-			    	if(userCollection != null)BeanUtil.map(userCollection, doctorDocument);
-			    	if(doctorCollection != null)BeanUtil.map(doctorCollection, doctorDocument);
-			    	if(clinicProfileCollection != null)BeanUtil.map(clinicProfileCollection, doctorDocument);
-			    	else {
-			    		doctorDocument.setWorkingSchedules(null);
-			    	}
-			    	if(locationCollection != null)doctorDocument.setLocationId(locationCollection.getId());
-			    	if(locationCollection.getImages() != null && !locationCollection.getImages().isEmpty()){
-			    		List<String> images = new ArrayList<String>();
-			    		for(ClinicImage clinicImage : locationCollection.getImages()){
-			    			images.add(clinicImage.getImageUrl());
-			    		}
-			    		doctorDocument.setImages(images);
-			    	}
-			    	solrRegistrationService.addDoctor(doctorDocument);
-			    }
+	try {
+	    DoctorCollection doctorCollection = doctorRepository.findByUserId(resourceId);
+	    UserCollection userCollection = userRepository.findOne(resourceId);
+	    if (doctorCollection != null && userCollection != null) {
+		List<UserLocationCollection> userLocationCollections = null;
+		if (locationId == null)
+		    userLocationCollections = userLocationRepository.findByUserId(resourceId);
+		else {
+		    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(resourceId, locationId);
+		    userLocationCollections = new ArrayList<UserLocationCollection>();
+		    userLocationCollections.add(userLocationCollection);
+		}
+		for (UserLocationCollection collection : userLocationCollections) {
+		    LocationCollection locationCollection = locationRepository.findOne(collection.getLocationId());
+		    DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(collection.getId());
+		    SolrDoctorDocument doctorDocument = new SolrDoctorDocument();
+		    if (locationCollection != null)
+			BeanUtil.map(locationCollection, doctorDocument);
+		    if (userCollection != null)
+			BeanUtil.map(userCollection, doctorDocument);
+		    if (doctorCollection != null)
+			BeanUtil.map(doctorCollection, doctorDocument);
+		    if (clinicProfileCollection != null)
+			BeanUtil.map(clinicProfileCollection, doctorDocument);
+		    else {
+			doctorDocument.setWorkingSchedules(null);
 		    }
+		    if (locationCollection != null)
+			doctorDocument.setLocationId(locationCollection.getId());
+		    if (locationCollection.getImages() != null && !locationCollection.getImages().isEmpty()) {
+			List<String> images = new ArrayList<String>();
+			for (ClinicImage clinicImage : locationCollection.getImages()) {
+			    images.add(clinicImage.getImageUrl());
+			}
+			doctorDocument.setImages(images);
+		    }
+		    solrRegistrationService.addDoctor(doctorDocument);
+		}
+	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);

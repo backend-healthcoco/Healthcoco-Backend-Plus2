@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.LabTest;
-import com.dpdocter.solr.beans.SolrLabTest;
 
 public class LabResponse {
 
@@ -50,15 +49,15 @@ public class LabResponse {
 
     private Boolean isHomeServiceAvailable = false;
 
-    private LabTest labTest ;
-    
+    private LabTest labTest;
+
     private List<ClinicImage> images;
 
     private String logoUrl;
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
     public String getLocationName() {
 	return locationName;
@@ -136,124 +135,121 @@ public class LabResponse {
 	return landmarkDetails;
     }
 
-	public void setLandmarkDetails(String landmarkDetails) {
-		this.landmarkDetails = landmarkDetails;
-	}
+    public void setLandmarkDetails(String landmarkDetails) {
+	this.landmarkDetails = landmarkDetails;
+    }
 
-	public String getLocationEmailAddress() {
-		return locationEmailAddress;
-	}
+    public String getLocationEmailAddress() {
+	return locationEmailAddress;
+    }
 
-	public void setLocationEmailAddress(String locationEmailAddress) {
-		this.locationEmailAddress = locationEmailAddress;
-	}
+    public void setLocationEmailAddress(String locationEmailAddress) {
+	this.locationEmailAddress = locationEmailAddress;
+    }
 
-	public String getStreetAddress() {
-		return streetAddress;
-	}
+    public String getStreetAddress() {
+	return streetAddress;
+    }
 
-	public void setStreetAddress(String streetAddress) {
-		this.streetAddress = streetAddress;
-	}
+    public void setStreetAddress(String streetAddress) {
+	this.streetAddress = streetAddress;
+    }
 
-	public String getLocality() {
-		return locality;
-	}
+    public String getLocality() {
+	return locality;
+    }
 
-	public void setLocality(String locality) {
-		this.locality = locality;
-	}
+    public void setLocality(String locality) {
+	this.locality = locality;
+    }
 
-	public String getMobileNumber() {
-		return mobileNumber;
-	}
+    public String getMobileNumber() {
+	return mobileNumber;
+    }
 
-	public void setMobileNumber(String mobileNumber) {
-		this.mobileNumber = mobileNumber;
-	}
+    public void setMobileNumber(String mobileNumber) {
+	this.mobileNumber = mobileNumber;
+    }
 
-	public String getAlternateNumber() {
-		return alternateNumber;
-	}
+    public String getAlternateNumber() {
+	return alternateNumber;
+    }
 
-	public void setAlternateNumber(String alternateNumber) {
-		this.alternateNumber = alternateNumber;
-	}
+    public void setAlternateNumber(String alternateNumber) {
+	this.alternateNumber = alternateNumber;
+    }
 
-	public List<String> getSpecialization() {
-		return specialization;
-	}
+    public List<String> getSpecialization() {
+	return specialization;
+    }
 
-	public void setSpecialization(List<String> specialization) {
-		this.specialization = specialization;
-	}
+    public void setSpecialization(List<String> specialization) {
+	this.specialization = specialization;
+    }
 
-	public Boolean getIsLab() {
-		return isLab;
-	}
+    public Boolean getIsLab() {
+	return isLab;
+    }
 
-	public void setIsLab(Boolean isLab) {
-		this.isLab = isLab;
-	}
+    public void setIsLab(Boolean isLab) {
+	this.isLab = isLab;
+    }
 
-	public Boolean getIsOnlineReportsAvailable() {
-		return isOnlineReportsAvailable;
-	}
+    public Boolean getIsOnlineReportsAvailable() {
+	return isOnlineReportsAvailable;
+    }
 
-	public void setIsOnlineReportsAvailable(Boolean isOnlineReportsAvailable) {
-		this.isOnlineReportsAvailable = isOnlineReportsAvailable;
-	}
+    public void setIsOnlineReportsAvailable(Boolean isOnlineReportsAvailable) {
+	this.isOnlineReportsAvailable = isOnlineReportsAvailable;
+    }
 
-	public Boolean getIsNABLAccredited() {
-		return isNABLAccredited;
-	}
+    public Boolean getIsNABLAccredited() {
+	return isNABLAccredited;
+    }
 
-	public void setIsNABLAccredited(Boolean isNABLAccredited) {
-		this.isNABLAccredited = isNABLAccredited;
-	}
+    public void setIsNABLAccredited(Boolean isNABLAccredited) {
+	this.isNABLAccredited = isNABLAccredited;
+    }
 
-	public Boolean getIsHomeServiceAvailable() {
-		return isHomeServiceAvailable;
-	}
+    public Boolean getIsHomeServiceAvailable() {
+	return isHomeServiceAvailable;
+    }
 
-	public void setIsHomeServiceAvailable(Boolean isHomeServiceAvailable) {
-		this.isHomeServiceAvailable = isHomeServiceAvailable;
-	}
+    public void setIsHomeServiceAvailable(Boolean isHomeServiceAvailable) {
+	this.isHomeServiceAvailable = isHomeServiceAvailable;
+    }
 
-	public LabTest getLabTest() {
-		return labTest;
-	}
+    public LabTest getLabTest() {
+	return labTest;
+    }
 
-	public void setLabTest(LabTest labTest) {
-		this.labTest = labTest;
-	}
+    public void setLabTest(LabTest labTest) {
+	this.labTest = labTest;
+    }
 
-	public List<ClinicImage> getImages() {
-		return images;
-	}
+    public List<ClinicImage> getImages() {
+	return images;
+    }
 
-	public void setImages(List<ClinicImage> images) {
-		this.images = images;
-	}
+    public void setImages(List<ClinicImage> images) {
+	this.images = images;
+    }
 
-	public String getLogoUrl() {
-		return logoUrl;
-	}
+    public String getLogoUrl() {
+	return logoUrl;
+    }
 
-	public void setLogoUrl(String logoUrl) {
-		this.logoUrl = logoUrl;
-	}
+    public void setLogoUrl(String logoUrl) {
+	this.logoUrl = logoUrl;
+    }
 
-	@Override
-	public String toString() {
-		return "LabResponse [locationId=" + locationId + ", locationName=" + locationName + ", country=" + country
-				+ ", state=" + state + ", city=" + city + ", locationPhoneNumber=" + locationPhoneNumber
-				+ ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", latitude=" + latitude
-				+ ", longitude=" + longitude + ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress="
-				+ locationEmailAddress + ", streetAddress=" + streetAddress + ", locality=" + locality
-				+ ", mobileNumber=" + mobileNumber + ", alternateNumber=" + alternateNumber + ", specialization="
-				+ specialization + ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable
-				+ ", isNABLAccredited=" + isNABLAccredited + ", isHomeServiceAvailable=" + isHomeServiceAvailable
-				+ ", labTest=" + labTest + ", images=" + images + ", logoUrl=" + logoUrl + "]";
-	}
+    @Override
+    public String toString() {
+	return "LabResponse [locationId=" + locationId + ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city
+		+ ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", latitude=" + latitude
+		+ ", longitude=" + longitude + ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress=" + locationEmailAddress + ", streetAddress="
+		+ streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber + ", alternateNumber=" + alternateNumber + ", specialization="
+		+ specialization + ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
+		+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", labTest=" + labTest + ", images=" + images + ", logoUrl=" + logoUrl + "]";
+    }
 }

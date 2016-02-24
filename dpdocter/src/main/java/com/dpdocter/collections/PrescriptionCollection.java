@@ -51,7 +51,7 @@ public class PrescriptionCollection extends GenericCollection {
 
     @Field
     private Boolean isFeedbackAvailable = false;
-    
+
     public String getId() {
 	return id;
     }
@@ -148,28 +148,27 @@ public class PrescriptionCollection extends GenericCollection {
 	this.advice = advice;
     }
 
-	public Boolean getInHistory() {
-		return inHistory;
-	}
+    public Boolean getInHistory() {
+	return inHistory;
+    }
 
-	public void setInHistory(Boolean inHistory) {
-		this.inHistory = inHistory;
-	}
+    public void setInHistory(Boolean inHistory) {
+	this.inHistory = inHistory;
+    }
 
-	public Boolean getIsFeedbackAvailable() {
-		return isFeedbackAvailable;
-	}
+    public Boolean getIsFeedbackAvailable() {
+	return isFeedbackAvailable;
+    }
 
-	public void setIsFeedbackAvailable(Boolean isFeedbackAvailable) {
-		this.isFeedbackAvailable = isFeedbackAvailable;
-	}
+    public void setIsFeedbackAvailable(Boolean isFeedbackAvailable) {
+	this.isFeedbackAvailable = isFeedbackAvailable;
+    }
 
-	@Override
-	public String toString() {
-		return "PrescriptionCollection [id=" + id + ", uniqueId=" + uniqueId + ", name=" + name + ", doctorId="
-				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
-				+ ", items=" + items + ", tests=" + tests + ", patientId=" + patientId + ", prescriptionCode="
-				+ prescriptionCode + ", inHistory=" + inHistory + ", advice=" + advice + ", isFeedbackAvailable="
-				+ isFeedbackAvailable + "]";
-	}
+    @Override
+    public String toString() {
+	return "PrescriptionCollection [id=" + id + ", uniqueId=" + uniqueId + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId
+		+ ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", items=" + items + ", tests=" + tests + ", patientId=" + patientId
+		+ ", prescriptionCode=" + prescriptionCode + ", inHistory=" + inHistory + ", advice=" + advice + ", isFeedbackAvailable=" + isFeedbackAvailable
+		+ "]";
+    }
 }

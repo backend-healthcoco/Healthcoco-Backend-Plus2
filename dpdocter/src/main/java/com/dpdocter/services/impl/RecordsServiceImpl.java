@@ -19,7 +19,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -141,7 +140,7 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Value(value = "${mail.aws.secret.key}")
     private String AWS_SECRET_KEY;
- 
+
     @Autowired
     private PatientVisitRepository patientVisitRepository;
 
@@ -167,7 +166,7 @@ public class RecordsServiceImpl implements RecordsService {
 		recordsCollection.setRecordsLable(recordLabel);
 	    }
 	    recordsCollection.setCreatedTime(createdTime);
-	    recordsCollection.setUniqueId(UniqueIdInitial.REPORTS.getInitial()+DPDoctorUtils.generateRandomId());
+	    recordsCollection.setUniqueId(UniqueIdInitial.REPORTS.getInitial() + DPDoctorUtils.generateRandomId());
 	    UserCollection userCollection = userRepository.findOne(recordsCollection.getDoctorId());
 	    if (userCollection != null) {
 		recordsCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
@@ -200,9 +199,13 @@ public class RecordsServiceImpl implements RecordsService {
 		prescriptionCollection.setTests(tests);
 		prescriptionCollection.setUpdatedTime(new Date());
 		prescriptionRepository.save(prescriptionCollection);
-//		String body = mailBodyGenerator.generateRecordsUploadedEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
-//			userCollection.getMiddleName(), userCollection.getLastName());
-//		mailService.sendEmail(userCollection.getEmailAddress(), "Records Uploaded", body, null);
+		// String body =
+		// mailBodyGenerator.generateRecordsUploadedEmailBody(userCollection.getUserName(),
+		// userCollection.getFirstName(),
+		// userCollection.getMiddleName(),
+		// userCollection.getLastName());
+		// mailService.sendEmail(userCollection.getEmailAddress(),
+		// "Records Uploaded", body, null);
 
 	    }
 
@@ -233,7 +236,7 @@ public class RecordsServiceImpl implements RecordsService {
 		// save image
 		String recordUrl = fileManager.saveImageAndReturnImageUrl(request.getFileDetails(), path);
 		String fileName = request.getFileDetails().getFileName() + "." + request.getFileDetails().getFileExtension();
-		String recordPath =  path + File.separator + fileName;
+		String recordPath = path + File.separator + fileName;
 
 		recordsCollection.setRecordsUrl(recordUrl);
 		recordsCollection.setRecordsPath(recordPath);
@@ -636,18 +639,19 @@ public class RecordsServiceImpl implements RecordsService {
 	    RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
 	    if (recordsCollection != null) {
 
-	   	BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
-	    AmazonS3 s3client = new AmazonS3Client(credentials);
-	                
-        S3Object object = s3client.getObject(new GetObjectRequest(bucketName, recordsCollection.getRecordsUrl()));
+		BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+		AmazonS3 s3client = new AmazonS3Client(credentials);
+
+		S3Object object = s3client.getObject(new GetObjectRequest(bucketName, recordsCollection.getRecordsUrl()));
 		InputStream objectData = object.getObjectContent();
-		 
-		mailAttachment = new  MailAttachment();
+
+		mailAttachment = new MailAttachment();
 		mailAttachment.setFileSystemResource(null);
 		mailAttachment.setInputStream(objectData);
 		UserCollection patientUserCollection = userRepository.findOne(recordsCollection.getPatientId());
 		if (patientUserCollection != null) {
-		    mailAttachment.setAttachmentName(patientUserCollection.getFirstName() + new Date() + "REPORTS." + FilenameUtils.getExtension(recordsCollection.getRecordsUrl()));
+		    mailAttachment.setAttachmentName(
+			    patientUserCollection.getFirstName() + new Date() + "REPORTS." + FilenameUtils.getExtension(recordsCollection.getRecordsUrl()));
 		} else {
 		    mailAttachment.setAttachmentName(new Date() + "REPORTS." + FilenameUtils.getExtension(recordsCollection.getRecordsUrl()));
 		}
@@ -797,46 +801,46 @@ public class RecordsServiceImpl implements RecordsService {
 	return records;
     }
 
-	@Override
-	public Records addRecordsMultipart(FormDataBodyPart file, RecordsAddRequestMultipart request) {
-		try {
+    @Override
+    public Records addRecordsMultipart(FormDataBodyPart file, RecordsAddRequestMultipart request) {
+	try {
 
-		    Date createdTime = new Date();
+	    Date createdTime = new Date();
 
-		    RecordsCollection recordsCollection = new RecordsCollection();
-		    BeanUtil.map(request, recordsCollection);
-		    if (file != null) {
-		  
-			String recordLabel = request.getFileName();
-			String path = request.getPatientId() + File.separator + "records";
+	    RecordsCollection recordsCollection = new RecordsCollection();
+	    BeanUtil.map(request, recordsCollection);
+	    if (file != null) {
 
-			FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
-			String recordPath = path + File.separator;
-//			writeToFile(file.getEntityAs(InputStream.class), recordPath);
-			fileManager.saveRecord(file, recordPath);
-			recordsCollection.setRecordsUrl(recordPath+fileDetail.getFileName()+createdTime.getTime());
-			recordsCollection.setRecordsPath(recordPath+fileDetail.getFileName()+createdTime.getTime());
-			recordsCollection.setRecordsLable(recordLabel);
-		    }
-		    recordsCollection.setCreatedTime(createdTime);
-		    UserCollection userCollection = userRepository.findOne(recordsCollection.getDoctorId());
-		    if (userCollection != null) {
-			recordsCollection.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());
-		    }
-		    LocationCollection locationCollection = locationRepository.findOne(recordsCollection.getLocationId());
-		    if(locationCollection != null){
-		    	recordsCollection.setUploadedByLocation(locationCollection.getLocationName());
-		    }
-		    recordsCollection = recordsRepository.save(recordsCollection);
-		    Records records = new Records();
-		    BeanUtil.map(recordsCollection, records);
+		String recordLabel = request.getFileName();
+		String path = request.getPatientId() + File.separator + "records";
 
-		    return records;
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
-		}
+		FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
+		String recordPath = path + File.separator;
+		// writeToFile(file.getEntityAs(InputStream.class), recordPath);
+		fileManager.saveRecord(file, recordPath);
+		recordsCollection.setRecordsUrl(recordPath + fileDetail.getFileName() + createdTime.getTime());
+		recordsCollection.setRecordsPath(recordPath + fileDetail.getFileName() + createdTime.getTime());
+		recordsCollection.setRecordsLable(recordLabel);
+	    }
+	    recordsCollection.setCreatedTime(createdTime);
+	    UserCollection userCollection = userRepository.findOne(recordsCollection.getDoctorId());
+	    if (userCollection != null) {
+		recordsCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
+	    }
+	    LocationCollection locationCollection = locationRepository.findOne(recordsCollection.getLocationId());
+	    if (locationCollection != null) {
+		recordsCollection.setUploadedByLocation(locationCollection.getLocationName());
+	    }
+	    recordsCollection = recordsRepository.save(recordsCollection);
+	    Records records = new Records();
+	    BeanUtil.map(recordsCollection, records);
+
+	    return records;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	}
     }
 
     private void writeToFile(InputStream uploadedInputStream, String uploadedFileLocation) {

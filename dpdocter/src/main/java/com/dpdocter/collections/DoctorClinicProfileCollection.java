@@ -55,14 +55,14 @@ public class DoctorClinicProfileCollection extends GenericCollection {
     }
 
     public String getUserLocationId() {
-		return userLocationId;
-	}
+	return userLocationId;
+    }
 
-	public void setUserLocationId(String userLocationId) {
-		this.userLocationId = userLocationId;
-	}
+    public void setUserLocationId(String userLocationId) {
+	this.userLocationId = userLocationId;
+    }
 
-	public String getPatientInitial() {
+    public String getPatientInitial() {
 	return patientInitial;
     }
 
@@ -118,28 +118,27 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	this.facility = facility;
     }
 
-	public Integer getNoOfReviews() {
-		return noOfReviews;
-	}
+    public Integer getNoOfReviews() {
+	return noOfReviews;
+    }
 
-	public void setNoOfReviews(Integer noOfReviews) {
-		this.noOfReviews = noOfReviews;
-	}
+    public void setNoOfReviews(Integer noOfReviews) {
+	this.noOfReviews = noOfReviews;
+    }
 
-	public Integer getNoOfRecommenations() {
-		return noOfRecommenations;
-	}
+    public Integer getNoOfRecommenations() {
+	return noOfRecommenations;
+    }
 
-	public void setNoOfRecommenations(Integer noOfRecommenations) {
-		this.noOfRecommenations = noOfRecommenations;
-	}
+    public void setNoOfRecommenations(Integer noOfRecommenations) {
+	this.noOfRecommenations = noOfRecommenations;
+    }
 
-	@Override
-	public String toString() {
-		return "DoctorClinicProfileCollection [id=" + id + ", userLocationId=" + userLocationId + ", patientInitial="
-				+ patientInitial + ", patientCounter=" + patientCounter + ", appointmentBookingNumber="
-				+ appointmentBookingNumber + ", consultationFee=" + consultationFee + ", appointmentSlot="
-				+ appointmentSlot + ", workingSchedules=" + workingSchedules + ", facility=" + facility
-				+ ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + "]";
-	}
+    @Override
+    public String toString() {
+	return "DoctorClinicProfileCollection [id=" + id + ", userLocationId=" + userLocationId + ", patientInitial=" + patientInitial + ", patientCounter="
+		+ patientCounter + ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee=" + consultationFee + ", appointmentSlot="
+		+ appointmentSlot + ", workingSchedules=" + workingSchedules + ", facility=" + facility + ", noOfReviews=" + noOfReviews
+		+ ", noOfRecommenations=" + noOfRecommenations + "]";
+    }
 }

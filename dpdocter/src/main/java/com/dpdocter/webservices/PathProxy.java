@@ -13,8 +13,8 @@ public interface PathProxy {
 
     public interface SignUpUrls {
 
-    public static final String ADMIN_SIGNUP = "/admin";
-    
+	public static final String ADMIN_SIGNUP = "/admin";
+
 	public static final String DOCTOR_SIGNUP = "/doctor";
 
 	public static final String DOCTOR_SIGNUP_HANDHELD = "/doctorHandheld";
@@ -45,8 +45,8 @@ public interface PathProxy {
     public static final String LOGIN_BASE_URL = BASE_URL + "/login";
 
     public interface LoginUrls {
-    public static final String LOGIN_ADMIN = "/admin";
-    
+	public static final String LOGIN_ADMIN = "/admin";
+
 	public static final String LOGIN_USER = "/user";
 
 	public static final String LOGIN_PATIENT = "/patient";
@@ -200,9 +200,9 @@ public interface PathProxy {
 
     public static final String FORGOT_PASSWORD_BASE_URL = BASE_URL + "/forgotPassword";
 
-    public interface ForgotPasswordUrls {    
-    public static final String CHECK_LINK_IS_ALREADY_USED = "/checkLink/{userId}";
-    	
+    public interface ForgotPasswordUrls {
+	public static final String CHECK_LINK_IS_ALREADY_USED = "/checkLink/{userId}";
+
 	public static final String FORGOT_PASSWORD_DOCTOR = "/forgotPasswordDoctor";
 
 	public static final String FORGOT_PASSWORD_PATIENT = "/forgotPasswordPatient";
@@ -579,9 +579,9 @@ public interface PathProxy {
 	public static final String ACTIVATE_DEACTIVATE_CITY = "/activateCity/{cityId}";
 
 	public static final String GET_CITY = "/cities";
-	
+
 	public static final String GET_COUNTRIES = "/countries";
-	
+
 	public static final String GET_STATES = "/states";
 
 	public static final String GET_CITY_ID = "/getCity/{cityId}";
@@ -718,34 +718,34 @@ public interface PathProxy {
     public static final String ADMIN_BASE_URL = BASE_URL + "/admin";
 
     public interface AdminUrls {
-    	
-    public static final String GET_INACTIVE_USERS = "/inactiveUsers";
-    
+
+	public static final String GET_INACTIVE_USERS = "/inactiveUsers";
+
 	public static final String GET_HOSPITALS = "/hospitals";
 
 	public static final String GET_CLINICS = "/clinics/{hospitalId}";
-	
-    public static final String GET_USERS = "/users/{locationId}/{hospitalId}";
-    
+
+	public static final String GET_USERS = "/users/{locationId}/{hospitalId}";
+
 	public static final String GET_FEEDBACKS = "/feedbacks";
 
 	public static final String EDIT_FEEDBACK = "/feedback/{feedbackId}/edit";
-	
+
 	public static final String GET_HELPUS_DATA = "/helpUsData";
-		
+
 	public static final String GET_SMS_COUNT = "/smsCount/{doctorId}/{locationId}/{hospitalId}";
-	
+
 	public static final String EDIT_SMS_COUNT = "/smsCount/{doctorId}/{locationId}/{hospitalId}/edit";
-	
-    public static final String ADD_RESUMES = "/resumes/add";
-	
+
+	public static final String ADD_RESUMES = "/resumes/add";
+
 	public static final String GET_RESUMES = "/resumes";
-	
+
 	public static final String GET_PATIENT = "/patients";
-	
-    public static final String SEARCH_CLINIC_BY_NAME = "/clinic";
-	
+
+	public static final String SEARCH_CLINIC_BY_NAME = "/clinic";
+
 	public static final String SEARCH_DOCTOR_BY_NAME = "/doctor";
-    
+
     }
 }

@@ -314,7 +314,7 @@ public class ClinicalNotesApi {
 	transnationalService.addResource(id, Resource.COMPLAINT, false);
 
 	solrClinicalNotesService.deleteComplaints(id, discarded);
-	
+
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -328,7 +328,7 @@ public class ClinicalNotesApi {
 	clinicalNotesService.deleteObservation(id, doctorId, locationId, hospitalId, discarded);
 	transnationalService.addResource(id, Resource.OBSERVATION, false);
 	solrClinicalNotesService.deleteObservations(id, discarded);
-	
+
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -342,7 +342,7 @@ public class ClinicalNotesApi {
 	clinicalNotesService.deleteInvestigation(id, doctorId, locationId, hospitalId, discarded);
 	transnationalService.addResource(id, Resource.INVESTIGATION, false);
 	solrClinicalNotesService.deleteInvestigations(id, discarded);
-	
+
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -356,7 +356,7 @@ public class ClinicalNotesApi {
 	clinicalNotesService.deleteDiagnosis(id, doctorId, locationId, hospitalId, discarded);
 	transnationalService.addResource(id, Resource.DIAGNOSIS, false);
 	solrClinicalNotesService.deleteDiagnoses(id, discarded);
-	
+
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -370,7 +370,7 @@ public class ClinicalNotesApi {
 	clinicalNotesService.deleteNotes(id, doctorId, locationId, hospitalId, discarded);
 	transnationalService.addResource(id, Resource.NOTES, false);
 	solrClinicalNotesService.deleteNotes(id, discarded);
-	
+
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -384,7 +384,7 @@ public class ClinicalNotesApi {
 	clinicalNotesService.deleteDiagram(id, doctorId, locationId, hospitalId, discarded);
 	transnationalService.addResource(id, Resource.DIAGRAM, false);
 	solrClinicalNotesService.deleteDiagrams(id, discarded);
-	
+
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;

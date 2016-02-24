@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.solr.document.SolrDiagnosticTestDocument;
 import com.dpdocter.solr.document.SolrDrugDocument;
-import com.dpdocter.solr.document.SolrLabTestDocument;
 import com.dpdocter.solr.services.SolrPrescriptionService;
 import com.dpdocter.webservices.PathProxy;
 
@@ -85,8 +84,7 @@ public class SolrPrescriptionApi {
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 	    @QueryParam(value = "searchTerm") String searchTerm) {
 
-	List<LabTest> labTests = solrPrescriptionService.searchLabTest(range, page, size, locationId, hospitalId, updatedTime, discarded,
-		searchTerm);
+	List<LabTest> labTests = solrPrescriptionService.searchLabTest(range, page, size, locationId, hospitalId, updatedTime, discarded, searchTerm);
 	Response<LabTest> response = new Response<LabTest>();
 	response.setDataList(labTests);
 	return response;
