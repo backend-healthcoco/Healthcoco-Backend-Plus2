@@ -42,6 +42,14 @@ public class Appointment extends GenericCollection {
 
     private String locationName;
 
+    private String clinicAddress;
+
+    private String locationPhoneNumber;
+
+    private Double latitude;
+
+    private Double longitude;
+
     public String getId() {
 	return id;
     }
@@ -178,11 +186,46 @@ public class Appointment extends GenericCollection {
 	this.locationName = locationName;
     }
 
-    @Override
-    public String toString() {
-	return "Appointment [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", time=" + time
-		+ ", patient=" + patient + ", state=" + state + ", isReschduled=" + isReschduled + ", date=" + date + ", appointmentId=" + appointmentId
-		+ ", subject=" + subject + ", description=" + description + ", type=" + type + ", isCalenderBlocked=" + isCalenderBlocked
-		+ ", isFeedbackAvailable=" + isFeedbackAvailable + ", doctorName=" + doctorName + ", locationName=" + locationName + "]";
-    }
+	public String getClinicAddress() {
+		return clinicAddress;
+	}
+
+	public void setClinicAddress(String clinicAddress) {
+		this.clinicAddress = clinicAddress;
+	}
+
+	public String getLocationPhoneNumber() {
+		return locationPhoneNumber;
+	}
+
+	public void setLocationPhoneNumber(String locationPhoneNumber) {
+		this.locationPhoneNumber = locationPhoneNumber;
+	}
+
+	public Double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
+	}
+
+	public Double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(Double longitude) {
+		this.longitude = longitude;
+	}
+
+	@Override
+	public String toString() {
+		return "Appointment [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", time=" + time + ", patient=" + patient + ", state=" + state + ", isReschduled="
+				+ isReschduled + ", date=" + date + ", appointmentId=" + appointmentId + ", subject=" + subject
+				+ ", description=" + description + ", type=" + type + ", isCalenderBlocked=" + isCalenderBlocked
+				+ ", isFeedbackAvailable=" + isFeedbackAvailable + ", doctorName=" + doctorName + ", locationName="
+				+ locationName + ", clinicAddress=" + clinicAddress + ", locationPhoneNumber=" + locationPhoneNumber
+				+ ", latitude=" + latitude + ", longitude=" + longitude + "]";
+	}
 }

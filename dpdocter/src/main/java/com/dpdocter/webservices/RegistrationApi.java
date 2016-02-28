@@ -350,7 +350,6 @@ public class RegistrationApi {
 	transnationalService.addResource(clinicAddressUpdateResponse.getId(), Resource.LOCATION, false);
 	if (clinicAddressUpdateResponse != null)
 	    transnationalService.checkLocation(request.getId());
-
 	Response<ClinicAddress> response = new Response<ClinicAddress>();
 	response.setData(clinicAddressUpdateResponse);
 	return response;

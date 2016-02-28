@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.LabTest;
+import com.dpdocter.solr.beans.SolrLabTest;
 
 public class LabResponse {
 

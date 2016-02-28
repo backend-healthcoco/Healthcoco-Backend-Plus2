@@ -18,7 +18,7 @@ public class PatientDetails {
 
     private Boolean showBloodGroup;
 
-    private Boolean showResourceId;
+    private Boolean showResourceId = true;
 
     private PrintSettingsText style;
 

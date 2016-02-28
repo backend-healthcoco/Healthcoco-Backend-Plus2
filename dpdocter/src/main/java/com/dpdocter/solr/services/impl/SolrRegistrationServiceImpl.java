@@ -30,6 +30,7 @@ import com.dpdocter.beans.DoctorGeneralInfo;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.collections.ReferencesCollection;
+import com.dpdocter.enums.AdvancedSearchType;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -48,7 +49,6 @@ import com.dpdocter.solr.beans.SolrWorkingSchedule;
 import com.dpdocter.solr.document.SolrDoctorDocument;
 import com.dpdocter.solr.document.SolrPatientDocument;
 import com.dpdocter.solr.document.SolrReferenceDocument;
-import com.dpdocter.solr.enums.AdvancedSearchType;
 import com.dpdocter.solr.repository.SolrDoctorRepository;
 import com.dpdocter.solr.repository.SolrPatientRepository;
 import com.dpdocter.solr.repository.SolrReferenceRepository;
@@ -219,7 +219,6 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 		responseDetails.setPatients(response);
 		responseDetails.setTotalSize(solrTemplate.count(new SimpleQuery(advancedCriteria)));
 	    }
-
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Searching Patients");

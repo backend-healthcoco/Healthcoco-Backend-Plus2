@@ -157,11 +157,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     @Autowired
     private PatientVisitRepository patientVisitRepository;
 
-    @Autowired
-    private ReferenceRepository referenceRepository;
+     @Autowired
+     private ReferenceRepository referenceRepository;
 
-    @Value(value = "${IMAGE_PATH}")
-    private String imagePath;
+     @Value(value = "${IMAGE_PATH}")
+     private String imagePath;
 
     @Override
     @SuppressWarnings("unchecked")

@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.solr.client.solrj.beans.Field;
 import org.springframework.data.solr.core.geo.GeoLocation;
 
+import com.dpdocter.beans.ClinicImage;
+
 public class DoctorLocation {
     @Field
     private String locationId;
@@ -210,7 +212,7 @@ public class DoctorLocation {
 	this.alternateNumbers = alternateNumbers;
     }
 
-    public String getLocationId() {
+	public String getLocationId() {
 	return locationId;
     }
 

@@ -1,4 +1,4 @@
-package com.dpdocter.solr.enums;
+package com.dpdocter.enums;
 
 public enum AdvancedSearchType {
     FIRST_NAME("firstNameWithoutSpace"), MIDDLE_NAME("middleName"), LAST_NAME("lastName"), PID("PID"), MOBILE_NUMBER("mobileNumber"), EMAIL_ADDRESS(

@@ -1,6 +1,6 @@
 package com.dpdocter.solr.beans;
 
-import com.dpdocter.solr.enums.AppointmentResponseType;
+import com.dpdocter.enums.AppointmentResponseType;
 
 public class AppointmentSearchResponse {
     private String id;

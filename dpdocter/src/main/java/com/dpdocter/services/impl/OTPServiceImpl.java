@@ -139,6 +139,7 @@ public class OTPServiceImpl implements OTPService {
 	    UserCollection userCollection = userRepository.findOne(doctorId);
 	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(doctorId, locationId);
 	    UserCollection patient = userRepository.findOne(patientId);
+
 	    PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientId, doctorId, locationId, hospitalId);
 	    if (userCollection != null && patient != null && userLocationCollection != null && patientId != null) {
 		String doctorName = (userCollection.getTitle() != null ? userCollection.getTitle() : "") + " " + userCollection.getFirstName();

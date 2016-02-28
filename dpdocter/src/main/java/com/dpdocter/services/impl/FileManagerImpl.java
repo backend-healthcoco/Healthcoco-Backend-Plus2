@@ -41,7 +41,7 @@ public class FileManagerImpl implements FileManager {
 
     @Value(value = "${mail.aws.secret.key}")
     private String AWS_SECRET_KEY;
-
+  
     private void createDirIfNotExist(String dirPath) {
 	File dir = new File(dirPath);
 	if (!dir.exists()) {

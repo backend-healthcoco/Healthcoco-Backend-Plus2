@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.beans.FooterSetup;
 import com.dpdocter.beans.HeaderSetup;
 import com.dpdocter.beans.PageSetup;
+import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.enums.ComponentType;
 
 @Document(collection = "print_settings_cl")
@@ -42,6 +43,9 @@ public class PrintSettingsCollection extends GenericCollection {
     @Field
     private String clinicLogoUrl;
 
+    @Field
+    private PrintSettingsText contentSetup;
+    
     public String getId() {
 	return id;
     }
@@ -122,10 +126,19 @@ public class PrintSettingsCollection extends GenericCollection {
 	this.clinicLogoUrl = clinicLogoUrl;
     }
 
-    @Override
-    public String toString() {
-	return "PrintSettingsCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", componentType="
-		+ componentType + ", pageSetup=" + pageSetup + ", headerSetup=" + headerSetup + ", footerSetup=" + footerSetup + ", discarded=" + discarded
-		+ ", clinicLogoUrl=" + clinicLogoUrl + "]";
-    }
+	public PrintSettingsText getContentSetup() {
+		return contentSetup;
+	}
+
+	public void setContentSetup(PrintSettingsText contentSetup) {
+		this.contentSetup = contentSetup;
+	}
+
+	@Override
+	public String toString() {
+		return "PrintSettingsCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", componentType=" + componentType + ", pageSetup=" + pageSetup
+				+ ", headerSetup=" + headerSetup + ", footerSetup=" + footerSetup + ", discarded=" + discarded
+				+ ", clinicLogoUrl=" + clinicLogoUrl + ", contentSetup=" + contentSetup + "]";
+	}
 }

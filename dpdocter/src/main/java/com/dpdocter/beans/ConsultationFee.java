@@ -8,14 +8,14 @@ public class ConsultationFee {
     private Currency currency = Currency.INR;
 
     public ConsultationFee() {
-    }
+	}
 
-    public ConsultationFee(int amount, Currency currency) {
-	this.amount = amount;
-	this.currency = currency;
-    }
+	public ConsultationFee(int amount, Currency currency) {
+		this.amount = amount;
+		this.currency = currency;
+	}
 
-    public int getAmount() {
+	public int getAmount() {
 	return amount;
     }
 

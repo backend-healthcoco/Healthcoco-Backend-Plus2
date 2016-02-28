@@ -6,6 +6,7 @@ import com.dpdocter.beans.ClinicProfile;
 import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.DoctorExperience;
 import com.dpdocter.beans.DoctorGeneralInfo;
+import com.dpdocter.beans.Reference;
 import com.dpdocter.request.DoctorConsultationFeeAddEditRequest;
 import com.dpdocter.request.DoctorNameAddEditRequest;
 import com.dpdocter.request.DoctorSpecialityAddEditRequest;
@@ -58,6 +59,6 @@ public interface SolrRegistrationService {
 
     void editLocation(DoctorLocation doctorLocation);
 
-    void addEditReference(String id);
+	void addEditReference(String id);
 
 }

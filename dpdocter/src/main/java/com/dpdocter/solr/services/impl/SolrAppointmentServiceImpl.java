@@ -1,6 +1,7 @@
 package com.dpdocter.solr.services.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -13,6 +14,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.data.solr.core.query.Criteria;
+import org.springframework.data.solr.core.query.FilterQuery;
+import org.springframework.data.solr.core.query.SimpleFilterQuery;
 import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.data.solr.core.query.SimpleStringCriteria;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Service;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.collections.SpecialityCollection;
+import com.dpdocter.enums.AppointmentResponseType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -32,7 +36,6 @@ import com.dpdocter.solr.document.SolrLabTestDocument;
 import com.dpdocter.solr.document.SolrLocationDocument;
 import com.dpdocter.solr.document.SolrSpecialityDocument;
 import com.dpdocter.solr.document.SolrSymptomsDocument;
-import com.dpdocter.solr.enums.AppointmentResponseType;
 import com.dpdocter.solr.repository.SolrCityRepository;
 import com.dpdocter.solr.repository.SolrDiagnosticTestRepository;
 import com.dpdocter.solr.repository.SolrDoctorRepository;
@@ -70,7 +73,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 
     @Autowired
     private SolrSymptomsRepository solrSymptomRepository;
-
+    
     @Autowired
     private SpecialityRepository specialityRepository;
 
@@ -180,8 +183,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 	    response = new ArrayList<AppointmentSearchResponse>();
 	    if (solrSpecialityDocuments != null)
 		for (SolrSpecialityDocument speciality : solrSpecialityDocuments) {
-		    if (response.size() >= 50)
-			break;
+			if(response.size() >= 50)break;
 		    AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
 		    appointmentSearchResponse.setId(speciality.getId());
 		    appointmentSearchResponse.setResponse(speciality.getSpeciality());
@@ -191,8 +193,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 
 	    if (solrSymptomsDocuments != null)
 		for (SolrSymptomsDocument symptom : solrSymptomsDocuments) {
-		    if (response.size() >= 50)
-			break;
+			if(response.size() >= 50)break;
 		    AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
 		    appointmentSearchResponse.setId(symptom.getId());
 		    appointmentSearchResponse.setResponse(symptom.getSymptom());
@@ -202,8 +203,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 
 	    if (diagnosticTestDocuments != null)
 		for (SolrDiagnosticTestDocument diagnosticTest : diagnosticTestDocuments) {
-		    if (response.size() >= 50)
-			break;
+			if(response.size() >= 50)break;
 		    AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
 		    appointmentSearchResponse.setId(diagnosticTest.getId());
 		    appointmentSearchResponse.setResponse(diagnosticTest.getTestName());
@@ -213,8 +213,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 
 	    if (solrDoctorDocuments != null)
 		for (SolrDoctorDocument doctor : solrDoctorDocuments) {
-		    if (response.size() >= 50)
-			break;
+			if(response.size() >= 50)break;
 		    AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
 		    appointmentSearchResponse.setId(doctor.getUserId());
 		    SolrDoctorDocument object = new SolrDoctorDocument();
@@ -228,8 +227,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 	    if (solrLocationDocuments != null)
 		for (SolrDoctorDocument locationDocument : solrLocationDocuments) {
 		    if (!locationDocument.getIsClinic()) {
-			if (response.size() >= 50)
-			    break;
+		    	if(response.size() >= 50)break;
 			AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
 			appointmentSearchResponse.setId(locationDocument.getLocationId());
 			appointmentSearchResponse.setResponse(locationDocument.getLocationName());
@@ -240,8 +238,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 
 	    if (solrLocationDocuments != null)
 		for (SolrDoctorDocument locationDocument : solrLocationDocuments) {
-		    if (response.size() >= 50)
-			break;
+			if(response.size() >= 50)break;
 		    if (locationDocument.getIsLab()) {
 			AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
 			appointmentSearchResponse.setId(locationDocument.getLocationId());
@@ -249,7 +246,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 			appointmentSearchResponse.setResponseType(AppointmentResponseType.LAB);
 			response.add(appointmentSearchResponse);
 		    }
-		}
+		}	    
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}
@@ -257,41 +254,39 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
     }
 
     @Override
-    public List<SolrDoctorDocument> getDoctors(int page, int size, String city, String location, String latitude, String longitude, String speciality,
-	    String symptom, Boolean booking, Boolean calling, String minFee, String maxFee, String minTime, String maxTime, List<String> days, String gender,
-	    String minExperience, String maxExperience) {
+    public List<SolrDoctorDocument> getDoctors(int page, int size, String city, String location, String latitude, String longitude, String speciality, String symptom, Boolean booking, Boolean calling,
+	    String minFee, String maxFee, String minTime, String maxTime, List<String> days, String gender, String minExperience, String maxExperience) {
 	List<SolrDoctorDocument> solrDoctorDocuments = null;
 	try {
 	    Criteria doctorSearchCriteria = new Criteria();
-
-	    if (DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)) {
-		SolrCityDocument solrCityDocument = solrCityRepository.findByName(city);
-		if (solrCityDocument != null) {
-		    latitude = solrCityDocument.getLatitude() + "";
-		    longitude = solrCityDocument.getLongitude() + "";
-		}
+	    
+	    if(DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)){
+	    	SolrCityDocument solrCityDocument = solrCityRepository.findByName(city);
+	    	if(solrCityDocument != null){
+	    		latitude = solrCityDocument.getLatitude()+"";
+	    		longitude = solrCityDocument.getLongitude()+"";
+	    	}
 	    }
-
+	    	    
 	    if (!DPDoctorUtils.anyStringEmpty(location)) {
 		doctorSearchCriteria = doctorSearchCriteria.and("locationName").is(location);
 	    }
 	    SimpleQuery query = new SimpleQuery();
-	    query.addProjectionOnField("*");
-	    query.addProjectionOnField("score");
+        query.addProjectionOnField("*");
+        query.addProjectionOnField("score");
 
-	    StringBuffer buf = new StringBuffer("");
-	    buf.append("{!geofilt pt=" + latitude + "," + longitude + " sfield=geoLocation d=" + 10.0 + " score=distance}");
-
+        StringBuffer buf = new StringBuffer("");
+        buf.append("{!geofilt pt="+latitude+","+longitude+" sfield=geoLocation d="+10.0+" score=distance}");
+        
 	    if (!DPDoctorUtils.anyStringEmpty(speciality)) {
 		List<SolrSpecialityDocument> solrSpecialityDocuments = solrSpecialityRepository.findByQueryAnnotation(speciality);
 		if (solrSpecialityDocuments != null) {
 		    @SuppressWarnings("unchecked")
 		    Collection<String> specialityIds = CollectionUtils.collect(solrSpecialityDocuments, new BeanToPropertyValueTransformer("id"));
 		    if (specialityIds != null && !specialityIds.isEmpty()) {
-			// doctorSearchCriteria =
-			// doctorSearchCriteria.and("specialities").contains(specialityIds);
-			String ids = specialityIds.toString();
-			buf.append("AND specialities:('" + specialityIds.toString().replace("[", "").replace("]", "") + "')");
+			doctorSearchCriteria = doctorSearchCriteria.and("specialities").in(Arrays.asList(specialityIds));
+//			String ids = specialityIds.toString();
+//			buf.append("AND specialities:('" + specialityIds.toString().replace("[", "").replace("]", "") + "')");
 		    }
 		}
 	    }

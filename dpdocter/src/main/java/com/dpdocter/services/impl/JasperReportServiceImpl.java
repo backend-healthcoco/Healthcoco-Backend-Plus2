@@ -3,6 +3,8 @@ package com.dpdocter.services.impl;
 import java.io.File;
 import java.util.Map;
 
+import javax.ws.rs.core.UriInfo;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -33,7 +35,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
     @Value(value = "${JASPER_TEMPLATES_RESOURCE}")
     private String REPORT_NAME;
-
+       
     @SuppressWarnings("deprecation")
     @Override
     public String createPDF(Map<String, Object> parameters, String fileName, String layout, String pageSize, String margins, String pdfName) {

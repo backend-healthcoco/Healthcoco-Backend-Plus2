@@ -7,11 +7,13 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.solr.core.mapping.SolrDocument;
 
+import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.DoctorExperience;
 import com.dpdocter.enums.Currency;
 import com.dpdocter.enums.DoctorExperienceUnit;
+import com.dpdocter.enums.TimeUnit;
 import com.dpdocter.solr.beans.DoctorLocation;
 import com.dpdocter.solr.beans.SolrWorkingSchedule;
 
@@ -65,6 +67,18 @@ public class SolrDoctorDocument extends DoctorLocation {
 
     @Field
     private String facility;
+
+    @Field
+    private List<String> appointmentBookingNumber;
+
+    @Transient
+    private AppointmentSlot appointmentSlot;
+
+    @Field
+    private float appointmentSlotTime;
+
+    @Field
+    private TimeUnit appointmentSlotTimeUnit;
 
     @Field
     private Boolean isActive = false;
@@ -340,15 +354,62 @@ public class SolrDoctorDocument extends DoctorLocation {
 	this.distance = distance;
     }
 
-    @Override
-    public String toString() {
-	return "SolrDoctorDocument [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", gender=" + gender + ", emailAddress=" + emailAddress
-		+ ", mobileNumber=" + mobileNumber + ", imageUrl=" + imageUrl + ", consultationFee=" + consultationFee + ", consultationFeeAmount="
-		+ consultationFeeAmount + ", consultationFeeCurrency=" + consultationFeeCurrency + ", workingSchedules=" + workingSchedules + ", specialities="
-		+ specialities + ", experience=" + experience + ", experienceNum=" + experienceNum + ", experiencePeriod=" + experiencePeriod + ", facility="
-		+ facility + ", isActive=" + isActive + ", isVerified=" + isVerified + ", coverImageUrl=" + coverImageUrl + ", colorCode=" + colorCode
-		+ ", userState=" + userState + ", registerNumber=" + registerNumber + ", days=" + days + ", months=" + months + ", years=" + years + ", dob="
-		+ dob + ", distance=" + distance + "]";
-    }
+	public List<String> getAppointmentBookingNumber() {
+		return appointmentBookingNumber;
+	}
 
+	public void setAppointmentBookingNumber(List<String> appointmentBookingNumber) {
+		this.appointmentBookingNumber = appointmentBookingNumber;
+	}
+
+	public AppointmentSlot getAppointmentSlot() {
+		return appointmentSlot;
+	}
+
+	public void setAppointmentSlot(AppointmentSlot appointmentSlot) {
+		this.appointmentSlot = appointmentSlot;
+		if (appointmentSlot != null) {
+		    this.appointmentSlotTime = appointmentSlot.getTime();
+		    this.appointmentSlotTimeUnit = appointmentSlot.getTimeUnit();
+		}
+	}
+
+	public float getAppointmentSlotTime() {
+		return appointmentSlotTime;
+	}
+
+	public void setAppointmentSlotTime(float appointmentSlotTime) {
+		this.appointmentSlotTime = appointmentSlotTime;
+		if (this.appointmentSlot != null)
+		    this.appointmentSlot.setTime(appointmentSlotTime);
+		else
+		    this.appointmentSlot = new AppointmentSlot(this.appointmentSlotTime, this.appointmentSlotTimeUnit);
+	}
+
+	public TimeUnit getAppointmentSlotTimeUnit() {
+		return appointmentSlotTimeUnit;
+	}
+
+	public void setAppointmentSlotTimeUnit(TimeUnit appointmentSlotTimeUnit) {
+		this.appointmentSlotTimeUnit = appointmentSlotTimeUnit;
+		if (this.appointmentSlot != null)
+		    this.appointmentSlot.setTimeUnit(appointmentSlotTimeUnit);
+		else
+		    this.appointmentSlot = new AppointmentSlot(this.appointmentSlotTime, this.appointmentSlotTimeUnit);
+	}
+
+	@Override
+	public String toString() {
+		return "SolrDoctorDocument [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", gender=" + gender
+				+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", imageUrl=" + imageUrl
+				+ ", consultationFee=" + consultationFee + ", consultationFeeAmount=" + consultationFeeAmount
+				+ ", consultationFeeCurrency=" + consultationFeeCurrency + ", workingSchedules=" + workingSchedules
+				+ ", specialities=" + specialities + ", experience=" + experience + ", experienceNum=" + experienceNum
+				+ ", experiencePeriod=" + experiencePeriod + ", facility=" + facility + ", appointmentBookingNumber="
+				+ appointmentBookingNumber + ", appointmentSlot=" + appointmentSlot + ", appointmentSlotTime="
+				+ appointmentSlotTime + ", appointmentSlotTimeUnit=" + appointmentSlotTimeUnit + ", isActive="
+				+ isActive + ", isVerified=" + isVerified + ", coverImageUrl=" + coverImageUrl + ", colorCode="
+				+ colorCode + ", userState=" + userState + ", registerNumber=" + registerNumber + ", days=" + days
+				+ ", months=" + months + ", years=" + years + ", dob=" + dob + ", distance=" + distance + "]";
+	}
 }

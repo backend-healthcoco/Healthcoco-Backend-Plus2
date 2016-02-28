@@ -49,7 +49,7 @@ public class MailServiceImpl implements MailService {
 
     @Value(value = "${mail.aws.secret.key}")
     private String AWS_SECRET_KEY;
-
+    
     /**
      * @param String
      *            to

@@ -168,7 +168,6 @@ public class LoginServiceImpl implements LoginService {
 			    locationAndAccessControl.setLogoUrl(getFinalImageURL(locationAndAccessControl.getLogoUrl()));
 			    locationAndAccessControl.setLogoThumbnailUrl(getFinalImageURL(locationAndAccessControl.getLogoThumbnailUrl()));
 			    locationAndAccessControl.setImages(getFinalClinicImages(locationAndAccessControl.getImages()));
-
 			    List<Role> roles = null;
 			    for (UserRoleCollection collection : userRoleCollections) {
 				RoleCollection roleCollection2 = roleRepository.find(collection.getRoleId(), locationCollection.getId(),

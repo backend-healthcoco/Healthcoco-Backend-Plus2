@@ -67,17 +67,18 @@ public class DoctorGeneralInfo {
 	this.appointmentBookingNumber = appointmentBookingNumber;
     }
 
-    public DoctorFacility getFacility() {
-	return facility;
-    }
+	public DoctorFacility getFacility() {
+		return facility;
+	}
 
-    public void setFacility(DoctorFacility facility) {
-	this.facility = facility;
-    }
+	public void setFacility(DoctorFacility facility) {
+		this.facility = facility;
+	}
 
-    @Override
-    public String toString() {
-	return "DoctorGeneralInfo [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", appointmentSlot=" + appointmentSlot
-		+ ", consultationFee=" + consultationFee + ", appointmentBookingNumber=" + appointmentBookingNumber + ", facility=" + facility + "]";
-    }
+	@Override
+	public String toString() {
+		return "DoctorGeneralInfo [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", appointmentSlot=" + appointmentSlot + ", consultationFee=" + consultationFee
+				+ ", appointmentBookingNumber=" + appointmentBookingNumber + ", facility=" + facility + "]";
+	}
 }
