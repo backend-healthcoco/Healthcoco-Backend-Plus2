@@ -40,10 +40,10 @@ public interface SolrDiagnosticTestRepository extends SolrCrudRepository<SolrDia
     @Query("locationId:*?0* AND hospitalId:*?1* AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false) AND testName:?4*")
     List<SolrDiagnosticTestDocument> getCustomDiagnosticTests(String locationId, String hospitalId, Date date, boolean discarded, String searchTerm, Sort sort);
 
-    @Query("updatedTime: {?0 TO *} AND discarded: {$in: ?1}}")
+    @Query("updatedTime: {?0 TO *} AND ( discarded: ?1 OR discarded:false)")
     List<SolrDiagnosticTestDocument> getCustomGlobalDiagnosticTests(Date date, boolean discarded, Pageable pageable);
 
-    @Query("updatedTime: {?0 TO *} AND discarded: {$in: ?1}}")
+    @Query("updatedTime: {?0 TO *} AND ( discarded: ?1 OR discarded:false)")
     List<SolrDiagnosticTestDocument> getCustomGlobalDiagnosticTests(Date date, boolean discarded, Sort sort);
 
     @Query("(locationId:*?0* AND hospitalId:*?1* AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false)) OR ((locationId: null OR locationId: \"\") AND (hospitalId: null OR hospitalId: \"\") AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false))")
@@ -58,11 +58,11 @@ public interface SolrDiagnosticTestRepository extends SolrCrudRepository<SolrDia
     @Query("updatedTime: {?0 TO *} AND ( discarded: ?1 OR discarded:false) AND testName:?2*")
     List<SolrDiagnosticTestDocument> getCustomGlobalDiagnosticTests(Date date, boolean discarded, String searchTerm, Sort sort);
 
-    @Query("(locationId:*?0* AND hospitalId:*?1* AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false) AND testName:?4*) OR (((locationId: null OR locationId: \"\") AND (hospitalId: null OR hospitalId: \"\") AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false) AND testName:?4*)")
+    @Query("(locationId:*?0* AND hospitalId:*?1* AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false) AND testName:?4*) OR ((locationId: null OR locationId: \"\") AND (hospitalId: null OR hospitalId: \"\") AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false) AND testName:?4*)")
     List<SolrDiagnosticTestDocument> getCustomGlobalDiagnosticTests(String locationId, String hospitalId, Date date, boolean discarded, String searchTerm,
 	    Pageable pageable);
 
-    @Query("(locationId:*?0* AND hospitalId:*?1* AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false) AND testName:?4*) OR (((locationId: null OR locationId: \"\") AND (hospitalId: null OR hospitalId: \"\") AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false) AND testName: ?4*)")
+    @Query("(locationId:*?0* AND hospitalId:*?1* AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false) AND testName:?4*) OR ((locationId: null OR locationId: \"\") AND (hospitalId: null OR hospitalId: \"\") AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false) AND testName: ?4*)")
     List<SolrDiagnosticTestDocument> getCustomGlobalDiagnosticTests(String locationId, String hospitalId, Date date, boolean discarded, String searchTerm,
 	    Sort sort);
 }

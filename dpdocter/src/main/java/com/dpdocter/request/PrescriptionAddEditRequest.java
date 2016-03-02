@@ -2,6 +2,7 @@ package com.dpdocter.request;
 
 import java.util.List;
 
+import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.PrescriptionItem;
 
@@ -26,7 +27,7 @@ public class PrescriptionAddEditRequest {
 
     private String visitId;
 
-    private List<LabTest> labTests;
+    private List<DiagnosticTest> diagnosticTests;
 
     private String advice;
 
@@ -110,26 +111,27 @@ public class PrescriptionAddEditRequest {
 	this.visitId = visitId;
     }
 
-    public List<LabTest> getLabTests() {
-	return labTests;
-    }
+	public List<DiagnosticTest> getDiagnosticTests() {
+		return diagnosticTests;
+	}
 
-    public void setLabTests(List<LabTest> labTests) {
-	this.labTests = labTests;
-    }
+	public void setDiagnosticTests(List<DiagnosticTest> diagnosticTests) {
+		this.diagnosticTests = diagnosticTests;
+	}
 
-    public String getAdvice() {
-	return advice;
-    }
+	public String getAdvice() {
+		return advice;
+	}
 
-    public void setAdvice(String advice) {
-	this.advice = advice;
-    }
+	public void setAdvice(String advice) {
+		this.advice = advice;
+	}
 
-    @Override
-    public String toString() {
-	return "PrescriptionAddEditRequest [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-		+ hospitalId + ", items=" + items + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + ", createdBy=" + createdBy
-		+ ", visitId=" + visitId + ", labTests=" + labTests + ", advice=" + advice + "]";
-    }
+	@Override
+	public String toString() {
+		return "PrescriptionAddEditRequest [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", items=" + items + ", patientId=" + patientId
+				+ ", prescriptionCode=" + prescriptionCode + ", createdBy=" + createdBy + ", visitId=" + visitId
+				+ ", diagnosticTests=" + diagnosticTests + ", advice=" + advice + "]";
+	}
 }

@@ -2,6 +2,8 @@ package com.dpdocter.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -45,5 +47,11 @@ public interface UserRepository extends MongoRepository<UserCollection, String> 
 
     @Query("{'password' : ?0, 'mobileNumber' : ?1}")
     public UserCollection findByPasswordAndMobileNumberIgnoreCase(String password, String mobileNumber);
+
+    @Query("{'isActive' : ?0}")
+	public List<UserCollection> findInactiveDoctors(boolean isActive, Pageable pageRequest);
+
+    @Query("{'isActive' : ?0}")
+	public List<UserCollection> findInactiveDoctors(boolean isActive, Sort sort);
 
 }

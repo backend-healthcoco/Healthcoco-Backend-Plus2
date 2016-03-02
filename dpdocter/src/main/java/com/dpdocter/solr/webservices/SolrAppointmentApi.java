@@ -82,14 +82,11 @@ public class SolrAppointmentApi {
 	if (doctors != null && !doctors.isEmpty()) {
 	    for (LabResponse doctorDocument : doctors) {
 		if (doctorDocument.getImages() != null && !doctorDocument.getImages().isEmpty()) {
-		    for (ClinicImage clinicImage : doctorDocument.getImages()) {
-			if (clinicImage.getImageUrl() != null) {
-			    clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl()));
+			List<String> images = new ArrayList<String>();
+			for (String clinicImage : doctorDocument.getImages()) {
+			    images.add(clinicImage);
 			}
-			if (clinicImage.getThumbnailUrl() != null) {
-			    clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
-			}
-		    }
+			doctorDocument.setImages(images);
 		}
 		if (doctorDocument.getLogoUrl() != null)
 		    doctorDocument.setLogoUrl(getFinalImageURL(doctorDocument.getLogoUrl()));

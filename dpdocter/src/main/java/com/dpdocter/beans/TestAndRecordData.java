@@ -2,24 +2,26 @@ package com.dpdocter.beans;
 
 public class TestAndRecordData {
 
-    private String labTestId;
+    private String testId;
 
     private String recordId;
 
-    public TestAndRecordData(String labTestId, String recordId) {
-	this.labTestId = labTestId;
-	this.recordId = recordId;
-    }
+    public TestAndRecordData(String testId, String recordId) {
+		this.testId = testId;
+		this.recordId = recordId;
+	}
 
-    public String getLabTestId() {
-	return labTestId;
-    }
+	public String getTestId() {
+		return testId;
+	}
 
-    public void setLabTestId(String labTestId) {
-	this.labTestId = labTestId;
-    }
 
-    public String getRecordId() {
+	public void setTestId(String testId) {
+		this.testId = testId;
+	}
+
+
+	public String getRecordId() {
 	return recordId;
     }
 
@@ -27,8 +29,8 @@ public class TestAndRecordData {
 	this.recordId = recordId;
     }
 
-    @Override
-    public String toString() {
-	return "TestAndRecordData [labTestId=" + labTestId + ", recordId=" + recordId + "]";
-    }
+	@Override
+	public String toString() {
+		return "TestAndRecordData [testId=" + testId + ", recordId=" + recordId + "]";
+	}
 }

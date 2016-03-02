@@ -901,15 +901,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    String labTest = "";
 		    int i = 1;
 		    for (TestAndRecordData tests : prescriptionCollection.getTests()) {
-			LabTestCollection labTestCollection = labTestRepository.findOne(tests.getLabTestId());
-			if (labTestCollection.getTestId() != null) {
-			    DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(labTestCollection.getTestId());
+			DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(tests.getTestId());
 			    if (diagnosticTestCollection != null) {
 				labTest = labTest + i + ") " + diagnosticTestCollection.getTestName() + "<br>";
 				i++;
 			    }
 			}
-		    }
 		    prescriptionItemsObj.put("labTest", labTest);
 		} else {
 		    prescriptionItemsObj.put("labTest", null);

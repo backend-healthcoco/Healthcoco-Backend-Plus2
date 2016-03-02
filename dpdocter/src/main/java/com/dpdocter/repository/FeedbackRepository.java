@@ -24,4 +24,16 @@ public interface FeedbackRepository extends MongoRepository<FeedbackCollection, 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'isVisible': ?3, 'updatedTime': {'$gt': ?4}}")
     List<FeedbackCollection> find(String doctorId, String locationId, String hospitalId, boolean isVisible, Date date, Sort sort);
 
+    @Query("{'isVisible': ?0, 'updatedTime': {'$gt': ?1}}")
+	List<FeedbackCollection> find(boolean isVisible, Date date, Pageable pageRequest);
+
+    @Query("{'isVisible': ?0, 'updatedTime': {'$gt': ?1}}")
+	List<FeedbackCollection> find(boolean isVisible, Date date, Sort sort);
+
+    @Query("{'type': ?0, 'isVisible': ?1, 'updatedTime': {'$gt': ?2}}")
+	List<FeedbackCollection> findByType(String type, boolean isVisible, Date date, Pageable pageRequest);
+
+    @Query("{'type': ?0, 'isVisible': ?1, 'updatedTime': {'$gt': ?2}}")
+	List<FeedbackCollection> findByType(String type, boolean isVisible, Date date, Sort sort);
+
 }

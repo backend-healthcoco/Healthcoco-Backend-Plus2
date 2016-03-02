@@ -73,7 +73,7 @@ public class AccessControlServicesImpl implements AccessControlServices {
 	    response.setLocationId(locationId);
 	    response.setHospitalId(hospitalId);
 	} catch (Exception e) {
-	    throw new BusinessException(ServiceError.Forbidden, "Error : " + e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 	}
 	return response;
     }
@@ -155,7 +155,7 @@ public class AccessControlServicesImpl implements AccessControlServices {
 	    BeanUtil.map(acosCollections, accessModules);
 	    response.setAccessModules(accessModules);
 	} catch (Exception e) {
-	    throw new BusinessException(ServiceError.Forbidden, "Error : " + e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 	}
 	return response;
     }

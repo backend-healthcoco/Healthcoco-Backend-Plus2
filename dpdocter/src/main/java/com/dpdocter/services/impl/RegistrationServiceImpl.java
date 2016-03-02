@@ -294,6 +294,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		userCollection.setThumbnailUrl(thumbnailUrl);
 
 	    }
+	    userCollection.setIsActive(true);
 	    userCollection.setCreatedTime(createdTime);
 	    userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
 	    userCollection = userRepository.save(userCollection);
@@ -500,7 +501,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    userCollection.setThumbnailUrl(thumbnailUrl);
 		    registeredPatientDetails.setThumbnailUrl(thumbnailUrl);
 		}
-
+		userCollection.setIsActive(true);
 		userCollection.setEmailAddress(request.getEmailAddress());
 		userCollection = userRepository.save(userCollection);
 		patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(request.getUserId(), request.getDoctorId(),
@@ -1904,11 +1905,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 		if (request.getIsLab()) {
 		    locationCollection.setIsHomeServiceAvailable(request.getIsHomeServiceAvailable());
 		    locationCollection.setIsNABLAccredited(request.getIsNABLAccredited());
-		    locationCollection.setIsNABLAccredited(request.getIsNABLAccredited());
+		    locationCollection.setIsOnlineReportsAvailable(request.getIsOnlineReportsAvailable());
 		} else {
 		    locationCollection.setIsHomeServiceAvailable(false);
 		    locationCollection.setIsNABLAccredited(false);
-		    locationCollection.setIsNABLAccredited(false);
+		    locationCollection.setIsOnlineReportsAvailable(false);
 		}
 		locationCollection = locationRepository.save(locationCollection);
 		response = new ClinicLabProperties();
@@ -2056,13 +2057,25 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     @Override
-    public List<Feedback> getFeedback(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime) {
+    public List<Feedback> getFeedback(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, String type) {
 	List<Feedback> response = null;
 	try {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    List<FeedbackCollection> feedbackCollection = null;
-	    if (DPDoctorUtils.anyStringEmpty(doctorId))
-		;
+	    if (DPDoctorUtils.anyStringEmpty(doctorId)){
+	    	//THis for ADMIN so isVisible = false
+	    	if(DPDoctorUtils.anyStringEmpty(type)){
+	    		if (size > 0)
+					feedbackCollection = feedbackRepository.find(false, new Date(createdTimeStamp), new PageRequest(page, size, Sort.Direction.DESC, "updatedTime"));
+				else
+					feedbackCollection = feedbackRepository.find(false, new Date(createdTimeStamp), new Sort(Direction.DESC, "updatedTime"));
+	    	}else{
+	    		if (size > 0)
+					feedbackCollection = feedbackRepository.findByType(type, false, new Date(createdTimeStamp), new PageRequest(page, size, Sort.Direction.DESC, "updatedTime"));
+				else
+					feedbackCollection = feedbackRepository.findByType(type, false, new Date(createdTimeStamp), new Sort(Direction.DESC, "updatedTime"));
+	    	}
+	    }
 	    else {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 		    if (size > 0)

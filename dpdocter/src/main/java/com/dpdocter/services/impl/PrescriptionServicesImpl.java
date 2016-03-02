@@ -1,7 +1,6 @@
 package com.dpdocter.services.impl;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -115,6 +114,7 @@ import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrDiagnosticTestDocument;
+import com.dpdocter.solr.document.SolrDrugDocument;
 import com.dpdocter.solr.document.SolrLabTestDocument;
 import com.dpdocter.solr.repository.SolrDiagnosticTestRepository;
 import com.dpdocter.solr.services.SolrPrescriptionService;
@@ -516,59 +516,30 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		prescriptionCollection.setItems(items);
 	    }
-	    if (request.getLabTests() != null) {
+	    if (request.getDiagnosticTests() != null) {
 		List<TestAndRecordData> tests = null;
-		for (LabTest labTest : request.getLabTests()) {
+		for (DiagnosticTest diagnosticTest : request.getDiagnosticTests()) {
 			if (tests == null)tests = new ArrayList<TestAndRecordData>();
-		    if (labTest.getId() != null) {
-			tests.add(new TestAndRecordData(labTest.getId(),null));
-		    }else{
-		    	if(labTest.getTest() != null){
+		    if (diagnosticTest.getId() != null) {
+			tests.add(new TestAndRecordData(diagnosticTest.getId(),null));
+		    }else if(diagnosticTest.getTestName() != null){
 		    		DiagnosticTestCollection diagnosticTestCollection = null;
-		    		if(labTest.getTest().getId() != null){
-		    			if(labTest.getTest().getId() != null)
-		    			 diagnosticTestCollection = diagnosticTestRepository.findOne(labTest.getTest().getId());
-		    		if(diagnosticTestCollection == null){	    				
-		    				 diagnosticTestCollection = new DiagnosticTestCollection();
-				    			diagnosticTestCollection.setTestName(labTest.getTest().getTestName());
-				    			diagnosticTestCollection.setLocationId(prescriptionCollection.getLocationId());
-				    			diagnosticTestCollection.setHospitalId(prescriptionCollection.getHospitalId());
-				    			diagnosticTestCollection.setCreatedTime(new Date());
-				    			diagnosticTestCollection = diagnosticTestRepository.save(diagnosticTestCollection);
-			    			}
-		    		}else if(labTest.getTest().getTestName() != null){
-		    			diagnosticTestCollection = new DiagnosticTestCollection();
-		    			diagnosticTestCollection.setTestName(labTest.getTest().getTestName());
-		    			diagnosticTestCollection.setLocationId(prescriptionCollection.getLocationId());
-		    			diagnosticTestCollection.setHospitalId(prescriptionCollection.getHospitalId());
-		    			diagnosticTestCollection.setCreatedTime(new Date());
-		    			diagnosticTestCollection = diagnosticTestRepository.save(diagnosticTestCollection);
-		    		}
-		    		LabTestCollection test = new LabTestCollection();
-    				test.setTestId(diagnosticTestCollection.getId());
-    				test.setLocationId(prescriptionCollection.getLocationId());
-    				test.setHospitalId(prescriptionCollection.getHospitalId());
-    				test.setCost(labTest.getCost());
-    				test.setCreatedTime(new Date());
-    				if (userCollection != null)test.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());
-    				test = labTestRepository.save(test);
+		    		diagnosticTestCollection = new DiagnosticTestCollection();
+		    	    diagnosticTestCollection.setTestName(diagnosticTest.getTestName());
+		    		diagnosticTestCollection.setLocationId(prescriptionCollection.getLocationId());
+		    		diagnosticTestCollection.setHospitalId(prescriptionCollection.getHospitalId());
+		    		diagnosticTestCollection.setCreatedTime(new Date());
+		    		
+		    		if (userCollection != null)diagnosticTestCollection.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());
+		    		diagnosticTestCollection = diagnosticTestRepository.save(diagnosticTestCollection);
     				
-    				transnationalService.addResource(test.getId(), Resource.LABTEST, false);
     				transnationalService.addResource(diagnosticTestCollection.getId(), Resource.DIAGNOSTICTEST, false);
     				SolrDiagnosticTestDocument diagnosticTestDocument = new SolrDiagnosticTestDocument();
     				BeanUtil.map(diagnosticTestCollection, diagnosticTestDocument);
     				solrPrescriptionService.addEditDiagnosticTest(diagnosticTestDocument);
-    				
-    				SolrLabTestDocument labTestDocument = new SolrLabTestDocument();
-    				BeanUtil.map(test, labTestDocument);
-    				solrPrescriptionService.addLabTest(labTestDocument);
-    				
-    				LabTest labTest2 = new LabTest();
-    				BeanUtil.map(test, labTest2);
-    				tests.add(new TestAndRecordData(labTest2.getId(),null));
+       				tests.add(new TestAndRecordData(diagnosticTestCollection.getId(),null));
 		    	}
 		    }
-		}
 		prescriptionCollection.setTests(tests);
 	    }
 	    
@@ -579,18 +550,16 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    response = new PrescriptionAddEditResponse();
 	    BeanUtil.map(prescriptionCollection, response);
 	    if(prescriptionCollection.getTests() != null && !prescriptionCollection.getTests().isEmpty()){
-			List<TestAndRecordDataResponse> labTests = new ArrayList<TestAndRecordDataResponse>();
+			List<TestAndRecordDataResponse> tests = new ArrayList<TestAndRecordDataResponse>();
 		    	for(TestAndRecordData data : prescriptionCollection.getTests()){
-		    		LabTestCollection labTestCollection = labTestRepository.findOne(data.getLabTestId());
-		    		DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(labTestCollection.getTestId());
-		    		LabTest labTest = new LabTest();DiagnosticTest diagnosticTest = new DiagnosticTest();
-		    		if(labTestCollection != null && diagnosticTestCollection !=null){
-		    			BeanUtil.map(labTestCollection, labTest);BeanUtil.map(diagnosticTestCollection, diagnosticTest);
-		    			labTest.setTest(diagnosticTest);
+		    		DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(data.getTestId());
+		    		DiagnosticTest diagnosticTest = new DiagnosticTest();
+		    		if(diagnosticTestCollection !=null){
+		    			BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 		    		}
-		    		labTests.add(new TestAndRecordDataResponse(labTest, data.getRecordId()));
+		    		tests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
 		    }
-		   response.setTestsAndRecords(labTests);
+		   response.setTestsAndRecords(tests);
 		}
 	    response.setVisitId(request.getVisitId());
 	} catch (Exception e) {
@@ -634,58 +603,30 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    }
 		}
 	    }
-	    if (request.getLabTests() != null) {
+	    if (request.getDiagnosticTests() != null) {
 			List<TestAndRecordData> tests = null;
-			for (LabTest labTest : request.getLabTests()) {
-			    if (labTest.getId() != null) {
+			for (DiagnosticTest diagnosticTest : request.getDiagnosticTests()) {
+			    if (diagnosticTest.getId() != null) {
 			    	if (tests == null)tests = new ArrayList<TestAndRecordData>();
-					tests.add(new TestAndRecordData(labTest.getId(),null));
-			    }else{
-			    	if(labTest.getTest() != null){
-			    		DiagnosticTestCollection diagnosticTestCollection = null;
-			    		if(labTest.getTest().getId() != null){
-			    			if(labTest.getTest().getId() != null)
-			    			 diagnosticTestCollection = diagnosticTestRepository.findOne(labTest.getTest().getId());
-			    			 if(diagnosticTestCollection == null){	    				
-			    				 diagnosticTestCollection = new DiagnosticTestCollection();
-					    			diagnosticTestCollection.setTestName(labTest.getTest().getTestName());
-					    			diagnosticTestCollection.setLocationId(prescriptionCollection.getLocationId());
-					    			diagnosticTestCollection.setHospitalId(prescriptionCollection.getHospitalId());
-					    			diagnosticTestCollection.setCreatedTime(new Date());
-					    			diagnosticTestCollection = diagnosticTestRepository.save(diagnosticTestCollection);
-				    			}
-			    		}else if(labTest.getTest().getTestName() != null){
-			    			diagnosticTestCollection = new DiagnosticTestCollection();
-			    			diagnosticTestCollection.setTestName(labTest.getTest().getTestName());
-			    			diagnosticTestCollection.setLocationId(prescriptionCollection.getLocationId());
-			    			diagnosticTestCollection.setHospitalId(prescriptionCollection.getHospitalId());
-			    			diagnosticTestCollection.setCreatedTime(new Date());
-			    			diagnosticTestCollection = diagnosticTestRepository.save(diagnosticTestCollection);
-			    		}
-			    		LabTestCollection test = new LabTestCollection();
-	    				test.setTestId(diagnosticTestCollection.getId());
-	    				test.setLocationId(prescriptionCollection.getLocationId());
-	    				test.setHospitalId(prescriptionCollection.getHospitalId());
-	    				test.setCost(labTest.getCost());
-	    				test.setCreatedTime(new Date());
-	    				if (userCollection != null)test.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());
-	    				test = labTestRepository.save(test);
-	    				
-	    				transnationalService.addResource(test.getId(), Resource.LABTEST, false);
-	    				transnationalService.addResource(diagnosticTestCollection.getId(), Resource.DIAGNOSTICTEST, false);
-	    				SolrDiagnosticTestDocument diagnosticTestDocument = new SolrDiagnosticTestDocument();
-	    				BeanUtil.map(diagnosticTestCollection, diagnosticTestDocument);
-	    				solrPrescriptionService.addEditDiagnosticTest(diagnosticTestDocument);
-	    				
-	    				SolrLabTestDocument labTestDocument = new SolrLabTestDocument();
-	    				BeanUtil.map(test, labTestDocument);
-	    				solrPrescriptionService.addLabTest(labTestDocument);
-	    				LabTest labTest2 = new LabTest();
-	    				BeanUtil.map(test, labTest2);
-	    				tests.add(new TestAndRecordData(labTest2.getId(), null));
+					tests.add(new TestAndRecordData(diagnosticTest.getId(),null));
+			    }else if(diagnosticTest.getTestName() != null){
+			    	DiagnosticTestCollection diagnosticTestCollection = null;
+			    	diagnosticTestCollection = new DiagnosticTestCollection();
+			    	diagnosticTestCollection.setTestName(diagnosticTest.getTestName());
+			    	diagnosticTestCollection.setLocationId(prescriptionCollection.getLocationId());
+			    	diagnosticTestCollection.setHospitalId(prescriptionCollection.getHospitalId());
+			    	diagnosticTestCollection.setCreatedTime(new Date());
+			    	
+			    	if (userCollection != null)diagnosticTestCollection.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());
+			    	diagnosticTestCollection = diagnosticTestRepository.save(diagnosticTestCollection);	
+
+			    	transnationalService.addResource(diagnosticTestCollection.getId(), Resource.DIAGNOSTICTEST, false);
+	    			SolrDiagnosticTestDocument diagnosticTestDocument = new SolrDiagnosticTestDocument();
+	    			BeanUtil.map(diagnosticTestCollection, diagnosticTestDocument);
+	    			solrPrescriptionService.addEditDiagnosticTest(diagnosticTestDocument);
+	    			tests.add(new TestAndRecordData(diagnosticTestCollection.getId(), null));
 			    	}
 			    }
-			}
 			prescriptionCollection.setTests(tests);
 		}
 	    prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
@@ -709,18 +650,16 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		response.setItems(prescriptionItemDetails);
 	    }
 	    if(prescriptionCollection.getTests() != null && !prescriptionCollection.getTests().isEmpty()){
-			List<TestAndRecordDataResponse> labTests = new ArrayList<TestAndRecordDataResponse>();
+			List<TestAndRecordDataResponse> tests = new ArrayList<TestAndRecordDataResponse>();
 		    	for(TestAndRecordData data : prescriptionCollection.getTests()){
-		    		LabTestCollection labTestCollection = labTestRepository.findOne(data.getLabTestId());
-		    		DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(labTestCollection.getTestId());
-		    		LabTest labTest = new LabTest();DiagnosticTest diagnosticTest = new DiagnosticTest();
-		    		if(labTestCollection != null && diagnosticTestCollection !=null){
-		    			BeanUtil.map(labTestCollection, labTest);BeanUtil.map(diagnosticTestCollection, diagnosticTest);
-		    			labTest.setTest(diagnosticTest);
+		    		DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(data.getTestId());
+		    	    DiagnosticTest diagnosticTest = new DiagnosticTest();
+		    		if(diagnosticTestCollection !=null){
+		    			BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 		    		}
-		    		labTests.add(new TestAndRecordDataResponse(labTest, data.getRecordId()));
+		    		tests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
 		    }
-		   response.setTestsAndRecords(labTests);
+		   response.setTestsAndRecords(tests);
 		}
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -838,14 +777,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if(tests != null && !tests.isEmpty()){
 				List<TestAndRecordDataResponse> labTests = new ArrayList<TestAndRecordDataResponse>();
 			    	for(TestAndRecordData data : tests){
-			    		LabTestCollection labTestCollection = labTestRepository.findOne(data.getLabTestId());
-			    		DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(labTestCollection.getTestId());
-			    		LabTest labTest = new LabTest();DiagnosticTest diagnosticTest = new DiagnosticTest();
-			    		if(labTestCollection != null && diagnosticTestCollection !=null){
-			    			BeanUtil.map(labTestCollection, labTest);BeanUtil.map(diagnosticTestCollection, diagnosticTest);
-			    			labTest.setTest(diagnosticTest);
+			    		DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(data.getTestId());
+			    		DiagnosticTest diagnosticTest = new DiagnosticTest();
+			    		if(diagnosticTestCollection !=null){
+			    			BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 			    		}
-			    		labTests.add(new TestAndRecordDataResponse(labTest, data.getRecordId()));
+			    		labTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
 			    }
 			prescription.setTests(labTests);
 			}
@@ -902,14 +839,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if(tests != null && !tests.isEmpty()){
 				List<TestAndRecordDataResponse> labTests = new ArrayList<TestAndRecordDataResponse>();
 			    	for(TestAndRecordData data : tests){
-			    		LabTestCollection labTestCollection = labTestRepository.findOne(data.getLabTestId());
-			    		DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(labTestCollection.getTestId());
-			    		LabTest labTest = new LabTest();DiagnosticTest diagnosticTest = new DiagnosticTest();
-			    		if(labTestCollection != null && diagnosticTestCollection !=null){
-			    			BeanUtil.map(labTestCollection, labTest);BeanUtil.map(diagnosticTestCollection, diagnosticTest);
-			    			labTest.setTest(diagnosticTest);
+			    		DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(data.getTestId());
+			    		DiagnosticTest diagnosticTest = new DiagnosticTest();
+			    		if(diagnosticTestCollection !=null){
+			    			BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 			    		}
-			    		labTests.add(new TestAndRecordDataResponse(labTest, data.getRecordId()));
+			    		labTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
 			    }
 			prescription.setTests(labTests);
 			}
@@ -1429,14 +1364,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if(tests != null && !tests.isEmpty()){
 				List<TestAndRecordDataResponse> labTests = new ArrayList<TestAndRecordDataResponse>();
 			    	for(TestAndRecordData data : prescriptionCollection.getTests()){
-			    		LabTestCollection labTestCollection = labTestRepository.findOne(data.getLabTestId());
-			    		DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(labTestCollection.getTestId());
-			    		LabTest labTest = new LabTest();DiagnosticTest diagnosticTest = new DiagnosticTest();
-			    		if(labTestCollection != null && diagnosticTestCollection !=null){
-			    			BeanUtil.map(labTestCollection, labTest);BeanUtil.map(diagnosticTestCollection, diagnosticTest);
-			    			labTest.setTest(diagnosticTest);
+			    		DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(data.getTestId());
+			    		DiagnosticTest diagnosticTest = new DiagnosticTest();
+			    		if(diagnosticTestCollection !=null){
+			    			BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 			    		}
-			    		labTests.add(new TestAndRecordDataResponse(labTest, data.getRecordId()));
+			    		labTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
 			    }
 			prescription.setTests(labTests);
 			}
@@ -2622,14 +2555,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (prescriptionCollection.getTests() != null && !prescriptionCollection.getTests().isEmpty()) {
 			    String labTest = "";  int i = 1;
 			    for (TestAndRecordData tests : prescriptionCollection.getTests()) {
-			    	LabTestCollection labTestCollection = labTestRepository.findOne(tests.getLabTestId());
-				if (labTestCollection.getTestId() != null) {
-					DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(labTestCollection.getTestId());
-					if(diagnosticTestCollection != null){
+			    DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(tests.getTestId());
+				if(diagnosticTestCollection != null){
 					    labTest = labTest + i + ") " + diagnosticTestCollection.getTestName() + "<br>";
 					    i++;	
 					}
-				}
 			    }
 			    parameters.put("labTest", labTest);
 			} else {
@@ -3041,11 +2971,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	try {
 
-	    br = new BufferedReader(new FileReader(csvFile));
-	    int i = 0;
-	    while ((line = br.readLine()) != null) {
-		System.out.println(i++);
-		String[] obj = line.split(cvsSplitBy);
+//	    br = new BufferedReader(new FileReader(csvFile));
+//	    int i = 0;
+//	    while ((line = br.readLine()) != null) {
+//		System.out.println(i++);
+//		String[] obj = line.split(cvsSplitBy);
 //		String drugType = obj[1];
 //		 DrugTypeCollection drugTypeCollection = null;
 //		 if (drugType.equals("TAB")) {
@@ -3089,10 +3019,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 //		solrDrugDocument.setLocationId(null);
 //		solrDrugDocument.setDrugCode(null);
 
-		DiagnosticTestCollection diagnosticTestCollection = new DiagnosticTestCollection();
-		diagnosticTestCollection.setTestName(obj[1]);
-		diagnosticTestRepository.save(diagnosticTestCollection);
-	    }
+//		DiagnosticTestCollection diagnosticTestCollection = new DiagnosticTestCollection();
+//		diagnosticTestCollection.setTestName(obj[1]);
+//		diagnosticTestRepository.save(diagnosticTestCollection);
+//	    }
 		
 	List<DiagnosticTestCollection> diagnosticTestCollections = diagnosticTestRepository.findAll();
 	for(DiagnosticTestCollection diagnosticTestCollection : diagnosticTestCollections){
@@ -3100,18 +3030,18 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		BeanUtil.map(diagnosticTestCollection, document);
 		solrDiagnosticTestRepository.save(document);
 	}
-//	boolean[] discard = new boolean[2];
-//	discard[0] = true;discard[0] = false;
-//	List<DrugCollection> drugCollection = drugRepository.getGlobalDrugs(new Date(Long.parseLong("0")), discard, new Sort(Sort.Direction.DESC,"updatedTime"));
-//	for(DrugCollection collection : drugCollection){
-//		SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
-//		BeanUtil.map(collection, solrDrugDocument);
-//		if(collection.getDrugType()!=null){
-//			solrDrugDocument.setDrugTypeId(collection.getDrugType().getId());
-//			solrDrugDocument.setDrugType(collection.getDrugType().getType());
-//		}
-//		solrPrescriptionService.addDrug(solrDrugDocument);
-//	}
+	boolean[] discard = new boolean[2];
+	discard[0] = true;discard[0] = false;
+	List<DrugCollection> drugCollection = drugRepository.getGlobalDrugs(new Date(Long.parseLong("0")), discard, new Sort(Sort.Direction.DESC,"updatedTime"));
+	for(DrugCollection collection : drugCollection){
+		SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
+		BeanUtil.map(collection, solrDrugDocument);
+		if(collection.getDrugType()!=null){
+			solrDrugDocument.setDrugTypeId(collection.getDrugType().getId());
+			solrDrugDocument.setDrugType(collection.getDrugType().getType());
+		}
+		solrPrescriptionService.addDrug(solrDrugDocument);
+	}
 	} catch (Exception e) {
 	    e.printStackTrace();
 	} 
@@ -3197,14 +3127,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				if(prescriptionCollection.getTests() != null && !prescriptionCollection.getTests().isEmpty()){
 					List<TestAndRecordDataResponse> labTests = new ArrayList<TestAndRecordDataResponse>();
 				    	for(TestAndRecordData data : prescriptionCollection.getTests()){
-				    		LabTestCollection labTestCollection = labTestRepository.findOne(data.getLabTestId());
-				    		DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(labTestCollection.getTestId());
-				    		LabTest labTest = new LabTest();DiagnosticTest diagnosticTest = new DiagnosticTest();
-				    		if(labTestCollection != null && diagnosticTestCollection !=null){
-				    			BeanUtil.map(labTestCollection, labTest);BeanUtil.map(diagnosticTestCollection, diagnosticTest);
-				    			labTest.setTest(diagnosticTest);
+				    		DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(data.getTestId());
+				    		DiagnosticTest diagnosticTest = new DiagnosticTest();
+				    		if(diagnosticTestCollection !=null){
+				    			BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 				    		}
-				    		labTests.add(new TestAndRecordDataResponse(labTest, data.getRecordId()));
+				    		labTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
 				    }
 				prescription.setTests(labTests);
 				}
@@ -3430,19 +3358,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					if(prescriptionCollection.getTests() != null && !prescriptionCollection.getTests().isEmpty()){
 						tests = new ArrayList<TestAndRecordDataResponse>();
 						for(TestAndRecordData recordData : prescriptionCollection.getTests()){
-							LabTestCollection labTestCollection = labTestRepository.findOne(recordData.getLabTestId());
-							if(labTestCollection != null){
-								DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(labTestCollection.getTestId());
+							DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(recordData.getTestId());
 								if(diagnosticTestCollection != null){
-									LabTest labTest = new LabTest();
-									BeanUtil.map(labTestCollection, labTest);
 									DiagnosticTest diagnosticTest = new DiagnosticTest();
 									BeanUtil.map(diagnosticTestCollection, diagnosticTest);
-									labTest.setTest(diagnosticTest);
-									TestAndRecordDataResponse dataResponse = new TestAndRecordDataResponse(labTest, recordData.getRecordId());
+									TestAndRecordDataResponse dataResponse = new TestAndRecordDataResponse(diagnosticTest, recordData.getRecordId());
 									tests.add(dataResponse);
 								}
-							}
 						}
 						if(tests != null && !tests.isEmpty()){
 							response = new PrescriptionTestAndRecord();

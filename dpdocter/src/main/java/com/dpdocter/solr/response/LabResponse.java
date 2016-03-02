@@ -2,9 +2,7 @@ package com.dpdocter.solr.response;
 
 import java.util.List;
 
-import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.LabTest;
-import com.dpdocter.solr.beans.SolrLabTest;
 
 public class LabResponse {
 
@@ -52,15 +50,25 @@ public class LabResponse {
 
     private LabTest labTest;
 
-    private List<ClinicImage> images;
+    private List<String> images;
 
     private String logoUrl;
+
+    private Integer noOfReviews = 0;
+
+    private Integer noOfRecommenations = 0;
+
+    private Double distance;
 
     public String getLocationId() {
 	return locationId;
     }
+    
+    public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public String getLocationName() {
+	public String getLocationName() {
 	return locationName;
     }
 
@@ -228,11 +236,11 @@ public class LabResponse {
 	this.labTest = labTest;
     }
 
-    public List<ClinicImage> getImages() {
+    public List<String> getImages() {
 	return images;
     }
 
-    public void setImages(List<ClinicImage> images) {
+    public void setImages(List<String> images) {
 	this.images = images;
     }
 
@@ -244,13 +252,41 @@ public class LabResponse {
 	this.logoUrl = logoUrl;
     }
 
-    @Override
-    public String toString() {
-	return "LabResponse [locationId=" + locationId + ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city
-		+ ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", latitude=" + latitude
-		+ ", longitude=" + longitude + ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress=" + locationEmailAddress + ", streetAddress="
-		+ streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber + ", alternateNumber=" + alternateNumber + ", specialization="
-		+ specialization + ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
-		+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", labTest=" + labTest + ", images=" + images + ", logoUrl=" + logoUrl + "]";
-    }
+	public Integer getNoOfReviews() {
+		return noOfReviews;
+	}
+
+	public void setNoOfReviews(Integer noOfReviews) {
+		this.noOfReviews = noOfReviews;
+	}
+
+	public Integer getNoOfRecommenations() {
+		return noOfRecommenations;
+	}
+
+	public void setNoOfRecommenations(Integer noOfRecommenations) {
+		this.noOfRecommenations = noOfRecommenations;
+	}
+
+	public Double getDistance() {
+		return distance;
+	}
+
+	public void setDistance(Double distance) {
+		this.distance = distance;
+	}
+
+	@Override
+	public String toString() {
+		return "LabResponse [locationId=" + locationId + ", locationName=" + locationName + ", country=" + country
+				+ ", state=" + state + ", city=" + city + ", locationPhoneNumber=" + locationPhoneNumber
+				+ ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", latitude=" + latitude
+				+ ", longitude=" + longitude + ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress="
+				+ locationEmailAddress + ", streetAddress=" + streetAddress + ", locality=" + locality
+				+ ", mobileNumber=" + mobileNumber + ", alternateNumber=" + alternateNumber + ", specialization="
+				+ specialization + ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable
+				+ ", isNABLAccredited=" + isNABLAccredited + ", isHomeServiceAvailable=" + isHomeServiceAvailable
+				+ ", labTest=" + labTest + ", images=" + images + ", logoUrl=" + logoUrl + ", noOfReviews="
+				+ noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", distance=" + distance + "]";
+	}
 }

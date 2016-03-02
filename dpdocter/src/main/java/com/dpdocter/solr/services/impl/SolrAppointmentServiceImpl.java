@@ -14,8 +14,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.data.solr.core.query.Criteria;
-import org.springframework.data.solr.core.query.FilterQuery;
-import org.springframework.data.solr.core.query.SimpleFilterQuery;
 import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.data.solr.core.query.SimpleStringCriteria;
 import org.springframework.stereotype.Service;
@@ -284,9 +282,13 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 		    @SuppressWarnings("unchecked")
 		    Collection<String> specialityIds = CollectionUtils.collect(solrSpecialityDocuments, new BeanToPropertyValueTransformer("id"));
 		    if (specialityIds != null && !specialityIds.isEmpty()) {
-			doctorSearchCriteria = doctorSearchCriteria.and("specialities").in(Arrays.asList(specialityIds));
-//			String ids = specialityIds.toString();
-//			buf.append("AND specialities:('" + specialityIds.toString().replace("[", "").replace("]", "") + "')");
+		    	String specialities = "";
+		    	for(String sId : specialityIds){ 
+		    		if(specialities.isEmpty())specialities = "'"+sId+"'";
+		    		else specialities = specialities+",'"+sId+"'";
+		    	}
+			doctorSearchCriteria = doctorSearchCriteria.and(Criteria.where("specialities").in(Arrays.asList(specialities)));
+			System.out.println(Arrays.asList(specialities));
 		    }
 		}
 	    }
@@ -342,7 +344,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 	    solrTemplate.setSolrCore("doctors");
 	    Page<SolrDoctorDocument> results = solrTemplate.queryForPage(query, SolrDoctorDocument.class);
 	    solrDoctorDocuments = results.getContent();
-	    System.out.println(buf.toString() + "........" + query);
+	    System.out.println(query.toString());
 	    if (solrDoctorDocuments != null) {
 		for (SolrDoctorDocument doctorDocument : solrDoctorDocuments) {
 		    if (doctorDocument.getSpecialities() != null) {
@@ -387,62 +389,84 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 	List<LabResponse> response = null;
 	List<SolrLabTestDocument> solrLabTestDocuments = null;
 	try {
+	    if(DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)){
+	    	SolrCityDocument solrCityDocument = solrCityRepository.findByName(city);
+	    	if(solrCityDocument != null){
+	    		latitude = solrCityDocument.getLatitude()+"";
+	    		longitude = solrCityDocument.getLongitude()+"";
+	    	}
+	    }    	    
+        
 	    if (!DPDoctorUtils.anyStringEmpty(test)) {
 		List<SolrDiagnosticTestDocument> diagnosticTests = solrDiagnosticTestRepository.findAll(test);
 		if (diagnosticTests != null) {
 		    @SuppressWarnings("unchecked")
 		    Collection<String> testIds = CollectionUtils.collect(diagnosticTests, new BeanToPropertyValueTransformer("id"));
-		    solrLabTestDocuments = solrLabTestRepository.findByTestIds(testIds);
-		    for (SolrLabTestDocument solrLabTestDocument : solrLabTestDocuments) {
-			List<SolrDoctorDocument> doctorDocument = null;
-			if (!DPDoctorUtils.anyStringEmpty(longitude, latitude)) {
-			    doctorDocument = solrDoctorRepository.findLabByLatLong(latitude, longitude, solrLabTestDocument.getLocationId(), true);
-			} else if (!DPDoctorUtils.anyStringEmpty(city, location)) {
-			    doctorDocument = solrDoctorRepository.findLabByCityLocationName(city, location, solrLabTestDocument.getLocationId(), true);
-			} else if (!DPDoctorUtils.anyStringEmpty(city)) {
-			    doctorDocument = solrDoctorRepository.findLabByCity(city, solrLabTestDocument.getLocationId(), true);
+		    Criteria criteria = new Criteria("testId").in(testIds);
+		    SimpleQuery query = new SimpleQuery();
+		    query.addCriteria(criteria);
+		    solrTemplate.setSolrCore("labTests");
+		    solrLabTestDocuments = solrTemplate.queryForPage(query, SolrLabTestDocument.class).getContent(); 
+		}
+	    }
+	    if(solrLabTestDocuments == null || solrLabTestDocuments.isEmpty()){return null;}
+	    List<SolrDoctorDocument> doctorDocument = null;
+		SimpleQuery queryOthr = new SimpleQuery();
+			
+       if (!DPDoctorUtils.anyStringEmpty(longitude, latitude)) {
+			queryOthr.addProjectionOnField("*");
+			queryOthr.addProjectionOnField("score");
+	        StringBuffer buf = new StringBuffer("");
+	        buf.append("{!geofilt pt="+latitude+","+longitude+" sfield=geoLocation d="+10.0+" score=distance}");
+	        queryOthr.addCriteria(new SimpleStringCriteria(buf.toString()));
+	        queryOthr.addSort(new Sort(Sort.Direction.ASC, "score"));
+		} 
+        
+        @SuppressWarnings("unchecked")
+    	Collection<String> locationIds = CollectionUtils.collect(solrLabTestDocuments, new BeanToPropertyValueTransformer("id"));
+    	Criteria searchCriteria = new Criteria("locationId").in(locationIds);
+    	queryOthr.addCriteria(searchCriteria);
+        
+	    solrTemplate.setSolrCore("doctors");
+	    Page<SolrDoctorDocument> results = solrTemplate.queryForPage(queryOthr, SolrDoctorDocument.class);
+	    doctorDocument = results.getContent();
+	    for(SolrLabTestDocument labTestDocument : solrLabTestDocuments){
+	    	if (doctorDocument != null && !doctorDocument.isEmpty()) {
+				for (SolrDoctorDocument document : doctorDocument) {
+					if(labTestDocument.getLocationId().equalsIgnoreCase(document.getLocationId())){
+						LabResponse labResponse = new LabResponse();
+						BeanUtil.map(document, labResponse);
+						LabTest solrLabTest = new LabTest();
+						BeanUtil.map(labTestDocument, solrLabTest);
+						labResponse.setLabTest(solrLabTest);
+						if (labResponse.getLabTest() != null) {
+						    if (labTestDocument.getTestId() != null) {
+							SolrDiagnosticTestDocument testDocument = solrDiagnosticTestRepository.findOne(labTestDocument.getTestId());
+							DiagnosticTest diagnosticTest = new DiagnosticTest();
+							if(testDocument != null){
+								BeanUtil.map(testDocument, diagnosticTest);
+							}
+							labResponse.getLabTest().setTest(diagnosticTest);
+						    }
+						}
+						List<String> images = new ArrayList<String>();
+						if(document.getImages() != null)
+						for (String clinicImage : document.getImages()) {
+							    images.add(clinicImage);
+						}
+						labResponse.setImages(images);
+						 if (document.getLogoUrl() != null)
+							 labResponse.setLogoUrl(getFinalImageURL(document.getLogoUrl()));
+
+						    if (latitude != null && longitude != null && document.getLatitude() != null && document.getLongitude() != null) {
+							labResponse.setDistance(DPDoctorUtils.distance(Double.parseDouble(latitude), Double.parseDouble(longitude),
+								document.getLatitude(), document.getLongitude(), "K"));
+						    }
+						if (response == null)response = new ArrayList<LabResponse>();
+						response.add(labResponse);
+					    }	
+					}
 			}
-			if (doctorDocument != null && !doctorDocument.isEmpty()) {
-			    for (SolrDoctorDocument document : doctorDocument) {
-				LabResponse labResponse = new LabResponse();
-				BeanUtil.map(document, labResponse);
-				LabTest solrLabTest = new LabTest();
-				BeanUtil.map(solrLabTestDocument, solrLabTest);
-				labResponse.setLabTest(solrLabTest);
-				if (labResponse.getLabTest() != null) {
-				    if (solrLabTestDocument.getTestId() != null) {
-					SolrDiagnosticTestDocument testDocument = solrDiagnosticTestRepository.findOne(solrLabTest.getId());
-					DiagnosticTest diagnosticTest = new DiagnosticTest();
-					BeanUtil.map(testDocument, diagnosticTest);
-					labResponse.getLabTest().setTest(diagnosticTest);
-				    }
-				}
-				if (response == null)
-				    response = new ArrayList<LabResponse>();
-				response.add(labResponse);
-			    }
-			}
-		    }
-		}
-	    } else {
-		SolrDoctorDocument doctorDocument = null;
-		if (!DPDoctorUtils.anyStringEmpty(city, location)) {
-		    doctorDocument = solrDoctorRepository.findLabByCityLocationName(city, location, true);
-		} else if (!DPDoctorUtils.anyStringEmpty(city)) {
-		    doctorDocument = solrDoctorRepository.findLabByCity(city, true);
-		}
-		if (doctorDocument != null) {
-		    LabResponse labResponse = new LabResponse();
-		    BeanUtil.map(doctorDocument, labResponse);
-		    // BeanUtil.map(solrLabTestDocument,
-		    // labResponse.getLabTest());
-		    // if(labResponse.getLabTest() != null){
-		    // labResponse.getLabTest().setTestName(diagnosticTest.getTestName());
-		    // }
-		    if (response == null)
-			response = new ArrayList<LabResponse>();
-		    response.add(labResponse);
-		}
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();

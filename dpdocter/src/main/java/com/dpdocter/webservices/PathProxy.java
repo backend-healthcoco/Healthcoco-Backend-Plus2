@@ -723,15 +723,15 @@ public interface PathProxy {
 
 	public static final String GET_HOSPITALS = "/hospitals";
 
-	public static final String GET_CLINICS = "/clinics/{hospitalId}";
+	public static final String GET_CLINICS = "/clinics";
 
-	public static final String GET_USERS = "/users/{locationId}/{hospitalId}";
+//	public static final String GET_USERS = "/users/{locationId}/{hospitalId}"; this API is in RegsiterAPI
 
-	public static final String GET_FEEDBACKS = "/feedbacks";
+//	public static final String GET_FEEDBACKS = "/feedbacks"; API is already there
 
-	public static final String EDIT_FEEDBACK = "/feedback/{feedbackId}/edit";
+//	public static final String EDIT_FEEDBACK = "/feedback/{feedbackId}/edit"; visible API is already there
 
-	public static final String GET_HELPUS_DATA = "/helpUsData";
+//	public static final String GET_HELPUS_DATA = "/helpUsData";API is already there
 
 	public static final String GET_SMS_COUNT = "/smsCount/{doctorId}/{locationId}/{hospitalId}";
 

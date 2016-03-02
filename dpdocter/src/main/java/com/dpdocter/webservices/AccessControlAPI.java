@@ -9,6 +9,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.AccessControl;
@@ -26,6 +27,12 @@ import common.util.web.Response;
 public class AccessControlAPI {
     @Autowired
     private AccessControlServices accessControlServices;
+
+//    @Value(value = "${AccessControlAPI.getAccessControls}")
+//    private String getAccessControls;
+//
+//    @Value(value = "${AccessControlAPI.setAccessControls}")
+//    private String setAccessControls;
 
     @Path(value = PathProxy.AccessControlUrls.GET_ACCESS_CONTROLS)
     @GET

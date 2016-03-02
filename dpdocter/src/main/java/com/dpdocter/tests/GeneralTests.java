@@ -1,14 +1,14 @@
 package com.dpdocter.tests;
 
-import java.io.File;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.collections.CollectionUtils;
+
+import com.dpdocter.collections.DiagnosticTestCollection;
 
 public class GeneralTests {
 	
@@ -77,14 +77,19 @@ public class GeneralTests {
 //	                System.out.println("Error Message: " + ace.getMessage());
 //        }
 //	    	}
-	    		GeneralTests test = new GeneralTests();
-	    		public int show(){
-	    		      return (true ? null : 0);
-	    		 }
 	    		 
 	    		 public static void main(String[] args)  {
-	    		 
-	    			 GeneralTests test = new GeneralTests();
-	    			 test.show();
+	    			 List<DiagnosticTestCollection> diagnosticTests = new ArrayList<DiagnosticTestCollection>();
+	    			 DiagnosticTestCollection diagnosticTestCollection = new DiagnosticTestCollection();
+	    			 diagnosticTestCollection.setId("56b47551e4b0f5980d1404f5");diagnosticTests.add(diagnosticTestCollection);
+	    			 diagnosticTestCollection.setId("56b47551e4b0f5980d14057e");diagnosticTests.add(diagnosticTestCollection);
+	    			 diagnosticTestCollection.setId("56b47551e4b0f5980d14057b");diagnosticTests.add(diagnosticTestCollection);
+	    			 diagnosticTestCollection.setId("56b47551e4b0f5980d140580");diagnosticTests.add(diagnosticTestCollection);
+	    			 diagnosticTestCollection.setId("56b47551e4b0f5980d14057d");diagnosticTests.add(diagnosticTestCollection);
+	    			 diagnosticTestCollection.setId("56b47551e4b0f5980d140623");diagnosticTests.add(diagnosticTestCollection);
+	    			 Collection<String> testIds = CollectionUtils.collect(diagnosticTests, new BeanToPropertyValueTransformer("id"));
+	    			 System.out.println(testIds.toString().replace("[", "(").replace("]", ")"));
+	    			 System.out.println(Arrays.asList(testIds));
+//	    			 testId:{IN : (56b47551e4b0f5980d140623,56b47551e4b0f5980d1404f5)}
 	    		    }
 }  	

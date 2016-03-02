@@ -109,6 +109,6 @@ public interface RegistrationService {
 
     Feedback visibleFeedback(String feedbackId, Boolean isVisible);
 
-    List<Feedback> getFeedback(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime);
+    List<Feedback> getFeedback(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, String type);
 
 }

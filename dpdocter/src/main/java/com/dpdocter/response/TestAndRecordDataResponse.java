@@ -1,36 +1,36 @@
 package com.dpdocter.response;
 
-import com.dpdocter.beans.LabTest;
+import com.dpdocter.beans.DiagnosticTest;
 
 public class TestAndRecordDataResponse {
 
-    private LabTest labTest;
+    private DiagnosticTest test;
 
     private String recordId;
 
-    public TestAndRecordDataResponse(LabTest labTest, String recordId) {
-	this.labTest = labTest;
-	this.recordId = recordId;
-    }
+	public TestAndRecordDataResponse(DiagnosticTest test, String recordId) {
+		this.test = test;
+		this.recordId = recordId;
+	}
 
-    public LabTest getLabTest() {
-	return labTest;
-    }
+	public DiagnosticTest getTest() {
+		return test;
+	}
 
-    public void setLabTest(LabTest labTest) {
-	this.labTest = labTest;
-    }
+	public void setTest(DiagnosticTest test) {
+		this.test = test;
+	}
 
-    public String getRecordId() {
-	return recordId;
-    }
+	public String getRecordId() {
+		return recordId;
+	}
 
-    public void setRecordId(String recordId) {
-	this.recordId = recordId;
-    }
+	public void setRecordId(String recordId) {
+		this.recordId = recordId;
+	}
 
-    @Override
-    public String toString() {
-	return "TestAndRecordDataResponse [labTest=" + labTest + ", recordId=" + recordId + "]";
-    }
+	@Override
+	public String toString() {
+		return "TestAndRecordDataResponse [test=" + test + ", recordId=" + recordId + "]";
+	}
 }

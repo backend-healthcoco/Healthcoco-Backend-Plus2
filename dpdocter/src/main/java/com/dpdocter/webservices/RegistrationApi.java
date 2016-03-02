@@ -657,9 +657,9 @@ public class RegistrationApi {
     @GET
     public Response<Feedback> getFeedback(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
 	    @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @QueryParam(value = "type") String type) {
 
-	List<Feedback> feedbacks = registrationService.getFeedback(page, size, doctorId, locationId, hospitalId, updatedTime);
+	List<Feedback> feedbacks = registrationService.getFeedback(page, size, doctorId, locationId, hospitalId, updatedTime, type);
 	Response<Feedback> response = new Response<Feedback>();
 	response.setDataList(feedbacks);
 	return response;
