@@ -93,8 +93,9 @@ public class RegistrationApi {
 	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 	RegisteredPatientDetails registeredPatientDetails = null;
 	// User user = registrationService.checkIfPatientExist(request);
-	registrationService.checkPatientCount(request.getMobileNumber());
+	
 	if (request.getUserId() == null) {
+		registrationService.checkPatientCount(request.getMobileNumber());
 	    registeredPatientDetails = registrationService.registerNewPatient(request);
 	    transnationalService.addResource(registeredPatientDetails.getUserId(), Resource.PATIENT, false);
 	    solrRegistrationService.addPatient(getSolrPatientDocument(registeredPatientDetails));

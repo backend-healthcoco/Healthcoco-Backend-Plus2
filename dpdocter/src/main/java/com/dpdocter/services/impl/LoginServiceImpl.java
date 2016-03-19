@@ -13,6 +13,9 @@ import org.apache.commons.collections.IteratorUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.AccessControl;
@@ -81,6 +84,15 @@ public class LoginServiceImpl implements LoginService {
     @Value(value = "${IMAGE_PATH}")
     private String imagePath;
 
+    @Value(value = "${Login.login}")
+    private String login;
+
+    @Value(value = "${Login.loginPatient}")
+    private String loginPatient;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
     /**
      * This method is used for login purpose.
      */
@@ -91,10 +103,15 @@ public class LoginServiceImpl implements LoginService {
 	    /**
 	     * Check if user exist.
 	     */
-	    UserCollection userCollection = userRepository.findByPasswordAndUserNameIgnoreCase(request.getPassword(), request.getUsername());
+		Criteria criteria = new Criteria("password").is(request.getPassword()).and("userName").regex(request.getUsername(), "i");
+		Query query = new Query(); query.addCriteria(criteria);
+		List<UserCollection> userCollections = mongoTemplate.find(query, UserCollection.class);
+		UserCollection userCollection = null;
+		if(userCollections != null && !userCollections.isEmpty())userCollection = userCollections.get(0);
+
 	    if (userCollection == null) {
-		logger.warn("Invalid username and Password");
-		throw new BusinessException(ServiceError.InvalidInput, "Invalid username and Password");
+		logger.warn(login);
+		throw new BusinessException(ServiceError.InvalidInput, login);
 	    }
 
 	    User user = new User();
@@ -217,7 +234,7 @@ public class LoginServiceImpl implements LoginService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while login");
-	    throw new BusinessException(ServiceError.Forbidden, "Error occured while login");
+	    throw new BusinessException(ServiceError.Unknown, "Error occured while login");
 	}
 	return response;
     }
@@ -247,13 +264,15 @@ public class LoginServiceImpl implements LoginService {
     public LoginResponse loginPatient(LoginPatientRequest request) {
 	LoginResponse response = null;
 	try {
-	    /**
-	     * Check if user exist.
-	     */
-	    UserCollection userCollection = userRepository.findByPasswordAndMobileNumberIgnoreCase(request.getPassword(), request.getMobileNumber());
+		Criteria criteria = new Criteria("password").is(request.getPassword()).and("mobileNumber").is(request.getMobileNumber());
+		Query query = new Query(); query.addCriteria(criteria);
+		List<UserCollection> userCollections = mongoTemplate.find(query, UserCollection.class);
+		UserCollection userCollection = null;
+		if(userCollections != null && !userCollections.isEmpty())userCollection = userCollections.get(0);
+		
 	    if (userCollection == null) {
-		logger.warn("Invalid mobile Number and Password");
-		throw new BusinessException(ServiceError.InvalidInput, "Invalid mobile Number and Password");
+		logger.warn(loginPatient);
+		throw new BusinessException(ServiceError.InvalidInput, loginPatient);
 	    }
 	    User user = new User();
 	    BeanUtil.map(userCollection, user);
@@ -281,13 +300,10 @@ public class LoginServiceImpl implements LoginService {
 		    return response;
 		}
 	    }
-	} catch (BusinessException be) {
-	    logger.error(be);
-	    throw be;
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while login");
-	    throw new BusinessException(ServiceError.Forbidden, "Error occured while login");
+	    throw new BusinessException(ServiceError.Unknown, "Error occured while login");
 	}
 	return response;
     }
@@ -296,7 +312,11 @@ public class LoginServiceImpl implements LoginService {
     public User adminLogin(LoginPatientRequest request) {
 	User response = null;
 	try {
-	    UserCollection userCollection = userRepository.findByPasswordAndMobileNumberIgnoreCase(request.getPassword(), request.getMobileNumber());
+		Criteria criteria = new Criteria("password").is(request.getPassword()).and("mobileNumber").is(request.getMobileNumber());
+		Query query = new Query(); query.addCriteria(criteria);
+		List<UserCollection> userCollections = mongoTemplate.find(query, UserCollection.class);
+		UserCollection userCollection = null;
+		if(userCollections != null && !userCollections.isEmpty())userCollection = userCollections.get(0);
 	    if (userCollection == null) {
 		logger.warn("Invalid mobile Number and Password");
 		throw new BusinessException(ServiceError.InvalidInput, "Invalid mobile Number and Password");
@@ -319,7 +339,7 @@ public class LoginServiceImpl implements LoginService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while login");
-	    throw new BusinessException(ServiceError.Forbidden, "Error occured while login");
+	    throw new BusinessException(ServiceError.Unknown, "Error occured while login");
 	}
 	return response;
     }

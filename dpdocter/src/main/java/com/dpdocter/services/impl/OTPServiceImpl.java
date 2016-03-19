@@ -126,7 +126,7 @@ public class OTPServiceImpl implements OTPService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error While Generating OTP");
-	    throw new BusinessException(ServiceError.Forbidden, "Error While Generating OTP");
+	    throw new BusinessException(ServiceError.Unknown, "Error While Generating OTP");
 	}
 
 	return OTP;
@@ -174,7 +174,7 @@ public class OTPServiceImpl implements OTPService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error While Verifying OTP");
-	    throw new BusinessException(ServiceError.Forbidden, "Error While Verifying OTP");
+	    throw new BusinessException(ServiceError.Unknown, "Error While Verifying OTP");
 	}
 	return response;
     }
@@ -198,7 +198,7 @@ public class OTPServiceImpl implements OTPService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error While checking OTP");
-	    throw new BusinessException(ServiceError.Forbidden, "Error While checking OTP");
+	    throw new BusinessException(ServiceError.Unknown, "Error While checking OTP");
 	}
 	return response;
     }
@@ -234,7 +234,7 @@ public class OTPServiceImpl implements OTPService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error While Generating OTP");
-	    throw new BusinessException(ServiceError.Forbidden, "Error While Generating OTP");
+	    throw new BusinessException(ServiceError.Unknown, "Error While Generating OTP");
 	}
 
 	return OTP;
@@ -262,7 +262,7 @@ public class OTPServiceImpl implements OTPService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error While Verifying OTP");
-	    throw new BusinessException(ServiceError.Forbidden, "Error While Verifying OTP");
+	    throw new BusinessException(ServiceError.Unknown, "Error While Verifying OTP");
 	}
 	return response;
     }

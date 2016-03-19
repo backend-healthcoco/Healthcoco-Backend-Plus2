@@ -281,7 +281,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
 

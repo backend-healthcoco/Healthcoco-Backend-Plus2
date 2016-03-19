@@ -25,7 +25,7 @@ public interface UserRepository extends MongoRepository<UserCollection, String> 
     public UserCollection findByUserNameAndPass(String userName, String pasword);
 
     @Query("{'password' : ?0, 'userName' : { $regex : '^?1$', $options : 'i'}}")
-    public UserCollection findByPasswordAndUserNameIgnoreCase(String password, String userName);
+    public UserCollection findByPasswordAndUserNameIgnoreCase(char[] cs, String userName);
 
     @Query("{'emailAddress':?0, 'password':?1}")
     public UserCollection findByEmailAddressAndPass(String emailAddress, String pasword);
@@ -53,5 +53,8 @@ public interface UserRepository extends MongoRepository<UserCollection, String> 
 
     @Query("{'isActive' : ?0}")
 	public List<UserCollection> findInactiveDoctors(boolean isActive, Sort sort);
+
+    @Query("{'userName': {$regex : '^?0$', $options : 'i'}}")
+	public UserCollection findDoctorByUserName(String username);
 
 }

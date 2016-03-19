@@ -1,5 +1,6 @@
 package com.dpdocter.repository;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -67,5 +68,8 @@ public interface GroupRepository extends MongoRepository<GroupCollection, String
 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': {$in: ?3}, 'updatedTime': {'$gt': ?4}}")
     public List<GroupCollection> findAll(String doctorId, String locationId, String hospitalId, boolean[] discarded, Date date, Sort sort);
+
+    @Query("{'id': {'$in' : ?0}, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3, 'discarded': ?4}")
+	public List<GroupCollection> find(Collection<String> groupIds, String doctorId, String locationId, String hospitalId, boolean discarded);
 
 }

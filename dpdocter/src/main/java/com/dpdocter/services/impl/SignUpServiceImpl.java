@@ -65,6 +65,7 @@ import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.PatientProfilePicChangeRequest;
 import com.dpdocter.request.PatientSignUpRequest;
 import com.dpdocter.request.PatientSignupRequestMobile;
+import com.dpdocter.response.PateientSignUpCheckResponse;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.GenerateUniqueUserNameService;
@@ -141,12 +142,27 @@ public class SignUpServiceImpl implements SignUpService {
 
     private final double NAME_MATCH_REQUIRED = 0.80;
 
+    @Value(value = "${PATIENT_COUNT}")
+    private String patientCount;
+    
     @Autowired
     private SMSFormatRepository sMSFormatRepository;
 
     @Autowired
     private GenerateUniqueUserNameService generateUniqueUserNameService;
 
+    @Value(value = "${Signup.role}")
+    private String role;
+    
+    @Value(value = "${Signup.DOB}")
+    private String DOB;
+    
+    @Value(value = "${Signup.verifyPatientBasedOn80PercentMatchOfName}")
+    private String verifyPatientBasedOn80PercentMatchOfName;
+    
+    @Value(value = "${Signup.unlockPatientBasedOn80PercentMatch}")
+    private String unlockPatientBasedOn80PercentMatch;
+    
     /**
      * @param UserTemp
      *            Id
@@ -192,7 +208,7 @@ public class SignUpServiceImpl implements SignUpService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while Activating user");
-	    throw new BusinessException(ServiceError.Forbidden, "Error occured while Activating user");
+	    throw new BusinessException(ServiceError.Unknown, "Error occured while Activating user");
 	}
 
     }
@@ -238,7 +254,7 @@ public class SignUpServiceImpl implements SignUpService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error While Verifying User");
-	    throw new BusinessException(ServiceError.Forbidden, "Error While Verifying User");
+	    throw new BusinessException(ServiceError.Unknown, "Error While Verifying User");
 	}
 	return response;
     }
@@ -411,7 +427,7 @@ public class SignUpServiceImpl implements SignUpService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while creating doctor");
-	    throw new BusinessException(ServiceError.Forbidden, "Error occured while creating doctor");
+	    throw new BusinessException(ServiceError.Unknown, "Error occured while creating doctor");
 	}
 	return response;
     }
@@ -447,7 +463,7 @@ public class SignUpServiceImpl implements SignUpService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while assigning access control");
-	    throw new BusinessException(ServiceError.Forbidden, "Error occured while assigning access control");
+	    throw new BusinessException(ServiceError.Unknown, "Error occured while assigning access control");
 	}
 	return accessControls;
     }
@@ -509,7 +525,7 @@ public class SignUpServiceImpl implements SignUpService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while creating doctor");
-	    throw new BusinessException(ServiceError.Forbidden, "Error occured while creating doctor");
+	    throw new BusinessException(ServiceError.Unknown, "Error occured while creating doctor");
 	}
 	return response;
     }
@@ -658,7 +674,7 @@ public class SignUpServiceImpl implements SignUpService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while creating doctor");
-	    throw new BusinessException(ServiceError.Forbidden, "Error occured while creating doctor");
+	    throw new BusinessException(ServiceError.Unknown, "Error occured while creating doctor");
 	}
 	return response;
     }
@@ -670,25 +686,15 @@ public class SignUpServiceImpl implements SignUpService {
 	    // get role of specified type
 	    RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.PATIENT.getRole());
 	    if (roleCollection == null) {
-		logger.warn("Role Collection in database is either empty or not defind properly");
-		throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defined properly");
+		logger.warn(role);
+		throw new BusinessException(ServiceError.NoRecord, role);
 	    }
 	    // save user
 	    UserCollection userCollection = new UserCollection();
 	    BeanUtil.map(request, userCollection);
 	    if (request.getDob() != null && request.getDob().getAge() < 0) {
-		logger.warn("Incorrect Date of Birth");
-		throw new BusinessException(ServiceError.NotAcceptable, "Incorrect Date of Birth");
-	    }
-	    if (request.getImage() != null) {
-		String path = "profile-image";
-		// save image
-		request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
-		String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
-		userCollection.setImageUrl(imageurl);
-
-		String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
-		userCollection.setThumbnailUrl(thumbnailUrl);
+		logger.warn(DOB);
+		throw new BusinessException(ServiceError.NotAcceptable, DOB);
 	    }
 	    userCollection.setIsActive(true);
 	    userCollection.setCreatedTime(new Date());
@@ -717,22 +723,18 @@ public class SignUpServiceImpl implements SignUpService {
 	    if (addressCollection != null) {
 		patientCollection.setAddressId(addressCollection.getId());
 	    }
-	    patientCollection = patientRepository.save(patientCollection);
+	    if (request.getImage() != null) {
+			String path = "profile-image";
+			// save image
+			request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
+			String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
+			patientCollection.setImageUrl(imageurl);
 
-	    // save token
-	    // TokenCollection tokenCollection = new TokenCollection();
-	    // tokenCollection.setUserLocationId(userCollection.getId());
-	    // tokenCollection.setCreatedTime(new Date());
-	    // tokenCollection = tokenRepository.save(tokenCollection);
-	    //
-	    // // send activation email
-	    // String body =
-	    // mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(),
-	    // userCollection.getFirstName(),
-	    // userCollection.getMiddleName(), userCollection.getLastName(),
-	    // tokenCollection.getId());
-	    // mailService.sendEmail(userCollection.getEmailAddress(),
-	    // signupSubject, body, null);
+			String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
+			patientCollection.setThumbnailUrl(thumbnailUrl);
+		    }
+
+	    patientCollection = patientRepository.save(patientCollection);
 	    user = new User();
 	    BeanUtil.map(userCollection, user);
 	    // user.setPassword(null);
@@ -742,7 +744,7 @@ public class SignUpServiceImpl implements SignUpService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while creating user");
-	    throw new BusinessException(ServiceError.Forbidden, "Error occured while creating user");
+	    throw new BusinessException(ServiceError.Unknown, "Error occured while creating user");
 	}
 	return user;
     }
@@ -758,7 +760,7 @@ public class SignUpServiceImpl implements SignUpService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
 
@@ -777,7 +779,7 @@ public class SignUpServiceImpl implements SignUpService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
     }
@@ -797,7 +799,7 @@ public class SignUpServiceImpl implements SignUpService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
 
@@ -810,50 +812,63 @@ public class SignUpServiceImpl implements SignUpService {
 		logger.warn("User not found");
 		throw new BusinessException(ServiceError.NotFound, "User not found");
 	    } else {
-		if (request.getImage() != null) {
-		    String path = "profile-image";
-		    // save image
-		    request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
-		    String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
-		    userCollection.setImageUrl(imageurl);
+	    PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(),
+	    		request.getDoctorId(), request.getLocationId(), request.getHospitalId());	
+		if(patientCollection != null){
+			if (request.getImage() != null) {
+			    String path = "profile-image";
+			    // save image
+			    request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
+			    String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
+			    patientCollection.setImageUrl(imageurl);
 
-		    String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
-		    userCollection.setThumbnailUrl(thumbnailUrl);
-		    userCollection = userRepository.save(userCollection);
+			    String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
+			    patientCollection.setThumbnailUrl(thumbnailUrl);
+			    patientCollection.setUpdatedTime(new Date());
+			    patientCollection = patientRepository.save(patientCollection);
 
-		    user = new User();
-		    BeanUtil.map(userCollection, user);
+			    user = new User();
+			    BeanUtil.map(userCollection, user);
+			    user.setImageUrl(imageurl);
+			    user.setThumbnailUrl(thumbnailUrl);
+			}
+		}else{
+			logger.warn("No patient found for this doctor");
+			throw new BusinessException(ServiceError.NotFound, "No patient found for this doctor");
 		}
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return user;
     }
 
     @Override
-    public boolean checkMobileNumberSignedUp(String mobileNumber) {
-	boolean response = false;
+    public PateientSignUpCheckResponse checkMobileNumberSignedUp(String mobileNumber) {
+    	PateientSignUpCheckResponse response = new PateientSignUpCheckResponse();
 	try {
-	    List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
+		int count = 0;
+		List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
 	    if (userCollections != null && !userCollections.isEmpty()) {
 		for (UserCollection userCollection : userCollections) {
-		    List<PatientCollection> patientCollection = patientRepository.findByUserId(userCollection.getId());
-		    if (patientCollection != null) {
+//		    List<PatientCollection> patientCollection = patientRepository.findByUserId(userCollection.getId());
+			if (!userCollection.getUserName().equals(userCollection.getEmailAddress())) {
+			count++;
 			if (userCollection.isSignedUp())
 			    throw new BusinessException(ServiceError.NotAcceptable, "Already Signed Up Please Login");
-			else
-			    response = true;
-			break;
+			else{
+				if(!response.getIsPatientExistWithMobileNumber())response.setIsPatientExistWithMobileNumber(true);
+			}
 		    }
 		}
+		if (count >= Integer.parseInt(patientCount))response.setCanAddNewPatient(false);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -865,8 +880,8 @@ public class SignUpServiceImpl implements SignUpService {
 	    List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
 	    if (userCollections != null && !userCollections.isEmpty()) {
 		for (UserCollection userCollection : userCollections) {
-		    List<PatientCollection> patientCollection = patientRepository.findByUserId(userCollection.getId());
-		    if (patientCollection != null) {
+//		    List<PatientCollection> patientCollection = patientRepository.findByUserId(userCollection.getId());
+		    if (!userCollection.getUserName().equals(userCollection.getEmailAddress())) {
 			response = true;
 			break;
 		    }
@@ -875,7 +890,7 @@ public class SignUpServiceImpl implements SignUpService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -950,7 +965,7 @@ public class SignUpServiceImpl implements SignUpService {
     } catch (Exception e) {
         e.printStackTrace();
         logger.error(e + " Error occured while creating user");
-        throw new BusinessException(ServiceError.Forbidden, "Error occured while creating user");
+        throw new BusinessException(ServiceError.Unknown, "Error occured while creating user");
     }
     return user;
      
@@ -968,8 +983,8 @@ public class SignUpServiceImpl implements SignUpService {
 	boolean checkMatch = false;
 
 	if (!checkMobileNumberExistForPatient(mobileNumber)) {
-	    logger.error("Cannot verify patient as No patient is registered for mobile number " + mobileNumber);
-	    throw new BusinessException(ServiceError.NoRecord, "No patient is registered for mobile number " + mobileNumber);
+	    logger.error(verifyPatientBasedOn80PercentMatchOfName+" " + mobileNumber);
+	    throw new BusinessException(ServiceError.NoRecord,verifyPatientBasedOn80PercentMatchOfName+ " " + mobileNumber);
 	} else {
 	    List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
 	    if (userCollections != null && !userCollections.isEmpty()) {
@@ -994,9 +1009,9 @@ public class SignUpServiceImpl implements SignUpService {
     public boolean unlockPatientBasedOn80PercentMatch(String name, String mobileNumber) {
 	boolean isUnlocked = false;
 
-	if (!checkMobileNumberSignedUp(mobileNumber)) {
-	    logger.error("Cannot unlock patient as No patient is registered for mobile number " + mobileNumber);
-	    throw new BusinessException(ServiceError.NoRecord, "No patient is registered for mobile number " + mobileNumber);
+	if (!checkMobileNumberSignedUp(mobileNumber).getIsPatientExistWithMobileNumber()) {
+	    logger.error(unlockPatientBasedOn80PercentMatch+" " + mobileNumber);
+	    throw new BusinessException(ServiceError.NoRecord, unlockPatientBasedOn80PercentMatch+" " + mobileNumber);
 	} else {
 	    List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
 	    if (userCollections != null && !userCollections.isEmpty()) {
@@ -1037,8 +1052,8 @@ public class SignUpServiceImpl implements SignUpService {
     public User signupNewPatient(PatientSignupRequestMobile request) {
 	RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.PATIENT.getRole());
 	if (roleCollection == null) {
-	    logger.warn("Role Collection in database is either empty or not defind properly");
-	    throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defined properly");
+	    logger.warn(role);
+	    throw new BusinessException(ServiceError.NoRecord, role);
 	}
 	// save user
 	UserCollection userCollection = new UserCollection();
@@ -1135,8 +1150,8 @@ public class SignUpServiceImpl implements SignUpService {
 	try {
 	    RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.SUPER_ADMIN.getRole());
 	    if (roleCollection == null) {
-		logger.warn("Role Collection in database is either empty or not defind properly");
-		throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defined properly");
+		logger.warn(role);
+		throw new BusinessException(ServiceError.NoRecord, role);
 	    }
 
 	    UserCollection userCollection = new UserCollection();
@@ -1169,7 +1184,7 @@ public class SignUpServiceImpl implements SignUpService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while creating user");
-	    throw new BusinessException(ServiceError.Forbidden, "Error occured while creating user");
+	    throw new BusinessException(ServiceError.Unknown, "Error occured while creating user");
 	}
 	return user;
     }

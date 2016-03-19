@@ -52,7 +52,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while saving default settings");
-	    throw new BusinessException(ServiceError.Forbidden, "Error occured while saving default settings");
+	    throw new BusinessException(ServiceError.Unknown, "Error occured while saving default settings");
 	}
 	return response;
     }
@@ -67,7 +67,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while Getting default settings");
-	    throw new BusinessException(ServiceError.Forbidden, "Error occured while Getting default settings");
+	    throw new BusinessException(ServiceError.Unknown, "Error occured while Getting default settings");
 	}
 	return response;
     }
@@ -115,7 +115,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while saving settings");
-	    throw new BusinessException(ServiceError.Forbidden, "Error occured while saving settings");
+	    throw new BusinessException(ServiceError.Unknown, "Error occured while saving settings");
 	}
 	return response;
     }
@@ -183,7 +183,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Print Settings");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Print Settings");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Print Settings");
 	}
 	return response;
 
@@ -218,7 +218,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
     }

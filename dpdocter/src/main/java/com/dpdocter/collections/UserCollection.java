@@ -97,15 +97,16 @@ public class UserCollection extends GenericCollection {
 	this.userName = userName;
     }
 
+
     public String getPassword() {
-	return password;
-    }
+		return password;
+	}
 
-    public void setPassword(String password) {
-	this.password = password;
-    }
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
-    public String getMobileNumber() {
+	public String getMobileNumber() {
 	return mobileNumber;
     }
 

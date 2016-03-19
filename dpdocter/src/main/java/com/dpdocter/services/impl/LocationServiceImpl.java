@@ -38,7 +38,7 @@ public class LocationServiceImpl implements LocationServices {
 		}
 	    }
 	} catch (Exception e) {
-	    throw new BusinessException(ServiceError.Forbidden, "Couldn't Geocode the location");
+	    throw new BusinessException(ServiceError.Unknown, "Couldn't Geocode the location");
 	}
 	return response;
     }
@@ -61,7 +61,7 @@ public class LocationServiceImpl implements LocationServices {
 		}
 	    }
 	} catch (Exception e) {
-	    throw new BusinessException(ServiceError.Forbidden, "Couldn't Geocode the location");
+	    throw new BusinessException(ServiceError.Unknown, "Couldn't Geocode the location");
 	}
 	return response;
     }

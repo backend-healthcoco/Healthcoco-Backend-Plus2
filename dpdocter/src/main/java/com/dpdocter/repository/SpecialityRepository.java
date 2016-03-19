@@ -18,4 +18,7 @@ public interface SpecialityRepository extends MongoRepository<SpecialityCollecti
     @Query("{'updatedTime': {'$gt': ?0}}")
     List<SpecialityCollection> find(Date date, Sort sort);
 
+    @Query("{'id': {$in: ?0}}")
+	List<SpecialityCollection> findById(List<String> specialities);
+
 }

@@ -10,6 +10,7 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -115,6 +116,12 @@ public class ContactsServiceImpl implements ContactsService {
     @Autowired
     private OTPService otpService;
 
+    @Value(value = "${Contacts.checkIfGroupIsExistWithSameName}")
+    private String checkIfGroupIsExistWithSameName;
+    
+    @Value(value = "${Contacts.GroupNotFound}")
+    private String groupNotFound;
+   
     /**
      * This method returns all unblocked or blocked patients (based on param
      * blocked) of specified doctor.
@@ -129,10 +136,10 @@ public class ContactsServiceImpl implements ContactsService {
 	try {
 	    if (request.getSize() > 0)
 		doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(), false,
-			new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "updatedTime"));
+			new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "createdTime"));
 	    else
 		doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(), false,
-			new Sort(Sort.Direction.DESC, "updatedTime"));
+			new Sort(Sort.Direction.DESC, "createdTime"));
 
 	    if (doctorContactCollections.isEmpty()) {
 		return null;
@@ -147,7 +154,7 @@ public class ContactsServiceImpl implements ContactsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
 
@@ -186,7 +193,7 @@ public class ContactsServiceImpl implements ContactsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -222,7 +229,7 @@ public class ContactsServiceImpl implements ContactsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
 
@@ -258,11 +265,13 @@ public class ContactsServiceImpl implements ContactsService {
 		    @SuppressWarnings("unchecked")
 		    Collection<String> groupIds = CollectionUtils.collect(patientGroupCollections, new BeanToPropertyValueTransformer("groupId"));
 		    List<Group> groups = new ArrayList<Group>();
-		    List<GroupCollection> groupCollections = (List<GroupCollection>) groupRepository.findAll(groupIds);
+		    List<GroupCollection> groupCollections = (List<GroupCollection>) groupRepository.find(groupIds, doctorId, locationId, hospitalId, false);
 		    BeanUtil.map(groupCollections, groups);
 		    PatientCard patientCard = new PatientCard();
 		    BeanUtil.map(patientCollection, patientCard);
 		    BeanUtil.map(userCollection, patientCard);
+		    patientCard.setImageUrl(patientCollection.getImageUrl());
+		    patientCard.setThumbnailUrl(patientCollection.getThumbnailUrl());
 		    patientCard.setGroups(groups);
 		    patientCard.setDoctorSepecificPatientId(patientCollection.getUserId());
 
@@ -304,14 +313,15 @@ public class ContactsServiceImpl implements ContactsService {
 			    @SuppressWarnings("unchecked")
 			    Collection<String> groupIds = CollectionUtils.collect(patientGroupCollections, new BeanToPropertyValueTransformer("groupId"));
 			    List<Group> groups = new ArrayList<Group>();
-			    List<GroupCollection> groupCollections = (List<GroupCollection>) groupRepository.findAll(groupIds);
+			    List<GroupCollection> groupCollections = (List<GroupCollection>) groupRepository.find(groupIds, doctorId, locationId, hospitalId, false);
 			    BeanUtil.map(groupCollections, groups);
 			    PatientCard patientCard = new PatientCard();
 			    BeanUtil.map(patientCollection, patientCard);
 			    BeanUtil.map(userCollection, patientCard);
 			    patientCard.setGroups(groups);
 			    patientCard.setDoctorSepecificPatientId(patientCollection.getUserId());
-
+			    patientCard.setImageUrl(patientCollection.getImageUrl());
+			    patientCard.setThumbnailUrl(patientCollection.getThumbnailUrl());
 			    Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(doctorId, userCollection.getId(), hospitalId,
 				    locationId);
 			    Integer clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(doctorId, userCollection.getId(),
@@ -392,7 +402,7 @@ public class ContactsServiceImpl implements ContactsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
 
@@ -416,7 +426,7 @@ public class ContactsServiceImpl implements ContactsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
 
@@ -436,14 +446,14 @@ public class ContactsServiceImpl implements ContactsService {
 	    }
 
 	    if (groupCollection != null && !groupCollection.isEmpty() && groupCollection.size() > 0) {
-		logger.error("Group Name already exist.Please try with some other name");
-		throw new BusinessException(ServiceError.NotAcceptable, "Group Name already exist.Please try with some other name");
+		logger.error(checkIfGroupIsExistWithSameName);
+		throw new BusinessException(ServiceError.NotAcceptable, checkIfGroupIsExistWithSameName);
 	    }
 
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
     }
@@ -474,13 +484,13 @@ public class ContactsServiceImpl implements ContactsService {
 		}
 		response = true;
 	    } else {
-		logger.error("Group Not Found");
-		throw new BusinessException(ServiceError.NotFound, "Group Not Found");
+		logger.error(groupNotFound);
+		throw new BusinessException(ServiceError.NotFound, groupNotFound);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Deleting Group");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Group");
 	}
 	return response;
     }
@@ -499,7 +509,7 @@ public class ContactsServiceImpl implements ContactsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return null;
     }
@@ -524,7 +534,7 @@ public class ContactsServiceImpl implements ContactsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
     }
@@ -571,7 +581,7 @@ public class ContactsServiceImpl implements ContactsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return groups;
     }
@@ -595,7 +605,7 @@ public class ContactsServiceImpl implements ContactsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Importing Contact");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Importing Contact");
+	    throw new BusinessException(ServiceError.Unknown, "Error Importing Contact");
 	}
 	return response;
     }
@@ -612,7 +622,7 @@ public class ContactsServiceImpl implements ContactsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Exporting Contact");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Exporting Contact");
+	    throw new BusinessException(ServiceError.Unknown, "Error Exporting Contact");
 	}
 	return response;
     }
@@ -676,7 +686,7 @@ public class ContactsServiceImpl implements ContactsService {
 		    Address address = new Address();
 		    BeanUtil.map(addressCollection, address);
 		    registeredPatientDetail.setAddress(address);
-		    groupCollections = (List<GroupCollection>) groupRepository.findAll(groupIds);
+		    groupCollections = (List<GroupCollection>) groupRepository.find(groupIds, doctorId, locationId, hospitalId, false);
 		    groups = new ArrayList<Group>();
 		    BeanUtil.map(groupCollections, groups);
 		    registeredPatientDetail.setGroups(groups);
@@ -708,7 +718,7 @@ public class ContactsServiceImpl implements ContactsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return registeredPatientDetails;
     }
@@ -740,7 +750,7 @@ public class ContactsServiceImpl implements ContactsService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }

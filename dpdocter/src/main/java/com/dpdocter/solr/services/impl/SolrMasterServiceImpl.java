@@ -100,7 +100,7 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -132,7 +132,7 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -187,7 +187,7 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -257,7 +257,7 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -339,7 +339,7 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return diseaseListResponses;
     }
@@ -379,7 +379,7 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return diseaseListResponses;
     }
@@ -455,7 +455,7 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return diseaseListResponses;
     }
@@ -485,7 +485,7 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -515,7 +515,7 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -548,7 +548,7 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -581,7 +581,7 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -614,7 +614,7 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -646,7 +646,7 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -676,7 +676,7 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }

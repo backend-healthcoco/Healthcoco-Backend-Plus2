@@ -260,8 +260,11 @@ public class RecordsApi {
     @POST
     @Path(value = PathProxy.RecordsUrls.ADD_RECORDS_MULTIPART)
     @Consumes({ MediaType.MULTIPART_FORM_DATA })
-    public Response<Records> addRecordsMultipart(@FormDataParam("file") FormDataBodyPart file, @FormDataParam("data") RecordsAddRequestMultipart request) {
-	if (request == null) {
+    public Response<Records> addRecordsMultipart(@FormDataParam("file") FormDataBodyPart file, @FormDataParam("data") FormDataBodyPart data) {
+    	data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+    	RecordsAddRequestMultipart request = data.getValueAs(RecordsAddRequestMultipart.class);
+
+    if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 

@@ -59,7 +59,7 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Drug in Solr");
-	    // throw new BusinessException(ServiceError.Forbidden,
+	    // throw new BusinessException(ServiceError.Unknown,
 	    // "Error Occurred While Saving Drug in Solr");
 	}
 	return response;
@@ -75,7 +75,7 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Drug in Solr");
-	    // throw new BusinessException(ServiceError.Forbidden,
+	    // throw new BusinessException(ServiceError.Unknown,
 	    // "Error Occurred While Editing Drug");
 	}
 	return response;
@@ -97,7 +97,7 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Drug in Solr");
-	    // throw new BusinessException(ServiceError.Forbidden,
+	    // throw new BusinessException(ServiceError.Unknown,
 	    // "Error Occurred While Deleting Drug");
 	}
 	return response;
@@ -114,7 +114,7 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Lab Test in Solr");
-	    // throw new BusinessException(ServiceError.Forbidden,
+	    // throw new BusinessException(ServiceError.Unknown,
 	    // "Error Occurred While Saving Lab Test in Solr");
 	}
 	return response;
@@ -131,7 +131,7 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Lab Test in Solr");
-	    // throw new BusinessException(ServiceError.Forbidden,
+	    // throw new BusinessException(ServiceError.Unknown,
 	    // "Error Occurred While Editing Lab Test");
 	}
 	return response;
@@ -153,7 +153,7 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Lab Test in Solr");
-	    // throw new BusinessException(ServiceError.Forbidden,
+	    // throw new BusinessException(ServiceError.Unknown,
 	    // "Error Occurred While Deleting Lab Test");
 	}
 	return response;
@@ -239,7 +239,7 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Drugs");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Drugs");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
 	}
 	return solrDrugDocument;
     }
@@ -268,7 +268,7 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Drugs");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Drugs");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
 	}
 	return SolrDrugDocuments;
     }
@@ -320,7 +320,7 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Drugs");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Drugs");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
 	}
 	return SolrDrugDocuments;
     }
@@ -390,7 +390,7 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting LabTests");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting LabTests");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting LabTests");
 	}
 	return labTestCollections;
     }
@@ -426,7 +426,7 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting LabTests");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting LabTests");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting LabTests");
 	}
 	return labTestCollections;
     }
@@ -476,7 +476,7 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting LabTests");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting LabTests");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting LabTests");
 	}
 	return labTestCollections;
     }
@@ -492,7 +492,7 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Diagnostic Test in Solr");
-	    // throw new BusinessException(ServiceError.Forbidden,
+	    // throw new BusinessException(ServiceError.Unknown,
 	    // "Error Occurred While Saving Lab Test in Solr");
 	}
 	return response;
@@ -514,7 +514,7 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Lab Test in Solr");
-	    // throw new BusinessException(ServiceError.Forbidden,
+	    // throw new BusinessException(ServiceError.Unknown,
 	    // "Error Occurred While Deleting Lab Test");
 	}
 	return response;
@@ -565,7 +565,7 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting DiagnosticTests");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting DiagnosticTests");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting DiagnosticTests");
 	}
 	return diagnosticTestCollections;
     }
@@ -597,7 +597,7 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting LabTests");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting LabTests");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting LabTests");
 	}
 	return diagnosticTestCollections;
     }
@@ -644,7 +644,7 @@ public class SolrPrescriptionServiceImpl implements SolrPrescriptionService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting LabTests");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting LabTests");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting LabTests");
 	}
 	return diagnosticTestCollections;
     }

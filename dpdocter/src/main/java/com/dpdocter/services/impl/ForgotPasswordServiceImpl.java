@@ -59,6 +59,9 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     @Value(value = "${mail.resetPasswordSuccess.subject}")
     private String resetPasswordSub;
 
+    @Value(value = "${ForgotPassword.forgotUsername}")
+    private String forgotUsername;
+
     @Autowired
     private SMSServices sMSServices;
 
@@ -75,7 +78,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		request.setUsername(request.getEmailAddress());
 
 	    if (request.getUsername() != null)
-		userCollection = userRepository.findByUserName(request.getUsername());
+		userCollection = userRepository.findDoctorByUserName(request.getUsername());
 	    if (userCollection != null) {
 		if (userCollection.getEmailAddress().trim().equals(request.getEmailAddress().trim())) {
 		    TokenCollection tokenCollection = new TokenCollection();
@@ -103,7 +106,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
 
@@ -155,7 +158,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
 	return flag;
@@ -183,7 +186,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
 
@@ -191,14 +194,14 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     public String resetPassword(ResetPasswordRequest request) {
 	try {
 	    UserCollection userCollection = userRepository.findOne(request.getUserId());
-	    userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(request.getPassword()));
+	    userCollection.setPassword(request.getPassword());
 	    userCollection.setIsTempPassword(false);
 	    userRepository.save(userCollection);
 	    return "Password Changed Successfully";
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
     }
@@ -222,13 +225,13 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		    flag = true;
 		}
 	    } else {
-		logger.warn("Email Address or mobile should be provided!");
-		throw new BusinessException(ServiceError.InvalidInput, "Email Address or mobile should be provided!");
+		logger.warn(forgotUsername);
+		throw new BusinessException(ServiceError.InvalidInput, forgotUsername);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return flag;
     }
@@ -281,7 +284,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
 
@@ -303,7 +306,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
 
@@ -329,7 +332,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }

@@ -94,7 +94,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Patient");
-	    // throw new BusinessException(ServiceError.Forbidden,
+	    // throw new BusinessException(ServiceError.Unknown,
 	    // "Error Occurred While Saving Patient");
 	}
 	return response;
@@ -110,7 +110,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Patient");
-	    // throw new BusinessException(ServiceError.Forbidden,
+	    // throw new BusinessException(ServiceError.Unknown,
 	    // "Error Occurred While Editing Patient");
 	}
 	return response;
@@ -125,7 +125,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Patient");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Deleting Patient");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Patient");
 	}
 	return response;
     }
@@ -179,7 +179,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Searching Patient");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Searching Patients");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
 	}
 	return patientResponseDetails;
     }
@@ -222,7 +222,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Searching Patients");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Searching Patients");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Patients");
 	}
 	return responseDetails;
     }
@@ -258,8 +258,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 			} else {
 			    advancedCriteria = advancedCriteria.and("createdTime").between(start, end);
 			}
-		    } else if (searchType.equalsIgnoreCase(AdvancedSearchType.REFERRED_BY.getSearchType())
-			    || searchType.equalsIgnoreCase(AdvancedSearchType.PROFESSION.getSearchType())) {
+		    } else if (searchType.equalsIgnoreCase(AdvancedSearchType.REFERRED_BY.getSearchType())){
 			List<SolrReferenceDocument> referenceDocuments = solrReferenceRepository.findCustomGlobal(request.getDoctorId(),
 				request.getLocationId(), request.getHospitalId(), searchValue);
 			@SuppressWarnings("unchecked")
@@ -269,7 +268,13 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 			} else {
 			    advancedCriteria = advancedCriteria.and(searchType).in(referenceIds);
 			}
-		    } else {
+		    } else if(searchType.equalsIgnoreCase(AdvancedSearchType.PROFESSION.getSearchType())){ 
+		    	if (advancedCriteria == null) {
+				    advancedCriteria = new Criteria(searchType).is(searchValue);
+				} else {
+				    advancedCriteria = advancedCriteria.and(searchType).is(searchValue);
+				}
+		    }else {
 			searchValue = searchValue.replaceAll("\\s+", "");
 			if (advancedCriteria == null) {
 			    advancedCriteria = new Criteria(searchType).contains(searchValue);
@@ -294,7 +299,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     // } catch (Exception e) {
     // e.printStackTrace();
     // logger.error(e + " Error Occurred While Searching Patients");
-    // throw new BusinessException(ServiceError.Forbidden,
+    // throw new BusinessException(ServiceError.Unknown,
     // "Error Occurred While Searching Patients");
     // }
     // return response;
@@ -311,7 +316,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     // } catch (Exception e) {
     // e.printStackTrace();
     // logger.error(e + " Error Occurred While Searching Patients");
-    // throw new BusinessException(ServiceError.Forbidden,
+    // throw new BusinessException(ServiceError.Unknown,
     // "Error Occurred While Searching Patients");
     // }
     // return response;
@@ -327,7 +332,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     // } catch (Exception e) {
     // e.printStackTrace();
     // logger.error(e + " Error Occurred While Searching Patients");
-    // throw new BusinessException(ServiceError.Forbidden,
+    // throw new BusinessException(ServiceError.Unknown,
     // "Error Occurred While Searching Patients");
     // }
     // return response;
@@ -344,7 +349,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     // } catch (Exception e) {
     // e.printStackTrace();
     // logger.error(e + " Error Occurred While Searching Patients");
-    // throw new BusinessException(ServiceError.Forbidden,
+    // throw new BusinessException(ServiceError.Unknown,
     // "Error Occurred While Searching Patients");
     // }
     // return response;
@@ -360,7 +365,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     // } catch (Exception e) {
     // e.printStackTrace();
     // logger.error(e + " Error Occurred While Searching Patients");
-    // throw new BusinessException(ServiceError.Forbidden,
+    // throw new BusinessException(ServiceError.Unknown,
     // "Error Occurred While Searching Patients");
     // }
     // return response;
@@ -376,7 +381,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     // } catch (Exception e) {
     // e.printStackTrace();
     // logger.error(e + " Error Occurred While Searching Patients");
-    // throw new BusinessException(ServiceError.Forbidden,
+    // throw new BusinessException(ServiceError.Unknown,
     // "Error Occurred While Searching Patients");
     // }
     // return response;
@@ -393,7 +398,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     // } catch (Exception e) {
     // e.printStackTrace();
     // logger.error(e + " Error Occurred While Searching Patients");
-    // throw new BusinessException(ServiceError.Forbidden,
+    // throw new BusinessException(ServiceError.Unknown,
     // "Error Occurred While Searching Patients");
     // }
     // return response;
@@ -410,7 +415,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     // } catch (Exception e) {
     // e.printStackTrace();
     // logger.error(e + " Error Occurred While Searching Patients");
-    // throw new BusinessException(ServiceError.Forbidden,
+    // throw new BusinessException(ServiceError.Unknown,
     // "Error Occurred While Searching Patients");
     // }
     // return response;
@@ -427,7 +432,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     // } catch (Exception e) {
     // e.printStackTrace();
     // logger.error(e + " Error Occurred While Searching Patients");
-    // throw new BusinessException(ServiceError.Forbidden,
+    // throw new BusinessException(ServiceError.Unknown,
     // "Error Occurred While Searching Patients");
     // }
     // return response;
@@ -444,7 +449,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     // } catch (Exception e) {
     // e.printStackTrace();
     // logger.error(e + " Error Occurred While Searching Patients");
-    // throw new BusinessException(ServiceError.Forbidden,
+    // throw new BusinessException(ServiceError.Unknown,
     // "Error Occurred While Searching Patients");
     // }
     // return response;
@@ -461,7 +466,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     // } catch (Exception e) {
     // e.printStackTrace();
     // logger.error(e + " Error Occurred While Searching Patients");
-    // throw new BusinessException(ServiceError.Forbidden,
+    // throw new BusinessException(ServiceError.Unknown,
     // "Error Occurred While Searching Patients");
     // }
     // return response;
@@ -478,7 +483,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     // } catch (Exception e) {
     // e.printStackTrace();
     // logger.error(e + " Error Occurred While Searching Patients");
-    // throw new BusinessException(ServiceError.Forbidden,
+    // throw new BusinessException(ServiceError.Unknown,
     // "Error Occurred While Searching Patients");
     // }
     // return response;
@@ -495,7 +500,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     // } catch (Exception e) {
     // e.printStackTrace();
     // logger.error(e + " Error Occurred While Searching Patients");
-    // throw new BusinessException(ServiceError.Forbidden,
+    // throw new BusinessException(ServiceError.Unknown,
     // "Error Occurred While Searching Patients");
     // }
     // return response;
@@ -512,7 +517,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     // } catch (Exception e) {
     // e.printStackTrace();
     // logger.error(e + " Error Occurred While Searching Patients");
-    // throw new BusinessException(ServiceError.Forbidden,
+    // throw new BusinessException(ServiceError.Unknown,
     // "Error Occurred While Searching Patients");
     // }
     // return response;

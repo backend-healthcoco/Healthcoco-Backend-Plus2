@@ -240,6 +240,16 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Value(value = "${PATIENT_COUNT}")
     private String patientCount;
 
+    @Value(value = "${Register.checkPatientCount}")
+    private String checkPatientCount;
+
+    @Value(value = "${Signup.role}")
+    private String role;
+
+    @Value(value = "${Signup.DOB}")
+    private String DOB;
+
+
     @Override
     public User checkIfPatientExist(PatientRegistrationRequest request) {
 	try {
@@ -252,7 +262,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return null;
 
@@ -268,32 +278,23 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    // get role of specified type
 	    RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.PATIENT.getRole());
 	    if (roleCollection == null) {
-		logger.warn("Role Collection in database is either empty or not defind properly");
-		throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
+		logger.warn(role);
+		throw new BusinessException(ServiceError.NoRecord, role);
 	    }
 	    Date createdTime = new Date();
 	    // save user
 	    UserCollection userCollection = new UserCollection();
 	    BeanUtil.map(request, userCollection);
 	    if (request.getDob() != null && request.getDob().getAge() < 0) {
-		logger.warn("Incorrect Date of Birth");
-		throw new BusinessException(ServiceError.NotAcceptable, "Incorrect Date of Birth");
+		logger.warn(DOB);
+		throw new BusinessException(ServiceError.NotAcceptable, DOB);
 	    }
 	    User user = new User();
 	    BeanUtil.map(request, user);
 	    String uniqueUserName = generateUniqueUserNameService.generate(user);
 	    userCollection.setUserName(uniqueUserName);
 	    userCollection.setPassword(generateRandomAlphanumericString(10));
-	    if (request.getImage() != null) {
-		String path = "profile-images";
-		// save image
-		request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
-		String imageUrl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
-		userCollection.setImageUrl(imageUrl);
-		String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
-		userCollection.setThumbnailUrl(thumbnailUrl);
 
-	    }
 	    userCollection.setIsActive(true);
 	    userCollection.setCreatedTime(createdTime);
 	    userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
@@ -332,6 +333,16 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    patientCollection.setProfession(professionCollection.getProfession());
 	    }
 	    patientCollection.setNotes(request.getNotes());
+	    if (request.getImage() != null) {
+		String path = "profile-images";
+		// save image
+		request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
+		String imageUrl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
+		patientCollection.setImageUrl(imageUrl);
+		String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
+		patientCollection.setThumbnailUrl(thumbnailUrl);
+
+	    }
 	    patientCollection = patientRepository.save(patientCollection);
 
 	    ReferencesCollection referencesCollection = null;
@@ -418,6 +429,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    registeredPatientDetails.setLocationId(patientCollection.getLocationId());
 	    registeredPatientDetails.setHospitalId(patientCollection.getHospitalId());
 	    registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
+	    registeredPatientDetails.setImageUrl(patientCollection.getImageUrl());
+	    registeredPatientDetails.setThumbnailUrl(patientCollection.getThumbnailUrl());
 	    if (referencesCollection != null) {
 		Reference reference = new Reference();
 		BeanUtil.map(referencesCollection, reference);
@@ -460,7 +473,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return registeredPatientDetails;
     }
@@ -490,17 +503,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    throw new BusinessException(ServiceError.InvalidInput, "Incorrect User Id");
 		}
 		BeanUtil.map(userCollection, registeredPatientDetails);
-		if (request.getImage() != null) {
-		    String path = "profile-images";
-		    // save image
-		    request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
-		    String imageUrl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
-		    userCollection.setImageUrl(imageUrl);
-		    registeredPatientDetails.setImageUrl(imageUrl);
-		    String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
-		    userCollection.setThumbnailUrl(thumbnailUrl);
-		    registeredPatientDetails.setThumbnailUrl(thumbnailUrl);
-		}
+		
 		userCollection.setIsActive(true);
 		userCollection.setEmailAddress(request.getEmailAddress());
 		userCollection = userRepository.save(userCollection);
@@ -518,6 +521,17 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    patientCollection.setBloodGroup(request.getBloodGroup());
 		    patientCollection.setGender(request.getGender());
 		    patientCollection.setEmailAddress(request.getEmailAddress());
+		}
+		if (request.getImage() != null) {
+		    String path = "profile-images";
+		    // save image
+		    request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
+		    String imageUrl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
+		    patientCollection.setImageUrl(imageUrl);
+		    registeredPatientDetails.setImageUrl(imageUrl);
+		    String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
+		    patientCollection.setThumbnailUrl(thumbnailUrl);
+		    registeredPatientDetails.setThumbnailUrl(thumbnailUrl);
 		}
 		patientCollection = patientRepository.save(patientCollection);
 
@@ -645,11 +659,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    // save image
 		    request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
 		    String imageUrl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
-		    userCollection.setImageUrl(imageUrl);
+		    patientCollection.setImageUrl(imageUrl);
 		    registeredPatientDetails.setImageUrl(imageUrl);
 		    userCollection = userRepository.save(userCollection);
 		    String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
-		    userCollection.setThumbnailUrl(thumbnailUrl);
+		    patientCollection.setThumbnailUrl(thumbnailUrl);
 		    registeredPatientDetails.setThumbnailUrl(thumbnailUrl);
 		}
 		registeredPatientDetails.setUserId(userCollection.getId());
@@ -699,7 +713,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return registeredPatientDetails;
     }
@@ -715,8 +729,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    count++;
 	    }
 	    if (count >= Integer.parseInt(patientCount)) {
-		logger.warn("Only Nine patients can register with same mobile number");
-		throw new BusinessException(ServiceError.NotAcceptable, "Only Nine patients can register with same mobile number");
+		logger.warn(checkPatientCount);
+		throw new BusinessException(ServiceError.NotAcceptable, checkPatientCount);
 	    }
 	}
     }
@@ -731,7 +745,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		for (UserCollection userCollection : userCollections) {
 		    if (!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress())) {
 			User user = new User();
-			BeanUtil.map(userCollection, user);
+			
 			if (locationId != null && hospitalId != null) {
 			    List<PatientCollection> patientCollections = patientRepository.findByUserId(userCollection.getId());
 			    boolean isPartOfClinic = false;
@@ -747,6 +761,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 				    }
 				}
 			    }
+			    if(!isPartOfClinic){
+			    	user.setFirstName(userCollection.getFirstName());
+			    	user.setMobileNumber(userCollection.getMobileNumber());
+			    }else{
+			    	BeanUtil.map(userCollection, user);
+			    }
 			    user.setIsPartOfClinic(isPartOfClinic);
 			}
 			users.add(user);
@@ -757,7 +777,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return users;
     }
@@ -798,6 +818,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    registeredPatientDetails = new RegisteredPatientDetails();
 		    BeanUtil.map(patientCollection, registeredPatientDetails);
 		    BeanUtil.map(userCollection, registeredPatientDetails);
+		    registeredPatientDetails.setImageUrl(patientCollection.getImageUrl());
+		    registeredPatientDetails.setThumbnailUrl(patientCollection.getThumbnailUrl());
+		    
 		    registeredPatientDetails.setUserId(userCollection.getId());
 		    registeredPatientDetails.setReferredBy(reference);
 		    Patient patient = new Patient();
@@ -833,7 +856,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return registeredPatientDetails;
     }
@@ -858,7 +881,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return reference;
     }
@@ -878,11 +901,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (BusinessException be) {
 	    be.printStackTrace();
 	    logger.error(be);
-	    throw new BusinessException(ServiceError.Forbidden, be.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, be.getMessage());
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
     }
@@ -913,7 +936,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -935,7 +958,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -972,7 +995,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -1015,7 +1038,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -1051,17 +1074,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 		generatedId = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay) + DPDoctorUtils.getPrefixedNumber(currentMonth)
 			+ DPDoctorUtils.getPrefixedNumber(currentYear % 100) + DPDoctorUtils.getPrefixedNumber(patientCounter + patientCount + 1);
-		System.out.println(patientCount + "" + generatedId);
-		// updatePatientInitialAndCounter(doctorId, locationId,
-		// patientInitial, patientCounter + 1);
-	    } else {
+		} else {
 		logger.warn("Doctor Id and Location Id does not match.");
 		throw new BusinessException(ServiceError.NoRecord, "Doctor Id and Location Id does not match.");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return generatedId;
     }
@@ -1085,7 +1105,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Forbidden, "Error While Updating Patient Initial and Counter");
+	    throw new BusinessException(ServiceError.Unknown, "Error While Updating Patient Initial and Counter");
 	}
 	return patientInitialAndCounter;
     }
@@ -1116,7 +1136,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error While Updating Patient Initial and Counter");
-	    throw new BusinessException(ServiceError.Forbidden, "Error While Updating Patient Initial and Counter");
+	    throw new BusinessException(ServiceError.Unknown, "Error While Updating Patient Initial and Counter");
 	}
 	return response;
     }
@@ -1170,7 +1190,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error While Retrieving Location Details");
-	    throw new BusinessException(ServiceError.Forbidden, "Error While Retrieving Location Details");
+	    throw new BusinessException(ServiceError.Unknown, "Error While Retrieving Location Details");
 	}
 	return location;
     }
@@ -1201,7 +1221,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error While Updating Clinic Details");
-	    throw new BusinessException(ServiceError.Forbidden, "Error While Updating Clinic Details");
+	    throw new BusinessException(ServiceError.Unknown, "Error While Updating Clinic Details");
 	}
 	return response;
     }
@@ -1230,7 +1250,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error While Updating Clinic Details");
-	    throw new BusinessException(ServiceError.Forbidden, "Error While Updating Clinic Details");
+	    throw new BusinessException(ServiceError.Unknown, "Error While Updating Clinic Details");
 	}
 	return response;
     }
@@ -1250,7 +1270,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error While Updating Clinic Details");
-	    throw new BusinessException(ServiceError.Forbidden, "Error While Updating Clinic Details");
+	    throw new BusinessException(ServiceError.Unknown, "Error While Updating Clinic Details");
 	}
 	return response;
     }
@@ -1271,7 +1291,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error While Updating Clinic Details");
-	    throw new BusinessException(ServiceError.Forbidden, "Error While Updating Clinic Details");
+	    throw new BusinessException(ServiceError.Unknown, "Error While Updating Clinic Details");
 	}
 	return response;
     }
@@ -1287,7 +1307,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return bloodGroup;
     }
@@ -1312,7 +1332,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return bloodGroups;
     }
@@ -1328,7 +1348,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return profession;
     }
@@ -1352,7 +1372,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return professions;
     }
@@ -1391,7 +1411,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -1432,7 +1452,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -1469,7 +1489,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
     }
@@ -1485,7 +1505,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
 
@@ -1499,8 +1519,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    }
 
 	    if (doctorRole == null) {
-		logger.warn("Role Collection in database is either empty or not defind properly");
-		throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
+		logger.warn(role);
+		throw new BusinessException(ServiceError.NoRecord, role);
 	    }
 	    // save user
 	    UserCollection userCollection = new UserCollection();
@@ -1588,11 +1608,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    }
 	} catch (DuplicateKeyException de) {
 	    logger.error(de);
-	    throw new BusinessException(ServiceError.Forbidden, "Email address already registerd. Please login");
+	    throw new BusinessException(ServiceError.Unknown, "Email address already registerd. Please login");
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -1608,8 +1628,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    }
 
 	    if (doctorRole == null) {
-		logger.warn("Role Collection in database is either empty or not defind properly");
-		throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
+		logger.warn(role);
+		throw new BusinessException(ServiceError.NoRecord, role);
 	    }
 	    UserCollection userCollection = userRepository.findByUserNameAndEmailAddress(request.getEmailAddress(), request.getEmailAddress());
 	    userCollection.setFirstName(request.getFirstName());
@@ -1660,7 +1680,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -1687,7 +1707,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return role;
     }
@@ -1712,7 +1732,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
 
@@ -1750,7 +1770,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -1780,7 +1800,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -1809,7 +1829,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -1842,7 +1862,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -1874,7 +1894,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
 
@@ -1889,7 +1909,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
 
@@ -1918,7 +1938,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error While Updating Clinic IsLab");
-	    throw new BusinessException(ServiceError.Forbidden, "Error While Updating Clinic IsLab");
+	    throw new BusinessException(ServiceError.Unknown, "Error While Updating Clinic IsLab");
 	}
 	return response;
     }
@@ -1978,7 +1998,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, "Error while adding feedback");
+	    throw new BusinessException(ServiceError.Unknown, "Error while adding feedback");
 	}
 	return response;
     }
@@ -1997,7 +2017,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error While Updating Clinic Details");
-	    throw new BusinessException(ServiceError.Forbidden, "Error While Updating Clinic Details");
+	    throw new BusinessException(ServiceError.Unknown, "Error While Updating Clinic Details");
 	}
 	return response;
     }
@@ -2018,7 +2038,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error While getting status");
-	    throw new BusinessException(ServiceError.Forbidden, "Error While getting status");
+	    throw new BusinessException(ServiceError.Unknown, "Error While getting status");
 	}
 	return response;
     }
@@ -2051,7 +2071,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, "Error while editing feedback");
+	    throw new BusinessException(ServiceError.Unknown, "Error while editing feedback");
 	}
 	return response;
     }
@@ -2099,7 +2119,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, "Error while getting feedback");
+	    throw new BusinessException(ServiceError.Unknown, "Error while getting feedback");
 	}
 	return response;
     }

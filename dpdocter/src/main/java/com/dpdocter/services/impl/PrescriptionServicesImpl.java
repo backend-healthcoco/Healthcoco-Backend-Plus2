@@ -115,7 +115,6 @@ import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrDiagnosticTestDocument;
 import com.dpdocter.solr.document.SolrDrugDocument;
-import com.dpdocter.solr.document.SolrLabTestDocument;
 import com.dpdocter.solr.repository.SolrDiagnosticTestRepository;
 import com.dpdocter.solr.services.SolrPrescriptionService;
 
@@ -202,6 +201,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     @Value(value = "${IMAGE_PATH}")
     private String imagePath;
 
+    @Value(value = "${Prescription.checkPrescriptionExists}")
+    private String checkPrescriptionExists;
+
     @Autowired
     private SMSFormatRepository sMSFormatRepository;
     
@@ -237,7 +239,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Drug");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Saving Drug");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug");
 	}
 	return response;
     }
@@ -274,7 +276,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Drug");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Editing Drug");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Drug");
 	}
 	return response;
     }
@@ -308,7 +310,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Drug");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Deleting Drug");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug");
 	}
 	return response;
     }
@@ -331,7 +333,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Drug");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Deleting Drug");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug");
 	}
 	return response;
     }
@@ -351,7 +353,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Drug");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Drug");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug");
 	}
 	return drugAddEditResponse;
     }
@@ -370,7 +372,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Template");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Saving Template");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Template");
 	}
 	return response;
     }
@@ -409,7 +411,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Template");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Editing Template");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Template");
 	}
 	return response;
     }
@@ -443,7 +445,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Template");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Deleting Template");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Template");
 	}
 	return response;
     }
@@ -474,7 +476,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Template");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Template");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Template");
 	}
 	return response;
     }
@@ -565,7 +567,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Prescription");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Saving Prescription");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Prescription");
 	}
 	return response;
     }
@@ -664,7 +666,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Prescription");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Editing Prescription");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Prescription");
 	}
 	return response;
     }
@@ -699,7 +701,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error("Error Occurred While Deleting Prescription");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Deleting Prescription");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Prescription");
 	}
 	return response;
     }
@@ -777,12 +779,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if(tests != null && !tests.isEmpty()){
 				List<TestAndRecordDataResponse> labTests = new ArrayList<TestAndRecordDataResponse>();
 			    	for(TestAndRecordData data : tests){
-			    		DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(data.getTestId());
-			    		DiagnosticTest diagnosticTest = new DiagnosticTest();
-			    		if(diagnosticTestCollection !=null){
-			    			BeanUtil.map(diagnosticTestCollection, diagnosticTest);
+			    		if(data.getTestId() != null){
+			    			DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(data.getTestId());
+				    		DiagnosticTest diagnosticTest = new DiagnosticTest();
+				    		if(diagnosticTestCollection !=null){
+				    			BeanUtil.map(diagnosticTestCollection, diagnosticTest);
+				    		}
+				    		labTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
 			    		}
-			    		labTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
 			    }
 			prescription.setTests(labTests);
 			}
@@ -796,7 +800,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(" Error Occurred While Getting Prescription");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Prescription");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Prescription");
 	}
 	return prescriptions;
     }
@@ -839,12 +843,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if(tests != null && !tests.isEmpty()){
 				List<TestAndRecordDataResponse> labTests = new ArrayList<TestAndRecordDataResponse>();
 			    	for(TestAndRecordData data : tests){
-			    		DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(data.getTestId());
-			    		DiagnosticTest diagnosticTest = new DiagnosticTest();
-			    		if(diagnosticTestCollection !=null){
-			    			BeanUtil.map(diagnosticTestCollection, diagnosticTest);
+			    		if(data.getTestId() != null){
+			    			DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(data.getTestId());
+				    		DiagnosticTest diagnosticTest = new DiagnosticTest();
+				    		if(diagnosticTestCollection !=null){
+				    			BeanUtil.map(diagnosticTestCollection, diagnosticTest);
+				    		}
+				    		labTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
 			    		}
-			    		labTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
 			    }
 			prescription.setTests(labTests);
 			}
@@ -859,7 +865,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Prescription");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Prescription");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Prescription");
 	}
 	return prescriptions;
     }
@@ -919,7 +925,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Template");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Template");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Template");
 	}
 	return response;
     }
@@ -933,7 +939,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Prescription Count");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Prescription Count");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Prescription Count");
 	}
 	return prescriptionCount;
     }
@@ -1004,7 +1010,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Drug Type");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Saving Drug Type");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug Type");
 	}
 	return response;
 
@@ -1028,7 +1034,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Drug Type");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Editing Drug Type");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Drug Type");
 	}
 	return response;
 
@@ -1053,7 +1059,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Drug Type");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Deleting Drug Type");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug Type");
 	}
 	return response;
     }
@@ -1073,7 +1079,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Drug Strength");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Saving Drug Strength");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug Strength");
 	}
 	return response;
     }
@@ -1096,7 +1102,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Drug Strength");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Editing Drug Strength");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Drug Strength");
 	}
 	return response;
     }
@@ -1120,7 +1126,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Drug Strength");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Deleting Drug Strength");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug Strength");
 	}
 	return response;
     }
@@ -1140,7 +1146,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Drug Dosage");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Saving Drug Dosage");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug Dosage");
 	}
 	return response;
     }
@@ -1163,7 +1169,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Drug Dosage");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Editin Drug Dosage");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editin Drug Dosage");
 	}
 	return response;
     }
@@ -1186,7 +1192,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Drug Dosage");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Deleting Drug Dosage");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug Dosage");
 	}
 	return response;
     }
@@ -1206,7 +1212,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Drug Direction");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Saving Drug Direction");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug Direction");
 	}
 	return response;
     }
@@ -1229,7 +1235,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Drug Direction");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Editing Drug Direction");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Drug Direction");
 	}
 	return response;
 
@@ -1253,7 +1259,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Drug Direction");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Deleting Drug Direction");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug Direction");
 	}
 	return response;
     }
@@ -1273,7 +1279,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Drug Duration Unit");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Saving Drug Duration Unit");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug Duration Unit");
 	}
 	return response;
     }
@@ -1296,7 +1302,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Drug Duration Unit");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Editing Drug Duration Unit");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Drug Duration Unit");
 	}
 	return response;
 
@@ -1320,7 +1326,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Drug Duration Unit");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Deleting Drug Duration Unit");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug Duration Unit");
 	}
 	return response;
     }
@@ -1363,13 +1369,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			
 			if(tests != null && !tests.isEmpty()){
 				List<TestAndRecordDataResponse> labTests = new ArrayList<TestAndRecordDataResponse>();
-			    	for(TestAndRecordData data : prescriptionCollection.getTests()){
-			    		DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(data.getTestId());
-			    		DiagnosticTest diagnosticTest = new DiagnosticTest();
-			    		if(diagnosticTestCollection !=null){
-			    			BeanUtil.map(diagnosticTestCollection, diagnosticTest);
+			    	for(TestAndRecordData data : tests){
+			    		if(data.getTestId() != null){
+			    			DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(data.getTestId());
+				    		DiagnosticTest diagnosticTest = new DiagnosticTest();
+				    		if(diagnosticTestCollection !=null){
+				    			BeanUtil.map(diagnosticTestCollection, diagnosticTest);
+				    		}
+				    		labTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
 			    		}
-			    		labTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
 			    }
 			prescription.setTests(labTests);
 			}
@@ -1383,7 +1391,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error while getting prescription : " + e.getCause().getMessage());
-	    throw new BusinessException(ServiceError.Forbidden, "Error while getting prescription : " + e.getCause().getMessage());
+	    throw new BusinessException(ServiceError.Unknown, "Error while getting prescription : " + e.getCause().getMessage());
 	}
 	return prescription;
     }
@@ -1549,7 +1557,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting LabTests");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting LabTests");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting LabTests");
 	}
 	return response;
     }
@@ -1581,7 +1589,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting LabTests");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting LabTests");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting LabTests");
 	}
 	return response;
     }
@@ -1618,7 +1626,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting LabTests");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting LabTests");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting LabTests");
 	}
 	return response;
     }
@@ -1647,7 +1655,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Drugs");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Drugs");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
 	}
 	return response;
     }
@@ -1687,7 +1695,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Drugs");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Drugs");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
 	}
 	return response;
     }
@@ -1733,7 +1741,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Drugs");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Drugs");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
 	}
 	return response;
     }
@@ -1761,7 +1769,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Drug Type");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Drug Type");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Type");
 	}
 	return response;
     }
@@ -1802,7 +1810,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Drug Type");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Drug Type");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Type");
 	}
 	return response;
     }
@@ -1849,7 +1857,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Drug Type");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Drug Type");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Type");
 	}
 	return response;
     }
@@ -1878,7 +1886,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Drug Direction");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Drug Direction");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Direction");
 	}
 	return response;
     }
@@ -1919,7 +1927,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Drug Direction");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Drug Direction");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Direction");
 	}
 	return response;
     }
@@ -1967,7 +1975,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Drug Direction");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Drug Direction");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Direction");
 	}
 	return response;
     }
@@ -1995,7 +2003,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Drug Dosage");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Drug Dosage");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Dosage");
 	}
 	return response;
     }
@@ -2036,7 +2044,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Drug Dosage");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Drug Dosage");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Dosage");
 	}
 	return response;
     }
@@ -2082,7 +2090,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Drug Dosage");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Drug Dosage");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Dosage");
 	}
 	return response;
     }
@@ -2110,7 +2118,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Drug Duration Unit");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Drug DurationUnit");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug DurationUnit");
 	}
 	return response;
     }
@@ -2153,7 +2161,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Drug Duration Unit");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Drug Duration Unit");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Duration Unit");
 	}
 	return response;
     }
@@ -2199,7 +2207,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Drug Duration Unit");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Drug DurationUnit");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug DurationUnit");
 	}
 	return response;
     }
@@ -2247,7 +2255,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Drug Strength Unit");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Drug StrengthUnit");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug StrengthUnit");
 	}
 	return response;
     }
@@ -2336,7 +2344,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Drug Strength Unit");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Drug StrengthUnit");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug StrengthUnit");
 	}
 	return response;
     }
@@ -2457,7 +2465,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Drug Strength Unit");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Drug StrengthUnit");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug StrengthUnit");
 	}
 	return response;
     }
@@ -2469,7 +2477,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    mailService.sendEmail(emailAddress, "Prescription", "PFA.", mailAttachment);
 	} catch (MessagingException e) {
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
 
@@ -2552,19 +2560,22 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 			parameters.put("prescriptionId", prescriptionId);
 			parameters.put("advice", prescriptionCollection.getAdvice() != null ? prescriptionCollection.getAdvice() : "----");
+			String labTest = "";
 			if (prescriptionCollection.getTests() != null && !prescriptionCollection.getTests().isEmpty()) {
-			    String labTest = "";  int i = 1;
+			      int i = 1;
 			    for (TestAndRecordData tests : prescriptionCollection.getTests()) {
-			    DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(tests.getTestId());
-				if(diagnosticTestCollection != null){
-					    labTest = labTest + i + ") " + diagnosticTestCollection.getTestName() + "<br>";
-					    i++;	
-					}
+			    if(tests.getTestId() != null){
+			    	DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(tests.getTestId());
+					if(diagnosticTestCollection != null){
+						    labTest = labTest + i + ") " + diagnosticTestCollection.getTestName() + "<br>";
+						    i++;	
+						}
 			    }
-			    parameters.put("labTest", labTest);
-			} else {
-			    parameters.put("labTest", null);
-			}
+			    }
+			} 
+			if(labTest != null && !labTest.isEmpty())parameters.put("labTest", labTest); 
+			else parameters.put("labTest", null);
+			
 
 		    } else {
 			logger.warn("Prescription Id, doctorId, location Id, hospital Id does not match");
@@ -2635,7 +2646,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				else
 				    footerBottomText = footerBottomText + "" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 			    }
-			    logoURL = getFinalImageURL(printSettings.getClinicLogoUrl());
+			    if(printSettings.getClinicLogoUrl() != null)logoURL = getFinalImageURL(printSettings.getClinicLogoUrl());
 			    
 			    if(printSettings.getHeaderSetup() != null && printSettings.getHeaderSetup().getPatientDetails() != null && printSettings.getHeaderSetup().getPatientDetails().getStyle() != null){
 					PatientDetails patientDetails = printSettings.getHeaderSetup().getPatientDetails();
@@ -2691,13 +2702,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		logger.warn("Prescription not found.Please check prescriptionId.");
 		throw new BusinessException(ServiceError.NoRecord, "Prescription not found.Please check prescriptionId.");
 	    }
-	} catch (BusinessException e) {
-	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return mailAttachment;
     }
@@ -2787,13 +2795,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    }
 		}
 	    }
-	} catch (BusinessException e) {
-	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
 
@@ -2834,7 +2839,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Lab Test");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Saving Lab Test");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Lab Test");
 	}
 	return response;
     }
@@ -2878,7 +2883,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Lab Test");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Editing Lab Test");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Lab Test");
 	}
 	return response;
 
@@ -2912,7 +2917,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Lab Test");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Deleting Lab Test");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Lab Test");
 	}
 	return response;
 
@@ -2936,7 +2941,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Lab Test");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Deleting Lab Test");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Lab Test");
 	}
 	return response;
     }
@@ -2956,7 +2961,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Lab Test");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Lab Test");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Lab Test");
 	}
 	return response;
 
@@ -3082,7 +3087,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting LabTests");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting LabTests");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting LabTests");
 	}
 	return response;
     }
@@ -3107,6 +3112,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
 			    if (prescriptionCollection.getItems() != null) {
 				Prescription prescription = new Prescription();
+				List<TestAndRecordData> tests = prescriptionCollection.getTests();
+				prescriptionCollection.setTests(null);
 				BeanUtil.map(prescriptionCollection, prescription);
 				List<PrescriptionItemDetail> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetail>();
 				for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
@@ -3124,15 +3131,17 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				prescription.setItems(prescriptionItemDetailsList);
 				PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(prescription.getId());
 				if (patientVisitCollection != null)prescription.setVisitId(patientVisitCollection.getId());
-				if(prescriptionCollection.getTests() != null && !prescriptionCollection.getTests().isEmpty()){
+				if(tests != null && !tests.isEmpty()){
 					List<TestAndRecordDataResponse> labTests = new ArrayList<TestAndRecordDataResponse>();
-				    	for(TestAndRecordData data : prescriptionCollection.getTests()){
-				    		DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(data.getTestId());
-				    		DiagnosticTest diagnosticTest = new DiagnosticTest();
-				    		if(diagnosticTestCollection !=null){
-				    			BeanUtil.map(diagnosticTestCollection, diagnosticTest);
+				    	for(TestAndRecordData data : tests){
+				    		if(data.getTestId() != null){
+				    			DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(data.getTestId());
+					    		DiagnosticTest diagnosticTest = new DiagnosticTest();
+					    		if(diagnosticTestCollection !=null){
+					    			BeanUtil.map(diagnosticTestCollection, diagnosticTest);
+					    		}
+					    		labTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
 				    		}
-				    		labTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
 				    }
 				prescription.setTests(labTests);
 				}
@@ -3146,7 +3155,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		} catch (Exception e) {
 		    e.printStackTrace();
 		    logger.error(" Error Occurred While Getting Prescription");
-		    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Prescription");
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Prescription");
 		}
 		return prescriptions;
 	}
@@ -3169,7 +3178,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		} catch (Exception e) {
 		    e.printStackTrace();
 		    logger.error(e + " Error Occurred While Saving Lab Test");
-		    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Saving Lab Test");
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Lab Test");
 		}
 		return response;
 	}
@@ -3189,7 +3198,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		} catch (Exception e) {
 		    e.printStackTrace();
 		    logger.error(e + " Error Occurred While Getting Diagnostic Test");
-		    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Diagnostic Test");
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnostic Test");
 		}
 		return response;
 
@@ -3223,7 +3232,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		} catch (Exception e) {
 		    e.printStackTrace();
 		    logger.error(e + " Error Occurred While Deleting Diagnostic Test");
-		    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Deleting Diagnostic Test");
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Diagnostic Test");
 		}
 		return response;
 	}
@@ -3246,7 +3255,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		} catch (Exception e) {
 		    e.printStackTrace();
 		    logger.error(e + " Error Occurred While Deleting Lab Test");
-		    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Deleting Diagnostic Test");
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Diagnostic Test");
 		}
 		return response;
 	}
@@ -3274,7 +3283,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		} catch (Exception e) {
 		    e.printStackTrace();
 		    logger.error(e + " Error Occurred While Getting LabTests");
-		    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Diagnostic Tests");
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnostic Tests");
 		}
 		return response;
 	    }
@@ -3306,7 +3315,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		} catch (Exception e) {
 		    e.printStackTrace();
 		    logger.error(e + " Error Occurred While Getting Diagnostic Tests");
-		    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Diagnostic Tests");
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnostic Tests");
 		}
 		return response;
 	    }
@@ -3343,7 +3352,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		} catch (Exception e) {
 		    e.printStackTrace();
 		    logger.error(e + " Error Occurred While Getting Diagnostic Tests");
-		    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Diagnostic Tests");
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnostic Tests");
 		}
 		return response;
 }
@@ -3375,12 +3384,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						throw new BusinessException(ServiceError.NoRecord, "No test Exists for this prescription");
 					}
 				}else{
-					throw new BusinessException(ServiceError.InvalidInput, "PrescriptionID was not prescribed to Patient Name,Enter Valid Prescription Id");
+					throw new BusinessException(ServiceError.InvalidInput, checkPrescriptionExists);
 				}
 			}catch (Exception e) {
 			    e.printStackTrace();
 			    logger.error(e + " Error Occurred While Checking Prescription Exists");
-			    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Checking Prescription Exists");
+			    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Checking Prescription Exists");
 			}
 			return response;
 		}

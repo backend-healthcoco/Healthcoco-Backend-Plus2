@@ -53,7 +53,7 @@ public class SolrCityServiceImpl implements SolrCityService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    // throw new BusinessException(ServiceError.Forbidden,
+	    // throw new BusinessException(ServiceError.Unknown,
 	    // "Error Occurred While Saving Country");
 	}
 	return response;
@@ -107,7 +107,7 @@ public class SolrCityServiceImpl implements SolrCityService {
 	    response = solrCityRepository.findByQueryAnnotation(searchTerm);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Searching City");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching City");
 	}
 	return response;
 
@@ -129,7 +129,7 @@ public class SolrCityServiceImpl implements SolrCityService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Searching Landmark Locality");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Landmark Locality");
 	}
 	return response;
     }
@@ -217,7 +217,7 @@ public class SolrCityServiceImpl implements SolrCityService {
 		response = response.subList(0, 29);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Searching Landmark Locality");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Landmark Locality");
 	}
 	return response;
     }

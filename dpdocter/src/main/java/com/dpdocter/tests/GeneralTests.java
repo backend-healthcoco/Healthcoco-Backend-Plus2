@@ -1,14 +1,13 @@
 package com.dpdocter.tests;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.security.spec.KeySpec;
 
-import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
-import org.apache.commons.collections.CollectionUtils;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 
-import com.dpdocter.collections.DiagnosticTestCollection;
+import org.apache.commons.codec.binary.Base64;
+
+
 
 public class GeneralTests {
 	
@@ -79,17 +78,13 @@ public class GeneralTests {
 //	    	}
 	    		 
 	    		 public static void main(String[] args)  {
-	    			 List<DiagnosticTestCollection> diagnosticTests = new ArrayList<DiagnosticTestCollection>();
-	    			 DiagnosticTestCollection diagnosticTestCollection = new DiagnosticTestCollection();
-	    			 diagnosticTestCollection.setId("56b47551e4b0f5980d1404f5");diagnosticTests.add(diagnosticTestCollection);
-	    			 diagnosticTestCollection.setId("56b47551e4b0f5980d14057e");diagnosticTests.add(diagnosticTestCollection);
-	    			 diagnosticTestCollection.setId("56b47551e4b0f5980d14057b");diagnosticTests.add(diagnosticTestCollection);
-	    			 diagnosticTestCollection.setId("56b47551e4b0f5980d140580");diagnosticTests.add(diagnosticTestCollection);
-	    			 diagnosticTestCollection.setId("56b47551e4b0f5980d14057d");diagnosticTests.add(diagnosticTestCollection);
-	    			 diagnosticTestCollection.setId("56b47551e4b0f5980d140623");diagnosticTests.add(diagnosticTestCollection);
-	    			 Collection<String> testIds = CollectionUtils.collect(diagnosticTests, new BeanToPropertyValueTransformer("id"));
-	    			 System.out.println(testIds.toString().replace("[", "(").replace("]", ")"));
-	    			 System.out.println(Arrays.asList(testIds));
-//	    			 testId:{IN : (56b47551e4b0f5980d140623,56b47551e4b0f5980d1404f5)}
-	    		    }
+	    			 byte[] salt = new byte[16];
+//	    			
+//	    			 KeySpec spec = new PBEKeySpec("password".toCharArray(), salt, 65536, 128);
+//	    			 SecretKeyFactory f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+//	    			 byte[] hash = f.generateSecret(spec).getEncoded();
+//	    			 Base64.Encoder enc = Base64.getEncoder();
+//	    			 System.out.printf("salt: %s%n", enc.encodeToString(salt));
+//	    			 System.out.printf("hash: %s%n", enc.encodeToString(hash));	    		    
+	    			 }
 }  	

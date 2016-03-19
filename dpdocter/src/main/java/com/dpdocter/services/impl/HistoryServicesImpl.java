@@ -141,7 +141,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Disease(s)");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Saving Disease(s)");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Disease(s)");
 	}
 	return response;
     }
@@ -162,7 +162,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Disease");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Editing Disease");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Disease");
 	}
 	return response;
     }
@@ -195,7 +195,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Deleting Disease");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Deleting Disease");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Disease");
 	}
 	return response;
     }
@@ -256,7 +256,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return true;
     }
@@ -322,7 +322,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 
 	}
 	return true;
@@ -382,7 +382,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 
 	}
 	return true;
@@ -443,7 +443,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 
 	}
 	return true;
@@ -486,7 +486,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 
 	}
 	return true;
@@ -527,7 +527,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 
 	}
 	return true;
@@ -571,7 +571,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 
 	}
 	return true;
@@ -618,7 +618,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return true;
     }
@@ -672,7 +672,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return true;
     }
@@ -719,7 +719,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return true;
     }
@@ -755,7 +755,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return true;
     }
@@ -791,7 +791,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return true;
     }
@@ -873,7 +873,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return diseaseListResponses;
     }
@@ -908,7 +908,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return diseaseListResponses;
     }
@@ -962,7 +962,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return diseaseListResponses;
     }
@@ -1044,7 +1044,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -1093,7 +1093,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return details;
     }
@@ -1165,7 +1165,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -1212,7 +1212,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return generalData;
     }
@@ -1232,7 +1232,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return diseaseListResponses;
     }
@@ -1261,7 +1261,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting History Count");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting History Count");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting History Count");
 	}
 	return historyCount;
     }
@@ -1310,7 +1310,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 
 	}
 	return response;
@@ -1360,7 +1360,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -1393,7 +1393,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -1426,7 +1426,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    response = true;
 	} catch (Exception e) {
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -1457,7 +1457,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 
 	}
 	return true;
@@ -1489,7 +1489,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 
 	}
 	return true;
@@ -1552,7 +1552,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
 
@@ -1626,7 +1626,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -1674,7 +1674,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return true;
     }

@@ -3,14 +3,18 @@ package com.dpdocter.services.impl;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -23,6 +27,7 @@ import org.springframework.stereotype.Service;
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.City;
 import com.dpdocter.beans.Clinic;
+import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Doctor;
 import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.GeocodedLocation;
@@ -44,6 +49,7 @@ import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.AppointmentWorkFlowCollection;
 import com.dpdocter.collections.CityCollection;
 import com.dpdocter.collections.CountryCollection;
+import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.HospitalCollection;
@@ -73,6 +79,7 @@ import com.dpdocter.repository.AppointmentRepository;
 import com.dpdocter.repository.AppointmentWorkFlowRepository;
 import com.dpdocter.repository.CityRepository;
 import com.dpdocter.repository.CountryRepository;
+import com.dpdocter.repository.DiagnosticTestRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.HospitalRepository;
@@ -82,6 +89,7 @@ import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientQueueRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.SMSFormatRepository;
+import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.StateRepository;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
@@ -169,6 +177,21 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Autowired
     private PatientQueueRepository patientQueueRepository;
 
+    @Autowired
+    private SpecialityRepository specialityRepository;
+    
+    @Autowired
+    private DiagnosticTestRepository diagnosticTestRepository;
+    
+    @Value(value = "${Appointment.timeSlotIsBooked}")
+    private String timeSlotIsBooked;
+
+    @Value(value = "${Appointment.incorrectAppointmentId}")
+    private String incorrectAppointmentId;
+
+    @Value(value = "${Appoinment.appointmentDoesNotExist}")
+    private String appointmentDoesNotExist;
+
     @Override
     public Country addCountry(Country country) {
 	try {
@@ -181,7 +204,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    BeanUtil.map(countryCollection, country);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return country;
     }
@@ -202,7 +225,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    BeanUtil.map(cityCollection, city);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return city;
     }
@@ -236,7 +259,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -251,7 +274,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -286,7 +309,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    BeanUtil.map(landmarkLocalityCollection, landmarkLocality);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return landmarkLocality;
     }
@@ -319,8 +342,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    UserLocationCollection userLocationCollection = iterator.next();
 		    DoctorCollection doctorCollection = doctorRepository.findByUserId(userLocationCollection.getUserId());
 		    UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
-		    DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
-			    .findByLocationId(userLocationCollection.getId());
+		    DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
 
 		    if (doctorCollection != null) {
 			Doctor doctor = new Doctor();
@@ -336,6 +358,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    doctorClinicProfile.setDoctorId(userLocationCollection.getUserId());
 			    doctor.setDoctorClinicProfile(doctorClinicProfile);
 			}
+			if(doctor.getSpecialities() != null && !doctor.getSpecialities().isEmpty()){
+				List<String> specialities = (List<String>) CollectionUtils.collect((Collection<?>) specialityRepository.findAll(doctor.getSpecialities()),new BeanToPropertyValueTransformer("speciality"));
+				doctor.setSpecialities(specialities);
+			}
 			doctors.add(doctor);
 		    }
 		}
@@ -343,7 +369,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -439,17 +465,17 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    	updateQueue(appointmentCollection.getAppointmentId(), appointmentCollection.getDoctorId(), appointmentCollection.getLocationId(), appointmentCollection.getHospitalId(), appointmentCollection.getPatientId(), appointmentCollection.getDate(), appointmentCollection.getTime().getFrom(), null, false);
 		    }
 		} else {
-		    logger.error("Time slot is already booked");
-		    throw new BusinessException(ServiceError.NotAcceptable, "Time slot is already booked");
+		    logger.error(timeSlotIsBooked);
+		    throw new BusinessException(ServiceError.NotAcceptable, timeSlotIsBooked);
 		}
 	    } else {
-		logger.error("Incorrect appointment Id");
-		throw new BusinessException(ServiceError.InvalidInput, "Incorrect appointment Id");
+		logger.error(incorrectAppointmentId);
+		throw new BusinessException(ServiceError.InvalidInput, incorrectAppointmentId);
 	    }
 	}
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -530,13 +556,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    	updateQueue(appointmentCollection.getAppointmentId(), appointmentCollection.getDoctorId(), appointmentCollection.getLocationId(), appointmentCollection.getHospitalId(), appointmentCollection.getPatientId(), appointmentCollection.getDate(), appointmentCollection.getTime().getFrom(),null, false);
 			    }
 			} else {
-			    logger.error("Time slot is already booked");
-			    throw new BusinessException(ServiceError.NotAcceptable, "Time slot is already booked");
+			    logger.error(timeSlotIsBooked);
+			    throw new BusinessException(ServiceError.NotAcceptable, timeSlotIsBooked);
 			}
 		}
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -740,7 +766,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		}
 	    } catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
     }
@@ -805,7 +831,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			}
 		} catch (Exception e) {
 		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
  }
@@ -826,7 +852,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    BeanUtil.map(stateCollection, state);
 		} catch (Exception e) {
 		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return state;
 	}
@@ -862,7 +888,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    DoctorCollection doctorCollection = doctorRepository.findByUserId(userLocationCollection.getUserId());
 			    UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
 			    DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection
-				    .getLocationId());
+				    .getId());
 
 			    if (doctorCollection != null) {
 				Doctor doctor = new Doctor();
@@ -878,21 +904,38 @@ public class AppointmentServiceImpl implements AppointmentService {
 				    doctorClinicProfile.setDoctorId(userLocationCollection.getUserId());
 				    doctor.setDoctorClinicProfile(doctorClinicProfile);
 				}
+				if(doctor.getSpecialities() != null && !doctor.getSpecialities().isEmpty()){
+					List<String> specialities = (List<String>) CollectionUtils.collect((Collection<?>) specialityRepository.findAll(doctor.getSpecialities()),new BeanToPropertyValueTransformer("speciality"));
+					doctor.setSpecialities(specialities);
+				}
 				doctors.add(doctor);
 			    }
 			}
 			response.setDoctors(doctors);
 			
 			List<LabTestCollection> labTestCollections = labTestRepository.findByLocationId(localtionCollection.getId());
-			if(labTestCollections != null){
-				List<LabTest> labTests = new ArrayList<LabTest>();
-				BeanUtil.map(labTestCollections, labTests);
+			List<LabTest> labTests = null;
+			if(labTestCollections != null && !labTestCollections.isEmpty()){
+				labTests = new ArrayList<LabTest>();
+				for(LabTestCollection labTestCollection : labTestCollections){
+					LabTest labTest = new LabTest();
+					BeanUtil.map(labTestCollection, labTest);
+					if(labTestCollection.getTestId() != null){
+						DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(labTestCollection.getTestId());
+						if(diagnosticTestCollection != null){
+							DiagnosticTest diagnosticTest = new DiagnosticTest();
+							BeanUtil.map(diagnosticTestCollection, diagnosticTest);
+							labTest.setTest(diagnosticTest);
+						}
+					}
+					labTests.add(labTest);
+				}
 				response.setLabTests(labTests);
 			}
 		    }
 		} catch (Exception e) {
 		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
 	}
@@ -907,7 +950,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    }
 		} catch (Exception e) {
 		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
 	}
@@ -924,7 +967,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    }
 		} catch (Exception e) {
 		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
 	}
@@ -970,7 +1013,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	  }
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Forbidden, "Error whie getting time slots");
+	    throw new BusinessException(ServiceError.Unknown, "Error while getting time slots");
 	}
 	return response;
     }
@@ -1006,13 +1049,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 					BeanUtil.map(appointmentCollection, response);
 				    }
 				} else {
-				    logger.error("Event cannot be added as appointment is already book");
-				    throw new BusinessException(ServiceError.NotAcceptable, "Event cannot be added as appointment is already book");
+				    logger.error(timeSlotIsBooked);
+				    throw new BusinessException(ServiceError.NotAcceptable, timeSlotIsBooked);
 				}
 			}
 		} catch (Exception e) {
 		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
 	}
@@ -1065,8 +1108,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    response = new Appointment();
 			    BeanUtil.map(appointmentCollection, response);
 			} else {
-			    logger.error("Event cannot be added as appointment is already book");
-			    throw new BusinessException(ServiceError.NotAcceptable, "Event cannot be added as appointment is already book");
+			    logger.error(timeSlotIsBooked);
+			    throw new BusinessException(ServiceError.NotAcceptable, timeSlotIsBooked);
 			}
 		    } else {
 			logger.error("Incorrect Id");
@@ -1074,7 +1117,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    }
 		} catch (Exception e) {
 		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
 	}
@@ -1098,12 +1141,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 					}
 				}
 			}else{
-				logger.error("Appointment does not exist for this appointmentId");
-			    throw new BusinessException(ServiceError.InvalidInput, "Appointment does not exist for this appointmentId");
+				logger.error(appointmentDoesNotExist);
+			    throw new BusinessException(ServiceError.InvalidInput, appointmentDoesNotExist);
 			}
 		} catch (Exception e) {
 		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
 	}
@@ -1198,7 +1241,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			response = updateQueue(null, request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId(), new Date(), null, null, true);
 		}catch(Exception e) {
 		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Forbidden, "Error while adding patient In Queue");
+		    throw new BusinessException(ServiceError.Unknown, "Error while adding patient In Queue");
 		}
 		return response;
 	}
@@ -1210,7 +1253,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			response = updateQueue(appointmentId, doctorId, locationId, hospitalId, patientId, new Date(), null, sequenceNo, true);
 		}catch(Exception e) {
 		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Forbidden, "Error while rearranging patient In Queue");
+		    throw new BusinessException(ServiceError.Unknown, "Error while rearranging patient In Queue");
 		}
 		return response;
 	}
@@ -1245,7 +1288,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    	}
 		}catch(Exception e) {
 		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Forbidden, "Error while rearranging patient In Queue");
+		    throw new BusinessException(ServiceError.Unknown, "Error while rearranging patient In Queue");
 		}
 		return response;
 	}
@@ -1370,7 +1413,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    	}
 		}catch(Exception e) {
 		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
 	}

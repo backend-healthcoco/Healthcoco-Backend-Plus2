@@ -86,7 +86,7 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Add Edit Issue");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Add Edit Issue");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Add Edit Issue");
 	}
 	return response;
     }
@@ -171,7 +171,7 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Issue");
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Issue");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Issue");
 	}
 	return response;
     }
@@ -215,7 +215,7 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error while updating status");
-	    throw new BusinessException(ServiceError.Forbidden, "Error while updating status");
+	    throw new BusinessException(ServiceError.Unknown, "Error while updating status");
 	}
 	return response;
     }
@@ -243,7 +243,7 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error while updating status");
-	    throw new BusinessException(ServiceError.Forbidden, "Error while updating status");
+	    throw new BusinessException(ServiceError.Unknown, "Error while updating status");
 	}
 	return response;
 
@@ -278,7 +278,7 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
     }

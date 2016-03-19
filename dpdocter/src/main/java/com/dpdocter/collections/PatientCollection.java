@@ -20,6 +20,12 @@ public class PatientCollection extends GenericCollection {
     private String firstName;
 
     @Field
+    private String imageUrl;
+
+    @Field
+    private String thumbnailUrl;
+
+    @Field
     private String bloodGroup;
 
     @Field
@@ -258,13 +264,31 @@ public class PatientCollection extends GenericCollection {
 	this.dob = dob;
     }
 
-    @Override
-    public String toString() {
-	return "PatientCollection [id=" + id + ", firstName=" + firstName + ", bloodGroup=" + bloodGroup + ", profession=" + profession + ", relations="
-		+ relations + ", emailAddress=" + emailAddress + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ ", addressId=" + addressId + ", secMobile=" + secMobile + ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber
-		+ ", drivingLicenseId=" + drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName=" + insuranceName + ", userId=" + userId
-		+ ", notes=" + notes + ", PID=" + PID + ", registrationDate=" + registrationDate + ", gender=" + gender + ", dob=" + dob + "]";
-    }
+	public String getImageUrl() {
+		return imageUrl;
+	}
 
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	public String getThumbnailUrl() {
+		return thumbnailUrl;
+	}
+
+	public void setThumbnailUrl(String thumbnailUrl) {
+		this.thumbnailUrl = thumbnailUrl;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientCollection [id=" + id + ", firstName=" + firstName + ", imageUrl=" + imageUrl + ", thumbnailUrl="
+				+ thumbnailUrl + ", bloodGroup=" + bloodGroup + ", profession=" + profession + ", relations="
+				+ relations + ", emailAddress=" + emailAddress + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", addressId=" + addressId + ", secMobile=" + secMobile + ", adhaarId="
+				+ adhaarId + ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId
+				+ ", insuranceId=" + insuranceId + ", insuranceName=" + insuranceName + ", userId=" + userId
+				+ ", notes=" + notes + ", PID=" + PID + ", registrationDate=" + registrationDate + ", gender=" + gender
+				+ ", dob=" + dob + "]";
+	}
 }

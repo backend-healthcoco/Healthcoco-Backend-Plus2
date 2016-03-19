@@ -33,6 +33,7 @@ import com.dpdocter.request.PatientSignUpRequest;
 import com.dpdocter.request.PatientSignupRequestMobile;
 import com.dpdocter.request.VerifyUnlockPatientRequest;
 import com.dpdocter.request.VerifyUnlockPatientRequest.FlagEnum;
+import com.dpdocter.response.PateientSignUpCheckResponse;
 import com.dpdocter.services.SignUpService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrDoctorDocument;
@@ -352,15 +353,15 @@ public class SignUpApi {
 
     @Path(value = PathProxy.SignUpUrls.CHECK_MOBNUM_SIGNEDUP)
     @GET
-    public Response<Boolean> checkMobileNumberSignedUp(@PathParam(value = "mobileNumber") String mobileNumber) {
+    public Response<PateientSignUpCheckResponse> checkMobileNumberSignedUp(@PathParam(value = "mobileNumber") String mobileNumber) {
 	if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
 	    logger.warn("Invalid Input. Mobile Number Cannot Be Empty!");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Mobile Number Cannot Be Empty!");
 	}
 
-	boolean mobileNumberSignedUp = signUpService.checkMobileNumberSignedUp(mobileNumber);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(mobileNumberSignedUp);
+	PateientSignUpCheckResponse checkResponse = signUpService.checkMobileNumberSignedUp(mobileNumber);
+	Response<PateientSignUpCheckResponse> response = new Response<PateientSignUpCheckResponse>();
+	response.setData(checkResponse);
 	return response;
     }
 

@@ -42,6 +42,7 @@ import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.ComplaintCollection;
 import com.dpdocter.collections.DiagnosisCollection;
 import com.dpdocter.collections.DiagramsCollection;
+import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.InvestigationCollection;
 import com.dpdocter.collections.NotesCollection;
@@ -52,6 +53,7 @@ import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.ReferencesCollection;
+import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ClinicalItems;
 import com.dpdocter.enums.ComponentType;
@@ -66,6 +68,7 @@ import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.ComplaintRepository;
 import com.dpdocter.repository.DiagnosisRepository;
 import com.dpdocter.repository.DiagramsRepository;
+import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.InvestigationRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.NotesRepository;
@@ -76,6 +79,7 @@ import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.ReferenceRepository;
+import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.ClinicalNotesAddRequest;
 import com.dpdocter.request.ClinicalNotesEditRequest;
@@ -131,6 +135,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     private UserRepository userRepository;
 
     @Autowired
+    private DoctorRepository  doctorRepository;
+
+    @Autowired
+    private SpecialityRepository specialityRepository;
+
+    @Autowired
     private JasperReportService jasperReportService;
 
     @Autowired
@@ -162,7 +172,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
      @Value(value = "${IMAGE_PATH}")
      private String imagePath;
-
+     
+     @Value(value = "${ClinicalNotes.getPatientsClinicalNotesWithVerifiedOTP}")
+     private String getPatientsClinicalNotesWithVerifiedOTP;
+    
     @Override
     @SuppressWarnings("unchecked")
     public ClinicalNotes addNotes(ClinicalNotesAddRequest request) {
@@ -347,7 +360,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
 	return clinicalNotes;
@@ -470,7 +483,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return clinicalNote;
     }
@@ -661,7 +674,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
 	return clinicalNotes;
@@ -686,7 +699,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
     }
@@ -727,13 +740,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    }
 		}
 	    } else {
-		logger.warn("No Clinical Notes found for patient Id : " + patientId);
-		throw new BusinessException(ServiceError.NoRecord, "No Clinical Notes found for patient Id : " + patientId);
+		logger.warn(getPatientsClinicalNotesWithVerifiedOTP+" : " + patientId);
+		throw new BusinessException(ServiceError.NoRecord, getPatientsClinicalNotesWithVerifiedOTP+" : " + patientId);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return clinicalNotesList;
     }
@@ -792,13 +805,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    }
 		}
 	    } else {
-		logger.warn("No Clinical Notes found for patient Id : " + patientId);
-		throw new BusinessException(ServiceError.NoRecord, "No Clinical Notes found for patient Id : " + patientId);
+		logger.warn(getPatientsClinicalNotesWithVerifiedOTP+" : " + patientId);
+		throw new BusinessException(ServiceError.NoRecord, getPatientsClinicalNotesWithVerifiedOTP+" : " + patientId);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return clinicalNotesList;
     }
@@ -821,7 +834,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return complaint;
     }
@@ -844,7 +857,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return observation;
     }
@@ -867,7 +880,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return investigation;
     }
@@ -890,7 +903,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return diagnosis;
     }
@@ -913,7 +926,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return notes;
     }
@@ -945,7 +958,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return diagram;
     }
@@ -978,7 +991,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
     }
@@ -1010,7 +1023,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
 
@@ -1041,7 +1054,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
 
@@ -1071,7 +1084,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
 
@@ -1102,7 +1115,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
 
@@ -1133,7 +1146,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
     }
 
@@ -1153,7 +1166,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Clinical Notes Count");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Clinical Notes Count");
 	}
 	return clinicalNotesCount;
     }
@@ -1301,7 +1314,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Complaints");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
 	}
 	return response;
 
@@ -1334,7 +1347,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Complaints");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
 	}
 	return response;
     }
@@ -1382,7 +1395,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Complaints");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
 	}
 	return response;
     }
@@ -1429,7 +1442,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Investigations");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Investigations");
 	}
 	return response;
     }
@@ -1463,7 +1476,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Investigations");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Investigations");
 	}
 	return response;
     }
@@ -1509,7 +1522,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Investigations");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Investigations");
 	}
 	return response;
     }
@@ -1554,7 +1567,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Observations");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Observations");
 	}
 	return response;
 
@@ -1589,7 +1602,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Observations");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Observations");
 	}
 	return response;
     }
@@ -1635,7 +1648,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Observations");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Observations");
 	}
 	return response;
     }
@@ -1682,7 +1695,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Diagnosis");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnosis");
 	}
 	return response;
 
@@ -1715,7 +1728,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Diagnosis");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnosis");
 	}
 	return response;
     }
@@ -1759,7 +1772,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Diagnosis");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnosis");
 	}
 	return response;
     }
@@ -1803,7 +1816,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Notes");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Notes");
 	}
 	return response;
 
@@ -1835,7 +1848,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Notes");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Notes");
 	}
 	return response;
     }
@@ -1880,7 +1893,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Notes");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Notes");
 	}
 	return response;
     }
@@ -1905,19 +1918,25 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			    new Sort(Sort.Direction.DESC, "updatedTime"));
 
 	    } else {
+	    	DoctorCollection doctorCollection = doctorRepository.findByUserId(doctorId);
+	 	   
+		    List<SpecialityCollection> specialityCollections = specialityRepository.findById(doctorCollection.getSpecialities());
+		    @SuppressWarnings("unchecked")
+		    Collection<String> specialities = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("speciality"));
+		   
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
-			diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, new Date(createdTimeStamp), discards,
+			diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, specialities, new Date(createdTimeStamp), discards,
 				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, new Date(createdTimeStamp), discards,
+			diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, specialities, new Date(createdTimeStamp), discards,
 				new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
 		    if (size > 0)
-			diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
+			diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, specialities, new Date(createdTimeStamp), discards,
 				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
+			diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, specialities, new Date(createdTimeStamp), discards,
 				new Sort(Sort.Direction.DESC, "updatedTime"));
 		}
 	    }
@@ -1925,7 +1944,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Diagrams");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagrams");
 	}
 	return response;
 
@@ -1958,7 +1977,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Diagrams");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagrams");
 	}
 	return response;
     }
@@ -1976,19 +1995,25 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    if (doctorId == null)
 		diagramCollections = new ArrayList<DiagramsCollection>();
 	    else {
+	    DoctorCollection doctorCollection = doctorRepository.findByUserId(doctorId);
+	   
+	    List<SpecialityCollection> specialityCollections = specialityRepository.findById(doctorCollection.getSpecialities());
+	    @SuppressWarnings("unchecked")
+	    Collection<String> specialities = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("speciality"));
+	    
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
-			diagramCollections = diagramsRepository.findCustomDiagrams(doctorId, new Date(createdTimeStamp), discards,
+			diagramCollections = diagramsRepository.findCustomDiagrams(doctorId, specialities, new Date(createdTimeStamp), discards,
 				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			diagramCollections = diagramsRepository.findCustomDiagrams(doctorId, new Date(createdTimeStamp), discards,
+			diagramCollections = diagramsRepository.findCustomDiagrams(doctorId, specialities, new Date(createdTimeStamp), discards,
 				new Sort(Sort.Direction.DESC, "updatedTime"));
 		} else {
 		    if (size > 0)
-			diagramCollections = diagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
+			diagramCollections = diagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId, specialities, new Date(createdTimeStamp), discards,
 				new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		    else
-			diagramCollections = diagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
+			diagramCollections = diagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId, specialities, new Date(createdTimeStamp), discards,
 				new Sort(Sort.Direction.DESC, "updatedTime"));
 		}
 	    }
@@ -2004,7 +2029,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, "Error Occurred While Getting Diagrams");
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagrams");
 	}
 	return response;
     }
@@ -2016,7 +2041,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    mailService.sendEmail(emailAddress, "Clinical Notes", "PFA.", mailAttachment);
 	} catch (MessagingException e) {
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
     }
@@ -2258,7 +2283,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				else
 				    footerBottomText = footerBottomText + "" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 			    }
-			logoURL = getFinalImageURL(printSettings.getClinicLogoUrl());
+			if(printSettings.getClinicLogoUrl() != null)logoURL = getFinalImageURL(printSettings.getClinicLogoUrl());
 
 			if (printSettings.getHeaderSetup() != null && printSettings.getHeaderSetup().getPatientDetails() != null
 				&& printSettings.getHeaderSetup().getPatientDetails().getStyle() != null) {
@@ -2333,11 +2358,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    }
 	} catch (BusinessException e) {
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
 	return mailAttachment;
@@ -2396,7 +2421,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Forbidden, e.getMessage());
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return clinicalNotesList;
     }
