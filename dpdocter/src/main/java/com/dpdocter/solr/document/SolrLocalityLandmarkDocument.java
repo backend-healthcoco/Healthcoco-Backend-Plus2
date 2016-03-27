@@ -22,7 +22,7 @@ public class SolrLocalityLandmarkDocument {
     private String landmark;
 
     @Field
-    private String description;
+    private String explanation;
 
     @SuppressWarnings("deprecation")
     @Field
@@ -65,15 +65,7 @@ public class SolrLocalityLandmarkDocument {
     public void setLandmark(String landmark) {
 	this.landmark = landmark;
     }
-
-    public String getDescription() {
-	return description;
-    }
-
-    public void setDescription(String description) {
-	this.description = description;
-    }
-
+    
     public GeoLocation getGeoLocation() {
 	return geoLocation;
     }
@@ -98,9 +90,19 @@ public class SolrLocalityLandmarkDocument {
 	this.longitude = longitude;
     }
 
-    @Override
-    public String toString() {
-	return "SolrLocalityLandmarkDocument [id=" + id + ", cityId=" + cityId + ", locality=" + locality + ", landmark=" + landmark + ", description="
-		+ description + ", geoLocation=" + geoLocation + ", latitude=" + latitude + ", longitude=" + longitude + "]";
-    }
+	public String getExplanation() {
+		return explanation;
+	}
+
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
+
+	@Override
+	public String toString() {
+		return "SolrLocalityLandmarkDocument [id=" + id + ", cityId=" + cityId + ", locality=" + locality
+				+ ", landmark=" + landmark + ", explanation=" + explanation + ", geoLocation=" + geoLocation
+				+ ", latitude=" + latitude + ", longitude=" + longitude + "]";
+	}
+
 }

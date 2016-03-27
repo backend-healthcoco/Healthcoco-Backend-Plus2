@@ -10,7 +10,7 @@ public class Role extends GenericCollection {
 
     private String role;
 
-    private String description;
+    private String explanation;
 
     private String locationId;
 
@@ -34,15 +34,15 @@ public class Role extends GenericCollection {
 	this.role = role;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public String getLocationId() {
+	public String getLocationId() {
 	return locationId;
     }
 
@@ -66,9 +66,10 @@ public class Role extends GenericCollection {
 	this.accessModules = accessModules;
     }
 
-    @Override
-    public String toString() {
-	return "Role [id=" + id + ", role=" + role + ", description=" + description + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ ", accessModules=" + accessModules + "]";
-    }
+	@Override
+	public String toString() {
+		return "Role [id=" + id + ", role=" + role + ", explanation=" + explanation + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", accessModules=" + accessModules + "]";
+	}
+
 }

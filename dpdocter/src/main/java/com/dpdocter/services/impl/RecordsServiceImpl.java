@@ -167,7 +167,7 @@ public class RecordsServiceImpl implements RecordsService {
 		recordsCollection.setRecordsLable(recordLabel);
 	    }
 	    recordsCollection.setCreatedTime(createdTime);
-	    recordsCollection.setUniqueId(UniqueIdInitial.REPORTS.getInitial() + DPDoctorUtils.generateRandomId());
+	    recordsCollection.setUniqueEmrId(UniqueIdInitial.REPORTS.getInitial() + DPDoctorUtils.generateRandomId());
 	    UserCollection userCollection = userRepository.findOne(recordsCollection.getDoctorId());
 	    if (userCollection != null) {
 		recordsCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
@@ -250,7 +250,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    recordsCollection.setUploadedByLocation(oldRecord.getUploadedByLocation());
 	    recordsCollection.setDiscarded(oldRecord.getDiscarded());
 	    recordsCollection.setInHistory(oldRecord.getInHistory());
-	    recordsCollection.setUniqueId(oldRecord.getUniqueId());
+	    recordsCollection.setUniqueEmrId(oldRecord.getUniqueEmrId());
 	    recordsCollection.setPrescribedByDoctorId(oldRecord.getDoctorId());
 	    recordsCollection.setPrescribedByLocationId(oldRecord.getLocationId());
 	    recordsCollection.setPrescribedByHospitalId(oldRecord.getHospitalId());
@@ -683,7 +683,7 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public void changeLabelAndDescription(String recordId, String label, String description) {
+    public void changeLabelAndDescription(String recordId, String label, String explanation) {
 	try {
 	    RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
 	    if (recordsCollection == null) {
@@ -691,7 +691,7 @@ public class RecordsServiceImpl implements RecordsService {
 		throw new BusinessException(ServiceError.NoRecord, "Record not found.Check RecordId !");
 	    }
 	    recordsCollection.setRecordsLable(label);
-	    recordsCollection.setDescription(description);
+	    recordsCollection.setExplanation(explanation);
 	    recordsCollection.setUpdatedTime(new Date());
 	    recordsRepository.save(recordsCollection);
 	} catch (Exception e) {

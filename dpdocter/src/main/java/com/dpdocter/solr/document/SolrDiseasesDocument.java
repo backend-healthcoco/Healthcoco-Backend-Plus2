@@ -25,7 +25,7 @@ public class SolrDiseasesDocument {
     private String disease;
 
     @Field
-    private String description;
+    private String explanation;
 
     @Field
     private Boolean discarded = false;
@@ -73,15 +73,15 @@ public class SolrDiseasesDocument {
 	this.disease = disease;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public Boolean getDiscarded() {
+	public Boolean getDiscarded() {
 	return discarded;
     }
 
@@ -97,9 +97,11 @@ public class SolrDiseasesDocument {
 	this.updatedTime = updatedTime;
     }
 
-    @Override
-    public String toString() {
-	return "SolrDiseasesDocument [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", disease="
-		+ disease + ", description=" + description + ", discarded=" + discarded + ", updatedTime=" + updatedTime + "]";
-    }
+	@Override
+	public String toString() {
+		return "SolrDiseasesDocument [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", disease=" + disease + ", explanation=" + explanation
+				+ ", discarded=" + discarded + ", updatedTime=" + updatedTime + "]";
+	}
+
 }

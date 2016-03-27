@@ -16,7 +16,7 @@ public class SolrProfessionDocument {
     private String profession;
 
     @Field
-    private String description;
+    private String explanation;
 
     @Field
     private Date updatedTime = new Date();
@@ -37,14 +37,6 @@ public class SolrProfessionDocument {
 	this.profession = profession;
     }
 
-    public String getDescription() {
-	return description;
-    }
-
-    public void setDescription(String description) {
-	this.description = description;
-    }
-
     public Date getUpdatedTime() {
 	return updatedTime;
     }
@@ -53,8 +45,9 @@ public class SolrProfessionDocument {
 	this.updatedTime = updatedTime;
     }
 
-    @Override
-    public String toString() {
-	return "SolrProfessionDocument [id=" + id + ", profession=" + profession + ", description=" + description + ", updatedTime=" + updatedTime + "]";
-    }
+	@Override
+	public String toString() {
+		return "SolrProfessionDocument [id=" + id + ", profession=" + profession + ", explanation=" + explanation
+				+ ", updatedTime=" + updatedTime + "]";
+	}
 }

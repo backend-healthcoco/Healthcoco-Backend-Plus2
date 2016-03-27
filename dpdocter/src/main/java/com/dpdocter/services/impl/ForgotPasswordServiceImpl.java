@@ -143,6 +143,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		    otpCollection.setCreatedTime(new Date());
 		    otpCollection.setOtpNumber(OTP);
 		    otpCollection.setMobileNumber(request.getMobileNumber());
+		    otpCollection.setGeneratorId(request.getMobileNumber());
 		    otpCollection.setCreatedBy(request.getMobileNumber());
 		    otpCollection = otpRepository.save(otpCollection);
 
@@ -194,7 +195,14 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     public String resetPassword(ResetPasswordRequest request) {
 	try {
 	    UserCollection userCollection = userRepository.findOne(request.getUserId());
-	    userCollection.setPassword(request.getPassword());
+	    char[] salt = DPDoctorUtils.generateSalt();
+	    userCollection.setSalt(salt);
+	    char[] passwordWithSalt = new char[request.getPassword().length + salt.length]; 
+	    for(int i = 0; i < request.getPassword().length; i++)
+	        passwordWithSalt[i] = request.getPassword()[i];
+	    for(int i = 0; i < salt.length; i++)
+	    	passwordWithSalt[i+request.getPassword().length] = salt[i];
+	    userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt));
 	    userCollection.setIsTempPassword(false);
 	    userRepository.save(userCollection);
 	    return "Password Changed Successfully";
@@ -269,7 +277,14 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		if (userCollection == null) {
 		    return "Invalid Url.";
 		}
-		userCollection.setPassword(request.getPassword());
+		char[] salt = DPDoctorUtils.generateSalt();
+	    userCollection.setSalt(salt);
+	    char[] passwordWithSalt = new char[request.getPassword().length + salt.length]; 
+	    for(int i = 0; i < request.getPassword().length; i++)
+	        passwordWithSalt[i] = request.getPassword()[i];
+	    for(int i = 0; i < salt.length; i++)
+	    	passwordWithSalt[i+request.getPassword().length] = salt[i];
+	    userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt));
 		userCollection.setIsTempPassword(false);
 		userRepository.save(userCollection);
 
@@ -315,13 +330,21 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     }
 
     @Override
-    public Boolean resetPasswordPatient(String mobileNumber, String password) {
+    public Boolean resetPasswordPatient(ResetPasswordRequest request) {
 	Boolean response = false;
 	try {
-	    List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
+	    List<UserCollection> userCollections = userRepository.findByMobileNumber(request.getMobileNumber());
 	    if (userCollections != null && !userCollections.isEmpty()) {
+	    	char[] salt = DPDoctorUtils.generateSalt();
+		    char[] passwordWithSalt = new char[request.getPassword().length + salt.length]; 
+		    for(int i = 0; i < request.getPassword().length; i++)
+		        passwordWithSalt[i] = request.getPassword()[i];
+		    for(int i = 0; i < salt.length; i++)
+		    	passwordWithSalt[i+request.getPassword().length] = salt[i];
+		    char[] password = DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt);
 		for (UserCollection userCollection : userCollections) {
 		    if (!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress())) {
+		    userCollection.setSalt(salt);
 			userCollection.setPassword(password);
 			userCollection.setIsTempPassword(false);
 			userRepository.save(userCollection);

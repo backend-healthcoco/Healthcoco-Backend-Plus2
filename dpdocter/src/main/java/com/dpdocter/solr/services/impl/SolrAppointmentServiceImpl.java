@@ -256,8 +256,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 	    String minFee, String maxFee, String minTime, String maxTime, List<String> days, String gender, String minExperience, String maxExperience) {
 	List<SolrDoctorDocument> solrDoctorDocuments = null;
 	try {
-	    Criteria doctorSearchCriteria = new Criteria();
-	    
+	    Criteria doctorSearchCriteria =  new Criteria();
 	    if(DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)){
 	    	SolrCityDocument solrCityDocument = solrCityRepository.findByName(city);
 	    	if(solrCityDocument != null){
@@ -269,35 +268,22 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 	    if (!DPDoctorUtils.anyStringEmpty(location)) {
 		doctorSearchCriteria = doctorSearchCriteria.and("locationName").is(location);
 	    }
-	    SimpleQuery query = new SimpleQuery();
-        query.addProjectionOnField("*");
-        query.addProjectionOnField("score");
-
-        StringBuffer buf = new StringBuffer("");
-        buf.append("{!geofilt pt="+latitude+","+longitude+" sfield=geoLocation d="+10.0+" score=distance}");
-        
 	    if (!DPDoctorUtils.anyStringEmpty(speciality)) {
-		List<SolrSpecialityDocument> solrSpecialityDocuments = solrSpecialityRepository.findByQueryAnnotation(speciality);
-		if (solrSpecialityDocuments != null) {
-		    @SuppressWarnings("unchecked")
-		    Collection<String> specialityIds = CollectionUtils.collect(solrSpecialityDocuments, new BeanToPropertyValueTransformer("id"));
-		    if (specialityIds != null && !specialityIds.isEmpty()) {
-		    	String specialities = "";
-		    	for(String sId : specialityIds){ 
-		    		if(specialities.isEmpty())specialities = "'"+sId+"'";
-		    		else specialities = specialities+",'"+sId+"'";
-		    	}
-			doctorSearchCriteria = doctorSearchCriteria.and(Criteria.where("specialities").in(Arrays.asList(specialities)));
-			System.out.println(Arrays.asList(specialities));
-		    }
+			List<SolrSpecialityDocument> solrSpecialityDocuments = solrSpecialityRepository.findByQueryAnnotation(speciality);
+			if (solrSpecialityDocuments != null) {
+			    @SuppressWarnings("unchecked")
+			    Collection<String> specialityIds = CollectionUtils.collect(solrSpecialityDocuments, new BeanToPropertyValueTransformer("id"));
+			    if (specialityIds != null && !specialityIds.isEmpty()) {
+				doctorSearchCriteria = Criteria.where("specialities").in(Arrays.asList(specialityIds));
+				
+			    }
+			}
 		}
-	    }
-
 	    if (!DPDoctorUtils.anyStringEmpty(symptom)) {
 		List<SolrSymptomsDocument> solrSymptomsDocuments = solrSymptomRepository.findAll(symptom);
 		@SuppressWarnings("unchecked")
 		Collection<String> specialityIds = CollectionUtils.collect(solrSymptomsDocuments, new BeanToPropertyValueTransformer("specialityId"));
-		doctorSearchCriteria = doctorSearchCriteria.and("specialities").contains(specialityIds);
+		doctorSearchCriteria = doctorSearchCriteria.and("specialities").in(Arrays.asList(specialityIds));
 	    }
 
 	    if (DPDoctorUtils.anyStringEmpty(minFee, maxFee)) {
@@ -335,8 +321,15 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 		doctorSearchCriteria = doctorSearchCriteria.and("workingSchedules").in(days);
 	    }
 
+	    SimpleQuery query = new SimpleQuery(doctorSearchCriteria);
+        query.addProjectionOnField("*");
+        query.addProjectionOnField("score");
+
+        StringBuffer buf = new StringBuffer("");
+        if(!DPDoctorUtils.anyStringEmpty(latitude,longitude))buf.append("{!geofilt pt="+latitude+","+longitude+" sfield=geoLocation d="+10.0+" score=distance}");
+
 	    query.addCriteria(new SimpleStringCriteria(buf.toString()));
-	    query.addCriteria(doctorSearchCriteria);
+	    System.out.println(query.getCriteria());
 	    if (size > 0)
 		query.setPageRequest(new PageRequest(page, size, Sort.Direction.ASC, "score"));
 	    else
@@ -344,7 +337,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 	    solrTemplate.setSolrCore("doctors");
 	    Page<SolrDoctorDocument> results = solrTemplate.queryForPage(query, SolrDoctorDocument.class);
 	    solrDoctorDocuments = results.getContent();
-	    System.out.println(query.toString());
+	    
 	    if (solrDoctorDocuments != null) {
 		for (SolrDoctorDocument doctorDocument : solrDoctorDocuments) {
 		    if (doctorDocument.getSpecialities() != null) {
@@ -411,22 +404,22 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 	    }
 	    if(solrLabTestDocuments == null || solrLabTestDocuments.isEmpty()){return null;}
 	    List<SolrDoctorDocument> doctorDocument = null;
-		SimpleQuery queryOthr = new SimpleQuery();
-			
-       if (!DPDoctorUtils.anyStringEmpty(longitude, latitude)) {
-			queryOthr.addProjectionOnField("*");
-			queryOthr.addProjectionOnField("score");
-	        StringBuffer buf = new StringBuffer("");
-	        buf.append("{!geofilt pt="+latitude+","+longitude+" sfield=geoLocation d="+10.0+" score=distance}");
-	        queryOthr.addCriteria(new SimpleStringCriteria(buf.toString()));
-	        queryOthr.addSort(new Sort(Sort.Direction.ASC, "score"));
-		} 
-        
+		
         @SuppressWarnings("unchecked")
     	Collection<String> locationIds = CollectionUtils.collect(solrLabTestDocuments, new BeanToPropertyValueTransformer("id"));
-    	Criteria searchCriteria = new Criteria("locationId").in(locationIds);
-    	queryOthr.addCriteria(searchCriteria);
-        
+    	Criteria searchCriteria = new Criteria("locationId").in(locationIds).and("isLab").is(true);
+    	
+    	SimpleQuery queryOthr = new SimpleQuery(searchCriteria);
+		
+        if (!DPDoctorUtils.anyStringEmpty(longitude, latitude)) {
+ 			queryOthr.addProjectionOnField("*");
+ 			queryOthr.addProjectionOnField("score");
+ 	        StringBuffer buf = new StringBuffer("");
+ 	        buf.append("{!geofilt pt="+latitude+","+longitude+" sfield=geoLocation d="+10.0+" score=distance}");
+ 	        queryOthr.addCriteria(new SimpleStringCriteria(buf.toString()));
+ 	        queryOthr.addSort(new Sort(Sort.Direction.ASC, "score"));
+ 		} 
+         
 	    solrTemplate.setSolrCore("doctors");
 	    Page<SolrDoctorDocument> results = solrTemplate.queryForPage(queryOthr, SolrDoctorDocument.class);
 	    doctorDocument = results.getContent();

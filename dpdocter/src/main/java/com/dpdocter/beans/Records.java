@@ -5,7 +5,7 @@ import com.dpdocter.collections.GenericCollection;
 public class Records extends GenericCollection {
     private String id;
 
-    private String uniqueId;
+    private String uniqueEmrId;
 
     private String doctorId;
 
@@ -21,7 +21,7 @@ public class Records extends GenericCollection {
 
     private String recordsType;
 
-    private String description;
+    private String explanation;
 
     private Boolean inHistory = false;
 
@@ -75,15 +75,15 @@ public class Records extends GenericCollection {
 	this.recordsType = recordsType;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public Boolean getDiscarded() {
+	public Boolean getDiscarded() {
 	return discarded;
     }
 
@@ -137,14 +137,6 @@ public class Records extends GenericCollection {
 
     public void setUploadedByLocation(String uploadedByLocation) {
 	this.uploadedByLocation = uploadedByLocation;
-    }
-
-    public String getUniqueId() {
-	return uniqueId;
-    }
-
-    public void setUniqueId(String uniqueId) {
-	this.uniqueId = uniqueId;
     }
 
     public String getPrescriptionId() {
@@ -203,13 +195,24 @@ public class Records extends GenericCollection {
 	this.isFeedbackAvailable = isFeedbackAvailable;
     }
 
-    @Override
-    public String toString() {
-	return "Records [id=" + id + ", uniqueId=" + uniqueId + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ ", patientId=" + patientId + ", recordsUrl=" + recordsUrl + ", recordsLable=" + recordsLable + ", recordsType=" + recordsType
-		+ ", description=" + description + ", inHistory=" + inHistory + ", discarded=" + discarded + ", uploadedByLocation=" + uploadedByLocation
-		+ ", visitId=" + visitId + ", prescriptionId=" + prescriptionId + ", prescribedByDoctorId=" + prescribedByDoctorId + ", prescribedByLocationId="
-		+ prescribedByLocationId + ", prescribedByHospitalId=" + prescribedByHospitalId + ", testId=" + testId + ", isFeedbackAvailable="
-		+ isFeedbackAvailable + "]";
-    }
+	public String getUniqueEmrId() {
+		return uniqueEmrId;
+	}
+
+	public void setUniqueEmrId(String uniqueEmrId) {
+		this.uniqueEmrId = uniqueEmrId;
+	}
+
+	@Override
+	public String toString() {
+		return "Records [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", recordsUrl=" + recordsUrl
+				+ ", recordsLable=" + recordsLable + ", recordsType=" + recordsType + ", explanation=" + explanation
+				+ ", inHistory=" + inHistory + ", discarded=" + discarded + ", uploadedByLocation=" + uploadedByLocation
+				+ ", visitId=" + visitId + ", prescriptionId=" + prescriptionId + ", prescribedByDoctorId="
+				+ prescribedByDoctorId + ", prescribedByLocationId=" + prescribedByLocationId
+				+ ", prescribedByHospitalId=" + prescribedByHospitalId + ", testId=" + testId + ", isFeedbackAvailable="
+				+ isFeedbackAvailable + "]";
+	}
+
 }

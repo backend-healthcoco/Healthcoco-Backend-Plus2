@@ -13,7 +13,7 @@ public class DrugAddEditRequest {
 
     private String drugName;
 
-    private String description;
+    private String explanation;
 
     private Strength strength;
 
@@ -51,15 +51,15 @@ public class DrugAddEditRequest {
 	this.drugName = drugName;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public Strength getStrength() {
+	public Strength getStrength() {
 	return strength;
     }
 
@@ -109,7 +109,7 @@ public class DrugAddEditRequest {
 
     @Override
     public String toString() {
-	return "DrugAddEditRequest [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", description=" + description + ", strength=" + strength
+	return "DrugAddEditRequest [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation=" + explanation + ", strength=" + strength
 		+ ", genericNames=" + genericNames + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", drugCode="
 		+ drugCode + "]";
     }

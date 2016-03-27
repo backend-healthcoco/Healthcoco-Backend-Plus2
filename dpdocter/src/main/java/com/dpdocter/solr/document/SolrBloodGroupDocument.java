@@ -16,7 +16,7 @@ public class SolrBloodGroupDocument {
     private String bloodGroup;
 
     @Field
-    private String description;
+    private String explanation;
 
     @Field
     private Date updatedTime = new Date();
@@ -37,15 +37,15 @@ public class SolrBloodGroupDocument {
 	this.bloodGroup = bloodGroup;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public Date getUpdatedTime() {
+	public Date getUpdatedTime() {
 	return updatedTime;
     }
 
@@ -55,6 +55,6 @@ public class SolrBloodGroupDocument {
 
     @Override
     public String toString() {
-	return "SolrBloodGroupDocument [id=" + id + ", bloodGroup=" + bloodGroup + ", description=" + description + ", updatedTime=" + updatedTime + "]";
+	return "SolrBloodGroupDocument [id=" + id + ", bloodGroup=" + bloodGroup + ", explanation=" + explanation + ", updatedTime=" + updatedTime + "]";
     }
 }

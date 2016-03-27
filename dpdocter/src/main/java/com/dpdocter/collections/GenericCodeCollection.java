@@ -12,7 +12,7 @@ public class GenericCodeCollection {
 
     @Field
     private String code;
-
+    
     @Field
     private String name;
 

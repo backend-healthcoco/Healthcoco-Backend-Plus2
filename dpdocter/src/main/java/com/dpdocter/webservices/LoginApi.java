@@ -1,5 +1,7 @@
 package com.dpdocter.webservices;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -93,30 +95,20 @@ public class LoginApi {
 
     @Path(value = PathProxy.LoginUrls.LOGIN_PATIENT)
     @POST
-    public Response<LoginResponse> loginPatient(LoginPatientRequest request) {
+    public Response<User> loginPatient(LoginPatientRequest request) {
 	if (request == null) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
-	LoginResponse loginResponse = loginService.loginPatient(request);
-	if (loginResponse != null) {
-	    if (!DPDoctorUtils.anyStringEmpty(loginResponse.getUser().getImageUrl())) {
-		loginResponse.getUser().setImageUrl(getFinalImageURL(loginResponse.getUser().getImageUrl()));
-	    }
-	    if (!DPDoctorUtils.anyStringEmpty(loginResponse.getUser().getThumbnailUrl())) {
-		loginResponse.getUser().setThumbnailUrl(getFinalImageURL(loginResponse.getUser().getThumbnailUrl()));
-	    }
-	    if (loginResponse.getHospitals() != null && !loginResponse.getHospitals().isEmpty()) {
-		for (Hospital hospital : loginResponse.getHospitals()) {
-		    if (!DPDoctorUtils.anyStringEmpty(hospital.getHospitalImageUrl())) {
-			hospital.setHospitalImageUrl(getFinalImageURL(hospital.getHospitalImageUrl()));
-		    }
+	List<User> users = loginService.loginPatient(request);
+	if(users != null && !users.isEmpty()){
+		for(User user : users){
+			user.setImageUrl(getFinalImageURL(user.getImageUrl()));
+			user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
 		}
-	    }
 	}
-	Response<LoginResponse> response = new Response<LoginResponse>();
-	if (response != null)
-	    response.setData(loginResponse);
+	Response<User> response = new Response<User>();
+	response.setDataList(users);
 	return response;
     }
 

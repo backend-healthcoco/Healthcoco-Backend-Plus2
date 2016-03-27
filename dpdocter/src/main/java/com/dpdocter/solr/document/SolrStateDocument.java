@@ -19,7 +19,7 @@ public class SolrStateDocument {
     private Boolean isActivated = false;
 
     @Field
-    private String description;
+    private String explanation;
 
     @Field
     private String countryId;
@@ -58,15 +58,15 @@ public class SolrStateDocument {
 	this.isActivated = isActivated;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public String getCountryId() {
+	public String getCountryId() {
 	return countryId;
     }
 
@@ -98,9 +98,11 @@ public class SolrStateDocument {
 	this.longitude = longitude;
     }
 
-    @Override
-    public String toString() {
-	return "SolrStateDocument [id=" + id + ", state=" + state + ", isActivated=" + isActivated + ", description=" + description + ", countryId=" + countryId
-		+ ", geoLocation=" + geoLocation + ", latitude=" + latitude + ", longitude=" + longitude + "]";
-    }
+	@Override
+	public String toString() {
+		return "SolrStateDocument [id=" + id + ", state=" + state + ", isActivated=" + isActivated + ", explanation="
+				+ explanation + ", countryId=" + countryId + ", geoLocation=" + geoLocation + ", latitude=" + latitude
+				+ ", longitude=" + longitude + "]";
+	}
+
 }

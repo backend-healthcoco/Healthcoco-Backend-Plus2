@@ -16,7 +16,7 @@ public class SolrCountryDocument {
     private String country;
 
     @Field
-    private String description;
+    private String explanation;
 
     @SuppressWarnings("deprecation")
     @Field
@@ -44,15 +44,15 @@ public class SolrCountryDocument {
 	this.country = country;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public GeoLocation getGeoLocation() {
+	public GeoLocation getGeoLocation() {
 	return geoLocation;
     }
 
@@ -78,7 +78,7 @@ public class SolrCountryDocument {
 
     @Override
     public String toString() {
-	return "SolrCountryDocument [id=" + id + ", country=" + country + ", description=" + description + ", geoLocation=" + geoLocation + ", latitude="
+	return "SolrCountryDocument [id=" + id + ", country=" + country + ", explanation=" + explanation + ", geoLocation=" + geoLocation + ", latitude="
 		+ latitude + ", longitude=" + longitude + "]";
     }
 

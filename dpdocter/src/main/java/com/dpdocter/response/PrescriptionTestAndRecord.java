@@ -4,19 +4,19 @@ import java.util.List;
 
 public class PrescriptionTestAndRecord {
 
-    private String uniqueId;
+    private String uniqueEmrId;
 
     private List<TestAndRecordDataResponse> tests;
 
-    public String getUniqueId() {
-	return uniqueId;
-    }
+    public String getUniqueEmrId() {
+		return uniqueEmrId;
+	}
 
-    public void setUniqueId(String uniqueId) {
-	this.uniqueId = uniqueId;
-    }
+	public void setUniqueEmrId(String uniqueEmrId) {
+		this.uniqueEmrId = uniqueEmrId;
+	}
 
-    public List<TestAndRecordDataResponse> getTests() {
+	public List<TestAndRecordDataResponse> getTests() {
 	return tests;
     }
 
@@ -24,8 +24,8 @@ public class PrescriptionTestAndRecord {
 	this.tests = tests;
     }
 
-    @Override
-    public String toString() {
-	return "PrescriptionTestAndRecord [uniqueId=" + uniqueId + ", tests=" + tests + "]";
-    }
+	@Override
+	public String toString() {
+		return "PrescriptionTestAndRecord [uniqueEmrId=" + uniqueEmrId + ", tests=" + tests + "]";
+	}
 }

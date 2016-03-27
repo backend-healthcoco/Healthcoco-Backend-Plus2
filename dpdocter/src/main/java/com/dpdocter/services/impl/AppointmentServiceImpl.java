@@ -387,7 +387,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    AppointmentCollection appointmentCollectionToCheck = null;
 		    if (request.getState().equals(AppointmentState.RESCHEDULE))
 			appointmentCollectionToCheck = appointmentRepository.findAppointmentbyUserLocationIdTimeDate(appointmentCollection.getDoctorId(),
-				appointmentCollection.getLocationId(), request.getTime().getFrom(), request.getTime().getTo(), request.getDate(),
+				appointmentCollection.getLocationId(), request.getTime().getFromTime(), request.getTime().getToTime(), request.getFromDate(),request.getToDate(),
 				AppointmentState.CANCEL.getState());
 		    if (appointmentCollectionToCheck == null) {
 			AppointmentWorkFlowCollection appointmentWorkFlowCollection = new AppointmentWorkFlowCollection();
@@ -397,7 +397,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			appointmentCollection.setState(request.getState());
 			
 			String patientName=patient.getFirstName() != null?patient.getFirstName().split(" ")[0] :"", appointmentId= appointmentCollection.getAppointmentId(), 
-					dateTime= String.format("%02d:%02d", appointmentCollection.getTime().getFrom() / 60, appointmentCollection.getTime().getFrom() % 60)+" "+new SimpleDateFormat("MMM dd,yyyy").format(appointmentCollection.getDate()),
+					dateTime= String.format("%02d:%02d", appointmentCollection.getTime().getFromTime() / 60, appointmentCollection.getTime().getFromTime() % 60)+" "+new SimpleDateFormat("MMM dd,yyyy").format(appointmentCollection.getFromDate()),
 					doctorName=userCollection.getTitle()+" "+userCollection.getFirstName(),clinicName= locationCollection.getLocationName(),clinicContactNum=locationCollection.getLocationPhoneNumber() != null ? locationCollection.getLocationPhoneNumber() :"";
 					
 			if(request.getState().getState().equals(AppointmentState.CANCEL.getState())){
@@ -405,7 +405,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    	if(bookedSlotCollection != null) appointmentBookedSlotRepository.delete(bookedSlotCollection);
 		    }
 		    else {
-		    	appointmentCollection.setDate(request.getDate());
+		    	appointmentCollection.setFromDate(request.getFromDate());
+		    	appointmentCollection.setToDate(request.getToDate());
 			    appointmentCollection.setTime(request.getTime());
 			    
 		    	if(request.getState().getState().equals(AppointmentState.RESCHEDULE.getState())){
@@ -413,8 +414,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    	appointmentCollection.setState(AppointmentState.NEW);
 			    	AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository.findByAppointmentId(request.getAppointmentId());
 			    	if(bookedSlotCollection != null) {
-			    		bookedSlotCollection.setDate(appointmentCollection.getDate());
-					    bookedSlotCollection.setTime(appointmentCollection.getTime());
+			    		bookedSlotCollection.setFromDate(appointmentCollection.getFromDate());
+			    		bookedSlotCollection.setToDate(appointmentCollection.getToDate());
 					    bookedSlotCollection.setUpdatedTime(new Date());
 			    		appointmentBookedSlotRepository.save(bookedSlotCollection);
 			    	}
@@ -462,7 +463,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    BeanUtil.map(appointmentCollection, response);
 		    
 		    if(appointmentCollection.getState().getState().equalsIgnoreCase(AppointmentState.CONFIRM.getState())){
-		    	updateQueue(appointmentCollection.getAppointmentId(), appointmentCollection.getDoctorId(), appointmentCollection.getLocationId(), appointmentCollection.getHospitalId(), appointmentCollection.getPatientId(), appointmentCollection.getDate(), appointmentCollection.getTime().getFrom(), null, false);
+		    	updateQueue(appointmentCollection.getAppointmentId(), appointmentCollection.getDoctorId(), appointmentCollection.getLocationId(), appointmentCollection.getHospitalId(), appointmentCollection.getPatientId(), appointmentCollection.getFromDate(), appointmentCollection.getTime().getFromTime(), null, false);
 		    }
 		} else {
 		    logger.error(timeSlotIsBooked);
@@ -489,7 +490,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		UserCollection userCollection = userRepository.findOne(request.getDoctorId());
 		LocationCollection locationCollection = locationRepository.findOne(request.getLocationId());
 		UserCollection patient = userRepository.findOne(request.getPatientId());
-	    AppointmentCollection appointmentCollection = appointmentRepository.findAppointmentbyUserLocationIdTimeDate(request.getDoctorId(), request.getLocationId(), request.getTime().getFrom(), request.getTime().getTo(), request.getDate(), AppointmentState.CANCEL.getState());
+	    AppointmentCollection appointmentCollection = appointmentRepository.findAppointmentbyUserLocationIdTimeDate(request.getDoctorId(), request.getLocationId(), request.getTime().getFromTime(), request.getTime().getToTime(), request.getFromDate(), request.getToDate(), AppointmentState.CANCEL.getState());
 		if(userCollection != null && locationCollection != null && patient != null){
 			
 			if(appointmentCollection == null) {			
@@ -499,7 +500,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    appointmentCollection.setAppointmentId(UniqueIdInitial.APPOINTMENT.getInitial()+DPDoctorUtils.generateRandomId());
 			    
 			    String patientName = patient.getFirstName() != null?patient.getFirstName().split(" ")[0] :"", appointmentId= appointmentCollection.getAppointmentId(), 
-						dateTime= String.format("%02d:%02d", appointmentCollection.getTime().getFrom() / 60, appointmentCollection.getTime().getFrom() % 60)+" "+new SimpleDateFormat("MMM dd,yyyy").format(appointmentCollection.getDate()),
+						dateTime= String.format("%02d:%02d", appointmentCollection.getTime().getFromTime() / 60, appointmentCollection.getTime().getFromTime() % 60)+" "+new SimpleDateFormat("MMM dd,yyyy").format(appointmentCollection.getFromDate()),
 						doctorName=userCollection.getTitle()+" "+userCollection.getFirstName(),clinicName= locationCollection.getLocationName(),clinicContactNum=locationCollection.getLocationPhoneNumber() != null ? locationCollection.getLocationPhoneNumber() :"";
 						
 			    if(request.getCreatedBy().equals(AppointmentCreatedBy.DOCTOR)){
@@ -553,7 +554,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    }
 			    
 			    if(appointmentCollection.getState().getState().equalsIgnoreCase(AppointmentState.CONFIRM.getState())){
-			    	updateQueue(appointmentCollection.getAppointmentId(), appointmentCollection.getDoctorId(), appointmentCollection.getLocationId(), appointmentCollection.getHospitalId(), appointmentCollection.getPatientId(), appointmentCollection.getDate(), appointmentCollection.getTime().getFrom(),null, false);
+			    	updateQueue(appointmentCollection.getAppointmentId(), appointmentCollection.getDoctorId(), appointmentCollection.getLocationId(), appointmentCollection.getHospitalId(), appointmentCollection.getPatientId(), appointmentCollection.getFromDate(), appointmentCollection.getTime().getFromTime(),null, false);
 			    }
 			} else {
 			    logger.error(timeSlotIsBooked);
@@ -582,13 +583,19 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    smsDetail.setUserId(userId);
 	    SMS sms = new SMS();
 	    
+	    if(DPDoctorUtils.anyStringEmpty(patientName))patientName="";
+	    if(DPDoctorUtils.anyStringEmpty(appointmentId))appointmentId="";
+	    if(DPDoctorUtils.anyStringEmpty(dateTime))dateTime="";
+	    if(DPDoctorUtils.anyStringEmpty(doctorName))doctorName="";
+	    if(DPDoctorUtils.anyStringEmpty(clinicName))clinicName="";
+	    if(DPDoctorUtils.anyStringEmpty(clinicContactNum))clinicContactNum="";
 	    if(smsFormatCollection != null){
 	    		if(smsFormatCollection.getContent().contains(SMSContent.PATIENT_NAME.getContent()) && patientName != null && patientName != "")
 	    			 patientName = " "+patientName;
 	    		 else patientName = "";
 	    		 if(smsFormatCollection.getContent().contains(SMSContent.APPOINTMENT_ID.getContent()) && appointmentId != null && appointmentId != "")
 	    			 appointmentId = " "+appointmentId;
-	    		 else appointmentId= "";
+	    		 else appointmentId = "";
 	    		 if(smsFormatCollection.getContent().contains(SMSContent.DATE_TIME.getContent()) && dateTime != null && dateTime != "")
 	    			 dateTime = " "+dateTime;
 	    		 else dateTime ="";
@@ -602,11 +609,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    		 else clinicContactNum = "";
 	    	}
 	    else{
-	    	if(patientName != null && patientName != "")patientName = " "+patientName;
-	    	if(appointmentId != null && appointmentId != "")appointmentId = " "+appointmentId;
-	    	if(dateTime != null && dateTime != "")dateTime = " "+dateTime;
-	    	if(doctorName != null && doctorName != "")doctorName = " "+doctorName;
-	    	if(clinicContactNum != null && clinicContactNum != "")clinicContactNum = " "+ clinicContactNum;
+	    	if(!DPDoctorUtils.anyStringEmpty(patientName))patientName = " "+patientName;
+	    	if(!DPDoctorUtils.anyStringEmpty(appointmentId))appointmentId = " "+appointmentId;
+	    	if(!DPDoctorUtils.anyStringEmpty(dateTime))dateTime = " "+dateTime;
+	    	if(!DPDoctorUtils.anyStringEmpty(doctorName))doctorName = " "+doctorName;
+	    	if(!DPDoctorUtils.anyStringEmpty(clinicContactNum))clinicContactNum = " "+ clinicContactNum;
 	    }
 	    String text = "";
 	    switch (type) {
@@ -710,20 +717,20 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    if(!DPDoctorUtils.anyStringEmpty(from,to)){
 	    	long fromLong = Long.parseLong(from);
 	    	long toLong = Long.parseLong(to);
-	    	criteria.and("date").gte(new Date(fromLong)).lte(toLong);
+	    	criteria.and("fromDate").gte(new Date(fromLong)).and("toDate").lte(new Date(toLong));
 	    }
 	    else if(!DPDoctorUtils.anyStringEmpty(from)){
 	    	long fromLong = Long.parseLong(from);
-	    	criteria.and("date").gte(new Date(fromLong));
+	    	criteria.and("fromDate").gte(new Date(fromLong));
 	    }
 	    else if(!DPDoctorUtils.anyStringEmpty(to)){
 	    	long toLong = Long.parseLong(to);
-	    	criteria.and("date").lte(new Date(toLong));
+	    	criteria.and("toDate").lte(new Date(toLong));
 	    }
 	    
 	    query.addCriteria(criteria);
-	    if(size > 0) appointmentCollections = mongoTemplate.find(query.with(new PageRequest(page, size, Direction.ASC, "date","time.from")), AppointmentCollection.class);
-	    else appointmentCollections = mongoTemplate.find(query.with(new Sort(Direction.ASC, "date","time.from")), AppointmentCollection.class);
+	    if(size > 0) appointmentCollections = mongoTemplate.find(query.with(new PageRequest(page, size, Direction.ASC, "fromDate","time.from")), AppointmentCollection.class);
+	    else appointmentCollections = mongoTemplate.find(query.with(new Sort(Direction.ASC, "fromDate","time.from")), AppointmentCollection.class);
 		
 	    if (appointmentCollections != null) {
 		    response = new ArrayList<Appointment>();
@@ -787,16 +794,16 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    
 		    if(!DPDoctorUtils.anyStringEmpty(from)){
 		    	long fromLong = Long.parseLong(from);
-		    	criteria.and("date").gte(new Date(fromLong));
+		    	criteria.and("fromDate").gte(new Date(fromLong));
 		    }
 		    if(!DPDoctorUtils.anyStringEmpty(to)){
 		    	long toLong = Long.parseLong(to);
-		    	criteria.and("date").lte(new Date(toLong));
+		    	criteria.and("toDate").lte(new Date(toLong));
 		    }
 		    
 		    query.addCriteria(criteria);
-		    if(size > 0) appointmentCollections = mongoTemplate.find(query.with(new PageRequest(page, size, Direction.DESC, "date")), AppointmentCollection.class);
-		    else appointmentCollections = mongoTemplate.find(query.with(new Sort(Direction.DESC, "date")), AppointmentCollection.class);
+		    if(size > 0) appointmentCollections = mongoTemplate.find(query.with(new PageRequest(page, size, Direction.DESC, "fromDate")), AppointmentCollection.class);
+		    else appointmentCollections = mongoTemplate.find(query.with(new Sort(Direction.DESC, "fromDate")), AppointmentCollection.class);
 			
 		    if (appointmentCollections != null) {
 			    response = new ArrayList<Appointment>();   
@@ -988,8 +995,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    		List<WorkingHours> workingHours = workingSchedule.getWorkingHours();
 		    		if(workingHours != null && !workingHours.isEmpty()){
 		    			for(WorkingHours workingHour : workingHours){
-		    				if(workingHour.getFrom() != null && workingHour.getTo() != null && doctorClinicProfileCollection.getAppointmentSlot().getTime() > 0){
-		    					List<Slot> slots = DateAndTimeUtility.sliceTime(workingHour.getFrom(), workingHour.getTo(), Math.round(doctorClinicProfileCollection.getAppointmentSlot().getTime()));
+		    				if(workingHour.getFromTime() != null && workingHour.getToTime() != null && doctorClinicProfileCollection.getAppointmentSlot().getTime() > 0){
+		    					List<Slot> slots = DateAndTimeUtility.sliceTime(workingHour.getFromTime(), workingHour.getToTime(), Math.round(doctorClinicProfileCollection.getAppointmentSlot().getTime()));
 		    					if(slots != null)response.addAll(slots);
 		    				}	    				
 		    			}
@@ -1000,7 +1007,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    if(bookedSlots != null && !bookedSlots.isEmpty())
 		    for(AppointmentBookedSlotCollection bookedSlot : bookedSlots){
 		    	if(bookedSlot.getTime() != null){
-		    		List<Slot> slots = DateAndTimeUtility.sliceTime(bookedSlot.getTime().getFrom(), bookedSlot.getTime().getTo(), Math.round(doctorClinicProfileCollection.getAppointmentSlot().getTime()));
+		    		if(!bookedSlot.getFromDate().equals(bookedSlot.getToDate())){
+		    			if(bookedSlot.getIsAllDayEvent()){
+		    				if(bookedSlot.getFromDate().equals(date))bookedSlot.getTime().setToTime(719);
+		    				if(bookedSlot.getToDate().equals(date))bookedSlot.getTime().setFromTime(0);
+		    			}
+		    		}
+		    		List<Slot> slots = DateAndTimeUtility.sliceTime(bookedSlot.getTime().getFromTime(), bookedSlot.getTime().getToTime(), Math.round(doctorClinicProfileCollection.getAppointmentSlot().getTime()));
 		    		for(Slot slot : slots){
 		    			if(response.contains(slot)){
 			    			slot.setIsAvailable(false);
@@ -1023,7 +1036,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		Appointment response = null;
 		try {
 			UserCollection userCollection = userRepository.findOne(request.getDoctorId());
-		    AppointmentCollection appointmentCollection = appointmentRepository.findAppointmentbyUserLocationIdTimeDate(request.getDoctorId(), request.getLocationId(), request.getTime().getFrom(), request.getTime().getTo(), request.getDate(), AppointmentState.CANCEL.getState());
+		    AppointmentCollection appointmentCollection = appointmentRepository.findAppointmentbyUserLocationIdTimeDate(request.getDoctorId(), request.getLocationId(), request.getTime().getFromTime(), request.getTime().getToTime(), request.getFromDate(), request.getToDate(), AppointmentState.CANCEL.getState());
 			if(userCollection != null){
 				if (appointmentCollection == null || !request.getIsCalenderBlocked()) {
 				    appointmentCollection = new AppointmentCollection();
@@ -1068,7 +1081,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    if (appointmentCollection != null) {
 		    	AppointmentCollection appointmentCollectionToCheck = null;
 		    	if(request.getState().equals(AppointmentState.RESCHEDULE)){
-		    		appointmentCollectionToCheck = appointmentRepository.findAppointmentbyUserLocationIdTimeDate(appointmentCollection.getDoctorId(), appointmentCollection.getLocationId(), request.getTime().getFrom(), request.getTime().getTo(), request.getDate(), AppointmentState.CANCEL.getState());
+		    		appointmentCollectionToCheck = appointmentRepository.findAppointmentbyUserLocationIdTimeDate(appointmentCollection.getDoctorId(), appointmentCollection.getLocationId(), request.getTime().getFromTime(), request.getTime().getToTime(), request.getFromDate(), request.getToDate(), AppointmentState.CANCEL.getState());
 		    		if(appointmentCollectionToCheck != null)
 		    			if(!request.getIsCalenderBlocked()) appointmentCollectionToCheck = null;
 		    	}		    		
@@ -1084,7 +1097,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    	if(bookedSlotCollection != null) appointmentBookedSlotRepository.delete(bookedSlotCollection);
 			    }
 			    else {
-			    	appointmentCollection.setDate(request.getDate());
+			    	appointmentCollection.setFromDate(request.getFromDate());
+			    	appointmentCollection.setToDate(request.getToDate());
 				    appointmentCollection.setTime(request.getTime());
 				    
 			    	if(request.getState().equals(AppointmentState.RESCHEDULE)){
@@ -1093,7 +1107,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 				    	AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository.findByAppointmentId(appointmentCollection.getAppointmentId());
 				    	if(bookedSlotCollection != null) {
 				    		if(appointmentCollection.getIsCalenderBlocked()){
-				    			bookedSlotCollection.setDate(appointmentCollection.getDate());
+				    			bookedSlotCollection.setFromDate(appointmentCollection.getFromDate());
+				    			bookedSlotCollection.setToDate(appointmentCollection.getToDate());
 							    bookedSlotCollection.setTime(appointmentCollection.getTime());
 							    bookedSlotCollection.setUpdatedTime(new Date());
 					    		appointmentBookedSlotRepository.save(bookedSlotCollection);
@@ -1134,7 +1149,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					LocationCollection locationCollection = locationRepository.findOne(appointmentCollection.getLocationId());
 					if(userCollection != null && locationCollection != null && patient != null){
 						String patientName=patient.getFirstName(),  
-								dateTime=appointmentCollection.getDate()+" "+String.format("%02d:%02d", appointmentCollection.getTime().getFrom() / 60, appointmentCollection.getTime().getFrom() % 60),
+								dateTime= String.format("%02d:%02d", appointmentCollection.getTime().getFromTime() / 60, appointmentCollection.getTime().getFromTime() % 60)+" "+new SimpleDateFormat("MMM dd,yyyy").format(appointmentCollection.getFromDate()),
 								doctorName=userCollection.getTitle()+" "+userCollection.getFirstName(),clinicName= locationCollection.getLocationName(),clinicContactNum=locationCollection.getLocationPhoneNumber() != null ? locationCollection.getLocationPhoneNumber() :"";
 						sendMsg(SMSFormatType.APPOINTMENT_REMINDER.getType(), "APPOINTMENT_REMINDER_TO_PATIENT", appointmentCollection.getDoctorId(),appointmentCollection.getLocationId(), appointmentCollection.getHospitalId(), appointmentCollection.getPatientId(), patient.getMobileNumber(), patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum);
 						response = true;

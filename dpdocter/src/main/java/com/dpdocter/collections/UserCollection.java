@@ -1,5 +1,6 @@
 package com.dpdocter.collections;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import org.apache.commons.lang.WordUtils;
@@ -32,7 +33,10 @@ public class UserCollection extends GenericCollection {
     private String userName;
 
     @Field
-    private String password;
+    private char[] password;
+
+    @Field
+    private char[] salt;
 
     @Field
     private String emailAddress;
@@ -98,11 +102,11 @@ public class UserCollection extends GenericCollection {
     }
 
 
-    public String getPassword() {
+    public char[] getPassword() {
 		return password;
 	}
 
-	public void setPassword(String password) {
+	public void setPassword(char[] password) {
 		this.password = password;
 	}
 
@@ -237,12 +241,22 @@ public class UserCollection extends GenericCollection {
 	this.signedUp = signedUp;
     }
 
-    @Override
-    public String toString() {
-	return "UserCollection [id=" + id + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName
-		+ ", userName=" + userName + ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", imageUrl="
-		+ imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", isActive=" + isActive + ", isTempPassword=" + isTempPassword + ", isVerified=" + isVerified
-		+ ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", colorCode=" + colorCode + ", userState="
-		+ userState + ", lastSession=" + lastSession + ", signedUp=" + signedUp + "]";
-    }
+	public char[] getSalt() {
+		return salt;
+	}
+
+	public void setSalt(char[] salt) {
+		this.salt = salt;
+	}
+
+	@Override
+	public String toString() {
+		return "UserCollection [id=" + id + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName
+				+ ", middleName=" + middleName + ", userName=" + userName + ", password=" + Arrays.toString(password)
+				+ ", salt=" + Arrays.toString(salt) + ", emailAddress=" + emailAddress + ", mobileNumber="
+				+ mobileNumber + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", isActive=" + isActive
+				+ ", isTempPassword=" + isTempPassword + ", isVerified=" + isVerified + ", coverImageUrl="
+				+ coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", colorCode=" + colorCode
+				+ ", userState=" + userState + ", lastSession=" + lastSession + ", signedUp=" + signedUp + "]";
+	}
 }

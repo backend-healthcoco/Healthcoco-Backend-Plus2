@@ -6,7 +6,7 @@ public class Profession {
 
     private String profession;
 
-    private String description;
+    private String explanation;
 
     public String getId() {
 	return id;
@@ -24,16 +24,17 @@ public class Profession {
 	this.profession = profession;
     }
 
-    public String getDescription() {
-	return description;
-    }
+	public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    @Override
-    public String toString() {
-	return "Profession [id=" + id + ", profession=" + profession + ", description=" + description + "]";
-    }
+	@Override
+	public String toString() {
+		return "Profession [id=" + id + ", profession=" + profession + ", explanation=" + explanation + "]";
+	}
+
 }

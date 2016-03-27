@@ -58,7 +58,7 @@ public class GeneralTestsAPI {
     @Path(value = "getDoctorsWithSpecialities")
     @GET
     public Response<SolrDoctorDocument> getDoctorsWithSpecialities() {
-	Criteria doctorSearchCriteria = Criteria.where("specialities").in(Arrays.asList("5698a19c87bde8031cdb0acf", "5698a19c87bde8031cdb0ab8", "5698a19c87bde8031cdb0ac5"));
+	Criteria doctorSearchCriteria = Criteria.where("specialities").in(Arrays.asList("5698a19c87bde8031cdb0ac5"));
 
 	SimpleQuery query = new SimpleQuery(doctorSearchCriteria);
 	solrTemplate.setSolrCore("doctors");

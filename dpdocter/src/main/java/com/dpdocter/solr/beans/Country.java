@@ -6,7 +6,7 @@ public class Country {
 
     private String country;
 
-    private String description;
+    private String explanation;
 
     private double latitude;
 
@@ -28,15 +28,15 @@ public class Country {
 	this.country = country;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public double getLatitude() {
+	public double getLatitude() {
 	return latitude;
     }
 
@@ -54,6 +54,6 @@ public class Country {
 
     @Override
     public String toString() {
-	return "Country [id=" + id + ", country=" + country + ", description=" + description + ", latitude=" + latitude + ", longitude=" + longitude + "]";
+	return "Country [id=" + id + ", country=" + country + ", explanation=" + explanation + ", latitude=" + latitude + ", longitude=" + longitude + "]";
     }
 }

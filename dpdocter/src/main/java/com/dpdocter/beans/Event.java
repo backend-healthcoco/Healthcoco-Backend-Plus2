@@ -10,7 +10,7 @@ public class Event extends GenericCollection {
 
     private String subject;
 
-    private String description;
+    private String explanation;
 
     private String userLocationId;
 
@@ -34,14 +34,6 @@ public class Event extends GenericCollection {
 
     public void setSubject(String subject) {
 	this.subject = subject;
-    }
-
-    public String getDescription() {
-	return description;
-    }
-
-    public void setDescription(String description) {
-	this.description = description;
     }
 
     public String getUserLocationId() {
@@ -76,9 +68,19 @@ public class Event extends GenericCollection {
 	this.date = date;
     }
 
-    @Override
-    public String toString() {
-	return "Event [id=" + id + ", subject=" + subject + ", description=" + description + ", userLocationId=" + userLocationId + ", time=" + time
-		+ ", isCalenderBlocked=" + isCalenderBlocked + ", date=" + date + "]";
-    }
+	public String getExplanation() {
+		return explanation;
+	}
+
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
+
+	@Override
+	public String toString() {
+		return "Event [id=" + id + ", subject=" + subject + ", explanation=" + explanation + ", userLocationId="
+				+ userLocationId + ", time=" + time + ", isCalenderBlocked=" + isCalenderBlocked + ", date=" + date
+				+ "]";
+	}
+
 }

@@ -14,7 +14,7 @@ public class DiagnosticTestCollection extends GenericCollection {
     private String testName;
 
     @Field
-    private String description;
+    private String explanation;
 
     @Field
     private String locationId;
@@ -44,15 +44,15 @@ public class DiagnosticTestCollection extends GenericCollection {
 	this.testName = testName;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public String getLocationId() {
+	public String getLocationId() {
 	return locationId;
     }
 
@@ -86,7 +86,7 @@ public class DiagnosticTestCollection extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "DiagnosticTestCollection [id=" + id + ", testName=" + testName + ", description=" + description
+		return "DiagnosticTestCollection [id=" + id + ", testName=" + testName + ", explanation=" + explanation
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", code="
 				+ code + "]";
 	}

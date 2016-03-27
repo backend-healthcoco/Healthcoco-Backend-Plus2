@@ -251,7 +251,7 @@ public class RecordsApi {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
-	recordsService.changeLabelAndDescription(request.getRecordId(), request.getLabel(), request.getDescription());
+	recordsService.changeLabelAndDescription(request.getRecordId(), request.getLabel(), request.getExplanation());
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;

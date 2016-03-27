@@ -7,7 +7,7 @@ public class Reference extends GenericCollection {
 
     private String reference;
 
-    private String description;
+    private String explanation;
 
     private String doctorId;
 
@@ -33,15 +33,15 @@ public class Reference extends GenericCollection {
 	this.reference = reference;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public String getDoctorId() {
+	public String getDoctorId() {
 	return doctorId;
     }
 
@@ -73,9 +73,10 @@ public class Reference extends GenericCollection {
 	this.discarded = discarded;
     }
 
-    @Override
-    public String toString() {
-	return "Reference [id=" + id + ", reference=" + reference + ", description=" + description + ", doctorId=" + doctorId + ", locationId=" + locationId
-		+ ", hospitalId=" + hospitalId + ", discarded=" + discarded + "]";
-    }
+	@Override
+	public String toString() {
+		return "Reference [id=" + id + ", reference=" + reference + ", explanation=" + explanation + ", doctorId="
+				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ "]";
+	}
 }

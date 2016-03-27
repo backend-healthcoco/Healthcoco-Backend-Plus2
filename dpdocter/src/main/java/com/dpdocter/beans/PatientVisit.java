@@ -8,7 +8,7 @@ import com.dpdocter.enums.VisitedFor;
 public class PatientVisit {
     private String id;
 
-    private String uniqueId;
+    private String uniqueEmrId;
 
     private String patientId;
 
@@ -118,18 +118,19 @@ public class PatientVisit {
 	this.discarded = discarded;
     }
 
-    public String getUniqueId() {
-	return uniqueId;
-    }
+	public String getUniqueEmrId() {
+		return uniqueEmrId;
+	}
 
-    public void setUniqueId(String uniqueId) {
-	this.uniqueId = uniqueId;
-    }
+	public void setUniqueEmrId(String uniqueEmrId) {
+		this.uniqueEmrId = uniqueEmrId;
+	}
 
-    @Override
-    public String toString() {
-	return "PatientVisit [id=" + id + ", uniqueId=" + uniqueId + ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId=" + locationId
-		+ ", hospitalId=" + hospitalId + ", visitedTime=" + visitedTime + ", visitedFor=" + visitedFor + ", prescriptionId=" + prescriptionId
-		+ ", clinicalNotesId=" + clinicalNotesId + ", recordId=" + recordId + ", discarded=" + discarded + "]";
-    }
+	@Override
+	public String toString() {
+		return "PatientVisit [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", patientId=" + patientId + ", doctorId="
+				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", visitedTime="
+				+ visitedTime + ", visitedFor=" + visitedFor + ", prescriptionId=" + prescriptionId
+				+ ", clinicalNotesId=" + clinicalNotesId + ", recordId=" + recordId + ", discarded=" + discarded + "]";
+	}
 }

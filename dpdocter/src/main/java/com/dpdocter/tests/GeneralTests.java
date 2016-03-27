@@ -1,11 +1,16 @@
 package com.dpdocter.tests;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.security.spec.KeySpec;
+import java.util.Date;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
+
+import common.util.web.DPDoctorUtils;
 
 
 
@@ -77,14 +82,12 @@ public class GeneralTests {
 //        }
 //	    	}
 	    		 
-	    		 public static void main(String[] args)  {
-	    			 byte[] salt = new byte[16];
-//	    			
-//	    			 KeySpec spec = new PBEKeySpec("password".toCharArray(), salt, 65536, 128);
-//	    			 SecretKeyFactory f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-//	    			 byte[] hash = f.generateSecret(spec).getEncoded();
-//	    			 Base64.Encoder enc = Base64.getEncoder();
-//	    			 System.out.printf("salt: %s%n", enc.encodeToString(salt));
-//	    			 System.out.printf("hash: %s%n", enc.encodeToString(hash));	    		    
-	    			 }
+	    		 public static void main(String[] args) throws UnsupportedEncodingException, NoSuchAlgorithmException  {
+
+	    			 char[] p = new char[4];
+	    			 p[0]='a';p[1]='b';p[2]='h';p[3]='i';
+	    			 System.out.println(DPDoctorUtils.getSHA3SecurePassword(p));
+	    			 System.out.println(DPDoctorUtils.getSHA3SecurePassword(new char['n']));
+	    		 }
+	    		 
 }  	

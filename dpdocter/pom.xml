@@ -348,7 +348,7 @@
   <dependency>
    <groupId>org.springframework.security.oauth</groupId>
    <artifactId>spring-security-oauth2</artifactId>
-   <version>1.0.0.RELEASE</version>
+   <version>1.0.5.RELEASE</version>
   </dependency>
   <dependency>
    <groupId>com.google.code.gson</groupId>
@@ -381,6 +381,21 @@
     <artifactId>jackson-core-asl</artifactId>
     <version>1.9.13</version>
 </dependency>
+<dependency> 
+  <groupId>com.fasterxml.jackson.core</groupId>
+  <artifactId>jackson-databind</artifactId> 
+  <version>2.7.0</version> 
+</dependency>
+<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-annotations</artifactId>
+    <version>2.7.0</version>
+  </dependency>
+  <dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-core</artifactId>
+    <version>2.7.0</version>
+  </dependency>
 	</dependencies>
 	<build>
 		<plugins>

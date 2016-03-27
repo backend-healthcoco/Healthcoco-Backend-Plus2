@@ -2,6 +2,7 @@ package com.dpdocter.solr.document;
 
 import org.apache.solr.client.solrj.beans.Field;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.solr.core.mapping.SolrDocument;
 
 @SolrDocument(solrCoreName = "specialities")
@@ -12,6 +13,9 @@ public class SolrSpecialityDocument {
 
     @Field
     private String speciality;
+
+    @Transient
+    private String superSpeciality;
 
     @Field
     private String code;
@@ -40,8 +44,17 @@ public class SolrSpecialityDocument {
 	this.code = code;
     }
 
-    @Override
-    public String toString() {
-	return "SolrSpecialityDocument [id=" + id + ", speciality=" + speciality + ", code=" + code + "]";
-    }
+	public String getSuperSpeciality() {
+		return superSpeciality;
+	}
+
+	public void setSuperSpeciality(String superSpeciality) {
+		this.superSpeciality = superSpeciality;
+	}
+
+	@Override
+	public String toString() {
+		return "SolrSpecialityDocument [id=" + id + ", speciality=" + speciality + ", superSpeciality="
+				+ superSpeciality + ", code=" + code + "]";
+	}
 }

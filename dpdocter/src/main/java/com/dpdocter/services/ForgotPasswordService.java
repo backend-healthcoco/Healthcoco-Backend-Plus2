@@ -21,6 +21,6 @@ public interface ForgotPasswordService {
 
     String checkLinkIsAlreadyUsed(String userId);
 
-    Boolean resetPasswordPatient(String mobileNumber, String password);
+    Boolean resetPasswordPatient(ResetPasswordRequest request);
 
 }

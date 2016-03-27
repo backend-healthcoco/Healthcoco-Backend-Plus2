@@ -207,7 +207,7 @@ public interface PathProxy {
 
 	public static final String FORGOT_PASSWORD_PATIENT = "/forgotPasswordPatient";
 
-	public static final String RESET_PASSWORD_PATIENT = "/resetPassword/{mobileNumber}/{password}";
+	public static final String RESET_PASSWORD_PATIENT = "/resetPasswordPatient";
 
 	public static final String RESET_PASSWORD = "/resetPassword";
 
@@ -347,7 +347,7 @@ public interface PathProxy {
 
 	public static final String IMPORT_DRUG = "/importDrug";
 
-	public static final String CHECK_PRESCRIPTION_EXISTS_FOR_PATIENT = "/prescriptionExist/{uniqueId}/{patientId}";
+	public static final String CHECK_PRESCRIPTION_EXISTS_FOR_PATIENT = "/prescriptionExist/{uniqueEmrId}/{patientId}";
 
     }
 

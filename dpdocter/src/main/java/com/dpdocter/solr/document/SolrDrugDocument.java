@@ -18,7 +18,7 @@ public class SolrDrugDocument {
     private String drugName;
 
     @Field
-    private String description;
+    private String explanation;
 
     @Field
     private String drugCode;
@@ -61,15 +61,15 @@ public class SolrDrugDocument {
 	this.drugName = drugName;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public String getDrugCode() {
+	public String getDrugCode() {
 	return drugCode;
     }
 
@@ -154,10 +154,11 @@ public class SolrDrugDocument {
 	this.drugType = drugType;
     }
 
-    @Override
-    public String toString() {
-	return "SolrDrugDocument [id=" + id + ", drugName=" + drugName + ", description=" + description + ", drugCode=" + drugCode + ", drugTypeId="
-		+ drugTypeId + ", drugType=" + drugType + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ ", discarded=" + discarded + ", updatedTime=" + updatedTime + "]";
-    }
+	@Override
+	public String toString() {
+		return "SolrDrugDocument [id=" + id + ", drugName=" + drugName + ", explanation=" + explanation + ", drugCode="
+				+ drugCode + ", drugTypeId=" + drugTypeId + ", drugType=" + drugType + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ ", updatedTime=" + updatedTime + "]";
+	}
 }

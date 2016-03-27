@@ -15,7 +15,7 @@ public class CountryCollection {
     private String country;
 
     @Field
-    private String description;
+    private String explanation;
 
     @Field
     private double latitude;
@@ -39,15 +39,15 @@ public class CountryCollection {
 	this.country = country;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public double getLatitude() {
+	public double getLatitude() {
 	return latitude;
     }
 
@@ -65,7 +65,7 @@ public class CountryCollection {
 
     @Override
     public String toString() {
-	return "CountryCollection [id=" + id + ", country=" + country + ", description=" + description + ", latitude=" + latitude + ", longitude=" + longitude
+	return "CountryCollection [id=" + id + ", country=" + country + ", explanation=" + explanation + ", latitude=" + latitude + ", longitude=" + longitude
 		+ "]";
     }
 

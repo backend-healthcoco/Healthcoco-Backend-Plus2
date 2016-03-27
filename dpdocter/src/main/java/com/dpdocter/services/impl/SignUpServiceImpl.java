@@ -1,5 +1,8 @@
 package com.dpdocter.services.impl;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -74,6 +77,8 @@ import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.SignUpService;
+
+import common.util.web.DPDoctorUtils;
 
 /**
  * @author veeraj
@@ -287,6 +292,14 @@ public class SignUpServiceImpl implements SignUpService {
 		logger.warn("Incorrect Date of Birth");
 		throw new BusinessException(ServiceError.NotAcceptable, "Incorrect Date of Birth");
 	    }
+	    char[] salt = DPDoctorUtils.generateSalt();
+	    userCollection.setSalt(salt);
+	    char[] passwordWithSalt = new char[request.getPassword().length + salt.length]; 
+	    for(int i = 0; i < request.getPassword().length; i++)
+	        passwordWithSalt[i] = request.getPassword()[i];
+	    for(int i = 0; i < salt.length; i++)
+	    	passwordWithSalt[i+request.getPassword().length] = salt[i];
+	    userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt));
 	    userCollection.setUserName(request.getEmailAddress());
 	    userCollection.setTitle("Dr.");
 	    if (request.getImage() != null) {
@@ -496,11 +509,20 @@ public class SignUpServiceImpl implements SignUpService {
 		logger.warn("Incorrect Date of Birth");
 		throw new BusinessException(ServiceError.NotAcceptable, "Incorrect Date of Birth");
 	    }
+	    char[] salt = DPDoctorUtils.generateSalt();
+	    userCollection.setSalt(salt);
+	    char[] passwordWithSalt = new char[request.getPassword().length + salt.length]; 
+	    for(int i = 0; i < request.getPassword().length; i++)
+	        passwordWithSalt[i] = request.getPassword()[i];
+	    for(int i = 0; i < salt.length; i++)
+	    	passwordWithSalt[i+request.getPassword().length] = salt[i];
+	    userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt));
 	    userCollection.setUserName(request.getEmailAddress());
 	    userCollection.setTitle("Dr.");
 	    userCollection.setCreatedTime(new Date());
 	    userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
 	    userCollection.setUserState(UserState.USERSTATEINCOMPLETE);
+	    
 	    userCollection = userRepository.save(userCollection);
 	    // save doctor specific details
 	    DoctorCollection doctorCollection = new DoctorCollection();
@@ -557,6 +579,11 @@ public class SignUpServiceImpl implements SignUpService {
 	    userCollection.setUserState(UserState.NOTVERIFIED);
 	    userCollection = userRepository.save(userCollection);
 
+	    DoctorCollection doctorCollection = doctorRepository.findByUserId(request.getUserId());
+	    if(doctorCollection != null){
+	    	doctorCollection.setRegisterNumber(request.getRegisterNumber());
+	    	doctorCollection = doctorRepository.save(doctorCollection);
+	    }
 	    HospitalCollection hospitalCollection = new HospitalCollection();
 	    BeanUtil.map(request, hospitalCollection);
 	    hospitalCollection.setCreatedTime(new Date());
@@ -696,6 +723,14 @@ public class SignUpServiceImpl implements SignUpService {
 		logger.warn(DOB);
 		throw new BusinessException(ServiceError.NotAcceptable, DOB);
 	    }
+	    char[] salt = DPDoctorUtils.generateSalt();
+	    userCollection.setSalt(salt);
+	    char[] passwordWithSalt = new char[request.getPassword().length + salt.length]; 
+	    for(int i = 0; i < request.getPassword().length; i++)
+	        passwordWithSalt[i] = request.getPassword()[i];
+	    for(int i = 0; i < salt.length; i++)
+	    	passwordWithSalt[i+request.getPassword().length] = salt[i];
+	    userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt));
 	    userCollection.setIsActive(true);
 	    userCollection.setCreatedTime(new Date());
 	    userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
@@ -853,7 +888,6 @@ public class SignUpServiceImpl implements SignUpService {
 		List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
 	    if (userCollections != null && !userCollections.isEmpty()) {
 		for (UserCollection userCollection : userCollections) {
-//		    List<PatientCollection> patientCollection = patientRepository.findByUserId(userCollection.getId());
 			if (!userCollection.getUserName().equals(userCollection.getEmailAddress())) {
 			count++;
 			if (userCollection.isSignedUp())
@@ -880,7 +914,6 @@ public class SignUpServiceImpl implements SignUpService {
 	    List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
 	    if (userCollections != null && !userCollections.isEmpty()) {
 		for (UserCollection userCollection : userCollections) {
-//		    List<PatientCollection> patientCollection = patientRepository.findByUserId(userCollection.getId());
 		    if (!userCollection.getUserName().equals(userCollection.getEmailAddress())) {
 			response = true;
 			break;
@@ -1050,7 +1083,9 @@ public class SignUpServiceImpl implements SignUpService {
      */
     @Override
     public User signupNewPatient(PatientSignupRequestMobile request) {
-	RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.PATIENT.getRole());
+    User user = null;
+    try {
+    		RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.PATIENT.getRole());
 	if (roleCollection == null) {
 	    logger.warn(role);
 	    throw new BusinessException(ServiceError.NoRecord, role);
@@ -1058,13 +1093,21 @@ public class SignUpServiceImpl implements SignUpService {
 	// save user
 	UserCollection userCollection = new UserCollection();
 	BeanUtil.map(request, userCollection);
+	char[] salt = DPDoctorUtils.generateSalt();
+	userCollection.setSalt(salt);
+    char[] passwordWithSalt = new char[request.getPassword().length + salt.length]; 
+    for(int i = 0; i < request.getPassword().length; i++)
+        passwordWithSalt[i] = request.getPassword()[i];
+    for(int i = 0; i < salt.length; i++)
+    	passwordWithSalt[i+request.getPassword().length] = salt[i];
+    userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt));
 	userCollection.setFirstName(request.getName());
 	userCollection.setIsActive(true);
 	userCollection.setCreatedTime(new Date());
 	userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
 	userCollection.setSignedUp(true);
 
-	User user = new User();
+	user = new User();
 	BeanUtil.map(userCollection, user);
 	userCollection.setUserName(generateUniqueUserNameService.generate(user));
 	userCollection = userRepository.save(userCollection);
@@ -1107,10 +1150,17 @@ public class SignUpServiceImpl implements SignUpService {
 	// smsDetails.add(smsDetail);
 	// smsTrackDetail.setSmsDetails(smsDetails);
 	// sMSServices.sendSMS(smsTrackDetail, true);
-
 	BeanUtil.map(userCollection, user);
-	return user;
-    }
+	
+	} catch (NoSuchAlgorithmException e) {
+		e.printStackTrace();
+	} catch (NoSuchProviderException e) {
+		e.printStackTrace();
+	} catch (UnsupportedEncodingException e) {
+		e.printStackTrace();
+	}
+    return user;
+ }
 
     /**
      * This Service Impl will signup the already registered patients into the
@@ -1121,24 +1171,41 @@ public class SignUpServiceImpl implements SignUpService {
     public List<User> signupAlreadyRegisteredPatient(PatientSignupRequestMobile request) {
 
 	List<User> users = new ArrayList<User>();
+	try{
 	List<UserCollection> userCollections = userRepository.findByMobileNumber(request.getMobileNumber());
+	char[] salt = DPDoctorUtils.generateSalt();
+	
+    char[] passwordWithSalt = new char[request.getPassword().length + salt.length]; 
+    for(int i = 0; i < request.getPassword().length; i++)
+        passwordWithSalt[i] = request.getPassword()[i];
+    for(int i = 0; i < salt.length; i++)
+    	passwordWithSalt[i+request.getPassword().length] = salt[i];
+    char[] password = DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt);
+	
 	if (userCollections != null && !userCollections.isEmpty()) {
-	    if (verifyPatientBasedOn80PercentMatchOfName(request.getName(), request.getMobileNumber())) {
-		for (UserCollection userCollection : userCollections) {
-		    userCollection.setPassword(request.getPassword());
-		    userCollection.setSignedUp(true);
-		    userRepository.save(userCollection);
+	    for (UserCollection userCollection : userCollections) {
+	    	if (!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress())) {
+	    		userCollection.setSalt(salt);
+	    		userCollection.setPassword(password);
+		        userCollection.setSignedUp(true);
+		        userRepository.save(userCollection);
 
 		    User user = new User();
 		    BeanUtil.map(userCollection, user);
 		    users.add(user);
+	    	}
 		}
-
-	    }
 	} else {// In case if no patient is registered for this mobile
 		// number.Then signup new patient.
 	    User user = signupNewPatient(request);
 	    users.add(user);
+	}
+    } catch (NoSuchAlgorithmException e) {
+		e.printStackTrace();
+	} catch (NoSuchProviderException e) {
+		e.printStackTrace();
+	} catch (UnsupportedEncodingException e) {
+		e.printStackTrace();
 	}
 	return users;
 
@@ -1166,6 +1233,15 @@ public class SignUpServiceImpl implements SignUpService {
 		String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
 		userCollection.setThumbnailUrl(thumbnailUrl);
 	    }
+	    char[] salt = DPDoctorUtils.generateSalt();
+		userCollection.setSalt(salt);
+	    char[] passwordWithSalt = new char[request.getPassword().length + salt.length]; 
+	    for(int i = 0; i < request.getPassword().length; i++)
+	        passwordWithSalt[i] = request.getPassword()[i];
+	    for(int i = 0; i < salt.length; i++)
+	    	passwordWithSalt[i+request.getPassword().length] = salt[i];
+	    userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt));
+		
 	    userCollection.setIsVerified(true);
 	    userCollection.setIsActive(true);
 	    userCollection.setCreatedTime(new Date());

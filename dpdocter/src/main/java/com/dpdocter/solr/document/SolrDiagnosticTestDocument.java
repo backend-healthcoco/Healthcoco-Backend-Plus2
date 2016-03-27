@@ -17,7 +17,7 @@ public class SolrDiagnosticTestDocument {
     private String testName;
 
     @Field
-    private String description;
+    private String explanation;
 
     @Field
     private String locationId;
@@ -50,15 +50,15 @@ public class SolrDiagnosticTestDocument {
 	this.testName = testName;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public String getLocationId() {
+	public String getLocationId() {
 	return locationId;
     }
 
@@ -98,9 +98,11 @@ public class SolrDiagnosticTestDocument {
 	this.code = code;
     }
 
-    @Override
-    public String toString() {
-	return "SolrDiagnosticTestDocument [id=" + id + ", testName=" + testName + ", description=" + description + ", locationId=" + locationId
-		+ ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", updatedTime=" + updatedTime + ", code=" + code + "]";
-    }
+	@Override
+	public String toString() {
+		return "SolrDiagnosticTestDocument [id=" + id + ", testName=" + testName + ", explanation=" + explanation
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ ", updatedTime=" + updatedTime + ", code=" + code + "]";
+	}
+
 }

@@ -13,7 +13,7 @@ public class EventRequest {
 
     private String subject;
 
-    private String description;
+    private String explanation;
 
     private String locationId;
 
@@ -23,8 +23,12 @@ public class EventRequest {
 
     private Boolean isCalenderBlocked = false;
 
-    private Date date;
+    private Date fromDate;
+    
+    private Date toDate;
 
+    private Boolean isAllDayEvent = false;
+    
     public String getId() {
 	return id;
     }
@@ -49,15 +53,15 @@ public class EventRequest {
 	this.subject = subject;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public String getLocationId() {
+	public String getLocationId() {
 	return locationId;
     }
 
@@ -89,17 +93,36 @@ public class EventRequest {
 	this.isCalenderBlocked = isCalenderBlocked;
     }
 
-    public Date getDate() {
-	return date;
-    }
+	public Date getFromDate() {
+		return fromDate;
+	}
 
-    public void setDate(Date date) {
-	this.date = date;
-    }
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
 
-    @Override
-    public String toString() {
-	return "EventRequest [id=" + id + ", state=" + state + ", subject=" + subject + ", description=" + description + ", locationId=" + locationId
-		+ ", doctorId=" + doctorId + ", time=" + time + ", isCalenderBlocked=" + isCalenderBlocked + ", date=" + date + "]";
-    }
+	public Date getToDate() {
+		return toDate;
+	}
+
+	public void setToDate(Date toDate) {
+		this.toDate = toDate;
+	}
+
+	public Boolean getIsAllDayEvent() {
+		return isAllDayEvent;
+	}
+
+	public void setIsAllDayEvent(Boolean isAllDayEvent) {
+		this.isAllDayEvent = isAllDayEvent;
+	}
+
+	@Override
+	public String toString() {
+		return "EventRequest [id=" + id + ", state=" + state + ", subject=" + subject + ", explanation=" + explanation
+				+ ", locationId=" + locationId + ", doctorId=" + doctorId + ", time=" + time + ", isCalenderBlocked="
+				+ isCalenderBlocked + ", fromDate=" + fromDate + ", toDate=" + toDate + ", isAllDayEvent="
+				+ isAllDayEvent + "]";
+	}
+
 }

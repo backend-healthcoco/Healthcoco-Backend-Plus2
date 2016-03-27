@@ -29,10 +29,25 @@
   access-decision-manager-ref="accessDecisionManager"
   xmlns="http://www.springframework.org/schema/security">
   <anonymous enabled="false" />
-  <intercept-url pattern="/api/**" access="IS_AUTHENTICATED_FULLY" /> 
-  <custom-filter ref="resourceServerFilter" before="BASIC_AUTH_FILTER" />
+  <intercept-url pattern="/api/**" /> 
+  <custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
   <access-denied-handler ref="oauthAccessDeniedHandler" />
  </http>
+
+<!-- <http pattern="/logout" create-session="never"  -->
+<!--         entry-point-ref="oauthAuthenticationEntryPoint" -->
+<!--         xmlns="http://www.springframework.org/schema/security"> -->
+<!--         <anonymous enabled="false" /> -->
+<!--         <intercept-url pattern="/logout" method="GET" /> -->
+<!--         <sec:logout invalidate-session="true" logout-url="/logout" success-handler-ref="logoutSuccessHandler"   /> -->
+<!--         <custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" /> -->
+<!--         <access-denied-handler ref="oauthAccessDeniedHandler" /> -->
+<!--     </http> -->
+
+<!--     <bean id="logoutSuccessHandler" class="prototype.oauth2.authentication.security.LogoutImpl" > -->
+<!--         <property name="tokenstore" ref="tokenStore"></property> -->
+<!--     </bean> -->
+
 
  <bean id="oauthAuthenticationEntryPoint"
   class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
@@ -142,6 +157,7 @@
 
  <oauth:expression-handler id="oauthExpressionHandler" />
  <oauth:web-expression-handler id="oauthWebExpressionHandler" />
+<!--  <context:component-scan base-package="com.dpdocter"/> -->
  
  <mvc:annotation-driven />
  <mvc:default-servlet-handler />

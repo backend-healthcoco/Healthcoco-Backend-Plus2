@@ -32,7 +32,7 @@ public class JasperReportServiceImpl implements JasperReportService {
     private static Logger logger = Logger.getLogger(JasperReportServiceImpl.class.getName());
 
     private static final String MONGO_HOST_URI = "mongodb://localhost:27017/dpdocter_db";
-
+//10.0.1.207:27017,10.0.1.8:27017,10.0.1.9:27017
     @Value(value = "${JASPER_TEMPLATES_RESOURCE}")
     private String REPORT_NAME;
        

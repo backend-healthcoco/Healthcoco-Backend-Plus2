@@ -8,7 +8,7 @@ public class RecordsAddRequest {
 
     private String doctorId;
 
-    private String description;
+    private String explanation;
 
     private FileDetails fileDetails;
 
@@ -42,15 +42,15 @@ public class RecordsAddRequest {
 	this.doctorId = doctorId;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public FileDetails getFileDetails() {
+	public FileDetails getFileDetails() {
 	return fileDetails;
     }
 
@@ -116,7 +116,7 @@ public class RecordsAddRequest {
 
     @Override
     public String toString() {
-	return "RecordsAddRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", description=" + description + ", fileDetails=" + fileDetails
+	return "RecordsAddRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", explanation=" + explanation + ", fileDetails=" + fileDetails
 		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", recordsType=" + recordsType + ", createdBy=" + createdBy + ", visitId="
 		+ visitId + ", prescriptionId=" + prescriptionId + ", testId=" + testId + "]";
     }

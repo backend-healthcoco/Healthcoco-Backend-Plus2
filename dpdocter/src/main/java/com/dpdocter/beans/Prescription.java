@@ -8,7 +8,7 @@ import com.dpdocter.response.TestAndRecordDataResponse;
 public class Prescription extends GenericCollection {
     private String id;
 
-    private String uniqueId;
+    private String uniqueEmrId;
 
     private String name;
 
@@ -40,14 +40,6 @@ public class Prescription extends GenericCollection {
 
     public void setId(String id) {
 	this.id = id;
-    }
-
-    public String getUniqueId() {
-	return uniqueId;
-    }
-
-    public void setUniqueId(String uniqueId) {
-	this.uniqueId = uniqueId;
     }
 
     public String getName() {
@@ -146,10 +138,19 @@ public class Prescription extends GenericCollection {
 	this.isFeedbackAvailable = isFeedbackAvailable;
     }
 
-    @Override
-    public String toString() {
-	return "Prescription [id=" + id + ", uniqueId=" + uniqueId + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId
-		+ ", hospitalId=" + hospitalId + ", items=" + items + ", inHistory=" + inHistory + ", discarded=" + discarded + ", tests=" + tests + ", advice="
-		+ advice + ", visitId=" + visitId + ", patientId=" + patientId + ", isFeedbackAvailable=" + isFeedbackAvailable + "]";
-    }
+	public String getUniqueEmrId() {
+		return uniqueEmrId;
+	}
+
+	public void setUniqueEmrId(String uniqueEmrId) {
+		this.uniqueEmrId = uniqueEmrId;
+	}
+
+	@Override
+	public String toString() {
+		return "Prescription [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", name=" + name + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", items=" + items + ", inHistory="
+				+ inHistory + ", discarded=" + discarded + ", tests=" + tests + ", advice=" + advice + ", visitId="
+				+ visitId + ", patientId=" + patientId + ", isFeedbackAvailable=" + isFeedbackAvailable + "]";
+	}
 }

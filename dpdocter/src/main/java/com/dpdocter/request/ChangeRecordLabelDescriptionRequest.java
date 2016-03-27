@@ -6,7 +6,7 @@ public class ChangeRecordLabelDescriptionRequest {
 
     private String label;
 
-    private String description;
+    private String explanation;
 
     public String getRecordId() {
 	return recordId;
@@ -24,16 +24,18 @@ public class ChangeRecordLabelDescriptionRequest {
 	this.label = label;
     }
 
-    public String getDescription() {
-	return description;
-    }
+	public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    @Override
-    public String toString() {
-	return "ChangeRecordLabelDescriptionRequest [recordId=" + recordId + ", label=" + label + ", description=" + description + "]";
-    }
+	@Override
+	public String toString() {
+		return "ChangeRecordLabelDescriptionRequest [recordId=" + recordId + ", label=" + label + ", explanation="
+				+ explanation + "]";
+	}
+
 }

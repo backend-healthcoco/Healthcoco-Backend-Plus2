@@ -14,7 +14,7 @@ public class BloodGroupCollection extends GenericCollection {
     private String bloodGroup;
 
     @Field
-    private String description;
+    private String explanation;
 
     public String getId() {
 	return id;
@@ -32,16 +32,16 @@ public class BloodGroupCollection extends GenericCollection {
 	this.bloodGroup = bloodGroup;
     }
 
-    public String getDescription() {
-	return description;
-    }
+	public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    @Override
-    public String toString() {
-	return "BloodGroupCollection [id=" + id + ", bloodGroup=" + bloodGroup + ", description=" + description + "]";
-    }
+	@Override
+	public String toString() {
+		return "BloodGroupCollection [id=" + id + ", bloodGroup=" + bloodGroup + ", explanation=" + explanation + "]";
+	}
 }

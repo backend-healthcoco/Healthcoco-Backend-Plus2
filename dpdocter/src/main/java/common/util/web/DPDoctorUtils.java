@@ -2,6 +2,9 @@ package common.util.web;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -67,13 +70,17 @@ public class DPDoctorUtils {
 	return new DPDoctorUtils();
     }
 
-    public static String getSHA3SecurePassword(String password) throws UnsupportedEncodingException {
+    public static char[] getSHA3SecurePassword(char[] password) throws UnsupportedEncodingException {
 	DigestSHA3 md = new DigestSHA3(256);
-	md.update(password.getBytes("UTF-8"));
+	byte[] buffer = new byte[password.length];
+	for (int i = 0; i < buffer.length; i++) {
+		 buffer[i] = (byte) password[i];
+	 }
+	md.update(buffer);
 	byte[] digest = md.digest();
 
 	BigInteger bigInt = new BigInteger(1, digest);
-	return bigInt.toString(16);
+	return bigInt.toString(16).toCharArray();
     }
 
     public static String generateRandomId() {
@@ -108,4 +115,14 @@ public class DPDoctorUtils {
 	return (rad * 180.0 / Math.PI);
     }
 
+    public static char[] generateSalt() throws NoSuchAlgorithmException, NoSuchProviderException {
+    	SecureRandom sr = SecureRandom.getInstance("SHA1PRNG", "SUN");
+        byte[] salt = new byte[16];
+        sr.nextBytes(salt);
+        char[] result = new char[salt.length];
+        for (int i = 0; i < result.length; i++) {
+        	result[i] = (char) salt[i];
+   	 }
+        return result;
+   }
 }

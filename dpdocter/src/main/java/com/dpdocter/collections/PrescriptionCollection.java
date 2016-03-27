@@ -14,7 +14,7 @@ public class PrescriptionCollection extends GenericCollection {
     private String id;
 
     @Field
-    private String uniqueId;
+    private String uniqueEmrId;
 
     @Field
     private String name;
@@ -58,14 +58,6 @@ public class PrescriptionCollection extends GenericCollection {
 
     public void setId(String id) {
 	this.id = id;
-    }
-
-    public String getUniqueId() {
-	return uniqueId;
-    }
-
-    public void setUniqueId(String uniqueId) {
-	this.uniqueId = uniqueId;
     }
 
     public String getName() {
@@ -164,11 +156,20 @@ public class PrescriptionCollection extends GenericCollection {
 	this.isFeedbackAvailable = isFeedbackAvailable;
     }
 
-    @Override
-    public String toString() {
-	return "PrescriptionCollection [id=" + id + ", uniqueId=" + uniqueId + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId
-		+ ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", items=" + items + ", tests=" + tests + ", patientId=" + patientId
-		+ ", prescriptionCode=" + prescriptionCode + ", inHistory=" + inHistory + ", advice=" + advice + ", isFeedbackAvailable=" + isFeedbackAvailable
-		+ "]";
-    }
+	public String getUniqueEmrId() {
+		return uniqueEmrId;
+	}
+
+	public void setUniqueEmrId(String uniqueEmrId) {
+		this.uniqueEmrId = uniqueEmrId;
+	}
+
+	@Override
+	public String toString() {
+		return "PrescriptionCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", name=" + name + ", doctorId="
+				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ ", items=" + items + ", tests=" + tests + ", patientId=" + patientId + ", prescriptionCode="
+				+ prescriptionCode + ", inHistory=" + inHistory + ", advice=" + advice + ", isFeedbackAvailable="
+				+ isFeedbackAvailable + "]";
+	}
 }

@@ -131,6 +131,6 @@ public interface PrescriptionServices {
 
     Boolean deleteDiagnosticTest(String diagnosticTestId, String hospitalId, String locationId, Boolean discarded);
 
-    PrescriptionTestAndRecord checkPrescriptionExists(String uniqueId, String patientId);
+    PrescriptionTestAndRecord checkPrescriptionExists(String uniqueEmrId, String patientId);
 
 }

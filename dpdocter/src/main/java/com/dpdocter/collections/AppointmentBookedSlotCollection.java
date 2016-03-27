@@ -30,8 +30,14 @@ public class AppointmentBookedSlotCollection extends GenericCollection {
     private WorkingHours time;
 
     @Field
-    private Date date;
+    private Date fromDate;
 
+    @Field
+    private Date toDate;
+
+    @Field
+    private Boolean isAllDayEvent = false;
+    
     public String getId() {
 	return id;
     }
@@ -80,17 +86,34 @@ public class AppointmentBookedSlotCollection extends GenericCollection {
 	this.time = time;
     }
 
-    public Date getDate() {
-	return date;
-    }
+	public Date getFromDate() {
+		return fromDate;
+	}
 
-    public void setDate(Date date) {
-	this.date = date;
-    }
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
 
-    @Override
-    public String toString() {
-	return "AppointmentBookedSlotCollection [id=" + id + ", appointmentId=" + appointmentId + ", doctorId=" + doctorId + ", locationId=" + locationId
-		+ ", hospitalId=" + hospitalId + ", time=" + time + ", date=" + date + "]";
-    }
+	public Date getToDate() {
+		return toDate;
+	}
+
+	public void setToDate(Date toDate) {
+		this.toDate = toDate;
+	}
+
+	public Boolean getIsAllDayEvent() {
+		return isAllDayEvent;
+	}
+
+	public void setIsAllDayEvent(Boolean isAllDayEvent) {
+		this.isAllDayEvent = isAllDayEvent;
+	}
+
+	@Override
+	public String toString() {
+		return "AppointmentBookedSlotCollection [id=" + id + ", appointmentId=" + appointmentId + ", doctorId="
+				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", time=" + time
+				+ ", fromDate=" + fromDate + ", toDate=" + toDate + ", isAllDayEvent=" + isAllDayEvent + "]";
+	}
 }

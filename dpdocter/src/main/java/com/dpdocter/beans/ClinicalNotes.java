@@ -8,7 +8,7 @@ public class ClinicalNotes extends GenericCollection {
 
     private String id;
 
-    private String uniqueId;
+    private String uniqueEmrId;
 
     private List<Complaint> complaints;
 
@@ -158,19 +158,20 @@ public class ClinicalNotes extends GenericCollection {
 	this.vitalSigns = vitalSigns;
     }
 
-    public String getUniqueId() {
-	return uniqueId;
-    }
+	public String getUniqueEmrId() {
+		return uniqueEmrId;
+	}
 
-    public void setUniqueId(String uniqueId) {
-	this.uniqueId = uniqueId;
-    }
+	public void setUniqueEmrId(String uniqueEmrId) {
+		this.uniqueEmrId = uniqueEmrId;
+	}
 
-    @Override
-    public String toString() {
-	return "ClinicalNotes [id=" + id + ", uniqueId=" + uniqueId + ", complaints=" + complaints + ", observations=" + observations + ", investigations="
-		+ investigations + ", diagnoses=" + diagnoses + ", diagrams=" + diagrams + ", notes=" + notes + ", doctorId=" + doctorId + ", locationId="
-		+ locationId + ", hospitalId=" + hospitalId + ", inHistory=" + inHistory + ", discarded=" + discarded + ", visitId=" + visitId + ", patientId="
-		+ patientId + ", vitalSigns=" + vitalSigns + "]";
-    }
+	@Override
+	public String toString() {
+		return "ClinicalNotes [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", complaints=" + complaints
+				+ ", observations=" + observations + ", investigations=" + investigations + ", diagnoses=" + diagnoses
+				+ ", diagrams=" + diagrams + ", notes=" + notes + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", inHistory=" + inHistory + ", discarded=" + discarded
+				+ ", visitId=" + visitId + ", patientId=" + patientId + ", vitalSigns=" + vitalSigns + "]";
+	}
 }

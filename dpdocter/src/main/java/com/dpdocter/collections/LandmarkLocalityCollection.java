@@ -20,7 +20,7 @@ public class LandmarkLocalityCollection {
     private String landmark;
 
     @Field
-    private String description;
+    private String explanation;
 
     @Field
     private double latitude;
@@ -60,15 +60,15 @@ public class LandmarkLocalityCollection {
 	this.landmark = landmark;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public double getLatitude() {
+	public double getLatitude() {
 	return latitude;
     }
 
@@ -86,7 +86,7 @@ public class LandmarkLocalityCollection {
 
     @Override
     public String toString() {
-	return "LandmarkLocalityCollection [id=" + id + ", cityId=" + cityId + ", locality=" + locality + ", landmark=" + landmark + ", description="
-		+ description + ", latitude=" + latitude + ", longitude=" + longitude + "]";
+	return "LandmarkLocalityCollection [id=" + id + ", cityId=" + cityId + ", locality=" + locality + ", landmark=" + landmark + ", explanation="
+		+ explanation + ", latitude=" + latitude + ", longitude=" + longitude + "]";
     }
 }

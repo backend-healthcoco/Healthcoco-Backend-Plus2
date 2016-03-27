@@ -64,10 +64,10 @@ public class ForgotPasswordApi {
     }
 
     @Path(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PATIENT)
-    @GET
-    public Response<Boolean> resetPasswordPatient(@PathParam(value = "mobileNumber") String mobileNumber, @PathParam(value = "password") String password) {
+    @POST
+    public Response<Boolean> resetPasswordPatient(ResetPasswordRequest request) {
 
-	Boolean isReset = forgotPasswordService.resetPasswordPatient(mobileNumber, password);
+	Boolean isReset = forgotPasswordService.resetPasswordPatient(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(isReset);
 	return response;

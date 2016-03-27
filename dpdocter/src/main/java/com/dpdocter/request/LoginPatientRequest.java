@@ -4,7 +4,7 @@ public class LoginPatientRequest {
 
     private String mobileNumber;
 
-    private String password;
+    private char[] password;
 
     public String getMobileNumber() {
 	return mobileNumber;
@@ -14,11 +14,11 @@ public class LoginPatientRequest {
 	this.mobileNumber = mobileNumber;
     }
 
-    public String getPassword() {
+    public char[] getPassword() {
 	return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(char[] password) {
 	this.password = password;
     }
 

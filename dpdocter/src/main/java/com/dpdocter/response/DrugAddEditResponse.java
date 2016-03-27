@@ -15,7 +15,7 @@ public class DrugAddEditResponse extends GenericCollection {
 
     private String drugName;
 
-    private String description;
+    private String explanation;
 
     @JsonManagedReference
     private Strength strength;
@@ -54,15 +54,15 @@ public class DrugAddEditResponse extends GenericCollection {
 	this.drugName = drugName;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public Strength getStrength() {
+	public Strength getStrength() {
 	return strength;
     }
 
@@ -112,7 +112,7 @@ public class DrugAddEditResponse extends GenericCollection {
 
     @Override
     public String toString() {
-	return "DrugAddEditResponse [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", description=" + description + ", strength=" + strength
+	return "DrugAddEditResponse [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation=" + explanation + ", strength=" + strength
 		+ ", genericNames=" + genericNames + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", drugCode="
 		+ drugCode + "]";
     }

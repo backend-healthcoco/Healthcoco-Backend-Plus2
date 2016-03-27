@@ -198,7 +198,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	    if (patientTrackCollection.getId() == null) {
 		patientTrackCollection.setCreatedTime(new Date());
-		patientTrackCollection.setUniqueId(UniqueIdInitial.VISITS.getInitial() + DPDoctorUtils.generateRandomId());
+		patientTrackCollection.setUniqueEmrId(UniqueIdInitial.VISITS.getInitial() + DPDoctorUtils.generateRandomId());
 		UserCollection userCollection = userRepository.findOne(patientTrackCollection.getDoctorId());
 		if (userCollection != null) {
 		    patientTrackCollection
@@ -266,7 +266,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		patientTrackCollection.setHospitalId(hospitalId);
 		patientTrackCollection.setVisitedTime(new Date());
 		patientTrackCollection.setCreatedTime(new Date());
-		patientTrackCollection.setUniqueId(UniqueIdInitial.VISITS.getInitial() + DPDoctorUtils.generateRandomId());
+		patientTrackCollection.setUniqueEmrId(UniqueIdInitial.VISITS.getInitial() + DPDoctorUtils.generateRandomId());
 		if (patientCollection != null) {
 		    patientTrackCollection.setPatientId(patientCollection.getUserId());
 		}
@@ -578,7 +578,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		pid = "Patient Id: " + (patient != null ? patient.getPID() : "--") + "<br>";
 		refferedBy = "Reffered By: " + (refferedBy != "" ? refferedBy : "--") + "<br>";
 		date = "Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()) + "<br>";
-		resourceId = "ClinicalNotesId: " + (patientVisitCollection.getUniqueId() != null ? patientVisitCollection.getUniqueId() : "--") + "<br>";
+		resourceId = "ClinicalNotesId: " + (patientVisitCollection.getUniqueEmrId() != null ? patientVisitCollection.getUniqueEmrId() : "--") + "<br>";
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(patientVisitCollection.getDoctorId(),
 			patientVisitCollection.getLocationId(), patientVisitCollection.getHospitalId(), ComponentType.ALL.getType());
 

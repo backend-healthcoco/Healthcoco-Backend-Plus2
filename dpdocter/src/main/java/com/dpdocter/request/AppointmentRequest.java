@@ -22,7 +22,9 @@ public class AppointmentRequest {
 
     private WorkingHours time;
 
-    private Date date;
+    private Date fromDate;
+    
+    private Date toDate;
 
     private AppointmentCreatedBy createdBy;
 
@@ -82,14 +84,6 @@ public class AppointmentRequest {
 	this.time = time;
     }
 
-    public Date getDate() {
-	return date;
-    }
-
-    public void setDate(Date date) {
-	this.date = date;
-    }
-
     public AppointmentCreatedBy getCreatedBy() {
 	return createdBy;
     }
@@ -138,11 +132,28 @@ public class AppointmentRequest {
 	this.hospitalId = hospitalId;
     }
 
-    @Override
-    public String toString() {
-	return "AppointmentRequest [appointmentId=" + appointmentId + ", state=" + state + ", doctorId=" + doctorId + ", locationId=" + locationId
-		+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", time=" + time + ", date=" + date + ", createdBy=" + createdBy
-		+ ", notifyPatientBySms=" + notifyPatientBySms + ", notifyPatientByEmail=" + notifyPatientByEmail + ", notifyDoctorBySms=" + notifyDoctorBySms
-		+ ", notifyDoctorByEmail=" + notifyDoctorByEmail + "]";
-    }
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
+
+	public Date getToDate() {
+		return toDate;
+	}
+
+	public void setToDate(Date toDate) {
+		this.toDate = toDate;
+	}
+
+	@Override
+	public String toString() {
+		return "AppointmentRequest [appointmentId=" + appointmentId + ", state=" + state + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", time="
+				+ time + ", fromDate=" + fromDate + ", toDate=" + toDate + ", createdBy=" + createdBy
+				+ ", notifyPatientBySms=" + notifyPatientBySms + ", notifyPatientByEmail=" + notifyPatientByEmail
+				+ ", notifyDoctorBySms=" + notifyDoctorBySms + ", notifyDoctorByEmail=" + notifyDoctorByEmail + "]";
+	}
 }

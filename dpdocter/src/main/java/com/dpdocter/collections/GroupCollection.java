@@ -14,7 +14,7 @@ public class GroupCollection extends GenericCollection {
     private String name;
 
     @Field
-    private String description;
+    private String explanation;
 
     @Field
     private String doctorId;
@@ -44,15 +44,15 @@ public class GroupCollection extends GenericCollection {
 	this.name = name;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public String getDoctorId() {
+	public String getDoctorId() {
 	return doctorId;
     }
 
@@ -86,7 +86,7 @@ public class GroupCollection extends GenericCollection {
 
     @Override
     public String toString() {
-	return "GroupCollection [id=" + id + ", name=" + name + ", description=" + description + ", doctorId=" + doctorId + ", locationId=" + locationId
+	return "GroupCollection [id=" + id + ", name=" + name + ", explanation=" + explanation + ", doctorId=" + doctorId + ", locationId=" + locationId
 		+ ", hospitalId=" + hospitalId + ", discarded=" + discarded + "]";
     }
 

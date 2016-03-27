@@ -2,6 +2,8 @@ package com.dpdocter.beans;
 
 import java.util.Date;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
@@ -24,13 +26,15 @@ public class Appointment extends GenericCollection {
 
     private Boolean isReschduled = false;
 
-    private Date date;
+    private Date fromDate;
+
+    private Date toDate;
 
     private String appointmentId;
 
     private String subject;
 
-    private String description;
+    private String explanation;
 
     private AppointmentType type;
 
@@ -38,6 +42,8 @@ public class Appointment extends GenericCollection {
 
     private Boolean isFeedbackAvailable = false;
 
+    private Boolean isAllDayEvent = false;
+    
     private String doctorName;
 
     private String locationName;
@@ -90,14 +96,6 @@ public class Appointment extends GenericCollection {
 	this.isReschduled = isReschduled;
     }
 
-    public Date getDate() {
-	return date;
-    }
-
-    public void setDate(Date date) {
-	this.date = date;
-    }
-
     public String getAppointmentId() {
 	return appointmentId;
     }
@@ -114,15 +112,15 @@ public class Appointment extends GenericCollection {
 	this.subject = subject;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public AppointmentType getType() {
+	public AppointmentType getType() {
 	return type;
     }
 
@@ -218,14 +216,39 @@ public class Appointment extends GenericCollection {
 		this.longitude = longitude;
 	}
 
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
+
+	public Date getToDate() {
+		return toDate;
+	}
+
+	public void setToDate(Date toDate) {
+		this.toDate = toDate;
+	}
+
+	public Boolean getIsAllDayEvent() {
+		return isAllDayEvent;
+	}
+
+	public void setIsAllDayEvent(Boolean isAllDayEvent) {
+		this.isAllDayEvent = isAllDayEvent;
+	}
+
 	@Override
 	public String toString() {
 		return "Appointment [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
 				+ hospitalId + ", time=" + time + ", patient=" + patient + ", state=" + state + ", isReschduled="
-				+ isReschduled + ", date=" + date + ", appointmentId=" + appointmentId + ", subject=" + subject
-				+ ", description=" + description + ", type=" + type + ", isCalenderBlocked=" + isCalenderBlocked
-				+ ", isFeedbackAvailable=" + isFeedbackAvailable + ", doctorName=" + doctorName + ", locationName="
-				+ locationName + ", clinicAddress=" + clinicAddress + ", locationPhoneNumber=" + locationPhoneNumber
-				+ ", latitude=" + latitude + ", longitude=" + longitude + "]";
+				+ isReschduled + ", fromDate=" + fromDate + ", toDate=" + toDate + ", appointmentId=" + appointmentId
+				+ ", subject=" + subject + ", explanation=" + explanation + ", type=" + type + ", isCalenderBlocked="
+				+ isCalenderBlocked + ", isFeedbackAvailable=" + isFeedbackAvailable + ", isAllDayEvent="
+				+ isAllDayEvent + ", doctorName=" + doctorName + ", locationName=" + locationName + ", clinicAddress="
+				+ clinicAddress + ", locationPhoneNumber=" + locationPhoneNumber + ", latitude=" + latitude
+				+ ", longitude=" + longitude + "]";
 	}
 }

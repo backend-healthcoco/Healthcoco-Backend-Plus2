@@ -50,7 +50,7 @@ public interface RecordsService {
 
     Records editRecord(RecordsEditRequest request);
 
-    void changeLabelAndDescription(String recordId, String label, String description);
+    void changeLabelAndDescription(String recordId, String label, String explanation);
 
     List<Records> getRecordsByPatientId(String patientId, int page, int size, String updatedTime, Boolean discarded);
 

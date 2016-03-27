@@ -6,7 +6,7 @@ public class RecordsAddRequestMultipart {
 
     private String doctorId;
 
-    private String description;
+    private String explanation;
 
     private String fileName;
 
@@ -36,15 +36,15 @@ public class RecordsAddRequestMultipart {
 	this.doctorId = doctorId;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public String getFileName() {
+	public String getFileName() {
 	return fileName;
     }
 
@@ -94,7 +94,7 @@ public class RecordsAddRequestMultipart {
 
     @Override
     public String toString() {
-	return "RecordsAddRequestMultipart [patientId=" + patientId + ", doctorId=" + doctorId + ", description=" + description + ", fileName=" + fileName
+	return "RecordsAddRequestMultipart [patientId=" + patientId + ", doctorId=" + doctorId + ", explanation=" + explanation + ", fileName=" + fileName
 		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", recordsType=" + recordsType + ", createdBy=" + createdBy + ", visitId="
 		+ visitId + "]";
     }

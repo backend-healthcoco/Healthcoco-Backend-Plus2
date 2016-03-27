@@ -28,7 +28,7 @@ public class IssueTrackCollection extends GenericCollection {
     private String subject;
 
     @Field
-    private String description;
+    private String explanation;
 
     @Field
     private IssueStatus status = IssueStatus.OPEN;
@@ -76,15 +76,15 @@ public class IssueTrackCollection extends GenericCollection {
 	this.subject = subject;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public IssueStatus getStatus() {
+	public IssueStatus getStatus() {
 	return status;
     }
 
@@ -111,6 +111,6 @@ public class IssueTrackCollection extends GenericCollection {
     @Override
     public String toString() {
 	return "IssueTrackCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", issueCode="
-		+ issueCode + ", subject=" + subject + ", description=" + description + ", status=" + status + ", discarded=" + discarded + "]";
+		+ issueCode + ", subject=" + subject + ", explanation=" + explanation + ", status=" + status + ", discarded=" + discarded + "]";
     }
 }

@@ -1,6 +1,7 @@
 package com.dpdocter.services.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -48,6 +49,8 @@ import com.dpdocter.request.LoginPatientRequest;
 import com.dpdocter.request.LoginRequest;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.LoginService;
+
+import common.util.web.DPDoctorUtils;
 
 /**
  * @author veeraj
@@ -103,7 +106,7 @@ public class LoginServiceImpl implements LoginService {
 	    /**
 	     * Check if user exist.
 	     */
-		Criteria criteria = new Criteria("password").is(request.getPassword()).and("userName").regex(request.getUsername(), "i");
+		Criteria criteria = new Criteria("userName").regex(request.getUsername(), "i");
 		Query query = new Query(); query.addCriteria(criteria);
 		List<UserCollection> userCollections = mongoTemplate.find(query, UserCollection.class);
 		UserCollection userCollection = null;
@@ -113,7 +116,18 @@ public class LoginServiceImpl implements LoginService {
 		logger.warn(login);
 		throw new BusinessException(ServiceError.InvalidInput, login);
 	    }
-
+	    else{
+	    	char[] salt = userCollection.getSalt();
+	        char[] passwordWithSalt = new char[request.getPassword().length + salt.length]; 
+		    for(int i = 0; i < request.getPassword().length; i++)
+		        passwordWithSalt[i] = request.getPassword()[i];
+		    for(int i = 0; i < salt.length; i++)
+		    	passwordWithSalt[i+request.getPassword().length] = salt[i];
+		    if(!Arrays.equals(userCollection.getPassword(), DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt))){
+		    	logger.warn(login);
+				throw new BusinessException(ServiceError.InvalidInput, login);
+		    }
+	    }
 	    User user = new User();
 	    BeanUtil.map(userCollection, user);
 	    /**
@@ -132,24 +146,6 @@ public class LoginServiceImpl implements LoginService {
 		RoleCollection roleCollection = roleRepository.findOne(userRoleCollection.getRoleId());
 		if (roleCollection.getRole().equalsIgnoreCase(RoleEnum.PATIENT.getRole())
 			|| roleCollection.getRole().equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole())) {
-		    // if (!userCollection.getIsVerified()) {
-		    // logger.warn("This user is not verified");
-		    // throw new BusinessException(ServiceError.NotAuthorized,
-		    // "This user is not verified");
-		    // }
-		    // if (!userCollection.getIsActive()) {
-		    // logger.warn("This user is not activated");
-		    // throw new BusinessException(ServiceError.NotAuthorized,
-		    // "This user is not activated");
-		    // }
-		    //
-		    // userCollection.setLastSession(new Date());
-		    // userCollection = userRepository.save(userCollection);
-		    //
-		    // response = new LoginResponse();
-		    // response.setUser(user);
-		    // response.setIsTempPassword(userCollection.getIsTempPassword());
-		    // return response;
 		    logger.warn("Invalid User");
 		    throw new BusinessException(ServiceError.NotAuthorized, "Invalid User");
 
@@ -261,45 +257,58 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public LoginResponse loginPatient(LoginPatientRequest request) {
-	LoginResponse response = null;
+    public List<User>  loginPatient(LoginPatientRequest request) {
+    	List<User> response = null;
 	try {
-		Criteria criteria = new Criteria("password").is(request.getPassword()).and("mobileNumber").is(request.getMobileNumber());
+		Criteria criteria = new Criteria("mobileNumber").is(request.getMobileNumber());
 		Query query = new Query(); query.addCriteria(criteria);
 		List<UserCollection> userCollections = mongoTemplate.find(query, UserCollection.class);
-		UserCollection userCollection = null;
-		if(userCollections != null && !userCollections.isEmpty())userCollection = userCollections.get(0);
 		
-	    if (userCollection == null) {
+		for(UserCollection userCollection : userCollections){
+			if(userCollection.getEmailAddress() != null){
+				if(!userCollection.getEmailAddress().equalsIgnoreCase(userCollection.getUserName())){
+				    User user = new User();
+				    char[] salt = userCollection.getSalt();
+					char[] passwordWithSalt = new char[request.getPassword().length + salt.length]; 
+					for(int i = 0; i < request.getPassword().length; i++)
+						        passwordWithSalt[i] = request.getPassword()[i];
+					for(int i = 0; i < salt.length; i++)
+						    	passwordWithSalt[i+request.getPassword().length] = salt[i];
+					if(!Arrays.equals(userCollection.getPassword(), DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt))){
+						    	logger.warn(login);
+								throw new BusinessException(ServiceError.InvalidInput, login);
+				    }
+				    BeanUtil.map(userCollection, user);
+				    PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(),null,null, null);
+				    if(patientCollection != null)BeanUtil.map(patientCollection, user);
+				    if(response == null)response = new ArrayList<User>();
+				    response.add(user);
+				}
+			}else{
+				User user = new User();
+				char[] salt = userCollection.getSalt();
+				char[] passwordWithSalt = new char[request.getPassword().length + salt.length]; 
+				for(int i = 0; i < request.getPassword().length; i++)
+					        passwordWithSalt[i] = request.getPassword()[i];
+				for(int i = 0; i < salt.length; i++)
+					    	passwordWithSalt[i+request.getPassword().length] = salt[i];
+				if(!Arrays.equals(userCollection.getPassword(), DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt))){
+					    	logger.warn(login);
+							throw new BusinessException(ServiceError.InvalidInput, login);
+			    }
+				BeanUtil.map(userCollection, user);
+				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(),null,null, null);
+				if(patientCollection != null)BeanUtil.map(patientCollection, user);
+				if(response == null)response = new ArrayList<User>();
+				response.add(user);
+			}
+			
+		}
+	    if (response == null) {
 		logger.warn(loginPatient);
 		throw new BusinessException(ServiceError.InvalidInput, loginPatient);
 	    }
-	    User user = new User();
-	    BeanUtil.map(userCollection, user);
 
-	    PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), null, null, null);
-	    if (patientCollection != null)
-		user.setBloodGroup(patientCollection.getBloodGroup());
-	    if (userCollection.getUserState() != null && userCollection.getUserState().equals(UserState.USERSTATEINCOMPLETE)) {
-		response = new LoginResponse();
-		user.setEmailAddress(user.getUserName());
-		response.setUser(user);
-		return response;
-	    }
-	    List<UserRoleCollection> userRoleCollections = userRoleRepository.findByUserId(userCollection.getId());
-
-	    for (UserRoleCollection userRoleCollection : userRoleCollections) {
-		RoleCollection roleCollection = roleRepository.findOne(userRoleCollection.getRoleId());
-		if (roleCollection.getRole().equalsIgnoreCase(RoleEnum.PATIENT.getRole())) {
-		    userCollection.setLastSession(new Date());
-		    userCollection = userRepository.save(userCollection);
-
-		    response = new LoginResponse();
-		    response.setUser(user);
-		    response.setIsTempPassword(userCollection.getIsTempPassword());
-		    return response;
-		}
-	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while login");
@@ -312,7 +321,7 @@ public class LoginServiceImpl implements LoginService {
     public User adminLogin(LoginPatientRequest request) {
 	User response = null;
 	try {
-		Criteria criteria = new Criteria("password").is(request.getPassword()).and("mobileNumber").is(request.getMobileNumber());
+		Criteria criteria = new Criteria("mobileNumber").is(request.getMobileNumber());
 		Query query = new Query(); query.addCriteria(criteria);
 		List<UserCollection> userCollections = mongoTemplate.find(query, UserCollection.class);
 		UserCollection userCollection = null;
@@ -320,6 +329,17 @@ public class LoginServiceImpl implements LoginService {
 	    if (userCollection == null) {
 		logger.warn("Invalid mobile Number and Password");
 		throw new BusinessException(ServiceError.InvalidInput, "Invalid mobile Number and Password");
+	    }else{
+	    	char[] salt = userCollection.getSalt();
+			char[] passwordWithSalt = new char[request.getPassword().length + salt.length]; 
+			for(int i = 0; i < request.getPassword().length; i++)
+				        passwordWithSalt[i] = request.getPassword()[i];
+			for(int i = 0; i < salt.length; i++)
+				    	passwordWithSalt[i+request.getPassword().length] = salt[i];
+			if(!Arrays.equals(userCollection.getPassword(), DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt))){
+				    	logger.warn(login);
+						throw new BusinessException(ServiceError.InvalidInput, login);
+		    }
 	    }
 	    User user = new User();
 	    BeanUtil.map(userCollection, user);

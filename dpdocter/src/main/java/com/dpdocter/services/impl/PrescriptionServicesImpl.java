@@ -491,7 +491,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    Date createdTime = new Date();
 	    prescriptionCollection.setCreatedTime(createdTime);
 	    prescriptionCollection.setPrescriptionCode(PrescriptionUtils.generatePrescriptionCode());
-	    prescriptionCollection.setUniqueId(UniqueIdInitial.PRESCRIPTION.getInitial()+DPDoctorUtils.generateRandomId());
+	    prescriptionCollection.setUniqueEmrId(UniqueIdInitial.PRESCRIPTION.getInitial()+DPDoctorUtils.generateRandomId());
 	    if (prescriptionCollection.getItems() != null) {
 		List<PrescriptionItem> items = null;
 		for (PrescriptionItem item : prescriptionCollection.getItems()) {
@@ -585,7 +585,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    prescriptionCollection.setCreatedTime(oldPrescription.getCreatedTime());
 	    prescriptionCollection.setDiscarded(oldPrescription.getDiscarded());
 	    prescriptionCollection.setInHistory(oldPrescription.getInHistory());
-	    prescriptionCollection.setUniqueId(oldPrescription.getUniqueId());
+	    prescriptionCollection.setUniqueEmrId(oldPrescription.getUniqueEmrId());
 	    if (prescriptionCollection.getItems() != null) {
 		for (PrescriptionItem item : prescriptionCollection.getItems()) {
 		    List<DrugDirection> directions = null;
@@ -2594,7 +2594,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		pid= "Patient Id: " + (patient != null ? patient.getPID() : "--") + "<br>";
 		refferedBy = "Reffered By: "+ (refferedBy != "" ? refferedBy : "--") + "<br>";
 		date = "Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date())+"<br>";
-		resourceId = "ClinicalNotesId: " + (prescriptionCollection.getUniqueId() != null ? prescriptionCollection.getUniqueId() : "--") + "<br>";
+		resourceId = "ClinicalNotesId: " + (prescriptionCollection.getUniqueEmrId() != null ? prescriptionCollection.getUniqueEmrId() : "--") + "<br>";
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(doctorId, locationId, hospitalId,
 				ComponentType.PRESCRIPTIONS.getType());
 		
@@ -2774,7 +2774,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    if (userCollection != null)
 				smsDetail.setUserName(userCollection.getFirstName());
 			    SMS sms = new SMS();
-			    String uniqueId = (prescriptionCollection.getUniqueId() !=null ? ("PID:"+prescriptionCollection.getUniqueId()):"");
+			    String uniqueId = (prescriptionCollection.getUniqueEmrId() !=null ? ("PID:"+prescriptionCollection.getUniqueEmrId()):"");
 			    sms.setSmsText("Hi "+patientName+",Prescription"+uniqueId+" by "+doctorName+prescriptionDetails+".Pls call"+clinicContactNum+" in case of query");
 
 			    SMSAddress smsAddress = new SMSAddress();
@@ -3358,11 +3358,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 }
 
 		@Override
-		public PrescriptionTestAndRecord checkPrescriptionExists(String uniqueId, String patientId) {
+		public PrescriptionTestAndRecord checkPrescriptionExists(String uniqueEmrId, String patientId) {
 			PrescriptionTestAndRecord response = null;
 			List<TestAndRecordDataResponse> tests = null;
 			try{
-				PrescriptionCollection prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(uniqueId, patientId);
+				PrescriptionCollection prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(uniqueEmrId, patientId);
 				if(prescriptionCollection != null){
 					if(prescriptionCollection.getTests() != null && !prescriptionCollection.getTests().isEmpty()){
 						tests = new ArrayList<TestAndRecordDataResponse>();
@@ -3377,7 +3377,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						}
 						if(tests != null && !tests.isEmpty()){
 							response = new PrescriptionTestAndRecord();
-							response.setUniqueId(prescriptionCollection.getUniqueId());
+							response.setUniqueEmrId(prescriptionCollection.getUniqueEmrId());
 							response.setTests(tests);
 						}
 					}else{

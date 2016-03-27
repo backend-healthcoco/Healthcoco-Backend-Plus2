@@ -14,7 +14,7 @@ public class CityCollection {
     private String city;
 
     @Field
-    private String description;
+    private String explanation;
 
     @Field
     private Boolean isActivated = true;
@@ -44,15 +44,15 @@ public class CityCollection {
 	this.city = city;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public Boolean getIsActivated() {
+	public Boolean getIsActivated() {
 	return isActivated;
     }
 
@@ -84,10 +84,9 @@ public class CityCollection {
 	this.longitude = longitude;
     }
 
-    @Override
-    public String toString() {
-	return "CityCollection [id=" + id + ", city=" + city + ", description=" + description + ", isActivated=" + isActivated + ", stateId=" + stateId
-		+ ", latitude=" + latitude + ", longitude=" + longitude + "]";
-    }
-
+	@Override
+	public String toString() {
+		return "CityCollection [id=" + id + ", city=" + city + ", explanation=" + explanation + ", isActivated="
+				+ isActivated + ", stateId=" + stateId + ", latitude=" + latitude + ", longitude=" + longitude + "]";
+	}
 }

@@ -8,7 +8,7 @@ public class Landmark {
 
     private String landmark;
 
-    private String description;
+    private String explanation;
 
     public String getId() {
 	return id;
@@ -34,16 +34,17 @@ public class Landmark {
 	this.landmark = landmark;
     }
 
-    public String getDescription() {
-	return description;
-    }
+	public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    @Override
-    public String toString() {
-	return "Landmark [id=" + id + ", cityId=" + cityId + ", landmark=" + landmark + ", description=" + description + "]";
-    }
+	@Override
+	public String toString() {
+		return "Landmark [id=" + id + ", cityId=" + cityId + ", landmark=" + landmark + ", explanation=" + explanation
+				+ "]";
+	}
 }

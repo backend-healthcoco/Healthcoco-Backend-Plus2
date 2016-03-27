@@ -330,7 +330,7 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 		diseaseListResponses = new ArrayList<DiseaseListResponse>();
 		for (SolrDiseasesDocument diseasesCollection : diseasesDocuments) {
 		    DiseaseListResponse diseaseListResponse = new DiseaseListResponse(diseasesCollection.getId(), diseasesCollection.getDisease(),
-			    diseasesCollection.getDescription(), diseasesCollection.getDoctorId(), diseasesCollection.getLocationId(),
+			    diseasesCollection.getExplanation(), diseasesCollection.getDoctorId(), diseasesCollection.getLocationId(),
 			    diseasesCollection.getHospitalId(), diseasesCollection.getDiscarded(), null, diseasesCollection.getUpdatedTime(), null);
 		    diseaseListResponses.add(diseaseListResponse);
 
@@ -370,7 +370,7 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 		diseaseListResponses = new ArrayList<DiseaseListResponse>();
 		for (SolrDiseasesDocument diseasesCollection : diseasesDocuments) {
 		    DiseaseListResponse diseaseListResponse = new DiseaseListResponse(diseasesCollection.getId(), diseasesCollection.getDisease(),
-			    diseasesCollection.getDescription(), diseasesCollection.getDoctorId(), diseasesCollection.getLocationId(),
+			    diseasesCollection.getExplanation(), diseasesCollection.getDoctorId(), diseasesCollection.getLocationId(),
 			    diseasesCollection.getHospitalId(), diseasesCollection.getDiscarded(), null, diseasesCollection.getUpdatedTime(), null);
 		    diseaseListResponses.add(diseaseListResponse);
 
@@ -446,7 +446,7 @@ public class SolrMasterServiceImpl implements SolrMasterService {
 		diseaseListResponses = new ArrayList<DiseaseListResponse>();
 		for (SolrDiseasesDocument diseasesCollection : diseasesDocuments) {
 		    DiseaseListResponse diseaseListResponse = new DiseaseListResponse(diseasesCollection.getId(), diseasesCollection.getDisease(),
-			    diseasesCollection.getDescription(), diseasesCollection.getDoctorId(), diseasesCollection.getLocationId(),
+			    diseasesCollection.getExplanation(), diseasesCollection.getDoctorId(), diseasesCollection.getLocationId(),
 			    diseasesCollection.getHospitalId(), diseasesCollection.getDiscarded(), null, diseasesCollection.getUpdatedTime(), null);
 		    diseaseListResponses.add(diseaseListResponse);
 

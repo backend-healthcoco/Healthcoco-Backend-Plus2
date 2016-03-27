@@ -310,7 +310,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    } else {
 		diagramIds = request.getDiagrams();
 	    }
-	    clinicalNotesCollection.setUniqueId(UniqueIdInitial.CLINICALNOTES.getInitial() + DPDoctorUtils.generateRandomId());
+	    clinicalNotesCollection.setUniqueEmrId(UniqueIdInitial.CLINICALNOTES.getInitial() + DPDoctorUtils.generateRandomId());
 	    clinicalNotesCollection.setCreatedTime(createdTime);
 	    UserCollection userCollection = userRepository.findOne(clinicalNotesCollection.getDoctorId());
 	    if (userCollection != null) {
@@ -627,7 +627,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    clinicalNotesCollection.setDiscarded(oldClinicalNotesCollection.getDiscarded());
 	    clinicalNotesCollection.setInHistory(oldClinicalNotesCollection.isInHistory());
 	    clinicalNotesCollection.setUpdatedTime(new Date());
-	    clinicalNotesCollection.setUniqueId(oldClinicalNotesCollection.getUniqueId());
+	    clinicalNotesCollection.setUniqueEmrId(oldClinicalNotesCollection.getUniqueEmrId());
 	    clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
 	    if (clinicalNotesCollection != null) {
 		if (request.getId() == null) {
@@ -1922,7 +1922,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	 	   
 		    List<SpecialityCollection> specialityCollections = specialityRepository.findById(doctorCollection.getSpecialities());
 		    @SuppressWarnings("unchecked")
-		    Collection<String> specialities = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("speciality"));
+		    Collection<String> specialities = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("superSpeciality"));
 		   
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
@@ -1999,7 +1999,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	   
 	    List<SpecialityCollection> specialityCollections = specialityRepository.findById(doctorCollection.getSpecialities());
 	    @SuppressWarnings("unchecked")
-	    Collection<String> specialities = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("speciality"));
+	    Collection<String> specialities = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("superSpeciality"));
 	    
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
@@ -2209,7 +2209,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		pid = "Patient Id: " + (patient != null ? patient.getPID() : "--") + "<br>";
 		refferedBy = "Reffered By: " + (refferedBy != "" ? refferedBy : "--") + "<br>";
 		date = "Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()) + "<br>";
-		resourceId = "ClinicalNotesId: " + (clinicalNotesCollection.getUniqueId() != null ? clinicalNotesCollection.getUniqueId() : "--") + "<br>";
+		resourceId = "ClinicalNotesId: " + (clinicalNotesCollection.getUniqueEmrId() != null ? clinicalNotesCollection.getUniqueEmrId() : "--") + "<br>";
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(doctorId, locationId, hospitalId,
 			ComponentType.CLINICAL_NOTES.getType());
 

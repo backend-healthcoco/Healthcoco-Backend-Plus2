@@ -19,7 +19,7 @@ public class DrugCollection extends GenericCollection {
     private String drugName;
 
     @Field
-    private String description;
+    private String explanation;
 
     @Field
     private Strength strength;
@@ -75,15 +75,15 @@ public class DrugCollection extends GenericCollection {
 	this.drugName = drugName;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public Strength getStrength() {
+	public Strength getStrength() {
 	return strength;
     }
 
@@ -165,7 +165,7 @@ public class DrugCollection extends GenericCollection {
 
     @Override
     public String toString() {
-	return "DrugCollection [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", description=" + description + ", strength=" + strength
+	return "DrugCollection [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation=" + explanation + ", strength=" + strength
 		+ ", genericId=" + genericId + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", discarded="
 		+ discarded + ", drugCode=" + drugCode + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP=" + MRP + "]";
     }

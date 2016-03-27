@@ -14,7 +14,7 @@ public class DoctorSignupRequest {
 
     private String userName;
 
-    private String password;
+    private char[] password;
 
     private String emailAddress;
 
@@ -92,11 +92,11 @@ public class DoctorSignupRequest {
 	this.userName = userName;
     }
 
-    public String getPassword() {
+    public char[] getPassword() {
 	return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(char[] password) {
 	this.password = password;
     }
 

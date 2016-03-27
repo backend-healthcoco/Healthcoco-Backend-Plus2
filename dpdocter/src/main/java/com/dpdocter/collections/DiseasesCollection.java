@@ -23,7 +23,7 @@ public class DiseasesCollection extends GenericCollection {
     private String disease;
 
     @Field
-    private String description;
+    private String explanation;
 
     @Field
     private Boolean discarded = false;
@@ -68,15 +68,15 @@ public class DiseasesCollection extends GenericCollection {
 	this.disease = disease;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public Boolean getDiscarded() {
+	public Boolean getDiscarded() {
 	return discarded;
     }
 
@@ -87,7 +87,7 @@ public class DiseasesCollection extends GenericCollection {
     @Override
     public String toString() {
 	return "DiseasesCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", disease=" + disease
-		+ ", description=" + description + ", discarded=" + discarded + "]";
+		+ ", explanation=" + explanation + ", discarded=" + discarded + "]";
     }
 
 }

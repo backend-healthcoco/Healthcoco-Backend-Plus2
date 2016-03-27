@@ -6,7 +6,7 @@ public class CityAddRequest {
 
     private String city;
 
-    private String description;
+    private String explanation;
 
     private Boolean isActivated = false;
 
@@ -26,14 +26,6 @@ public class CityAddRequest {
 	this.city = city;
     }
 
-    public String getDescription() {
-	return description;
-    }
-
-    public void setDescription(String description) {
-	this.description = description;
-    }
-
     public Boolean getIsActivated() {
 	return isActivated;
     }
@@ -42,8 +34,17 @@ public class CityAddRequest {
 	this.isActivated = isActivated;
     }
 
-    @Override
-    public String toString() {
-	return "CityAddRequest [id=" + id + ", city=" + city + ", description=" + description + ", isActivated=" + isActivated + "]";
-    }
+	public String getExplanation() {
+		return explanation;
+	}
+
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
+
+	@Override
+	public String toString() {
+		return "CityAddRequest [id=" + id + ", city=" + city + ", explanation=" + explanation + ", isActivated="
+				+ isActivated + "]";
+	}
 }

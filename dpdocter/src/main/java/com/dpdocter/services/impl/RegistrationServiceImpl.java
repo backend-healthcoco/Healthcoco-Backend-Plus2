@@ -528,12 +528,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
 		    String imageUrl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 		    patientCollection.setImageUrl(imageUrl);
+		    userCollection.setImageUrl(null);
 		    registeredPatientDetails.setImageUrl(imageUrl);
 		    String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
 		    patientCollection.setThumbnailUrl(thumbnailUrl);
+		    userCollection.setThumbnailUrl(null);
 		    registeredPatientDetails.setThumbnailUrl(thumbnailUrl);
 		}
-		patientCollection = patientRepository.save(patientCollection);
+		
 
 		Patient patient = new Patient();
 		BeanUtil.map(patientCollection, patient);
@@ -584,7 +586,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    if (professionCollection != null)
 			patientCollection.setProfession(professionCollection.getProfession());
 		}
-		patientCollection = patientRepository.save(patientCollection);
+		
 
 		ReferencesCollection referencesCollection = null;
 		if (request.getReferredBy() != null) {
@@ -660,13 +662,18 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
 		    String imageUrl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
 		    patientCollection.setImageUrl(imageUrl);
+		    userCollection.setImageUrl(null);
 		    registeredPatientDetails.setImageUrl(imageUrl);
-		    userCollection = userRepository.save(userCollection);
+		    
 		    String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
 		    patientCollection.setThumbnailUrl(thumbnailUrl);
+		    userCollection.setThumbnailUrl(null);
 		    registeredPatientDetails.setThumbnailUrl(thumbnailUrl);
 		}
 		registeredPatientDetails.setUserId(userCollection.getId());
+		patientCollection = patientRepository.save(patientCollection);
+		registeredPatientDetails.setImageUrl(patientCollection.getImageUrl());
+		registeredPatientDetails.setThumbnailUrl(patientCollection.getThumbnailUrl());
 		Patient patient = new Patient();
 		BeanUtil.map(patientCollection, patient);
 		patient.setPatientId(patientCollection.getId());
@@ -762,6 +769,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				}
 			    }
 			    if(!isPartOfClinic){
+			    	user.setId(userCollection.getId());
 			    	user.setFirstName(userCollection.getFirstName());
 			    	user.setMobileNumber(userCollection.getMobileNumber());
 			    }else{
@@ -782,8 +790,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 	return users;
     }
 
-    private String generateRandomAlphanumericString(int count) {
-	return RandomStringUtils.randomAlphabetic(count);
+    private char[] generateRandomAlphanumericString(int count) {
+	return RandomStringUtils.randomAlphabetic(count).toCharArray();
     }
 
     @Override

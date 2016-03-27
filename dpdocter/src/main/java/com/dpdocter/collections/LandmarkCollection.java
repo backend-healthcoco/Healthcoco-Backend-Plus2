@@ -17,7 +17,7 @@ public class LandmarkCollection {
     private String landmark;
 
     @Field
-    private String description;
+    private String explanation;
 
     public String getId() {
 	return id;
@@ -43,16 +43,16 @@ public class LandmarkCollection {
 	this.landmark = landmark;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    @Override
+	@Override
     public String toString() {
-	return "LandmarkCollection [id=" + id + ", cityId=" + cityId + ", landmark=" + landmark + ", description=" + description + "]";
+	return "LandmarkCollection [id=" + id + ", cityId=" + cityId + ", landmark=" + landmark + ", explanation=" + explanation + "]";
     }
 }

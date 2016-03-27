@@ -3,7 +3,7 @@ package com.dpdocter.request;
 public class PatientSignupRequestMobile {
     private String name;
 
-    private String password;
+    private char[] password;
 
     private String mobileNumber;
 
@@ -17,11 +17,11 @@ public class PatientSignupRequestMobile {
 	this.name = name;
     }
 
-    public String getPassword() {
+    public char[] getPassword() {
 	return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(char[] password) {
 	this.password = password;
     }
 

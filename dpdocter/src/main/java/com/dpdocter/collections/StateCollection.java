@@ -15,7 +15,7 @@ public class StateCollection {
     private String state;
 
     @Field
-    private String description;
+    private String explanation;
 
     @Field
     private Boolean isActivated = true;
@@ -45,15 +45,15 @@ public class StateCollection {
 	this.state = state;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public Boolean getIsActivated() {
+	public Boolean getIsActivated() {
 	return isActivated;
     }
 
@@ -87,7 +87,7 @@ public class StateCollection {
 
     @Override
     public String toString() {
-	return "StateCollection [id=" + id + ", state=" + state + ", description=" + description + ", isActivated=" + isActivated + ", countryId=" + countryId
+	return "StateCollection [id=" + id + ", state=" + state + ", explanation=" + explanation + ", isActivated=" + isActivated + ", countryId=" + countryId
 		+ ", latitude=" + latitude + ", longitude=" + longitude + "]";
     }
 }

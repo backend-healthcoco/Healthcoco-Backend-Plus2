@@ -839,8 +839,8 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.CHECK_PRESCRIPTION_EXISTS_FOR_PATIENT)
     @GET
-    public Response<PrescriptionTestAndRecord> checkPrescriptionExists(@PathParam("uniqueId") String uniqueId, @PathParam("patientId") String patientId) {
-	PrescriptionTestAndRecord dataResponse = prescriptionServices.checkPrescriptionExists(uniqueId, patientId);
+    public Response<PrescriptionTestAndRecord> checkPrescriptionExists(@PathParam("uniqueEmrId") String uniqueEmrId, @PathParam("patientId") String patientId) {
+	PrescriptionTestAndRecord dataResponse = prescriptionServices.checkPrescriptionExists(uniqueEmrId, patientId);
 
 	Response<PrescriptionTestAndRecord> response = new Response<PrescriptionTestAndRecord>();
 	response.setData(dataResponse);

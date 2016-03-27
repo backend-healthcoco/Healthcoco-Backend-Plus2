@@ -7,7 +7,7 @@ public class Drug {
 
     private String drugName;
 
-    private String description;
+    private String explanation;
 
     private Strength strength;
 
@@ -53,15 +53,15 @@ public class Drug {
 	this.drugName = drugName;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public Strength getStrength() {
+	public Strength getStrength() {
 	return strength;
     }
 
@@ -141,10 +141,12 @@ public class Drug {
 	this.locationId = locationId;
     }
 
-    @Override
-    public String toString() {
-	return "Drug [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", description=" + description + ", strength=" + strength
-		+ ", genericId=" + genericId + ", drugCode=" + drugCode + ", discarded=" + discarded + ", companyName=" + companyName + ", packSize=" + packSize
-		+ ", MRP=" + MRP + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + "]";
-    }
+	@Override
+	public String toString() {
+		return "Drug [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation=" + explanation
+				+ ", strength=" + strength + ", genericId=" + genericId + ", drugCode=" + drugCode + ", discarded="
+				+ discarded + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP=" + MRP + ", doctorId="
+				+ doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + "]";
+	}
+
 }

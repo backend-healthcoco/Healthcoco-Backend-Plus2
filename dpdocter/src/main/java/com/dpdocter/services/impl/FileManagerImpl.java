@@ -79,7 +79,7 @@ public class FileManagerImpl implements FileManager {
     @Override
     public String saveThumbnailAndReturnThumbNailUrl(FileDetails fileDetails, String path) {
 	String thumbnailUrl = "";
-	BufferedImage img = new BufferedImage(120, 120, BufferedImage.TYPE_INT_RGB);
+	
 	try {
 	    BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
 	    AmazonS3 s3client = new AmazonS3Client(credentials);
@@ -88,7 +88,26 @@ public class FileManagerImpl implements FileManager {
 		    .getObject(new GetObjectRequest(bucketName, path + File.separator + fileDetails.getFileName() + "." + fileDetails.getFileExtension()));
 	    InputStream objectData = object.getObjectContent();
 
-	    img.createGraphics().drawImage(ImageIO.read(objectData).getScaledInstance(120, 120, Image.SCALE_SMOOTH), 0, 0, null);
+	    BufferedImage originalImage = ImageIO.read(objectData);
+	    double ratio = (double) originalImage.getWidth() / originalImage.getHeight();
+	    int height = originalImage.getHeight();	
+
+	    int width = originalImage.getWidth();
+	    int max = 120;
+	    if (width == height) {
+	    	width = max;
+	    	height = max;
+	    } 
+	    else if (width > height) {
+	    	height = max;
+	    	width = (int) (ratio * max);
+	    }
+	    else {
+	    	width = max;
+	    	height = (int) (max / ratio);
+	    }
+	    BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+	    img.createGraphics().drawImage(originalImage.getScaledInstance(width, height, Image.SCALE_SMOOTH), 0, 0, null);
 	    String fileName = fileDetails.getFileName() + "_thumb." + fileDetails.getFileExtension();
 	    thumbnailUrl = path + "/" + fileName;
 

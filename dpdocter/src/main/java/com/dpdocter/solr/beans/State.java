@@ -5,7 +5,7 @@ public class State {
 
     private String state;
 
-    private String description;
+    private String explanation;
 
     private Boolean isActivated = true;
 
@@ -31,15 +31,15 @@ public class State {
 	this.state = state;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public Boolean getIsActivated() {
+	public Boolean getIsActivated() {
 	return isActivated;
     }
 
@@ -73,7 +73,7 @@ public class State {
 
     @Override
     public String toString() {
-	return "State [id=" + id + ", state=" + state + ", description=" + description + ", isActivated=" + isActivated + ", countryId=" + countryId
+	return "State [id=" + id + ", state=" + state + ", explanation=" + explanation + ", isActivated=" + isActivated + ", countryId=" + countryId
 		+ ", latitude=" + latitude + ", longitude=" + longitude + "]";
     }
 }

@@ -17,7 +17,7 @@ public class SolrReferenceDocument {
     private String reference;
 
     @Field
-    private String description;
+    private String explanation;
 
     @Field
     private String doctorId;
@@ -50,15 +50,15 @@ public class SolrReferenceDocument {
 	this.reference = reference;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public String getDoctorId() {
+	public String getDoctorId() {
 	return doctorId;
     }
 
@@ -98,9 +98,11 @@ public class SolrReferenceDocument {
 	this.updatedTime = updatedTime;
     }
 
-    @Override
-    public String toString() {
-	return "SolrReferenceDocument [id=" + id + ", reference=" + reference + ", description=" + description + ", doctorId=" + doctorId + ", locationId="
-		+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", updatedTime=" + updatedTime + "]";
-    }
+	@Override
+	public String toString() {
+		return "SolrReferenceDocument [id=" + id + ", reference=" + reference + ", explanation=" + explanation
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", discarded=" + discarded + ", updatedTime=" + updatedTime + "]";
+	}
+
 }

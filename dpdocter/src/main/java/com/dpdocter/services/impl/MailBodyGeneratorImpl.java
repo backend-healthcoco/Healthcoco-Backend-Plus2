@@ -56,7 +56,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
     }
 
     @Override
-    public String generatePatientRegistrationEmailBody(String userName, String password, String firstName, String lastName) {
+    public String generatePatientRegistrationEmailBody(String userName, char[] password, String firstName, String lastName) {
 	StringBuffer body = new StringBuffer();
 	body.append("Dear " + firstName + " " + lastName + ", \n");
 	body.append("Your username is " + userName + " and password is " + password);

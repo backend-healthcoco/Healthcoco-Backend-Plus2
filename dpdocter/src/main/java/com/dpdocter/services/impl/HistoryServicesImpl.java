@@ -863,7 +863,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		diseaseListResponses = new ArrayList<DiseaseListResponse>();
 		for (DiseasesCollection diseasesCollection : diseasesCollections) {
 		    DiseaseListResponse diseaseListResponse = new DiseaseListResponse(diseasesCollection.getId(), diseasesCollection.getDisease(),
-			    diseasesCollection.getDescription(), diseasesCollection.getDoctorId(), diseasesCollection.getLocationId(),
+			    diseasesCollection.getExplanation(), diseasesCollection.getDoctorId(), diseasesCollection.getLocationId(),
 			    diseasesCollection.getHospitalId(), diseasesCollection.getDiscarded(), diseasesCollection.getCreatedTime(),
 			    diseasesCollection.getUpdatedTime(), diseasesCollection.getCreatedBy());
 		    diseaseListResponses.add(diseaseListResponse);
@@ -898,7 +898,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		diseaseListResponses = new ArrayList<DiseaseListResponse>();
 		for (DiseasesCollection diseasesCollection : diseasesCollections) {
 		    DiseaseListResponse diseaseListResponse = new DiseaseListResponse(diseasesCollection.getId(), diseasesCollection.getDisease(),
-			    diseasesCollection.getDescription(), diseasesCollection.getDoctorId(), diseasesCollection.getLocationId(),
+			    diseasesCollection.getExplanation(), diseasesCollection.getDoctorId(), diseasesCollection.getLocationId(),
 			    diseasesCollection.getHospitalId(), diseasesCollection.getDiscarded(), diseasesCollection.getCreatedTime(),
 			    diseasesCollection.getUpdatedTime(), diseasesCollection.getCreatedBy());
 		    diseaseListResponses.add(diseaseListResponse);
@@ -952,7 +952,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		diseaseListResponses = new ArrayList<DiseaseListResponse>();
 		for (DiseasesCollection diseasesCollection : diseasesCollections) {
 		    DiseaseListResponse diseaseListResponse = new DiseaseListResponse(diseasesCollection.getId(), diseasesCollection.getDisease(),
-			    diseasesCollection.getDescription(), diseasesCollection.getDoctorId(), diseasesCollection.getLocationId(),
+			    diseasesCollection.getExplanation(), diseasesCollection.getDoctorId(), diseasesCollection.getLocationId(),
 			    diseasesCollection.getHospitalId(), diseasesCollection.getDiscarded(), diseasesCollection.getCreatedTime(),
 			    diseasesCollection.getUpdatedTime(), diseasesCollection.getCreatedBy());
 		    diseaseListResponses.add(diseaseListResponse);

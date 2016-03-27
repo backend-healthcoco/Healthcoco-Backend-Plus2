@@ -19,7 +19,7 @@ public class TagsCollection {
     private String hospitalId;
 
     @Field
-    private String description;
+    private String explanation;
 
     @Field
     private String doctorId;
@@ -40,15 +40,15 @@ public class TagsCollection {
 	this.tag = tag;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public String getLocationId() {
+	public String getLocationId() {
 	return locationId;
     }
 
@@ -74,7 +74,7 @@ public class TagsCollection {
 
     @Override
     public String toString() {
-	return "TagsCollection [id=" + id + ", tag=" + tag + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", description=" + description
+	return "TagsCollection [id=" + id + ", tag=" + tag + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", explanation=" + explanation
 		+ ", doctorId=" + doctorId + "]";
     }
 

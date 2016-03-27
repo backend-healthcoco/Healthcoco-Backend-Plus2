@@ -19,7 +19,7 @@ public class SolrCityDocument {
     private Boolean isActivated = false;
 
     @Field
-    private String description;
+    private String explanation;
 
     @Field
     private String stateId;
@@ -58,15 +58,15 @@ public class SolrCityDocument {
 	this.isActivated = isActivated;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public String getStateId() {
+	public String getStateId() {
 	return stateId;
     }
 
@@ -100,7 +100,7 @@ public class SolrCityDocument {
 
     @Override
     public String toString() {
-	return "SolrCityDocument [id=" + id + ", city=" + city + ", isActivated=" + isActivated + ", description=" + description + ", stateId=" + stateId
+	return "SolrCityDocument [id=" + id + ", city=" + city + ", isActivated=" + isActivated + ", explanation=" + explanation + ", stateId=" + stateId
 		+ ", geoLocation=" + geoLocation + ", latitude=" + latitude + ", longitude=" + longitude + "]";
     }
 }

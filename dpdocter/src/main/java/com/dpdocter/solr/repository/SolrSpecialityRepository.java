@@ -12,7 +12,7 @@ import org.springframework.data.solr.repository.SolrCrudRepository;
 import com.dpdocter.solr.document.SolrSpecialityDocument;
 
 public interface SolrSpecialityRepository extends SolrCrudRepository<SolrSpecialityDocument, String> {
-    @Query("speciality :?0*")
+    @Query("speciality :?0*") // OR superSpeciality :?0*
     List<SolrSpecialityDocument> findByQueryAnnotation(String speciality);
 
     @Query("{'id': {'$in': ?0}}")

@@ -8,7 +8,7 @@ import com.dpdocter.collections.GenericCollection;
 public class PrescriptionAddEditResponseDetails extends GenericCollection {
     private String id;
 
-    private String uniqueId;
+    private String uniqueEmrId;
 
     private String name;
 
@@ -120,15 +120,15 @@ public class PrescriptionAddEditResponseDetails extends GenericCollection {
 	this.advice = advice;
     }
 
-    public String getUniqueId() {
-	return uniqueId;
-    }
+    public String getUniqueEmrId() {
+		return uniqueEmrId;
+	}
 
-    public void setUniqueId(String uniqueId) {
-	this.uniqueId = uniqueId;
-    }
+	public void setUniqueEmrId(String uniqueEmrId) {
+		this.uniqueEmrId = uniqueEmrId;
+	}
 
-    public List<TestAndRecordDataResponse> getTestsAndRecords() {
+	public List<TestAndRecordDataResponse> getTestsAndRecords() {
 	return testsAndRecords;
     }
 
@@ -136,10 +136,12 @@ public class PrescriptionAddEditResponseDetails extends GenericCollection {
 	this.testsAndRecords = testsAndRecords;
     }
 
-    @Override
-    public String toString() {
-	return "PrescriptionAddEditResponseDetails [id=" + id + ", uniqueId=" + uniqueId + ", name=" + name + ", doctorId=" + doctorId + ", locationId="
-		+ locationId + ", hospitalId=" + hospitalId + ", items=" + items + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode
-		+ ", discarded=" + discarded + ", visitId=" + visitId + ", testsAndRecords=" + testsAndRecords + ", advice=" + advice + "]";
-    }
+	@Override
+	public String toString() {
+		return "PrescriptionAddEditResponseDetails [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", name=" + name
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", items="
+				+ items + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + ", discarded="
+				+ discarded + ", visitId=" + visitId + ", testsAndRecords=" + testsAndRecords + ", advice=" + advice
+				+ "]";
+	}
 }

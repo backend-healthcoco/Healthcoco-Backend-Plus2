@@ -20,7 +20,7 @@ public class AppointmentCollection extends GenericCollection {
     private String subject;
 
     @Field
-    private String description;
+    private String explanation;
 
     @Field
     private String doctorId;
@@ -50,14 +50,20 @@ public class AppointmentCollection extends GenericCollection {
     private Boolean isReschduled = false;
 
     @Field
-    private Date date;
+    private Date fromDate;
 
+    @Field
+    private Date toDate;
+    
     @Field
     private Boolean isCalenderBlocked = false;
 
     @Field
     private Boolean isFeedbackAvailable = false;
 
+    @Field
+    private Boolean isAllDayEvent = false;
+    
     public String getId() {
 	return id;
     }
@@ -74,15 +80,15 @@ public class AppointmentCollection extends GenericCollection {
 	this.subject = subject;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public String getAppointmentId() {
+	public String getAppointmentId() {
 	return appointmentId;
     }
 
@@ -130,14 +136,6 @@ public class AppointmentCollection extends GenericCollection {
 	this.isReschduled = isReschduled;
     }
 
-    public Date getDate() {
-	return date;
-    }
-
-    public void setDate(Date date) {
-	this.date = date;
-    }
-
     public Boolean getIsCalenderBlocked() {
 	return isCalenderBlocked;
     }
@@ -178,11 +176,37 @@ public class AppointmentCollection extends GenericCollection {
 	this.isFeedbackAvailable = isFeedbackAvailable;
     }
 
-    @Override
-    public String toString() {
-	return "AppointmentCollection [id=" + id + ", subject=" + subject + ", description=" + description + ", doctorId=" + doctorId + ", locationId="
-		+ locationId + ", hospitalId=" + hospitalId + ", appointmentId=" + appointmentId + ", time=" + time + ", patientId=" + patientId + ", state="
-		+ state + ", type=" + type + ", isReschduled=" + isReschduled + ", date=" + date + ", isCalenderBlocked=" + isCalenderBlocked
-		+ ", isFeedbackAvailable=" + isFeedbackAvailable + "]";
-    }
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
+
+	public Date getToDate() {
+		return toDate;
+	}
+
+	public void setToDate(Date toDate) {
+		this.toDate = toDate;
+	}
+
+	public Boolean getIsAllDayEvent() {
+		return isAllDayEvent;
+	}
+
+	public void setIsAllDayEvent(Boolean isAllDayEvent) {
+		this.isAllDayEvent = isAllDayEvent;
+	}
+
+	@Override
+	public String toString() {
+		return "AppointmentCollection [id=" + id + ", subject=" + subject + ", explanation=" + explanation
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", appointmentId=" + appointmentId + ", time=" + time + ", patientId=" + patientId + ", state="
+				+ state + ", type=" + type + ", isReschduled=" + isReschduled + ", fromDate=" + fromDate + ", toDate="
+				+ toDate + ", isCalenderBlocked=" + isCalenderBlocked + ", isFeedbackAvailable=" + isFeedbackAvailable
+				+ ", isAllDayEvent=" + isAllDayEvent + "]";
+	}
 }

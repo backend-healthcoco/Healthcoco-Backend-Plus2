@@ -11,7 +11,7 @@ public class RecordsCollection extends GenericCollection {
     private String id;
 
     @Field
-    private String uniqueId;
+    private String uniqueEmrId;
 
     @Field
     private String recordsUrl;
@@ -26,7 +26,7 @@ public class RecordsCollection extends GenericCollection {
     private String recordsType;
 
     @Field
-    private String description;
+    private String explanation;
 
     @Field
     private String patientId;
@@ -107,15 +107,15 @@ public class RecordsCollection extends GenericCollection {
 	this.recordsType = recordsType;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public String getPatientId() {
+	public String getPatientId() {
 	return patientId;
     }
 
@@ -163,15 +163,15 @@ public class RecordsCollection extends GenericCollection {
 	this.uploadedByLocation = uploadedByLocation;
     }
 
-    public String getUniqueId() {
-	return uniqueId;
-    }
+    public String getUniqueEmrId() {
+		return uniqueEmrId;
+	}
 
-    public void setUniqueId(String uniqueId) {
-	this.uniqueId = uniqueId;
-    }
+	public void setUniqueEmrId(String uniqueEmrId) {
+		this.uniqueEmrId = uniqueEmrId;
+	}
 
-    public String getPrescriptionId() {
+	public String getPrescriptionId() {
 	return prescriptionId;
     }
 
@@ -227,13 +227,15 @@ public class RecordsCollection extends GenericCollection {
 	this.isFeedbackAvailable = isFeedbackAvailable;
     }
 
-    @Override
-    public String toString() {
-	return "RecordsCollection [id=" + id + ", uniqueId=" + uniqueId + ", recordsUrl=" + recordsUrl + ", recordsPath=" + recordsPath + ", recordsLable="
-		+ recordsLable + ", recordsType=" + recordsType + ", description=" + description + ", patientId=" + patientId + ", doctorId=" + doctorId
-		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", inHistory=" + inHistory
-		+ ", uploadedByLocation=" + uploadedByLocation + ", prescriptionId=" + prescriptionId + ", prescribedByDoctorId=" + prescribedByDoctorId
-		+ ", prescribedByLocationId=" + prescribedByLocationId + ", prescribedByHospitalId=" + prescribedByHospitalId + ", testId=" + testId
-		+ ", isFeedbackAvailable=" + isFeedbackAvailable + "]";
-    }
+	@Override
+	public String toString() {
+		return "RecordsCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", recordsUrl=" + recordsUrl
+				+ ", recordsPath=" + recordsPath + ", recordsLable=" + recordsLable + ", recordsType=" + recordsType
+				+ ", explanation=" + explanation + ", patientId=" + patientId + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ ", inHistory=" + inHistory + ", uploadedByLocation=" + uploadedByLocation + ", prescriptionId="
+				+ prescriptionId + ", prescribedByDoctorId=" + prescribedByDoctorId + ", prescribedByLocationId="
+				+ prescribedByLocationId + ", prescribedByHospitalId=" + prescribedByHospitalId + ", testId=" + testId
+				+ ", isFeedbackAvailable=" + isFeedbackAvailable + "]";
+	}
 }
