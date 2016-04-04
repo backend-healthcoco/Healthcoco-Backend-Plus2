@@ -528,8 +528,7 @@ public class HistoryApi {
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 	    @DefaultValue("true") @QueryParam(value = "inHistory") Boolean inHistory) {
 
-	List<HistoryDetailsResponse> historyDetailsResponses = historyServices.getMultipleData(patientId, doctorId, hospitalId, locationId, updatedTime,
-		inHistory);
+	List<HistoryDetailsResponse> historyDetailsResponses = historyServices.getMultipleData(patientId, doctorId, hospitalId, locationId, updatedTime, inHistory, discarded);
 
 	if (historyDetailsResponses != null && !historyDetailsResponses.isEmpty())
 	    for (HistoryDetailsResponse historyDetailsResponse : historyDetailsResponses) {

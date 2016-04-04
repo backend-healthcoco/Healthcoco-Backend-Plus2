@@ -5,8 +5,6 @@ import java.util.List;
 import org.apache.solr.client.solrj.beans.Field;
 import org.springframework.data.solr.core.geo.GeoLocation;
 
-import com.dpdocter.beans.ClinicImage;
-
 public class DoctorLocation {
     @Field
     private String locationId;
@@ -25,9 +23,6 @@ public class DoctorLocation {
 
     @Field
     private String city;
-
-    @Field
-    private String locationPhoneNumber;
 
     @Field
     private String postalCode;
@@ -57,10 +52,10 @@ public class DoctorLocation {
     private String locality;
 
     @Field
-    private String locationMobileNumber;
+    private String clinicNumber;
 
     @Field
-    private List<String> alternateNumbers;
+    private List<String> alternateClinicNumbers;
 
     @Field
     private List<String> specialization;
@@ -122,14 +117,6 @@ public class DoctorLocation {
 
     public void setCity(String city) {
 	this.city = city;
-    }
-
-    public String getLocationPhoneNumber() {
-	return locationPhoneNumber;
-    }
-
-    public void setLocationPhoneNumber(String locationPhoneNumber) {
-	this.locationPhoneNumber = locationPhoneNumber;
     }
 
     public String getPostalCode() {
@@ -196,21 +183,21 @@ public class DoctorLocation {
 	this.locality = locality;
     }
 
-    public String getLocationMobileNumber() {
-	return locationMobileNumber;
-    }
+	public String getClinicNumber() {
+		return clinicNumber;
+	}
 
-    public void setLocationMobileNumber(String locationMobileNumber) {
-	this.locationMobileNumber = locationMobileNumber;
-    }
+	public void setClinicNumber(String clinicNumber) {
+		this.clinicNumber = clinicNumber;
+	}
 
-    public List<String> getAlternateNumbers() {
-	return alternateNumbers;
-    }
+	public List<String> getAlternateClinicNumbers() {
+		return alternateClinicNumbers;
+	}
 
-    public void setAlternateNumbers(List<String> alternateNumbers) {
-	this.alternateNumbers = alternateNumbers;
-    }
+	public void setAlternateClinicNumbers(List<String> alternateClinicNumbers) {
+		this.alternateClinicNumbers = alternateClinicNumbers;
+	}
 
 	public String getLocationId() {
 	return locationId;
@@ -316,15 +303,17 @@ public class DoctorLocation {
 	this.isClinic = isClinic;
     }
 
-    @Override
-    public String toString() {
-	return "DoctorLocation [locationId=" + locationId + ", hospitalId=" + hospitalId + ", locationName=" + locationName + ", country=" + country
-		+ ", state=" + state + ", city=" + city + ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl="
-		+ websiteUrl + ", geoLocation=" + geoLocation + ", latitude=" + latitude + ", longitude=" + longitude + ", landmarkDetails=" + landmarkDetails
-		+ ", locationEmailAddress=" + locationEmailAddress + ", streetAddress=" + streetAddress + ", locality=" + locality + ", locationMobileNumber="
-		+ locationMobileNumber + ", alternateNumbers=" + alternateNumbers + ", specialization=" + specialization + ", isClinic=" + isClinic + ", isLab="
-		+ isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited + ", isHomeServiceAvailable="
-		+ isHomeServiceAvailable + ", images=" + images + ", logoUrl=" + logoUrl + ", noOfReviews=" + noOfReviews + ", noOfRecommenations="
-		+ noOfRecommenations + "]";
-    }
+	@Override
+	public String toString() {
+		return "DoctorLocation [locationId=" + locationId + ", hospitalId=" + hospitalId + ", locationName="
+				+ locationName + ", country=" + country + ", state=" + state + ", city=" + city + ", postalCode="
+				+ postalCode + ", websiteUrl=" + websiteUrl + ", geoLocation=" + geoLocation + ", latitude=" + latitude
+				+ ", longitude=" + longitude + ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress="
+				+ locationEmailAddress + ", streetAddress=" + streetAddress + ", locality=" + locality
+				+ ", clinicNumber=" + clinicNumber + ", alternateClinicNumbers=" + alternateClinicNumbers
+				+ ", specialization=" + specialization + ", isClinic=" + isClinic + ", isLab=" + isLab
+				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
+				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", images=" + images + ", logoUrl=" + logoUrl
+				+ ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + "]";
+	}
 }

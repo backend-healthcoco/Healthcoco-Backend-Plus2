@@ -18,7 +18,10 @@
 	<task:annotation-driven />
 	
 	<context:component-scan base-package="com.dpdocter"/>
-	
+<!-- 	<mvc:annotation-driven /> -->
+
+<!-- <mvc:annotation-driven />  -->
+<!--  <mvc:default-servlet-handler /> -->
 	<context:property-placeholder
 		location="classpath:jdbc.properties,classpath:mail.properties,classpath:commons.properties,classpath:sms.properties,classpath:jasperreports_extension.properties,classpath:exceptions.properties"
 		ignore-unresolvable="true" />
@@ -26,7 +29,7 @@
 	<import resource="database-connection.xml" />
 	<import resource="mail-config.xml" />
 	<import resource="application-context-velocity.xml" />
-<!-- 	<import resource="spring-security-oauth2-servlet.xml"/> -->
+	<import resource="spring-security.xml"/>
 	<mongo:repositories
 		base-package="com.dpdocter.repository, com.dpdocter.sms.repository" />
 	

@@ -9,7 +9,7 @@ import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.response.SMSResponse;
 
 public interface SMSServices {
-    void sendSMS(SMSTrackDetail smsTrackDetail, Boolean save);
+	Boolean sendSMS(SMSTrackDetail smsTrackDetail, Boolean save);
 
     SMSResponse getSMS(int page, int size, String doctorId, String locationId, String hospitalId);
 

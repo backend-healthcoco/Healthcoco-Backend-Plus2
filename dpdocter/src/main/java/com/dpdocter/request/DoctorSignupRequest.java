@@ -1,13 +1,14 @@
 package com.dpdocter.request;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.FileDetails;
-
 /**
  * @author veeraj
  */
+
 public class DoctorSignupRequest {
     // user details
     private String firstName;
@@ -16,6 +17,7 @@ public class DoctorSignupRequest {
 
     private char[] password;
 
+    
     private String emailAddress;
 
     private String mobileNumber;
@@ -52,7 +54,7 @@ public class DoctorSignupRequest {
 
     private String city;
 
-    private String locationPhoneNumber;
+    private String clinicNumber;
 
     private String postalCode;
 
@@ -204,15 +206,15 @@ public class DoctorSignupRequest {
 	this.city = city;
     }
 
-    public String getLocationPhoneNumber() {
-	return locationPhoneNumber;
-    }
+    public String getClinicNumber() {
+		return clinicNumber;
+	}
 
-    public void setLocationPhoneNumber(String locationPhoneNumber) {
-	this.locationPhoneNumber = locationPhoneNumber;
-    }
+	public void setClinicNumber(String clinicNumber) {
+		this.clinicNumber = clinicNumber;
+	}
 
-    public String getPostalCode() {
+	public String getPostalCode() {
 	return postalCode;
     }
 
@@ -284,15 +286,17 @@ public class DoctorSignupRequest {
 	this.streetAddress = streetAddress;
     }
 
-    @Override
-    public String toString() {
-	return "DoctorSignupRequest [firstName=" + firstName + ", userName=" + userName + ", password=" + password + ", emailAddress=" + emailAddress
-		+ ", mobileNumber=" + mobileNumber + ", image=" + image + ", gender=" + gender + ", dob=" + dob + ", phoneNumber=" + phoneNumber + ", imageUrl="
-		+ imageUrl + ", specialization=" + specialization + ", hospitalName=" + hospitalName + ", hospitalPhoneNumber=" + hospitalPhoneNumber
-		+ ", hospitalImageUrl=" + hospitalImageUrl + ", hospitalDescription=" + hospitalDescription + ", locationName=" + locationName + ", country="
-		+ country + ", state=" + state + ", city=" + city + ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode
-		+ ", websiteUrl=" + websiteUrl + ", locationImageUrl=" + locationImageUrl + ", hospitalId=" + hospitalId + ", latitude=" + latitude
-		+ ", longitude=" + longitude + ", streetAddress=" + streetAddress + "]";
-    }
-
+	@Override
+	public String toString() {
+		return "DoctorSignupRequest [firstName=" + firstName + ", userName=" + userName + ", password="
+				+ Arrays.toString(password) + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
+				+ ", image=" + image + ", gender=" + gender + ", dob=" + dob + ", phoneNumber=" + phoneNumber
+				+ ", imageUrl=" + imageUrl + ", specialization=" + specialization + ", hospitalName=" + hospitalName
+				+ ", hospitalPhoneNumber=" + hospitalPhoneNumber + ", hospitalImageUrl=" + hospitalImageUrl
+				+ ", hospitalDescription=" + hospitalDescription + ", locationName=" + locationName + ", country="
+				+ country + ", state=" + state + ", city=" + city + ", clinicNumber=" + clinicNumber + ", postalCode="
+				+ postalCode + ", websiteUrl=" + websiteUrl + ", locationImageUrl=" + locationImageUrl + ", hospitalId="
+				+ hospitalId + ", latitude=" + latitude + ", longitude=" + longitude + ", streetAddress="
+				+ streetAddress + "]";
+	}
 }

@@ -105,7 +105,7 @@ public interface PrescriptionServices {
 
     MailAttachment getPrescriptionMailData(String prescriptionId, String doctorId, String locationId, String hospitalId);
 
-    void smsPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String mobileNumber);
+    Boolean smsPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String mobileNumber, String type);
 
     LabTest addLabTest(LabTest request);
 

@@ -10,6 +10,9 @@ import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.collections.OTPCollection;
@@ -68,6 +71,9 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     @Autowired
     private OTPRepository otpRepository;
 
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
     @Override
     public ForgotPasswordResponse forgotPasswordForDoctor(ForgotUsernamePasswordRequest request, UriInfo uriInfo) {
 	try {
@@ -77,8 +83,11 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	    if (request.getUsername() == null)
 		request.setUsername(request.getEmailAddress());
 
-	    if (request.getUsername() != null)
-		userCollection = userRepository.findDoctorByUserName(request.getUsername());
+	    Criteria criteria = new Criteria("userName").regex(request.getUsername(), "i");
+		Query query = new Query(); query.addCriteria(criteria);
+		List<UserCollection> userCollections = mongoTemplate.find(query, UserCollection.class);
+		if(userCollections != null && !userCollections.isEmpty())userCollection = userCollections.get(0);
+
 	    if (userCollection != null) {
 		if (userCollection.getEmailAddress().trim().equals(request.getEmailAddress().trim())) {
 		    TokenCollection tokenCollection = new TokenCollection();

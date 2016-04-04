@@ -1,5 +1,7 @@
 package com.dpdocter.solr.document;
 
+import java.util.List;
+
 import org.apache.solr.client.solrj.beans.Field;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.solr.core.mapping.SolrDocument;
@@ -21,9 +23,6 @@ public class SolrLocationDocument {
 
     @Field
     private String city;
-
-    @Field
-    private String locationPhoneNumber;
 
     @Field
     private String postalCode;
@@ -53,10 +52,10 @@ public class SolrLocationDocument {
     private String locality;
 
     @Field
-    private String mobileNumber;
+    private String clinicNumber;
 
     @Field
-    private String alternateNumber;
+    private List<String> alternateClinicNumbers;
 
     public String getId() {
 	return id;
@@ -96,14 +95,6 @@ public class SolrLocationDocument {
 
     public void setCity(String city) {
 	this.city = city;
-    }
-
-    public String getLocationPhoneNumber() {
-	return locationPhoneNumber;
-    }
-
-    public void setLocationPhoneNumber(String locationPhoneNumber) {
-	this.locationPhoneNumber = locationPhoneNumber;
     }
 
     public String getPostalCode() {
@@ -178,29 +169,29 @@ public class SolrLocationDocument {
 	this.locality = locality;
     }
 
-    public String getMobileNumber() {
-	return mobileNumber;
-    }
+	public String getClinicNumber() {
+		return clinicNumber;
+	}
 
-    public void setMobileNumber(String mobileNumber) {
-	this.mobileNumber = mobileNumber;
-    }
+	public void setClinicNumber(String clinicNumber) {
+		this.clinicNumber = clinicNumber;
+	}
 
-    public String getAlternateNumber() {
-	return alternateNumber;
-    }
+	public List<String> getAlternateClinicNumbers() {
+		return alternateClinicNumbers;
+	}
 
-    public void setAlternateNumber(String alternateNumber) {
-	this.alternateNumber = alternateNumber;
-    }
+	public void setAlternateClinicNumbers(List<String> alternateClinicNumbers) {
+		this.alternateClinicNumbers = alternateClinicNumbers;
+	}
 
-    @Override
-    public String toString() {
-	return "SolrLocationDocument [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city
-		+ ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", imageUrl=" + imageUrl
-		+ ", latitude=" + latitude + ", longitude=" + longitude + ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress="
-		+ locationEmailAddress + ", streetAddress=" + streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber + ", alternateNumber="
-		+ alternateNumber + "]";
-    }
-
+	@Override
+	public String toString() {
+		return "SolrLocationDocument [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state="
+				+ state + ", city=" + city + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", imageUrl="
+				+ imageUrl + ", latitude=" + latitude + ", longitude=" + longitude + ", landmarkDetails="
+				+ landmarkDetails + ", locationEmailAddress=" + locationEmailAddress + ", streetAddress="
+				+ streetAddress + ", locality=" + locality + ", clinicNumber=" + clinicNumber
+				+ ", alternateClinicNumbers=" + alternateClinicNumbers + "]";
+	}
 }

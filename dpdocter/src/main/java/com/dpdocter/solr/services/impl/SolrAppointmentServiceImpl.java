@@ -393,12 +393,14 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 	    if (!DPDoctorUtils.anyStringEmpty(test)) {
 		List<SolrDiagnosticTestDocument> diagnosticTests = solrDiagnosticTestRepository.findAll(test);
 		if (diagnosticTests != null) {
+			System.out.println(diagnosticTests.size());
 		    @SuppressWarnings("unchecked")
 		    Collection<String> testIds = CollectionUtils.collect(diagnosticTests, new BeanToPropertyValueTransformer("id"));
 		    Criteria criteria = new Criteria("testId").in(testIds);
 		    SimpleQuery query = new SimpleQuery();
 		    query.addCriteria(criteria);
 		    solrTemplate.setSolrCore("labTests");
+		    System.out.println(query.getCriteria());
 		    solrLabTestDocuments = solrTemplate.queryForPage(query, SolrLabTestDocument.class).getContent(); 
 		}
 	    }
@@ -406,8 +408,8 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 	    List<SolrDoctorDocument> doctorDocument = null;
 		
         @SuppressWarnings("unchecked")
-    	Collection<String> locationIds = CollectionUtils.collect(solrLabTestDocuments, new BeanToPropertyValueTransformer("id"));
-    	Criteria searchCriteria = new Criteria("locationId").in(locationIds).and("isLab").is(true);
+    	Collection<String> locationIds = CollectionUtils.collect(solrLabTestDocuments, new BeanToPropertyValueTransformer("locationId"));
+    	Criteria searchCriteria = new Criteria("locationId").in(locationIds).and("isLab").is("true");
     	
     	SimpleQuery queryOthr = new SimpleQuery(searchCriteria);
 		
@@ -419,7 +421,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
  	        queryOthr.addCriteria(new SimpleStringCriteria(buf.toString()));
  	        queryOthr.addSort(new Sort(Sort.Direction.ASC, "score"));
  		} 
-         
+         System.out.println(queryOthr.getCriteria());
 	    solrTemplate.setSolrCore("doctors");
 	    Page<SolrDoctorDocument> results = solrTemplate.queryForPage(queryOthr, SolrDoctorDocument.class);
 	    doctorDocument = results.getContent();

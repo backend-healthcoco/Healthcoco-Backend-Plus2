@@ -170,7 +170,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     @Autowired
     private OTPService otpService;
 
-    @Scheduled(fixedDelay = 1800000)
+//    @Scheduled(fixedDelay = 1800000)
     @Override
     public void checkResources() {
 	System.out.println(">>> Scheduled test service <<<");
@@ -462,7 +462,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		DoctorLocation doctorLocation = new DoctorLocation();
 		BeanUtil.map(locationCollection, doctorLocation);
 		doctorLocation.setLocationId(locationCollection.getId());
-		doctorLocation.setLocationPhoneNumber(locationCollection.getMobileNumber());
+		doctorLocation.setClinicNumber(locationCollection.getClinicNumber());
 		if (locationCollection.getImages() != null && !locationCollection.getImages().isEmpty()) {
 		    List<String> images = new ArrayList<String>();
 		    for (ClinicImage clinicImage : locationCollection.getImages()) {

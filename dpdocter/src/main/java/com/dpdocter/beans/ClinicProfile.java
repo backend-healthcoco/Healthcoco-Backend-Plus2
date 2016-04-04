@@ -2,6 +2,8 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import org.apache.solr.client.solrj.beans.Field;
+
 public class ClinicProfile {
 
     private String id;
@@ -18,9 +20,9 @@ public class ClinicProfile {
 
     private String landmarkDetails;
 
-    private String mobileNumber;
+    private String clinicNumber;
 
-    private List<String> alternateNumbers;
+    private List<String> alternateClinicNumbers;
 
     public String getId() {
 	return id;
@@ -78,27 +80,27 @@ public class ClinicProfile {
 	this.landmarkDetails = landmarkDetails;
     }
 
-    public String getMobileNumber() {
-	return mobileNumber;
-    }
+	public String getClinicNumber() {
+		return clinicNumber;
+	}
 
-    public void setMobileNumber(String mobileNumber) {
-	this.mobileNumber = mobileNumber;
-    }
+	public void setClinicNumber(String clinicNumber) {
+		this.clinicNumber = clinicNumber;
+	}
 
-    public List<String> getAlternateNumbers() {
-	return alternateNumbers;
-    }
+	public List<String> getAlternateClinicNumbers() {
+		return alternateClinicNumbers;
+	}
 
-    public void setAlternateNumbers(List<String> alternateNumbers) {
-	this.alternateNumbers = alternateNumbers;
-    }
+	public void setAlternateClinicNumbers(List<String> alternateClinicNumbers) {
+		this.alternateClinicNumbers = alternateClinicNumbers;
+	}
 
-    @Override
-    public String toString() {
-	return "ClinicProfile [id=" + id + ", locationName=" + locationName + ", tagLine=" + tagLine + ", specialization=" + specialization
-		+ ", locationEmailAddress=" + locationEmailAddress + ", websiteUrl=" + websiteUrl + ", landmarkDetails=" + landmarkDetails + ", mobileNumber="
-		+ mobileNumber + ", alternateNumbers=" + alternateNumbers + "]";
-    }
-
+	@Override
+	public String toString() {
+		return "ClinicProfile [id=" + id + ", locationName=" + locationName + ", tagLine=" + tagLine
+				+ ", specialization=" + specialization + ", locationEmailAddress=" + locationEmailAddress
+				+ ", websiteUrl=" + websiteUrl + ", landmarkDetails=" + landmarkDetails + ", clinicNumber="
+				+ clinicNumber + ", alternateClinicNumbers=" + alternateClinicNumbers + "]";
+	}
 }

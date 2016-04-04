@@ -214,14 +214,15 @@ public class OTPServiceImpl implements OTPService {
     }
 
     @Override
-    public String otpGenerator(String mobileNumber) {
+    public Boolean otpGenerator(String mobileNumber) {
+    	Boolean response = false;
 	String OTP = null;
 	try {
 	    OTP = LoginUtils.generateOTP();
 	    SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(null, null, null, null, null,
 		    "Your Healthcoco account verification number is: " + OTP + ".Enter this in our app to confirm your Healthcoco account.", mobileNumber,
 		    "OTPVerification");
-	    sMSServices.sendSMS(smsTrackDetail, false);
+	    response = sMSServices.sendSMS(smsTrackDetail, false);
 
 	    OTPCollection otpCollection = new OTPCollection();
 	    otpCollection.setCreatedTime(new Date());
@@ -237,7 +238,7 @@ public class OTPServiceImpl implements OTPService {
 	    throw new BusinessException(ServiceError.Unknown, "Error While Generating OTP");
 	}
 
-	return OTP;
+	return response;
     }
 
     @Override
@@ -263,6 +264,21 @@ public class OTPServiceImpl implements OTPService {
 	    e.printStackTrace();
 	    logger.error(e + " Error While Verifying OTP");
 	    throw new BusinessException(ServiceError.Unknown, "Error While Verifying OTP");
+	}
+	return response;
+    }
+    
+    @Override
+    public Boolean checkOTPVerifiedForPatient(String mobileNumber, String otpNumber) {
+	Boolean response = false;
+	try {
+	        OTPCollection otpCollection = otpRepository.findOne(mobileNumber, otpNumber, mobileNumber);
+		    if (otpCollection != null && otpCollection.getState().equals(OTPState.VERIFIED)) response = true;
+		
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e + " Error While checking OTP");
+	    throw new BusinessException(ServiceError.Unknown, "Error While checking OTP");
 	}
 	return response;
     }

@@ -13,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.solr.document.SolrComplaintsDocument;
@@ -40,6 +41,9 @@ public class SolrClinicalNotesApi {
 
     @Autowired
     private SolrClinicalNotesService solrClinicalNotesService;
+    
+    @Autowired
+    private SolrTemplate solrTemplate;
 
     // @Path(value = PathProxy.SolrClinicalNotesUrls.ADD_COMPLAINTS)
     //

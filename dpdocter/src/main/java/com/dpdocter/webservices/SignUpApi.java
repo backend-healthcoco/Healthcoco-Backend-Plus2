@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.LocationAndAccessControl;
@@ -93,7 +94,7 @@ public class SignUpApi {
     public Response<DoctorSignUp> doctorSignup(DoctorSignupRequest request) {
 	if (request == null) {
 	    logger.warn("Request send  is NULL");
-	    throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
+	    throw new BusinessException(ServiceError.InvalidInput, "Request send is NULL");
 	}
 
 	DoctorSignUp doctorSignUp = signUpService.doctorSignUp(request, uriInfo);
@@ -113,21 +114,7 @@ public class SignUpApi {
 	    }
 	    transnationalService.addResource(doctorSignUp.getUser().getId(), Resource.DOCTOR, false);
 	    solrRegistrationService.addDoctor(getSolrDoctorDocument(doctorSignUp));
-
-	    // if(doctorSignUp.getHospital() != null){
-	    // if(doctorSignUp.getHospital().getLocationsAndAccessControl() !=
-	    // null &&
-	    // !doctorSignUp.getHospital().getLocationsAndAccessControl().isEmpty()){
-	    // for(LocationAndAccessControl location :
-	    // doctorSignUp.getHospital().getLocationsAndAccessControl()){
-	    // transnationalService.addResource(location.getId(),
-	    // Resource.LOCATION, false);
-	    // solrRegistrationService.addLocation(getSolrLocationDocument(location));
-	    // }
-	    // }
-	    // }
-
-	}
+	    }
 
 	Response<DoctorSignUp> response = new Response<DoctorSignUp>();
 	response.setData(doctorSignUp);
@@ -387,29 +374,27 @@ public class SignUpApi {
 	    solrDoctorDocument = new SolrDoctorDocument();
 	    BeanUtil.map(doctor.getUser(), solrDoctorDocument);
 	    solrDoctorDocument.setUserId(doctor.getUser().getId());
-//	    List<String> specialiazation = new ArrayList<String>();
 	    if (doctor.getHospital() != null && doctor.getHospital().getLocationsAndAccessControl() != null) {
 		for (LocationAndAccessControl locationAndAccessControl : doctor.getHospital().getLocationsAndAccessControl()) {
-//		    specialiazation.addAll(locationAndAccessControl.getSpecialization());
 		    BeanUtil.map(locationAndAccessControl, solrDoctorDocument);
 		    solrDoctorDocument.setLocationId(locationAndAccessControl.getId());
 		}
 	    }
-//	    solrDoctorDocument.setSpecialities(specialiazation);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}
 	return solrDoctorDocument;
     }
 
-    // private SolrLocationDocument
-    // getSolrLocationDocument(LocationAndAccessControl location) {
-    // SolrLocationDocument solrLocationDocument = new SolrLocationDocument();
-    // try {
-    // BeanUtil.map(location, solrLocationDocument);
-    // } catch (Exception e) {
-    // e.printStackTrace();
-    // }
-    // return solrLocationDocuments;
-    // }
+    @Path(value = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR)
+    @GET
+    public Response<Boolean> resendVerificationEmail(@PathParam(value = "emailaddress") String emailaddress) {
+	if (DPDoctorUtils.anyStringEmpty(emailaddress)) {
+	    logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	}
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(signUpService.resendVerificationEmail(emailaddress, uriInfo));
+	return response;
+    }
 }

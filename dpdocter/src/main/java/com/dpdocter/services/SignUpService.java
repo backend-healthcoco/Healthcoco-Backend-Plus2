@@ -50,4 +50,6 @@ public interface SignUpService {
     boolean checkMobileNumberExistForPatient(String mobileNumber);
 
     User adminSignUp(PatientSignUpRequest request);
+
+	Boolean resendVerificationEmail(String emailaddress, UriInfo uriInfo);
 }

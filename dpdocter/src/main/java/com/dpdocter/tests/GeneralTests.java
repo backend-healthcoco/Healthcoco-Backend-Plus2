@@ -2,15 +2,9 @@ package com.dpdocter.tests;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
-import java.security.spec.KeySpec;
 import java.util.Date;
 
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
-
-import org.apache.commons.codec.binary.Base64;
-
-import common.util.web.DPDoctorUtils;
+import org.apache.commons.io.FilenameUtils;
 
 
 
@@ -84,10 +78,9 @@ public class GeneralTests {
 	    		 
 	    		 public static void main(String[] args) throws UnsupportedEncodingException, NoSuchAlgorithmException  {
 
-	    			 char[] p = new char[4];
-	    			 p[0]='a';p[1]='b';p[2]='h';p[3]='i';
-	    			 System.out.println(DPDoctorUtils.getSHA3SecurePassword(p));
-	    			 System.out.println(DPDoctorUtils.getSHA3SecurePassword(new char['n']));
+	    			 String u = FilenameUtils.getBaseName("ecords/56f7a93ee4b0bb8ce0c2c71e/Test image1459071671248.jpeg");
+	    			 System.out.println(u.substring(0, u.length()-13));
+	    			 
 	    		 }
 	    		 
 }  	

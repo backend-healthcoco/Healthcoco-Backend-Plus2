@@ -1,5 +1,6 @@
 package com.dpdocter.solr.repository;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -30,69 +31,69 @@ public interface SolrDiagramsRepository extends SolrCrudRepository<SolrDiagramsD
     @Query("updatedTime: {?0 TO *} AND ( discarded: ?1 OR discarded:false) AND (speciality:?2* OR tags:?2*)")
     public List<SolrDiagramsDocument> findCustomGlobalDiagrams(Date date, Boolean discarded, String searchTerm, Sort sort);
 
-    @Query("( doctorId:*?0* AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)) OR ((doctorId: null OR doctorId: \"\") AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false))")
-    public List<SolrDiagramsDocument> findCustomGlobalDiagrams(String doctorId, Date date, Boolean discarded, Pageable pageRequest);
+    @Query("( doctorId:*?0* AND speciality : ?1 AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false)) OR ((doctorId: null OR doctorId: \"\") AND speciality : ?1 AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false))")
+    public List<SolrDiagramsDocument> findCustomGlobalDiagrams(String doctorId, String specialities, Date date, Boolean discarded, Pageable pageRequest);
 
-    @Query("( doctorId:*?0* AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)) OR ((doctorId: null OR doctorId: \"\") AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false))")
-    public List<SolrDiagramsDocument> findCustomGlobalDiagrams(String doctorId, Date date, Boolean discarded, Sort sort);
+    @Query("( doctorId:*?0* AND speciality : ?1 AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false)) OR ((doctorId: null OR doctorId: \"\") AND speciality : ?1 AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false))")
+    public List<SolrDiagramsDocument> findCustomGlobalDiagrams(String doctorId, String specialities, Date date, Boolean discarded, Sort sort);
 
-    @Query("(doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false)) OR ((doctorId: null OR doctorId: \"\") AND (locationId: null OR locationId: \"\") AND (hospitalId: null OR hospitalId: \"\") AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false))")
-    public List<SolrDiagramsDocument> findCustomGlobalDiagrams(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded,
+    @Query("(doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND speciality : ?3 AND updatedTime: {?4 TO *} AND ( discarded: ?5 OR discarded:false)) OR ((doctorId: null OR doctorId: \"\") AND (locationId: null OR locationId: \"\") AND (hospitalId: null OR hospitalId: \"\") AND speciality : ?3 AND updatedTime: {?4 TO *} AND ( discarded: ?5 OR discarded:false))")
+    public List<SolrDiagramsDocument> findCustomGlobalDiagrams(String doctorId, String locationId, String hospitalId, String specialities, Date date, Boolean discarded,
 	    Pageable pageRequest);
 
-    @Query("(doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false)) OR ((doctorId: null OR doctorId: \"\") AND (locationId: null OR locationId: \"\") AND (hospitalId: null OR hospitalId: \"\") AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false))")
-    public List<SolrDiagramsDocument> findCustomGlobalDiagrams(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded, Sort sort);
+    @Query("(doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND speciality : ?3 AND updatedTime: {?4 TO *} AND ( discarded: ?5 OR discarded:false)) OR ((doctorId: null OR doctorId: \"\") AND (locationId: null OR locationId: \"\") AND (hospitalId: null OR hospitalId: \"\") AND speciality : ?3 AND updatedTime: {?4 TO *} AND ( discarded: ?5 OR discarded:false))")
+    public List<SolrDiagramsDocument> findCustomGlobalDiagrams(String doctorId, String locationId, String hospitalId, String specialities, Date date, Boolean discarded, Sort sort);
 
-    @Query("(doctorId:*?0* AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)  AND (speciality:?3* OR tags:?3*)) OR ((doctorId: null OR doctorId: \"\") AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)  AND (speciality:?3* OR tags:?3*))")
-    public List<SolrDiagramsDocument> findCustomGlobalDiagrams(String doctorId, Date date, Boolean discarded, String searchTerm, Pageable pageRequest);
+    @Query("(doctorId:*?0* AND speciality : ?1 AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false)  AND (speciality:?4* OR tags:?4*)) OR ((doctorId: null OR doctorId: \"\") AND speciality : ?1 AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false)  AND (speciality:?4* OR tags:?4*))")
+    public List<SolrDiagramsDocument> findCustomGlobalDiagrams(String doctorId, String specialities, Date date, Boolean discarded, String searchTerm, Pageable pageRequest);
 
-    @Query("(doctorId:*?0* AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)  AND (speciality:?3* OR tags:?2*)) OR ((doctorId: null OR doctorId: \"\") AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)  AND (speciality:?3* OR tags:?2*))")
-    public List<SolrDiagramsDocument> findCustomGlobalDiagrams(String doctorId, Date date, Boolean discarded, String searchTerm, Sort sort);
+    @Query("(doctorId:*?0* AND speciality : ?1 AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false)  AND (speciality:?4* OR tags:?4*)) OR ((doctorId: null OR doctorId: \"\") AND speciality : ?1 AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false)  AND (speciality:?4* OR tags:?4*))")
+    public List<SolrDiagramsDocument> findCustomGlobalDiagrams(String doctorId, String specialities, Date date, Boolean discarded, String searchTerm, Sort sort);
 
-    @Query("(doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false) AND (speciality:?5* OR tags:?5*)) OR ((doctorId: null OR doctorId: \"\") AND (locationId: null OR locationId: \"\") AND (hospitalId: null OR hospitalId: \"\") AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false) AND (speciality:?5* OR tags:?5*))")
-    public List<SolrDiagramsDocument> findCustomGlobalDiagrams(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded,
+    @Query("(doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND speciality : ?3 AND updatedTime: {?4 TO *} AND ( discarded: ?5 OR discarded:false) AND (speciality:?6* OR tags:?6*)) OR ((doctorId: null OR doctorId: \"\") AND (locationId: null OR locationId: \"\") AND (hospitalId: null OR hospitalId: \"\") AND speciality : ?3 AND updatedTime: {?4 TO *} AND ( discarded: ?5 OR discarded:false) AND (speciality:?6* OR tags:?6*))")
+    public List<SolrDiagramsDocument> findCustomGlobalDiagrams(String doctorId, String locationId, String hospitalId, String specialities, Date date, Boolean discarded,
 	    String searchTerm, Pageable pageRequest);
 
-    @Query("(doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false) AND (speciality:?5* OR tags:?5*)) OR ((doctorId: null OR doctorId: \"\") AND (locationId: null OR locationId: \"\") AND (hospitalId: null OR hospitalId: \"\") AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false) AND (speciality:?5* OR tags:?5*))")
-    public List<SolrDiagramsDocument> findCustomGlobalDiagrams(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded,
+    @Query("(doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND speciality : ?3 AND updatedTime: {?4 TO *} AND ( discarded: ?5 OR discarded:false) AND (speciality:?6* OR tags:?6*)) OR ((doctorId: null OR doctorId: \"\") AND (locationId: null OR locationId: \"\") AND (hospitalId: null OR hospitalId: \"\") AND speciality : ?3 AND updatedTime: {?4 TO *} AND ( discarded: ?5 OR discarded:false) AND (speciality:?6* OR tags:?6*))")
+    public List<SolrDiagramsDocument> findCustomGlobalDiagrams(String doctorId, String locationId, String hospitalId, String specialities, Date date, Boolean discarded,
 	    String searchTerm, Sort sort);
 
-    @Query("(doctorId: null OR doctorId: \"\") AND updatedTime: {?0 TO *} AND ( discarded: ?1 OR discarded:false)")
-    public List<SolrDiagramsDocument> findGlobalDiagrams(Date date, Boolean discarded, Pageable pageRequest);
+    @Query("(doctorId: null OR doctorId: \"\") AND speciality: ?0 AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)")
+    public List<SolrDiagramsDocument> findGlobalDiagrams(String specialities, Date date, Boolean discarded, Pageable pageRequest);
 
-    @Query("(doctorId: null OR doctorId: \"\") AND updatedTime: {?0 TO *} AND ( discarded: ?1 OR discarded:false)")
-    public List<SolrDiagramsDocument> findGlobalDiagrams(Date date, Boolean discarded, Sort sort);
+    @Query("(doctorId: null OR doctorId: \"\") AND speciality: ?0 AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)")
+    public List<SolrDiagramsDocument> findGlobalDiagrams(String specialities, Date date, Boolean discarded, Sort sort);
 
-    @Query("(doctorId: null OR doctorId: \"\") AND updatedTime: {?0 TO *} AND ( discarded: ?1 OR discarded:false) AND (speciality:?2* OR tags:?2*)")
-    public List<SolrDiagramsDocument> findGlobalDiagrams(Date date, Boolean discarded, String searchTerm, Pageable pageRequest);
+    @Query("(doctorId: null OR doctorId: \"\") AND speciality: ?0 AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false) AND (speciality:?3* OR tags:?3*)")
+    public List<SolrDiagramsDocument> findGlobalDiagrams(String specialities, Date date, Boolean discarded, String searchTerm, Pageable pageRequest);
 
-    @Query("(doctorId: null OR doctorId: \"\") AND updatedTime: {?0 TO *} AND ( discarded: ?1 OR discarded:false) AND (speciality:?2* OR tags:?2*)")
-    public List<SolrDiagramsDocument> findGlobalDiagrams(Date date, Boolean discarded, String searchTerm, Sort sort);
+    @Query("(doctorId: null OR doctorId: \"\") AND speciality: ?0 AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false) AND (speciality:?3* OR tags:?3*)")
+    public List<SolrDiagramsDocument> findGlobalDiagrams(String specialities, Date date, Boolean discarded, String searchTerm, Sort sort);
 
-    @Query("doctorId:*?0* AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)")
-    public List<SolrDiagramsDocument> findCustomDiagrams(String doctorId, Date date, Boolean discarded, Pageable pageRequest);
+    @Query("doctorId:*?0* AND speciality:  ?1 AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false)")
+    public List<SolrDiagramsDocument> findCustomDiagrams(String doctorId, String specialities, Date date, Boolean discarded, Pageable pageRequest);
 
-    @Query("doctorId:*?0* AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false)")
-    public List<SolrDiagramsDocument> findCustomDiagrams(String doctorId, Date date, Boolean discarded, Sort sort);
+    @Query("doctorId:*?0* AND speciality:  ?1 AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false)")
+    public List<SolrDiagramsDocument> findCustomDiagrams(String doctorId, String specialities, Date date, Boolean discarded, Sort sort);
 
-    @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false)")
-    public List<SolrDiagramsDocument> findCustomDiagrams(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded,
+    @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND speciality:  ?3 AND updatedTime: {?4 TO *} AND ( discarded: ?5 OR discarded:false)")
+    public List<SolrDiagramsDocument> findCustomDiagrams(String doctorId, String locationId, String hospitalId, String specialities, Date date, Boolean discarded,
 	    Pageable pageRequest);
 
-    @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false)")
-    public List<SolrDiagramsDocument> findCustomDiagrams(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded, Sort sort);
+    @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND speciality: ?3 AND updatedTime: {?4 TO *} AND ( discarded: ?5 OR discarded:false)")
+    public List<SolrDiagramsDocument> findCustomDiagrams(String doctorId, String locationId, String hospitalId, String specialities, Date date, Boolean discarded, Sort sort);
 
-    @Query("doctorId:*?0* AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false) AND (speciality:?3* OR tags:?3*)")
-    public List<SolrDiagramsDocument> findCustomDiagrams(String doctorId, Date date, Boolean discarded, String searchTerm, Pageable pageRequest);
+    @Query("doctorId:*?0* AND speciality: ?1 AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false) AND (speciality:?4* OR tags:?4*)")
+    public List<SolrDiagramsDocument> findCustomDiagrams(String doctorId, String specialities, Date date, Boolean discarded, String searchTerm, Pageable pageRequest);
 
-    @Query("doctorId:*?0* AND updatedTime: {?1 TO *} AND ( discarded: ?2 OR discarded:false) AND (speciality:?3* OR tags:?3*)")
-    public List<SolrDiagramsDocument> findCustomDiagrams(String doctorId, Date date, Boolean discarded, String searchTerm, Sort sort);
+    @Query("doctorId:*?0* AND speciality: ?1 AND updatedTime: {?2 TO *} AND ( discarded: ?3 OR discarded:false) AND (speciality:?4* OR tags:?4*)")
+    public List<SolrDiagramsDocument> findCustomDiagrams(String doctorId, String specialities, Date date, Boolean discarded, String searchTerm, Sort sort);
 
-    @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false) AND (speciality:?5* OR tags:?5*)")
-    public List<SolrDiagramsDocument> findCustomDiagrams(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded, String searchTerm,
+    @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND speciality: ?3 AND updatedTime: {?4 TO *} AND ( discarded: ?5 OR discarded:false) AND (speciality:?6* OR tags:?6*)")
+    public List<SolrDiagramsDocument> findCustomDiagrams(String doctorId, String locationId, String hospitalId, String specialities, Date date, Boolean discarded, String searchTerm,
 	    Pageable pageRequest);
 
-    @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND updatedTime: {?3 TO *} AND ( discarded: ?4 OR discarded:false) AND (speciality:?5* OR tags:?5*)")
-    public List<SolrDiagramsDocument> findCustomDiagrams(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded, String searchTerm,
+    @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND speciality: ?3 AND updatedTime: {?4 TO *} AND ( discarded: ?5 OR discarded:false) AND (speciality:?6* OR tags:?6*)")
+    public List<SolrDiagramsDocument> findCustomDiagrams(String doctorId, String locationId, String hospitalId, String specialities, Date date, Boolean discarded, String searchTerm,
 	    Sort sort);
 }

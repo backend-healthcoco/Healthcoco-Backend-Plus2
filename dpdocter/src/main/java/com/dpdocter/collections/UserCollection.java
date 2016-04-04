@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.enums.UserState;
+import com.sun.istack.NotNull;
 
 @Document(collection = "user_cl")
 public class UserCollection extends GenericCollection {
@@ -30,6 +31,7 @@ public class UserCollection extends GenericCollection {
     private String middleName;
 
     @Indexed(unique = true)
+    @NotNull
     private String userName;
 
     @Field

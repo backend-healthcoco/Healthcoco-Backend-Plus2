@@ -15,6 +15,7 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.log4j.Logger;
+import org.bouncycastle.asn1.ua.UAObjectIdentifiers;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -275,6 +276,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 	List<Group> groups = null;
 	try {
 
+		if (DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
+			logger.warn("Mobile Number cannot be null");
+			throw new BusinessException(ServiceError.InvalidInput, "Mobile Number cannot be null");
+		 }
 	    // get role of specified type
 	    RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.PATIENT.getRole());
 	    if (roleCollection == null) {
@@ -285,9 +290,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    // save user
 	    UserCollection userCollection = new UserCollection();
 	    BeanUtil.map(request, userCollection);
-	    if (request.getDob() != null && request.getDob().getAge() < 0) {
+	    if (request.getDob() != null && request.getDob().getAge().getYears() < 0) {
 		logger.warn(DOB);
-		throw new BusinessException(ServiceError.NotAcceptable, DOB);
+		throw new BusinessException(ServiceError.InvalidInput, DOB);
 	    }
 	    User user = new User();
 	    BeanUtil.map(request, user);
@@ -521,6 +526,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    patientCollection.setBloodGroup(request.getBloodGroup());
 		    patientCollection.setGender(request.getGender());
 		    patientCollection.setEmailAddress(request.getEmailAddress());
+		    patientCollection.setDob(request.getDob());
 		}
 		if (request.getImage() != null) {
 		    String path = "profile-images";
@@ -1209,9 +1215,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 	LocationCollection locationCollection = null;
 	try {
 	    locationCollection = locationRepository.findOne(request.getId());
-	    if (locationCollection != null)
-		BeanUtil.map(request, locationCollection);
-	    BeanUtil.map(request, locationCollection);
+	    String landmarkDetails = null; 
+	    if (locationCollection != null){
+	    	landmarkDetails = locationCollection.getLandmarkDetails();
+	    	BeanUtil.map(request, locationCollection);
+	    }
 	    List<GeocodedLocation> geocodedLocations = locationServices
 		    .geocodeLocation((locationCollection.getLocationName() != null ? locationCollection.getLocationName() : "")
 			    + (locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() : "")
@@ -1222,6 +1230,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    if (geocodedLocations != null && !geocodedLocations.isEmpty())
 		BeanUtil.map(geocodedLocations.get(0), locationCollection);
 
+	    locationCollection.setLandmarkDetails(landmarkDetails);
 	    locationCollection.setSpecialization(request.getSpecialization());
 	    locationCollection = locationRepository.save(locationCollection);
 	    response = new ClinicProfile();
@@ -1240,8 +1249,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 	LocationCollection locationCollection = null;
 	try {
 	    locationCollection = locationRepository.findOne(request.getId());
-	    if (locationCollection != null)
-		BeanUtil.map(request, locationCollection);
+	    String locationName = "";
+	    if (locationCollection != null){
+	    	locationName = locationCollection.getLocationName();
+	    	BeanUtil.map(request, locationCollection);
+	    }
+		
 	    List<GeocodedLocation> geocodedLocations = locationServices
 		    .geocodeLocation((locationCollection.getLocationName() != null ? locationCollection.getLocationName() + " " : "")
 			    + (locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() + " " : "")
@@ -1251,7 +1264,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	    if (geocodedLocations != null && !geocodedLocations.isEmpty())
 		BeanUtil.map(geocodedLocations.get(0), locationCollection);
-
+	    if(DPDoctorUtils.anyStringEmpty(request.getLocationName()))locationCollection.setLocationName(locationName);
 	    locationCollection = locationRepository.save(locationCollection);
 	    response = new ClinicAddress();
 	    BeanUtil.map(locationCollection, response);
@@ -1533,11 +1546,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    // save user
 	    UserCollection userCollection = new UserCollection();
 	    BeanUtil.map(request, userCollection);
-	    // if (request.getDob() != null && request.getDob().getAge() < 0) {
-	    // logger.warn("Incorrect Date of Birth");
-	    // throw new BusinessException(ServiceError.NotAcceptable,
-	    // "Incorrect Date of Birth");
-	    // }
 	    userCollection.setUserName(request.getEmailAddress());
 	    userCollection.setCreatedTime(new Date());
 	    userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
@@ -2131,4 +2139,63 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 	return response;
     }
+
+	@Override
+	public Boolean checkPatientNumber(String oldMobileNumber, String newMobileNumber) {
+		Boolean response = false;
+		try{
+			Boolean isPatient = false;
+			List<UserCollection> userCollections = userRepository.findByMobileNumber(oldMobileNumber);
+			for(UserCollection userCollection : userCollections){
+				if(!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress())){
+					isPatient = true;
+					break;
+				}
+			}
+			if(isPatient){
+				userCollections = userRepository.findByMobileNumber(newMobileNumber);
+				for(UserCollection userCollection : userCollections){
+					if(!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress())){
+						logger.error("Patients already exist with this mobile number");
+					    throw new BusinessException(ServiceError.Unknown, "Patients already exist with this mobile number");
+					}
+				}
+				response = otpService.otpGenerator(newMobileNumber);
+			}
+			else{
+				logger.error("No Patients exist with this mobile number");
+			    throw new BusinessException(ServiceError.NoRecord, "No Patients exist with this mobile number");
+			}
+		}catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, "Error while checking patient number");
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean changePatientNumber(String oldMobileNumber, String newMobileNumber, String otpNumber) {
+		Boolean response = false;
+		try{
+			response = otpService.checkOTPVerifiedForPatient(newMobileNumber, otpNumber);
+			if(response){
+				List<UserCollection> userCollections = userRepository.findByMobileNumber(oldMobileNumber);
+				for(UserCollection userCollection : userCollections){
+					if(!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress())){
+						userCollection.setMobileNumber(newMobileNumber);
+						userRepository.save(userCollection);
+					}
+				}
+			}else{
+				logger.error("Please verify OTP for new mobile number");
+			    throw new BusinessException(ServiceError.Unknown, "Please verify OTP for new mobile number");
+			}
+		}catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, "Error while changing patient number");
+		}
+		return response;
+	}
 }

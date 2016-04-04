@@ -7,7 +7,7 @@ public interface PathProxy {
 
     public static final String HOME_URL = "/";
 
-    public static final String BASE_URL = "api/v1";
+    public static final String BASE_URL = "/v1";
 
     public static final String SIGNUP_BASE_URL = BASE_URL + "/signup";
 
@@ -40,6 +40,9 @@ public interface PathProxy {
 	public static final String PATIENT_PROFILE_PIC_CHANGE = "/patientProfilePicChange";
 
 	public static final String VERIFY_UNLOCK_PATIENT = "/patient/verifyorunlock";
+	
+	public static final String RESEND_VERIFICATION_EMAIL_TO_DOCTOR = "/resendVerificationEmail/{emailaddress}";
+
     }
 
     public static final String LOGIN_BASE_URL = BASE_URL + "/login";
@@ -151,6 +154,10 @@ public interface PathProxy {
 	public static final String GET_DOCTOR_FEEDBACK = "/feedback";
 
 	public static final String GET_PATIENT_STATUS = "/patientStatus/{patientId}/{doctorId}/{locationId}/{hospitalId}";
+	
+	public static final String CHANGE_PATIENT_NUMBER = "/patient/changeNumber/{oldMobileNumber}/{newMobileNumber}/{otpNumber}";
+	
+	public static final String CHECK_PATIENT_NUMBER = "/patient/checkNumber/{oldMobileNumber}/{newMobileNumber}";
     }
 
     public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";
@@ -248,6 +255,8 @@ public interface PathProxy {
 	public static final String CHANGE_LABEL_AND_DESCRIPTION_RECORD = "/changeLabelAndDescription";
 
 	public static final String ADD_RECORDS_MULTIPART = "/add";
+	
+	public static final String SAVE_RECORDS_IMAGE = "/saveImage";
     }
 
     public static final String PRESCRIPTION_BASE_URL = BASE_URL + "/prescription";

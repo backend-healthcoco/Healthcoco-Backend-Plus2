@@ -943,6 +943,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    }
 	    DiagramsCollection diagramsCollection = new DiagramsCollection();
 	    BeanUtil.map(diagram, diagramsCollection);
+	    if(DPDoctorUtils.allStringsEmpty(diagram.getDoctorId()))diagramsCollection.setDoctorId(null);
+	    if(DPDoctorUtils.allStringsEmpty(diagram.getLocationId()))diagramsCollection.setLocationId(null);
+	    if(DPDoctorUtils.allStringsEmpty(diagram.getHospitalId()))diagramsCollection.setHospitalId(null);
+	    
 	    if (DPDoctorUtils.anyStringEmpty(diagramsCollection.getId())) {
 		diagramsCollection.setCreatedTime(new Date());
 	    } else {

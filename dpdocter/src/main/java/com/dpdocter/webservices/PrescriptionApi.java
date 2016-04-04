@@ -755,10 +755,9 @@ public class PrescriptionApi {
 	    throw new BusinessException(ServiceError.InvalidInput,
 		    "Invalid Input. Prescription Id, Doctor Id, Location Id, Hospital Id, Mobile Number Cannot Be Empty");
 	}
-	prescriptionServices.smsPrescription(prescriptionId, doctorId, locationId, hospitalId, mobileNumber);
-
+	
 	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
+	response.setData(prescriptionServices.smsPrescription(prescriptionId, doctorId, locationId, hospitalId, mobileNumber, "PRESCRIPTION"));
 	return response;
     }
 

@@ -708,7 +708,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 		String mobileNumber = doctorDocument.getMobileNumber();
 		BeanUtil.map(clinicProfileUpdateResponse, doctorDocument);
 		doctorDocument.setMobileNumber(mobileNumber);
-		doctorDocument.setLocationMobileNumber(clinicProfileUpdateResponse.getMobileNumber());
+		doctorDocument.setClinicNumber(clinicProfileUpdateResponse.getClinicNumber());
 		solrDoctorRepository.save(doctorDocument);
 		transnationalService.addResource(clinicProfileUpdateResponse.getId(), Resource.LOCATION, true);
 	    }

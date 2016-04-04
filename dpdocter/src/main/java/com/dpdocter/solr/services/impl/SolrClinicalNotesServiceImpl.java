@@ -1,14 +1,22 @@
 package com.dpdocter.solr.services.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.solr.core.SolrTemplate;
+import org.springframework.data.solr.core.query.Criteria;
+import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.enums.Range;
@@ -19,15 +27,19 @@ import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrComplaintsDocument;
 import com.dpdocter.solr.document.SolrDiagnosesDocument;
 import com.dpdocter.solr.document.SolrDiagramsDocument;
+import com.dpdocter.solr.document.SolrDoctorDocument;
 import com.dpdocter.solr.document.SolrInvestigationsDocument;
 import com.dpdocter.solr.document.SolrNotesDocument;
 import com.dpdocter.solr.document.SolrObservationsDocument;
+import com.dpdocter.solr.document.SolrSpecialityDocument;
 import com.dpdocter.solr.repository.SolrComplaintsRepository;
 import com.dpdocter.solr.repository.SolrDiagnosesRepository;
 import com.dpdocter.solr.repository.SolrDiagramsRepository;
+import com.dpdocter.solr.repository.SolrDoctorRepository;
 import com.dpdocter.solr.repository.SolrInvestigationsRepository;
 import com.dpdocter.solr.repository.SolrNotesRepository;
 import com.dpdocter.solr.repository.SolrObservationsRepository;
+import com.dpdocter.solr.repository.SolrSpecialityRepository;
 import com.dpdocter.solr.services.SolrClinicalNotesService;
 
 import common.util.web.DPDoctorUtils;
@@ -57,6 +69,15 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 
     @Autowired
     private TransactionalManagementService transnationalService;
+
+    @Autowired
+    private SolrDoctorRepository solrDoctorRepository;
+
+    @Autowired
+    private SolrSpecialityRepository solrSpecialityRepository;
+
+    @Autowired
+    private SolrTemplate solrTemplate;
 
     @Override
     public boolean addComplaints(SolrComplaintsDocument request) {
@@ -442,7 +463,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	List<SolrDiagramsDocument> response = null;
 	switch (Range.valueOf(range.toUpperCase())) {
 	case GLOBAL:
-	    response = getGlobalDiagrams(page, size, updatedTime, discarded, searchTerm);
+	    response = getGlobalDiagrams(page, size, doctorId, updatedTime, discarded, searchTerm);
 	    break;
 	case CUSTOM:
 	    response = getCustomDiagrams(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
@@ -662,57 +683,70 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 
 	try {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
-	    if (doctorId == null) {
-		if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
-		    if (size > 0)
-			diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(new Date(createdTimeStamp), discarded,
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+
+	    	List<SolrDoctorDocument> doctorCollections = solrDoctorRepository.findByUserId(doctorId);
+	    	List<String> specialitiesId = new ArrayList<String>();
+	 	   	if(doctorCollections != null && !doctorCollections.isEmpty()){
+	 	   		for(SolrDoctorDocument doctorDocument : doctorCollections){
+	 	   			if(doctorDocument.getSpecialities() != null && !doctorDocument.getSpecialities().isEmpty())
+	 	   			specialitiesId.addAll(doctorDocument.getSpecialities());
+	 	   		}
+	 	   	}
+	 	   SimpleQuery specialityQuery = new SimpleQuery(Criteria.where("id").in(Arrays.asList(specialitiesId)));
+	 	   solrTemplate.setSolrCore("specialities");
+		   Page<SolrSpecialityDocument> resultsSpeciality = solrTemplate.queryForPage(specialityQuery, SolrSpecialityDocument.class);
+		   
+		   List<SolrSpecialityDocument> specialityCollections = resultsSpeciality.getContent();
+		    @SuppressWarnings("unchecked")
+		    Collection<String> specialities = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("superSpeciality"));
+		    Criteria searchCriteria =  Criteria.where("speciality").in(Arrays.asList(specialities))
+		    		.and("doctorId").contains(doctorId, null, "").and("updatedTime").greaterThanEqual(new Date(createdTimeStamp));
+		    searchCriteria.and("locationId").contains(locationId, null, "").and("hospitalId").contains(hospitalId, null, "");
+		    if(!discarded)searchCriteria.and("discarded").is(discarded);
+		if (!DPDoctorUtils.anyStringEmpty(searchTerm))searchCriteria.and("speciality").or("tags").contains(searchTerm);
+		SimpleQuery query = new SimpleQuery(searchCriteria);
+		
+		if (size > 0)query.setPageRequest(new PageRequest(page, size, Sort.Direction.DESC, "updatedTime"));
 		    else
-			diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(new Date(createdTimeStamp), discarded,
-				new Sort(Sort.Direction.DESC, "updatedTime"));
-		} else {
-		    if (size > 0)
-			diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(new Date(createdTimeStamp), discarded, searchTerm,
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
-		    else
-			diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(new Date(createdTimeStamp), discarded, searchTerm,
-				new Sort(Sort.Direction.DESC, "updatedTime"));
-		}
-	    } else {
+			query.addSort(new Sort(Sort.Direction.DESC, "updatedTime"));
+		    solrTemplate.setSolrCore("diagrams");
+		    Page<SolrDiagramsDocument> results = solrTemplate.queryForPage(query, SolrDiagramsDocument.class);
+		    diagramCollections = results.getContent();
+		    
+		    String speciality = specialities.toString().replaceAll("\\[", "(").replaceAll("\\]", ")");
 		if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		    if (locationId == null && hospitalId == null) {
 			if (size > 0)
-			    diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(doctorId, new Date(createdTimeStamp), discarded,
+			    diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(doctorId, speciality, new Date(createdTimeStamp), discarded,
 				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(doctorId, new Date(createdTimeStamp), discarded,
+			    diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(doctorId, speciality, new Date(createdTimeStamp), discarded,
 				    new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
-			    diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
+			    diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, speciality, new Date(createdTimeStamp),
 				    discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
+			    diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, speciality, new Date(createdTimeStamp),
 				    discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
 		    }
 		} else {
 		    if (locationId == null && hospitalId == null) {
 			if (size > 0)
-			    diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(doctorId, new Date(createdTimeStamp), discarded, searchTerm,
+			    diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(doctorId, speciality, new Date(createdTimeStamp), discarded, searchTerm,
 				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(doctorId, new Date(createdTimeStamp), discarded, searchTerm,
+			    diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(doctorId, speciality, new Date(createdTimeStamp), discarded, searchTerm,
 				    new Sort(Sort.Direction.DESC, "updatedTime"));
 		    } else {
 			if (size > 0)
-			    diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
+			    diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, speciality, new Date(createdTimeStamp),
 				    discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 			else
-			    diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
+			    diagramCollections = solrDiagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, speciality, new Date(createdTimeStamp),
 				    discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
 		    }
 		}
-	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
@@ -721,23 +755,41 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	return diagramCollections;
     }
 
-    private List<SolrDiagramsDocument> getGlobalDiagrams(int page, int size, String updatedTime, Boolean discarded, String searchTerm) {
+    private List<SolrDiagramsDocument> getGlobalDiagrams(int page, int size, String doctorId, String updatedTime, Boolean discarded, String searchTerm) {
 	List<SolrDiagramsDocument> diagramCollections = null;
 	try {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
+	    
+	    List<SolrDoctorDocument> doctorCollections = solrDoctorRepository.findByUserId(doctorId);
+    	List<String> specialitiesId = new ArrayList<String>();
+ 	   	if(doctorCollections != null && !doctorCollections.isEmpty()){
+ 	   		for(SolrDoctorDocument doctorDocument : doctorCollections){
+ 	   			if(doctorDocument.getSpecialities() != null && !doctorDocument.getSpecialities().isEmpty())
+ 	   			specialitiesId.addAll(doctorDocument.getSpecialities());
+ 	   		}
+ 	   	}
+ 	   SimpleQuery specialityQuery = new SimpleQuery(Criteria.where("id").in(Arrays.asList(specialitiesId)));
+ 	   solrTemplate.setSolrCore("specialities");
+	   Page<SolrSpecialityDocument> resultsSpeciality = solrTemplate.queryForPage(specialityQuery, SolrSpecialityDocument.class);
+	   
+	   List<SolrSpecialityDocument> specialityCollections = resultsSpeciality.getContent();
+	    @SuppressWarnings("unchecked")
+	    Collection<String> specialities = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("superSpeciality"));
+	    
+	    String speciality = specialities.toString().replaceAll("\\[", "(").replaceAll("\\]", ")");
 	    if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 		if (size > 0)
-		    diagramCollections = solrDiagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discarded,
+		    diagramCollections = solrDiagramsRepository.findGlobalDiagrams(speciality, new Date(createdTimeStamp), discarded,
 			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    diagramCollections = solrDiagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discarded,
+		    diagramCollections = solrDiagramsRepository.findGlobalDiagrams(speciality, new Date(createdTimeStamp), discarded,
 			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    } else {
 		if (size > 0)
-		    diagramCollections = solrDiagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discarded, searchTerm,
+		    diagramCollections = solrDiagramsRepository.findGlobalDiagrams(speciality, new Date(createdTimeStamp), discarded, searchTerm,
 			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    diagramCollections = solrDiagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discarded, searchTerm,
+		    diagramCollections = solrDiagramsRepository.findGlobalDiagrams(speciality, new Date(createdTimeStamp), discarded, searchTerm,
 			    new Sort(Sort.Direction.DESC, "updatedTime"));
 	    }
 	} catch (Exception e) {
@@ -756,39 +808,57 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	    if (doctorId == null)
 		diagramCollections = new ArrayList<SolrDiagramsDocument>();
 	    else {
-		if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
-		    if (locationId == null && hospitalId == null) {
-			if (size > 0)
-			    diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId, new Date(createdTimeStamp), discarded,
-				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
-			else
-			    diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId, new Date(createdTimeStamp), discarded,
-				    new Sort(Sort.Direction.DESC, "updatedTime"));
-		    } else {
-			if (size > 0)
-			    diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-				    discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-			else
-			    diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-				    discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
-		    }
-		} else {
-		    if (locationId == null && hospitalId == null) {
-			if (size > 0)
-			    diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId, new Date(createdTimeStamp), discarded, searchTerm,
-				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
-			else
-			    diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId, new Date(createdTimeStamp), discarded, searchTerm,
-				    new Sort(Sort.Direction.DESC, "updatedTime"));
-		    } else {
-			if (size > 0)
-			    diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-				    discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-			else
-			    diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-				    discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
-		    }
-		}
+	    	List<SolrDoctorDocument> doctorCollections = solrDoctorRepository.findByUserId(doctorId);
+	    	List<String> specialitiesId = new ArrayList<String>();
+	 	   	if(doctorCollections != null && !doctorCollections.isEmpty()){
+	 	   		for(SolrDoctorDocument doctorDocument : doctorCollections){
+	 	   			if(doctorDocument.getSpecialities() != null && !doctorDocument.getSpecialities().isEmpty())
+	 	   			specialitiesId.addAll(doctorDocument.getSpecialities());
+	 	   		}
+	 	   	}
+	 	   SimpleQuery specialityQuery = new SimpleQuery(Criteria.where("id").in(Arrays.asList(specialitiesId)));
+	 	   solrTemplate.setSolrCore("specialities");
+		   Page<SolrSpecialityDocument> resultsSpeciality = solrTemplate.queryForPage(specialityQuery, SolrSpecialityDocument.class);
+		   
+		   List<SolrSpecialityDocument> specialityCollections = resultsSpeciality.getContent();
+		   
+		   @SuppressWarnings("unchecked")
+		    Collection<String> specialities = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("superSpeciality"));
+		    String speciality = specialities.toString().replaceAll("\\[", "(").replaceAll("\\]", ")"); 
+		   
+		    if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
+			    if (locationId == null && hospitalId == null) {
+				if (size > 0)
+				    diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId, speciality, new Date(createdTimeStamp), discarded,
+					    new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else
+				    diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId, speciality, new Date(createdTimeStamp), discarded,
+					    new Sort(Sort.Direction.DESC, "updatedTime"));
+			    } else {
+				if (size > 0)
+				    diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId, speciality, new Date(createdTimeStamp),
+					    discarded, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else
+				    diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId, speciality, new Date(createdTimeStamp),
+					    discarded, new Sort(Sort.Direction.DESC, "updatedTime"));
+			    }
+			} else {
+			    if (locationId == null && hospitalId == null) {
+				if (size > 0)
+				    diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId, speciality, new Date(createdTimeStamp), discarded, searchTerm,
+					    new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else
+				    diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId, speciality, new Date(createdTimeStamp), discarded, searchTerm,
+					    new Sort(Sort.Direction.DESC, "updatedTime"));
+			    } else {
+				if (size > 0)
+				    diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId, speciality, new Date(createdTimeStamp),
+					    discarded, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else
+				    diagramCollections = solrDiagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId, speciality, new Date(createdTimeStamp),
+					    discarded, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
+			    }
+			} 
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();

@@ -14,8 +14,6 @@ public class LocationAndAccessControl {
 
     private String city;
 
-    private String locationPhoneNumber;
-
     private String postalCode;
 
     private String websiteUrl;
@@ -44,9 +42,9 @@ public class LocationAndAccessControl {
 
     private String locality;
 
-    private String mobileNumber;
+    private String clinicNumber;
 
-    private String alternateNumber;
+    private List<String> alternateClinicNumbers;
 
     private List<WorkingSchedule> workingSchedules;
 
@@ -102,14 +100,6 @@ public class LocationAndAccessControl {
 
     public void setCity(String city) {
 	this.city = city;
-    }
-
-    public String getLocationPhoneNumber() {
-	return locationPhoneNumber;
-    }
-
-    public void setLocationPhoneNumber(String locationPhoneNumber) {
-	this.locationPhoneNumber = locationPhoneNumber;
     }
 
     public String getPostalCode() {
@@ -224,22 +214,6 @@ public class LocationAndAccessControl {
 	this.locality = locality;
     }
 
-    public String getMobileNumber() {
-	return mobileNumber;
-    }
-
-    public void setMobileNumber(String mobileNumber) {
-	this.mobileNumber = mobileNumber;
-    }
-
-    public String getAlternateNumber() {
-	return alternateNumber;
-    }
-
-    public void setAlternateNumber(String alternateNumber) {
-	this.alternateNumber = alternateNumber;
-    }
-
     public List<WorkingSchedule> getWorkingSchedules() {
 	return workingSchedules;
     }
@@ -304,15 +278,34 @@ public class LocationAndAccessControl {
 	this.isClinic = isClinic;
     }
 
-    @Override
-    public String toString() {
-	return "LocationAndAccessControl [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city
-		+ ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", images=" + images
-		+ ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude="
-		+ longitude + ", tagLine=" + tagLine + ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress=" + locationEmailAddress
-		+ ", specialization=" + specialization + ", streetAddress=" + streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber
-		+ ", alternateNumber=" + alternateNumber + ", workingSchedules=" + workingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen
-		+ ", isClinic=" + isClinic + ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited="
-		+ isNABLAccredited + ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", roles=" + roles + "]";
-    }
+	public String getClinicNumber() {
+		return clinicNumber;
+	}
+
+	public void setClinicNumber(String clinicNumber) {
+		this.clinicNumber = clinicNumber;
+	}
+
+	public List<String> getAlternateClinicNumbers() {
+		return alternateClinicNumbers;
+	}
+
+	public void setAlternateClinicNumbers(List<String> alternateClinicNumbers) {
+		this.alternateClinicNumbers = alternateClinicNumbers;
+	}
+
+	@Override
+	public String toString() {
+		return "LocationAndAccessControl [id=" + id + ", locationName=" + locationName + ", country=" + country
+				+ ", state=" + state + ", city=" + city + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl
+				+ ", images=" + images + ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl
+				+ ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude=" + longitude + ", tagLine="
+				+ tagLine + ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress=" + locationEmailAddress
+				+ ", specialization=" + specialization + ", streetAddress=" + streetAddress + ", locality=" + locality
+				+ ", clinicNumber=" + clinicNumber + ", alternateClinicNumbers=" + alternateClinicNumbers
+				+ ", workingSchedules=" + workingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen
+				+ ", isClinic=" + isClinic + ", isLab=" + isLab + ", isOnlineReportsAvailable="
+				+ isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited + ", isHomeServiceAvailable="
+				+ isHomeServiceAvailable + ", roles=" + roles + "]";
+	}
 }

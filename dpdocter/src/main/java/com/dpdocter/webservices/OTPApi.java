@@ -50,13 +50,13 @@ public class OTPApi {
 
     @Path(value = PathProxy.OTPUrls.OTP_GENERATOR_MOBILE)
     @GET
-    public Response<String> otpGenerator(@PathParam("mobileNumber") String mobileNumber) {
+    public Response<Boolean> otpGenerator(@PathParam("mobileNumber") String mobileNumber) {
 	if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
 	    logger.warn("Invalid Input. Mobile Number Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Mobile Number Cannot Be Empty");
 	}
-	String OTP = otpService.otpGenerator(mobileNumber);
-	Response<String> response = new Response<String>();
+	Boolean OTP = otpService.otpGenerator(mobileNumber);
+	Response<Boolean> response = new Response<Boolean>();
 	response.setData(OTP);
 	return response;
     }

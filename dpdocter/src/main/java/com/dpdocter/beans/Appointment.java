@@ -1,6 +1,7 @@
 package com.dpdocter.beans;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -49,8 +50,8 @@ public class Appointment extends GenericCollection {
     private String locationName;
 
     private String clinicAddress;
-
-    private String locationPhoneNumber;
+    
+    private String clinicNumber;
 
     private Double latitude;
 
@@ -192,14 +193,6 @@ public class Appointment extends GenericCollection {
 		this.clinicAddress = clinicAddress;
 	}
 
-	public String getLocationPhoneNumber() {
-		return locationPhoneNumber;
-	}
-
-	public void setLocationPhoneNumber(String locationPhoneNumber) {
-		this.locationPhoneNumber = locationPhoneNumber;
-	}
-
 	public Double getLatitude() {
 		return latitude;
 	}
@@ -240,6 +233,14 @@ public class Appointment extends GenericCollection {
 		this.isAllDayEvent = isAllDayEvent;
 	}
 
+	public String getClinicNumber() {
+		return clinicNumber;
+	}
+
+	public void setClinicNumber(String clinicNumber) {
+		this.clinicNumber = clinicNumber;
+	}
+
 	@Override
 	public String toString() {
 		return "Appointment [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
@@ -248,7 +249,8 @@ public class Appointment extends GenericCollection {
 				+ ", subject=" + subject + ", explanation=" + explanation + ", type=" + type + ", isCalenderBlocked="
 				+ isCalenderBlocked + ", isFeedbackAvailable=" + isFeedbackAvailable + ", isAllDayEvent="
 				+ isAllDayEvent + ", doctorName=" + doctorName + ", locationName=" + locationName + ", clinicAddress="
-				+ clinicAddress + ", locationPhoneNumber=" + locationPhoneNumber + ", latitude=" + latitude
-				+ ", longitude=" + longitude + "]";
+				+ clinicAddress + ", clinicNumber=" + clinicNumber + ", latitude=" + latitude + ", longitude="
+				+ longitude + "]";
 	}
+
 }

@@ -20,6 +20,8 @@ public class RecordsEditRequest {
 
     private String visitId;
 
+    private String recordsUrl;
+    
     public String getId() {
 	return id;
     }
@@ -84,9 +86,18 @@ public class RecordsEditRequest {
 	this.visitId = visitId;
     }
 
-    @Override
-    public String toString() {
-	return "RecordsEditRequest [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId + ", explanation=" + explanation + ", fileDetails="
-		+ fileDetails + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", visitId=" + visitId + "]";
-    }
+	public String getRecordsUrl() {
+		return recordsUrl;
+	}
+
+	public void setRecordsUrl(String recordsUrl) {
+		this.recordsUrl = recordsUrl;
+	}
+
+	@Override
+	public String toString() {
+		return "RecordsEditRequest [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId + ", explanation="
+				+ explanation + ", fileDetails=" + fileDetails + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", visitId=" + visitId + ", recordsUrl=" + recordsUrl + "]";
+	}
 }

@@ -29,7 +29,7 @@
   access-decision-manager-ref="accessDecisionManager"
   xmlns="http://www.springframework.org/schema/security">
   <anonymous enabled="false" />
-  <intercept-url pattern="/api/**" /> 
+  <intercept-url pattern="/api/**" access="ROLE_APP"/> 
   <custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
   <access-denied-handler ref="oauthAccessDeniedHandler" />
  </http>
@@ -106,7 +106,7 @@
  <!-- This defined token store, we have used inmemory tokenstore for now 
   but this can be changed to a user defined one -->
  <bean id="tokenStore"
-  class="org.springframework.security.oauth2.provider.token.InMemoryTokenStore" />
+  class="org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore" />
 
  <!-- This is where we defined token based configurations, token validity 
   and other things -->
@@ -118,11 +118,13 @@
   <property name="clientDetailsService" ref="clientDetails" />
  </bean>
 
- <bean id="userApprovalHandler"
-  class="org.springframework.security.oauth2.provider.approval.TokenServicesUserApprovalHandler">
-  <property name="tokenServices" ref="tokenServices" />
- </bean>
-
+ <bean class="org.springframework.security.oauth2.provider.approval.TokenStoreUserApprovalHandler" id="userApprovalHandler">  
+     <property name="requestFactory" ref="oAuth2RequestFactory"/> 
+     <property name="tokenStore" ref="tokenStore"/>  
+     </bean>
+     <bean class="org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory" id="oAuth2RequestFactory">  
+   <constructor-arg ref="clientDetails"> </constructor-arg></bean> 
+     
  <oauth:authorization-server
   client-details-service-ref="clientDetails" token-services-ref="tokenServices"
   user-approval-handler-ref="userApprovalHandler">
@@ -148,10 +150,8 @@
 
  </oauth:client-details-service>
 
-<!--  <sec:global-method-security -->
-<!--   pre-post-annotations="enabled" proxy-target-class="true"> -->
-<!--   you could also wire in the expression handler up at the layer of the  -->
-<!--    http filters. See https://jira.springsource.org/browse/SEC-1452 --> 
+<!--  <sec:global-method-security> -->
+<!--   <pre-post-annotations="enabled" proxy-target-class="true"/> -->
 <!--   <sec:expression-handler ref="oauthExpressionHandler" /> -->
 <!--  </sec:global-method-security> -->
 
@@ -159,6 +159,6 @@
  <oauth:web-expression-handler id="oauthWebExpressionHandler" />
 <!--  <context:component-scan base-package="com.dpdocter"/> -->
  
- <mvc:annotation-driven />
- <mvc:default-servlet-handler />
+<!--  <mvc:annotation-driven /> -->
+<!--  <mvc:default-servlet-handler /> -->
 </beans>

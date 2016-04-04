@@ -150,10 +150,9 @@ public class PatientVisitApi {
 	    throw new BusinessException(ServiceError.InvalidInput,
 		    "Invalid Input. Visit Id, Doctor Id, Location Id, Hospital Id, Mobile Number Cannot Be Empty");
 	}
-	patientVisitService.smsVisit(visitId, doctorId, locationId, hospitalId, mobileNumber);
 
 	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
+	response.setData(patientVisitService.smsVisit(visitId, doctorId, locationId, hospitalId, mobileNumber));
 	return response;
     }
 

@@ -53,6 +53,8 @@ import com.dpdocter.response.DoctorSMSResponse;
 import com.dpdocter.response.SMSResponse;
 import com.dpdocter.services.SMSServices;
 
+import common.util.web.DPDoctorUtils;
+
 @Service
 public class SMSServicesImpl implements SMSServices {
     private static Logger logger = Logger.getLogger(SMSServicesImpl.class);
@@ -88,7 +90,9 @@ public class SMSServicesImpl implements SMSServices {
     private SMSFormatRepository sMSFormatRepository;
 
     @Override
-    public void sendSMS(SMSTrackDetail smsTrackDetail, Boolean save) {
+    public Boolean sendSMS(SMSTrackDetail smsTrackDetail, Boolean save) {
+    	Boolean response = false;
+    	String responseId = null;
 	try {
 	    Message message = new Message();
 	    List<SMS> smsList = new ArrayList<SMS>();
@@ -117,7 +121,7 @@ public class SMSServicesImpl implements SMSServices {
 			    smsList.add(sms);
 			    message.setSms(smsList);
 			    String xmlSMSData = createXMLData(message);
-			    String responseId = hitSMSUrl(SMS_POST_URL, xmlSMSData);
+			    responseId = hitSMSUrl(SMS_POST_URL, xmlSMSData);
 			    smsTrackDetail.setResponseId(responseId);
 			}
 		    }
@@ -127,18 +131,18 @@ public class SMSServicesImpl implements SMSServices {
 		    smsList.add(sms);
 		    message.setSms(smsList);
 		    String xmlSMSData = createXMLData(message);
-		    String responseId = hitSMSUrl(SMS_POST_URL, xmlSMSData);
+		    responseId = hitSMSUrl(SMS_POST_URL, xmlSMSData);
 		    smsTrackDetail.setResponseId(responseId);
 		}
 	    }
 
-	    if (save)
-		smsTrackRepository.save(smsTrackDetail);
+	    if (save)smsTrackRepository.save(smsTrackDetail);
+	    if(DPDoctorUtils.anyStringEmpty(responseId))response = true;
 	} catch (Exception e) {
 	    logger.error("Error : " + e.getMessage());
 	    throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 	}
-
+	return response;
     }
 
     private static String hitSMSUrl(final String SMS_URL, String xmlSMSData) {
@@ -204,16 +208,18 @@ public class SMSServicesImpl implements SMSServices {
 	SMSResponse response = null;
 	List<SMSTrackDetail> smsTrackDetails = null;
 	try {
+		
+		String[] type = {"APPOINTMENT", "PRESCRIPTION", "VISITS"};
 	    if (doctorId == null) {
 		if (size > 0)
-		    smsTrackDetails = smsTrackRepository.findAll(locationId, hospitalId, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+		    smsTrackDetails = smsTrackRepository.findByLocationHospitalId(locationId, hospitalId, type, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    smsTrackDetails = smsTrackRepository.findAll(locationId, hospitalId, new Sort(Sort.Direction.DESC, "updatedTime"));
+		    smsTrackDetails = smsTrackRepository.findByLocationHospitalId(locationId, hospitalId, type, new Sort(Sort.Direction.DESC, "updatedTime"));
 	    } else {
 		if (size > 0)
-		    smsTrackDetails = smsTrackRepository.findAll(doctorId, locationId, hospitalId, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+		    smsTrackDetails = smsTrackRepository.findByDoctorLocationHospitalId(doctorId, locationId, hospitalId, type, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 		else
-		    smsTrackDetails = smsTrackRepository.findAll(doctorId, locationId, hospitalId, new Sort(Sort.Direction.DESC, "updatedTime"));
+		    smsTrackDetails = smsTrackRepository.findByDoctorLocationHospitalId(doctorId, locationId, hospitalId, type, new Sort(Sort.Direction.DESC, "updatedTime"));
 	    }
 
 	    @SuppressWarnings("unchecked")
@@ -252,32 +258,33 @@ public class SMSServicesImpl implements SMSServices {
 	List<SMSTrack> response = null;
 	List<SMSTrackDetail> smsTrackCollections = null;
 	try {
+		String[] type = {"APPOINTMENT", "PRESCRIPTION", "VISITS"};
 	    if (doctorId == null) {
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
-			smsTrackCollections = smsTrackRepository.findAll(new PageRequest(page, size, Direction.DESC, "sentTime")).getContent();
+			smsTrackCollections = smsTrackRepository.findByType(type, new PageRequest(page, size, Direction.DESC, "sentTime"));
 		    else
-			smsTrackCollections = smsTrackRepository.findAll(new Sort(Sort.Direction.DESC, "sentTime"));
+			smsTrackCollections = smsTrackRepository.findByType(type, new Sort(Sort.Direction.DESC, "sentTime"));
 		} else {
 		    if (size > 0)
-			smsTrackCollections = smsTrackRepository.findByLocationHospitalPatientId(locationId, hospitalId, patientId,
+			smsTrackCollections = smsTrackRepository.findByLocationHospitalPatientId(locationId, hospitalId, patientId, type, 
 				new PageRequest(page, size, Direction.DESC, "sentTime"));
 		    else
-			smsTrackCollections = smsTrackRepository.findByLocationHospitalPatientId(locationId, hospitalId, patientId,
+			smsTrackCollections = smsTrackRepository.findByLocationHospitalPatientId(locationId, hospitalId, patientId, type, 
 				new Sort(Sort.Direction.DESC, "sentTime"));
 		}
 	    } else {
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
-			smsTrackCollections = smsTrackRepository.findAll(doctorId, patientId, new PageRequest(page, size, Direction.DESC, "sentTime"));
+			smsTrackCollections = smsTrackRepository.findByDoctorPatient(doctorId, patientId, type, new PageRequest(page, size, Direction.DESC, "sentTime"));
 		    else
-			smsTrackCollections = smsTrackRepository.findAll(doctorId, patientId, new Sort(Sort.Direction.DESC, "sentTime"));
+			smsTrackCollections = smsTrackRepository.findByDoctorPatient(doctorId, patientId, type, new Sort(Sort.Direction.DESC, "sentTime"));
 		} else {
 		    if (size > 0)
-			smsTrackCollections = smsTrackRepository.findAll(doctorId, locationId, hospitalId, patientId,
+			smsTrackCollections = smsTrackRepository.findByDoctorLocationHospitalPatient(doctorId, locationId, hospitalId, patientId,type, 
 				new PageRequest(page, size, Direction.DESC, "sentTime"));
 		    else
-			smsTrackCollections = smsTrackRepository.findAll(doctorId, locationId, hospitalId, patientId,
+			smsTrackCollections = smsTrackRepository.findByDoctorLocationHospitalPatient(doctorId, locationId, hospitalId, patientId,type, 
 				new Sort(Sort.Direction.DESC, "sentTime"));
 		}
 	    }

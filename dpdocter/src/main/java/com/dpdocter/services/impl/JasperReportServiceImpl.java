@@ -3,8 +3,6 @@ package com.dpdocter.services.impl;
 import java.io.File;
 import java.util.Map;
 
-import javax.ws.rs.core.UriInfo;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

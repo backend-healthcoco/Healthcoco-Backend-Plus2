@@ -574,11 +574,11 @@ public class RegistrationApi {
     }
 
     @Path(value = PathProxy.RegistrationUrls.GET_ROLE)
-    @GET
-    public Response<Role> getRole(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
-	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
-	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
-
+	@GET
+    public Response<Role> getRole(@PathParam(value = "range") String range, @QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
+    		@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+    		@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+ 
 	List<Role> professionResponse = registrationService.getRole(range, page, size, locationId, hospitalId, updatedTime);
 	Response<Role> response = new Response<Role>();
 	response.setDataList(professionResponse);
@@ -663,6 +663,26 @@ public class RegistrationApi {
 	List<Feedback> feedbacks = registrationService.getFeedback(page, size, doctorId, locationId, hospitalId, updatedTime, type);
 	Response<Feedback> response = new Response<Feedback>();
 	response.setDataList(feedbacks);
+	return response;
+    }
+
+    @Path(value = PathProxy.RegistrationUrls.CHECK_PATIENT_NUMBER)
+    @GET
+    public Response<Boolean> checkPatientNumber(@PathParam("oldMobileNumber") String oldMobileNumber, @PathParam("newMobileNumber") String newMobileNumber) {
+
+    Boolean checkPatientNumberResponse = registrationService.checkPatientNumber(oldMobileNumber, newMobileNumber);
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(checkPatientNumberResponse);
+	return response;
+    }
+
+    @Path(value = PathProxy.RegistrationUrls.CHANGE_PATIENT_NUMBER)
+    @GET
+    public Response<Boolean> changePatientNumber(@PathParam("oldMobileNumber") String oldMobileNumber, @PathParam("newMobileNumber") String newMobileNumber, @PathParam("otpNumber") String otpNumber) {
+
+    	Boolean changePatientNumberResponse = registrationService.changePatientNumber(oldMobileNumber, newMobileNumber, otpNumber);
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(changePatientNumberResponse);
 	return response;
     }
 

@@ -281,6 +281,7 @@ public class LoginServiceImpl implements LoginService {
 				    BeanUtil.map(userCollection, user);
 				    PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(),null,null, null);
 				    if(patientCollection != null)BeanUtil.map(patientCollection, user);
+				    user.setId(userCollection.getId());
 				    if(response == null)response = new ArrayList<User>();
 				    response.add(user);
 				}
@@ -299,10 +300,10 @@ public class LoginServiceImpl implements LoginService {
 				BeanUtil.map(userCollection, user);
 				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(),null,null, null);
 				if(patientCollection != null)BeanUtil.map(patientCollection, user);
+				user.setId(userCollection.getId());
 				if(response == null)response = new ArrayList<User>();
 				response.add(user);
-			}
-			
+			}		
 		}
 	    if (response == null) {
 		logger.warn(loginPatient);

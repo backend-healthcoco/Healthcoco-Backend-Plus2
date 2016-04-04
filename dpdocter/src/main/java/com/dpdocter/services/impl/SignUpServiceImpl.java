@@ -14,6 +14,9 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.AccessControl;
@@ -156,6 +159,9 @@ public class SignUpServiceImpl implements SignUpService {
     @Autowired
     private GenerateUniqueUserNameService generateUniqueUserNameService;
 
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
     @Value(value = "${Signup.role}")
     private String role;
     
@@ -269,6 +275,10 @@ public class SignUpServiceImpl implements SignUpService {
 	DoctorSignUp response = null;
 
 	try {
+		if (DPDoctorUtils.anyStringEmpty(request.getEmailAddress())) {
+			logger.warn("Email Address cannot be null");
+			throw new BusinessException(ServiceError.InvalidInput, "Email Address cannot be null");
+		 }
 	    // get role of specified type
 	    RoleCollection hospitalAdmin = roleRepository.findByRole(RoleEnum.HOSPITAL_ADMIN.getRole());
 	    if (hospitalAdmin == null) {
@@ -288,7 +298,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    // save user
 	    UserCollection userCollection = new UserCollection();
 	    BeanUtil.map(request, userCollection);
-	    if (request.getDob() != null && request.getDob().getAge() < 0) {
+	    if (request.getDob() != null && request.getDob().getAge() != null && request.getDob().getAge().getYears() < 0) {
 		logger.warn("Incorrect Date of Birth");
 		throw new BusinessException(ServiceError.NotAcceptable, "Incorrect Date of Birth");
 	    }
@@ -433,7 +443,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    response.setHospital(hospital);
 	} catch (DuplicateKeyException de) {
 	    logger.error(de);
-	    throw new BusinessException(ServiceError.NotAcceptable, "Email address already registerd. Please login");
+	    throw new BusinessException(ServiceError.Unknown, "Email address already registerd. Please login");
 	} catch (BusinessException be) {
 	    logger.error(be);
 	    throw be;
@@ -486,6 +496,11 @@ public class SignUpServiceImpl implements SignUpService {
 	DoctorSignUp response = null;
 	try {
 
+		if (DPDoctorUtils.anyStringEmpty(request.getEmailAddress())) {
+			logger.warn("Email Address cannot be null");
+			throw new BusinessException(ServiceError.InvalidInput, "Email Address cannot be null");
+		 }
+		
 	    // get role of specified type
 	    RoleCollection hospitalAdmin = roleRepository.findByRole(RoleEnum.HOSPITAL_ADMIN.getRole());
 	    if (hospitalAdmin == null) {
@@ -505,9 +520,9 @@ public class SignUpServiceImpl implements SignUpService {
 	    // save user
 	    UserCollection userCollection = new UserCollection();
 	    BeanUtil.map(request, userCollection);
-	    if (request.getDob() != null && request.getDob().getAge() < 0) {
+	    if (request.getDob() != null && request.getDob().getAge() != null & request.getDob().getAge().getYears() < 0) {
 		logger.warn("Incorrect Date of Birth");
-		throw new BusinessException(ServiceError.NotAcceptable, "Incorrect Date of Birth");
+		throw new BusinessException(ServiceError.InvalidInput, "Incorrect Date of Birth");
 	    }
 	    char[] salt = DPDoctorUtils.generateSalt();
 	    userCollection.setSalt(salt);
@@ -540,7 +555,7 @@ public class SignUpServiceImpl implements SignUpService {
 
 	} catch (DuplicateKeyException de) {
 	    logger.error(de);
-	    throw new BusinessException(ServiceError.NotAcceptable, "Email address already registerd. Please login");
+	    throw new BusinessException(ServiceError.Unknown, "An account already exists with this email address.Please use another email address to register.");
 	} catch (BusinessException be) {
 	    logger.error(be);
 	    throw be;
@@ -622,6 +637,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    userRoleCollection = new UserRoleCollection(userCollection.getId(), roleCollection.getId());
 	    userRoleCollection.setCreatedTime(new Date());
 	    userRoleRepository.save(userRoleCollection);
+	    
 	    // save token
 	    TokenCollection tokenCollection = new TokenCollection();
 	    tokenCollection.setResourceId(userLocationCollection.getId());
@@ -643,7 +659,7 @@ public class SignUpServiceImpl implements SignUpService {
 		smsDetail.setUserId(userCollection.getId());
 		smsDetail.setUserName(userCollection.getFirstName());
 		SMS sms = new SMS();
-		sms.setSmsText("Healthcoco " + (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName()
+		sms.setSmsText("Hi " + (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName()
 			+ ",Thank you for signing up with Healthcoco.We will contact you shortly to get you started with Healthcoco+.");
 
 		SMSAddress smsAddress = new SMSAddress();
@@ -719,7 +735,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    // save user
 	    UserCollection userCollection = new UserCollection();
 	    BeanUtil.map(request, userCollection);
-	    if (request.getDob() != null && request.getDob().getAge() < 0) {
+	    if (request.getDob() != null && request.getDob().getAge().getYears() < 0) {
 		logger.warn(DOB);
 		throw new BusinessException(ServiceError.NotAcceptable, DOB);
 	    }
@@ -1023,7 +1039,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    if (userCollections != null && !userCollections.isEmpty()) {
 		for (UserCollection userCollection : userCollections) {
 		    if (!userCollection.getUserName().equals(userCollection.getEmailAddress()))
-			if (userCollection.isSignedUp() && matchName(userCollection.getFirstName(), name)) {
+			if (!userCollection.isSignedUp() && matchName(userCollection.getFirstName(), name)) {
 			    checkMatch = true;
 			    break;
 			}
@@ -1265,4 +1281,41 @@ public class SignUpServiceImpl implements SignUpService {
 	return user;
     }
 
+	@Override
+	public Boolean resendVerificationEmail(String emailaddress, UriInfo uriInfo) {
+		UserCollection userCollection = null;
+		Boolean response = false;
+		try {
+			Criteria criteria = new Criteria("userName").regex(emailaddress, "i");
+			Query query = new Query(); query.addCriteria(criteria);
+			List<UserCollection> userCollections = mongoTemplate.find(query, UserCollection.class);
+			if(userCollections != null && !userCollections.isEmpty())userCollection = userCollections.get(0);
+
+			if (userCollection != null) {
+				List<UserLocationCollection> userLocationCollections = userLocationRepository.findByUserId(userCollection.getId());
+				UserLocationCollection userLocationCollection = null;
+				if(userLocationCollections != null && !userLocationCollections.isEmpty())userLocationCollection = userLocationCollections.get(0);
+			    // save token
+			    TokenCollection tokenCollection = new TokenCollection();
+			    tokenCollection.setResourceId(userLocationCollection.getId());
+			    tokenCollection.setCreatedTime(new Date());
+			    tokenCollection = tokenRepository.save(tokenCollection);
+
+			    // send activation email
+			    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
+				    userCollection.getMiddleName(), userCollection.getLastName(), tokenCollection.getId(), uriInfo);
+			    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
+				
+			    response = true;
+		    } else {
+			logger.error("User Not Found For The Given User Id");
+			throw new BusinessException(ServiceError.NotFound, "User Not Found For The Given User Id");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error While sending verification email");
+		    throw new BusinessException(ServiceError.Unknown, "Error While sending verification email");
+		}
+		return response;
+	}
 }

@@ -808,6 +808,11 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		    userCollection.setFirstName(request.getFirstName());
 		}
 
+		if (!DPDoctorUtils.anyStringEmpty(request.getGender())) {
+		    doctorCollection.setGender(request.getGender());
+		}
+		doctorCollection.setDob(request.getDob());
+		
 		response = new DoctorMultipleDataAddEditResponse();
 		response.setDoctorId(request.getDoctorId());
 

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.EmailTrack;
 import com.dpdocter.collections.EmailTrackCollection;
+import com.dpdocter.enums.ComponentType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -31,31 +32,31 @@ public class EmailTrackServiceImpl implements EmailTackService {
 	List<EmailTrack> response = null;
 	List<EmailTrackCollection> emailTrackCollections = null;
 	try {
+		String[] type = {"APPOINTMENT", ComponentType.PRESCRIPTIONS.getType(), ComponentType.VISITS.getType(), ComponentType.CLINICAL_NOTES.getType(), ComponentType.REPORTS.getType()};
 	    if (doctorId == null) {
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
-			emailTrackCollections = emailTrackRepository.findAll(new PageRequest(page, size, Direction.DESC, "sentTime")).getContent();
+			emailTrackCollections = emailTrackRepository.findByType(type, new PageRequest(page, size, Direction.DESC, "sentTime"));
 		    else
-			emailTrackCollections = emailTrackRepository.findAll(new Sort(Sort.Direction.DESC, "sentTime"));
+			emailTrackCollections = emailTrackRepository.findByType(type, new Sort(Sort.Direction.DESC, "sentTime"));
 		} else {
 		    if (size > 0)
-			emailTrackCollections = emailTrackRepository.findAll(locationId, hospitalId, patientId,
-				new PageRequest(page, size, Direction.DESC, "sentTime"));
+			emailTrackCollections = emailTrackRepository.findByLocationHospitalPatientId(locationId, hospitalId, patientId, type, new PageRequest(page, size, Direction.DESC, "sentTime"));
 		    else
-			emailTrackCollections = emailTrackRepository.findAll(locationId, hospitalId, patientId, new Sort(Sort.Direction.DESC, "sentTime"));
+			emailTrackCollections = emailTrackRepository.findByLocationHospitalPatientId(locationId, hospitalId, patientId, type, new Sort(Sort.Direction.DESC, "sentTime"));
 		}
 	    } else {
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
-			emailTrackCollections = emailTrackRepository.findAll(doctorId, patientId, new PageRequest(page, size, Direction.DESC, "sentTime"));
+			emailTrackCollections = emailTrackRepository.findByDoctorPatient(doctorId, patientId, type, new PageRequest(page, size, Direction.DESC, "sentTime"));
 		    else
-			emailTrackCollections = emailTrackRepository.findAll(doctorId, patientId, new Sort(Sort.Direction.DESC, "sentTime"));
+			emailTrackCollections = emailTrackRepository.findByDoctorPatient(doctorId, patientId, type, new Sort(Sort.Direction.DESC, "sentTime"));
 		} else {
 		    if (size > 0)
-			emailTrackCollections = emailTrackRepository.findAll(doctorId, locationId, hospitalId, patientId,
+			emailTrackCollections = emailTrackRepository.findByDoctorLocationHospitalPatient(doctorId, locationId, hospitalId, patientId, type, 
 				new PageRequest(page, size, Direction.DESC, "sentTime"));
 		    else
-			emailTrackCollections = emailTrackRepository.findAll(doctorId, locationId, hospitalId, patientId,
+			emailTrackCollections = emailTrackRepository.findByDoctorLocationHospitalPatient(doctorId, locationId, hospitalId, patientId, type, 
 				new Sort(Sort.Direction.DESC, "sentTime"));
 		}
 	    }

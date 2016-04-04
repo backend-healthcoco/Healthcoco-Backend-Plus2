@@ -65,6 +65,7 @@ import com.dpdocter.response.PatientTreatmentResponse;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.MailService;
+import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientTreatmentServices;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.RecordsService;
@@ -73,6 +74,9 @@ import com.dpdocter.services.RecordsService;
 public class HistoryServicesImpl implements HistoryServices {
 
     private static Logger logger = Logger.getLogger(HistoryServicesImpl.class.getName());
+
+    @Autowired
+    private OTPService otpService;
 
     @Autowired
     private DiseasesRepository diseasesRepository;
@@ -1497,15 +1501,18 @@ public class HistoryServicesImpl implements HistoryServices {
 
     @Override
     public List<HistoryDetailsResponse> getMultipleData(String patientId, String doctorId, String hospitalId, String locationId, String updatedTime,
-	    Boolean inHistory) {
+	    Boolean inHistory, Boolean discarded) {
 	List<HistoryDetailsResponse> response = null;
 	try {
 
-	    List<Prescription> prescriptions = prescriptionServices.getPrescriptions(0, 0, doctorId, hospitalId, locationId, patientId, updatedTime, false,
-		    true, inHistory);
-	    List<ClinicalNotes> clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(0, 0, patientId, doctorId, locationId,
-		    hospitalId, updatedTime, true, inHistory);
-	    List<Records> records = recordsService.getRecords(0, 0, doctorId, hospitalId, locationId, patientId, updatedTime, false, true, inHistory);
+		Boolean isOTPVerified = otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId);
+	    List<Prescription> prescriptions = prescriptionServices.getPrescriptions(0, 0, doctorId, hospitalId, locationId, patientId, updatedTime, isOTPVerified,	discarded, inHistory);
+	    
+	    List<ClinicalNotes> clinicalNotes = null;
+	    if(isOTPVerified)clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithVerifiedOTP(0, 0, patientId, updatedTime, discarded, inHistory);
+	    else clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(0, 0, patientId, doctorId, locationId, hospitalId, updatedTime, discarded, inHistory);
+	    
+	    List<Records> records = recordsService.getRecords(0, 0, doctorId, hospitalId, locationId, patientId, updatedTime, isOTPVerified, discarded, inHistory);
 
 	    if (prescriptions != null || clinicalNotes != null || records != null) {
 

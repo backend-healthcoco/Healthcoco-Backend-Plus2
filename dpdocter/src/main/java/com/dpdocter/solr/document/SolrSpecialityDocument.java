@@ -14,7 +14,7 @@ public class SolrSpecialityDocument {
     @Field
     private String speciality;
 
-    @Transient
+    @Field
     private String superSpeciality;
 
     @Field

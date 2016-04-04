@@ -2,6 +2,8 @@ package com.dpdocter.solr.response;
 
 import java.util.List;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import com.dpdocter.beans.LabTest;
 
 public class LabResponse {
@@ -15,8 +17,6 @@ public class LabResponse {
     private String state;
 
     private String city;
-
-    private String locationPhoneNumber;
 
     private String postalCode;
 
@@ -60,6 +60,8 @@ public class LabResponse {
 
     private Double distance;
 
+    private String clinicNumber;
+
     public String getLocationId() {
 	return locationId;
     }
@@ -98,14 +100,6 @@ public class LabResponse {
 
     public void setCity(String city) {
 	this.city = city;
-    }
-
-    public String getLocationPhoneNumber() {
-	return locationPhoneNumber;
-    }
-
-    public void setLocationPhoneNumber(String locationPhoneNumber) {
-	this.locationPhoneNumber = locationPhoneNumber;
     }
 
     public String getPostalCode() {
@@ -276,17 +270,25 @@ public class LabResponse {
 		this.distance = distance;
 	}
 
+	public String getClinicNumber() {
+		return clinicNumber;
+	}
+
+	public void setClinicNumber(String clinicNumber) {
+		this.clinicNumber = clinicNumber;
+	}
+
 	@Override
 	public String toString() {
 		return "LabResponse [locationId=" + locationId + ", locationName=" + locationName + ", country=" + country
-				+ ", state=" + state + ", city=" + city + ", locationPhoneNumber=" + locationPhoneNumber
-				+ ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", latitude=" + latitude
-				+ ", longitude=" + longitude + ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress="
-				+ locationEmailAddress + ", streetAddress=" + streetAddress + ", locality=" + locality
-				+ ", mobileNumber=" + mobileNumber + ", alternateNumber=" + alternateNumber + ", specialization="
-				+ specialization + ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable
-				+ ", isNABLAccredited=" + isNABLAccredited + ", isHomeServiceAvailable=" + isHomeServiceAvailable
-				+ ", labTest=" + labTest + ", images=" + images + ", logoUrl=" + logoUrl + ", noOfReviews="
-				+ noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", distance=" + distance + "]";
+				+ ", state=" + state + ", city=" + city + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl
+				+ ", latitude=" + latitude + ", longitude=" + longitude + ", landmarkDetails=" + landmarkDetails
+				+ ", locationEmailAddress=" + locationEmailAddress + ", streetAddress=" + streetAddress + ", locality="
+				+ locality + ", mobileNumber=" + mobileNumber + ", alternateNumber=" + alternateNumber
+				+ ", specialization=" + specialization + ", isLab=" + isLab + ", isOnlineReportsAvailable="
+				+ isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited + ", isHomeServiceAvailable="
+				+ isHomeServiceAvailable + ", labTest=" + labTest + ", images=" + images + ", logoUrl=" + logoUrl
+				+ ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", distance="
+				+ distance + ", clinicNumber=" + clinicNumber + "]";
 	}
 }

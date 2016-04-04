@@ -2,13 +2,13 @@ package com.dpdocter.request;
 
 public class RecordsAddRequestMultipart {
 
+	private String id;
+	
     private String patientId;
 
     private String doctorId;
 
     private String explanation;
-
-    private String fileName;
 
     private String locationId;
 
@@ -16,11 +16,23 @@ public class RecordsAddRequestMultipart {
 
     private String recordsType;
 
-    private String createdBy;
-
     private String visitId;
 
-    public String getPatientId() {
+    private String prescriptionId;
+
+    private String testId;
+
+    private String recordsUrl;
+    
+    public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getPatientId() {
 	return patientId;
     }
 
@@ -43,14 +55,6 @@ public class RecordsAddRequestMultipart {
 	public void setExplanation(String explanation) {
 		this.explanation = explanation;
 	}
-
-	public String getFileName() {
-	return fileName;
-    }
-
-    public void setFileName(String fileName) {
-	this.fileName = fileName;
-    }
 
     public String getLocationId() {
 	return locationId;
@@ -76,14 +80,6 @@ public class RecordsAddRequestMultipart {
 	this.recordsType = recordsType;
     }
 
-    public String getCreatedBy() {
-	return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-	this.createdBy = createdBy;
-    }
-
     public String getVisitId() {
 	return visitId;
     }
@@ -92,11 +88,35 @@ public class RecordsAddRequestMultipart {
 	this.visitId = visitId;
     }
 
-    @Override
-    public String toString() {
-	return "RecordsAddRequestMultipart [patientId=" + patientId + ", doctorId=" + doctorId + ", explanation=" + explanation + ", fileName=" + fileName
-		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", recordsType=" + recordsType + ", createdBy=" + createdBy + ", visitId="
-		+ visitId + "]";
-    }
+	public String getPrescriptionId() {
+		return prescriptionId;
+	}
 
+	public void setPrescriptionId(String prescriptionId) {
+		this.prescriptionId = prescriptionId;
+	}
+
+	public String getTestId() {
+		return testId;
+	}
+
+	public void setTestId(String testId) {
+		this.testId = testId;
+	}
+
+	public String getRecordsUrl() {
+		return recordsUrl;
+	}
+
+	public void setRecordsUrl(String recordsUrl) {
+		this.recordsUrl = recordsUrl;
+	}
+
+	@Override
+	public String toString() {
+		return "RecordsAddRequestMultipart [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId
+				+ ", explanation=" + explanation + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", recordsType=" + recordsType + ", visitId=" + visitId + ", prescriptionId=" + prescriptionId
+				+ ", testId=" + testId + ", recordsUrl=" + recordsUrl + "]";
+	}
 }

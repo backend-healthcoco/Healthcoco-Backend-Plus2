@@ -30,7 +30,7 @@ public interface PatientVisitService {
 
     Boolean deleteVisit(String visitId, Boolean discarded);
 
-    void smsVisit(String visitId, String doctorId, String locationId, String hospitalId, String mobileNumber);
+    Boolean smsVisit(String visitId, String doctorId, String locationId, String hospitalId, String mobileNumber);
 
     List<PatientVisit> getVisitsHandheld(String doctorId, String locationId, String hospitalId, String patientId, int page, int size, Boolean isOTPVerified,
 	    String updatedTime);

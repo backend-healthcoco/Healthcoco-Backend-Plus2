@@ -2711,8 +2711,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
-    public void smsPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String mobileNumber) {
-	PrescriptionCollection prescriptionCollection = null;
+    public Boolean smsPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String mobileNumber, String type) {
+    Boolean response = false;
+    PrescriptionCollection prescriptionCollection = null;
 	try {
 	    prescriptionCollection = prescriptionRepository.findOne(prescriptionId);
 	    if (prescriptionCollection != null) {
@@ -2762,13 +2763,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    if(doctor != null)doctorName = doctor.getTitle()+" "+doctor.getFirstName(); 
 			    
 			    LocationCollection locationCollection = locationRepository.findOne(locationId);
-			 	if(locationCollection != null && locationCollection.getLocationPhoneNumber() != null)
-			    		clinicContactNum = " "+ locationCollection.getLocationPhoneNumber();
+			 	if(locationCollection != null && locationCollection.getClinicNumber() != null)
+			    		clinicContactNum = " "+ locationCollection.getClinicNumber();
 			    
 			    smsTrackDetail.setDoctorId(doctorId);
 			    smsTrackDetail.setHospitalId(hospitalId);
 			    smsTrackDetail.setLocationId(locationId);
-			    smsTrackDetail.setType("PRESCRIPTION");
+			    smsTrackDetail.setType(type);
 			    SMSDetail smsDetail = new SMSDetail();
 			    smsDetail.setUserId(prescriptionCollection.getPatientId());
 			    if (userCollection != null)
@@ -2787,7 +2788,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    smsDetails.add(smsDetail);
 			    smsTrackDetail.setSmsDetails(smsDetails);
 			    sMSServices.sendSMS(smsTrackDetail, true);
-
+			    response = false;
 			}
 		    } else {
 			logger.warn("Prescription not found.Please check prescriptionId.");
@@ -2800,6 +2801,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return response;
     }
 
     @Override

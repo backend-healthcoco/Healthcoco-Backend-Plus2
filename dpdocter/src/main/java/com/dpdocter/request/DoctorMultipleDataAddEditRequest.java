@@ -2,6 +2,7 @@ package com.dpdocter.request;
 
 import java.util.List;
 
+import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.FileDetails;
 
 public class DoctorMultipleDataAddEditRequest {
@@ -19,6 +20,10 @@ public class DoctorMultipleDataAddEditRequest {
     private FileDetails profileImage;
 
     private FileDetails coverImage;
+    
+    private String gender;
+    
+    private DOB dob;
 
     public String getDoctorId() {
 	return doctorId;
@@ -76,9 +81,34 @@ public class DoctorMultipleDataAddEditRequest {
 	this.coverImage = coverImage;
     }
 
-    @Override
-    public String toString() {
-	return "DoctorMultipleDataAddEditRequest [doctorId=" + doctorId + ", title=" + title + ", firstName=" + firstName + ", experience=" + experience
-		+ ", specialities=" + specialities + ", profileImage=" + profileImage + ", coverImage=" + coverImage + "]";
-    }
+	public List<String> getSpecialities() {
+		return specialities;
+	}
+
+	public void setSpecialities(List<String> specialities) {
+		this.specialities = specialities;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public DOB getDob() {
+		return dob;
+	}
+
+	public void setDob(DOB dob) {
+		this.dob = dob;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorMultipleDataAddEditRequest [doctorId=" + doctorId + ", title=" + title + ", firstName="
+				+ firstName + ", experience=" + experience + ", specialities=" + specialities + ", profileImage="
+				+ profileImage + ", coverImage=" + coverImage + ", gender=" + gender + ", dob=" + dob + "]";
+	}
 }

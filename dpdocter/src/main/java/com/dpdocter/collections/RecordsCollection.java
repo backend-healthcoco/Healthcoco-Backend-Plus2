@@ -62,7 +62,7 @@ public class RecordsCollection extends GenericCollection {
     private String prescribedByHospitalId;
 
     @Field
-    private String testId;;
+    private String testId;
 
     @Field
     private Boolean isFeedbackAvailable = false;

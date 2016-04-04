@@ -8,6 +8,8 @@ public class RecordsAddRequest {
 
     private String doctorId;
 
+    private String recordsUrl;
+
     private String explanation;
 
     private FileDetails fileDetails;
@@ -114,10 +116,19 @@ public class RecordsAddRequest {
 	this.testId = testId;
     }
 
-    @Override
-    public String toString() {
-	return "RecordsAddRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", explanation=" + explanation + ", fileDetails=" + fileDetails
-		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", recordsType=" + recordsType + ", createdBy=" + createdBy + ", visitId="
-		+ visitId + ", prescriptionId=" + prescriptionId + ", testId=" + testId + "]";
-    }
+	public String getRecordsUrl() {
+		return recordsUrl;
+	}
+
+	public void setRecordsUrl(String recordsUrl) {
+		this.recordsUrl = recordsUrl;
+	}
+
+	@Override
+	public String toString() {
+		return "RecordsAddRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", recordsUrl=" + recordsUrl
+				+ ", explanation=" + explanation + ", fileDetails=" + fileDetails + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", recordsType=" + recordsType + ", createdBy=" + createdBy
+				+ ", visitId=" + visitId + ", prescriptionId=" + prescriptionId + ", testId=" + testId + "]";
+	}
 }

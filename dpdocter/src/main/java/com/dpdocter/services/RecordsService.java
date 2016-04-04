@@ -56,4 +56,6 @@ public interface RecordsService {
 
     Records addRecordsMultipart(FormDataBodyPart file, RecordsAddRequestMultipart request);
 
+	String saveRecordsImage(FormDataBodyPart file, String patientIdString);
+
 }

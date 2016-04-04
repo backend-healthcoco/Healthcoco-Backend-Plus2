@@ -8,7 +8,7 @@ public interface OTPService {
 
     String otpGenerator(String doctorId, String locationId, String hospitalId, String patientId, UriInfo uriInfo);
 
-    String otpGenerator(String mobileNumber);
+    Boolean otpGenerator(String mobileNumber);
 
     Boolean verifyOTP(String doctorId, String locationId, String hospitalId, String patientId, String otpNumber, UriInfo uriInfo);
 
@@ -19,5 +19,7 @@ public interface OTPService {
     boolean isNonVerifiedOTPValid(Date createdTime);
 
     boolean isOTPValid(Date createdTime);
+
+	Boolean checkOTPVerifiedForPatient(String mobileNumber, String otpNumber);
 
 }

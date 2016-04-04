@@ -2,6 +2,8 @@ package com.dpdocter.request;
 
 import java.util.List;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 public class DoctorSignupHandheldContinueRequest {
 
     private String userId;
@@ -26,7 +28,7 @@ public class DoctorSignupHandheldContinueRequest {
 
     private String city;
 
-    private String locationPhoneNumber;
+    private String clinicNumber;
 
     private String postalCode;
 
@@ -124,15 +126,15 @@ public class DoctorSignupHandheldContinueRequest {
 	this.city = city;
     }
 
-    public String getLocationPhoneNumber() {
-	return locationPhoneNumber;
-    }
+    public String getClinicNumber() {
+		return clinicNumber;
+	}
 
-    public void setLocationPhoneNumber(String locationPhoneNumber) {
-	this.locationPhoneNumber = locationPhoneNumber;
-    }
+	public void setClinicNumber(String clinicNumber) {
+		this.clinicNumber = clinicNumber;
+	}
 
-    public String getPostalCode() {
+	public String getPostalCode() {
 	return postalCode;
     }
 
@@ -196,13 +198,16 @@ public class DoctorSignupHandheldContinueRequest {
 	this.registerNumber = registerNumber;
     }
 
-    @Override
-    public String toString() {
-	return "DoctorSignupHandheldContinueRequest [userId=" + userId + ", specialization=" + specialization + ", hospitalName=" + hospitalName
-		+ ", hospitalPhoneNumber=" + hospitalPhoneNumber + ", hospitalImageUrl=" + hospitalImageUrl + ", hospitalDescription=" + hospitalDescription
-		+ ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city + ", locationPhoneNumber="
-		+ locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", locationImageUrl=" + locationImageUrl + ", hospitalId="
-		+ hospitalId + ", latitude=" + latitude + ", longitude=" + longitude + ", streetAddress=" + streetAddress + ", registerNumber=" + registerNumber
-		+ "]";
-    }
+	@Override
+	public String toString() {
+		return "DoctorSignupHandheldContinueRequest [userId=" + userId + ", specialization=" + specialization
+				+ ", hospitalName=" + hospitalName + ", hospitalPhoneNumber=" + hospitalPhoneNumber
+				+ ", hospitalImageUrl=" + hospitalImageUrl + ", hospitalDescription=" + hospitalDescription
+				+ ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city
+				+ ", clinicNumber=" + clinicNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl
+				+ ", locationImageUrl=" + locationImageUrl + ", hospitalId=" + hospitalId + ", latitude=" + latitude
+				+ ", longitude=" + longitude + ", streetAddress=" + streetAddress + ", registerNumber=" + registerNumber
+				+ "]";
+	}
+
 }

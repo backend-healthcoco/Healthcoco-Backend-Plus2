@@ -23,7 +23,6 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.services.LocationServices;
-import com.dpdocter.solr.document.SolrDiagnosticTestDocument;
 import com.dpdocter.solr.document.SolrDoctorDocument;
 import com.dpdocter.solr.document.SolrLabTestDocument;
 import com.dpdocter.solr.repository.SolrLabTestRepository;

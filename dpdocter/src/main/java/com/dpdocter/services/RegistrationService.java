@@ -111,4 +111,8 @@ public interface RegistrationService {
 
     List<Feedback> getFeedback(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, String type);
 
+	Boolean checkPatientNumber(String oldMobileNumber, String newMobileNumber);
+
+	Boolean changePatientNumber(String oldMobileNumber, String newMobileNumber, String otpNumber);
+
 }

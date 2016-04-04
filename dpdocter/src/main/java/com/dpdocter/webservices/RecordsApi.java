@@ -281,4 +281,19 @@ public class RecordsApi {
 	response.setData(records);
 	return response;
     }
+    
+    @POST
+    @Path(value = PathProxy.RecordsUrls.SAVE_RECORDS_IMAGE)
+    @Consumes({ MediaType.MULTIPART_FORM_DATA })
+    public Response<String> saveRecordsImage(@FormDataParam("file") FormDataBodyPart file, @FormDataParam("patientId") FormDataBodyPart patientId) {
+    	patientId.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+    	String patientIdString = patientId.getValueAs(String.class);
+
+    String	imageURL = recordsService.saveRecordsImage(file, patientIdString);
+    imageURL = getFinalImageURL(imageURL);
+	Response<String> response = new Response<String>();
+	response.setData(imageURL);
+	return response;
+    }
+
 }

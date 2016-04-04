@@ -2,6 +2,8 @@ package com.dpdocter.solr.beans;
 
 import java.util.List;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.DoctorExperience;
@@ -56,8 +58,6 @@ public class SolrDoctor extends DoctorLocation {
 
     private String city;
 
-    private String locationPhoneNumber;
-
     private String postalCode;
 
     private String websiteUrl;
@@ -74,9 +74,9 @@ public class SolrDoctor extends DoctorLocation {
 
     private String locality;
 
-    private String locationMobileNumber;
+    private String clinicNumber;
 
-    private List<String> alternateNumbers;
+    private List<String> alternateClinicNumbers;
 
     private List<String> specialization;
 
@@ -299,16 +299,6 @@ public class SolrDoctor extends DoctorLocation {
     }
 
     @Override
-    public String getLocationPhoneNumber() {
-	return locationPhoneNumber;
-    }
-
-    @Override
-    public void setLocationPhoneNumber(String locationPhoneNumber) {
-	this.locationPhoneNumber = locationPhoneNumber;
-    }
-
-    @Override
     public String getPostalCode() {
 	return postalCode;
     }
@@ -388,27 +378,23 @@ public class SolrDoctor extends DoctorLocation {
 	this.locality = locality;
     }
 
-    @Override
-    public String getLocationMobileNumber() {
-	return locationMobileNumber;
-    }
+    public String getClinicNumber() {
+		return clinicNumber;
+	}
 
-    @Override
-    public void setLocationMobileNumber(String locationMobileNumber) {
-	this.locationMobileNumber = locationMobileNumber;
-    }
+	public void setClinicNumber(String clinicNumber) {
+		this.clinicNumber = clinicNumber;
+	}
 
-    @Override
-    public List<String> getAlternateNumbers() {
-	return alternateNumbers;
-    }
+	public List<String> getAlternateClinicNumbers() {
+		return alternateClinicNumbers;
+	}
 
-    @Override
-    public void setAlternateNumbers(List<String> alternateNumbers) {
-	this.alternateNumbers = alternateNumbers;
-    }
+	public void setAlternateClinicNumbers(List<String> alternateClinicNumbers) {
+		this.alternateClinicNumbers = alternateClinicNumbers;
+	}
 
-    @Override
+	@Override
     public List<String> getSpecialization() {
 	return specialization;
     }
@@ -488,18 +474,23 @@ public class SolrDoctor extends DoctorLocation {
 	this.isClinic = isClinic;
     }
 
-    @Override
-    public String toString() {
-	return "SolrDoctor [userId=" + userId + ", firstName=" + firstName + ", gender=" + gender + ", emailAddress=" + emailAddress + ", mobileNumber="
-		+ mobileNumber + ", imageUrl=" + imageUrl + ", consultationFee=" + consultationFee + ", workingSchedules=" + workingSchedules
-		+ ", specialities=" + specialities + ", experience=" + experience + ", facility=" + facility + ", isActive=" + isActive + ", isVerified="
-		+ isVerified + ", coverImageUrl=" + coverImageUrl + ", colorCode=" + colorCode + ", userState=" + userState + ", dob=" + dob + ", distance="
-		+ distance + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", locationName=" + locationName + ", country=" + country
-		+ ", state=" + state + ", city=" + city + ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode + ", websiteUrl="
-		+ websiteUrl + ", latitude=" + latitude + ", longitude=" + longitude + ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress="
-		+ locationEmailAddress + ", streetAddress=" + streetAddress + ", locality=" + locality + ", locationMobileNumber=" + locationMobileNumber
-		+ ", alternateNumbers=" + alternateNumbers + ", specialization=" + specialization + ", isClinic=" + isClinic + ", isLab=" + isLab
-		+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited + ", isHomeServiceAvailable="
-		+ isHomeServiceAvailable + ", images=" + images + ", logoUrl=" + logoUrl + "]";
-    }
+	@Override
+	public String toString() {
+		return "SolrDoctor [userId=" + userId + ", firstName=" + firstName + ", gender=" + gender + ", emailAddress="
+				+ emailAddress + ", mobileNumber=" + mobileNumber + ", imageUrl=" + imageUrl + ", consultationFee="
+				+ consultationFee + ", workingSchedules=" + workingSchedules + ", specialities=" + specialities
+				+ ", experience=" + experience + ", facility=" + facility + ", isActive=" + isActive + ", isVerified="
+				+ isVerified + ", coverImageUrl=" + coverImageUrl + ", colorCode=" + colorCode + ", userState="
+				+ userState + ", dob=" + dob + ", distance=" + distance + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", locationName=" + locationName + ", country=" + country + ", state=" + state
+				+ ", city=" + city + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", latitude="
+				+ latitude + ", longitude=" + longitude + ", landmarkDetails=" + landmarkDetails
+				+ ", locationEmailAddress=" + locationEmailAddress + ", streetAddress=" + streetAddress + ", locality="
+				+ locality + ", clinicNumber=" + clinicNumber + ", alternateClinicNumbers=" + alternateClinicNumbers
+				+ ", specialization=" + specialization + ", isClinic=" + isClinic + ", isLab=" + isLab
+				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
+				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", images=" + images + ", logoUrl=" + logoUrl
+				+ "]";
+	}
+
 }

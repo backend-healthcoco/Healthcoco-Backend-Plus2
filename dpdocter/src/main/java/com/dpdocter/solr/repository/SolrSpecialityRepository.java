@@ -29,4 +29,7 @@ public interface SolrSpecialityRepository extends SolrCrudRepository<SolrSpecial
 
     @Query("updatedTime: {?0 TO *} AND speciality: ?1*")
     List<SolrSpecialityDocument> find(Date date, String searchTerm, Sort sort);
+
+    @Query("{'id': {$in: ?0}}")
+	List<SolrSpecialityDocument> findById(List<String> specialities);
 }

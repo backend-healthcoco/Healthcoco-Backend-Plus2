@@ -978,13 +978,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     }
 
     @Override
-    public void smsVisit(String visitId, String doctorId, String locationId, String hospitalId, String mobileNumber) {
-	try {
+    public Boolean smsVisit(String visitId, String doctorId, String locationId, String hospitalId, String mobileNumber) {
+    	Boolean response = false;
+    try {
 	    PatientVisitCollection patientVisitCollection = patientVisitRepository.findOne(visitId);
 	    if (patientVisitCollection != null) {
 		if (patientVisitCollection.getPrescriptionId() != null) {
 		    for (String prescriptionId : patientVisitCollection.getPrescriptionId()) {
-			prescriptionServices.smsPrescription(prescriptionId, doctorId, locationId, hospitalId, mobileNumber);
+		    	response = prescriptionServices.smsPrescription(prescriptionId, doctorId, locationId, hospitalId, mobileNumber, "VISITS");
 		    }
 		}
 	    } else {
@@ -996,6 +997,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+    return response;
     }
 
     public boolean containsIgnoreCase(String str, List<String> list) {

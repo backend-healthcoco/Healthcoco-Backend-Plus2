@@ -292,11 +292,8 @@ public class ClinicalNotesApi {
 	transnationalService.addResource(diagram.getId(), Resource.DIAGRAM, false);
 	SolrDiagramsDocument solrDiagrams = new SolrDiagramsDocument();
 	BeanUtil.map(diagram, solrDiagrams);
-	if (request.getId() == null) {
-	    solrClinicalNotesService.addDiagrams(solrDiagrams);
-	} else {
-	    solrClinicalNotesService.editDiagrams(solrDiagrams);
-	}
+	solrClinicalNotesService.addDiagrams(solrDiagrams);
+	
 	if (diagram.getDiagramUrl() != null) {
 	    diagram.setDiagramUrl(getFinalImageURL(diagram.getDiagramUrl()));
 	}

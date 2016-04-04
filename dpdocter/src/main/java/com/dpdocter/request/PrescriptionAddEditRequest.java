@@ -3,7 +3,6 @@ package com.dpdocter.request;
 import java.util.List;
 
 import com.dpdocter.beans.DiagnosticTest;
-import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.PrescriptionItem;
 
 public class PrescriptionAddEditRequest {
