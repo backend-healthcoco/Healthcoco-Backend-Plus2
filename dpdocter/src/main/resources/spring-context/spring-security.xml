@@ -90,11 +90,11 @@
   credentials from DB -->
  <authentication-manager alias="authenticationManager"
   xmlns="http://www.springframework.org/schema/security">
-  <authentication-provider>
-   <user-service>
-    <user name="java" password="java" authorities="ROLE_APP" />
-   </user-service>
-  </authentication-provider>
+  <authentication-provider user-service-ref="userDetailsService"/>
+<!--    <user-service> -->
+<!--     <user name="java" password="java" authorities="ROLE_APP" /> -->
+<!--    </user-service> -->
+<!--   </authentication-provider> -->
  </authentication-manager>
 
  <bean id="clientDetailsUserService"

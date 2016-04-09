@@ -63,6 +63,8 @@ public class DoctorClinicProfile {
 
     private Boolean isHomeServiceAvailable = false;
 
+    private String locality;
+    
     public String getId() {
 	return id;
     }
@@ -295,15 +297,27 @@ public class DoctorClinicProfile {
 	this.isClinic = isClinic;
     }
 
-    @Override
-    public String toString() {
-	return "DoctorClinicProfile [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", clinicAddress="
-		+ clinicAddress + ", locationName=" + locationName + ", country=" + country + ", state=" + state + ", city=" + city + ", postalCode="
-		+ postalCode + ", latitude=" + latitude + ", longitude=" + longitude + ", patientInitial=" + patientInitial + ", patientCounter="
-		+ patientCounter + ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee=" + consultationFee + ", appointmentSlot="
-		+ appointmentSlot + ", workingSchedules=" + workingSchedules + ", facility=" + facility + ", images=" + images + ", logoUrl=" + logoUrl
-		+ ", logoThumbnailUrl=" + logoThumbnailUrl + ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", isClinic="
-		+ isClinic + ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
-		+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + "]";
-    }
+	public String getLocality() {
+		return locality;
+	}
+
+	public void setLocality(String locality) {
+		this.locality = locality;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorClinicProfile [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", clinicAddress=" + clinicAddress + ", locationName=" + locationName
+				+ ", country=" + country + ", state=" + state + ", city=" + city + ", postalCode=" + postalCode
+				+ ", latitude=" + latitude + ", longitude=" + longitude + ", patientInitial=" + patientInitial
+				+ ", patientCounter=" + patientCounter + ", appointmentBookingNumber=" + appointmentBookingNumber
+				+ ", consultationFee=" + consultationFee + ", appointmentSlot=" + appointmentSlot
+				+ ", workingSchedules=" + workingSchedules + ", facility=" + facility + ", images=" + images
+				+ ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + ", noOfReviews=" + noOfReviews
+				+ ", noOfRecommenations=" + noOfRecommenations + ", isClinic=" + isClinic + ", isLab=" + isLab
+				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
+				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", locality=" + locality + "]";
+	}
+
 }

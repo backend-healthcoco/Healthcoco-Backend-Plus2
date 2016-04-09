@@ -134,26 +134,26 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 	    if (doctorId == null) {
 		if (size > 0)
 		    printSettingsCollections = printSettingsRepository.findAll(new Date(createdTimeStamp), discards,
-			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    new PageRequest(page, size, Direction.DESC, "createdTime"));
 		else
 		    printSettingsCollections = printSettingsRepository.findAll(new Date(createdTimeStamp), discards,
-			    new Sort(Sort.Direction.DESC, "updatedTime"));
+			    new Sort(Sort.Direction.DESC, "createdTime"));
 
 	    } else {
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
 			printSettingsCollections = printSettingsRepository.getSettings(doctorId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			printSettingsCollections = printSettingsRepository.getSettings(doctorId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "updatedTime"));
+				new Sort(Sort.Direction.DESC, "createdTime"));
 		} else {
 		    if (size > 0)
 			printSettingsCollections = printSettingsRepository.getSettings(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			printSettingsCollections = printSettingsRepository.getSettings(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "updatedTime"));
+				new Sort(Sort.Direction.DESC, "createdTime"));
 		}
 	    }
 	    if (printSettingsCollections != null) {

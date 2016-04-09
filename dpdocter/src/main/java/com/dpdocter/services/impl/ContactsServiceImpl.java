@@ -213,7 +213,7 @@ public class ContactsServiceImpl implements ContactsService {
 
 	    long createdTimestamp = Long.parseLong(updatedTime);
 	    doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, discards, new Date(createdTimestamp),
-		    new Sort(Sort.Direction.DESC, "updatedTime"));
+		    new Sort(Sort.Direction.DESC, "createdTime"));
 
 	    if (doctorContactCollections.isEmpty()) {
 		return null;
@@ -519,7 +519,7 @@ public class ContactsServiceImpl implements ContactsService {
 	List<DoctorContactCollection> doctorContactCollections = null;
 	try {
 	    doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(), false,
-		    new Sort(Sort.Direction.DESC, "updatedTime"));
+		    new Sort(Sort.Direction.DESC, "createdTime"));
 
 	    if (doctorContactCollections.isEmpty()) {
 		return 0;
@@ -556,17 +556,17 @@ public class ContactsServiceImpl implements ContactsService {
 	    if (size > 0) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 		    groupCollections = groupRepository.findAll(doctorId, discards, new Date(createdTimeStamp),
-			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    new PageRequest(page, size, Direction.DESC, "createdTime"));
 		} else {
 		    groupCollections = groupRepository.findAll(doctorId, locationId, hospitalId, discards, new Date(createdTimeStamp),
-			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    new PageRequest(page, size, Direction.DESC, "createdTime"));
 		}
 	    } else {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
-		    groupCollections = groupRepository.findAll(doctorId, discards, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+		    groupCollections = groupRepository.findAll(doctorId, discards, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
 		} else {
 		    groupCollections = groupRepository.findAll(doctorId, locationId, hospitalId, discards, new Date(createdTimeStamp),
-			    new Sort(Sort.Direction.DESC, "updatedTime"));
+			    new Sort(Sort.Direction.DESC, "createdTime"));
 		}
 	    }
 
@@ -643,10 +643,10 @@ public class ContactsServiceImpl implements ContactsService {
 
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
-		patientCollections = patientRepository.findByDoctorId(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+		patientCollections = patientRepository.findByDoctorId(doctorId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
 	    } else {
 		patientCollections = patientRepository.findByDoctorIdLocationIdAndHospitalId(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-			new Sort(Sort.Direction.DESC, "updatedTime"));
+			new Sort(Sort.Direction.DESC, "createdTime"));
 	    }
 
 	    if (!patientCollections.isEmpty()) {

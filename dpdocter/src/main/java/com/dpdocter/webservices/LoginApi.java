@@ -63,7 +63,22 @@ public class LoginApi {
 	    response.setData(loginResponse);
 	return response;
     }
-
+//    @Resource(name = "authenticationManager")
+//    private AuthenticationManager authenticationManager; // specific for Spring Security
+//
+//    public boolean login(String username, String password) {
+//        try {
+//            Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+//            if (authenticate.isAuthenticated()) {
+//                SecurityContextHolder.getContext().setAuthentication(authenticate);             
+//                return true;
+//            }
+//        }
+//        catch (AuthenticationException e) {         
+//        }
+//        return false;
+//    }
+    
     @Path(value = PathProxy.LoginUrls.LOGIN_USER)
     @POST
     public Response<LoginResponse> login(LoginRequest request) {

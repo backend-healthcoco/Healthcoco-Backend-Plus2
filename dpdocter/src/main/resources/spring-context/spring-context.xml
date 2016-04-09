@@ -29,7 +29,7 @@
 	<import resource="database-connection.xml" />
 	<import resource="mail-config.xml" />
 	<import resource="application-context-velocity.xml" />
-	<import resource="spring-security.xml"/>
+<!-- 	<import resource="spring-security.xml"/> -->
 	<mongo:repositories
 		base-package="com.dpdocter.repository, com.dpdocter.sms.repository" />
 	

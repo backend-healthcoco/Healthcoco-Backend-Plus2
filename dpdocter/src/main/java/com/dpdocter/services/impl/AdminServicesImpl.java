@@ -57,8 +57,8 @@ public class AdminServicesImpl implements AdminServices {
 		List<User> response = null;
 		try{
 			List<UserCollection> userCollections = null;
-			if(size > 0)userCollections = userRepository.findInactiveDoctors(true, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-			else userCollections = userRepository.findInactiveDoctors(true, new Sort(Direction.DESC, "updatedTime"));
+			if(size > 0)userCollections = userRepository.findInactiveDoctors(true, new PageRequest(page, size, Direction.DESC, "createdTime"));
+			else userCollections = userRepository.findInactiveDoctors(true, new Sort(Direction.DESC, "createdTime"));
 			if(userCollections != null){
 				response = new ArrayList<User>();
 				BeanUtil.map(userCollections, response);
@@ -76,8 +76,8 @@ public class AdminServicesImpl implements AdminServices {
 		List<Hospital> response = null;
 		try{
 			List<HospitalCollection> hospitalCollections = null;
-			if(size > 0)hospitalCollections = hospitalRepository.findAll(new PageRequest(page, size, Direction.DESC, "updatedTime")).getContent();
-			else hospitalCollections = hospitalRepository.findAll(new Sort(Direction.DESC, "updatedTime"));
+			if(size > 0)hospitalCollections = hospitalRepository.findAll(new PageRequest(page, size, Direction.DESC, "createdTime")).getContent();
+			else hospitalCollections = hospitalRepository.findAll(new Sort(Direction.DESC, "createdTime"));
 			if(hospitalCollections != null){
 				response = new ArrayList<Hospital>();
 				BeanUtil.map(hospitalCollections, response);
@@ -96,11 +96,11 @@ public class AdminServicesImpl implements AdminServices {
 		try{
 			List<LocationCollection> locationCollections = null;
 			if(DPDoctorUtils.anyStringEmpty(hospitalId)){
-				if(size > 0)locationCollections = locationRepository.findAll(new PageRequest(page, size, Direction.DESC, "updatedTime")).getContent();
-				else locationCollections = locationRepository.findAll(new Sort(Direction.DESC, "updatedTime"));
+				if(size > 0)locationCollections = locationRepository.findAll(new PageRequest(page, size, Direction.DESC, "createdTime")).getContent();
+				else locationCollections = locationRepository.findAll(new Sort(Direction.DESC, "createdTime"));
 			}else{
-				if(size > 0)locationCollections = locationRepository.find(hospitalId, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else locationCollections = locationRepository.find(hospitalId, new Sort(Direction.DESC, "updatedTime"));
+				if(size > 0)locationCollections = locationRepository.find(hospitalId, new PageRequest(page, size, Direction.DESC, "createdTime"));
+				else locationCollections = locationRepository.find(hospitalId, new Sort(Direction.DESC, "createdTime"));
 			}
 			if(locationCollections != null){
 				response = new ArrayList<Location>();
@@ -147,11 +147,11 @@ public class AdminServicesImpl implements AdminServices {
 		try{
 			List<ResumeCollection> resumeCollections = null;
 			if(DPDoctorUtils.anyStringEmpty(type)){
-				if(size > 0)resumeCollections = resumeRepository.findAll(new PageRequest(page, size, Direction.DESC, "updatedTime")).getContent();
-				else resumeCollections = resumeRepository.findAll(new Sort(Direction.DESC, "updatedTime"));
+				if(size > 0)resumeCollections = resumeRepository.findAll(new PageRequest(page, size, Direction.DESC, "createdTime")).getContent();
+				else resumeCollections = resumeRepository.findAll(new Sort(Direction.DESC, "createdTime"));
 			}else{
-				if(size > 0)resumeCollections = resumeRepository.find(type, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else resumeCollections = resumeRepository.find(type, new Sort(Direction.DESC, "updatedTime"));
+				if(size > 0)resumeCollections = resumeRepository.find(type, new PageRequest(page, size, Direction.DESC, "createdTime"));
+				else resumeCollections = resumeRepository.find(type, new Sort(Direction.DESC, "createdTime"));
 			}
 			if(resumeCollections != null){
 				response = new ArrayList<Resume>();

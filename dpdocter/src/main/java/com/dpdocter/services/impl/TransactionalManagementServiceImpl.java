@@ -170,7 +170,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     @Autowired
     private OTPService otpService;
 
-//    @Scheduled(fixedDelay = 1800000)
+    @Scheduled(fixedDelay = 1800000)
     @Override
     public void checkResources() {
 	System.out.println(">>> Scheduled test service <<<");

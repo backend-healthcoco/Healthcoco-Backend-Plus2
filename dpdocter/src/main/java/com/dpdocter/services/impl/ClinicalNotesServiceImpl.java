@@ -23,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.Age;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.ClinicalNotesComplaint;
 import com.dpdocter.beans.ClinicalNotesDiagnosis;
@@ -719,10 +720,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
 		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, discards, new Date(createdTimeStamp),
-			new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			new PageRequest(page, size, Direction.DESC, "createdTime"));
 	    else
 		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, discards, new Date(createdTimeStamp),
-			new Sort(Sort.Direction.DESC, "updatedTime"));
+			new Sort(Sort.Direction.DESC, "createdTime"));
 
 	    if (patientClinicalNotesCollections != null) {
 		@SuppressWarnings("unchecked")
@@ -766,10 +767,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
 		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Date(createdTimeStamp),
-			new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			new PageRequest(page, size, Direction.DESC, "createdTime"));
 	    else
 		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Date(createdTimeStamp),
-			new Sort(Sort.Direction.DESC, "updatedTime"));
+			new Sort(Sort.Direction.DESC, "createdTime"));
 	    if (patientClinicalNotesCollections != null) {
 		@SuppressWarnings("unchecked")
 		Collection<String> clinicalNotesIds = CollectionUtils.collect(patientClinicalNotesCollections,
@@ -1292,26 +1293,26 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    if (doctorId == null) {
 		if (size > 0)
 		    complaintCollections = complaintRepository.findCustomGlobalComplaints(new Date(createdTimeStamp), discards,
-			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    new PageRequest(page, size, Direction.DESC, "createdTime"));
 		else
 		    complaintCollections = complaintRepository.findCustomGlobalComplaints(new Date(createdTimeStamp), discards,
-			    new Sort(Sort.Direction.DESC, "updatedTime"));
+			    new Sort(Sort.Direction.DESC, "createdTime"));
 
 	    } else {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 		    if (size > 0)
 			complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "updatedTime"));
+				new Sort(Sort.Direction.DESC, "createdTime"));
 		} else {
 		    if (size > 0)
 			complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-				discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				discards, new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-				discards, new Sort(Sort.Direction.DESC, "updatedTime"));
+				discards, new Sort(Sort.Direction.DESC, "createdTime"));
 		}
 	    }
 	    BeanUtil.map(complaintCollections, response);
@@ -1336,10 +1337,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
 		complaintCollections = complaintRepository.findGlobalComplaints(new Date(createdTimeStamp), discards,
-			new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			new PageRequest(page, size, Direction.DESC, "createdTime"));
 	    else
 		complaintCollections = complaintRepository.findGlobalComplaints(new Date(createdTimeStamp), discards,
-			new Sort(Sort.Direction.DESC, "updatedTime"));
+			new Sort(Sort.Direction.DESC, "createdTime"));
 
 	    if (complaintCollections != null) {
 		response = new ArrayList<Object>();
@@ -1374,17 +1375,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 		    if (size > 0)
 			complaintCollections = complaintRepository.findCustomComplaints(doctorId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			complaintCollections = complaintRepository.findCustomComplaints(doctorId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "updatedTime"));
+				new Sort(Sort.Direction.DESC, "createdTime"));
 		} else {
 		    if (size > 0)
 			complaintCollections = complaintRepository.findCustomComplaints(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			complaintCollections = complaintRepository.findCustomComplaints(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "updatedTime"));
+				new Sort(Sort.Direction.DESC, "createdTime"));
 
 		}
 	    }
@@ -1419,26 +1420,26 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    if (doctorId == null) {
 		if (size > 0)
 		    investigationsCollections = investigationRepository.findCustomGlobalInvestigations(new Date(createdTimeStamp), discards,
-			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    new PageRequest(page, size, Direction.DESC, "createdTime"));
 		else
 		    investigationsCollections = investigationRepository.findCustomGlobalInvestigations(new Date(createdTimeStamp), discards,
-			    new Sort(Sort.Direction.DESC, "updatedTime"));
+			    new Sort(Sort.Direction.DESC, "createdTime"));
 
 	    } else {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 		    if (size > 0)
 			investigationsCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			investigationsCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "updatedTime"));
+				new Sort(Sort.Direction.DESC, "createdTime"));
 		} else {
 		    if (size > 0)
 			investigationsCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId,
-				new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			investigationsCollections = investigationRepository.findCustomGlobalInvestigations(doctorId, locationId, hospitalId,
-				new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
+				new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
 		}
 	    }
 
@@ -1464,10 +1465,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	    if (size > 0)
 		investigationsCollections = investigationRepository.findGlobalInvestigations(new Date(createdTimeStamp), discards,
-			new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			new PageRequest(page, size, Direction.DESC, "createdTime"));
 	    else
 		investigationsCollections = investigationRepository.findGlobalInvestigations(new Date(createdTimeStamp), discards,
-			new Sort(Sort.Direction.DESC, "updatedTime"));
+			new Sort(Sort.Direction.DESC, "createdTime"));
 
 	    if (investigationsCollections != null) {
 		response = new ArrayList<Object>();
@@ -1502,17 +1503,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
 			investigationsCollections = investigationRepository.findCustomInvestigations(doctorId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			investigationsCollections = investigationRepository.findCustomInvestigations(doctorId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "updatedTime"));
+				new Sort(Sort.Direction.DESC, "createdTime"));
 		} else {
 		    if (size > 0)
 			investigationsCollections = investigationRepository.findCustomInvestigations(doctorId, locationId, hospitalId,
-				new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			investigationsCollections = investigationRepository.findCustomInvestigations(doctorId, locationId, hospitalId,
-				new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
+				new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
 		}
 	    }
 	    if (investigationsCollections != null) {
@@ -1544,23 +1545,23 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    if (doctorId == null) {
 		if (size > 0)
 		    observationCollections = observationRepository.findCustomGlobalObservations(new Date(createdTimeStamp), discards,
-			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    new PageRequest(page, size, Direction.DESC, "createdTime"));
 		else
 		    observationCollections = observationRepository.findCustomGlobalObservations(new Date(createdTimeStamp), discards,
-			    new Sort(Sort.Direction.DESC, "updatedTime"));
+			    new Sort(Sort.Direction.DESC, "createdTime"));
 
 	    } else {
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
 			observationCollections = observationRepository.findCustomGlobalObservations(doctorId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			observationCollections = observationRepository.findCustomGlobalObservations(doctorId, new Date(createdTimeStamp), discards,
 				new Sort(Sort.Direction.DESC, "createdTime"));
 		} else {
 		    if (size > 0)
 			observationCollections = observationRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId,
-				new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			observationCollections = observationRepository.findCustomGlobalObservations(doctorId, locationId, hospitalId,
 				new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
@@ -1590,10 +1591,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	    if (size > 0)
 		observationCollections = observationRepository.findGlobalObservations(new Date(createdTimeStamp), discards,
-			new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			new PageRequest(page, size, Direction.DESC, "createdTime"));
 	    else
 		observationCollections = observationRepository.findGlobalObservations(new Date(createdTimeStamp), discards,
-			new Sort(Sort.Direction.DESC, "updatedTime"));
+			new Sort(Sort.Direction.DESC, "createdTime"));
 
 	    if (observationCollections != null) {
 		response = new ArrayList<Object>();
@@ -1629,17 +1630,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    else if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 		if (size > 0)
 		    observationCollections = observationRepository.findCustomObservations(doctorId, new Date(createdTimeStamp), discards,
-			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    new PageRequest(page, size, Direction.DESC, "createdTime"));
 		else
 		    observationCollections = observationRepository.findCustomObservations(doctorId, new Date(createdTimeStamp), discards,
-			    new Sort(Sort.Direction.DESC, "updatedTime"));
+			    new Sort(Sort.Direction.DESC, "createdTime"));
 	    } else {
 		if (size > 0)
 		    observationCollections = observationRepository.findCustomObservations(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-			    discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    discards, new PageRequest(page, size, Direction.DESC, "createdTime"));
 		else
 		    observationCollections = observationRepository.findCustomObservations(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-			    discards, new Sort(Sort.Direction.DESC, "updatedTime"));
+			    discards, new Sort(Sort.Direction.DESC, "createdTime"));
 	    }
 
 	    if (observationCollections != null) {
@@ -1672,16 +1673,16 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    if (doctorId == null) {
 		if (size > 0)
 		    diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(new Date(createdTimeStamp), discards,
-			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    new PageRequest(page, size, Direction.DESC, "createdTime"));
 		else
 		    diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(new Date(createdTimeStamp), discards,
-			    new Sort(Sort.Direction.DESC, "updatedTime"));
+			    new Sort(Sort.Direction.DESC, "createdTime"));
 	    } else {
 
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
 			diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(doctorId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(doctorId, new Date(createdTimeStamp), discards,
 				new Sort(Sort.Direction.DESC, "createdTime"));
@@ -1689,10 +1690,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} else {
 		    if (size > 0)
 			diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-				discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				discards, new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			diagnosisCollections = diagnosisRepository.findCustomGlobalDiagnosis(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-				discards, new Sort(Sort.Direction.DESC, "updatedTime"));
+				discards, new Sort(Sort.Direction.DESC, "createdTime"));
 		}
 	    }
 	    BeanUtil.map(diagnosisCollections, response);
@@ -1717,10 +1718,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	    if (size > 0)
 		diagnosisCollections = diagnosisRepository.findGlobalDiagnosis(new Date(createdTimeStamp), discards,
-			new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			new PageRequest(page, size, Direction.DESC, "createdTime"));
 	    else
 		diagnosisCollections = diagnosisRepository.findGlobalDiagnosis(new Date(createdTimeStamp), discards,
-			new Sort(Sort.Direction.DESC, "updatedTime"));
+			new Sort(Sort.Direction.DESC, "createdTime"));
 	    if (diagnosisCollections != null) {
 		response = new ArrayList<Object>();
 		BeanUtil.map(diagnosisCollections, response);
@@ -1752,17 +1753,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    else if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 		if (size > 0)
 		    diagnosisCollections = diagnosisRepository.findCustomDiagnosis(doctorId, new Date(createdTimeStamp), discards,
-			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    new PageRequest(page, size, Direction.DESC, "createdTime"));
 		else
 		    diagnosisCollections = diagnosisRepository.findCustomDiagnosis(doctorId, new Date(createdTimeStamp), discards,
-			    new Sort(Sort.Direction.DESC, "updatedTime"));
+			    new Sort(Sort.Direction.DESC, "createdTime"));
 	    } else {
 		if (size > 0)
 		    diagnosisCollections = diagnosisRepository.findCustomDiagnosis(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    new PageRequest(page, size, Direction.DESC, "createdTime"));
 		else
 		    diagnosisCollections = diagnosisRepository.findCustomDiagnosis(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-			    new Sort(Sort.Direction.DESC, "updatedTime"));
+			    new Sort(Sort.Direction.DESC, "createdTime"));
 	    }
 
 	    if (diagnosisCollections != null) {
@@ -1795,22 +1796,22 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    if (doctorId == null) {
 		if (size > 0)
 		    notesCollections = notesRepository.findCustomGlobalNotes(new Date(createdTimeStamp), discards,
-			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    new PageRequest(page, size, Direction.DESC, "createdTime"));
 		else
 		    notesCollections = notesRepository.findCustomGlobalNotes(new Date(createdTimeStamp), discards,
-			    new Sort(Sort.Direction.DESC, "updatedTime"));
+			    new Sort(Sort.Direction.DESC, "createdTime"));
 	    } else {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 		    if (size > 0)
 			notesCollections = notesRepository.findCustomGlobalNotes(doctorId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			notesCollections = notesRepository.findCustomGlobalNotes(doctorId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "updatedTime"));
+				new Sort(Sort.Direction.DESC, "createdTime"));
 		} else {
 		    if (size > 0)
 			notesCollections = notesRepository.findCustomGlobalNotes(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			notesCollections = notesRepository.findCustomGlobalNotes(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
 				new Sort(Sort.Direction.DESC, "createdTime"));
@@ -1837,9 +1838,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
 		notesCollections = notesRepository.findGlobalNotes(new Date(createdTimeStamp), discards,
-			new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			new PageRequest(page, size, Direction.DESC, "createdTime"));
 	    else
-		notesCollections = notesRepository.findGlobalNotes(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
+		notesCollections = notesRepository.findGlobalNotes(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
 
 	    if (notesCollections != null) {
 		response = new ArrayList<Object>();
@@ -1873,17 +1874,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
 			notesCollections = notesRepository.findCustomNotes(doctorId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			notesCollections = notesRepository.findCustomNotes(doctorId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "updatedTime"));
+				new Sort(Sort.Direction.DESC, "createdTime"));
 		} else {
 		    if (size > 0)
 			notesCollections = notesRepository.findCustomNotes(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			notesCollections = notesRepository.findCustomNotes(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "updatedTime"));
+				new Sort(Sort.Direction.DESC, "createdTime"));
 		}
 	    }
 	    if (notesCollections != null) {
@@ -1916,10 +1917,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    if (doctorId == null) {
 		if (size > 0)
 		    diagramCollections = diagramsRepository.findCustomGlobalDiagrams(new Date(createdTimeStamp), discards,
-			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    new PageRequest(page, size, Direction.DESC, "createdTime"));
 		else
 		    diagramCollections = diagramsRepository.findCustomGlobalDiagrams(new Date(createdTimeStamp), discards,
-			    new Sort(Sort.Direction.DESC, "updatedTime"));
+			    new Sort(Sort.Direction.DESC, "createdTime"));
 
 	    } else {
 	    	DoctorCollection doctorCollection = doctorRepository.findByUserId(doctorId);
@@ -1931,17 +1932,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
 			diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, specialities, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, specialities, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "updatedTime"));
+				new Sort(Sort.Direction.DESC, "createdTime"));
 		} else {
 		    if (size > 0)
 			diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, specialities, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			diagramCollections = diagramsRepository.findCustomGlobalDiagrams(doctorId, locationId, hospitalId, specialities, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "updatedTime"));
+				new Sort(Sort.Direction.DESC, "createdTime"));
 		}
 	    }
 	    BeanUtil.map(diagramCollections, response);
@@ -1966,9 +1967,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	    if (size > 0)
 		diagramCollections = diagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discards,
-			new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			new PageRequest(page, size, Direction.DESC, "createdTime"));
 	    else
-		diagramCollections = diagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
+		diagramCollections = diagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
 
 	    if (diagramCollections != null) {
 		response = new ArrayList<Object>();
@@ -2008,17 +2009,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
 			diagramCollections = diagramsRepository.findCustomDiagrams(doctorId, specialities, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			diagramCollections = diagramsRepository.findCustomDiagrams(doctorId, specialities, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "updatedTime"));
+				new Sort(Sort.Direction.DESC, "createdTime"));
 		} else {
 		    if (size > 0)
 			diagramCollections = diagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId, specialities, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			diagramCollections = diagramsRepository.findCustomDiagrams(doctorId, locationId, hospitalId, specialities, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "updatedTime"));
+				new Sort(Sort.Direction.DESC, "createdTime"));
 		}
 	    }
 
@@ -2207,7 +2208,21 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			refferedBy = referencesCollection.getReference();
 		}
 		patientName = "Patient Name: " + (user != null ? user.getFirstName() : "--") + "<br>";
-		dob = "Patient Age: " + ((patient != null && patient.getDob() != null) ? (patient.getDob().getAge() + " years") : "--") + "<br>";
+		String age = "--";
+		if(patient != null && patient.getDob() != null){
+			Age ageObj = patient.getDob().getAge();
+			if(ageObj.getYears() > 14)age = ageObj.getYears()+" years";
+			else {
+				int months = 0, days = ageObj.getDays();
+				if(ageObj.getMonths() > 0){
+					months = ageObj.getMonths();
+					if(ageObj.getYears() > 0)months = months + 12 * ageObj.getYears();
+				}
+				if(months > 0)age = days +" days";
+				else age = months +" months "+days +" days";
+			}
+		}
+		dob = "Patient Age: " + age + "<br>";
 		gender = "Patient Gender: " + (patient != null ? patient.getGender() : "--") + "<br>";
 		mobileNumber = "Mobile Number: " + (user != null ? user.getMobileNumber() : "--") + "<br>";
 		pid = "Patient Id: " + (patient != null ? patient.getPID() : "--") + "<br>";
@@ -2401,10 +2416,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
 		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, discards, new Date(createdTimeStamp),
-			new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			new PageRequest(page, size, Direction.DESC, "createdTime"));
 	    else
 		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, discards, new Date(createdTimeStamp),
-			new Sort(Sort.Direction.DESC, "updatedTime"));
+			new Sort(Sort.Direction.DESC, "createdTime"));
 
 	    if (patientClinicalNotesCollections != null) {
 		@SuppressWarnings("unchecked")

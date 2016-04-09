@@ -212,14 +212,14 @@ public class SMSServicesImpl implements SMSServices {
 		String[] type = {"APPOINTMENT", "PRESCRIPTION", "VISITS"};
 	    if (doctorId == null) {
 		if (size > 0)
-		    smsTrackDetails = smsTrackRepository.findByLocationHospitalId(locationId, hospitalId, type, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+		    smsTrackDetails = smsTrackRepository.findByLocationHospitalId(locationId, hospitalId, type, new PageRequest(page, size, Direction.DESC, "createdTime"));
 		else
-		    smsTrackDetails = smsTrackRepository.findByLocationHospitalId(locationId, hospitalId, type, new Sort(Sort.Direction.DESC, "updatedTime"));
+		    smsTrackDetails = smsTrackRepository.findByLocationHospitalId(locationId, hospitalId, type, new Sort(Sort.Direction.DESC, "createdTime"));
 	    } else {
 		if (size > 0)
-		    smsTrackDetails = smsTrackRepository.findByDoctorLocationHospitalId(doctorId, locationId, hospitalId, type, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+		    smsTrackDetails = smsTrackRepository.findByDoctorLocationHospitalId(doctorId, locationId, hospitalId, type, new PageRequest(page, size, Direction.DESC, "createdTime"));
 		else
-		    smsTrackDetails = smsTrackRepository.findByDoctorLocationHospitalId(doctorId, locationId, hospitalId, type, new Sort(Sort.Direction.DESC, "updatedTime"));
+		    smsTrackDetails = smsTrackRepository.findByDoctorLocationHospitalId(doctorId, locationId, hospitalId, type, new Sort(Sort.Direction.DESC, "createdTime"));
 	    }
 
 	    @SuppressWarnings("unchecked")

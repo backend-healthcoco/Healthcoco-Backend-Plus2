@@ -106,25 +106,25 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 		if (doctorId == null) {
 		    if (size > 0)
 			issueTrackCollections = issueTrackRepository.findAll(new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			issueTrackCollections = issueTrackRepository.findAll(new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "updatedTime"));
+				new Sort(Sort.Direction.DESC, "createdTime"));
 		} else {
 		    if (locationId == null && hospitalId == null) {
 			if (size > 0)
 			    issueTrackCollections = issueTrackRepository.findAll(doctorId, new Date(createdTimeStamp), discards,
-				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				    new PageRequest(page, size, Direction.DESC, "createdTime"));
 			else
 			    issueTrackCollections = issueTrackRepository.findAll(doctorId, new Date(createdTimeStamp), discards,
-				    new Sort(Sort.Direction.DESC, "updatedTime"));
+				    new Sort(Sort.Direction.DESC, "createdTime"));
 		    } else {
 			if (size > 0)
 			    issueTrackCollections = issueTrackRepository.findAll(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				    new PageRequest(page, size, Direction.DESC, "createdTime"));
 			else
 			    issueTrackCollections = issueTrackRepository.findAll(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-				    new Sort(Sort.Direction.DESC, "updatedTime"));
+				    new Sort(Sort.Direction.DESC, "createdTime"));
 		    }
 		}
 	    } else {
@@ -135,25 +135,25 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 		    if (doctorId == null) {
 			if (size > 0)
 			    localCollection = issueTrackRepository.findByStatus(status, new Date(createdTimeStamp), discards,
-				    new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				    new PageRequest(page, size, Direction.DESC, "createdTime"));
 			else
 			    localCollection = issueTrackRepository.findByStatus(status, new Date(createdTimeStamp), discards,
-				    new Sort(Sort.Direction.DESC, "updatedTime"));
+				    new Sort(Sort.Direction.DESC, "createdTime"));
 		    } else {
 			if (locationId == null && hospitalId == null) {
 			    if (size > 0)
 				localCollection = issueTrackRepository.findAll(doctorId, status, new Date(createdTimeStamp), discards,
-					new PageRequest(page, size, Direction.DESC, "updatedTime"));
+					new PageRequest(page, size, Direction.DESC, "createdTime"));
 			    else
 				localCollection = issueTrackRepository.findAll(doctorId, status, new Date(createdTimeStamp), discards,
-					new Sort(Sort.Direction.DESC, "updatedTime"));
+					new Sort(Sort.Direction.DESC, "createdTime"));
 			} else {
 			    if (size > 0)
 				localCollection = issueTrackRepository.findAll(doctorId, locationId, hospitalId, status, new Date(createdTimeStamp), discards,
-					new PageRequest(page, size, Direction.DESC, "updatedTime"));
+					new PageRequest(page, size, Direction.DESC, "createdTime"));
 			    else
 				localCollection = issueTrackRepository.findAll(doctorId, locationId, hospitalId, status, new Date(createdTimeStamp), discards,
-					new Sort(Sort.Direction.DESC, "updatedTime"));
+					new Sort(Sort.Direction.DESC, "createdTime"));
 			}
 		    }
 		    issueTrackCollections.addAll(localCollection);

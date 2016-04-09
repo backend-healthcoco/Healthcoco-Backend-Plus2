@@ -250,6 +250,8 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Value(value = "${Signup.DOB}")
     private String DOB;
 
+    @Value(value = "${IMAGE_PATH}")
+    private String imagePath;
 
     @Override
     public User checkIfPatientExist(PatientRegistrationRequest request) {
@@ -962,9 +964,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
 		referrencesCollections = referrenceRepository.findAll(new Date(createdTimeStamp), discards,
-			new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			new PageRequest(page, size, Direction.DESC, "createdTime"));
 	    else
-		referrencesCollections = referrenceRepository.findAll(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
+		referrencesCollections = referrenceRepository.findAll(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
 	    if (referrencesCollections != null) {
 		response = new ArrayList<ReferenceDetail>();
 		BeanUtil.map(referrencesCollections, response);
@@ -989,17 +991,17 @@ public class RegistrationServiceImpl implements RegistrationService {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 		    if (size > 0)
 			referrencesCollections = referrenceRepository.findCustom(doctorId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			referrencesCollections = referrenceRepository.findCustom(doctorId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "updatedTime"));
+				new Sort(Sort.Direction.DESC, "createdTime"));
 		} else {
 		    if (size > 0)
 			referrencesCollections = referrenceRepository.findCustom(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			referrencesCollections = referrenceRepository.findCustom(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "updatedTime"));
+				new Sort(Sort.Direction.DESC, "createdTime"));
 		}
 	    }
 	    if (referrencesCollections != null) {
@@ -1023,25 +1025,25 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 		if (size > 0)
 		    referrencesCollections = referrenceRepository.findCustomGlobal(new Date(createdTimeStamp), discards,
-			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    new PageRequest(page, size, Direction.DESC, "createdTime"));
 		else
 		    referrencesCollections = referrenceRepository.findCustomGlobal(new Date(createdTimeStamp), discards,
-			    new Sort(Sort.Direction.DESC, "updatedTime"));
+			    new Sort(Sort.Direction.DESC, "createdTime"));
 	    } else {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 		    if (size > 0)
 			referrencesCollections = referrenceRepository.findCustomGlobal(doctorId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			referrencesCollections = referrenceRepository.findCustomGlobal(doctorId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "updatedTime"));
+				new Sort(Sort.Direction.DESC, "createdTime"));
 		} else {
 		    if (size > 0)
 			referrencesCollections = referrenceRepository.findCustomGlobal(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			referrencesCollections = referrenceRepository.findCustomGlobal(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "updatedTime"));
+				new Sort(Sort.Direction.DESC, "createdTime"));
 		}
 	    }
 	    if (referrencesCollections != null) {
@@ -1761,16 +1763,16 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 		if (size > 0)
-		    roleCollections = roleRepository.findCustomGlobal(new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC, "updatedTime"));
+		    roleCollections = roleRepository.findCustomGlobal(new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC, "createdTime"));
 		else
-		    roleCollections = roleRepository.findCustomGlobal(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+		    roleCollections = roleRepository.findCustomGlobal(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
 	    } else {
 		if (size > 0)
 		    roleCollections = roleRepository.findCustomGlobal(locationId, hospitalId, new Date(createdTimeStamp),
-			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    new PageRequest(page, size, Direction.DESC, "createdTime"));
 		else
 		    roleCollections = roleRepository.findCustomGlobal(locationId, hospitalId, new Date(createdTimeStamp),
-			    new Sort(Sort.Direction.DESC, "updatedTime"));
+			    new Sort(Sort.Direction.DESC, "createdTime"));
 	    }
 	    if (roleCollections != null) {
 		response = new ArrayList<Role>();
@@ -1798,9 +1800,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
 		roleCollections = roleRepository.findCustom(locationId, hospitalId, new Date(createdTimeStamp),
-			new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			new PageRequest(page, size, Direction.DESC, "createdTime"));
 	    else
-		roleCollections = roleRepository.findCustom(locationId, hospitalId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+		roleCollections = roleRepository.findCustom(locationId, hospitalId, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
 
 	    if (roleCollections != null) {
 		response = new ArrayList<Role>();
@@ -1827,9 +1829,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	try {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
-		roleCollections = roleRepository.findGlobal(new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC, "updatedTime"));
+		roleCollections = roleRepository.findGlobal(new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC, "createdTime"));
 	    else
-		roleCollections = roleRepository.findGlobal(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+		roleCollections = roleRepository.findGlobal(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
 
 	    if (roleCollections != null) {
 		response = new ArrayList<Role>();
@@ -1856,9 +1858,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	try {
 	    List<UserLocationCollection> userLocationCollections = null;
 	    if (size > 0)
-		userLocationCollections = userLocationRepository.findByLocationId(locationId, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+		userLocationCollections = userLocationRepository.findByLocationId(locationId, new PageRequest(page, size, Direction.DESC, "createdTime"));
 	    else
-		userLocationCollections = userLocationRepository.findByLocationId(locationId, new Sort(Sort.Direction.DESC, "updatedTime"));
+		userLocationCollections = userLocationRepository.findByLocationId(locationId, new Sort(Sort.Direction.DESC, "createdTime"));
 
 	    if (userLocationCollections != null) {
 		response = new ArrayList<ClinicDoctorResponse>();
@@ -2097,40 +2099,55 @@ public class RegistrationServiceImpl implements RegistrationService {
 	List<Feedback> response = null;
 	try {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
-	    List<FeedbackCollection> feedbackCollection = null;
+	    List<FeedbackCollection> feedbackCollections = null;
 	    if (DPDoctorUtils.anyStringEmpty(doctorId)){
-	    	//THis for ADMIN so isVisible = false
+	    	//THis is for ADMIN so isVisible = false
 	    	if(DPDoctorUtils.anyStringEmpty(type)){
 	    		if (size > 0)
-					feedbackCollection = feedbackRepository.find(false, new Date(createdTimeStamp), new PageRequest(page, size, Sort.Direction.DESC, "updatedTime"));
+					feedbackCollections = feedbackRepository.find(false, new Date(createdTimeStamp), new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
 				else
-					feedbackCollection = feedbackRepository.find(false, new Date(createdTimeStamp), new Sort(Direction.DESC, "updatedTime"));
+					feedbackCollections = feedbackRepository.find(false, new Date(createdTimeStamp), new Sort(Direction.DESC, "createdTime"));
 	    	}else{
 	    		if (size > 0)
-					feedbackCollection = feedbackRepository.findByType(type, false, new Date(createdTimeStamp), new PageRequest(page, size, Sort.Direction.DESC, "updatedTime"));
+					feedbackCollections = feedbackRepository.findByType(type, false, new Date(createdTimeStamp), new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
 				else
-					feedbackCollection = feedbackRepository.findByType(type, false, new Date(createdTimeStamp), new Sort(Direction.DESC, "updatedTime"));
+					feedbackCollections = feedbackRepository.findByType(type, false, new Date(createdTimeStamp), new Sort(Direction.DESC, "createdTime"));
 	    	}
 	    }
 	    else {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 		    if (size > 0)
-			feedbackCollection = feedbackRepository.find(doctorId, true, new Date(createdTimeStamp),
-				new PageRequest(page, size, Sort.Direction.DESC, "updatedTime"));
+			feedbackCollections = feedbackRepository.find(doctorId, true, new Date(createdTimeStamp),
+				new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
 		    else
-			feedbackCollection = feedbackRepository.find(doctorId, true, new Date(createdTimeStamp), new Sort(Direction.DESC, "updatedTime"));
+			feedbackCollections = feedbackRepository.find(doctorId, true, new Date(createdTimeStamp), new Sort(Direction.DESC, "createdTime"));
 		} else {
 		    if (size > 0)
-			feedbackCollection = feedbackRepository.find(doctorId, locationId, hospitalId, true, new Date(createdTimeStamp),
-				new PageRequest(page, size, Sort.Direction.DESC, "updatedTime"));
+			feedbackCollections = feedbackRepository.find(doctorId, locationId, hospitalId, true, new Date(createdTimeStamp),
+				new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
 		    else
-			feedbackCollection = feedbackRepository.find(doctorId, locationId, hospitalId, true, new Date(createdTimeStamp),
-				new Sort(Direction.DESC, "updatedTime"));
+			feedbackCollections = feedbackRepository.find(doctorId, locationId, hospitalId, true, new Date(createdTimeStamp),
+				new Sort(Direction.DESC, "createdTime"));
 		}
 	    }
-	    if (feedbackCollection != null) {
+	    if (feedbackCollections != null) {
 		response = new ArrayList<Feedback>();
-		BeanUtil.map(feedbackCollection, response);
+		for(FeedbackCollection feedbackCollection : feedbackCollections){
+			Feedback feedback = new Feedback();
+			BeanUtil.map(feedbackCollection, feedback);
+			UserCollection userCollection = userRepository.findOne(feedback.getUserId());
+			PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(feedback.getUserId(),
+					feedback.getDoctorId(), feedback.getLocationId(), feedback.getHospitalId());
+			if(userCollection != null && patientCollection != null){
+				User user = new User();
+				BeanUtil.map(userCollection, user);
+				BeanUtil.map(patientCollection, user);
+				user.setImageUrl(getFinalImageURL(user.getImageUrl()));
+				user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
+				feedback.setPatient(user);
+			}
+			response.add(feedback);
+		}
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -2198,4 +2215,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 		}
 		return response;
 	}
+	
+	private String getFinalImageURL(String imageURL) {
+		if (imageURL != null) {
+		    return imagePath + imageURL;
+		} else
+		    return null;
+	    }
 }

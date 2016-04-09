@@ -10,9 +10,6 @@
 	<profiles>
 		<profile>
 			<id>local</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -33,6 +30,9 @@
 		</profile>
 		<profile>
 			<id>stagging</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -383,143 +383,143 @@
 <!--     <version>1.7.1</version> -->
 <!--     1.9.13 -->
 <!-- </dependency> -->
-<dependency> 
-  <groupId>com.fasterxml.jackson.core</groupId>
-  <artifactId>jackson-databind</artifactId> 
-  <version>2.7.0</version> 
-</dependency>
-<dependency>
-    <groupId>com.fasterxml.jackson.core</groupId>
-    <artifactId>jackson-annotations</artifactId>
-    <version>2.7.0</version>
-  </dependency>
-  <dependency>
-    <groupId>com.fasterxml.jackson.core</groupId>
-    <artifactId>jackson-core</artifactId>
-    <version>2.7.0</version>
-  </dependency>
+<!-- <dependency>  -->
+<!--   <groupId>com.fasterxml.jackson.core</groupId> -->
+<!--   <artifactId>jackson-databind</artifactId>  -->
+<!--   <version>2.7.0</version>  -->
+<!-- </dependency> -->
+<!-- <dependency> -->
+<!--     <groupId>com.fasterxml.jackson.core</groupId> -->
+<!--     <artifactId>jackson-annotations</artifactId> -->
+<!--     <version>2.7.0</version> -->
+<!--   </dependency> -->
+<!--   <dependency> -->
+<!--     <groupId>com.fasterxml.jackson.core</groupId> -->
+<!--     <artifactId>jackson-core</artifactId> -->
+<!--     <version>2.7.0</version> -->
+<!--   </dependency> -->
  <!-- Spring security Dependencies -->
- <dependency>
-  <groupId>org.springframework.security</groupId>
-  <artifactId>spring-security-core</artifactId>
-  <version>3.2.5.RELEASE</version>
-  <exclusions>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-beans</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-core</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-context</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-aop</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-expression</artifactId>
-   </exclusion>
-  </exclusions>
- </dependency>
-  <dependency>
-  <groupId>org.springframework.security</groupId>
-  <artifactId>spring-security-web</artifactId>
-  <version>3.2.5.RELEASE</version>
-  <exclusions>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-beans</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-core</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-context</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-aop</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-web</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework.security</groupId>
-    <artifactId>spring-security-core</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-expression</artifactId>
-   </exclusion>
-  </exclusions>
- </dependency>
- <dependency>
-  <groupId>org.springframework.security</groupId>
-  <artifactId>spring-security-config</artifactId>
-  <version>3.2.5.RELEASE</version>
-  <exclusions>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-beans</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-core</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-context</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-aop</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework.security</groupId>
-    <artifactId>spring-security-core</artifactId>
-   </exclusion>
-  </exclusions>
- </dependency>
+<!--  <dependency> -->
+<!--   <groupId>org.springframework.security</groupId> -->
+<!--   <artifactId>spring-security-core</artifactId> -->
+<!--   <version>3.2.5.RELEASE</version> -->
+<!--   <exclusions> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework</groupId> -->
+<!--     <artifactId>spring-beans</artifactId> -->
+<!--    </exclusion> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework</groupId> -->
+<!--     <artifactId>spring-core</artifactId> -->
+<!--    </exclusion> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework</groupId> -->
+<!--     <artifactId>spring-context</artifactId> -->
+<!--    </exclusion> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework</groupId> -->
+<!--     <artifactId>spring-aop</artifactId> -->
+<!--    </exclusion> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework</groupId> -->
+<!--     <artifactId>spring-expression</artifactId> -->
+<!--    </exclusion> -->
+<!--   </exclusions> -->
+<!--  </dependency> -->
+<!--   <dependency> -->
+<!--   <groupId>org.springframework.security</groupId> -->
+<!--   <artifactId>spring-security-web</artifactId> -->
+<!--   <version>3.2.5.RELEASE</version> -->
+<!--   <exclusions> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework</groupId> -->
+<!--     <artifactId>spring-beans</artifactId> -->
+<!--    </exclusion> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework</groupId> -->
+<!--     <artifactId>spring-core</artifactId> -->
+<!--    </exclusion> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework</groupId> -->
+<!--     <artifactId>spring-context</artifactId> -->
+<!--    </exclusion> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework</groupId> -->
+<!--     <artifactId>spring-aop</artifactId> -->
+<!--    </exclusion> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework</groupId> -->
+<!--     <artifactId>spring-web</artifactId> -->
+<!--    </exclusion> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework.security</groupId> -->
+<!--     <artifactId>spring-security-core</artifactId> -->
+<!--    </exclusion> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework</groupId> -->
+<!--     <artifactId>spring-expression</artifactId> -->
+<!--    </exclusion> -->
+<!--   </exclusions> -->
+<!--  </dependency> -->
+<!--  <dependency> -->
+<!--   <groupId>org.springframework.security</groupId> -->
+<!--   <artifactId>spring-security-config</artifactId> -->
+<!--   <version>3.2.5.RELEASE</version> -->
+<!--   <exclusions> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework</groupId> -->
+<!--     <artifactId>spring-beans</artifactId> -->
+<!--    </exclusion> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework</groupId> -->
+<!--     <artifactId>spring-core</artifactId> -->
+<!--    </exclusion> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework</groupId> -->
+<!--     <artifactId>spring-context</artifactId> -->
+<!--    </exclusion> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework</groupId> -->
+<!--     <artifactId>spring-aop</artifactId> -->
+<!--    </exclusion> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework.security</groupId> -->
+<!--     <artifactId>spring-security-core</artifactId> -->
+<!--    </exclusion> -->
+<!--   </exclusions> -->
+<!--  </dependency> -->
  <!-- for OAuth 2.0 -->
- <dependency>
-  <groupId>org.springframework.security.oauth</groupId>
-  <artifactId>spring-security-oauth2</artifactId>
-  <version>2.0.7.RELEASE</version>
-  <exclusions>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-beans</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-core</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-context</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework.security</groupId>
-    <artifactId>spring-security-core</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework.security</groupId>
-    <artifactId>spring-security-config</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework.security</groupId>
-    <artifactId>spring-security-web</artifactId>
-   </exclusion>
-  </exclusions>
- </dependency>
+<!--  <dependency> -->
+<!--   <groupId>org.springframework.security.oauth</groupId> -->
+<!--   <artifactId>spring-security-oauth2</artifactId> -->
+<!--   <version>2.0.7.RELEASE</version> -->
+<!--   <exclusions> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework</groupId> -->
+<!--     <artifactId>spring-beans</artifactId> -->
+<!--    </exclusion> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework</groupId> -->
+<!--     <artifactId>spring-core</artifactId> -->
+<!--    </exclusion> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework</groupId> -->
+<!--     <artifactId>spring-context</artifactId> -->
+<!--    </exclusion> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework.security</groupId> -->
+<!--     <artifactId>spring-security-core</artifactId> -->
+<!--    </exclusion> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework.security</groupId> -->
+<!--     <artifactId>spring-security-config</artifactId> -->
+<!--    </exclusion> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework.security</groupId> -->
+<!--     <artifactId>spring-security-web</artifactId> -->
+<!--    </exclusion> -->
+<!--   </exclusions> -->
+<!--  </dependency> -->
  	</dependencies>
 	<build>
 		<plugins>

@@ -850,17 +850,17 @@ public class HistoryServicesImpl implements HistoryServices {
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
 			diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "updatedTime"));
+				new Sort(Sort.Direction.DESC, "createdTime"));
 		} else {
 		    if (size > 0)
 			diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "updatedTime"));
+				new Sort(Sort.Direction.DESC, "createdTime"));
 		}
 	    }
 	    if (diseasesCollections != null) {
@@ -894,9 +894,9 @@ public class HistoryServicesImpl implements HistoryServices {
 
 	    if (size > 0)
 		diseasesCollections = diseasesRepository.findGlobalDiseases(new Date(createdTimeStamp), discards,
-			new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			new PageRequest(page, size, Direction.DESC, "createdTime"));
 	    else
-		diseasesCollections = diseasesRepository.findGlobalDiseases(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
+		diseasesCollections = diseasesRepository.findGlobalDiseases(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
 
 	    if (diseasesCollections != null) {
 		diseaseListResponses = new ArrayList<DiseaseListResponse>();
@@ -931,25 +931,25 @@ public class HistoryServicesImpl implements HistoryServices {
 	    if (doctorId == null) {
 		if (size > 0)
 		    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(new Date(createdTimeStamp), discards,
-			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    new PageRequest(page, size, Direction.DESC, "createdTime"));
 		else
 		    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(new Date(createdTimeStamp), discards,
-			    new Sort(Sort.Direction.DESC, "updatedTime"));
+			    new Sort(Sort.Direction.DESC, "createdTime"));
 	    } else {
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
 			diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "updatedTime"));
+				new Sort(Sort.Direction.DESC, "createdTime"));
 		} else {
 		    if (size > 0)
 			diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-				discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				discards, new PageRequest(page, size, Direction.DESC, "createdTime"));
 		    else
 			diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-				discards, new Sort(Sort.Direction.DESC, "updatedTime"));
+				discards, new Sort(Sort.Direction.DESC, "createdTime"));
 		}
 	    }
 	    if (diseasesCollections != null) {
@@ -990,13 +990,13 @@ public class HistoryServicesImpl implements HistoryServices {
 				    Criteria.where("locationId").is(locationId), Criteria.where("hospitalId").is(hospitalId),
 				    Criteria.where("updatedTime").gte(new Date(createdTime)))),
 			    Aggregation.unwind("generalRecords"), matchForFilter, Aggregation.skip(page * size), Aggregation.limit(size),
-			    Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			    Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 		else
 		    aggregation = Aggregation.newAggregation(
 			    Aggregation.match(Criteria.where("patientId").is(patientId).andOperator(Criteria.where("doctorId").is(doctorId),
 				    Criteria.where("locationId").is(locationId), Criteria.where("hospitalId").is(hospitalId),
 				    Criteria.where("updatedTime").gte(new Date(createdTime)))),
-			    Aggregation.unwind("generalRecords"), matchForFilter, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			    Aggregation.unwind("generalRecords"), matchForFilter, Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 	    } else {
 		if (size > 0)
@@ -1005,13 +1005,13 @@ public class HistoryServicesImpl implements HistoryServices {
 				    Criteria.where("locationId").is(locationId), Criteria.where("hospitalId").is(hospitalId),
 				    Criteria.where("updatedTime").gte(new Date(createdTime)))),
 			    Aggregation.unwind("generalRecords"), Aggregation.skip(page * size), Aggregation.limit(size),
-			    Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			    Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 		else
 		    aggregation = Aggregation.newAggregation(
 			    Aggregation.match(Criteria.where("patientId").is(patientId).andOperator(Criteria.where("doctorId").is(doctorId),
 				    Criteria.where("locationId").is(locationId), Criteria.where("hospitalId").is(hospitalId),
 				    Criteria.where("updatedTime").gte(new Date(createdTime)))),
-			    Aggregation.unwind("generalRecords"), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			    Aggregation.unwind("generalRecords"), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 	    }
 	    AggregationResults<History> groupResults = mongoTemplate.aggregate(aggregation, HistoryCollection.class, History.class);
@@ -1119,11 +1119,11 @@ public class HistoryServicesImpl implements HistoryServices {
 		    aggregation = Aggregation.newAggregation(
 			    Aggregation.match(Criteria.where("patientId").is(patientId).and("updatedTime").gte(new Date(createdTime))),
 			    Aggregation.unwind("generalRecords"), matchForFilter, Aggregation.skip(page * size), Aggregation.limit(size),
-			    Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			    Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 		else
 		    aggregation = Aggregation.newAggregation(
 			    Aggregation.match(Criteria.where("patientId").is(patientId).and("updatedTime").gte(new Date(createdTime))),
-			    Aggregation.unwind("generalRecords"), matchForFilter, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			    Aggregation.unwind("generalRecords"), matchForFilter, Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 	    } else {
 		if (size > 0)
 		    aggregation = Aggregation.newAggregation(
@@ -1581,22 +1581,22 @@ public class HistoryServicesImpl implements HistoryServices {
 		    aggregation = Aggregation.newAggregation(
 			    Aggregation.match(Criteria.where("patientId").is(patientId).andOperator(Criteria.where("updatedTime").gte(new Date(createdTime)))),
 			    Aggregation.unwind("generalRecords"), matchForFilter, Aggregation.skip(page * size), Aggregation.limit(size),
-			    Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			    Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 		else
 		    aggregation = Aggregation.newAggregation(
 			    Aggregation.match(Criteria.where("patientId").is(patientId).andOperator(Criteria.where("updatedTime").gte(new Date(createdTime)))),
-			    Aggregation.unwind("generalRecords"), matchForFilter, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			    Aggregation.unwind("generalRecords"), matchForFilter, Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 	    } else {
 		if (size > 0)
 		    aggregation = Aggregation.newAggregation(
 			    Aggregation.match(Criteria.where("patientId").is(patientId).andOperator(Criteria.where("updatedTime").gte(new Date(createdTime)))),
 			    Aggregation.unwind("generalRecords"), Aggregation.skip(page * size), Aggregation.limit(size),
-			    Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			    Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 		else
 		    aggregation = Aggregation.newAggregation(
 			    Aggregation.match(Criteria.where("patientId").is(patientId).andOperator(Criteria.where("updatedTime").gte(new Date(createdTime)))),
-			    Aggregation.unwind("generalRecords"), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			    Aggregation.unwind("generalRecords"), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 	    }
 	    AggregationResults<History> groupResults = mongoTemplate.aggregate(aggregation, HistoryCollection.class, History.class);

@@ -224,9 +224,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    long updatedTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
 		medicalCouncilCollections = medicalCouncilRepository.find(new Date(updatedTimeStamp),
-			new PageRequest(page, size, Sort.Direction.DESC, "updatedTime"));
+			new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
 	    else
-		medicalCouncilCollections = medicalCouncilRepository.find(new Date(updatedTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+		medicalCouncilCollections = medicalCouncilRepository.find(new Date(updatedTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
 	    medicalCouncils = new ArrayList<MedicalCouncil>();
 	    BeanUtil.map(medicalCouncilCollections, medicalCouncils);
 	} catch (Exception e) {
@@ -541,10 +541,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    long updatedTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
 		professionalMembershipCollections = professionalMembershipRepository.find(new Date(updatedTimeStamp),
-			new PageRequest(page, size, Sort.Direction.DESC, "updatedTime"));
+			new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
 	    else
 		professionalMembershipCollections = professionalMembershipRepository.find(new Date(updatedTimeStamp),
-			new Sort(Sort.Direction.DESC, "updatedTime"));
+			new Sort(Sort.Direction.DESC, "createdTime"));
 	    professionalMemberships = new ArrayList<ProfessionalMembership>();
 	    BeanUtil.map(professionalMembershipCollections, professionalMemberships);
 	} catch (Exception e) {
@@ -731,9 +731,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    long updatedTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
 		specialitiesCollections = specialityRepository.find(new Date(updatedTimeStamp),
-			new PageRequest(page, size, Sort.Direction.DESC, "updatedTime"));
+			new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
 	    else
-		specialitiesCollections = specialityRepository.find(new Date(updatedTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+		specialitiesCollections = specialityRepository.find(new Date(updatedTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
 	    specialities = new ArrayList<Speciality>();
 	    BeanUtil.map(specialitiesCollections, specialities);
 	} catch (Exception e) {
@@ -752,9 +752,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    long updatedTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
 		educationInstituteCollections = educationInstituteRepository.find(new Date(updatedTimeStamp),
-			new PageRequest(page, size, Sort.Direction.DESC, "updatedTime"));
+			new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
 	    else
-		educationInstituteCollections = educationInstituteRepository.find(new Date(updatedTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+		educationInstituteCollections = educationInstituteRepository.find(new Date(updatedTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
 
 	    educationInstitutes = new ArrayList<EducationInstitute>();
 	    BeanUtil.map(educationInstituteCollections, educationInstitutes);
@@ -774,9 +774,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    long updatedTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
 		qualificationCollections = educationQualificationRepository.find(new Date(updatedTimeStamp),
-			new PageRequest(page, size, Sort.Direction.DESC, "updatedTime"));
+			new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
 	    else
-		qualificationCollections = educationQualificationRepository.find(new Date(updatedTimeStamp), new Sort(Sort.Direction.DESC, "updatedTime"));
+		qualificationCollections = educationQualificationRepository.find(new Date(updatedTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
 	    qualifications = new ArrayList<EducationQualification>();
 	    BeanUtil.map(qualificationCollections, qualifications);
 	} catch (Exception e) {

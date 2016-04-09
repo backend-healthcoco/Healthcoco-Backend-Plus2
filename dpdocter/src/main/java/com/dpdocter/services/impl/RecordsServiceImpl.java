@@ -348,9 +348,9 @@ public class RecordsServiceImpl implements RecordsService {
 
 		if (request.getSize() > 0)
 		    recordsTagsCollections = recordsTagsRepository.findByTagsId(request.getTagId(),
-			    new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "updatedTime"));
+			    new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "createdTime"));
 		else
-		    recordsTagsCollections = recordsTagsRepository.findByTagsId(request.getTagId(), new Sort(Sort.Direction.DESC, "updatedTime"));
+		    recordsTagsCollections = recordsTagsRepository.findByTagsId(request.getTagId(), new Sort(Sort.Direction.DESC, "createdTime"));
 		@SuppressWarnings("unchecked")
 		Collection<String> recordIds = CollectionUtils.collect(recordsTagsCollections, new BeanToPropertyValueTransformer("recordsId"));
 
@@ -361,19 +361,19 @@ public class RecordsServiceImpl implements RecordsService {
 		if (isOTPVerified) {
 		    if (request.getSize() > 0) {
 			recordsCollections = recordsRepository.findRecords(request.getPatientId(), new Date(createdTimeStamp), discards,
-				new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "updatedTime"));
+				new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "createdTime"));
 		    } else {
 			recordsCollections = recordsRepository.findRecords(request.getPatientId(), new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "updatedTime"));
+				new Sort(Sort.Direction.DESC, "createdTime"));
 		    }
 		} else {
 		    if (request.getSize() > 0) {
 			recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), new Date(createdTimeStamp), discards,
-				new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "updatedTime"));
+				new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "createdTime"));
 		    } else {
 			recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
-				request.getHospitalId(), new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
+				request.getHospitalId(), new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
 		    }
 		}
 
@@ -728,18 +728,18 @@ public class RecordsServiceImpl implements RecordsService {
 	    if (isOTPVerified) {
 		if (size > 0) {
 		    recordsCollections = recordsRepository.findRecords(patientId, new Date(createdTimeStamp), discards, inHistorys,
-			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    new PageRequest(page, size, Direction.DESC, "createdTime"));
 		} else {
 		    recordsCollections = recordsRepository.findRecords(patientId, new Date(createdTimeStamp), discards, inHistorys,
-			    new Sort(Sort.Direction.DESC, "updatedTime"));
+			    new Sort(Sort.Direction.DESC, "createdTime"));
 		}
 	    } else {
 		if (size > 0) {
 		    recordsCollections = recordsRepository.findRecords(patientId, doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-			    inHistorys, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    inHistorys, new PageRequest(page, size, Direction.DESC, "createdTime"));
 		} else {
 		    recordsCollections = recordsRepository.findRecords(patientId, doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-			    inHistorys, new Sort(Sort.Direction.DESC, "updatedTime"));
+			    inHistorys, new Sort(Sort.Direction.DESC, "createdTime"));
 		}
 	    }
 	    records = new ArrayList<Records>();
@@ -773,10 +773,10 @@ public class RecordsServiceImpl implements RecordsService {
 		discards[1] = true;
 	    if (size > 0)
 		recordsCollections = recordsRepository.findRecordsByPatientId(patientId, new Date(updatedTimeLong), discards,
-			new PageRequest(page, size, Sort.Direction.DESC, "updatedTime"));
+			new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
 	    else
 		recordsCollections = recordsRepository.findRecordsByPatientId(patientId, new Date(updatedTimeLong), discards,
-			new Sort(Sort.Direction.DESC, "updatedTime"));
+			new Sort(Sort.Direction.DESC, "createdTime"));
 	    records = new ArrayList<Records>();
 	    for (RecordsCollection recordCollection : recordsCollections) {
 		Records record = new Records();

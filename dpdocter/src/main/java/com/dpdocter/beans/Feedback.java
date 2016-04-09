@@ -32,6 +32,8 @@ public class Feedback extends GenericCollection {
 
     private Boolean isRecommended = false;
 
+    private User patient;
+    
     public String getId() {
 	return id;
     }
@@ -136,10 +138,20 @@ public class Feedback extends GenericCollection {
 	this.resourceId = resourceId;
     }
 
-    @Override
-    public String toString() {
-	return "Feedback [id=" + id + ", type=" + type + ", appType=" + appType + ", resourceId=" + resourceId + ", doctorId=" + doctorId + ", locationId="
-		+ locationId + ", hospitalId=" + hospitalId + ", userId=" + userId + ", explanation=" + explanation + ", deviceType=" + deviceType
-		+ ", deviceInfo=" + deviceInfo + ", isVisible=" + isVisible + ", isRecommended=" + isRecommended + "]";
-    }
+	public User getPatient() {
+		return patient;
+	}
+
+	public void setPatient(User patient) {
+		this.patient = patient;
+	}
+
+	@Override
+	public String toString() {
+		return "Feedback [id=" + id + ", type=" + type + ", appType=" + appType + ", resourceId=" + resourceId
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", userId="
+				+ userId + ", explanation=" + explanation + ", deviceType=" + deviceType + ", deviceInfo=" + deviceInfo
+				+ ", isVisible=" + isVisible + ", isRecommended=" + isRecommended + ", patient=" + patient + "]";
+	}
+
 }

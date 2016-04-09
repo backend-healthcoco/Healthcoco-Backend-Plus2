@@ -6,6 +6,9 @@ import java.util.Date;
 
 import org.apache.commons.io.FilenameUtils;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+
 
 
 public class GeneralTests {
@@ -77,9 +80,9 @@ public class GeneralTests {
 //	    	}
 	    		 
 	    		 public static void main(String[] args) throws UnsupportedEncodingException, NoSuchAlgorithmException  {
-
-	    			 String u = FilenameUtils.getBaseName("ecords/56f7a93ee4b0bb8ce0c2c71e/Test image1459071671248.jpeg");
-	    			 System.out.println(u.substring(0, u.length()-13));
+	    			 DBObject prescriptionItems = new BasicDBObject();
+//	    			 prescriptionItems.put("resourceId", "nanjsn");
+	    			 System.out.println(prescriptionItems.get("resourceId"));
 	    			 
 	    		 }
 	    		 

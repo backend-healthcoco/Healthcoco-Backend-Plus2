@@ -280,18 +280,18 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	    if (size > 0) {
 		if (otpVerified) {
 		    patientTreatmentCollections = patientTreamentRepository.findAll(patientId, discards, new Date(Long.parseLong(updatedTime)),
-			    new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    new PageRequest(page, size, Direction.DESC, "createdTime"));
 		} else {
 		    patientTreatmentCollections = patientTreamentRepository.findAll(patientId, locationId, hospitalId, doctorId, discards,
-			    new Date(Long.parseLong(updatedTime)), new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			    new Date(Long.parseLong(updatedTime)), new PageRequest(page, size, Direction.DESC, "createdTime"));
 		}
 	    } else {
 		if (otpVerified) {
 		    patientTreatmentCollections = patientTreamentRepository.findAll(patientId, discards, new Date(Long.parseLong(updatedTime)),
-			    new Sort(Sort.Direction.DESC, "updatedTime"));
+			    new Sort(Sort.Direction.DESC, "createdTime"));
 		} else {
 		    patientTreatmentCollections = patientTreamentRepository.findAll(patientId, locationId, hospitalId, doctorId, discards,
-			    new Date(Long.parseLong(updatedTime)), new Sort(Sort.Direction.DESC, "updatedTime"));
+			    new Date(Long.parseLong(updatedTime)), new Sort(Sort.Direction.DESC, "createdTime"));
 		}
 	    }
 
