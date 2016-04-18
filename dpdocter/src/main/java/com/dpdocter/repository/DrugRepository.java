@@ -49,4 +49,7 @@ public interface DrugRepository extends MongoRepository<DrugCollection, String>,
     @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
     List<DrugCollection> getCustomGlobalDrugs(Date date, boolean[] discards, Sort sort);
 
+    @Query("{'drugCode': ?0}")
+	DrugCollection findByDrugCode(String drugCode);
+
 }

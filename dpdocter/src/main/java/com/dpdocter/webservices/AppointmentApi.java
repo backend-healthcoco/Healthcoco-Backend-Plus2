@@ -245,9 +245,9 @@ public class AppointmentApi {
     @GET
     public Response<Appointment> getDoctorAppointments(@QueryParam(value = "locationId") String locationId,
 	    @MatrixParam(value = "doctorId") List<String> doctorId, @QueryParam(value = "patientId") String patientId, @QueryParam(value = "from") String from,
-	    @QueryParam(value = "to") String to, @QueryParam(value = "page") int page, @QueryParam(value = "size") int size) {
+	    @QueryParam(value = "to") String to, @QueryParam(value = "page") int page, @QueryParam(value = "size") int size, @DefaultValue(value="0") @QueryParam(value = "updatedTime") String updatedTime) {
 
-	List<Appointment> appointment = appointmentService.getAppointments(locationId, doctorId, patientId, from, to, page, size);
+	List<Appointment> appointment = appointmentService.getAppointments(locationId, doctorId, patientId, from, to, page, size, updatedTime);
 	Response<Appointment> response = new Response<Appointment>();
 	response.setDataList(appointment);
 	return response;
@@ -257,9 +257,9 @@ public class AppointmentApi {
     @GET
     public Response<Appointment> getPatientAppointments(@QueryParam(value = "locationId") String locationId, @QueryParam(value = "doctorId") String doctorId,
 	    @QueryParam(value = "patientId") String patientId, @QueryParam(value = "from") String from, @QueryParam(value = "to") String to,
-	    @QueryParam(value = "page") int page, @QueryParam(value = "size") int size) {
+	    @QueryParam(value = "page") int page, @QueryParam(value = "size") int size, @DefaultValue(value="0") @QueryParam(value = "updatedTime") String updatedTime) {
 
-	List<Appointment> appointment = appointmentService.getPatientAppointments(locationId, doctorId, patientId, from, to, page, size);
+	List<Appointment> appointment = appointmentService.getPatientAppointments(locationId, doctorId, patientId, from, to, page, size, updatedTime);
 	Response<Appointment> response = new Response<Appointment>();
 	response.setDataList(appointment);
 	return response;
@@ -305,16 +305,6 @@ public class AppointmentApi {
 
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(sendReminder);
-	return response;
-    }
-
-    @Path(value = PathProxy.AppointmentUrls.IMPORT)
-    @GET
-    public Response<Boolean> importMaster() {
-	appointmentService.importMaster();
-
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
 	return response;
     }
 

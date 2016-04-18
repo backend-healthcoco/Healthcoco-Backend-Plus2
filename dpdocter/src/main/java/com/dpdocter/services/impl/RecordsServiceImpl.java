@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import javax.imageio.stream.FileImageInputStream;
 import javax.mail.MessagingException;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
@@ -27,6 +28,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.dpdocter.beans.Count;
+import com.dpdocter.beans.FileDownloadResponse;
 import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Records;
@@ -466,12 +468,23 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public File getRecordFile(String recordId) {
+    public FileDownloadResponse getRecordFile(String recordId) {
+    	FileDownloadResponse response = null; 
 	try {
 	    RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
 	    if (recordsCollection != null) {
 		if (recordsCollection.getRecordsPath() != null) {
-		    return new File(recordsCollection.getRecordsPath());
+			BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+			AmazonS3 s3client = new AmazonS3Client(credentials);
+
+			S3Object object = s3client.getObject(new GetObjectRequest(bucketName, recordsCollection.getRecordsUrl()));
+			InputStream objectData = object.getObjectContent();
+			if(objectData != null){
+				response = new FileDownloadResponse();
+				response.setInputStream(objectData);
+				response.setFileName(FilenameUtils.getName(recordsCollection.getRecordsUrl()));
+			}	
+		    return response;
 		} else {
 		    logger.warn("Record Path for this Record is Empty.");
 		    throw new BusinessException(ServiceError.NoRecord, "Record Path for this Record is Empty.");

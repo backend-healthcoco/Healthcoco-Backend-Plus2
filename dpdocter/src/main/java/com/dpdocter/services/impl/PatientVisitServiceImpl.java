@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import com.dpdocter.beans.Age;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.ClinicalNotesJasperDetails;
+import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Drug;
@@ -86,6 +87,7 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddMultipleDataRequest;
 import com.dpdocter.response.PatientVisitResponse;
 import com.dpdocter.response.PrescriptionAddEditResponse;
+import com.dpdocter.response.TestAndRecordDataResponse;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.JasperReportService;
@@ -403,8 +405,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    if (request.getPrescription() != null) {
 		PrescriptionAddEditResponse prescriptionResponse = prescriptionServices.addPrescription(request.getPrescription());
 		Prescription prescription = new Prescription();
+		
+		List<TestAndRecordDataResponse> prescriptionTest = prescriptionResponse.getTests();
+		prescriptionResponse.setTests(null);
 		BeanUtil.map(prescriptionResponse, prescription);
-
+		prescription.setTests(prescriptionTest);
+		
 		if (prescriptionResponse.getItems() != null) {
 		    List<PrescriptionItemDetail> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetail>();
 		    for (PrescriptionItem prescriptionItem : prescriptionResponse.getItems()) {
@@ -583,7 +589,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					months = ageObj.getMonths();
 					if(ageObj.getYears() > 0)months = months + 12 * ageObj.getYears();
 				}
-				if(months > 0)age = days +" days";
+				if(months == 0)age = days +" days";
 				else age = months +" months "+days +" days";
 			}
 		}
@@ -591,7 +597,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		gender = "Patient Gender: " + (patient != null ? patient.getGender() : "--") + "<br>";
 		mobileNumber = "Mobile Number: " + (user != null ? user.getMobileNumber() : "--") + "<br>";
 		pid = "Patient Id: " + (patient != null ? patient.getPID() : "--") + "<br>";
-		refferedBy = "Reffered By: " + (refferedBy != "" ? refferedBy : "--") + "<br>";
+		refferedBy = "Referred By: " + (refferedBy != "" ? refferedBy : "--") + "<br>";
 		date = "Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()) + "<br>";
 		
 		List<DBObject> prescriptions = new ArrayList<DBObject>();
@@ -771,13 +777,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    clinicalNotesJasperDetails = new ClinicalNotesJasperDetails();
 		    if (clinicalNotesCollection.getVitalSigns() != null) {
 			String pulse = clinicalNotesCollection.getVitalSigns().getPulse();
-			pulse = pulse != null && !pulse.isEmpty() ? "Pulse: " + pulse + VitalSignsUnit.PULSE.getUnit() + "    " : "";
+			pulse = pulse != null && !pulse.isEmpty() ? "Pulse: " + pulse + " "+VitalSignsUnit.PULSE.getUnit() + "    " : "";
 
 			String temp = clinicalNotesCollection.getVitalSigns().getTemperature();
-			temp = temp != null && !temp.isEmpty() ? "Temperature: " + temp + "    " : "";
+			temp = temp != null && !temp.isEmpty() ? "Temperature: " + temp +" "+VitalSignsUnit.TEMPERATURE.getUnit()+ "    " : "";
 
 			String breathing = clinicalNotesCollection.getVitalSigns().getBreathing();
-			breathing = breathing != null && !breathing.isEmpty() ? "Breathing: " + breathing + VitalSignsUnit.BREATHING.getUnit() + "    " : "";
+			breathing = breathing != null && !breathing.isEmpty() ? "Breathing: " + breathing + " "+VitalSignsUnit.BREATHING.getUnit() + "    " : "";
 
 			String bloodPressure = "";
 			if (clinicalNotesCollection.getVitalSigns().getBloodPressure() != null) {
@@ -787,7 +793,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			    String diastolic = clinicalNotesCollection.getVitalSigns().getBloodPressure().getDiastolic();
 			    diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic : "";
 
-			    bloodPressure = "Blood Pressure: " + systolic + "/" + diastolic + VitalSignsUnit.BLOODPRESSURE.getUnit();
+			    bloodPressure = "Blood Pressure: " + systolic + "/" + diastolic + " "+VitalSignsUnit.BLOODPRESSURE.getUnit();
 			}
 			String vitalSigns = pulse + temp + breathing + bloodPressure;
 			clinicalNotesJasperDetails.setVitalSigns(vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);

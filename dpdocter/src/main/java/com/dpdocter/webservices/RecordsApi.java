@@ -1,6 +1,5 @@
 package com.dpdocter.webservices;
 
-import java.io.File;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -21,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.FileDownloadResponse;
 import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.Tags;
@@ -200,13 +200,13 @@ public class RecordsApi {
     @Path(value = PathProxy.RecordsUrls.DOWNLOAD_RECORD)
     @GET
     public javax.ws.rs.core.Response downloadRecords(@PathParam("recordId") String recordId) {
-	File file = recordsService.getRecordFile(recordId);
+    	FileDownloadResponse file = recordsService.getRecordFile(recordId);
 	if (file == null) {
 	    ResponseBuilder response = javax.ws.rs.core.Response.status(Status.BAD_REQUEST);
 	    return response.build();
 	}
-	ResponseBuilder response = javax.ws.rs.core.Response.ok(file);
-	response.header("Content-Disposition", "attachment; filename=" + file.getName());
+	ResponseBuilder response = javax.ws.rs.core.Response.ok(file.getInputStream());
+	response.header("Content-Disposition", "attachment; filename=" + file.getFileName());
 	return response.build();
     }
 

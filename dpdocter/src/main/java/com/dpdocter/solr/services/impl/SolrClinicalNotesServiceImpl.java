@@ -698,7 +698,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 		   
 		   List<SolrSpecialityDocument> specialityCollections = resultsSpeciality.getContent();
 		    @SuppressWarnings("unchecked")
-		    Collection<String> specialities = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("superSpeciality"));
+		    Collection<String> specialities = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("speciality"));
 		    Criteria searchCriteria =  Criteria.where("speciality").in(Arrays.asList(specialities))
 		    		.and("doctorId").contains(doctorId, null, "").and("updatedTime").greaterThanEqual(new Date(createdTimeStamp));
 		    searchCriteria.and("locationId").contains(locationId, null, "").and("hospitalId").contains(hospitalId, null, "");
@@ -774,7 +774,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 	   
 	   List<SolrSpecialityDocument> specialityCollections = resultsSpeciality.getContent();
 	    @SuppressWarnings("unchecked")
-	    Collection<String> specialities = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("superSpeciality"));
+	    Collection<String> specialities = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("speciality"));
 	    
 	    String speciality = specialities.toString().replaceAll("\\[", "(").replaceAll("\\]", ")");
 	    if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
@@ -823,7 +823,7 @@ public class SolrClinicalNotesServiceImpl implements SolrClinicalNotesService {
 		   List<SolrSpecialityDocument> specialityCollections = resultsSpeciality.getContent();
 		   
 		   @SuppressWarnings("unchecked")
-		    Collection<String> specialities = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("superSpeciality"));
+		    Collection<String> specialities = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("speciality"));
 		    String speciality = specialities.toString().replaceAll("\\[", "(").replaceAll("\\]", ")"); 
 		   
 		    if (DPDoctorUtils.anyStringEmpty(searchTerm)) {

@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.DiagnosticTest;
+import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.enums.Resource;
@@ -761,16 +762,6 @@ public class PrescriptionApi {
 	return response;
     }
 
-    @Path(value = PathProxy.PrescriptionUrls.IMPORT_DRUG)
-    @GET
-    public Response<Boolean> importDrug() {
-	prescriptionServices.importDrug();
-
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
-	return response;
-    }
-
     @Path(value = PathProxy.PrescriptionUrls.ADD_EDIT_DIAGNOSTIC_TEST)
     @POST
     public Response<DiagnosticTest> addEditDiagnosticTest(DiagnosticTest request) {
@@ -843,6 +834,35 @@ public class PrescriptionApi {
 
 	Response<PrescriptionTestAndRecord> response = new Response<PrescriptionTestAndRecord>();
 	response.setData(dataResponse);
+	return response;
+    }
+    
+    @Path(value = PathProxy.PrescriptionUrls.ADD_EDIT_GENERIC_CODE)
+    @POST
+    public Response<GenericCode> addEditGenericCode(GenericCode request) {
+	if (request == null) {
+	    logger.warn("Request Sent Is NULL");
+	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
+	}
+	GenericCode genericCode = prescriptionServices.addEditGenericCode(request);
+	
+	Response<GenericCode> response = new Response<GenericCode>();
+	response.setData(genericCode);
+	return response;
+    }
+
+    /**action = ADD OR REMOVE**/		
+    @Path(value = PathProxy.PrescriptionUrls.ADD_REMOVE_GENERIC_CODE_TO_DRUG)
+    @GET
+    public Response<Boolean> addRemoveGenericCode(@PathParam(value = "action") String action,
+	    @PathParam(value = "genericId") String genericId, @PathParam(value = "drugCode") String drugCode) {
+	if (DPDoctorUtils.anyStringEmpty(action, genericId, drugCode)) {
+	    logger.warn("Action, Generic Id, Drug Code Cannot Be Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Action, Generic Id, Drug Code Cannot Be Empty");
+	}
+	Boolean addRemoveGenericCodeResponse = prescriptionServices.addRemoveGenericCode(action, genericId, drugCode);
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(addRemoveGenericCodeResponse);
 	return response;
     }
 }

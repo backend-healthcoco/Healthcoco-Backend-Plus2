@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class PatientQueueCollection extends GenericCollection {
 
     @Id
+    @Field
     private String id;
 
     @Field

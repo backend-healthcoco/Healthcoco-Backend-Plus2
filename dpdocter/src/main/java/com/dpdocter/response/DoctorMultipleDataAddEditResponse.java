@@ -2,6 +2,7 @@ package com.dpdocter.response;
 
 import java.util.List;
 
+import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.DoctorExperience;
 
 public class DoctorMultipleDataAddEditResponse {
@@ -23,6 +24,10 @@ public class DoctorMultipleDataAddEditResponse {
     private String coverImageUrl;
 
     private String thumbnailCoverImageUrl;
+
+    private String gender;
+    
+    private DOB dob;
 
     public String getDoctorId() {
 	return doctorId;
@@ -96,11 +101,28 @@ public class DoctorMultipleDataAddEditResponse {
 	this.thumbnailCoverImageUrl = thumbnailCoverImageUrl;
     }
 
-    @Override
-    public String toString() {
-	return "DoctorMultipleDataAddEditResponse [doctorId=" + doctorId + ", title=" + title + ", firstName=" + firstName + ", experience=" + experience
-		+ ", specialities=" + specialities + ", profileImageUrl=" + profileImageUrl + ", thumbnailProfileImageUrl=" + thumbnailProfileImageUrl
-		+ ", coverImageUrl=" + coverImageUrl + ", thumbnailCoverImageUrl=" + thumbnailCoverImageUrl + "]";
-    }
+	public String getGender() {
+		return gender;
+	}
 
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public DOB getDob() {
+		return dob;
+	}
+
+	public void setDob(DOB dob) {
+		this.dob = dob;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorMultipleDataAddEditResponse [doctorId=" + doctorId + ", title=" + title + ", firstName="
+				+ firstName + ", experience=" + experience + ", specialities=" + specialities + ", profileImageUrl="
+				+ profileImageUrl + ", thumbnailProfileImageUrl=" + thumbnailProfileImageUrl + ", coverImageUrl="
+				+ coverImageUrl + ", thumbnailCoverImageUrl=" + thumbnailCoverImageUrl + ", gender=" + gender + ", dob="
+				+ dob + "]";
+	}
 }

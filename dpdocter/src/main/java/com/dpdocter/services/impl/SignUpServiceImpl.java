@@ -225,17 +225,27 @@ public class SignUpServiceImpl implements SignUpService {
     }
 
     @Override
-    public Boolean activateUser(String userId) {
+    public Boolean activateUser(String userId, Boolean activate) {
 	UserCollection userCollection = null;
 	Boolean response = false;
 	try {
 	    userCollection = userRepository.findOne(userId);
 	    if (userCollection != null) {
-		userCollection.setIsActive(true);
-		userCollection.setUserState(UserState.USERSTATECOMPLETE);
+	    
+	    if(userCollection.getUserState().getState().equalsIgnoreCase(UserState.USERSTATEINCOMPLETE.getState())){
+	    	logger.error("User State is incomplete so user cannot be activated");
+			throw new BusinessException(ServiceError.Unknown, "User State is incomplete so user cannot be activated");
+	    }
+	    else if(userCollection.getUserState().getState().equalsIgnoreCase(UserState.NOTVERIFIED.getState())){
+	    	logger.error("User has not verified his mail so user cannot be activated");
+			throw new BusinessException(ServiceError.Unknown, "User has not verified his mail so user cannot be activated");
+	    }
+		userCollection.setIsActive(activate);
+		if(activate)userCollection.setUserState(UserState.USERSTATECOMPLETE);
+		else userCollection.setUserState(UserState.NOTACTIVATED);
 		userRepository.save(userCollection);
 		response = true;
-		if (userCollection.getMobileNumber() != null) {
+		if (userCollection.getMobileNumber() != null && activate) {
 		    SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 
 		    smsTrackDetail.setType("AFTER_VERIFICATION_TO_DOCTOR");

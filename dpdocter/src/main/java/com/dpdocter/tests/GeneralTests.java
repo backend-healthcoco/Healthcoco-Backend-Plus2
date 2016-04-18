@@ -6,8 +6,11 @@ import java.util.Date;
 
 import org.apache.commons.io.FilenameUtils;
 
+import com.dpdocter.services.impl.PushNotificationServicesImpl;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+
+import common.util.web.DPDoctorUtils;
 
 
 
@@ -80,10 +83,7 @@ public class GeneralTests {
 //	    	}
 	    		 
 	    		 public static void main(String[] args) throws UnsupportedEncodingException, NoSuchAlgorithmException  {
-	    			 DBObject prescriptionItems = new BasicDBObject();
-//	    			 prescriptionItems.put("resourceId", "nanjsn");
-	    			 System.out.println(prescriptionItems.get("resourceId"));
-	    			 
+	    			 System.out.println(new Date("2016-04-18T18:30:00.000Z").getTime());
 	    		 }
 	    		 
 }  	

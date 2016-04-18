@@ -1267,6 +1267,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    if (geocodedLocations != null && !geocodedLocations.isEmpty())
 		BeanUtil.map(geocodedLocations.get(0), locationCollection);
 	    if(DPDoctorUtils.anyStringEmpty(request.getLocationName()))locationCollection.setLocationName(locationName);
+	    locationCollection.setAlternateClinicNumbers(request.getAlternateClinicNumbers());
 	    locationCollection = locationRepository.save(locationCollection);
 	    response = new ClinicAddress();
 	    BeanUtil.map(locationCollection, response);
@@ -2027,8 +2028,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 	LocationCollection locationCollection = null;
 	try {
 	    locationCollection = locationRepository.findOne(request.getId());
-	    if (locationCollection != null)
-		BeanUtil.map(request, locationCollection);
+	    if (locationCollection != null)	BeanUtil.map(request, locationCollection);
+	    else{
+	    	logger.error("No Clinic Found");
+		    throw new BusinessException(ServiceError.NoRecord, "No Clinic Found");
+	    }
+	    locationCollection.setAlternateClinicNumbers(request.getAlternateClinicNumbers());
 	    locationCollection = locationRepository.save(locationCollection);
 	    response = new ClinicProfile();
 	    BeanUtil.map(locationCollection, response);

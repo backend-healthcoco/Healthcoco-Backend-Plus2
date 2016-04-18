@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "doctor_contact_cl")
-public class DoctorContactCollection extends GenericCollection {
+public class DoctorContactCollection extends GenericCollection implements Comparable<DoctorContactCollection>{
 
     @Id
     private String id;
@@ -68,4 +68,12 @@ public class DoctorContactCollection extends GenericCollection {
 		+ discarded + "]";
     }
 
+    @Override
+    public int compareTo(DoctorContactCollection contactCollection) {
+        if (this.getCreatedTime().getTime() > contactCollection.getCreatedTime().getTime()){
+            return -1;
+        }else{
+            return 1;
+        }
+    }
 }

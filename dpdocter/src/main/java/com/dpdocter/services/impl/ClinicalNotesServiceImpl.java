@@ -3,6 +3,7 @@ package com.dpdocter.services.impl;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -18,9 +19,12 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.solr.core.query.Criteria;
+import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.Age;
@@ -91,9 +95,11 @@ import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailService;
 import com.dpdocter.solr.document.SolrComplaintsDocument;
 import com.dpdocter.solr.document.SolrDiagnosesDocument;
+import com.dpdocter.solr.document.SolrDoctorDocument;
 import com.dpdocter.solr.document.SolrInvestigationsDocument;
 import com.dpdocter.solr.document.SolrNotesDocument;
 import com.dpdocter.solr.document.SolrObservationsDocument;
+import com.dpdocter.solr.document.SolrSpecialityDocument;
 import com.dpdocter.solr.services.SolrClinicalNotesService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -1263,7 +1269,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    switch (Range.valueOf(range.toUpperCase())) {
 
 	    case GLOBAL:
-		response = getGlobalDiagrams(page, size, updatedTime, discarded);
+		response = getGlobalDiagrams(page, size, doctorId, updatedTime, discarded);
 		break;
 	    case CUSTOM:
 		response = getCustomDiagrams(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
@@ -1927,7 +1933,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	 	   
 		    List<SpecialityCollection> specialityCollections = specialityRepository.findById(doctorCollection.getSpecialities());
 		    @SuppressWarnings("unchecked")
-		    Collection<String> specialities = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("superSpeciality"));
+		    Collection<String> specialities = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("speciality"));
 		   
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
@@ -1955,7 +1961,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
     }
 
-    private List<Object> getGlobalDiagrams(int page, int size, String updatedTime, Boolean discarded) {
+    private List<Object> getGlobalDiagrams(int page, int size, String doctorId, String updatedTime, Boolean discarded) {
 	List<DiagramsCollection> diagramCollections = null;
 	List<Object> response = null;
 	boolean[] discards = new boolean[2];
@@ -1964,12 +1970,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    if (discarded)
 		discards[1] = true;
 	    long createdTimeStamp = Long.parseLong(updatedTime);
-
+	    
+	    DoctorCollection doctorCollection = doctorRepository.findByUserId(doctorId);
+    	
+	    List<SpecialityCollection> specialityCollections = specialityRepository.findById(doctorCollection.getSpecialities());
+	    @SuppressWarnings("unchecked")
+	    Collection<String> specialities = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("speciality"));
+	    
 	    if (size > 0)
-		diagramCollections = diagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discards,
+		diagramCollections = diagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discards, specialities,
 			new PageRequest(page, size, Direction.DESC, "createdTime"));
 	    else
-		diagramCollections = diagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
+		diagramCollections = diagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discards, specialities, new Sort(Sort.Direction.DESC, "createdTime"));
 
 	    if (diagramCollections != null) {
 		response = new ArrayList<Object>();
@@ -2004,7 +2016,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	   
 	    List<SpecialityCollection> specialityCollections = specialityRepository.findById(doctorCollection.getSpecialities());
 	    @SuppressWarnings("unchecked")
-	    Collection<String> specialities = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("superSpeciality"));
+	    Collection<String> specialities = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("speciality"));
 	    
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
@@ -2174,13 +2186,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    parameters.put("clinicalNotesId", clinicalNotesId);
 		    if (clinicalNotesCollection.getVitalSigns() != null) {
 			String pulse = clinicalNotesCollection.getVitalSigns().getPulse();
-			pulse = pulse != null && !pulse.isEmpty() ? "Pulse: " + pulse + VitalSignsUnit.PULSE.getUnit() + "    " : "";
+			pulse = pulse != null && !pulse.isEmpty() ? "Pulse: " + pulse +" " +VitalSignsUnit.PULSE.getUnit() + "    " : "";
 
 			String temp = clinicalNotesCollection.getVitalSigns().getTemperature();
-			temp = temp != null && !temp.isEmpty() ? "Temperature: " + temp + "    " : "";
+			temp = temp != null && !temp.isEmpty() ? "Temperature: " + temp +" " +VitalSignsUnit.TEMPERATURE.getUnit() +"    " : "";
 
 			String breathing = clinicalNotesCollection.getVitalSigns().getBreathing();
-			breathing = breathing != null && !breathing.isEmpty() ? "Breathing: " + breathing + VitalSignsUnit.BREATHING.getUnit() + "    " : "";
+			breathing = breathing != null && !breathing.isEmpty() ? "Breathing: " + breathing + " "+VitalSignsUnit.BREATHING.getUnit() + "    " : "";
 
 			String bloodPressure = "";
 			if (clinicalNotesCollection.getVitalSigns().getBloodPressure() != null) {
@@ -2190,7 +2202,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			    String diastolic = clinicalNotesCollection.getVitalSigns().getBloodPressure().getDiastolic();
 			    diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic : "";
 
-			    bloodPressure = "Blood Pressure: " + systolic + "/" + diastolic + VitalSignsUnit.BLOODPRESSURE.getUnit();
+			    bloodPressure = "Blood Pressure: " + systolic + "/" + diastolic + " "+VitalSignsUnit.BLOODPRESSURE.getUnit();
 			}
 			String vitalSigns = pulse + temp + breathing + bloodPressure;
 			parameters.put("vitalSigns", vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
@@ -2218,7 +2230,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					months = ageObj.getMonths();
 					if(ageObj.getYears() > 0)months = months + 12 * ageObj.getYears();
 				}
-				if(months > 0)age = days +" days";
+				if(months == 0)age = days +" days";
 				else age = months +" months "+days +" days";
 			}
 		}
@@ -2226,7 +2238,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		gender = "Patient Gender: " + (patient != null ? patient.getGender() : "--") + "<br>";
 		mobileNumber = "Mobile Number: " + (user != null ? user.getMobileNumber() : "--") + "<br>";
 		pid = "Patient Id: " + (patient != null ? patient.getPID() : "--") + "<br>";
-		refferedBy = "Reffered By: " + (refferedBy != "" ? refferedBy : "--") + "<br>";
+		refferedBy = "Referred By: " + (refferedBy != "" ? refferedBy : "--") + "<br>";
 		date = "Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()) + "<br>";
 		resourceId = "ClinicalNotesId: " + (clinicalNotesCollection.getUniqueEmrId() != null ? clinicalNotesCollection.getUniqueEmrId() : "--") + "<br>";
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(doctorId, locationId, hospitalId,

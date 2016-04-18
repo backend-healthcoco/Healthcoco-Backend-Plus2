@@ -19,4 +19,14 @@ public interface AdminServices {
 
 	List<Resume> getResumes(int page, int size, String type);
 
+	void importDrug();
+
+	void importCity();
+
+	void importDiagnosticTest();
+
+	void importEducationInstitute();
+
+	void importEducationQualification();
+
 }

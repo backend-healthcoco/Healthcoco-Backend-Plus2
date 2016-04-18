@@ -3,6 +3,7 @@ package com.dpdocter.services;
 import java.util.List;
 
 import com.dpdocter.beans.DiagnosticTest;
+import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Prescription;
@@ -117,8 +118,6 @@ public interface PrescriptionServices {
 
     LabTest getLabTestById(String labTestId);
 
-    void importDrug();
-
     List<DiagnosticTestCollection> getDiagnosticTest();
 
     List<Prescription> getPrescriptions(String patientId, int page, int size, String updatedTime, Boolean discarded);
@@ -132,5 +131,9 @@ public interface PrescriptionServices {
     Boolean deleteDiagnosticTest(String diagnosticTestId, String hospitalId, String locationId, Boolean discarded);
 
     PrescriptionTestAndRecord checkPrescriptionExists(String uniqueEmrId, String patientId);
+
+	Boolean addRemoveGenericCode(String action, String genericId, String drugCode);
+
+	GenericCode addEditGenericCode(GenericCode request);
 
 }

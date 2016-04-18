@@ -72,4 +72,7 @@ public interface GroupRepository extends MongoRepository<GroupCollection, String
     @Query("{'id': {'$in' : ?0}, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3, 'discarded': ?4}")
 	public List<GroupCollection> find(Collection<String> groupIds, String doctorId, String locationId, String hospitalId, boolean discarded);
 
+    @Query("{'id': {'$in' : ?0}, 'doctorId': ?1, 'discarded': ?2}")
+	public List<GroupCollection> find(Collection<String> groupIds, String doctorId, boolean discarded);
+
 }

@@ -2,20 +2,21 @@ package com.dpdocter.solr.document;
 
 import java.util.Date;
 
+import org.apache.solr.client.solrj.beans.Field;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.solr.core.mapping.SolrDocument;
 
 @SolrDocument(solrCoreName = "educationInstitutes")
 public class SolrEducationInstituteDocument {
 
-    @Id
-    private String id;
-
+	@Id
     @Field
+	private String id;
+
+	@Field
     private String name;
 
-    @Field
+	@Field
     private Date updatedTime = new Date();
 
     public String getId() {

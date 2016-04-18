@@ -30,9 +30,9 @@ public interface AppointmentService {
 
     Clinic getClinic(String locationId);
 
-    List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from, String to, int page, int size);
+    List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from, String to, int page, int size, String updatedTime);
 
-    List<Appointment> getPatientAppointments(String locationId, String doctorId, String patientId, String from, String to, int page, int size);
+    List<Appointment> getPatientAppointments(String locationId, String doctorId, String patientId, String from, String to, int page, int size, String updatedTime);
 
     Country addCountry(Country request);
 
@@ -55,8 +55,6 @@ public interface AppointmentService {
     Appointment updateEvent(EventRequest request);
 
     Boolean sendReminder(String appointmentId);
-
-    void importMaster();
 
     List<PatientQueue> addPatientInQueue(PatientQueueAddEditRequest request);
 

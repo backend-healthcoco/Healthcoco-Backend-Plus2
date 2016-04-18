@@ -1,5 +1,7 @@
 package com.dpdocter.collections;
 
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -25,7 +27,7 @@ public class DrugCollection extends GenericCollection {
     private Strength strength;
 
     @Field
-    private String genericId;
+    private List<String> genericIds;
 
     @Field
     private String doctorId;
@@ -91,15 +93,15 @@ public class DrugCollection extends GenericCollection {
 	this.strength = strength;
     }
 
-    public String getGenericId() {
-	return genericId;
-    }
+    public List<String> getGenericIds() {
+		return genericIds;
+	}
 
-    public void setGenericId(String genericId) {
-	this.genericId = genericId;
-    }
+	public void setGenericIds(List<String> genericIds) {
+		this.genericIds = genericIds;
+	}
 
-    public String getDoctorId() {
+	public String getDoctorId() {
 	return doctorId;
     }
 
@@ -166,7 +168,7 @@ public class DrugCollection extends GenericCollection {
     @Override
     public String toString() {
 	return "DrugCollection [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation=" + explanation + ", strength=" + strength
-		+ ", genericId=" + genericId + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", discarded="
+		+ ", genericIds=" + genericIds + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", discarded="
 		+ discarded + ", drugCode=" + drugCode + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP=" + MRP + "]";
     }
 }

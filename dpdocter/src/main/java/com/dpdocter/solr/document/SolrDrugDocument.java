@@ -1,6 +1,7 @@
 package com.dpdocter.solr.document;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.ws.rs.DefaultValue;
 
@@ -44,6 +45,18 @@ public class SolrDrugDocument {
 
     @Field
     private Date updatedTime = new Date();
+
+    @Field
+    private String companyName;
+
+    @Field
+    private String packSize;
+
+    @Field
+    private String MRP;
+
+    @Field
+    private List<String> genericIds;
 
     public String getId() {
 	return id;
@@ -154,11 +167,45 @@ public class SolrDrugDocument {
 	this.drugType = drugType;
     }
 
+	public String getCompanyName() {
+		return companyName;
+	}
+
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
+
+	public String getPackSize() {
+		return packSize;
+	}
+
+	public void setPackSize(String packSize) {
+		this.packSize = packSize;
+	}
+
+	public String getMRP() {
+		return MRP;
+	}
+
+	public void setMRP(String mRP) {
+		MRP = mRP;
+	}
+
+	
+	public List<String> getGenericIds() {
+		return genericIds;
+	}
+
+	public void setGenericIds(List<String> genericIds) {
+		this.genericIds = genericIds;
+	}
+
 	@Override
 	public String toString() {
 		return "SolrDrugDocument [id=" + id + ", drugName=" + drugName + ", explanation=" + explanation + ", drugCode="
 				+ drugCode + ", drugTypeId=" + drugTypeId + ", drugType=" + drugType + ", doctorId=" + doctorId
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
-				+ ", updatedTime=" + updatedTime + "]";
+				+ ", updatedTime=" + updatedTime + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP="
+				+ MRP + ", genericIds=" + genericIds + "]";
 	}
 }

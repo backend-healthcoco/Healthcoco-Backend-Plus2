@@ -30,7 +30,7 @@ public class JasperReportServiceImpl implements JasperReportService {
     private static Logger logger = Logger.getLogger(JasperReportServiceImpl.class.getName());
 
     @Value(value = "${MONGO_HOST_URI}")
-    private static String MONGO_HOST_URI ;
+    private String MONGO_HOST_URI ;
 //10.0.1.207:27017,10.0.1.8:27017,10.0.1.9:27017
     @Value(value = "${JASPER_TEMPLATES_RESOURCE}")
     private String REPORT_NAME;

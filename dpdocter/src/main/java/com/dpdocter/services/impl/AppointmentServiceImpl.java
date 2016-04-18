@@ -21,7 +21,6 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.solr.core.geo.GeoLocation;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.Appointment;
@@ -101,9 +100,6 @@ import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.solr.beans.Country;
 import com.dpdocter.solr.beans.State;
-import com.dpdocter.solr.document.SolrCityDocument;
-import com.dpdocter.solr.document.SolrCountryDocument;
-import com.dpdocter.solr.document.SolrStateDocument;
 import com.dpdocter.solr.services.SolrCityService;
 
 import common.util.web.DPDoctorUtils;
@@ -425,9 +421,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    appointmentCollection.setUpdatedTime(new Date());
 		    appointmentCollection = appointmentRepository.save(appointmentCollection);
 		  //sendSMS after appointment is saved	
-	    	if(request.getCreatedBy().equals(AppointmentCreatedBy.DOCTOR)){
-		    	if(request.getNotifyDoctorByEmail());
-		    	if(request.getNotifyDoctorBySms()){
+
+		    if(request.getCreatedBy().equals(AppointmentCreatedBy.DOCTOR)){
+		    	if(request.getNotifyDoctorByEmail() != null && request.getNotifyDoctorByEmail());
+		    	if(request.getNotifyDoctorBySms() != null && request.getNotifyDoctorBySms()){
 		    		if(appointmentCollection.getState().getState().equals(AppointmentState.CANCEL.getState()))
 		    			sendMsg(null, "CANCEL_APPOINTMENT_TO_DOCTOR_BY_DOCTOR",request.getDoctorId(),request.getLocationId(), request.getHospitalId(), request.getDoctorId(), 
 		    				userCollection.getMobileNumber(), patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum);
@@ -438,8 +435,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    			sendMsg(null, "RESCHEDULE_APPOINTMENT_TO_DOCTOR", request.getDoctorId(),request.getLocationId(), request.getHospitalId(), request.getDoctorId(), 
 			    				userCollection.getMobileNumber(), patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum);
 		    	}
-		    	if(request.getNotifyPatientByEmail())System.out.println("send email to patient");
-		    	if(request.getNotifyPatientBySms()){
+		    	if(request.getNotifyPatientByEmail() != null && request.getNotifyPatientByEmail())System.out.println("send email to patient");
+		    	if(request.getNotifyPatientBySms() != null && request.getNotifyPatientBySms()){
 		    		if(appointmentCollection.getState().getState().equals(AppointmentState.CANCEL.getState()))
 		    			sendMsg(SMSFormatType.CANCEL_APPOINTMENT.getType(), "CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR", request.getDoctorId(),request.getLocationId(), request.getHospitalId(), request.getPatientId(), 
 		    				patient.getMobileNumber(), patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum);
@@ -465,15 +462,21 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    if(appointmentCollection.getState().getState().equalsIgnoreCase(AppointmentState.CONFIRM.getState())){
 		    	updateQueue(appointmentCollection.getAppointmentId(), appointmentCollection.getDoctorId(), appointmentCollection.getLocationId(), appointmentCollection.getHospitalId(), appointmentCollection.getPatientId(), appointmentCollection.getFromDate(), appointmentCollection.getTime().getFromTime(), null, false);
 		    }
+		    else if(appointmentCollection.getState().getState().equalsIgnoreCase(AppointmentState.CANCEL.getState())){
+		    	updateQueue(appointmentCollection.getAppointmentId(), appointmentCollection.getDoctorId(), appointmentCollection.getLocationId(), appointmentCollection.getHospitalId(), appointmentCollection.getPatientId(), appointmentCollection.getFromDate(), null, 0, false);
+		    }
 		} else {
 		    logger.error(timeSlotIsBooked);
-		    throw new BusinessException(ServiceError.NotAcceptable, timeSlotIsBooked);
+		    throw new BusinessException(ServiceError.InvalidInput, timeSlotIsBooked);
 		}
 	    } else {
 		logger.error(incorrectAppointmentId);
 		throw new BusinessException(ServiceError.InvalidInput, incorrectAppointmentId);
 	    }
-	}
+	}else {
+		logger.error("Incorrect DoctorId or locationId or patientId");
+		throw new BusinessException(ServiceError.InvalidInput, "Incorrect DoctorId or locationId or patientId");
+	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -701,34 +704,43 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	@Override
-    public List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from, String to, int page, int size) {
+    public List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from, String to, int page, int size, String updatedTime) {
 	List<Appointment> response = null;
 	List<AppointmentCollection> appointmentCollections = null;
-	try {		
-		Query query = new Query();
+	try {
+		long updatedTimeStamp = Long.parseLong(updatedTime);
 		
-		Criteria criteria = new Criteria();
+		
+		Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTimeStamp));
 	    if (!DPDoctorUtils.anyStringEmpty(locationId))criteria.and("locationId").is(locationId);
 	    
 	    if(doctorId != null && !doctorId.isEmpty())criteria.and("doctorId").in(doctorId);
 	    
 	    if(!DPDoctorUtils.anyStringEmpty(patientId))criteria.and("patientId").is(patientId);
 	    
-	    if(!DPDoctorUtils.anyStringEmpty(from,to)){
-	    	long fromLong = Long.parseLong(from);
-	    	long toLong = Long.parseLong(to);
-	    	criteria.and("fromDate").gte(new Date(fromLong)).and("toDate").lte(new Date(toLong));
-	    }
-	    else if(!DPDoctorUtils.anyStringEmpty(from)){
-	    	long fromLong = Long.parseLong(from);
-	    	criteria.and("fromDate").gte(new Date(fromLong));
+	    Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+	        	
+	    if(!DPDoctorUtils.anyStringEmpty(from)){
+	    	localCalendar.setTime(new Date(Long.parseLong(from)));
+		    int currentDay = localCalendar.get(Calendar.DATE);
+		    int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+		    int currentYear = localCalendar.get(Calendar.YEAR);
+
+		    DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
+		    
+	    	criteria.and("fromDate").gte(fromTime);
 	    }
 	    else if(!DPDoctorUtils.anyStringEmpty(to)){
-	    	long toLong = Long.parseLong(to);
-	    	criteria.and("toDate").lte(new Date(toLong));
+	    	localCalendar.setTime(new Date(Long.parseLong(to)));
+		    int currentDay = localCalendar.get(Calendar.DATE);
+		    int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+		    int currentYear = localCalendar.get(Calendar.YEAR);
+
+		    DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
+	    	
+	    	criteria.and("toDate").lte(toTime);
 	    }
-	    
-	    query.addCriteria(criteria);
+	    Query query = new Query(criteria);
 	    if(size > 0) appointmentCollections = mongoTemplate.find(query.with(new PageRequest(page, size, Direction.ASC, "fromDate","time.from")), AppointmentCollection.class);
 	    else appointmentCollections = mongoTemplate.find(query.with(new Sort(Direction.ASC, "fromDate","time.from")), AppointmentCollection.class);
 		
@@ -779,29 +791,43 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
 	@Override
-    public List<Appointment> getPatientAppointments(String locationId, String doctorId, String patientId, String from, String to, int page, int size) {
+    public List<Appointment> getPatientAppointments(String locationId, String doctorId, String patientId, String from, String to, int page, int size, String updatedTime) {
 		List<Appointment> response = null;
 		List<AppointmentCollection> appointmentCollections = null;
 		try {		
-			Query query = new Query();
 			
-			Criteria criteria = new Criteria();
+			long updatedTimeStamp = Long.parseLong(updatedTime);
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTimeStamp));
 		    if (!DPDoctorUtils.anyStringEmpty(locationId))criteria.and("locationId").is(locationId);
 		    
 		    if(doctorId != null && !doctorId.isEmpty())criteria.and("doctorId").in(doctorId);
 		    
 		    if(!DPDoctorUtils.anyStringEmpty(patientId))criteria.and("patientId").is(patientId);
 		    
+		    Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		    if(!DPDoctorUtils.anyStringEmpty(from)){
-		    	long fromLong = Long.parseLong(from);
-		    	criteria.and("fromDate").gte(new Date(fromLong));
+		    	localCalendar.setTime(new Date(Long.parseLong(from)));
+			    int currentDay = localCalendar.get(Calendar.DATE);
+			    int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+			    int currentYear = localCalendar.get(Calendar.YEAR);
+
+			    DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
+			    
+		    	criteria.and("fromDate").gte(fromTime);
 		    }
-		    if(!DPDoctorUtils.anyStringEmpty(to)){
-		    	long toLong = Long.parseLong(to);
-		    	criteria.and("toDate").lte(new Date(toLong));
+		    else if(!DPDoctorUtils.anyStringEmpty(to)){
+		    	localCalendar.setTime(new Date(Long.parseLong(to)));
+			    int currentDay = localCalendar.get(Calendar.DATE);
+			    int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+			    int currentYear = localCalendar.get(Calendar.YEAR);
+
+			    DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
+		    	
+		    	criteria.and("toDate").lte(toTime);
 		    }
+
 		    
-		    query.addCriteria(criteria);
+		    Query query = new Query(criteria);
 		    if(size > 0) appointmentCollections = mongoTemplate.find(query.with(new PageRequest(page, size, Direction.DESC, "fromDate")), AppointmentCollection.class);
 		    else appointmentCollections = mongoTemplate.find(query.with(new Sort(Direction.DESC, "fromDate")), AppointmentCollection.class);
 			
@@ -1167,89 +1193,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	@Override
-	public void importMaster() {
-//		String csvFile = "/home/suresh/cities.csv";
-//		BufferedReader br = null;
-//		String line = "";
-//		String cvsSplitBy = ",";
-
-		try {
-//			CountryCollection countryCollection = countryRepository.findOne("56936211e4b05b2581ba11dd");
-//		    br = new BufferedReader(new FileReader(csvFile));
-//		    int i = 0;
-//		    while ((line = br.readLine()) != null) {
-//			System.out.println(i++);
-//			String[] obj = line.split(cvsSplitBy);
-//
-//			StateCollection stateCollection = stateRepository.findByName(obj[2]);
-//			if(stateCollection == null){
-//				stateCollection = new StateCollection();
-//			    List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(obj[2] + " "
-//				    + (countryCollection != null ? countryCollection.getCountry() : ""));
-//
-//			    if (geocodedLocations != null && !geocodedLocations.isEmpty())
-//				BeanUtil.map(geocodedLocations.get(0), stateCollection);
-//			    stateCollection.setCountryId("56936211e4b05b2581ba11dd");
-//			    stateCollection.setState(obj[2]);
-//			    stateCollection = stateRepository.save(stateCollection);
-//			}
-//			
-//			CityCollection cityCollection = new CityCollection();
-//			cityCollection.setCity(obj[1]);
-//			cityCollection.setStateId(stateCollection.getId());
-//			List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(cityCollection.getCity() + " "
-//				    + (stateCollection != null ? stateCollection.getState() : "")+ " "
-//						    + (countryCollection != null ? countryCollection.getCountry() : ""));
-//
-//			    if (geocodedLocations != null && !geocodedLocations.isEmpty())
-//				BeanUtil.map(geocodedLocations.get(0), cityCollection);
-//
-//			    cityCollection = cityRepository.save(cityCollection);
-//		    }
-
-				List<CountryCollection> countries = countryRepository.findAll();
-		    	if(countries != null){
-		    		for(CountryCollection country : countries){
-						SolrCountryDocument solrCountry = new SolrCountryDocument();
-						BeanUtil.map(country, solrCountry);
-						solrCountry.setGeoLocation(new GeoLocation(country.getLatitude(), country.getLongitude()));
-						solrCityService.addCountry(solrCountry);
-					}
-		    	}
-		    	List<StateCollection> states = stateRepository.findAll();
-		    	if (states != null) {
-					for(StateCollection state : states){
-						SolrStateDocument solrState = new SolrStateDocument();
-						BeanUtil.map(state, solrState);
-						solrState.setGeoLocation(new GeoLocation(state.getLatitude(), state.getLongitude()));
-						solrCityService.addState(solrState);
-					}
-			    }
-			    List<CityCollection> cities = cityRepository.findAll();
-			    if (cities != null) {
-				for(CityCollection city : cities){
-					SolrCityDocument solrCities = new SolrCityDocument();
-					BeanUtil.map(city, solrCities);
-					solrCities.setGeoLocation(new GeoLocation(city.getLatitude(), city.getLongitude()));
-					solrCityService.addCities(solrCities);
-				}
-			    }
-		} catch (Exception e) {
-		    e.printStackTrace();
-		} 
-//		finally {
-//		    if (br != null) {
-//			try {
-//			    br.close();
-//			} catch (IOException e) {
-//			    e.printStackTrace();
-//			}
-//		    }
-//		}
-		System.out.println("Done");
-	}
-
-	@Override
 	public List<PatientQueue> addPatientInQueue(PatientQueueAddEditRequest request) {
 		List<PatientQueue> response = null;
 		try{
@@ -1297,6 +1240,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    			if(userCollection!=null)BeanUtil.map(userCollection, patientCard);
 	    			PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(collection.getPatientId(), doctorId, locationId, hospitalId);
 	    			if(patientCollection!=null)BeanUtil.map(patientCollection, patientCard);
+	    			patientCard.setId(collection.getPatientId());
 	    			patientQueue.setPatient(patientCard);
 	    			response.add(patientQueue);
 	    		}
@@ -1331,7 +1275,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    	DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
 		    
 	    	patientQueueCollections = patientQueueRepository.find(doctorId, locationId, hospitalId, start, end, false, new Sort(Direction.DESC,"sequenceNo"));
-	    	if(startTime !=null){
+	    	if(startTime != null){
 		    	if(patientQueueCollections == null || patientQueueCollections.isEmpty()){
 		    		patientQueueCollection.setSequenceNo(1);
 		    		patientQueueRepository.save(patientQueueCollection);
@@ -1366,27 +1310,45 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    				Integer toCheck = patientQueueRepository.find(appointmentId, doctorId, locationId, hospitalId, patientId, start, end, sequenceNo, false);
 	    				if(toCheck == null || toCheck == 0){
 	    					PatientQueueCollection temp = null;
+	    					int oldSeqNum = 0; int newStartTime = 0;
 	    					for(PatientQueueCollection queueCollection : patientQueueCollections){
 				    			if(appointmentId.equalsIgnoreCase(queueCollection.getAppointmentId())){
-				    				queueCollection.setSequenceNo(sequenceNo);
-				    				temp = queueCollection;
-				    			}else{
-				    				int seq = queueCollection.getSequenceNo();
-					    			if(queueCollection.getSequenceNo() > sequenceNo){
-					    				queueCollection.setSequenceNo(seq+1);
-					    				patientQueueRepository.save(queueCollection);
-					    			}else{
-					    				if(queueCollection.getSequenceNo() == sequenceNo){
-					    					if(temp != null){
-					    						temp.setStartTime(queueCollection.getStartTime()-1);
-					    						patientQueueRepository.save(temp);
-					    					}
-						    				queueCollection.setSequenceNo(seq+1);
+				    				oldSeqNum = queueCollection.getSequenceNo();
+				    			}
+				    			if(oldSeqNum > 0)break;
+				    		}
+	    					for(PatientQueueCollection queueCollection : patientQueueCollections){
+				    			if(oldSeqNum < sequenceNo){
+				    				if(queueCollection.getSequenceNo() >= oldSeqNum && queueCollection.getSequenceNo() <= sequenceNo){
+				    					if(oldSeqNum == queueCollection.getSequenceNo()){
+				    						queueCollection.setStartTime(newStartTime+1);
+				    						queueCollection.setSequenceNo(sequenceNo);
 						    				patientQueueRepository.save(queueCollection);
-						    			}
-					    			}
+				    					
+				    				}else{
+				    					queueCollection.setSequenceNo(queueCollection.getSequenceNo()-1);
+					    				patientQueueRepository.save(queueCollection);
+				    				}
+				    				}
+				    				newStartTime = queueCollection.getStartTime();
+				    			}else if(oldSeqNum > sequenceNo){
+				    				if(queueCollection.getSequenceNo() <= oldSeqNum && queueCollection.getSequenceNo() >= sequenceNo){
+				    					if(oldSeqNum == queueCollection.getSequenceNo()){
+				    						queueCollection.setSequenceNo(sequenceNo);
+				    						temp = new PatientQueueCollection();
+						    				BeanUtil.map(queueCollection, temp);
+				    					}else{
+				    						queueCollection.setSequenceNo(queueCollection.getSequenceNo()+1);
+				    						patientQueueRepository.save(queueCollection);
+				    					}
+				    				}
+				    				newStartTime = queueCollection.getStartTime();
 				    			}
 				    		}
+	    					if(temp != null){
+	    						temp.setStartTime(newStartTime+1);
+			    				patientQueueRepository.save(temp);
+	    					}
 	    				}
 	    				
 	    			}
@@ -1420,6 +1382,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    			PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(collection.getPatientId(), doctorId, locationId, hospitalId);
 		    			if(patientCollection!=null)BeanUtil.map(patientCollection, patientCard);
 		    			patientQueue.setPatient(patientCard);
+		    			patientCard.setId(collection.getPatientId());
 		    			response.add(patientQueue);
 		    		}
 	    		}else{

@@ -354,9 +354,11 @@ public interface PathProxy {
 
 	public static final String SMS_PRESCRIPTION = "/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{mobileNumber}/sms";
 
-	public static final String IMPORT_DRUG = "/importDrug";
-
 	public static final String CHECK_PRESCRIPTION_EXISTS_FOR_PATIENT = "/prescriptionExist/{uniqueEmrId}/{patientId}";
+
+	public static final String ADD_REMOVE_GENERIC_CODE_TO_DRUG = "/genericCode/{action}/{genericId}/{drugCode}";
+
+	public static final String ADD_EDIT_GENERIC_CODE = "/genericCode/addEdit";
 
     }
 
@@ -609,8 +611,6 @@ public interface PathProxy {
 
 	public static final String GET_TIME_SLOTS = "getTimeSlots/{doctorId}/{locationId}/{date}";
 
-	public static final String IMPORT = "/import";
-
 	public static final String SEND_REMINDER = "/sendReminder/{appointmentId}";
 
 	public static final String ADD_PATIENT_IN_QUEUE = "/queue/add";
@@ -756,5 +756,21 @@ public interface PathProxy {
 
 	public static final String SEARCH_DOCTOR_BY_NAME = "/doctor";
 
+	public static final String IMPORT_DRUG = "/importDrug";
+	
+	public static final String IMPORT_CITY = "/importCity";
+	
+	public static final String IMPORT_DIAGNOSTIC_TEST = "/importDiagnosticTest";
+	
+	public static final String IMPORT_EDUCATION_QUALIFICATION = "/importEducationQualification";
+	
+	public static final String IMPORT_EDUCATION_INSTITUTE = "/importEducationInstitute";
+	
+	}
+    public static final String PUSH_NOTIFICATION_BASE_URL = BASE_URL + "/notification";
+
+    public interface PushNotificationUrls {
+
+	public static final String ADD_DEVICE = "/device/add";
     }
 }

@@ -8,7 +8,7 @@ import org.apache.solr.client.solrj.beans.Field;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.solr.core.mapping.SolrDocument;
 
-@SolrDocument(solrCoreName = "diagrams")
+@SolrDocument(solrCoreName = "diagramsDoc")
 public class SolrDiagramsDocument {
     @Id
     @Field

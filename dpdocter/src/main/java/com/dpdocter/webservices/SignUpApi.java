@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
@@ -303,12 +305,12 @@ public class SignUpApi {
 
     @Path(value = PathProxy.SignUpUrls.ACTIVATE_USER)
     @GET
-    public Response<Boolean> activateUser(@PathParam("userId") String userId) {
+    public Response<Boolean> activateUser(@PathParam("userId") String userId, @DefaultValue(value = "true") @QueryParam("activate") Boolean activate) {
 	if (DPDoctorUtils.anyStringEmpty(userId)) {
 	    logger.warn("Invalid Input. User Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. User Id Cannot Be Empty");
 	}
-	Boolean verifyUserResponse = signUpService.activateUser(userId);
+	Boolean verifyUserResponse = signUpService.activateUser(userId, activate);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(verifyUserResponse);
 	return response;

@@ -1,8 +1,8 @@
 package com.dpdocter.services;
 
-import java.io.File;
 import java.util.List;
 
+import com.dpdocter.beans.FileDownloadResponse;
 import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Records;
@@ -40,7 +40,7 @@ public interface RecordsService {
 
     String getPatientEmailAddress(String patientId);
 
-    File getRecordFile(String recordId);
+    FileDownloadResponse getRecordFile(String recordId);
 
     void deleteRecord(String recordId, Boolean discarded);
 

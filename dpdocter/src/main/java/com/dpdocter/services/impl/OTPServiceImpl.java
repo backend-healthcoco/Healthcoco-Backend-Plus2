@@ -237,7 +237,6 @@ public class OTPServiceImpl implements OTPService {
 	    logger.error(e + " Error While Generating OTP");
 	    throw new BusinessException(ServiceError.Unknown, "Error While Generating OTP");
 	}
-
 	return response;
     }
 

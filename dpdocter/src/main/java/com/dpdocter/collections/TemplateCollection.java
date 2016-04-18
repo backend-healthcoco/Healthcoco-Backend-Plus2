@@ -2,6 +2,7 @@ package com.dpdocter.collections;
 
 import java.util.List;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -9,6 +10,8 @@ import com.dpdocter.beans.TemplateItem;
 
 @Document(collection = "template_cl")
 public class TemplateCollection extends GenericCollection {
+	
+	@Id
     @Field
     private String id;
 

@@ -128,4 +128,55 @@ public class AdminAPI {
 		} else
 		    return null;
 	    }
+
+	@Path(value = PathProxy.AdminUrls.IMPORT_DRUG)
+    @GET
+    public Response<Boolean> importDrug() {
+	adminServices.importDrug();
+
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(true);
+	return response;
+    }
+
+	@Path(value = PathProxy.AdminUrls.IMPORT_CITY)
+    @GET
+    public Response<Boolean> importCity() {
+		adminServices.importCity();
+
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(true);
+	return response;
+    }
+
+	@Path(value = PathProxy.AdminUrls.IMPORT_DIAGNOSTIC_TEST)
+    @GET
+    public Response<Boolean> importDiagnosticTest() {
+	adminServices.importDiagnosticTest();
+
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(true);
+	return response;
+    }
+
+	@Path(value = PathProxy.AdminUrls.IMPORT_EDUCATION_INSTITUTE)
+    @GET
+    public Response<Boolean> importEducationInstitute() {
+		adminServices.importEducationInstitute();
+
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(true);
+	return response;
+    }
+
+	@Path(value = PathProxy.AdminUrls.IMPORT_EDUCATION_QUALIFICATION)
+    @GET
+    public Response<Boolean> importEducationQualification() {
+	adminServices.importEducationQualification();
+
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(true);
+	return response;
+    }
+
 }

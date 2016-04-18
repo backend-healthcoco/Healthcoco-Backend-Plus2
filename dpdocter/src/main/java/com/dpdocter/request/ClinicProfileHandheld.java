@@ -10,9 +10,9 @@ public class ClinicProfileHandheld {
 
     private String locationEmailAddress;
 
-    private String mobileNumber;
+    private String clinicNumber;
 
-    private List<String> alternateNumbers;
+    private List<String> alternateClinicNumbers;
 
     public String getId() {
 	return id;
@@ -38,25 +38,26 @@ public class ClinicProfileHandheld {
 	this.locationEmailAddress = locationEmailAddress;
     }
 
-    public String getMobileNumber() {
-	return mobileNumber;
-    }
+	public String getClinicNumber() {
+		return clinicNumber;
+	}
 
-    public void setMobileNumber(String mobileNumber) {
-	this.mobileNumber = mobileNumber;
-    }
+	public void setClinicNumber(String clinicNumber) {
+		this.clinicNumber = clinicNumber;
+	}
 
-    public List<String> getAlternateNumbers() {
-	return alternateNumbers;
-    }
+	public List<String> getAlternateClinicNumbers() {
+		return alternateClinicNumbers;
+	}
 
-    public void setAlternateNumbers(List<String> alternateNumbers) {
-	this.alternateNumbers = alternateNumbers;
-    }
+	public void setAlternateClinicNumbers(List<String> alternateClinicNumbers) {
+		this.alternateClinicNumbers = alternateClinicNumbers;
+	}
 
-    @Override
-    public String toString() {
-	return "ClinicProfileHandheld [id=" + id + ", websiteUrl=" + websiteUrl + ", locationEmailAddress=" + locationEmailAddress + ", mobileNumber="
-		+ mobileNumber + ", alternateNumbers=" + alternateNumbers + "]";
-    }
+	@Override
+	public String toString() {
+		return "ClinicProfileHandheld [id=" + id + ", websiteUrl=" + websiteUrl + ", locationEmailAddress="
+				+ locationEmailAddress + ", clinicNumber=" + clinicNumber + ", alternateClinicNumbers="
+				+ alternateClinicNumbers + "]";
+	}
 }

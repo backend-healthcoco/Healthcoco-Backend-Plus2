@@ -16,7 +16,7 @@ import com.dpdocter.response.PateientSignUpCheckResponse;
 
 public interface SignUpService {
 
-    Boolean activateUser(String tokenId);
+    Boolean activateUser(String tokenId, Boolean activate);
 
     DoctorSignUp doctorSignUp(DoctorSignupRequest request, UriInfo uriInfo);
 
