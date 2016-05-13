@@ -20,6 +20,6 @@ public interface SolrAppointmentService {
 
     List<AppointmentSearchResponse> search(String city, String location, String latitude, String longitude, String searchTerm);
 
-    List<LabResponse> getLabs(String city, String location, String latitude, String longitude, String test);
+    List<LabResponse> getLabs(int page, int size, String city, String location, String latitude, String longitude, String test, Boolean booking, Boolean calling);
 
 }

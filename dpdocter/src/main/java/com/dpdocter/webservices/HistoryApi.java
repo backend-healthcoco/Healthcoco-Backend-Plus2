@@ -60,7 +60,7 @@ public class HistoryApi {
     @Autowired
     private OTPService otpService;
 
-    @Value(value = "${IMAGE_PATH}")
+    @Value(value = "${image.path}")
     private String imagePath;
 
     @Path(value = PathProxy.HistoryUrls.ADD_DISEASE)

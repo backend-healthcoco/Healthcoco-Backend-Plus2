@@ -75,7 +75,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     @Autowired
     private TransactionalManagementService transnationalService;
 
-    @Value(value = "${IMAGE_PATH}")
+    @Value(value = "${image.path}")
     private String imagePath;
 
     @Autowired

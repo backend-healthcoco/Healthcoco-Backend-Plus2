@@ -22,6 +22,7 @@ import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.GeneralData;
@@ -36,7 +37,6 @@ import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.DiseasesCollection;
 import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.NotesCollection;
-import com.dpdocter.collections.PatientClinicalNotesCollection;
 import com.dpdocter.collections.PatientTreatmentCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
@@ -51,7 +51,6 @@ import com.dpdocter.repository.DiseasesRepository;
 import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.NotesRepository;
-import com.dpdocter.repository.PatientClinicalNotesRepository;
 import com.dpdocter.repository.PatientTreamentRepository;
 import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrescriptionRepository;
@@ -126,10 +125,8 @@ public class HistoryServicesImpl implements HistoryServices {
     @Autowired
     private PatientVisitRepository patientVisitRepository;
 
-    @Autowired
-    private PatientClinicalNotesRepository patientClinicalNotesRepository;
-
     @Override
+    @Transactional
     public List<DiseaseAddEditResponse> addDiseases(List<DiseaseAddEditRequest> request) {
 	List<DiseaseAddEditResponse> response = null;
 	List<DiseasesCollection> diseases = new ArrayList<DiseasesCollection>();
@@ -151,6 +148,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
+    @Transactional
     public DiseaseAddEditResponse editDiseases(DiseaseAddEditRequest request) {
 	DiseaseAddEditResponse response = null;
 	DiseasesCollection disease = new DiseasesCollection();
@@ -172,6 +170,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
+    @Transactional
     public Boolean deleteDisease(String diseaseId, String doctorId, String hospitalId, String locationId, Boolean discarded) {
 	Boolean response = false;
 	DiseasesCollection disease = null;
@@ -206,6 +205,7 @@ public class HistoryServicesImpl implements HistoryServices {
 
     @SuppressWarnings("unchecked")
     @Override
+    @Transactional
     public boolean addReportToHistory(String reportId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	RecordsCollection recordsCollection = null;
@@ -267,6 +267,7 @@ public class HistoryServicesImpl implements HistoryServices {
 
     @SuppressWarnings("unchecked")
     @Override
+    @Transactional
     public boolean addClinicalNotesToHistory(String clinicalNotesId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	ClinicalNotesCollection clinicalNotesCollection = null;
@@ -314,13 +315,6 @@ public class HistoryServicesImpl implements HistoryServices {
 		clinicalNotesCollection.setInHistory(true);
 		clinicalNotesCollection.setUpdatedTime(new Date());
 		clinicalNotesRepository.save(clinicalNotesCollection);
-
-		PatientClinicalNotesCollection patientClinicalNotesCollection = patientClinicalNotesRepository.findByPatientIdClinicalNotesId(patientId,
-			clinicalNotesId);
-		if (patientClinicalNotesCollection != null) {
-		    patientClinicalNotesCollection.setUpdatedTime(new Date());
-		    patientClinicalNotesRepository.save(patientClinicalNotesCollection);
-		}
 	    }
 
 	} catch (Exception e) {
@@ -334,6 +328,7 @@ public class HistoryServicesImpl implements HistoryServices {
 
     @SuppressWarnings("unchecked")
     @Override
+    @Transactional
     public boolean addPrescriptionToHistory(String prescriptionId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	PrescriptionCollection prescriptionCollection = null;
@@ -393,6 +388,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
+    @Transactional
     public boolean addPatientTreatmentToHistory(String treatmentId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	PatientTreatmentCollection patientTreatmentCollection;
@@ -454,6 +450,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
+    @Transactional
     public boolean assignMedicalHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	try {
@@ -497,6 +494,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
+    @Transactional
     public boolean assignFamilyHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	try {
@@ -538,6 +536,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
+    @Transactional
     public boolean addSpecialNotes(List<String> specialNotes, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	List<NotesCollection> notesCollections = null;
@@ -582,6 +581,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
+    @Transactional
     public boolean removeReports(String reportId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	RecordsCollection recordsCollection = null;
@@ -628,6 +628,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
+    @Transactional
     public boolean removeClinicalNotes(String clinicalNotesId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	ClinicalNotesCollection clinicalNotesCollection = null;
@@ -654,12 +655,6 @@ public class HistoryServicesImpl implements HistoryServices {
 			    clinicalNotesCollection.setUpdatedTime(new Date());
 			    clinicalNotesRepository.save(clinicalNotesCollection);
 
-			    PatientClinicalNotesCollection patientClinicalNotesCollection = patientClinicalNotesRepository
-				    .findByPatientIdClinicalNotesId(patientId, clinicalNotesId);
-			    if (patientClinicalNotesCollection != null) {
-				patientClinicalNotesCollection.setUpdatedTime(new Date());
-				patientClinicalNotesRepository.save(patientClinicalNotesCollection);
-			    }
 			}
 		    } else {
 			logger.warn("This clinicalNote is not found for this patient to remove.");
@@ -682,6 +677,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
+    @Transactional
     public boolean removePrescription(String prescriptionId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	PrescriptionCollection prescriptionCollection = null;
@@ -729,6 +725,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
+    @Transactional
     public boolean removeMedicalHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	try {
@@ -765,6 +762,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
+    @Transactional
     public boolean removeFamilyHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	try {
@@ -814,6 +812,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
+    @Transactional
     public List<DiseaseListResponse> getDiseases(String range, int page, int size, String doctorId, String hospitalId, String locationId, String updatedTime,
 	    Boolean discarded) {
 	List<DiseaseListResponse> diseaseListResponses = null;
@@ -972,6 +971,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
+    @Transactional
     public List<HistoryDetailsResponse> getPatientHistoryDetailsWithoutVerifiedOTP(String patientId, String doctorId, String hospitalId, String locationId,
 	    List<String> historyFilter, int page, int size, String updatedTime) {
 	List<HistoryDetailsResponse> response = null;
@@ -1103,6 +1103,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
+    @Transactional
     public List<HistoryDetailsResponse> getPatientHistoryDetailsWithVerifiedOTP(String patientId, String doctorId, String hospitalId, String locationId,
 	    List<String> historyFilter, int page, int size, String updatedTime) {
 	List<HistoryDetailsResponse> response = null;
@@ -1222,6 +1223,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
+    @Transactional
     public List<DiseaseListResponse> getDiseasesByIds(List<String> diseasesIds) {
 	List<DiseaseListResponse> diseaseListResponses = null;
 	try {
@@ -1242,6 +1244,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
+    @Transactional
     public Integer getHistoryCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified) {
 	Integer historyCount = 0;
 	try {
@@ -1271,6 +1274,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
+    @Transactional
     public boolean handleMedicalHistory(MedicalHistoryHandler request) {
 	HistoryCollection historyCollection = null;
 	boolean response = false;
@@ -1321,6 +1325,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
+    @Transactional
     public boolean handleFamilyHistory(MedicalHistoryHandler request) {
 	HistoryCollection historyCollection = null;
 	boolean response = false;
@@ -1370,6 +1375,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
+    @Transactional
     public HistoryDetailsResponse getMedicalAndFamilyHistory(String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryDetailsResponse response = null;
 	HistoryCollection historyCollection = null;
@@ -1403,6 +1409,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
+    @Transactional
     public boolean mailMedicalData(MedicalData medicalData) {
 	boolean response = false;
 	List<MailAttachment> mailAttachments = null;
@@ -1436,6 +1443,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
+    @Transactional
     public boolean addVisitsToHistory(String visitId, String patientId, String doctorId, String hospitalId, String locationId) {
 
 	PatientVisitCollection patientVisitCollection = null;
@@ -1469,6 +1477,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
+    @Transactional
     public boolean removeVisits(String visitId, String patientId, String doctorId, String hospitalId, String locationId) {
 	PatientVisitCollection patientVisitCollection = null;
 	try {
@@ -1500,6 +1509,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
+    @Transactional
     public List<HistoryDetailsResponse> getMultipleData(String patientId, String doctorId, String hospitalId, String locationId, String updatedTime,
 	    Boolean inHistory, Boolean discarded) {
 	List<HistoryDetailsResponse> response = null;
@@ -1508,9 +1518,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		Boolean isOTPVerified = otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId);
 	    List<Prescription> prescriptions = prescriptionServices.getPrescriptions(0, 0, doctorId, hospitalId, locationId, patientId, updatedTime, isOTPVerified,	discarded, inHistory);
 	    
-	    List<ClinicalNotes> clinicalNotes = null;
-	    if(isOTPVerified)clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithVerifiedOTP(0, 0, patientId, updatedTime, discarded, inHistory);
-	    else clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(0, 0, patientId, doctorId, locationId, hospitalId, updatedTime, discarded, inHistory);
+	    List<ClinicalNotes> clinicalNotes = clinicalNotesService.getClinicalNotes(0, 0, doctorId, locationId, hospitalId, patientId, updatedTime, isOTPVerified, discarded, inHistory);
 	    
 	    List<Records> records = recordsService.getRecords(0, 0, doctorId, hospitalId, locationId, patientId, updatedTime, isOTPVerified, discarded, inHistory);
 
@@ -1566,6 +1574,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
+    @Transactional
     public List<HistoryDetailsResponse> getPatientHistory(String patientId, List<String> historyFilter, int page, int size, String updatedTime) {
 	List<HistoryDetailsResponse> response = null;
 	try {
@@ -1639,6 +1648,7 @@ public class HistoryServicesImpl implements HistoryServices {
     }
 
     @Override
+    @Transactional
     public boolean removePatientTreatment(String treatmentId, String patientId, String doctorId, String hospitalId, String locationId) {
 	HistoryCollection historyCollection = null;
 	PatientTreatmentCollection patientTreatmentCollection;

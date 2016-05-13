@@ -74,7 +74,7 @@ public class DoctorProfileApi {
     @Autowired
     private TransactionalManagementService transnationalService;
 
-    @Value(value = "${IMAGE_PATH}")
+    @Value(value = "${image.path}")
     private String imagePath;
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_NAME)

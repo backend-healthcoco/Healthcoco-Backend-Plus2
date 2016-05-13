@@ -4,12 +4,18 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.enums.VisitedFor;
 
 @Document(collection = "patient_visit_cl")
+@CompoundIndexes({
+    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
+})
 public class PatientVisitCollection extends GenericCollection {
     @Id
     private String id;
@@ -17,10 +23,10 @@ public class PatientVisitCollection extends GenericCollection {
     @Field
     private String uniqueEmrId;
 
-    @Field
+    @Indexed
     private String patientId;
 
-    @Field
+    @Indexed
     private String doctorId;
 
     @Field

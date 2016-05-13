@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -29,20 +30,21 @@ public class JasperReportServiceImpl implements JasperReportService {
 
     private static Logger logger = Logger.getLogger(JasperReportServiceImpl.class.getName());
 
-    @Value(value = "${MONGO_HOST_URI}")
+    @Value(value = "${mongo.host.uri}")
     private String MONGO_HOST_URI ;
-//10.0.1.207:27017,10.0.1.8:27017,10.0.1.9:27017
-    @Value(value = "${JASPER_TEMPLATES_RESOURCE}")
-    private String REPORT_NAME;
+
+    @Value(value = "${jasper.templates.resource}")
+    private String JASPER_TEMPLATES_RESOURCE;
        
     @SuppressWarnings("deprecation")
     @Override
+    @Transactional
     public String createPDF(Map<String, Object> parameters, String fileName, String layout, String pageSize, String margins, String pdfName) {
 	try {
 	    MongoDbConnection mongoConnection = new MongoDbConnection(MONGO_HOST_URI, null, null);
 
 	    parameters.put("REPORT_CONNECTION", mongoConnection);
-	    parameters.put("SUBREPORT_DIR", REPORT_NAME);
+	    parameters.put("SUBREPORT_DIR", JASPER_TEMPLATES_RESOURCE);
 
 	    DefaultJasperReportsContext context = DefaultJasperReportsContext.getInstance();
 	    context.setValue("net.sf.jasperreports.extension.registry.factory.queryexecuters.mongodb",
@@ -51,7 +53,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 	    // JRPropertiesUtil.getInstance(context);
 
 	    JRProperties.setProperty("net.sf.jasperreports.query.executer.factory.MongoDbQuery", "com.jaspersoft.mongodb.query.MongoDbQueryExecuterFactory");
-	    JasperDesign design = JRXmlLoader.load(new File(REPORT_NAME + fileName + ".jrxml"));
+	    JasperDesign design = JRXmlLoader.load(new File(JASPER_TEMPLATES_RESOURCE + fileName + ".jrxml"));
 
 	    if (layout.equals("LANDSCAPE")) {
 		if (pageSize.equalsIgnoreCase("LETTER")) {
@@ -80,9 +82,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 	    JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters);
 
-	    JasperExportManager.exportReportToPdfFile(jasperPrint, REPORT_NAME + pdfName + ".pdf");
+	    JasperExportManager.exportReportToPdfFile(jasperPrint, JASPER_TEMPLATES_RESOURCE + pdfName + ".pdf");
 
-	    return REPORT_NAME + pdfName + ".pdf";
+	    return JASPER_TEMPLATES_RESOURCE + pdfName + ".pdf";
 
 	} catch (JRException e) {
 	    e.printStackTrace();

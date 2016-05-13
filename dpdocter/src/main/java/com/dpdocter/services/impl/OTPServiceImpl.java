@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.collections.DoctorOTPCollection;
 import com.dpdocter.collections.OTPCollection;
@@ -62,10 +63,10 @@ public class OTPServiceImpl implements OTPService {
     @Autowired
     private SMSFormatRepository sMSFormatRepository;
 
-    @Value(value = "${OTP_VALIDATION_TIME_DIFFERENCE_IN_MINS}")
+    @Value(value = "${otp.validation.time.difference.in.mins}")
     private String otpTimeDifference;
 
-    @Value(value = "${OTP_NON_VERIFIED_TIME_DIFFERENCE_IN_MINS}")
+    @Value(value = "${otp.non.verified.time.difference.in.mins}")
     private String otpNonVerifiedTimeDifference;
 
     @Autowired
@@ -81,6 +82,7 @@ public class OTPServiceImpl implements OTPService {
     private String recordsShareOtpAfterVerification;
 
     @Override
+    @Transactional
     public String otpGenerator(String doctorId, String locationId, String hospitalId, String patientId, UriInfo uriInfo) {
 	String OTP = null;
 	try {
@@ -133,6 +135,7 @@ public class OTPServiceImpl implements OTPService {
     }
 
     @Override
+    @Transactional
     public Boolean verifyOTP(String doctorId, String locationId, String hospitalId, String patientId, String otpNumber, UriInfo uriInfo) {
 	Boolean response = false;
 	try {
@@ -180,6 +183,7 @@ public class OTPServiceImpl implements OTPService {
     }
 
     @Override
+    @Transactional
     public Boolean checkOTPVerified(String doctorId, String locationId, String hospitalId, String patientId) {
 	Boolean response = false;
 	try {
@@ -204,16 +208,19 @@ public class OTPServiceImpl implements OTPService {
     }
 
     @Override
+    @Transactional
     public boolean isOTPValid(Date createdTime) {
 	return Minutes.minutesBetween(new DateTime(createdTime), new DateTime()).isLessThan(Minutes.minutes(Integer.parseInt(otpTimeDifference)));
     }
 
     @Override
+    @Transactional
     public boolean isNonVerifiedOTPValid(Date createdTime) {
 	return Minutes.minutesBetween(new DateTime(createdTime), new DateTime()).isLessThan(Minutes.minutes(Integer.parseInt(otpNonVerifiedTimeDifference)));
     }
 
     @Override
+    @Transactional
     public Boolean otpGenerator(String mobileNumber) {
     	Boolean response = false;
 	String OTP = null;
@@ -241,6 +248,7 @@ public class OTPServiceImpl implements OTPService {
     }
 
     @Override
+    @Transactional
     public boolean verifyOTP(String mobileNumber, String otpNumber) {
 	Boolean response = false;
 	try {
@@ -268,6 +276,7 @@ public class OTPServiceImpl implements OTPService {
     }
     
     @Override
+    @Transactional
     public Boolean checkOTPVerifiedForPatient(String mobileNumber, String otpNumber) {
 	Boolean response = false;
 	try {

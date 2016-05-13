@@ -12,6 +12,8 @@ public class AppointmentRequest {
 
     private AppointmentState state;
 
+    private String explanation;
+    
     private String doctorId;
 
     private String locationId;
@@ -148,12 +150,21 @@ public class AppointmentRequest {
 		this.toDate = toDate;
 	}
 
+	public String getExplanation() {
+		return explanation;
+	}
+
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
+
 	@Override
 	public String toString() {
-		return "AppointmentRequest [appointmentId=" + appointmentId + ", state=" + state + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", time="
-				+ time + ", fromDate=" + fromDate + ", toDate=" + toDate + ", createdBy=" + createdBy
-				+ ", notifyPatientBySms=" + notifyPatientBySms + ", notifyPatientByEmail=" + notifyPatientByEmail
-				+ ", notifyDoctorBySms=" + notifyDoctorBySms + ", notifyDoctorByEmail=" + notifyDoctorByEmail + "]";
+		return "AppointmentRequest [appointmentId=" + appointmentId + ", state=" + state + ", explanation="
+				+ explanation + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", patientId=" + patientId + ", time=" + time + ", fromDate=" + fromDate + ", toDate=" + toDate
+				+ ", createdBy=" + createdBy + ", notifyPatientBySms=" + notifyPatientBySms + ", notifyPatientByEmail="
+				+ notifyPatientByEmail + ", notifyDoctorBySms=" + notifyDoctorBySms + ", notifyDoctorByEmail="
+				+ notifyDoctorByEmail + "]";
 	}
 }

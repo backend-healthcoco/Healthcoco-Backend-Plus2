@@ -15,13 +15,9 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.beans.SolrCityLandmarkLocalityResponse;
 import com.dpdocter.solr.document.SolrCityDocument;
-import com.dpdocter.solr.document.SolrCountryDocument;
 import com.dpdocter.solr.document.SolrLocalityLandmarkDocument;
-import com.dpdocter.solr.document.SolrStateDocument;
 import com.dpdocter.solr.repository.SolrCityRepository;
-import com.dpdocter.solr.repository.SolrCountryRepository;
 import com.dpdocter.solr.repository.SolrLocalityLandmarkRepository;
-import com.dpdocter.solr.repository.SolrStateRepository;
 import com.dpdocter.solr.services.SolrCityService;
 
 import common.util.web.DPDoctorUtils;
@@ -33,31 +29,10 @@ public class SolrCityServiceImpl implements SolrCityService {
     private SolrCityRepository solrCityRepository;
 
     @Autowired
-    private SolrCountryRepository solrCountryRepository;
-
-    @Autowired
     private SolrLocalityLandmarkRepository solrLocalityLandmarkRepository;
 
     @Autowired
     private TransactionalManagementService transnationalService;
-
-    @Autowired
-    private SolrStateRepository solrStateRepository;
-
-    @Override
-    public boolean addCountry(SolrCountryDocument solrCountry) {
-	boolean response = false;
-	try {
-	    solrCountryRepository.save(solrCountry);
-	    transnationalService.addResource(solrCountry.getId(), Resource.COUNTRY, true);
-	    response = true;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    // throw new BusinessException(ServiceError.Unknown,
-	    // "Error Occurred While Saving Country");
-	}
-	return response;
-    }
 
     @Override
     public boolean addCities(SolrCityDocument solrCities) {
@@ -168,13 +143,8 @@ public class SolrCityServiceImpl implements SolrCityService {
 		    BeanUtil.map(document, landmark);
 		    if (city != null) {
 			landmark.setCity(city.getCity());
-			SolrStateDocument state = solrStateRepository.findOne(city.getStateId());
-			if (state != null) {
-			    landmark.setState(state.getState());
-			    SolrCountryDocument country = solrCountryRepository.findOne(state.getCountryId());
-			    if (country != null)
-				landmark.setCountry(country.getCountry());
-			}
+			landmark.setState(city.getState());
+			landmark.setCountry(city.getCountry());
 		    }
 		    response.add(landmark);
 		}
@@ -186,32 +156,18 @@ public class SolrCityServiceImpl implements SolrCityService {
 		    BeanUtil.map(document, locality);
 		    if (city != null) {
 			locality.setCity(city.getCity());
-			SolrStateDocument state = solrStateRepository.findOne(city.getStateId());
-			if (state != null) {
-			    locality.setState(state.getState());
-			    SolrCountryDocument country = solrCountryRepository.findOne(state.getCountryId());
-			    if (country != null)
-				locality.setCountry(country.getCountry());
-			}
+			locality.setState(city.getState());
+			locality.setCountry(city.getCountry());
 		    }
-		    response.add(locality);
+			response.add(locality);
 		}
 	    }
 	    if (cities != null && !cities.isEmpty()) {
 		for (SolrCityDocument document : cities) {
 		    SolrCityLandmarkLocalityResponse city = new SolrCityLandmarkLocalityResponse();
 		    BeanUtil.map(document, city);
-		    if (city != null) {
-			SolrStateDocument state = solrStateRepository.findOne(document.getStateId());
-			if (state != null) {
-			    city.setState(state.getState());
-			    SolrCountryDocument country = solrCountryRepository.findOne(state.getCountryId());
-			    if (country != null)
-				city.setCountry(country.getCountry());
-			}
-		    }
 		    response.add(city);
-		}
+	    }
 	    }
 	    if (response != null && !response.isEmpty() && response.size() > 30)
 		response = response.subList(0, 29);
@@ -222,16 +178,4 @@ public class SolrCityServiceImpl implements SolrCityService {
 	return response;
     }
 
-    @Override
-    public boolean addState(SolrStateDocument solrState) {
-	boolean response = false;
-	try {
-	    solrStateRepository.save(solrState);
-	    transnationalService.addResource(solrState.getId(), Resource.STATE, true);
-	    response = true;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	}
-	return response;
-    }
 }

@@ -1,6 +1,9 @@
 package com.dpdocter.collections;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -11,12 +14,15 @@ import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.enums.ComponentType;
 
 @Document(collection = "print_settings_cl")
+@CompoundIndexes({
+    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
+})
 public class PrintSettingsCollection extends GenericCollection {
 
     @Id
     private String id;
 
-    @Field
+    @Indexed
     private String doctorId;
 
     @Field

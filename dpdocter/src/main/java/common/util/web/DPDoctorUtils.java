@@ -23,9 +23,6 @@ public class DPDoctorUtils {
     @Context
     private UriInfo uriInfo;
 
-    @Value(value = "${IMAGE_URL_ROOT_PATH}")
-    private String imageUrlRootPath;
-
     @Value(value = "${OTP_VALIDATION_TIME_DIFFERENCE}")
     private String otpTimeDifference;
 

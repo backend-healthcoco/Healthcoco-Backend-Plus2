@@ -17,7 +17,7 @@ public class Records extends GenericCollection {
 
     private String recordsUrl;
 
-    private String recordsLable;
+    private String recordsLabel;
 
     private String recordsType;
 
@@ -39,7 +39,7 @@ public class Records extends GenericCollection {
 
     private String prescribedByHospitalId;
 
-    private String testId;;
+    private String diagnosticTestId;
 
     private Boolean isFeedbackAvailable = false;
 
@@ -59,15 +59,15 @@ public class Records extends GenericCollection {
 	this.recordsUrl = recordsUrl;
     }
 
-    public String getRecordsLable() {
-	return recordsLable;
-    }
+    public String getRecordsLabel() {
+		return recordsLabel;
+	}
 
-    public void setRecordsLable(String recordsLable) {
-	this.recordsLable = recordsLable;
-    }
+	public void setRecordsLabel(String recordsLabel) {
+		this.recordsLabel = recordsLabel;
+	}
 
-    public String getRecordsType() {
+	public String getRecordsType() {
 	return recordsType;
     }
 
@@ -171,15 +171,15 @@ public class Records extends GenericCollection {
 	this.prescribedByHospitalId = prescribedByHospitalId;
     }
 
-    public String getTestId() {
-	return testId;
-    }
+    public String getDiagnosticTestId() {
+		return diagnosticTestId;
+	}
 
-    public void setTestId(String testId) {
-	this.testId = testId;
-    }
+	public void setDiagnosticTestId(String diagnosticTestId) {
+		this.diagnosticTestId = diagnosticTestId;
+	}
 
-    public Boolean getInHistory() {
+	public Boolean getInHistory() {
 	return inHistory;
     }
 
@@ -207,12 +207,11 @@ public class Records extends GenericCollection {
 	public String toString() {
 		return "Records [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", doctorId=" + doctorId + ", locationId="
 				+ locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", recordsUrl=" + recordsUrl
-				+ ", recordsLable=" + recordsLable + ", recordsType=" + recordsType + ", explanation=" + explanation
+				+ ", recordsLabel=" + recordsLabel + ", recordsType=" + recordsType + ", explanation=" + explanation
 				+ ", inHistory=" + inHistory + ", discarded=" + discarded + ", uploadedByLocation=" + uploadedByLocation
 				+ ", visitId=" + visitId + ", prescriptionId=" + prescriptionId + ", prescribedByDoctorId="
 				+ prescribedByDoctorId + ", prescribedByLocationId=" + prescribedByLocationId
-				+ ", prescribedByHospitalId=" + prescribedByHospitalId + ", testId=" + testId + ", isFeedbackAvailable="
+				+ ", prescribedByHospitalId=" + prescribedByHospitalId + ", diagnosticTestId=" + diagnosticTestId + ", isFeedbackAvailable="
 				+ isFeedbackAvailable + "]";
 	}
-
 }

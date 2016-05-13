@@ -1,10 +1,16 @@
 package com.dpdocter.collections;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "records_cl")
+@CompoundIndexes({
+    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
+})
 public class RecordsCollection extends GenericCollection {
 
     @Id
@@ -20,7 +26,7 @@ public class RecordsCollection extends GenericCollection {
     private String recordsPath;
 
     @Field
-    private String recordsLable;
+    private String recordsLabel;
 
     @Field
     private String recordsType;
@@ -28,10 +34,10 @@ public class RecordsCollection extends GenericCollection {
     @Field
     private String explanation;
 
-    @Field
+    @Indexed
     private String patientId;
 
-    @Field
+    @Indexed
     private String doctorId;
 
     @Field
@@ -62,7 +68,7 @@ public class RecordsCollection extends GenericCollection {
     private String prescribedByHospitalId;
 
     @Field
-    private String testId;
+    private String diagnosticTestId;
 
     @Field
     private Boolean isFeedbackAvailable = false;
@@ -91,15 +97,15 @@ public class RecordsCollection extends GenericCollection {
 	this.recordsPath = recordsPath;
     }
 
-    public String getRecordsLable() {
-	return recordsLable;
-    }
+    public String getRecordsLabel() {
+		return recordsLabel;
+	}
 
-    public void setRecordsLable(String recordsLable) {
-	this.recordsLable = recordsLable;
-    }
+	public void setRecordsLabel(String recordsLabel) {
+		this.recordsLabel = recordsLabel;
+	}
 
-    public String getRecordsType() {
+	public String getRecordsType() {
 	return recordsType;
     }
 
@@ -203,15 +209,15 @@ public class RecordsCollection extends GenericCollection {
 	this.prescribedByHospitalId = prescribedByHospitalId;
     }
 
-    public String getTestId() {
-	return testId;
-    }
+    public String getDiagnosticTestId() {
+		return diagnosticTestId;
+	}
 
-    public void setTestId(String testId) {
-	this.testId = testId;
-    }
+	public void setDiagnosticTestId(String diagnosticTestId) {
+		this.diagnosticTestId = diagnosticTestId;
+	}
 
-    public Boolean getInHistory() {
+	public Boolean getInHistory() {
 	return inHistory;
     }
 
@@ -230,12 +236,13 @@ public class RecordsCollection extends GenericCollection {
 	@Override
 	public String toString() {
 		return "RecordsCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", recordsUrl=" + recordsUrl
-				+ ", recordsPath=" + recordsPath + ", recordsLable=" + recordsLable + ", recordsType=" + recordsType
+				+ ", recordsPath=" + recordsPath + ", recordsLabel=" + recordsLabel + ", recordsType=" + recordsType
 				+ ", explanation=" + explanation + ", patientId=" + patientId + ", doctorId=" + doctorId
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
 				+ ", inHistory=" + inHistory + ", uploadedByLocation=" + uploadedByLocation + ", prescriptionId="
 				+ prescriptionId + ", prescribedByDoctorId=" + prescribedByDoctorId + ", prescribedByLocationId="
-				+ prescribedByLocationId + ", prescribedByHospitalId=" + prescribedByHospitalId + ", testId=" + testId
+				+ prescribedByLocationId + ", prescribedByHospitalId=" + prescribedByHospitalId + ", diagnosticTestId=" + diagnosticTestId
 				+ ", isFeedbackAvailable=" + isFeedbackAvailable + "]";
 	}
+
 }

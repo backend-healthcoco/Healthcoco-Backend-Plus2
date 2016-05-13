@@ -3,12 +3,18 @@ package com.dpdocter.collections;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.TemplateItem;
 
 @Document(collection = "template_cl")
+@CompoundIndexes({
+    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
+})
 public class TemplateCollection extends GenericCollection {
 	
 	@Id
@@ -18,7 +24,7 @@ public class TemplateCollection extends GenericCollection {
     @Field
     private String name;
 
-    @Field
+    @Indexed
     private String doctorId;
 
     @Field

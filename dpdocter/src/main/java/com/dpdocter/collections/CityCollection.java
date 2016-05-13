@@ -10,17 +10,20 @@ public class CityCollection {
     @Id
     private String id;
 
-    // @Indexed(unique = true)
+    @Field
     private String city;
 
     @Field
     private String explanation;
 
     @Field
-    private Boolean isActivated = true;
+    private Boolean isActivated = false;
 
     @Field
-    private String stateId;
+    private String state;
+
+    @Field
+    private String country;
 
     @Field
     private double latitude;
@@ -60,14 +63,6 @@ public class CityCollection {
 	this.isActivated = isActivated;
     }
 
-    public String getStateId() {
-	return stateId;
-    }
-
-    public void setStateId(String stateId) {
-	this.stateId = stateId;
-    }
-
     public double getLatitude() {
 	return latitude;
     }
@@ -84,9 +79,26 @@ public class CityCollection {
 	this.longitude = longitude;
     }
 
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
 	@Override
 	public String toString() {
 		return "CityCollection [id=" + id + ", city=" + city + ", explanation=" + explanation + ", isActivated="
-				+ isActivated + ", stateId=" + stateId + ", latitude=" + latitude + ", longitude=" + longitude + "]";
+				+ isActivated + ", state=" + state + ", country=" + country + ", latitude=" + latitude + ", longitude="
+				+ longitude + "]";
 	}
 }

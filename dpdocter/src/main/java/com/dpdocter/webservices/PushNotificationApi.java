@@ -1,8 +1,10 @@
 package com.dpdocter.webservices;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -13,8 +15,10 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.UserDevice;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.request.BroadcastNotificationRequest;
 import com.dpdocter.services.PushNotificationServices;
 
+import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
 @Component
@@ -38,6 +42,19 @@ public class PushNotificationApi {
 		UserDevice userDevice = pushNotificationServices.addDevice(request);
 		Response<UserDevice> response = new Response<UserDevice>();
 		response.setData(userDevice);
+		return response;
+	}
+	
+	@Path(value = PathProxy.PushNotificationUrls.BROADCAST_NOTIFICATION)
+	@POST
+	public Response<Boolean> broadcastNotification(BroadcastNotificationRequest request){
+		if(request == null){
+			    logger.warn("Invalid Input");
+			    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Boolean broadcastresponse = pushNotificationServices.broadcastNotification(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(broadcastresponse);
 		return response;
 	}
 }

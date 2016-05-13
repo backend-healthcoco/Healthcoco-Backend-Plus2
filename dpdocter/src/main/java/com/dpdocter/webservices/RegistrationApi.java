@@ -81,7 +81,7 @@ public class RegistrationApi {
     @Context
     private UriInfo uriInfo;
 
-    @Value(value = "${IMAGE_PATH}")
+    @Value(value = "${image.path}")
     private String imagePath;
 
     @Path(value = PathProxy.RegistrationUrls.PATIENT_REGISTER)
@@ -462,23 +462,10 @@ public class RegistrationApi {
 	return response;
     }
 
-    @Path(value = PathProxy.RegistrationUrls.ADD_BLOOD_GROUP)
-    @POST
-    public Response<BloodGroup> addBloodGroup(BloodGroup request) {
-	if (request == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
-	}
-	BloodGroup bloodGroupResponse = registrationService.addBloodGroup(request);
-	Response<BloodGroup> response = new Response<BloodGroup>();
-	response.setData(bloodGroupResponse);
-	return response;
-    }
-
     @Path(value = PathProxy.RegistrationUrls.GET_BLOOD_GROUP)
     @GET
-    public Response<BloodGroup> getBloodGroup(@QueryParam("page") int page, @QueryParam("size") int size,
-	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
-	List<BloodGroup> bloodGroupResponse = registrationService.getBloodGroup(page, size, updatedTime);
+    public Response<BloodGroup> getBloodGroup() {
+	List<BloodGroup> bloodGroupResponse = registrationService.getBloodGroup();
 	Response<BloodGroup> response = new Response<BloodGroup>();
 	response.setDataList(bloodGroupResponse);
 	return response;

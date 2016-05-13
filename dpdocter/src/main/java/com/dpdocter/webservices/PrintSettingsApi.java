@@ -39,7 +39,7 @@ public class PrintSettingsApi {
     @Autowired
     private PrintSettingsService printSettingsService;
 
-    @Value(value = "${IMAGE_PATH}")
+    @Value(value = "${image.path}")
     private String imagePath;
 
     @Path(value = PathProxy.PrintSettingsUrls.SAVE_SETTINGS_DEFAULT_DATA)

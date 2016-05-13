@@ -1,6 +1,9 @@
 package com.dpdocter.collections;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -8,6 +11,9 @@ import com.dpdocter.enums.AppType;
 import com.dpdocter.enums.FeedbackType;
 
 @Document(collection = "feedback_cl")
+@CompoundIndexes({
+    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
+})
 public class FeedbackCollection extends GenericCollection {
 
     @Id
@@ -22,7 +28,7 @@ public class FeedbackCollection extends GenericCollection {
     @Field
     private String resourceId;
 
-    @Field
+    @Indexed
     private String doctorId;
 
     @Field

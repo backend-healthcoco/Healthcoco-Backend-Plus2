@@ -2,9 +2,15 @@ package com.dpdocter.collections;
 
 import java.util.Date;
 
-public class GenericCollection {
-    private Date createdTime;
+import org.springframework.data.mongodb.core.index.IndexDirection;
+import org.springframework.data.mongodb.core.index.Indexed;
 
+public class GenericCollection {
+	
+	@Indexed(direction = IndexDirection.DESCENDING)
+	private Date createdTime;
+
+	@Indexed(direction = IndexDirection.DESCENDING)
     private Date updatedTime = new Date();
 
     private String createdBy;

@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.enums.DeviceType;
+import com.dpdocter.enums.RoleEnum;
 
 @Document(collection = "user_device_cl")
 public class UserDeviceCollection extends GenericCollection{
@@ -21,6 +22,9 @@ public class UserDeviceCollection extends GenericCollection{
     @Field
     private String deviceId;
 
+    @Field
+    private RoleEnum role;
+    
 	public String getId() {
 		return id;
 	}
@@ -53,9 +57,17 @@ public class UserDeviceCollection extends GenericCollection{
 		this.deviceId = deviceId;
 	}
 
+	public RoleEnum getRole() {
+		return role;
+	}
+
+	public void setRole(RoleEnum role) {
+		this.role = role;
+	}
+
 	@Override
 	public String toString() {
 		return "UserDeviceCollection [id=" + id + ", userId=" + userId + ", deviceType=" + deviceType + ", deviceId="
-				+ deviceId + "]";
-	}	
+				+ deviceId + ", role=" + role + "]";
+	}
 }

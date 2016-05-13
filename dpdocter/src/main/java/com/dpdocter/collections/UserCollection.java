@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.enums.UserState;
-import com.sun.istack.NotNull;
 
 @Document(collection = "user_cl")
 public class UserCollection extends GenericCollection {
@@ -31,7 +30,6 @@ public class UserCollection extends GenericCollection {
     private String middleName;
 
     @Indexed(unique = true)
-    @NotNull
     private String userName;
 
     @Field
@@ -40,10 +38,10 @@ public class UserCollection extends GenericCollection {
     @Field
     private char[] salt;
 
-    @Field
+    @Indexed
     private String emailAddress;
 
-    @Field
+    @Indexed
     private String mobileNumber;
 
     @Field
@@ -54,9 +52,6 @@ public class UserCollection extends GenericCollection {
 
     @Field
     private Boolean isActive = false;
-
-    @Field
-    private Boolean isTempPassword = true;
 
     @Field
     private Boolean isVerified = false;
@@ -78,6 +73,9 @@ public class UserCollection extends GenericCollection {
 
     @Field
     private boolean signedUp = false;
+
+    @Field
+    private String userUId;
 
     public String getId() {
 	return id;
@@ -171,13 +169,13 @@ public class UserCollection extends GenericCollection {
 	this.emailAddress = emailAddress;
     }
 
-    public Boolean getIsTempPassword() {
-	return isTempPassword;
-    }
-
-    public void setIsTempPassword(Boolean isTempPassword) {
-	this.isTempPassword = isTempPassword;
-    }
+//    public Boolean getIsTempPassword() {
+//	return isTempPassword;
+//    }
+//
+//    public void setIsTempPassword(Boolean isTempPassword) {
+//	this.isTempPassword = isTempPassword;
+//    }
 
     public Boolean getIsVerified() {
 	return isVerified;
@@ -251,14 +249,23 @@ public class UserCollection extends GenericCollection {
 		this.salt = salt;
 	}
 
+	public String getUserUId() {
+		return userUId;
+	}
+
+	public void setUserUId(String userUId) {
+		this.userUId = userUId;
+	}
+
 	@Override
 	public String toString() {
 		return "UserCollection [id=" + id + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName
 				+ ", middleName=" + middleName + ", userName=" + userName + ", password=" + Arrays.toString(password)
 				+ ", salt=" + Arrays.toString(salt) + ", emailAddress=" + emailAddress + ", mobileNumber="
 				+ mobileNumber + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", isActive=" + isActive
-				+ ", isTempPassword=" + isTempPassword + ", isVerified=" + isVerified + ", coverImageUrl="
+				+ ", isVerified=" + isVerified + ", coverImageUrl="
 				+ coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", colorCode=" + colorCode
-				+ ", userState=" + userState + ", lastSession=" + lastSession + ", signedUp=" + signedUp + "]";
+				+ ", userState=" + userState + ", lastSession=" + lastSession + ", signedUp=" + signedUp + ", userUId="
+				+ userUId + "]";
 	}
 }

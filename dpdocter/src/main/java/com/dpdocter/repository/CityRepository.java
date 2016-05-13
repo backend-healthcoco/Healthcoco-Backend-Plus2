@@ -9,7 +9,7 @@ import com.dpdocter.collections.CityCollection;
 
 public interface CityRepository extends MongoRepository<CityCollection, String> {
 
-    @Query("{'stateId': ?0}")
-    List<CityCollection> findAll(String stateId);
+    @Query("{'state': ?0}")
+    List<CityCollection> findAll(String state);
 
 }

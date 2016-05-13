@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.IssueTrack;
 import com.dpdocter.collections.IssueTrackCollection;
@@ -44,6 +45,7 @@ public class IssueTrackServiceImpl implements IssueTrackService {
     private UserRepository userRepository;
 
     @Override
+    @Transactional
     public IssueTrack addEditIssue(IssueTrack request) {
 	IssueTrack response = null;
 	IssueTrackCollection issueTrackCollection = new IssueTrackCollection();
@@ -92,6 +94,7 @@ public class IssueTrackServiceImpl implements IssueTrackService {
     }
 
     @Override
+    @Transactional
     public List<IssueTrack> getIssues(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
 	    List<String> scope) {
 	List<IssueTrack> response = null;
@@ -177,6 +180,7 @@ public class IssueTrackServiceImpl implements IssueTrackService {
     }
 
     @Override
+    @Transactional
     public Boolean updateIssueStatus(String issueId, String status, String doctorId, String locationId, String hospitalId) {
 	Boolean response = false;
 	IssueTrackCollection issueTrackCollection = null;
@@ -221,6 +225,7 @@ public class IssueTrackServiceImpl implements IssueTrackService {
     }
 
     @Override
+    @Transactional
     public Boolean updateIssueStatus(String issueId, String status) {
 	Boolean response = false;
 	IssueTrackCollection issueTrackCollection = null;
@@ -250,6 +255,7 @@ public class IssueTrackServiceImpl implements IssueTrackService {
     }
 
     @Override
+    @Transactional
     public Boolean deleteIssue(String issueId, String doctorId, String locationId, String hospitalId, Boolean discarded) {
 	try {
 	    IssueTrackCollection issueTrackCollection = issueTrackRepository.findOne(issueId);

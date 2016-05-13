@@ -20,7 +20,7 @@ public class RecordsAddRequestMultipart {
 
     private String prescriptionId;
 
-    private String testId;
+    private String diagnosticTestId;
 
     private String recordsUrl;
     
@@ -96,12 +96,12 @@ public class RecordsAddRequestMultipart {
 		this.prescriptionId = prescriptionId;
 	}
 
-	public String getTestId() {
-		return testId;
+	public String getDiagnosticTestId() {
+		return diagnosticTestId;
 	}
 
-	public void setTestId(String testId) {
-		this.testId = testId;
+	public void setDiagnosticTestId(String diagnosticTestId) {
+		this.diagnosticTestId = diagnosticTestId;
 	}
 
 	public String getRecordsUrl() {
@@ -117,6 +117,6 @@ public class RecordsAddRequestMultipart {
 		return "RecordsAddRequestMultipart [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId
 				+ ", explanation=" + explanation + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ ", recordsType=" + recordsType + ", visitId=" + visitId + ", prescriptionId=" + prescriptionId
-				+ ", testId=" + testId + ", recordsUrl=" + recordsUrl + "]";
+				+ ", diagnosticTestId=" + diagnosticTestId + ", recordsUrl=" + recordsUrl + "]";
 	}
 }

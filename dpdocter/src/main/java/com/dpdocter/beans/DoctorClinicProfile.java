@@ -65,6 +65,8 @@ public class DoctorClinicProfile {
 
     private String locality;
     
+    private String timeZone = "IST";
+    		
     public String getId() {
 	return id;
     }
@@ -305,6 +307,14 @@ public class DoctorClinicProfile {
 		this.locality = locality;
 	}
 
+	public String getTimeZone() {
+		return timeZone;
+	}
+
+	public void setTimeZone(String timeZone) {
+		this.timeZone = timeZone;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorClinicProfile [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
@@ -317,7 +327,7 @@ public class DoctorClinicProfile {
 				+ ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + ", noOfReviews=" + noOfReviews
 				+ ", noOfRecommenations=" + noOfRecommenations + ", isClinic=" + isClinic + ", isLab=" + isLab
 				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
-				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", locality=" + locality + "]";
+				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", locality=" + locality + ", timeZone="
+				+ timeZone + "]";
 	}
-
 }

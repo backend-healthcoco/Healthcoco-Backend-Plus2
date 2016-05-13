@@ -18,6 +18,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.ClinicImage;
@@ -84,7 +85,7 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     private PatientRepository patientRepository;
 
-    @Value(value = "${IMAGE_PATH}")
+    @Value(value = "${image.path}")
     private String imagePath;
 
     @Value(value = "${Login.login}")
@@ -100,6 +101,7 @@ public class LoginServiceImpl implements LoginService {
      * This method is used for login purpose.
      */
     @Override
+    @Transactional
     public LoginResponse login(LoginRequest request) {
 	LoginResponse response = null;
 	try {
@@ -257,6 +259,7 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
+    @Transactional
     public List<User>  loginPatient(LoginPatientRequest request) {
     	List<User> response = null;
 	try {
@@ -319,6 +322,7 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
+    @Transactional
     public User adminLogin(LoginPatientRequest request) {
 	User response = null;
 	try {

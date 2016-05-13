@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.collections.OTPCollection;
 import com.dpdocter.collections.SMSTrackDetail;
@@ -56,7 +57,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     @Autowired
     private TokenRepository tokenRepository;
 
-    @Value(value = "${FORGOT_PASSWORD_VALID_TIME_IN_MINS}")
+    @Value(value = "${forgot.password.valid.time.in.mins}")
     private String forgotPasswordValidTime;
 
     @Value(value = "${mail.resetPasswordSuccess.subject}")
@@ -75,6 +76,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     private MongoTemplate mongoTemplate;
 
     @Override
+    @Transactional
     public ForgotPasswordResponse forgotPasswordForDoctor(ForgotUsernamePasswordRequest request, UriInfo uriInfo) {
 	try {
 	    UserCollection userCollection = null;
@@ -120,6 +122,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     }
 
     @Override
+    @Transactional
     public Boolean forgotPasswordForPatient(ForgotUsernamePasswordRequest request, UriInfo uriInfo) {
 	Boolean flag = false;
 	Boolean isPatient = false;
@@ -175,6 +178,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     }
 
     @Override
+    @Transactional
     public ForgotPasswordResponse getEmailAndMobNumberOfPatient(String username) {
 	try {
 	    UserCollection userCollection = null;
@@ -201,6 +205,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     }
 
     @Override
+    @Transactional
     public String resetPassword(ResetPasswordRequest request) {
 	try {
 	    UserCollection userCollection = userRepository.findOne(request.getUserId());
@@ -212,7 +217,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	    for(int i = 0; i < salt.length; i++)
 	    	passwordWithSalt[i+request.getPassword().length] = salt[i];
 	    userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt));
-	    userCollection.setIsTempPassword(false);
+//	    userCollection.setIsTempPassword(false);
 	    userRepository.save(userCollection);
 	    return "Password Changed Successfully";
 	} catch (Exception e) {
@@ -224,6 +229,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     }
 
     @Override
+    @Transactional
     public Boolean forgotUsername(ForgotUsernamePasswordRequest request) {
 	boolean flag = false;
 	try {
@@ -254,6 +260,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     }
 
     @Override
+    @Transactional
     public String resetPassword(ResetPasswordRequest request, UriInfo uriInfo) {
 	try {
 	    // String startText = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01
@@ -294,7 +301,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	    for(int i = 0; i < salt.length; i++)
 	    	passwordWithSalt[i+request.getPassword().length] = salt[i];
 	    userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt));
-		userCollection.setIsTempPassword(false);
+//		userCollection.setIsTempPassword(false);
 		userRepository.save(userCollection);
 
 		tokenCollection.setIsUsed(true);
@@ -313,6 +320,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     }
 
     @Override
+    @Transactional
     public String checkLinkIsAlreadyUsed(String userId) {
 	try {
 	    TokenCollection tokenCollection = tokenRepository.findOne(userId);
@@ -339,6 +347,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     }
 
     @Override
+    @Transactional
     public Boolean resetPasswordPatient(ResetPasswordRequest request) {
 	Boolean response = false;
 	try {
@@ -355,7 +364,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		    if (!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress())) {
 		    userCollection.setSalt(salt);
 			userCollection.setPassword(password);
-			userCollection.setIsTempPassword(false);
+//			userCollection.setIsTempPassword(false);
 			userRepository.save(userCollection);
 		    }
 		}

@@ -92,6 +92,9 @@ public class SolrPatientDocument {
     @Field
     private Long registrationDate;
 
+    @Field
+    private String userUId;
+
     public String getId() {
 	return id;
     }
@@ -310,13 +313,24 @@ public class SolrPatientDocument {
 	this.thumbnailUrl = thumbnailUrl;
     }
 
-    @Override
-    public String toString() {
-	return "SolrPatientDocument [id=" + id + ", userId=" + userId + ", PID=" + PID + ", userName=" + userName + ", firstName=" + firstName
-		+ ", firstNameWithoutSpace=" + firstNameWithoutSpace + ", gender=" + gender + ", bloodGroup=" + bloodGroup + ", emailAddress=" + emailAddress
-		+ ", days=" + days + ", months=" + months + ", years=" + years + ", dob=" + dob + ", city=" + city + ", locality=" + locality + ", postalCode="
-		+ postalCode + ", mobileNumber=" + mobileNumber + ", profession=" + profession + ", doctorId=" + doctorId + ", locationId=" + locationId
-		+ ", hospitalId=" + hospitalId + ", referredBy=" + referredBy + ", createdTime=" + createdTime + ", imageUrl=" + imageUrl + ", thumbnailUrl="
-		+ thumbnailUrl + ", colorCode=" + colorCode + ", registrationDate=" + registrationDate + "]";
-    }
+	public String getUserUId() {
+		return userUId;
+	}
+
+	public void setUserUId(String userUId) {
+		this.userUId = userUId;
+	}
+
+	@Override
+	public String toString() {
+		return "SolrPatientDocument [id=" + id + ", userId=" + userId + ", PID=" + PID + ", userName=" + userName
+				+ ", firstName=" + firstName + ", firstNameWithoutSpace=" + firstNameWithoutSpace + ", gender=" + gender
+				+ ", bloodGroup=" + bloodGroup + ", emailAddress=" + emailAddress + ", days=" + days + ", months="
+				+ months + ", years=" + years + ", dob=" + dob + ", city=" + city + ", locality=" + locality
+				+ ", postalCode=" + postalCode + ", mobileNumber=" + mobileNumber + ", profession=" + profession
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", referredBy=" + referredBy + ", createdTime=" + createdTime + ", imageUrl=" + imageUrl
+				+ ", thumbnailUrl=" + thumbnailUrl + ", colorCode=" + colorCode + ", registrationDate="
+				+ registrationDate + ", userUId=" + userUId + "]";
+	}
 }

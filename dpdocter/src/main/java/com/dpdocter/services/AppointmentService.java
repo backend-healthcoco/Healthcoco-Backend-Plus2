@@ -9,12 +9,10 @@ import com.dpdocter.beans.Clinic;
 import com.dpdocter.beans.Lab;
 import com.dpdocter.beans.LandmarkLocality;
 import com.dpdocter.beans.PatientQueue;
-import com.dpdocter.beans.Slot;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.EventRequest;
 import com.dpdocter.request.PatientQueueAddEditRequest;
-import com.dpdocter.solr.beans.Country;
-import com.dpdocter.solr.beans.State;
+import com.dpdocter.response.SlotDataResponse;
 
 public interface AppointmentService {
 
@@ -22,7 +20,7 @@ public interface AppointmentService {
 
     Boolean activateDeactivateCity(String cityId, boolean activate);
 
-    List<City> getCities(String stateId);
+    List<City> getCities(String state);
 
     City getCity(String cityId);
 
@@ -34,17 +32,13 @@ public interface AppointmentService {
 
     List<Appointment> getPatientAppointments(String locationId, String doctorId, String patientId, String from, String to, int page, int size, String updatedTime);
 
-    Country addCountry(Country request);
-
-    State addState(State request);
-
     Lab getLab(String locationId);
 
-    List<Country> getCountries();
+    List<City> getCountries();
 
-    List<State> getStates(String countryId);
+    List<City> getStates(String country);
 
-    List<Slot> getTimeSlots(String doctorId, String locationId, Date date);
+    SlotDataResponse getTimeSlots(String doctorId, String locationId, Date date);
 
     Appointment addAppointment(AppointmentRequest request);
 

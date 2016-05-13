@@ -3,6 +3,7 @@ package com.dpdocter.collections;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -16,7 +17,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
     @Id
     private String id;
 
-    @Field
+    @Indexed
     private String userLocationId;
 
     @Field
@@ -45,6 +46,9 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
     @Field
     private Integer noOfRecommenations = 0;
+
+    @Field
+    private String timeZone = "IST";
 
     public String getId() {
 	return id;
@@ -134,11 +138,21 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	this.noOfRecommenations = noOfRecommenations;
     }
 
-    @Override
-    public String toString() {
-	return "DoctorClinicProfileCollection [id=" + id + ", userLocationId=" + userLocationId + ", patientInitial=" + patientInitial + ", patientCounter="
-		+ patientCounter + ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee=" + consultationFee + ", appointmentSlot="
-		+ appointmentSlot + ", workingSchedules=" + workingSchedules + ", facility=" + facility + ", noOfReviews=" + noOfReviews
-		+ ", noOfRecommenations=" + noOfRecommenations + "]";
-    }
+	public String getTimeZone() {
+		return timeZone;
+	}
+
+	public void setTimeZone(String timeZone) {
+		this.timeZone = timeZone;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorClinicProfileCollection [id=" + id + ", userLocationId=" + userLocationId + ", patientInitial="
+				+ patientInitial + ", patientCounter=" + patientCounter + ", appointmentBookingNumber="
+				+ appointmentBookingNumber + ", consultationFee=" + consultationFee + ", appointmentSlot="
+				+ appointmentSlot + ", workingSchedules=" + workingSchedules + ", facility=" + facility
+				+ ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", timeZone="
+				+ timeZone + "]";
+	}
 }

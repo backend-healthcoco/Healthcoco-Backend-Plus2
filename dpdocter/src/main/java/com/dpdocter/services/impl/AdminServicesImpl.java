@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.solr.core.geo.GeoLocation;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.GeocodedLocation;
@@ -23,7 +24,6 @@ import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Resume;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.CityCollection;
-import com.dpdocter.collections.CountryCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.DrugTypeCollection;
@@ -32,13 +32,11 @@ import com.dpdocter.collections.EducationQualificationCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.ResumeCollection;
-import com.dpdocter.collections.StateCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.CityRepository;
-import com.dpdocter.repository.CountryRepository;
 import com.dpdocter.repository.DiagnosticTestRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.DrugTypeRepository;
@@ -47,18 +45,15 @@ import com.dpdocter.repository.EducationQualificationRepository;
 import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.ResumeRepository;
-import com.dpdocter.repository.StateRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.services.AdminServices;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.solr.document.SolrCityDocument;
-import com.dpdocter.solr.document.SolrCountryDocument;
 import com.dpdocter.solr.document.SolrDiagnosticTestDocument;
 import com.dpdocter.solr.document.SolrDrugDocument;
 import com.dpdocter.solr.document.SolrEducationInstituteDocument;
 import com.dpdocter.solr.document.SolrEducationQualificationDocument;
-import com.dpdocter.solr.document.SolrStateDocument;
 import com.dpdocter.solr.repository.SolrDiagnosticTestRepository;
 import com.dpdocter.solr.repository.SolrDrugRepository;
 import com.dpdocter.solr.repository.SolrEducationInstituteRepository;
@@ -89,12 +84,6 @@ public class AdminServicesImpl implements AdminServices {
 
     @Autowired
     private CityRepository cityRepository;
-
-    @Autowired
-    private StateRepository stateRepository;
-    
-    @Autowired
-    private CountryRepository countryRepository;
 
     @Autowired
     private LocationServices locationServices;
@@ -130,6 +119,7 @@ public class AdminServicesImpl implements AdminServices {
     private DrugTypeRepository drugTypeRepository;
 
 	@Override
+	@Transactional
 	public List<User> getInactiveUsers(int page, int size) {
 		List<User> response = null;
 		try{
@@ -149,6 +139,7 @@ public class AdminServicesImpl implements AdminServices {
 	}
 
 	@Override
+	@Transactional
 	public List<Hospital> getHospitals(int page, int size) {
 		List<Hospital> response = null;
 		try{
@@ -168,6 +159,7 @@ public class AdminServicesImpl implements AdminServices {
 	}
 
 	@Override
+	@Transactional
 	public List<Location> getClinics(int page, int size, String hospitalId) {
 		List<Location> response = null;
 		try{
@@ -192,6 +184,7 @@ public class AdminServicesImpl implements AdminServices {
 	}
 
 	@Override
+	@Transactional
 	public Resume addResumes(Resume request) {
 		Resume response = null;
 		try{
@@ -219,6 +212,7 @@ public class AdminServicesImpl implements AdminServices {
 	}
 
 	@Override
+	@Transactional
 	public List<Resume> getResumes(int page, int size, String type) {
 		List<Resume> response = null;
 		try{
@@ -243,6 +237,7 @@ public class AdminServicesImpl implements AdminServices {
 	}
 	
 	@Override
+	@Transactional
 	public void importCity() {
 		String csvFile = "/home/ubuntu/cities.csv";
 		BufferedReader br = null;
@@ -250,71 +245,27 @@ public class AdminServicesImpl implements AdminServices {
 		String cvsSplitBy = ",";
 
 		try {
-//			CountryCollection countryCollection = new CountryCollection();
-//			countryCollection.setCountry("India");
-//			List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation((countryCollection != null ? countryCollection.getCountry() : ""));
-//			if (geocodedLocations != null && !geocodedLocations.isEmpty())BeanUtil.map(geocodedLocations.get(0), countryCollection);
-//			countryCollection = countryRepository.save(countryCollection);
-//			
-//		    br = new BufferedReader(new FileReader(csvFile));
-//		    int i = 0;
-//		    while ((line = br.readLine()) != null) {
-//			System.out.println(i++);
-//			String[] obj = line.split(cvsSplitBy);
-//
-//			StateCollection stateCollection = stateRepository.findByName(obj[2]);
-//			if(stateCollection == null){
-//				stateCollection = new StateCollection();
-//			    geocodedLocations = locationServices.geocodeLocation(obj[2] + " "
-//				    + (countryCollection != null ? countryCollection.getCountry() : ""));
-//
-//			    if (geocodedLocations != null && !geocodedLocations.isEmpty())
-//				BeanUtil.map(geocodedLocations.get(0), stateCollection);
-//			    stateCollection.setCountryId(countryCollection.getId());
-//			    stateCollection.setState(obj[2]);
-//			    stateCollection = stateRepository.save(stateCollection);
-//			}
-//			
-//			CityCollection cityCollection = new CityCollection();
-//			cityCollection.setCity(obj[1]);
-//			cityCollection.setStateId(stateCollection.getId());
-//			geocodedLocations = locationServices.geocodeLocation(cityCollection.getCity() + " "
-//				    + (stateCollection != null ? stateCollection.getState() : "")+ " "
-//						    + (countryCollection != null ? countryCollection.getCountry() : ""));
-//
-//			    if (geocodedLocations != null && !geocodedLocations.isEmpty())
-//				BeanUtil.map(geocodedLocations.get(0), cityCollection);
-//
-//			    cityCollection = cityRepository.save(cityCollection);
-//		    }
+			br = new BufferedReader(new FileReader(csvFile));
+		    int i = 0;
+		    while ((line = br.readLine()) != null) {
+			System.out.println(i++);
+			String[] obj = line.split(cvsSplitBy);
+			CityCollection cityCollection = new CityCollection();
+			cityCollection.setCity(obj[1]);
+			cityCollection.setState(obj[2]);
+			cityCollection.setCountry("India");
+			List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(cityCollection.getCity() + " "
+				    + cityCollection.getState() + " "+cityCollection.getCountry());
 
-				List<CountryCollection> countries = countryRepository.findAll();
-		    	if(countries != null){
-		    		for(CountryCollection country : countries){
-						SolrCountryDocument solrCountry = new SolrCountryDocument();
-						BeanUtil.map(country, solrCountry);
-						solrCountry.setGeoLocation(new GeoLocation(country.getLatitude(), country.getLongitude()));
-						solrCityService.addCountry(solrCountry);
-					}
-		    	}
-		    	List<StateCollection> states = stateRepository.findAll();
-		    	if (states != null) {
-					for(StateCollection state : states){
-						SolrStateDocument solrState = new SolrStateDocument();
-						BeanUtil.map(state, solrState);
-						solrState.setGeoLocation(new GeoLocation(state.getLatitude(), state.getLongitude()));
-						solrCityService.addState(solrState);
-					}
-			    }
-			    List<CityCollection> cities = cityRepository.findAll();
-			    if (cities != null) {
-				for(CityCollection city : cities){
-					SolrCityDocument solrCities = new SolrCityDocument();
-					BeanUtil.map(city, solrCities);
-					solrCities.setGeoLocation(new GeoLocation(city.getLatitude(), city.getLongitude()));
-					solrCityService.addCities(solrCities);
-				}
-			    }
+			    if (geocodedLocations != null && !geocodedLocations.isEmpty())
+				BeanUtil.map(geocodedLocations.get(0), cityCollection);
+
+			    cityCollection = cityRepository.save(cityCollection);
+			    SolrCityDocument solrCities = new SolrCityDocument();
+				BeanUtil.map(cityCollection, solrCities);
+				solrCities.setGeoLocation(new GeoLocation(cityCollection.getLatitude(), cityCollection.getLongitude()));
+				solrCityService.addCities(solrCities);
+		    }
 		} catch (Exception e) {
 		    e.printStackTrace();
 		} 
@@ -331,6 +282,7 @@ public class AdminServicesImpl implements AdminServices {
 	}
 
 	@Override
+	@Transactional
 	public void importDrug() {
 		String csvFile = "/home/ubuntu/Drugs.csv";
 		BufferedReader br = null;
@@ -343,10 +295,10 @@ public class AdminServicesImpl implements AdminServices {
 		    int i = 0;
 		    while ((line = br.readLine()) != null) {
 		    	i=i++;
-		    	if(i == 100) break;
+		    	
 			System.out.println(i++);
 			String[] obj = line.split(cvsSplitBy);
-			String drugType = obj[1];
+			String drugType = obj[2];
 			 DrugTypeCollection drugTypeCollection = drugTypeRepository.findByType(drugType);
 			 
 			 DrugType type = null;
@@ -362,12 +314,14 @@ public class AdminServicesImpl implements AdminServices {
 			 drugCollection.setCreatedTime(new Date());
 			 drugCollection.setUpdatedTime(new Date());
 			 drugCollection.setDiscarded(false);
-			 drugCollection.setDrugName(obj[0]);
+			 drugCollection.setDrugName(obj[1]);
 			 drugCollection.setDrugType(type);
 			 drugCollection.setDoctorId(null);
 			 drugCollection.setHospitalId(null);
 			 drugCollection.setLocationId(null);
-			
+			 drugCollection.setDrugCode(obj[0]);
+			 drugCollection.setPackSize(obj[3]);
+			 drugCollection.setCompanyName(obj[4]);
 			 drugCollection = drugRepository.save(drugCollection);
 	
 			 SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
@@ -397,6 +351,7 @@ public class AdminServicesImpl implements AdminServices {
 	}
 
 	@Override
+	@Transactional
 	public void importDiagnosticTest() {
 		String csvFile = "/home/ubuntu/DiagnosticTests.csv";
 		BufferedReader br = null;
@@ -433,6 +388,7 @@ public class AdminServicesImpl implements AdminServices {
 	}
 
 	@Override
+	@Transactional
 	public void importEducationInstitute() {
 		String csvFile = "/home/ubuntu/EducationInstitute.csv";
 		BufferedReader br = null;
@@ -473,6 +429,7 @@ public class AdminServicesImpl implements AdminServices {
 	}
 
 	@Override
+	@Transactional
 	public void importEducationQualification() {
 		String csvFile = "/home/ubuntu/EducationQualification.csv";
 		BufferedReader br = null;

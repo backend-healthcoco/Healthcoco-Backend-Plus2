@@ -28,7 +28,7 @@ public class PrescriptionAddEditResponseDetails extends GenericCollection {
 
     private String visitId;
 
-    private List<TestAndRecordDataResponse> tests;
+    private List<TestAndRecordDataResponse> diagnosticTests;
 
     private String advice;
 
@@ -128,12 +128,12 @@ public class PrescriptionAddEditResponseDetails extends GenericCollection {
 		this.uniqueEmrId = uniqueEmrId;
 	}
 
-	public List<TestAndRecordDataResponse> getTests() {
-		return tests;
+	public List<TestAndRecordDataResponse> getDiagnosticTests() {
+		return diagnosticTests;
 	}
 
-	public void setTests(List<TestAndRecordDataResponse> tests) {
-		this.tests = tests;
+	public void setDiagnosticTests(List<TestAndRecordDataResponse> diagnosticTests) {
+		this.diagnosticTests = diagnosticTests;
 	}
 
 	@Override
@@ -141,7 +141,7 @@ public class PrescriptionAddEditResponseDetails extends GenericCollection {
 		return "PrescriptionAddEditResponseDetails [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", name=" + name
 				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", items="
 				+ items + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + ", discarded="
-				+ discarded + ", visitId=" + visitId + ", tests=" + tests + ", advice=" + advice + "]";
+				+ discarded + ", visitId=" + visitId + ", diagnosticTests=" + diagnosticTests + ", advice=" + advice
+				+ "]";
 	}
-
 }

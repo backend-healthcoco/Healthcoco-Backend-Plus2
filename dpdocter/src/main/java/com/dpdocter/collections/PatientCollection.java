@@ -4,13 +4,20 @@ import java.util.List;
 
 import org.apache.commons.lang.WordUtils;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.Address;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.Relations;
 
 @Document(collection = "patient_cl")
+@CompoundIndexes({
+    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
+})
 public class PatientCollection extends GenericCollection {
 
     @Id
@@ -37,7 +44,7 @@ public class PatientCollection extends GenericCollection {
     @Field
     private String emailAddress;
 
-    @Field
+    @Indexed
     private String doctorId;
 
     @Field
@@ -45,9 +52,6 @@ public class PatientCollection extends GenericCollection {
 
     @Field
     private String hospitalId;
-
-    @Field
-    private String addressId;
 
     @Field
     private String secMobile;
@@ -67,7 +71,7 @@ public class PatientCollection extends GenericCollection {
     @Field
     private String insuranceName;
 
-    @Field
+    @Indexed
     private String userId;
 
     @Field
@@ -84,6 +88,18 @@ public class PatientCollection extends GenericCollection {
 
     @Field
     private DOB dob;
+
+    @Field
+    private Boolean discarded = false;
+
+    @Field
+    private Long dateOfVisit;
+
+    @Field
+    private String referredBy;
+
+    @Field
+    private Address address;
 
     public String getId() {
 	return id;
@@ -131,14 +147,6 @@ public class PatientCollection extends GenericCollection {
 
     public void setDoctorId(String doctorId) {
 	this.doctorId = doctorId;
-    }
-
-    public String getAddressId() {
-	return addressId;
-    }
-
-    public void setAddressId(String addressId) {
-	this.addressId = addressId;
     }
 
     public String getSecMobile() {
@@ -280,15 +288,48 @@ public class PatientCollection extends GenericCollection {
 		this.thumbnailUrl = thumbnailUrl;
 	}
 
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	public Long getDateOfVisit() {
+		return dateOfVisit;
+	}
+
+	public void setDateOfVisit(Long dateOfVisit) {
+		this.dateOfVisit = dateOfVisit;
+	}
+
+	public String getReferredBy() {
+		return referredBy;
+	}
+
+	public void setReferredBy(String referredBy) {
+		this.referredBy = referredBy;
+	}
+
+	public Address getAddress() {
+		return address;
+	}
+
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientCollection [id=" + id + ", firstName=" + firstName + ", imageUrl=" + imageUrl + ", thumbnailUrl="
 				+ thumbnailUrl + ", bloodGroup=" + bloodGroup + ", profession=" + profession + ", relations="
 				+ relations + ", emailAddress=" + emailAddress + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", addressId=" + addressId + ", secMobile=" + secMobile + ", adhaarId="
+				+ ", hospitalId=" + hospitalId + ", secMobile=" + secMobile + ", adhaarId="
 				+ adhaarId + ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId
 				+ ", insuranceId=" + insuranceId + ", insuranceName=" + insuranceName + ", userId=" + userId
 				+ ", notes=" + notes + ", PID=" + PID + ", registrationDate=" + registrationDate + ", gender=" + gender
-				+ ", dob=" + dob + "]";
+				+ ", dob=" + dob + ", discarded=" + discarded + ", dateOfVisit=" + dateOfVisit + ", referredBy="
+				+ referredBy + ", address=" + address + "]";
 	}
 }

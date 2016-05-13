@@ -19,7 +19,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.LocationAndAccessControl;
@@ -65,7 +64,7 @@ public class SignUpApi {
     @Context
     private UriInfo uriInfo;
 
-    @Value(value = "${IMAGE_PATH}")
+    @Value(value = "${image.path}")
     private String imagePath;
 
     @Path(value = PathProxy.SignUpUrls.ADMIN_SIGNUP)

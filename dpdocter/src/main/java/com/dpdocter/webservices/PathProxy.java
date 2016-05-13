@@ -129,8 +129,6 @@ public interface PathProxy {
 
 	public static final String DELETE_CLINIC_IMAGE = "/settings/clinicImage/{locationId}/{counter}/delete";
 
-	public static final String ADD_BLOOD_GROUP = "/settings/bloodGroup/add";
-
 	public static final String GET_BLOOD_GROUP = "/settings/bloodGroup";
 
 	public static final String ADD_PROFESSION = "/settings/profession/add";
@@ -581,7 +579,7 @@ public interface PathProxy {
 
     public interface AppointmentUrls {
 
-	public static final String ADD_COUNTRY = "/country/add";
+   	public static final String ADD_COUNTRY = "/country/add";
 
 	public static final String ADD_STATE = "/state/add";
 
@@ -772,5 +770,7 @@ public interface PathProxy {
     public interface PushNotificationUrls {
 
 	public static final String ADD_DEVICE = "/device/add";
+	
+	public static final String BROADCAST_NOTIFICATION = "/broadcast";
     }
 }

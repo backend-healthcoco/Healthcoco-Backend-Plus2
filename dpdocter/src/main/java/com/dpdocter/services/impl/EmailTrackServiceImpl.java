@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.EmailTrack;
 import com.dpdocter.collections.EmailTrackCollection;
@@ -28,6 +29,7 @@ public class EmailTrackServiceImpl implements EmailTackService {
     private EmailTrackRepository emailTrackRepository;
 
     @Override
+    @Transactional
     public List<EmailTrack> getEmailDetails(String patientId, String doctorId, String locationId, String hospitalId, int page, int size) {
 	List<EmailTrack> response = null;
 	List<EmailTrackCollection> emailTrackCollections = null;
@@ -73,6 +75,7 @@ public class EmailTrackServiceImpl implements EmailTackService {
     }
 
     @Override
+    @Transactional
     public void saveEmailTrack(EmailTrackCollection emailTrack) {
 	try {
 	    emailTrackRepository.save(emailTrack);

@@ -54,7 +54,7 @@ public class RecordsApi {
     @Autowired
     private PatientVisitService patientTrackService;
 
-    @Value(value = "${IMAGE_PATH}")
+    @Value(value = "${image.path}")
     private String imagePath;
 
     @Autowired

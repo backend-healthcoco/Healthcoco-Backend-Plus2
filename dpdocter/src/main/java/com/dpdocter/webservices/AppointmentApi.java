@@ -32,14 +32,10 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.EventRequest;
 import com.dpdocter.request.PatientQueueAddEditRequest;
+import com.dpdocter.response.SlotDataResponse;
 import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.TransactionalManagementService;
-import com.dpdocter.solr.beans.Country;
-import com.dpdocter.solr.beans.State;
-import com.dpdocter.solr.document.SolrCityDocument;
-import com.dpdocter.solr.document.SolrCountryDocument;
 import com.dpdocter.solr.document.SolrLocalityLandmarkDocument;
-import com.dpdocter.solr.document.SolrStateDocument;
 import com.dpdocter.solr.services.SolrCityService;
 
 import common.util.web.DPDoctorUtils;
@@ -60,68 +56,68 @@ public class AppointmentApi {
     @Autowired
     private TransactionalManagementService transnationalService;
 
-    @Path(value = PathProxy.AppointmentUrls.ADD_COUNTRY)
-    @POST
-    public Response<Country> addCountry(Country request) {
-	if (request == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Request sent is NULL");
-	} else if (request.getCountry() == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Country cannot be NULL");
-	}
-	Country country = appointmentService.addCountry(request);
-
-	transnationalService.addResource(country.getId(), Resource.COUNTRY, false);
-	SolrCountryDocument solrCountry = new SolrCountryDocument();
-	BeanUtil.map(country, solrCountry);
-	solrCountry.setGeoLocation(new GeoLocation(country.getLatitude(), country.getLongitude()));
-	solrCityService.addCountry(solrCountry);
-
-	Response<Country> response = new Response<Country>();
-	response.setData(country);
-	return response;
-    }
-
-    @Path(value = PathProxy.AppointmentUrls.ADD_STATE)
-    @POST
-    public Response<State> addState(State request) {
-	if (request == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Request sent is NULL");
-	} else if (request.getState() == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Country cannot be NULL");
-	}
-	State state = appointmentService.addState(request);
-
-	transnationalService.addResource(state.getId(), Resource.STATE, false);
-	SolrStateDocument solrState = new SolrStateDocument();
-	BeanUtil.map(state, solrState);
-	solrState.setGeoLocation(new GeoLocation(state.getLatitude(), state.getLongitude()));
-	solrCityService.addState(solrState);
-
-	Response<State> response = new Response<State>();
-	response.setData(state);
-	return response;
-    }
-
-    @Path(value = PathProxy.AppointmentUrls.ADD_CITY)
-    @POST
-    public Response<City> addCity(City request) {
-	if (request == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Request sent is NULL");
-	} else if (request.getCity() == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "City cannot be NULL");
-	}
-	City city = appointmentService.addCity(request);
-
-	transnationalService.addResource(city.getId(), Resource.CITY, false);
-	SolrCityDocument solrCities = new SolrCityDocument();
-	BeanUtil.map(city, solrCities);
-	solrCities.setGeoLocation(new GeoLocation(city.getLatitude(), city.getLongitude()));
-	solrCityService.addCities(solrCities);
-
-	Response<City> response = new Response<City>();
-	response.setData(city);
-	return response;
-    }
+//    @Path(value = PathProxy.AppointmentUrls.ADD_COUNTRY)
+//    @POST
+//    public Response<Country> addCountry(Country request) {
+//	if (request == null) {
+//	    throw new BusinessException(ServiceError.InvalidInput, "Request sent is NULL");
+//	} else if (request.getCountry() == null) {
+//	    throw new BusinessException(ServiceError.InvalidInput, "Country cannot be NULL");
+//	}
+//	Country country = appointmentService.addCountry(request);
+//
+//	transnationalService.addResource(country.getId(), Resource.COUNTRY, false);
+//	SolrCountryDocument solrCountry = new SolrCountryDocument();
+//	BeanUtil.map(country, solrCountry);
+//	solrCountry.setGeoLocation(new GeoLocation(country.getLatitude(), country.getLongitude()));
+//	solrCityService.addCountry(solrCountry);
+//
+//	Response<Country> response = new Response<Country>();
+//	response.setData(country);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.AppointmentUrls.ADD_STATE)
+//    @POST
+//    public Response<State> addState(State request) {
+//	if (request == null) {
+//	    throw new BusinessException(ServiceError.InvalidInput, "Request sent is NULL");
+//	} else if (request.getState() == null) {
+//	    throw new BusinessException(ServiceError.InvalidInput, "Country cannot be NULL");
+//	}
+//	State state = appointmentService.addState(request);
+//
+//	transnationalService.addResource(state.getId(), Resource.STATE, false);
+//	SolrStateDocument solrState = new SolrStateDocument();
+//	BeanUtil.map(state, solrState);
+//	solrState.setGeoLocation(new GeoLocation(state.getLatitude(), state.getLongitude()));
+//	solrCityService.addState(solrState);
+//
+//	Response<State> response = new Response<State>();
+//	response.setData(state);
+//	return response;
+//    }
+//
+//    @Path(value = PathProxy.AppointmentUrls.ADD_CITY)
+//    @POST
+//    public Response<City> addCity(City request) {
+//	if (request == null) {
+//	    throw new BusinessException(ServiceError.InvalidInput, "Request sent is NULL");
+//	} else if (request.getCity() == null) {
+//	    throw new BusinessException(ServiceError.InvalidInput, "City cannot be NULL");
+//	}
+//	City city = appointmentService.addCity(request);
+//
+//	transnationalService.addResource(city.getId(), Resource.CITY, false);
+//	SolrCityDocument solrCities = new SolrCityDocument();
+//	BeanUtil.map(city, solrCities);
+//	solrCities.setGeoLocation(new GeoLocation(city.getLatitude(), city.getLongitude()));
+//	solrCityService.addCities(solrCities);
+//
+//	Response<City> response = new Response<City>();
+//	response.setData(city);
+//	return response;
+//    }
 
     @Path(value = PathProxy.AppointmentUrls.ACTIVATE_DEACTIVATE_CITY)
     @GET
@@ -141,26 +137,26 @@ public class AppointmentApi {
 
     @Path(value = PathProxy.AppointmentUrls.GET_COUNTRIES)
     @GET
-    public Response<Country> getCountries() {
-	List<Country> countries = appointmentService.getCountries();
-	Response<Country> response = new Response<Country>();
+    public Response<City> getCountries() {
+	List<City> countries = appointmentService.getCountries();
+	Response<City> response = new Response<City>();
 	response.setDataList(countries);
 	return response;
     }
 
     @Path(value = PathProxy.AppointmentUrls.GET_STATES)
     @GET
-    public Response<State> getStates(@QueryParam(value = "countryId") String countryId) {
-	List<State> states = appointmentService.getStates(countryId);
-	Response<State> response = new Response<State>();
+    public Response<City> getStates(@QueryParam(value = "country") String country) {
+	List<City> states = appointmentService.getStates(country);
+	Response<City> response = new Response<City>();
 	response.setDataList(states);
 	return response;
     }
 
     @Path(value = PathProxy.AppointmentUrls.GET_CITY)
     @GET
-    public Response<City> getCities(@QueryParam(value = "stateId") String stateId) {
-	List<City> cities = appointmentService.getCities(stateId);
+    public Response<City> getCities(@QueryParam(value = "state") String state) {
+	List<City> cities = appointmentService.getCities(state);
 	Response<City> response = new Response<City>();
 	response.setDataList(cities);
 	return response;
@@ -267,14 +263,15 @@ public class AppointmentApi {
 
     @Path(value = PathProxy.AppointmentUrls.GET_TIME_SLOTS)
     @GET
-    public Response<Slot> getTimeSlots(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId, @PathParam("date") String date) {
-	Response<Slot> response = new Response<Slot>();
+    public Response<SlotDataResponse> getTimeSlots(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId, @PathParam("date") String date) {
+	
 	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
 	}
 	Date dateObj = new Date(Long.parseLong(date));
-	List<Slot> timeSlots = appointmentService.getTimeSlots(doctorId, locationId, dateObj);
-	response.setDataList(timeSlots);
+	SlotDataResponse slotDataResponse = appointmentService.getTimeSlots(doctorId, locationId, dateObj);
+	Response<SlotDataResponse> response = new Response<SlotDataResponse>();
+	response.setData(slotDataResponse);
 	return response;
     }
 

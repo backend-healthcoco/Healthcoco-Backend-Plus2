@@ -1,10 +1,16 @@
 package com.dpdocter.collections;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "group_cl")
+@CompoundIndexes({
+    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
+})
 public class GroupCollection extends GenericCollection {
 
     @Id
@@ -16,7 +22,7 @@ public class GroupCollection extends GenericCollection {
     @Field
     private String explanation;
 
-    @Field
+    @Indexed
     private String doctorId;
 
     @Field

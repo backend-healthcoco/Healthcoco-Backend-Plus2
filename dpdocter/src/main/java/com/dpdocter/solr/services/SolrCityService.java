@@ -4,9 +4,7 @@ import java.util.List;
 
 import com.dpdocter.solr.beans.SolrCityLandmarkLocalityResponse;
 import com.dpdocter.solr.document.SolrCityDocument;
-import com.dpdocter.solr.document.SolrCountryDocument;
 import com.dpdocter.solr.document.SolrLocalityLandmarkDocument;
-import com.dpdocter.solr.document.SolrStateDocument;
 
 public interface SolrCityService {
 
@@ -21,9 +19,5 @@ public interface SolrCityService {
     List<SolrLocalityLandmarkDocument> searchLandmarkLocality(String cityId, String type, String searchTerm);
 
     List<SolrCityLandmarkLocalityResponse> searchCityLandmarkLocality(String searchTerm, String latitude, String longitude);
-
-    boolean addCountry(SolrCountryDocument solrCountry);
-
-    boolean addState(SolrStateDocument solrState);
 
 }

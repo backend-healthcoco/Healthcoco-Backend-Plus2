@@ -35,7 +35,7 @@ public class AdminAPI {
 	@Autowired
 	AdminServices adminServices;
 	
-    @Value(value = "${IMAGE_PATH}")
+    @Value(value = "${image.path}")
     private String imagePath;
 
 	@Path(value = PathProxy.AdminUrls.GET_INACTIVE_USERS)

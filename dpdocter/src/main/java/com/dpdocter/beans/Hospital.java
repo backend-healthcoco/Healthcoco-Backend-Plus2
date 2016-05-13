@@ -19,6 +19,8 @@ public class Hospital {
 
     private List<LocationAndAccessControl> locationsAndAccessControl = new ArrayList<LocationAndAccessControl>();
 
+    private String hospitalUId;
+    
     public String getId() {
 	return id;
     }
@@ -67,9 +69,18 @@ public class Hospital {
 	this.locationsAndAccessControl = locationsAndAccessControl;
     }
 
-    @Override
-    public String toString() {
-	return "Hospital [id=" + id + ", hospitalName=" + hospitalName + ", hospitalPhoneNumber=" + hospitalPhoneNumber + ", hospitalImageUrl="
-		+ hospitalImageUrl + ", hospitalDescription=" + hospitalDescription + ", locationsAndAccessControl=" + locationsAndAccessControl + "]";
-    }
+	public String getHospitalUId() {
+		return hospitalUId;
+	}
+
+	public void setHospitalUId(String hospitalUId) {
+		this.hospitalUId = hospitalUId;
+	}
+
+	@Override
+	public String toString() {
+		return "Hospital [id=" + id + ", hospitalName=" + hospitalName + ", hospitalPhoneNumber=" + hospitalPhoneNumber
+				+ ", hospitalImageUrl=" + hospitalImageUrl + ", hospitalDescription=" + hospitalDescription
+				+ ", locationsAndAccessControl=" + locationsAndAccessControl + ", hospitalUId=" + hospitalUId + "]";
+	}
 }

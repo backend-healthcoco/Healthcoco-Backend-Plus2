@@ -36,7 +36,7 @@ public class SolrAppointmentApi {
     @Autowired
     private SolrAppointmentService solrAppointmentService;
 
-    @Value(value = "${IMAGE_PATH}")
+    @Value(value = "${image.path}")
     private String imagePath;
 
     @Path(value = PathProxy.SolrAppointmentUrls.SEARCH)
@@ -70,10 +70,11 @@ public class SolrAppointmentApi {
 
     @Path(value = PathProxy.SolrAppointmentUrls.GET_LABS)
     @GET
-    public Response<LabResponse> getLabs(@QueryParam("city") String city, @QueryParam("location") String location,
-	    @QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude, @QueryParam("test") String test) {
+    public Response<LabResponse> getLabs(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("city") String city, @QueryParam("location") String location,
+	    @QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude, @QueryParam("test") String test,
+	    @QueryParam("booking") Boolean booking, @QueryParam("calling") Boolean calling) {
 
-	List<LabResponse> doctors = solrAppointmentService.getLabs(city, location, latitude, longitude, test);
+	List<LabResponse> doctors = solrAppointmentService.getLabs(page, size, city, location, latitude, longitude, test, booking, calling);
 
 	if (doctors != null && !doctors.isEmpty()) {
 	    for (LabResponse doctorDocument : doctors) {

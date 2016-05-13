@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Age;
 import com.dpdocter.beans.DiagnosticTest;
@@ -51,7 +52,6 @@ import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.GenericCodeCollection;
 import com.dpdocter.collections.LabTestCollection;
 import com.dpdocter.collections.LocationCollection;
-import com.dpdocter.collections.PatientAdmissionCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
@@ -80,13 +80,11 @@ import com.dpdocter.repository.DrugTypeRepository;
 import com.dpdocter.repository.GenericCodeRepository;
 import com.dpdocter.repository.LabTestRepository;
 import com.dpdocter.repository.LocationRepository;
-import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.ReferenceRepository;
-import com.dpdocter.repository.SMSFormatRepository;
 import com.dpdocter.repository.TemplateRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DrugAddEditRequest;
@@ -113,11 +111,11 @@ import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.PrescriptionServices;
+import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrDiagnosticTestDocument;
 import com.dpdocter.solr.document.SolrDrugDocument;
-import com.dpdocter.solr.repository.SolrDiagnosticTestRepository;
 import com.dpdocter.solr.services.SolrPrescriptionService;
 
 import common.util.web.DPDoctorUtils;
@@ -180,9 +178,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     private EmailTackService emailTackService;
 
     @Autowired
-    private PatientAdmissionRepository patientAdmissionRepository;
-
-    @Autowired
     private LabTestRepository labTestRepository;
 
     @Autowired
@@ -198,21 +193,19 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     private SolrPrescriptionService solrPrescriptionService;
 
     @Autowired
-    private SolrDiagnosticTestRepository solrDiagnosticTestRepository;
-   
-    @Autowired
     private TransactionalManagementService transnationalService;
 
-    @Value(value = "${IMAGE_PATH}")
+    @Autowired
+	PushNotificationServices pushNotificationServices;
+	
+    @Value(value = "${image.path}")
     private String imagePath;
 
     @Value(value = "${Prescription.checkPrescriptionExists}")
     private String checkPrescriptionExists;
-
-    @Autowired
-    private SMSFormatRepository sMSFormatRepository;
     
     @Override
+    @Transactional
     public DrugAddEditResponse addDrug(DrugAddEditRequest request) {
 	DrugAddEditResponse response = null;
 	DrugCollection drugCollection = new DrugCollection();
@@ -250,6 +243,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public DrugAddEditResponse editDrug(DrugAddEditRequest request) {
 	DrugAddEditResponse response = null;
 	DrugCollection drugCollection = new DrugCollection();
@@ -287,6 +281,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public Boolean deleteDrug(String drugId, String doctorId, String hospitalId, String locationId, Boolean discarded) {
 	Boolean response = false;
 	DrugCollection drugCollection = null;
@@ -321,6 +316,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public Boolean deleteDrug(String drugId, Boolean discarded) {
 	Boolean response = false;
 	DrugCollection drugCollection = null;
@@ -344,6 +340,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public DrugAddEditResponse getDrugById(String drugId) {
 	DrugAddEditResponse drugAddEditResponse = null;
 	try {
@@ -364,6 +361,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public TemplateAddEditResponse addTemplate(TemplateAddEditRequest request) {
 	TemplateAddEditResponse response = null;
 	TemplateCollection templateCollection = new TemplateCollection();
@@ -371,6 +369,31 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	try {
 	    Date createdTime = new Date();
 	    templateCollection.setCreatedTime(createdTime);
+	    List<TemplateItem> items = null;
+		for (TemplateItem item : templateCollection.getItems()) {
+		    if (item.getDrugId() != null) {
+			List<DrugDirection> directions = null;
+			if (item.getDirection() != null && !item.getDirection().isEmpty()) {
+			    for (DrugDirection drugDirection : item.getDirection()) {
+				if (drugDirection != null && !DPDoctorUtils.anyStringEmpty(drugDirection.getId())) {
+				    if (directions == null)
+					directions = new ArrayList<DrugDirection>();
+				    directions.add(drugDirection);
+				}
+			    }
+			    item.setDirection(directions);
+			}
+			if (item.getDuration() != null && item.getDuration().getDurationUnit() != null) {
+			    if (item.getDuration().getDurationUnit().getId() == null)
+				item.getDuration().setDurationUnit(null);
+			}
+			if (items == null)
+			    items = new ArrayList<TemplateItem>();
+			items.add(item);
+		    }
+		}
+		templateCollection.setItems(items);
+	    
 	    templateCollection = templateRepository.save(templateCollection);
 	    response = new TemplateAddEditResponse();
 	    BeanUtil.map(templateCollection, response);
@@ -383,6 +406,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public TemplateAddEditResponseDetails editTemplate(TemplateAddEditRequest request) {
 	TemplateAddEditResponseDetails response = null;
 	TemplateAddEditResponse template = null;
@@ -393,6 +417,30 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    templateCollection.setCreatedBy(oldTemplate.getCreatedBy());
 	    templateCollection.setCreatedTime(oldTemplate.getCreatedTime());
 	    templateCollection.setDiscarded(oldTemplate.getDiscarded());
+	    List<TemplateItem> items = null;
+		for (TemplateItem item : templateCollection.getItems()) {
+		    if (item.getDrugId() != null) {
+			List<DrugDirection> directions = null;
+			if (item.getDirection() != null && !item.getDirection().isEmpty()) {
+			    for (DrugDirection drugDirection : item.getDirection()) {
+				if (drugDirection != null && !DPDoctorUtils.anyStringEmpty(drugDirection.getId())) {
+				    if (directions == null)
+					directions = new ArrayList<DrugDirection>();
+				    directions.add(drugDirection);
+				}
+			    }
+			    item.setDirection(directions);
+			}
+			if (item.getDuration() != null && item.getDuration().getDurationUnit() != null) {
+			    if (item.getDuration().getDurationUnit().getId() == null)
+				item.getDuration().setDurationUnit(null);
+			}
+			if (items == null)
+			    items = new ArrayList<TemplateItem>();
+			items.add(item);
+		    }
+		}
+		templateCollection.setItems(items);
 	    templateCollection = templateRepository.save(templateCollection);
 	    template = new TemplateAddEditResponse();
 	    BeanUtil.map(templateCollection, template);
@@ -422,6 +470,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public Boolean deleteTemplate(String templateId, String doctorId, String hospitalId, String locationId, Boolean discarded) {
 	Boolean response = false;
 	TemplateCollection templateCollection = null;
@@ -456,6 +505,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public TemplateAddEditResponseDetails getTemplate(String templateId, String doctorId, String hospitalId, String locationId) {
 	TemplateAddEditResponseDetails response = null;
 	TemplateCollection templateCollection = new TemplateCollection();
@@ -487,11 +537,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public PrescriptionAddEditResponse addPrescription(PrescriptionAddEditRequest request) {
 	PrescriptionAddEditResponse response = null;
-	PrescriptionCollection prescriptionCollection = new PrescriptionCollection();
-	BeanUtil.map(request, prescriptionCollection);
 	try {
+		PrescriptionCollection prescriptionCollection = new PrescriptionCollection();
+		List<DiagnosticTest> diagnosticTests = request.getDiagnosticTests();
+		request.setDiagnosticTests(null);
+		BeanUtil.map(request, prescriptionCollection);
+		
 		UserCollection userCollection = userRepository.findOne(prescriptionCollection.getDoctorId());
 	    Date createdTime = new Date();
 	    prescriptionCollection.setCreatedTime(createdTime);
@@ -504,7 +558,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			List<DrugDirection> directions = null;
 			if (item.getDirection() != null && !item.getDirection().isEmpty()) {
 			    for (DrugDirection drugDirection : item.getDirection()) {
-				if (drugDirection != null && DPDoctorUtils.anyStringEmpty(drugDirection.getId())) {
+				if (drugDirection != null && !DPDoctorUtils.anyStringEmpty(drugDirection.getId())) {
 				    if (directions == null)
 					directions = new ArrayList<DrugDirection>();
 				    directions.add(drugDirection);
@@ -523,9 +577,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		prescriptionCollection.setItems(items);
 	    }
-	    if (request.getDiagnosticTests() != null) {
+	    if (diagnosticTests != null) {
 		List<TestAndRecordData> tests = null;
-		for (DiagnosticTest diagnosticTest : request.getDiagnosticTests()) {
+		for (DiagnosticTest diagnosticTest : diagnosticTests) {
 			
 		    if (diagnosticTest.getId() != null) {
 		    	if (tests == null)tests = new ArrayList<TestAndRecordData>();
@@ -549,7 +603,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
        				tests.add(new TestAndRecordData(diagnosticTestCollection.getId(),null));
 		    	}
 		    }
-		prescriptionCollection.setTests(tests);
+		prescriptionCollection.setDiagnosticTests(tests);
 	    }
 	    
 	    if (userCollection != null) {
@@ -557,8 +611,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    }
 	    prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 	    response = new PrescriptionAddEditResponse();
-	    List<TestAndRecordData> prescriptionTest = prescriptionCollection.getTests();
-	    prescriptionCollection.setTests(null);
+	    List<TestAndRecordData> prescriptionTest = prescriptionCollection.getDiagnosticTests();
+	    prescriptionCollection.setDiagnosticTests(null);
 	    BeanUtil.map(prescriptionCollection, response);
 	    if(prescriptionTest != null && !prescriptionTest.isEmpty()){
 			List<TestAndRecordDataResponse> tests = new ArrayList<TestAndRecordDataResponse>();
@@ -570,9 +624,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    		}
 		    		tests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
 		    }
-		   response.setTests(tests);
+		   response.setDiagnosticTests(tests);
 		}
 	    response.setVisitId(request.getVisitId());
+	    pushNotificationServices.notifyUser(prescriptionCollection.getPatientId(), "Prescription:"+prescriptionCollection.getUniqueEmrId()+" is added by doctor");
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Prescription");
@@ -582,12 +637,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public PrescriptionAddEditResponseDetails editPrescription(PrescriptionAddEditRequest request) {
 	PrescriptionAddEditResponseDetails response = null;
 	PrescriptionAddEditResponse prescription = null;
-	PrescriptionCollection prescriptionCollection = new PrescriptionCollection();
-	BeanUtil.map(request, prescriptionCollection);
 	try {
+		PrescriptionCollection prescriptionCollection = new PrescriptionCollection();
+		List<DiagnosticTest> diagnosticTests = request.getDiagnosticTests();
+		request.setDiagnosticTests(null);
+		BeanUtil.map(request, prescriptionCollection);
 		UserCollection userCollection = userRepository.findOne(prescriptionCollection.getDoctorId());
 	    PrescriptionCollection oldPrescription = prescriptionRepository.findOne(request.getId());
 	    prescriptionCollection.setCreatedBy(oldPrescription.getCreatedBy());
@@ -600,7 +658,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    List<DrugDirection> directions = null;
 		    if (item.getDirection() != null  && !item.getDirection().isEmpty()) {
 			for (DrugDirection drugDirection : item.getDirection()) {
-			    if (drugDirection != null && DPDoctorUtils.anyStringEmpty(drugDirection.getId())) {
+			    if (drugDirection != null && !DPDoctorUtils.anyStringEmpty(drugDirection.getId())) {
 				if (directions == null)
 				    directions = new ArrayList<DrugDirection>();
 				directions.add(drugDirection);
@@ -614,9 +672,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    }
 		}
 	    }
-	    if (request.getDiagnosticTests() != null) {
+	    if (diagnosticTests != null) {
 			List<TestAndRecordData> tests = null;
-			for (DiagnosticTest diagnosticTest : request.getDiagnosticTests()) {
+			for (DiagnosticTest diagnosticTest : diagnosticTests) {
 			    if (diagnosticTest.getId() != null) {
 			    	if (tests == null)tests = new ArrayList<TestAndRecordData>();
 					tests.add(new TestAndRecordData(diagnosticTest.getId(),null));
@@ -638,12 +696,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    			tests.add(new TestAndRecordData(diagnosticTestCollection.getId(), null));
 			    	}
 			    }
-			prescriptionCollection.setTests(tests);
+			prescriptionCollection.setDiagnosticTests(tests);
 		}
 	    prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 	    prescription = new PrescriptionAddEditResponse();
-	    List<TestAndRecordData> prescriptionTests = prescriptionCollection.getTests();
-	    prescriptionCollection.setTests(null);
+	    List<TestAndRecordData> prescriptionTests = prescriptionCollection.getDiagnosticTests();
+	    prescriptionCollection.setDiagnosticTests(null);
 	    BeanUtil.map(prescriptionCollection, prescription);
 
 	    if (prescription != null) {
@@ -672,8 +730,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    		}
 		    		tests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
 		    }
-		   response.setTests(tests);
+		   response.setDiagnosticTests(tests);
 		}
+	    pushNotificationServices.notifyUser(prescriptionCollection.getPatientId(), "Prescription:"+prescriptionCollection.getUniqueEmrId()+" is edited by doctor");
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Prescription");
@@ -683,6 +742,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public Boolean deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId, String patientId, Boolean discarded) {
 	Boolean response = false;
 	PrescriptionCollection prescriptionCollection = null;
@@ -697,6 +757,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			prescriptionCollection.setUpdatedTime(new Date());
 			prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 			response = true;
+			pushNotificationServices.notifyUser(patientId, "Prescription:"+prescriptionCollection.getUniqueEmrId()+" is discarded");
 		    } else {
 			logger.warn("Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");
 			throw new BusinessException(ServiceError.NotAuthorized, "Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");
@@ -718,6 +779,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public List<Prescription> getPrescriptions(int page, int size, String doctorId, String hospitalId, String locationId, String patientId, String updatedTime,
 	    boolean isOTPVerified, boolean discarded, boolean inHistory) {
 	List<PrescriptionCollection> prescriptionCollections = null;
@@ -730,10 +792,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	inHistorys[1] = true;
 
 	try {
-	    if (discarded)
-		discards[1] = true;
-	    if (!inHistory)
-		inHistorys[1] = false;
+	    if (discarded)discards[1] = true;
+	    if (!inHistory)inHistorys[1] = false;
 
 	    long createdTimestamp = Long.parseLong(updatedTime);
 
@@ -760,6 +820,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		else
 		    prescriptionCollections = prescriptionRepository.getPrescription(patientId, new Date(createdTimestamp), discards, inHistorys, new Sort(
 			    Sort.Direction.DESC, "createdTime"));
+	    pushNotificationServices.notifyUser(patientId, "Global records");
 	    }
 
 	    if (prescriptionCollections != null) {
@@ -767,8 +828,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
 		    
 			Prescription prescription = new Prescription();
-			List<TestAndRecordData> tests = prescriptionCollection.getTests();
-			prescriptionCollection.setTests(null);
+			List<TestAndRecordData> tests = prescriptionCollection.getDiagnosticTests();
+			prescriptionCollection.setDiagnosticTests(null);
 			BeanUtil.map(prescriptionCollection, prescription);
 			if (prescriptionCollection.getItems() != null) {
 			List<PrescriptionItemDetail> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetail>();
@@ -790,7 +851,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (patientVisitCollection != null) prescription.setVisitId(patientVisitCollection.getId());
 			
 			if(tests != null && !tests.isEmpty()){
-				List<TestAndRecordDataResponse> labTests = new ArrayList<TestAndRecordDataResponse>();
+				List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
 			    	for(TestAndRecordData data : tests){
 			    		if(data.getTestId() != null){
 			    			DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(data.getTestId());
@@ -798,10 +859,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				    		if(diagnosticTestCollection !=null){
 				    			BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 				    		}
-				    		labTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
+				    		diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
 			    		}
 			    }
-			prescription.setTests(labTests);
+			prescription.setDiagnosticTests(diagnosticTests);
 			}
 			prescriptions.add(prescription);
 		}
@@ -818,6 +879,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     @SuppressWarnings("unchecked")
     public List<Prescription> getPrescriptionsByIds(List<String> prescriptionIds) {
 	List<PrescriptionCollection> prescriptionCollections = null;
@@ -833,8 +895,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
 		    
 			Prescription prescription = new Prescription();
-			List<TestAndRecordData> tests = prescriptionCollection.getTests();
-			prescriptionCollection.setTests(null);
+			List<TestAndRecordData> tests = prescriptionCollection.getDiagnosticTests();
+			prescriptionCollection.setDiagnosticTests(null);
 			BeanUtil.map(prescriptionCollection, prescription);
 			if (prescriptionCollection.getItems() != null) {
 			List<PrescriptionItemDetail> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetail>();
@@ -855,7 +917,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (patientVisitCollection != null)prescription.setVisitId(patientVisitCollection.getId());
 			
 			if(tests != null && !tests.isEmpty()){
-				List<TestAndRecordDataResponse> labTests = new ArrayList<TestAndRecordDataResponse>();
+				List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
 			    	for(TestAndRecordData data : tests){
 			    		if(data.getTestId() != null){
 			    			DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(data.getTestId());
@@ -863,10 +925,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				    		if(diagnosticTestCollection !=null){
 				    			BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 				    		}
-				    		labTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
+				    		diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
 			    		}
 			    }
-			prescription.setTests(labTests);
+			prescription.setDiagnosticTests(diagnosticTests);
 			}
 			prescriptions.add(prescription);
 		}
@@ -883,6 +945,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public List<TemplateAddEditResponseDetails> getTemplates(int page, int size, String doctorId, String hospitalId, String locationId, String updatedTime,
 	    boolean discarded) {
 	List<TemplateAddEditResponseDetails> response = null;
@@ -900,7 +963,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    Direction.DESC, "createdTime"));
 		else
 		    templateCollections = templateRepository.getTemplates(doctorId, new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC,
-			    "updatedTime"));
+			    "createdTime"));
 	    } else {
 		if (size > 0)
 		    templateCollections = templateRepository.getTemplates(doctorId, hospitalId, locationId, new Date(createdTimeStamp), discards,
@@ -943,6 +1006,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public Integer getPrescriptionCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified) {
 	Integer prescriptionCount = 0;
 	try {
@@ -957,6 +1021,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public TemplateAddEditResponseDetails addTemplateHandheld(TemplateAddEditRequest request) {
 	TemplateAddEditResponseDetails response = null;
 	TemplateAddEditResponse template = addTemplate(request);
@@ -982,15 +1047,16 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public PrescriptionAddEditResponseDetails addPrescriptionHandheld(PrescriptionAddEditRequest request) {
 	PrescriptionAddEditResponseDetails response = null;
 	PrescriptionAddEditResponse prescription = addPrescription(request);
 	if (prescription != null) {
 	    response = new PrescriptionAddEditResponseDetails();
-	    List<TestAndRecordDataResponse> prescriptionTest = prescription.getTests();
-	    prescription.setTests(null);
+	    List<TestAndRecordDataResponse> prescriptionTest = prescription.getDiagnosticTests();
+	    prescription.setDiagnosticTests(null);
 	    BeanUtil.map(prescription, response);
-	    response.setTests(prescriptionTest);
+	    response.setDiagnosticTests(prescriptionTest);
 	    List<PrescriptionItemDetail> prescriptionItemDetails = new ArrayList<PrescriptionItemDetail>();
 	    if (prescription.getItems() != null) {
 		for (PrescriptionItem prescriptionItem : prescription.getItems()) {
@@ -1011,6 +1077,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public DrugTypeAddEditResponse addDrugType(DrugTypeAddEditRequest request) {
 	DrugTypeAddEditResponse response = null;
 
@@ -1031,6 +1098,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public DrugTypeAddEditResponse editDrugType(DrugTypeAddEditRequest request) {
 
 	DrugTypeAddEditResponse response = null;
@@ -1055,6 +1123,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public Boolean deleteDrugType(String drugTypeId, Boolean discarded) {
 
 	Boolean response = false;
@@ -1079,6 +1148,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public DrugStrengthAddEditResponse addDrugStrength(DrugStrengthAddEditRequest request) {
 
 	DrugStrengthAddEditResponse response = null;
@@ -1099,6 +1169,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public DrugStrengthAddEditResponse editDrugStrength(DrugStrengthAddEditRequest request) {
 
 	DrugStrengthAddEditResponse response = null;
@@ -1122,6 +1193,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public Boolean deleteDrugStrength(String drugStrengthId, Boolean discarded) {
 
 	Boolean response = false;
@@ -1146,6 +1218,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public DrugDosageAddEditResponse addDrugDosage(DrugDosageAddEditRequest request) {
 
 	DrugDosageAddEditResponse response = null;
@@ -1166,6 +1239,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public DrugDosageAddEditResponse editDrugDosage(DrugDosageAddEditRequest request) {
 
 	DrugDosageAddEditResponse response = null;
@@ -1189,6 +1263,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public Boolean deleteDrugDosage(String drugDosageId, Boolean discarded) {
 	Boolean response = false;
 	DrugDosageCollection drugDosageCollection = null;
@@ -1212,6 +1287,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public DrugDirectionAddEditResponse addDrugDirection(DrugDirectionAddEditRequest request) {
 
 	DrugDirectionAddEditResponse response = null;
@@ -1232,6 +1308,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public DrugDirectionAddEditResponse editDrugDirection(DrugDirectionAddEditRequest request) {
 
 	DrugDirectionAddEditResponse response = null;
@@ -1256,6 +1333,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public Boolean deleteDrugDirection(String drugDirectionId, Boolean discarded) {
 	Boolean response = false;
 	DrugDirectionCollection drugDirectionCollection = null;
@@ -1279,6 +1357,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public DrugDurationUnitAddEditResponse addDrugDurationUnit(DrugDurationUnitAddEditRequest request) {
 
 	DrugDurationUnitAddEditResponse response = null;
@@ -1299,6 +1378,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public DrugDurationUnitAddEditResponse editDrugDurationUnit(DrugDurationUnitAddEditRequest request) {
 
 	DrugDurationUnitAddEditResponse response = null;
@@ -1323,6 +1403,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public Boolean deleteDrugDurationUnit(String drugDurationUnitId, Boolean discarded) {
 	Boolean response = false;
 	DrugDurationUnitCollection drugDurationUnitCollection = null;
@@ -1346,6 +1427,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public Prescription getPrescriptionById(String prescriptionId) {
 	Prescription prescription = null;
 	try {
@@ -1362,8 +1444,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    if (prescriptionCollections != null && !prescriptionCollections.isEmpty()) {
 		for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
 		    prescription = new Prescription();
-		    List<TestAndRecordData> tests = prescriptionCollection.getTests();
-			prescriptionCollection.setTests(null);
+		    List<TestAndRecordData> tests = prescriptionCollection.getDiagnosticTests();
+			prescriptionCollection.setDiagnosticTests(null);
 		    BeanUtil.map(prescriptionCollection, prescription);
 		    if (prescriptionCollection.getItems() != null && !prescriptionCollection.getItems().isEmpty()) {
 			List<PrescriptionItemDetail> prescriptionItemDetails = new ArrayList<PrescriptionItemDetail>();
@@ -1378,11 +1460,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    }
 			    prescriptionItemDetails.add(prescriptionItemDetail);
 			}
-			PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(prescription.getId());
+			prescription.setItems(prescriptionItemDetails);
+		    }
+		    PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(prescription.getId());
 			if (patientVisitCollection != null)prescription.setVisitId(patientVisitCollection.getId());
 			
 			if(tests != null && !tests.isEmpty()){
-				List<TestAndRecordDataResponse> labTests = new ArrayList<TestAndRecordDataResponse>();
+				List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
 			    	for(TestAndRecordData data : tests){
 			    		if(data.getTestId() != null){
 			    			DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(data.getTestId());
@@ -1390,13 +1474,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				    		if(diagnosticTestCollection !=null){
 				    			BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 				    		}
-				    		labTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
+				    		diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
 			    		}
 			    }
-			prescription.setTests(labTests);
+			prescription.setDiagnosticTests(diagnosticTests);
 			}
-			prescription.setItems(prescriptionItemDetails);
-		    }
 		}
 
 	    } else {
@@ -1411,6 +1493,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public List<Object> getPrescriptionItems(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId,
 	    String updatedTime, Boolean discarded) {
 
@@ -1559,7 +1642,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
 		labTestCollections = labTestRepository.getGlobalLabTests(new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC,
-			"updatedTime"));
+			"createdTime"));
 
 	    else
 		labTestCollections = labTestRepository.getGlobalLabTests(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
@@ -1624,7 +1707,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    Direction.DESC, "createdTime"));
 		else
 		    labTestCollections = labTestRepository.getCustomGlobalLabTests(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC,
-			    "updatedTime"));
+			    "createdTime"));
 	    } else {
 		if (size > 0)
 		    labTestCollections = labTestRepository.getCustomGlobalLabTests(hospitalId, locationId, new Date(createdTimeStamp), discards,
@@ -1690,7 +1773,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    if (locationId == null && hospitalId == null) {
 		if (size > 0)
 		    drugCollections = drugRepository.getCustomDrugs(doctorId, new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC,
-			    "updatedTime"));
+			    "createdTime"));
 		else
 		    drugCollections = drugRepository.getCustomDrugs(doctorId, new Date(createdTimeStamp), discards,
 			    new Sort(Sort.Direction.DESC, "createdTime"));
@@ -1727,7 +1810,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    if (doctorId == null) {
 		if (size > 0)
 		    drugCollections = drugRepository.getCustomGlobalDrugs(new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC,
-			    "updatedTime"));
+			    "createdTime"));
 		else
 		    drugCollections = drugRepository.getCustomGlobalDrugs(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
 
@@ -1738,7 +1821,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				Direction.DESC, "createdTime"));
 		    else
 			drugCollections = drugRepository.getCustomGlobalDrugs(doctorId, new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC,
-				"updatedTime"));
+				"createdTime"));
 		} else {
 		    if (size > 0)
 			drugCollections = drugRepository.getCustomGlobalDrugs(doctorId, hospitalId, locationId, new Date(createdTimeStamp), discards,
@@ -1772,7 +1855,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	    if (size > 0)
 		drugTypeCollections = drugTypeRepository.getGlobalDrugType(new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC,
-			"updatedTime"));
+			"createdTime"));
 	    else
 		drugTypeCollections = drugTypeRepository.getGlobalDrugType(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
 
@@ -1846,7 +1929,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    Direction.DESC, "createdTime"));
 		else
 		    drugTypeCollections = drugTypeRepository.getCustomGlobalDrugType(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC,
-			    "updatedTime"));
+			    "createdTime"));
 	    } else {
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
@@ -1891,7 +1974,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			Direction.DESC, "createdTime"));
 	    else
 		drugDirectionCollections = drugDirectionRepository.getGlobalDrugDirection(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC,
-			"updatedTime"));
+			"createdTime"));
 
 	    if (!drugDirectionCollections.isEmpty()) {
 		response = new ArrayList<Object>();
@@ -2008,7 +2091,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			Direction.DESC, "createdTime"));
 	    else
 		drugDosageCollections = drugDosageRepository.getGlobalDrugDosage(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC,
-			"updatedTime"));
+			"createdTime"));
 
 	    if (!drugDosageCollections.isEmpty()) {
 		response = new ArrayList<Object>();
@@ -2080,7 +2163,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    Direction.DESC, "createdTime"));
 		else
 		    drugDosageCollections = drugDosageRepository.getCustomGlobalDrugDosage(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC,
-			    "updatedTime"));
+			    "createdTime"));
 	    } else if (locationId == null && hospitalId == null) {
 		if (size > 0)
 		    drugDosageCollections = drugDosageRepository.getCustomGlobalDrugDosage(doctorId, new Date(createdTimeStamp), discards, new PageRequest(
@@ -2234,13 +2317,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		if (discarded) {
 		    if (size > 0)
 			drugStrengthUnitCollections = drugStrengthRepository.getGlobalDrugStrengthUnit(new PageRequest(page, size, Direction.DESC,
-				"updatedTime"));
+				"createdTime"));
 		    else
 			drugStrengthUnitCollections = drugStrengthRepository.getGlobalDrugStrengthUnit(new Sort(Sort.Direction.DESC, "createdTime"));
 		} else {
 		    if (size > 0)
 			drugStrengthUnitCollections = drugStrengthRepository.getGlobalDrugStrengthUnit(discarded, new PageRequest(page, size, Direction.DESC,
-				"updatedTime"));
+				"createdTime"));
 		    else
 			drugStrengthUnitCollections = drugStrengthRepository.getGlobalDrugStrengthUnit(discarded, new Sort(Sort.Direction.DESC, "createdTime"));
 		}
@@ -2289,14 +2372,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				    Direction.DESC, "createdTime"));
 			else
 			    drugStrengthUnitCollections = drugStrengthRepository.getCustomDrugStrengthUnit(doctorId, new Sort(Sort.Direction.DESC,
-				    "updatedTime"));
+				    "createdTime"));
 		    } else {
 			if (size > 0)
 			    drugStrengthUnitCollections = drugStrengthRepository.getCustomDrugStrengthUnit(doctorId, discarded, new PageRequest(page, size,
 				    Direction.DESC, "createdTime"));
 			else
 			    drugStrengthUnitCollections = drugStrengthRepository.getCustomDrugStrengthUnit(doctorId, discarded, new Sort(Sort.Direction.DESC,
-				    "updatedTime"));
+				    "createdTime"));
 		    }
 		} else {
 		    if (discarded) {
@@ -2399,7 +2482,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				    Direction.DESC, "createdTime"));
 			else
 			    drugStrengthUnitCollections = drugStrengthRepository.getCustomGlobalDrugStrengthUnit(discarded, new Sort(Sort.Direction.DESC,
-				    "updatedTime"));
+				    "createdTime"));
 		    }
 		}
 	    } else if (DPDoctorUtils.anyStringEmpty(updatedTime)) {
@@ -2410,7 +2493,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				    Direction.DESC, "createdTime"));
 			else
 			    drugStrengthUnitCollections = drugStrengthRepository.getCustomGlobalDrugStrengthUnit(doctorId, new Sort(Sort.Direction.DESC,
-				    "updatedTime"));
+				    "createdTime"));
 		    } else {
 			if (size > 0)
 			    drugStrengthUnitCollections = drugStrengthRepository.getCustomGlobalDrugStrengthUnit(doctorId, discarded, new PageRequest(page,
@@ -2485,6 +2568,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public void emailPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String emailAddress) {
 	try {
 	    MailAttachment mailAttachment = createMailDate(prescriptionId, doctorId, locationId, hospitalId);
@@ -2496,6 +2580,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public MailAttachment getPrescriptionMailData(String prescriptionId, String doctorId, String locationId, String hospitalId) {
 	return createMailDate(prescriptionId, doctorId, locationId, hospitalId);
     }
@@ -2506,7 +2591,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	MailAttachment mailAttachment = null;
 	List<PrescriptionJasperDetails> prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
 	PatientCollection patient = null;
-	PatientAdmissionCollection patientAdmission = null;
 	UserCollection user = null;
 	EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 	try {
@@ -2517,6 +2601,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    if (prescriptionCollection.getDoctorId().equals(doctorId) && prescriptionCollection.getHospitalId().equals(hospitalId)
 			    && prescriptionCollection.getLocationId().equals(locationId)) {
 			int no = 0;
+			if(prescriptionCollection.getItems() != null && !prescriptionCollection.getItems().isEmpty())
 			for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
 			    if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
 				DrugCollection drug = drugRepository.findOne(prescriptionItem.getDrugId());
@@ -2559,7 +2644,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    parameters.put("prescriptionItems", prescriptionItems);
 			}
 
-			patientAdmission = patientAdmissionRepository.findByUserIdAndDoctorId(prescriptionCollection.getPatientId(), doctorId);
 			user = userRepository.findOne(prescriptionCollection.getPatientId());
 			patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(prescriptionCollection.getPatientId(), doctorId, locationId, hospitalId);
 
@@ -2575,9 +2659,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			parameters.put("prescriptionId", prescriptionId);
 			parameters.put("advice", prescriptionCollection.getAdvice() != null ? prescriptionCollection.getAdvice() : "----");
 			String labTest = "";
-			if (prescriptionCollection.getTests() != null && !prescriptionCollection.getTests().isEmpty()) {
+			if (prescriptionCollection.getDiagnosticTests() != null && !prescriptionCollection.getDiagnosticTests().isEmpty()) {
 			      int i = 1;
-			    for (TestAndRecordData tests : prescriptionCollection.getTests()) {
+			    for (TestAndRecordData tests : prescriptionCollection.getDiagnosticTests()) {
 			    if(tests.getTestId() != null){
 			    	DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(tests.getTestId());
 					if(diagnosticTestCollection != null){
@@ -2597,8 +2681,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    }
 		}
 		String patientName = "", dob = "", gender = "", mobileNumber = "", refferedBy ="", pid="", date="", resourceId="",logoURL ="" ;
-		if(patientAdmission != null && patientAdmission.getReferredBy() != null){
-			ReferencesCollection referencesCollection = referenceRepository.findOne(patientAdmission.getReferredBy());
+		if(patient != null && patient.getReferredBy() != null){
+			ReferencesCollection referencesCollection = referenceRepository.findOne(patient.getReferredBy());
 			if(referencesCollection != null)refferedBy = referencesCollection.getReference();
 		}
 		patientName = "Patient Name: " + (user != null ? user.getFirstName() : "--") + "<br>";
@@ -2739,6 +2823,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public Boolean smsPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String mobileNumber, String type) {
     Boolean response = false;
     PrescriptionCollection prescriptionCollection = null;
@@ -2833,6 +2918,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public LabTest addLabTest(LabTest request) {
 	LabTest response = null;
 	LabTestCollection labTestCollection = new LabTestCollection();
@@ -2875,6 +2961,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public LabTest editLabTest(LabTest request) {
 	LabTest response = null;
 	LabTestCollection labTestCollection = new LabTestCollection();
@@ -2920,6 +3007,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public Boolean deleteLabTest(String labTestId, String hospitalId, String locationId, Boolean discarded) {
 	Boolean response = false;
 	LabTestCollection labTestCollection = null;
@@ -2954,6 +3042,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public Boolean deleteLabTest(String labTestId, Boolean discarded) {
 	Boolean response = false;
 	LabTestCollection labTestCollection = null;
@@ -2977,6 +3066,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public LabTest getLabTestById(String labTestId) {
 	LabTest response = null;
 	try {
@@ -3014,6 +3104,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
     @Override
+    @Transactional
     public List<DiagnosticTestCollection> getDiagnosticTest() {
 	List<DiagnosticTestCollection> response = null;
 	try {
@@ -3027,6 +3118,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     }
 
 	@Override
+	@Transactional
 	public List<Prescription> getPrescriptions(String patientId, int page, int size, String updatedTime, Boolean discarded) {
 		List<PrescriptionCollection> prescriptionCollections = null;
 		List<Prescription> prescriptions = null;
@@ -3046,8 +3138,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
 			    
 				Prescription prescription = new Prescription();
-				List<TestAndRecordData> tests = prescriptionCollection.getTests();
-				prescriptionCollection.setTests(null);
+				List<TestAndRecordData> tests = prescriptionCollection.getDiagnosticTests();
+				prescriptionCollection.setDiagnosticTests(null);
 				BeanUtil.map(prescriptionCollection, prescription);
 				if (prescriptionCollection.getItems() != null) {
 				List<PrescriptionItemDetail> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetail>();
@@ -3068,7 +3160,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(prescription.getId());
 				if (patientVisitCollection != null)prescription.setVisitId(patientVisitCollection.getId());
 				if(tests != null && !tests.isEmpty()){
-					List<TestAndRecordDataResponse> labTests = new ArrayList<TestAndRecordDataResponse>();
+					List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
 				    	for(TestAndRecordData data : tests){
 				    		if(data.getTestId() != null){
 				    			DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(data.getTestId());
@@ -3076,10 +3168,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					    		if(diagnosticTestCollection !=null){
 					    			BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 					    		}
-					    		labTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
+					    		diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
 				    		}
 				    }
-				prescription.setTests(labTests);
+				prescription.setDiagnosticTests(diagnosticTests);
 				}
 				prescriptions.add(prescription);
 			}
@@ -3096,6 +3188,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	@Override
+	@Transactional
 	public DiagnosticTest addEditDiagnosticTest(DiagnosticTest request) {
 		DiagnosticTest response = null;
 		DiagnosticTestCollection diagnosticTestCollection = new DiagnosticTestCollection();
@@ -3119,6 +3212,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	@Override
+	@Transactional
 	public DiagnosticTest getDiagnosticTest(String diagnosticTestId) {
 		DiagnosticTest response = null;
 		try {
@@ -3140,6 +3234,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	@Override
+	@Transactional
 	public Boolean deleteDiagnosticTest(String diagnosticTestId, String hospitalId, String locationId, Boolean discarded) {	
 		Boolean response = false;
 		DiagnosticTestCollection diagnosticTestCollection = null;
@@ -3173,6 +3268,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	@Override
+	@Transactional
 	public Boolean deleteDiagnosticTest(String diagnosticTestId, Boolean discarded) {
 		Boolean response = false;
 		DiagnosticTestCollection diagnosticTestCollection = null;
@@ -3206,7 +3302,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    long createdTimeStamp = Long.parseLong(updatedTime);
 		    if (size > 0)
 			diagnosticTestCollections = diagnosticTestRepository.getGlobal(new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC,
-				"updatedTime"));
+				"createdTime"));
 
 		    else
 			diagnosticTestCollections = diagnosticTestRepository.getGlobal(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
@@ -3271,7 +3367,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				    Direction.DESC, "createdTime"));
 			else
 			    diagnosticTestCollections = diagnosticTestRepository.getCustomGlobal(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC,
-				    "updatedTime"));
+				    "createdTime"));
 		    } else {
 			if (size > 0)
 			    diagnosticTestCollections = diagnosticTestRepository.getCustomGlobal(hospitalId, locationId, new Date(createdTimeStamp), discards,
@@ -3293,15 +3389,16 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 }
 
 		@Override
+		@Transactional
 		public PrescriptionTestAndRecord checkPrescriptionExists(String uniqueEmrId, String patientId) {
 			PrescriptionTestAndRecord response = null;
 			List<TestAndRecordDataResponse> tests = null;
 			try{
 				PrescriptionCollection prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(uniqueEmrId, patientId);
 				if(prescriptionCollection != null){
-					if(prescriptionCollection.getTests() != null && !prescriptionCollection.getTests().isEmpty()){
+					if(prescriptionCollection.getDiagnosticTests() != null && !prescriptionCollection.getDiagnosticTests().isEmpty()){
 						tests = new ArrayList<TestAndRecordDataResponse>();
-						for(TestAndRecordData recordData : prescriptionCollection.getTests()){
+						for(TestAndRecordData recordData : prescriptionCollection.getDiagnosticTests()){
 							DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(recordData.getTestId());
 								if(diagnosticTestCollection != null){
 									DiagnosticTest diagnosticTest = new DiagnosticTest();
@@ -3330,6 +3427,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 
 		@Override
+		@Transactional
 		public Boolean addRemoveGenericCode(String action, String genericId, String drugCode) {
 			Boolean response = false;
 			try{
@@ -3381,6 +3479,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 
 		@Override
+		@Transactional
 		public GenericCode addEditGenericCode(GenericCode request) {
 			GenericCode response = null;
 			try{

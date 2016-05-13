@@ -29,6 +29,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Message;
 import com.dpdocter.beans.SMS;
@@ -77,10 +78,10 @@ public class SMSServicesImpl implements SMSServices {
     @Value(value = "${SMS_POST_URL}")
     private String SMS_POST_URL;
 
-    @Value("${IS_ENV_PRODUCTION}")
+    @Value("${is.env.production}")
     private Boolean isEnvProduction;
 
-    @Value(value = "${MOBILE_NUMBERS_RESOURCE}")
+    @Value(value = "${mobile.numbers.resource}")
     private String MOBILE_NUMBERS_RESOURCE;
 
     @Autowired
@@ -90,6 +91,7 @@ public class SMSServicesImpl implements SMSServices {
     private SMSFormatRepository sMSFormatRepository;
 
     @Override
+    @Transactional
     public Boolean sendSMS(SMSTrackDetail smsTrackDetail, Boolean save) {
     	Boolean response = false;
     	String responseId = null;
@@ -204,6 +206,7 @@ public class SMSServicesImpl implements SMSServices {
     }
 
     @Override
+    @Transactional
     public SMSResponse getSMS(int page, int size, String doctorId, String locationId, String hospitalId) {
 	SMSResponse response = null;
 	List<SMSTrackDetail> smsTrackDetails = null;
@@ -254,6 +257,7 @@ public class SMSServicesImpl implements SMSServices {
     }
 
     @Override
+    @Transactional
     public List<SMSTrack> getSMSDetails(int page, int size, String patientId, String doctorId, String locationId, String hospitalId) {
 	List<SMSTrack> response = null;
 	List<SMSTrackDetail> smsTrackCollections = null;
@@ -302,6 +306,7 @@ public class SMSServicesImpl implements SMSServices {
     }
 
     @Override
+    @Transactional
     public void updateDeliveryReports(List<SMSDeliveryReports> request) {
 	try {
 	    for (SMSDeliveryReports smsDeliveryReport : request) {
@@ -329,6 +334,7 @@ public class SMSServicesImpl implements SMSServices {
     }
 
     @Override
+    @Transactional
     public void addNumber(String mobileNumber) {
 	try {
 	    if (!isEnvProduction) {
@@ -355,6 +361,7 @@ public class SMSServicesImpl implements SMSServices {
     }
 
     @Override
+    @Transactional
     public void deleteNumber(String mobileNumber) {
 	try {
 	    if (!isEnvProduction) {
@@ -381,6 +388,7 @@ public class SMSServicesImpl implements SMSServices {
     }
 
     @Override
+    @Transactional
     public SMSTrackDetail createSMSTrackDetail(String doctorId, String locationId, String hospitalId, String patientId, String patientName, String message,
 	    String mobileNumber, String type) {
 	SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
@@ -412,6 +420,7 @@ public class SMSServicesImpl implements SMSServices {
     }
 
     @Override
+    @Transactional
     public SMSFormat addSmsFormat(SMSFormat request) {
 	SMSFormat response = null;
 	SMSFormatCollection smsFormatCollection = null;
@@ -437,6 +446,7 @@ public class SMSServicesImpl implements SMSServices {
     }
 
     @Override
+    @Transactional
     public List<SMSFormat> getSmsFormat(String doctorId, String locationId, String hospitalId, String type) {
 	List<SMSFormat> response = null;
 	List<SMSFormatCollection> smsFormatCollections = null;

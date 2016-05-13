@@ -25,7 +25,7 @@ public class Appointment extends GenericCollection {
 
     private AppointmentState state;
 
-    private Boolean isReschduled = false;
+    private Boolean isRescheduled = false;
 
     private Date fromDate;
 
@@ -89,15 +89,15 @@ public class Appointment extends GenericCollection {
 	this.state = state;
     }
 
-    public Boolean getIsReschduled() {
-	return isReschduled;
-    }
+    public Boolean getIsRescheduled() {
+		return isRescheduled;
+	}
 
-    public void setIsReschduled(Boolean isReschduled) {
-	this.isReschduled = isReschduled;
-    }
+	public void setIsRescheduled(Boolean isRescheduled) {
+		this.isRescheduled = isRescheduled;
+	}
 
-    public String getAppointmentId() {
+	public String getAppointmentId() {
 	return appointmentId;
     }
 
@@ -244,8 +244,8 @@ public class Appointment extends GenericCollection {
 	@Override
 	public String toString() {
 		return "Appointment [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + ", time=" + time + ", patient=" + patient + ", state=" + state + ", isReschduled="
-				+ isReschduled + ", fromDate=" + fromDate + ", toDate=" + toDate + ", appointmentId=" + appointmentId
+				+ hospitalId + ", time=" + time + ", patient=" + patient + ", state=" + state + ", isRescheduled="
+				+ isRescheduled + ", fromDate=" + fromDate + ", toDate=" + toDate + ", appointmentId=" + appointmentId
 				+ ", subject=" + subject + ", explanation=" + explanation + ", type=" + type + ", isCalenderBlocked="
 				+ isCalenderBlocked + ", isFeedbackAvailable=" + isFeedbackAvailable + ", isAllDayEvent="
 				+ isAllDayEvent + ", doctorName=" + doctorName + ", locationName=" + locationName + ", clinicAddress="

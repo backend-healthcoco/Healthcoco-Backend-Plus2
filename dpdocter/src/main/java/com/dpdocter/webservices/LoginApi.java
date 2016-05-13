@@ -39,7 +39,7 @@ public class LoginApi {
     @Autowired
     private LoginService loginService;
 
-    @Value(value = "${IMAGE_PATH}")
+    @Value(value = "${image.path}")
     private String imagePath;
 
     @Path(value = PathProxy.LoginUrls.LOGIN_ADMIN)

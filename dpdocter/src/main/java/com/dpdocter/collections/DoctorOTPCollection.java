@@ -1,10 +1,15 @@
 package com.dpdocter.collections;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "doctor_otp_cl")
+@CompoundIndexes({
+    @CompoundIndex(def = "{'userLocationId' : 1, 'patientId': 1}")
+})
 public class DoctorOTPCollection extends GenericCollection {
 
     @Id

@@ -24,7 +24,7 @@ public class Prescription extends GenericCollection {
 
     private Boolean discarded = false;
 
-    private List<TestAndRecordDataResponse> tests;
+    private List<TestAndRecordDataResponse> diagnosticTests;
 
     private String advice;
 
@@ -114,14 +114,6 @@ public class Prescription extends GenericCollection {
 	this.patientId = patientId;
     }
 
-    public List<TestAndRecordDataResponse> getTests() {
-	return tests;
-    }
-
-    public void setTests(List<TestAndRecordDataResponse> tests) {
-	this.tests = tests;
-    }
-
     public Boolean getInHistory() {
 	return inHistory;
     }
@@ -146,11 +138,20 @@ public class Prescription extends GenericCollection {
 		this.uniqueEmrId = uniqueEmrId;
 	}
 
+	public List<TestAndRecordDataResponse> getDiagnosticTests() {
+		return diagnosticTests;
+	}
+
+	public void setDiagnosticTests(List<TestAndRecordDataResponse> diagnosticTests) {
+		this.diagnosticTests = diagnosticTests;
+	}
+
 	@Override
 	public String toString() {
 		return "Prescription [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", name=" + name + ", doctorId=" + doctorId
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", items=" + items + ", inHistory="
-				+ inHistory + ", discarded=" + discarded + ", tests=" + tests + ", advice=" + advice + ", visitId="
-				+ visitId + ", patientId=" + patientId + ", isFeedbackAvailable=" + isFeedbackAvailable + "]";
+				+ inHistory + ", discarded=" + discarded + ", diagnosticTests=" + diagnosticTests + ", advice=" + advice
+				+ ", visitId=" + visitId + ", patientId=" + patientId + ", isFeedbackAvailable=" + isFeedbackAvailable
+				+ "]";
 	}
 }

@@ -21,11 +21,11 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Age;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.ClinicalNotesJasperDetails;
-import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Drug;
@@ -51,7 +51,6 @@ import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.InvestigationCollection;
 import com.dpdocter.collections.NotesCollection;
 import com.dpdocter.collections.ObservationCollection;
-import com.dpdocter.collections.PatientAdmissionCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
@@ -77,7 +76,6 @@ import com.dpdocter.repository.LabTestRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.NotesRepository;
 import com.dpdocter.repository.ObservationRepository;
-import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrescriptionRepository;
@@ -160,9 +158,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     private EmailTackService emailTackService;
 
     @Autowired
-    private PatientAdmissionRepository patientAdmissionRepository;
-
-    @Autowired
     private ComplaintRepository complaintRepository;
 
     @Autowired
@@ -183,10 +178,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     @Autowired
     private ReferenceRepository referenceRepository;
 
-    @Value(value = "${IMAGE_PATH}")
+    @Value(value = "${image.path}")
     private String imagePath;
 
     @Override
+    @Transactional
     public String addRecord(Object details, VisitedFor visitedFor, String visitId) {
 	PatientVisitCollection patientTrackCollection = new PatientVisitCollection();
 	try {
@@ -255,6 +251,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     }
 
     @Override
+    @Transactional
     public boolean addRecord(String patientId, String doctorId, String locationId, String hospitalId, VisitedFor visitedFor) {
 	boolean response = false;
 	try {
@@ -299,6 +296,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     }
 
     @Override
+    @Transactional
     public DoctorContactsResponse recentlyVisited(String doctorId, String locationId, String hospitalId, int page, int size) {
 	DoctorContactsResponse response = null;
 	try {
@@ -324,7 +322,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    if (results != null && !results.isEmpty()) {
 		@SuppressWarnings("unchecked")
 		List<String> patientIds = (List<String>) CollectionUtils.collect(results, new BeanToPropertyValueTransformer("id"));
-		List<PatientCard> patientCards = contactsService.getSpecifiedPatientCards(patientIds, doctorId, locationId, hospitalId);
+		List<PatientCard> patientCards = contactsService.getSpecifiedPatientCards(patientIds, doctorId, locationId, hospitalId, 0, 0, "0", true);
 
 		Aggregation aggregationCount = Aggregation.newAggregation(
 			Aggregation.match((Criteria.where("doctorId").is(doctorId)
@@ -348,6 +346,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     }
 
     @Override
+    @Transactional
     public DoctorContactsResponse mostVisited(String doctorId, String locationId, String hospitalId, int page, int size) {
 	DoctorContactsResponse response = null;
 	try {
@@ -373,7 +372,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    if (patientTrackCollections != null && !patientTrackCollections.isEmpty()) {
 		@SuppressWarnings("unchecked")
 		List<String> patientIds = (List<String>) CollectionUtils.collect(patientTrackCollections, new BeanToPropertyValueTransformer("id"));
-		List<PatientCard> patientCards = contactsService.getSpecifiedPatientCards(patientIds, doctorId, locationId, hospitalId);
+		List<PatientCard> patientCards = contactsService.getSpecifiedPatientCards(patientIds, doctorId, locationId, hospitalId, 0, 0, "0", true);
 		int totalSize = mongoTemplate.aggregate(aggregationCount, PatientVisitCollection.class, PatientVisitCollection.class).getMappedResults().size();
 		response = new DoctorContactsResponse();
 		response.setPatientCards(patientCards);
@@ -388,6 +387,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     }
 
     @Override
+    @Transactional
     public PatientVisitResponse addMultipleData(AddMultipleDataRequest request) {
 	PatientVisitResponse response = new PatientVisitResponse();
 	try {
@@ -406,10 +406,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		PrescriptionAddEditResponse prescriptionResponse = prescriptionServices.addPrescription(request.getPrescription());
 		Prescription prescription = new Prescription();
 		
-		List<TestAndRecordDataResponse> prescriptionTest = prescriptionResponse.getTests();
-		prescriptionResponse.setTests(null);
+		List<TestAndRecordDataResponse> prescriptionTest = prescriptionResponse.getDiagnosticTests();
+		prescriptionResponse.setDiagnosticTests(null);
 		BeanUtil.map(prescriptionResponse, prescription);
-		prescription.setTests(prescriptionTest);
+		prescription.setDiagnosticTests(prescriptionTest);
 		
 		if (prescriptionResponse.getItems() != null) {
 		    List<PrescriptionItemDetail> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetail>();
@@ -466,6 +466,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     }
 
     @Override
+    @Transactional
     public List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId, int page, int size,
 	    Boolean isOTPVerified, String updatedTime) {
 	List<PatientVisitResponse> response = null;
@@ -556,6 +557,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     }
 
     @Override
+    @Transactional
     public Boolean email(String visitId, String emailAddress) {
 	PatientVisitCollection patientVisitCollection = null;
 	Map<String, Object> parameters = new HashMap<String, Object>();
@@ -566,15 +568,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    patientVisitCollection = patientVisitRepository.findOne(visitId);
 
 	    if (patientVisitCollection != null) {
-		PatientAdmissionCollection patientAdmission = patientAdmissionRepository.findByPatientIdAndDoctorId(patientVisitCollection.getPatientId(),
-			patientVisitCollection.getDoctorId());
 		PatientCollection patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientVisitCollection.getPatientId(),
 			patientVisitCollection.getDoctorId(), patientVisitCollection.getLocationId(), patientVisitCollection.getHospitalId());
 		UserCollection user = userRepository.findOne(patientVisitCollection.getPatientId());
 
 		String patientName = "", dob = "", gender = "", mobileNumber = "", refferedBy = "", pid = "", date = "", resourceId = "", logoURL = "";
-		if (patientAdmission != null && patientAdmission.getReferredBy() != null) {
-		    ReferencesCollection referencesCollection = referenceRepository.findOne(patientAdmission.getReferredBy());
+		if (patient.getReferredBy() != null) {
+		    ReferencesCollection referencesCollection = referenceRepository.findOne(patient.getReferredBy());
 		    if (referencesCollection != null)
 			refferedBy = referencesCollection.getReference();
 		}
@@ -896,10 +896,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    if (prescriptionCollection != null) {
 	    	prescriptionItemsObj.put("resourceId","PrescriptionId: " + prescriptionCollection.getUniqueEmrId() != null ? prescriptionCollection.getUniqueEmrId() : "--");
 	    	prescriptionItemsObj.put("advice", prescriptionCollection.getAdvice() != null ? prescriptionCollection.getAdvice() : "----");
-		if (prescriptionCollection.getTests() != null && !prescriptionCollection.getTests().isEmpty()) {
+		if (prescriptionCollection.getDiagnosticTests() != null && !prescriptionCollection.getDiagnosticTests().isEmpty()) {
 		    String labTest = "";
 		    int i = 1;
-		    for (TestAndRecordData tests : prescriptionCollection.getTests()) {
+		    for (TestAndRecordData tests : prescriptionCollection.getDiagnosticTests()) {
 			DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(tests.getTestId());
 			    if (diagnosticTestCollection != null) {
 				labTest = labTest + i + ") " + diagnosticTestCollection.getTestName() + "<br>";
@@ -913,6 +913,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		if (prescriptionCollection.getDoctorId() != null && prescriptionCollection.getHospitalId() != null
 			&& prescriptionCollection.getLocationId() != null) {
 		    int no = 0;
+		    if(prescriptionCollection.getItems() != null)
 		    for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
 			if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
 			    DrugCollection drug = drugRepository.findOne(prescriptionItem.getDrugId());
@@ -963,6 +964,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     }
 
     @Override
+    @Transactional
     public Boolean deleteVisit(String visitId, Boolean discarded) {
 	try {
 	    PatientVisitCollection patientVisitCollection = patientVisitRepository.findOne(visitId);
@@ -1002,6 +1004,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     }
 
     @Override
+    @Transactional
     public Boolean smsVisit(String visitId, String doctorId, String locationId, String hospitalId, String mobileNumber) {
     	Boolean response = false;
     try {
@@ -1034,6 +1037,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     }
 
     @Override
+    @Transactional
     public PatientVisitResponse getVisit(String visitId) {
 	PatientVisitResponse response = null;
 	try {
@@ -1086,6 +1090,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     }
 
     @Override
+    @Transactional
     public List<PatientVisit> getVisitsHandheld(String doctorId, String locationId, String hospitalId, String patientId, int page, int size,
 	    Boolean isOTPVerified, String updatedTime) {
 	List<PatientVisit> response = null;
@@ -1134,6 +1139,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     }
 
     @Override
+    @Transactional
     public String editRecord(String id, VisitedFor visitedFor) {
 	PatientVisitCollection patientTrackCollection = new PatientVisitCollection();
 	try {
@@ -1173,6 +1179,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     }
 
     @Override
+    @Transactional
     public int getVisitCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified) {
 	Integer visitCount = 0;
 	try {

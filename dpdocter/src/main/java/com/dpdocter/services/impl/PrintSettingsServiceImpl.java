@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.PrintSettings;
 import com.dpdocter.beans.PrintSettingsDefaultData;
@@ -40,6 +41,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
     private LocationRepository locationRepository;
 
     @Override
+    @Transactional
     public PrintSettingsDefaultData saveDefaultSettings(PrintSettingsDefaultData request) {
 	PrintSettingsDefaultData response = null;
 	PrintSettingsDefaultDataCollection printSettingsDefaultDataCollection = new PrintSettingsDefaultDataCollection();
@@ -58,6 +60,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
     }
 
     @Override
+    @Transactional
     public List<PrintSettingsDefaultData> getDefaultSettings() {
 	List<PrintSettingsDefaultData> response = new ArrayList<PrintSettingsDefaultData>();
 	List<PrintSettingsDefaultDataCollection> printSettingsDefaultDataCollection = null;
@@ -73,6 +76,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
     }
 
     @Override
+    @Transactional
     public PrintSettings saveSettings(PrintSettings request) {
 	PrintSettings response = new PrintSettings();
 	PrintSettingsCollection printSettingsCollection = new PrintSettingsCollection();
@@ -121,6 +125,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
     }
 
     @Override
+    @Transactional
     public List<PrintSettings> getSettings(String printFilter, String doctorId, String locationId, String hospitalId, int page, int size, String updatedTime,
 	    Boolean discarded) {
 	List<PrintSettings> response = null;
@@ -190,6 +195,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
     }
 
     @Override
+    @Transactional
     public Boolean deletePrintSettings(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
 	try {
 	    PrintSettingsCollection printSettingsCollection = printSettingsRepository.findOne(id);

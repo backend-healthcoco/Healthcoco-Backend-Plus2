@@ -1,6 +1,7 @@
 package com.dpdocter.collections;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -18,7 +19,7 @@ public class TransactionalCollection {
     @Field
     private Resource resource;
 
-    @Field
+    @Indexed
     private Boolean isCached = false;
 
     public String getId() {

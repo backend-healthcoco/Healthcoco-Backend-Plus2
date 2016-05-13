@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.ProductAndService;
@@ -53,6 +54,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
     private OTPService otpService;
 
     @Override
+    @Transactional
     public boolean addEditProductService(ProductAndService productAndService) {
 	boolean response = false;
 	ProductsAndServicesCollection productsAndServicesCollection;
@@ -124,6 +126,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
     }
 
     @Override
+    @Transactional
     public boolean addEditProductServiceCost(ProductAndService productAndService) {
 	boolean response = false;
 	ProductsAndServicesCostCollection productAndServiceCostCollection;
@@ -149,6 +152,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
     }
 
     @Override
+    @Transactional
     public List<ProductAndService> getProductsAndServices(String locationId, String hospitalId, String doctorId) {
 	List<ProductAndService> response = null;
 	try {
@@ -178,6 +182,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
     }
 
     @Override
+    @Transactional
     public PatientTreatmentResponse addEditPatientTreatment(String treatmentId, String locationId, String hospitalId, String doctorId,
 	    List<PatientTreatment> patientTreatments) {
 	PatientTreatmentResponse response;
@@ -226,6 +231,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
     }
 
     @Override
+    @Transactional
     public boolean deletePatientTreatment(String treatmentId, String locationId, String hospitalId, String doctorId) {
 	boolean response = false;
 	try {
@@ -246,6 +252,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
     }
 
     @Override
+    @Transactional
     public PatientTreatmentResponse getPatientTreatmentById(String treatmentId) {
 	PatientTreatmentResponse response;
 	try {
@@ -265,6 +272,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
     }
 
     @Override
+    @Transactional
     public List<PatientTreatmentResponse> getPatientTreatments(String locationId, String hospitalId, String doctorId, String patientId, int page, int size,
 	    String updatedTime, Boolean discarded) {
 	List<PatientTreatmentResponse> response;

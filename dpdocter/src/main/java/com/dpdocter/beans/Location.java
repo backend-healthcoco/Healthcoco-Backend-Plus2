@@ -63,6 +63,8 @@ public class Location {
 
     private Boolean isHomeServiceAvailable = false;
 
+    private String locationUId;
+    
     public String getId() {
 	return id;
     }
@@ -287,6 +289,14 @@ public class Location {
 		this.alternateClinicNumbers = alternateClinicNumbers;
 	}
 
+	public String getLocationUId() {
+		return locationUId;
+	}
+
+	public void setLocationUId(String locationUId) {
+		this.locationUId = locationUId;
+	}
+
 	@Override
 	public String toString() {
 		return "Location [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state
@@ -298,6 +308,7 @@ public class Location {
 				+ clinicNumber + ", alternateClinicNumbers=" + alternateClinicNumbers + ", workingSchedules="
 				+ workingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + ", isClinic=" + isClinic
 				+ ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited="
-				+ isNABLAccredited + ", isHomeServiceAvailable=" + isHomeServiceAvailable + "]";
+				+ isNABLAccredited + ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", locationUId="
+				+ locationUId + "]";
 	}
 }

@@ -3,6 +3,9 @@ package com.dpdocter.collections;
 import java.util.Date;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -11,6 +14,9 @@ import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
 
 @Document(collection = "appointment_cl")
+@CompoundIndexes({
+    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
+})
 public class AppointmentCollection extends GenericCollection {
 
     @Id
@@ -22,7 +28,7 @@ public class AppointmentCollection extends GenericCollection {
     @Field
     private String explanation;
 
-    @Field
+    @Indexed
     private String doctorId;
 
     @Field
@@ -37,7 +43,7 @@ public class AppointmentCollection extends GenericCollection {
     @Field
     private WorkingHours time;
 
-    @Field
+    @Indexed
     private String patientId;
 
     @Field
@@ -47,7 +53,7 @@ public class AppointmentCollection extends GenericCollection {
     private AppointmentType type = AppointmentType.APPOINTMENT;
 
     @Field
-    private Boolean isReschduled = false;
+    private Boolean isRescheduled = false;
 
     @Field
     private Date fromDate;
@@ -128,12 +134,12 @@ public class AppointmentCollection extends GenericCollection {
 	this.type = type;
     }
 
-    public Boolean getIsReschduled() {
-	return isReschduled;
+    public Boolean getIsRescheduled() {
+	return isRescheduled;
     }
 
-    public void setIsReschduled(Boolean isReschduled) {
-	this.isReschduled = isReschduled;
+    public void setIsRescheduled(Boolean isRescheduled) {
+	this.isRescheduled = isRescheduled;
     }
 
     public Boolean getIsCalenderBlocked() {
@@ -205,7 +211,7 @@ public class AppointmentCollection extends GenericCollection {
 		return "AppointmentCollection [id=" + id + ", subject=" + subject + ", explanation=" + explanation
 				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ ", appointmentId=" + appointmentId + ", time=" + time + ", patientId=" + patientId + ", state="
-				+ state + ", type=" + type + ", isReschduled=" + isReschduled + ", fromDate=" + fromDate + ", toDate="
+				+ state + ", type=" + type + ", isRescheduled=" + isRescheduled + ", fromDate=" + fromDate + ", toDate="
 				+ toDate + ", isCalenderBlocked=" + isCalenderBlocked + ", isFeedbackAvailable=" + isFeedbackAvailable
 				+ ", isAllDayEvent=" + isAllDayEvent + "]";
 	}

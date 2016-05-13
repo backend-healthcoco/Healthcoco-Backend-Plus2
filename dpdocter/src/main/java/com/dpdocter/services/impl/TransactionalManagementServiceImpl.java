@@ -7,12 +7,11 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.ClinicImage;
-import com.dpdocter.collections.AddressCollection;
 import com.dpdocter.collections.CityCollection;
 import com.dpdocter.collections.ComplaintCollection;
-import com.dpdocter.collections.CountryCollection;
 import com.dpdocter.collections.DiagnosisCollection;
 import com.dpdocter.collections.DiagramsCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
@@ -25,9 +24,7 @@ import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.NotesCollection;
 import com.dpdocter.collections.OTPCollection;
 import com.dpdocter.collections.ObservationCollection;
-import com.dpdocter.collections.PatientAdmissionCollection;
 import com.dpdocter.collections.PatientCollection;
-import com.dpdocter.collections.StateCollection;
 import com.dpdocter.collections.TransactionalCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
@@ -36,10 +33,8 @@ import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
-import com.dpdocter.repository.AddressRepository;
 import com.dpdocter.repository.CityRepository;
 import com.dpdocter.repository.ComplaintRepository;
-import com.dpdocter.repository.CountryRepository;
 import com.dpdocter.repository.DiagnosisRepository;
 import com.dpdocter.repository.DiagramsRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
@@ -52,10 +47,8 @@ import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.NotesRepository;
 import com.dpdocter.repository.OTPRepository;
 import com.dpdocter.repository.ObservationRepository;
-import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.ReferenceRepository;
-import com.dpdocter.repository.StateRepository;
 import com.dpdocter.repository.TransnationalRepositiory;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
@@ -64,7 +57,6 @@ import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.beans.DoctorLocation;
 import com.dpdocter.solr.document.SolrCityDocument;
 import com.dpdocter.solr.document.SolrComplaintsDocument;
-import com.dpdocter.solr.document.SolrCountryDocument;
 import com.dpdocter.solr.document.SolrDiagnosesDocument;
 import com.dpdocter.solr.document.SolrDiagramsDocument;
 import com.dpdocter.solr.document.SolrDoctorDocument;
@@ -75,7 +67,6 @@ import com.dpdocter.solr.document.SolrLocalityLandmarkDocument;
 import com.dpdocter.solr.document.SolrNotesDocument;
 import com.dpdocter.solr.document.SolrObservationsDocument;
 import com.dpdocter.solr.document.SolrPatientDocument;
-import com.dpdocter.solr.document.SolrStateDocument;
 import com.dpdocter.solr.services.SolrCityService;
 import com.dpdocter.solr.services.SolrClinicalNotesService;
 import com.dpdocter.solr.services.SolrPrescriptionService;
@@ -94,12 +85,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
     @Autowired
     private PatientRepository patientRepository;
-
-    @Autowired
-    private AddressRepository addressRepository;
-
-    @Autowired
-    private PatientAdmissionRepository patientAdmissionRepository;
 
     @Autowired
     private SolrRegistrationService solrRegistrationService;
@@ -135,12 +120,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     private SolrCityService solrCityService;
 
     @Autowired
-    private CountryRepository countryRepository;
-
-    @Autowired
-    private StateRepository stateRepository;
-
-    @Autowired
     private CityRepository cityRepository;
 
     @Autowired
@@ -172,6 +151,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
     @Scheduled(fixedDelay = 1800000)
     @Override
+    @Transactional
     public void checkResources() {
 	System.out.println(">>> Scheduled test service <<<");
 	List<TransactionalCollection> transactionalCollections = null;
@@ -208,12 +188,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			    break;
 			case OBSERVATION:
 			    checkObservation(transactionalCollection.getResourceId());
-			    break;
-			case COUNTRY:
-			    checkCountry(transactionalCollection.getResourceId());
-			    break;
-			case STATE:
-			    checkState(transactionalCollection.getResourceId());
 			    break;
 			case CITY:
 			    checkCity(transactionalCollection.getResourceId());
@@ -264,6 +238,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     }
 
     @Override
+    @Transactional
     public void addResource(String resourceId, Resource resource, boolean isCached) {
 	TransactionalCollection transactionalCollection = null;
 	try {
@@ -286,17 +261,13 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     }
 
     @Override
+    @Transactional
     public void checkPatient(String id) {
 	try {
 	    UserCollection userCollection = userRepository.findOne(id);
 	    List<PatientCollection> patientCollections = patientRepository.findByUserId(id);
 	    if (userCollection != null && patientCollections != null) {
 		for (PatientCollection patientCollection : patientCollections) {
-		    PatientAdmissionCollection patientAdmissionCollection = patientAdmissionRepository.findByUserIdAndDoctorId(id,
-			    patientCollection.getDoctorId());
-		    AddressCollection addressCollection = null;
-		    if (patientCollection.getAddressId() != null)
-			addressCollection = addressRepository.findOne(patientCollection.getAddressId());
 		    SolrPatientDocument patientDocument = new SolrPatientDocument();
 
 		    if (patientCollection.getDob() != null) {
@@ -307,18 +278,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		    BeanUtil.map(userCollection, patientDocument);
 		    if (patientCollection != null)
 			BeanUtil.map(patientCollection, patientDocument);
-		    if (patientAdmissionCollection != null)
-			BeanUtil.map(patientAdmissionCollection, patientDocument);
-		    if (addressCollection != null)
-			BeanUtil.map(addressCollection, patientDocument);
-
+	
 		    if (patientCollection != null)
 			patientDocument.setId(patientCollection.getId());
-		    if (patientAdmissionCollection != null) {
-			if (patientAdmissionCollection.getReferredBy() != null) {
-			    patientDocument.setReferredBy(patientAdmissionCollection.getReferredBy());
-			}
-		    }
 
 		    if (patientCollection != null)
 			solrRegistrationService.editPatient(patientDocument);
@@ -331,6 +293,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     }
 
     @Override
+    @Transactional
     public void checkDrug(String id) {
 	try {
 	    DrugCollection drugCollection = drugRepository.findOne(id);
@@ -350,6 +313,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     }
 
     @Override
+    @Transactional
     public void checkLabTest(String id) {
 	try {
 	    LabTestCollection labTestCollection = labTestRepository.findOne(id);
@@ -365,6 +329,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     }
 
     @Override
+    @Transactional
     public void checkComplaint(String id) {
 	try {
 	    ComplaintCollection complaintCollection = complaintRepository.findOne(id);
@@ -380,6 +345,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     }
 
     @Override
+    @Transactional
     public void checkObservation(String id) {
 	try {
 	    ObservationCollection observationCollection = observationRepository.findOne(id);
@@ -395,6 +361,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     }
 
     @Override
+    @Transactional
     public void checkInvestigation(String id) {
 	try {
 	    InvestigationCollection investigationCollection = investigationRepository.findOne(id);
@@ -410,6 +377,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     }
 
     @Override
+    @Transactional
     public void checkDiagnosis(String id) {
 	try {
 	    DiagnosisCollection diagnosisCollection = diagnosisRepository.findOne(id);
@@ -425,6 +393,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     }
 
     @Override
+    @Transactional
     public void checkNotes(String id) {
 	try {
 	    NotesCollection notesCollection = notesRepository.findOne(id);
@@ -440,6 +409,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     }
 
     @Override
+    @Transactional
     public void checkDiagrams(String id) {
 	try {
 	    DiagramsCollection diagramsCollection = diagramsRepository.findOne(id);
@@ -455,6 +425,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     }
 
     @Override
+    @Transactional
     public void checkLocation(String resourceId) {
 	try {
 	    LocationCollection locationCollection = locationRepository.findOne(resourceId);
@@ -479,6 +450,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     }
 
     @Override
+    @Transactional
     public void checkDoctor(String resourceId, String locationId) {
 	try {
 	    DoctorCollection doctorCollection = doctorRepository.findByUserId(resourceId);
@@ -552,32 +524,4 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	    logger.error(e);
 	}
     }
-
-    private void checkState(String resourceId) {
-	try {
-	    StateCollection stateCollection = stateRepository.findOne(resourceId);
-	    if (stateCollection != null) {
-		SolrStateDocument solrStateDocument = new SolrStateDocument();
-		BeanUtil.map(stateCollection, solrStateDocument);
-		solrCityService.addState(solrStateDocument);
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e);
-	}
     }
-
-    private void checkCountry(String resourceId) {
-	try {
-	    CountryCollection countryCollection = countryRepository.findOne(resourceId);
-	    if (countryCollection != null) {
-		SolrCountryDocument solrCountryDocument = new SolrCountryDocument();
-		BeanUtil.map(countryCollection, solrCountryDocument);
-		solrCityService.addCountry(solrCountryDocument);
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e);
-	}
-    }
-}

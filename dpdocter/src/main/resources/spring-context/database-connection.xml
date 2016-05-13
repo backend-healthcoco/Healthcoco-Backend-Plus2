@@ -4,12 +4,13 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
     http://www.springframework.org/schema/data/mongo
-    http://www.springframework.org/schema/data/mongo/spring-mongo-1.0.xsd">
+    http://www.springframework.org/schema/data/mongo/spring-mongo-1.8.xsd">
 	<mongo:mongo id="mongo" host="${db.host}" port="${db.port}"	write-concern="SAFE">
 <!-- 	replica-set= -->
-	<mongo:options
-              connect-timeout="${db.connectTimeout}" connections-per-host="${db.connectionPerHost}" threads-allowed-to-block-for-connection-multiplier="${db.threadsAllowedTblockForConnectionMultiplier}"/>
-    </mongo:mongo> 
+	<mongo:options connect-timeout="${db.connectTimeout}" connections-per-host="${db.connectionPerHost}" threads-allowed-to-block-for-connection-multiplier="${db.threadsAllowedTblockForConnectionMultiplier}"
+	/> 
+<!-- 	ssl="true"   -->
+             </mongo:mongo> 
 	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
 		<constructor-arg ref="mongo" />
 		<constructor-arg name="databaseName" value="${db.name}" />

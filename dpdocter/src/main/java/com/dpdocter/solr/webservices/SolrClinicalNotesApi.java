@@ -36,7 +36,7 @@ public class SolrClinicalNotesApi {
     // private static Logger logger =
     // Logger.getLogger(SolrClinicalNotesApi.class.getName());
 
-    @Value(value = "${IMAGE_PATH}")
+    @Value(value = "${image.path}")
     private String imagePath;
 
     @Autowired

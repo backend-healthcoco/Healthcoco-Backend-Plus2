@@ -22,7 +22,10 @@ public class SolrCityDocument {
     private String explanation;
 
     @Field
-    private String stateId;
+    private String state;
+
+    @Field
+    private String country;
 
     @SuppressWarnings("deprecation")
     @Field
@@ -66,15 +69,23 @@ public class SolrCityDocument {
 		this.explanation = explanation;
 	}
 
-	public String getStateId() {
-	return stateId;
-    }
+    public String getState() {
+		return state;
+	}
 
-    public void setStateId(String stateId) {
-	this.stateId = stateId;
-    }
+	public void setState(String state) {
+		this.state = state;
+	}
 
-    public GeoLocation getGeoLocation() {
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public GeoLocation getGeoLocation() {
 	return geoLocation;
     }
 
@@ -98,9 +109,10 @@ public class SolrCityDocument {
 	this.longitude = longitude;
     }
 
-    @Override
-    public String toString() {
-	return "SolrCityDocument [id=" + id + ", city=" + city + ", isActivated=" + isActivated + ", explanation=" + explanation + ", stateId=" + stateId
-		+ ", geoLocation=" + geoLocation + ", latitude=" + latitude + ", longitude=" + longitude + "]";
-    }
+	@Override
+	public String toString() {
+		return "SolrCityDocument [id=" + id + ", city=" + city + ", isActivated=" + isActivated + ", explanation="
+				+ explanation + ", state=" + state + ", country=" + country + ", geoLocation=" + geoLocation
+				+ ", latitude=" + latitude + ", longitude=" + longitude + "]";
+	}
 }

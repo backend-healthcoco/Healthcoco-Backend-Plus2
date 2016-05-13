@@ -22,6 +22,9 @@ public class HospitalCollection extends GenericCollection {
     @Field
     private String hospitalDescription;
 
+    @Field
+    private String hospitalUId;
+    
     public String getId() {
 	return id;
     }
@@ -62,10 +65,18 @@ public class HospitalCollection extends GenericCollection {
 	this.hospitalDescription = hospitalDescription;
     }
 
-    @Override
-    public String toString() {
-	return "HospitalCollection [id=" + id + ", hospitalName=" + hospitalName + ", hospitalPhoneNumber=" + hospitalPhoneNumber + ", hospitalImageUrl="
-		+ hospitalImageUrl + ", hospitalDescription=" + hospitalDescription + "]";
-    }
+	public String getHospitalUId() {
+		return hospitalUId;
+	}
 
+	public void setHospitalUId(String hospitalUId) {
+		this.hospitalUId = hospitalUId;
+	}
+
+	@Override
+	public String toString() {
+		return "HospitalCollection [id=" + id + ", hospitalName=" + hospitalName + ", hospitalPhoneNumber="
+				+ hospitalPhoneNumber + ", hospitalImageUrl=" + hospitalImageUrl + ", hospitalDescription="
+				+ hospitalDescription + ", hospitalUId=" + hospitalUId + "]";
+	}
 }

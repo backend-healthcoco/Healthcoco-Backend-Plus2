@@ -65,9 +65,7 @@ public interface RegistrationService {
 
     ClinicSpecialization updateClinicSpecialization(ClinicSpecialization request);
 
-    BloodGroup addBloodGroup(BloodGroup request);
-
-    List<BloodGroup> getBloodGroup(int page, int size, String updatedTime);
+    List<BloodGroup> getBloodGroup();
 
     Profession addProfession(Profession request);
 

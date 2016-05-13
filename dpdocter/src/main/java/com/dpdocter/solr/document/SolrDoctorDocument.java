@@ -112,6 +112,12 @@ public class SolrDoctorDocument extends DoctorLocation {
     @Transient
     private Double distance;
 
+    @Field
+    private String userUId;
+
+    @Field
+    private String timeZone = "IST";
+
     public String getId() {
 	return id;
     }
@@ -398,6 +404,22 @@ public class SolrDoctorDocument extends DoctorLocation {
 		    this.appointmentSlot = new AppointmentSlot(this.appointmentSlotTime, this.appointmentSlotTimeUnit);
 	}
 
+	public String getUserUId() {
+		return userUId;
+	}
+
+	public void setUserUId(String userUId) {
+		this.userUId = userUId;
+	}
+
+	public String getTimeZone() {
+		return timeZone;
+	}
+
+	public void setTimeZone(String timeZone) {
+		this.timeZone = timeZone;
+	}
+
 	@Override
 	public String toString() {
 		return "SolrDoctorDocument [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", gender=" + gender
@@ -410,6 +432,7 @@ public class SolrDoctorDocument extends DoctorLocation {
 				+ appointmentSlotTime + ", appointmentSlotTimeUnit=" + appointmentSlotTimeUnit + ", isActive="
 				+ isActive + ", isVerified=" + isVerified + ", coverImageUrl=" + coverImageUrl + ", colorCode="
 				+ colorCode + ", userState=" + userState + ", registerNumber=" + registerNumber + ", days=" + days
-				+ ", months=" + months + ", years=" + years + ", dob=" + dob + ", distance=" + distance + "]";
+				+ ", months=" + months + ", years=" + years + ", dob=" + dob + ", distance=" + distance + ", userUId="
+				+ userUId + ", timeZone=" + timeZone + "]";
 	}
 }

@@ -10,6 +10,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.AccessModule;
@@ -46,6 +47,7 @@ public class AccessControlServicesImpl implements AccessControlServices {
 
     @SuppressWarnings("unchecked")
     @Override
+    @Transactional
     public AccessControl getAccessControls(String roleOrUserId, String locationId, String hospitalId) {
 	AccessControl response = null;
 	try {
@@ -80,6 +82,7 @@ public class AccessControlServicesImpl implements AccessControlServices {
 
     @SuppressWarnings("unchecked")
     @Override
+    @Transactional
     public AccessControl setAccessControls(AccessControl accessControl) {
 	AccessControl response = null;
 	try {

@@ -3,17 +3,23 @@ package com.dpdocter.collections;
 import java.util.Date;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "patient_queue_cl")
+@CompoundIndexes({
+    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
+})
 public class PatientQueueCollection extends GenericCollection {
 
     @Id
     @Field
     private String id;
 
-    @Field
+    @Indexed
     private String doctorId;
 
     @Field
@@ -25,7 +31,7 @@ public class PatientQueueCollection extends GenericCollection {
     @Field
     private String patientId;
 
-    @Field
+    @Indexed
     private Date date;
 
     @Field

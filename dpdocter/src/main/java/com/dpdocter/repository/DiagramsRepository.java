@@ -20,6 +20,15 @@ public interface DiagramsRepository extends MongoRepository<DiagramsCollection, 
     @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'speciality': {$in: ?2}}")
     List<DiagramsCollection> findGlobalDiagrams(Date date, boolean[] discards, Collection<String> specialities, Pageable pageable);
 
+    @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'speciality': {$in: ?2}}")
+    List<DiagramsCollection> findGlobalDiagrams(Date date, boolean[] discards, Collection<String> specialities, Sort sort);
+
+    @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DiagramsCollection> findGlobalDiagrams(Date date, boolean[] discards, Pageable pageable);
+
+    @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DiagramsCollection> findGlobalDiagrams(Date date, boolean[] discards, Sort sort);
+
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'speciality': {$in: ?3}, 'updatedTime': {'$gt': ?4}, 'discarded': {$in: ?5}}")
     List<DiagramsCollection> findCustomDiagrams(String doctorId, String locationId, String hospitalId, Collection<String> specialities, Date date, boolean[] discards, Pageable pageable);
 
@@ -28,9 +37,6 @@ public interface DiagramsRepository extends MongoRepository<DiagramsCollection, 
 
     @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'speciality': {$in: ?3}, 'updatedTime': {'$gt': ?4}, 'discarded': {$in: ?5}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'speciality': {$in: ?3}, 'updatedTime': {'$gt': ?4},'discarded': {$in: ?5}}]}")
     List<DiagramsCollection> findCustomGlobalDiagrams(String doctorId, String locationId, String hospitalId, Collection<String> specialities, Date date, boolean[] discards, Sort sort);
-
-    @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'speciality': {$in: ?2}}")
-    List<DiagramsCollection> findGlobalDiagrams(Date date, boolean[] discards, Collection<String> specialities, Sort sort);
 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'speciality': {$in: ?3}, 'updatedTime': {'$gt': ?4}, 'discarded': {$in: ?5}}")
     List<DiagramsCollection> findCustomDiagrams(String doctorId, String locationId, String hospitalId, Collection<String> specialities, Date date, boolean[] discards, Sort sort);
@@ -49,5 +55,4 @@ public interface DiagramsRepository extends MongoRepository<DiagramsCollection, 
 
     @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
     List<DiagramsCollection> findCustomGlobalDiagrams(Date date, boolean[] discards, Sort sort);
-
 }

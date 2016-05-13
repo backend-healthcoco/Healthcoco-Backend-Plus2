@@ -33,6 +33,8 @@ public class User {
 
     private UserState userState;
 
+    private String userUId;
+
     public String getImageUrl() {
 	return imageUrl;
     }
@@ -153,11 +155,20 @@ public class User {
 	this.bloodGroup = bloodGroup;
     }
 
-    @Override
-    public String toString() {
-	return "User [id=" + id + ", title=" + title + ", firstName=" + firstName + ", userName=" + userName + ", emailAddress=" + emailAddress
-		+ ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob=" + dob + ", bloodGroup=" + bloodGroup + ", secPhoneNumber=" + secPhoneNumber
-		+ ", isPartOfClinic=" + isPartOfClinic + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", colorCode=" + colorCode
-		+ ", userState=" + userState + "]";
-    }
+	public String getUserUId() {
+		return userUId;
+	}
+
+	public void setUserUId(String userUId) {
+		this.userUId = userUId;
+	}
+
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", title=" + title + ", firstName=" + firstName + ", userName=" + userName
+				+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob="
+				+ dob + ", bloodGroup=" + bloodGroup + ", secPhoneNumber=" + secPhoneNumber + ", isPartOfClinic="
+				+ isPartOfClinic + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", colorCode="
+				+ colorCode + ", userState=" + userState + ", userUId=" + userUId + "]";
+	}
 }

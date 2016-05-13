@@ -96,6 +96,9 @@ public class LocationCollection extends GenericCollection {
     @Field
     private Boolean isHomeServiceAvailable = false;
 
+    @Field
+    private String locationUId;
+    
     public String getId() {
 	return id;
     }
@@ -320,6 +323,14 @@ public class LocationCollection extends GenericCollection {
 		this.alternateClinicNumbers = alternateClinicNumbers;
 	}
 
+	public String getLocationUId() {
+		return locationUId;
+	}
+
+	public void setLocationUId(String locationUId) {
+		this.locationUId = locationUId;
+	}
+
 	@Override
 	public String toString() {
 		return "LocationCollection [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state="
@@ -332,7 +343,6 @@ public class LocationCollection extends GenericCollection {
 				+ ", workingSchedules=" + workingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen
 				+ ", isClinic=" + isClinic + ", isLab=" + isLab + ", isOnlineReportsAvailable="
 				+ isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited + ", isHomeServiceAvailable="
-				+ isHomeServiceAvailable + "]";
+				+ isHomeServiceAvailable + ", locationUId=" + locationUId + "]";
 	}
-
 }

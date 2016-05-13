@@ -17,7 +17,7 @@ import com.google.maps.model.LatLng;
 
 @Service
 public class LocationServiceImpl implements LocationServices {
-    @Value("${GEOCODING_SERVICES_API_KEY}")
+    @Value("${geocoding.services.api.key}")
     private String GEOCODING_SERVICES_API_KEY;
 
     @Override

@@ -3,12 +3,18 @@ package com.dpdocter.collections;
 import java.util.Date;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.WorkingHours;
 
 @Document(collection = "appointment_booked_slot_cl")
+@CompoundIndexes({
+    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
+})
 public class AppointmentBookedSlotCollection extends GenericCollection {
 
     @Id
@@ -17,7 +23,7 @@ public class AppointmentBookedSlotCollection extends GenericCollection {
     @Field
     private String appointmentId;
 
-    @Field
+    @Indexed
     private String doctorId;
 
     @Field
@@ -29,10 +35,10 @@ public class AppointmentBookedSlotCollection extends GenericCollection {
     @Field
     private WorkingHours time;
 
-    @Field
+    @Indexed
     private Date fromDate;
 
-    @Field
+    @Indexed
     private Date toDate;
 
     @Field

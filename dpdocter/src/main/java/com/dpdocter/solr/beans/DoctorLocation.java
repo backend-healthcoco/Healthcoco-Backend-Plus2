@@ -87,6 +87,9 @@ public class DoctorLocation {
     @Field
     private Integer noOfRecommenations = 0;
 
+    @Field
+    private String locationUId;
+    
     public String getLocationName() {
 	return locationName;
     }
@@ -303,6 +306,14 @@ public class DoctorLocation {
 	this.isClinic = isClinic;
     }
 
+	public String getLocationUId() {
+		return locationUId;
+	}
+
+	public void setLocationUId(String locationUId) {
+		this.locationUId = locationUId;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorLocation [locationId=" + locationId + ", hospitalId=" + hospitalId + ", locationName="
@@ -314,6 +325,7 @@ public class DoctorLocation {
 				+ ", specialization=" + specialization + ", isClinic=" + isClinic + ", isLab=" + isLab
 				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
 				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", images=" + images + ", logoUrl=" + logoUrl
-				+ ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + "]";
+				+ ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", locationUId="
+				+ locationUId + "]";
 	}
 }

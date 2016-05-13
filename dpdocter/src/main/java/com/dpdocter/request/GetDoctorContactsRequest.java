@@ -9,7 +9,9 @@ public class GetDoctorContactsRequest {
 
     private String hospitalId;
 
-    private Boolean blocked = false;
+    private String updatedTime = "0";
+
+    private Boolean discarded = true;
 
     private int page;
 
@@ -41,14 +43,6 @@ public class GetDoctorContactsRequest {
 	this.doctorId = doctorId;
     }
 
-    public Boolean getBlocked() {
-	return blocked;
-    }
-
-    public void setBlocked(Boolean blocked) {
-	this.blocked = blocked;
-    }
-
     public int getPage() {
 	return page;
     }
@@ -73,10 +67,26 @@ public class GetDoctorContactsRequest {
 	this.groups = groups;
     }
 
-    @Override
-    public String toString() {
-	return "GetDoctorContactsRequest [doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", blocked=" + blocked
-		+ ", page=" + page + ", size=" + size + ", groups=" + groups + "]";
-    }
+	public String getUpdatedTime() {
+		return updatedTime;
+	}
 
+	public void setUpdatedTime(String updatedTime) {
+		this.updatedTime = updatedTime;
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	@Override
+	public String toString() {
+		return "GetDoctorContactsRequest [doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", updatedTime=" + updatedTime + ", discarded=" + discarded + ", page=" + page
+				+ ", size=" + size + ", groups=" + groups + "]";
+	}
 }

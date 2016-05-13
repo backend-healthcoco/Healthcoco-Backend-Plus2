@@ -3,8 +3,6 @@ package com.dpdocter.services.impl;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -20,20 +18,17 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.dpdocter.beans.Address;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Group;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.RegisteredPatientDetails;
-import com.dpdocter.collections.AddressCollection;
-import com.dpdocter.collections.DoctorContactCollection;
 import com.dpdocter.collections.ExportContactsRequestCollection;
 import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.ImportContactsRequestCollection;
-import com.dpdocter.collections.PatientAdmissionCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
 import com.dpdocter.collections.ReferencesCollection;
@@ -42,13 +37,10 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.reflections.ReflectionUtil;
-import com.dpdocter.repository.AddressRepository;
 import com.dpdocter.repository.ClinicalNotesRepository;
-import com.dpdocter.repository.DoctorContactsRepository;
 import com.dpdocter.repository.ExportContactsRequestRepository;
 import com.dpdocter.repository.GroupRepository;
 import com.dpdocter.repository.ImportContactsRequestRepository;
-import com.dpdocter.repository.PatientAdmissionRepository;
 import com.dpdocter.repository.PatientGroupRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PrescriptionRepository;
@@ -71,12 +63,6 @@ public class ContactsServiceImpl implements ContactsService {
     private static Logger logger = Logger.getLogger(ContactsServiceImpl.class.getName());
 
     @Autowired
-    private DoctorContactsRepository doctorContactsRepository;
-
-    @Autowired
-    private PatientAdmissionRepository patientAdmissionRepository;
-
-    @Autowired
     private PatientRepository patientRepository;
 
     @Autowired
@@ -96,9 +82,6 @@ public class ContactsServiceImpl implements ContactsService {
 
     @Autowired
     private ExportContactsRequestRepository exportContactsRequestRepository;
-
-    @Autowired
-    private AddressRepository addressRepository;
 
     @Autowired
     private FileManager fileManager;
@@ -133,31 +116,14 @@ public class ContactsServiceImpl implements ContactsService {
      * @return List of Patient cards
      */
     @Override
+    @Transactional
     public List<PatientCard> getDoctorContacts(GetDoctorContactsRequest request) {
-	List<DoctorContactCollection> doctorContactCollections = null;
 	try {
 		Collection<String> patientIds = null;
-	    if (request.getGroups() == null  || request.getGroups().isEmpty()) {
-			if (request.getSize() > 0)
-			doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(), false,
-				new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "createdTime"));
-		    else
-			doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(), false,
-				new Sort(Sort.Direction.DESC, "createdTime"));
-		    patientIds = CollectionUtils.collect(doctorContactCollections, new BeanToPropertyValueTransformer("contactId"));
-	    }else{
-	    	patientIds = getPatientIdsForGroups(request.getGroups());
-		    int from = Math.max(0,request.getPage()*request.getSize());
-		    int to = Math.min(patientIds.size(),(request.getPage()+1)*request.getSize());
-	
-		    patientIds = ((List<String>) patientIds).subList(from,to);
+	    if (request.getGroups() != null  && !request.getGroups().isEmpty())patientIds = getPatientIdsForGroups(request.getGroups());
 
-	    }
-	    if (( doctorContactCollections == null || doctorContactCollections.isEmpty()) && (patientIds == null || patientIds.isEmpty())) {
-		return null;
-	    }
-
-	    List<PatientCard> patientCards = getSpecifiedPatientCards(patientIds, request.getDoctorId(), request.getLocationId(), request.getHospitalId());
+	    if(patientIds == null || patientIds.isEmpty())return null;
+	    List<PatientCard> patientCards = getSpecifiedPatientCards(patientIds, request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPage(), request.getSize(), request.getUpdatedTime(), request.getDiscarded());
 	    
 	    return patientCards;
 	} catch (Exception e) {
@@ -168,36 +134,16 @@ public class ContactsServiceImpl implements ContactsService {
     }
 
     @Override
+    @Transactional
     public DoctorContactsResponse getDoctorContacts(String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded, int page,
 	    int size) {
 	DoctorContactsResponse response = null;
-	List<DoctorContactCollection> doctorContactCollections = null;
-	boolean[] discards = new boolean[2];
-	discards[0] = false;
-
 	try {
-	    if (discarded) {
-		discards[1] = true;
-	    }
-
-	    long createdTimestamp = Long.parseLong(updatedTime);
-	    if (size > 0)
-		doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, discards, new Date(createdTimestamp),
-			new PageRequest(page, size, Direction.DESC, "createdTime"));
-	    else
-		doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, discards, new Date(createdTimestamp),
-			new Sort(Sort.Direction.DESC, "createdTime"));
-
-	    if (doctorContactCollections.isEmpty()) {
-		return null;
-	    }
-	    @SuppressWarnings("unchecked")
-	    Collection<String> patientIds = CollectionUtils.collect(doctorContactCollections, new BeanToPropertyValueTransformer("contactId"));
-	    List<PatientCard> patientCards = getSpecifiedPatientCards(patientIds, doctorId, locationId, hospitalId);
+		List<PatientCard> patientCards = getSpecifiedPatientCards(null, doctorId, locationId, hospitalId, page, size, updatedTime, discarded);
 	    if (patientCards != null) {
 		response = new DoctorContactsResponse();
 		response.setPatientCards(patientCards);
-		response.setTotalSize(doctorContactsRepository.findCountByDoctorIdAndIsBlocked(doctorId, false, discards, new Date(createdTimestamp)));
+		response.setTotalSize(getSpecifiedPatientCount(null, doctorId, locationId, hospitalId, updatedTime, discarded));
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -208,32 +154,17 @@ public class ContactsServiceImpl implements ContactsService {
     }
 
     @Override
+    @Transactional
     public DoctorContactsResponse getDoctorContactsSortedByName(String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
 	    int page, int size) {
 	DoctorContactsResponse response = null;
-	List<DoctorContactCollection> doctorContactCollections = null;
-	boolean[] discards = new boolean[2];
-	discards[0] = false;
-
 	try {
-	    if (discarded) {
-		discards[1] = true;
-	    }
-
-	    long createdTimestamp = Long.parseLong(updatedTime);
-	    doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(doctorId, false, discards, new Date(createdTimestamp),
-		    new Sort(Sort.Direction.DESC, "createdTime"));
-
-	    if (doctorContactCollections.isEmpty()) {
-		return null;
-	    }
-	    @SuppressWarnings("unchecked")
-	    Collection<String> patientIds = CollectionUtils.collect(doctorContactCollections, new BeanToPropertyValueTransformer("contactId"));
-	    List<PatientCard> patientCards = getSpecifiedPatientCardsSorted(patientIds, doctorId, locationId, hospitalId, page, size);
+	    List<PatientCard> patientCards = getSpecifiedPatientCardsSorted(null, doctorId, locationId, hospitalId, page, size, updatedTime, discarded);
 	    if (patientCards != null) {
 		response = new DoctorContactsResponse();
 		response.setPatientCards(patientCards);
-		response.setTotalSize(doctorContactsRepository.findCountByDoctorIdAndIsBlocked(doctorId, false, discards, new Date(createdTimestamp)));
+		response.setTotalSize(getSpecifiedPatientCount(null, doctorId, locationId, hospitalId, updatedTime, discarded));
+		//doctorContactsRepository.findCountByDoctorIdAndIsBlocked(doctorId, false, discards, new Date(createdTimestamp))
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -244,25 +175,73 @@ public class ContactsServiceImpl implements ContactsService {
 
     }
 
-    private List<PatientCard> getSpecifiedPatientCardsSorted(Collection<String> patientIds, String doctorId, String locationId, String hospitalId, int page,
-	    int size) {
-	List<PatientCollection> patientCollections = null;
-	if (!DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId) && patientIds != null && !patientIds.isEmpty()) {
-	    if (size > 0)
-		patientCollections = patientRepository.findByUserIdDoctorIdLocationIdHospitalId(patientIds, doctorId, locationId, hospitalId,
-			new PageRequest(page, size, Direction.ASC, "firstName"));
-	    else
-		patientCollections = patientRepository.findByUserIdDoctorIdLocationIdHospitalId(patientIds, doctorId, locationId, hospitalId,
-			new Sort(Sort.Direction.ASC, "firstName"));
+    private int getSpecifiedPatientCount(Collection<String> patientIds, String doctorId, String locationId,String hospitalId, String updatedTime, Boolean discarded) {
+    	Integer count = 0;
+    	boolean[] discards = new boolean[2];
+    	discards[0] = false;
+    	if (discarded) discards[1] = true;
 
-	} else if (patientIds != null && !patientIds.isEmpty() && !DPDoctorUtils.anyStringEmpty(doctorId)) {
-	    if (size > 0)
-		patientCollections = patientRepository.findByUserIdDoctorId(patientIds, doctorId,
-			new PageRequest(page, size, new Sort(Direction.ASC, "firstName")));
-	    else
-		patientCollections = patientRepository.findByUserIdDoctorId(patientIds, doctorId, new Sort(Direction.ASC, "firstName"));
-	} else {
-	    return new ArrayList<PatientCard>(0);
+    	long createdTimestamp = Long.parseLong(updatedTime);
+
+    	if(patientIds != null && !patientIds.isEmpty()){
+    		if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+       		 count = patientRepository.findByUserIdDoctorIdLocationIdHospitalId(patientIds, doctorId, locationId, hospitalId,new Date(createdTimestamp), discards);
+
+       	} else if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+       	    count = patientRepository.findByUserIdDoctorId(patientIds, doctorId, new Date(createdTimestamp), discards);
+       	}
+    	}else{
+    		if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+       		 count = patientRepository.findByUserIdDoctorIdLocationIdHospitalId(doctorId, locationId, hospitalId,new Date(createdTimestamp), discards);
+
+       	} else if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+       	    count = patientRepository.findByUserIdDoctorId(doctorId, new Date(createdTimestamp), discards);
+       	}
+    	}
+    	if(count != null)return count;
+    	else return 0;
+	}
+
+	private List<PatientCard> getSpecifiedPatientCardsSorted(Collection<String> patientIds, String doctorId, String locationId, String hospitalId, int page, int size, String updatedTime, Boolean discarded) {
+	List<PatientCollection> patientCollections = null;
+	boolean[] discards = new boolean[2];
+	discards[0] = false;
+	if (discarded) discards[1] = true;
+
+	long createdTimestamp = Long.parseLong(updatedTime);
+
+	if(patientIds != null && !patientIds.isEmpty()){
+		if (!DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+		    if (size > 0)
+			patientCollections = patientRepository.findByUserIdDoctorIdLocationIdHospitalId(patientIds, doctorId, locationId, hospitalId, new Date(createdTimestamp), discards,
+				new PageRequest(page, size, Direction.ASC, "firstName"));
+		    else
+			patientCollections = patientRepository.findByUserIdDoctorIdLocationIdHospitalId(patientIds, doctorId, locationId, hospitalId,new Date(createdTimestamp), discards,
+				new Sort(Sort.Direction.ASC, "firstName"));
+
+		} else if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+		    if (size > 0)
+			patientCollections = patientRepository.findByUserIdDoctorId(patientIds, doctorId,new Date(createdTimestamp), discards,
+				new PageRequest(page, size, new Sort(Direction.ASC, "firstName")));
+		    else
+			patientCollections = patientRepository.findByUserIdDoctorId(patientIds, doctorId, new Date(createdTimestamp), discards, new Sort(Direction.ASC, "firstName"));
+		}
+	}else{
+		if (!DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+		    if (size > 0)
+			patientCollections = patientRepository.findByUserIdDoctorIdLocationIdHospitalId(doctorId, locationId, hospitalId, new Date(createdTimestamp), discards,
+				new PageRequest(page, size, Direction.ASC, "firstName"));
+		    else
+			patientCollections = patientRepository.findByUserIdDoctorIdLocationIdHospitalId(doctorId, locationId, hospitalId,new Date(createdTimestamp), discards,
+				new Sort(Sort.Direction.ASC, "firstName"));
+
+		} else if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+		    if (size > 0)
+			patientCollections = patientRepository.findByUserIdDoctorId(doctorId,new Date(createdTimestamp), discards,
+				new PageRequest(page, size, new Sort(Direction.ASC, "firstName")));
+		    else
+			patientCollections = patientRepository.findByUserIdDoctorId(doctorId, new Date(createdTimestamp), discards, new Sort(Direction.ASC, "firstName"));
+		}
 	}
 
 	List<PatientCard> patientCards = new ArrayList<PatientCard>();
@@ -305,21 +284,36 @@ public class ContactsServiceImpl implements ContactsService {
 	return patientCards;
     }
 
-    public List<PatientCard> getSpecifiedPatientCards(Collection<String> patientIds, String doctorId, String locationId, String hospitalId) throws Exception {
+    public List<PatientCard> getSpecifiedPatientCards(Collection<String> patientIds, String doctorId, String locationId, String hospitalId, int page, int size, String updatedTime, Boolean discarded) throws Exception {
 	List<PatientCard> patientCards = new ArrayList<PatientCard>();
-	List<String> uniqueIds = new ArrayList<String>();
-	if (patientIds != null && !patientIds.isEmpty()) {
-	    for (String patientId : patientIds) {
-		if (!uniqueIds.contains(patientId)) {
-		    uniqueIds.add(patientId);
-		    PatientCollection patientCollection = null;
-		    if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
-			patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientId, doctorId, locationId, hospitalId);
-		    } else {
-			patientCollection = patientRepository.findByUserIdDoctorId(patientId, doctorId);
-		    }
-		    if (patientCollection != null) {
+	boolean[] discards = new boolean[2];
+	discards[0] = false;
+	if (discarded) discards[1] = true;
 
+	long createdTimestamp = Long.parseLong(updatedTime);
+	
+	List<PatientCollection> patientCollections = null;
+	if(patientIds != null && !patientIds.isEmpty()){
+		if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+			if(size > 0)patientCollections = patientRepository.findByUserIdDoctorIdLocationIdHospitalId(patientIds, doctorId, locationId, hospitalId, new Date(createdTimestamp), discards, new PageRequest(page, size, Direction.DESC, "createdTime"));
+			else patientCollections = patientRepository.findByUserIdDoctorIdLocationIdHospitalId(patientIds, doctorId, locationId, hospitalId, new Date(createdTimestamp), discards, new Sort(Direction.DESC, "createdTime"));
+		}else{
+			if(size > 0)patientCollections = patientRepository.findByUserIdDoctorId(patientIds, doctorId, new Date(createdTimestamp), discards, new PageRequest(page, size, Direction.DESC, "createdTime"));
+			else patientCollections = patientRepository.findByUserIdDoctorId(patientIds, doctorId, new Date(createdTimestamp), discards, new Sort(Direction.DESC, "createdTime"));
+		}
+	}else{
+		if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+			if(size > 0)patientCollections = patientRepository.findByUserIdDoctorIdLocationIdHospitalId(doctorId, locationId, hospitalId, new Date(createdTimestamp), discards, new PageRequest(page, size, Direction.DESC, "createdTime"));
+			else patientCollections = patientRepository.findByUserIdDoctorIdLocationIdHospitalId(doctorId, locationId, hospitalId, new Date(createdTimestamp), discards, new Sort(Direction.DESC, "createdTime"));
+		}else{
+			if(size > 0)patientCollections = patientRepository.findByUserIdDoctorId(doctorId, new Date(createdTimestamp), discards, new PageRequest(page, size, Direction.DESC, "createdTime"));
+			else patientCollections = patientRepository.findByUserIdDoctorId(doctorId, new Date(createdTimestamp), discards, new Sort(Direction.DESC, "createdTime"));
+		}
+	}
+	if(patientCollections != null){
+	for(PatientCollection patientCollection : patientCollections){
+	
+		    if (patientCollection != null) {
 			UserCollection userCollection = userRepository.findOne(patientCollection.getUserId());
 			if (userCollection != null) {
 			    List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getUserId());
@@ -355,7 +349,6 @@ public class ContactsServiceImpl implements ContactsService {
 			}
 		    }
 		}
-	    }
 	} else {
 	    return new ArrayList<PatientCard>(0);
 	}
@@ -375,42 +368,14 @@ public class ContactsServiceImpl implements ContactsService {
 	return null;
     }
 
-    private List<DoctorContactCollection> filterContactsByGroup(GetDoctorContactsRequest request, List<DoctorContactCollection> doctorContactCollections)
-	    throws Exception {
-	Collection<String> patientIds = getPatientIdsForGroups(request.getGroups());
-	List<DoctorContactCollection> filteredDoctorContactCollection = new ArrayList<DoctorContactCollection>();
-	if (patientIds != null) {
-	    for (DoctorContactCollection doctorContactCollection : doctorContactCollections) {
-		if (patientIds.contains(doctorContactCollection.getContactId().trim())) {
-		    filteredDoctorContactCollection.add(doctorContactCollection);
-		}
-	    }
-	}
-	return filteredDoctorContactCollection;
-    }
-
-    @SuppressWarnings("unused")
-    private List<DoctorContactCollection> filterContactsByGroup(List<String> groupIds, List<DoctorContactCollection> doctorContactCollections)
-	    throws Exception {
-	Collection<String> patientIds = getPatientIdsForGroups(groupIds);
-	List<DoctorContactCollection> filteredDoctorContactCollection = new ArrayList<DoctorContactCollection>();
-	if (patientIds != null) {
-	    for (DoctorContactCollection doctorContactCollection : doctorContactCollections) {
-		if (patientIds.contains(doctorContactCollection.getContactId().trim())) {
-		    filteredDoctorContactCollection.add(doctorContactCollection);
-		}
-	    }
-	}
-	return filteredDoctorContactCollection;
-    }
-
     @Override
+    @Transactional
     public void blockPatient(String patientId, String docterId) {
 	try {
-	    DoctorContactCollection doctorContactCollection = doctorContactsRepository.findByDoctorIdAndContactId(docterId, patientId);
-	    if (doctorContactCollection != null) {
-		doctorContactCollection.setIsBlocked(true);
-		doctorContactsRepository.save(doctorContactCollection);
+	    PatientCollection patientCollection = patientRepository.findByUserIdDoctorId(patientId, docterId);
+	    if (patientCollection != null) {
+	    	patientCollection.setDiscarded(true);
+	    	patientRepository.save(patientCollection);
 	    } else {
 		logger.warn("PatientId and DoctorId send is not proper.");
 		throw new BusinessException(ServiceError.InvalidInput, "PatientId and DoctorId send is not proper.");
@@ -424,6 +389,7 @@ public class ContactsServiceImpl implements ContactsService {
     }
 
     @Override
+    @Transactional
     public Group addEditGroup(Group group) {
 	try {
 	    checkIfGroupIsExistWithSameName(group);
@@ -476,6 +442,7 @@ public class ContactsServiceImpl implements ContactsService {
     }
 
     @Override
+    @Transactional
     public Boolean deleteGroup(String groupId, Boolean discarded) {
 	Boolean response = false;
 	GroupCollection groupCollection = null;
@@ -513,78 +480,31 @@ public class ContactsServiceImpl implements ContactsService {
     }
 
     @Override
-    public List<PatientCard> getDoctorsRecentlyVisitedContacts(String doctorId, int size, int page) {
-	try {
-	    List<PatientAdmissionCollection> patientAdmissionCollections = patientAdmissionRepository.findDistinctPatientByDoctorId(doctorId,
-		    new PageRequest(page, size));
-	    if (patientAdmissionCollections != null) {
-		@SuppressWarnings({ "unchecked", "unused" })
-		Collection<String> patientIds = CollectionUtils.collect(patientAdmissionCollections, new BeanToPropertyValueTransformer("patientId"));
-		List<PatientCard> patientCards = null;// getSpecifiedPatientCards(patientIds,doctorId);
-		return patientCards;
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-	}
-	return null;
-    }
-
-    @Override
+    @Transactional
     public int getContactsTotalSize(GetDoctorContactsRequest request) {
-	List<DoctorContactCollection> doctorContactCollections = null;
-	try {
-		Collection<String> patientIds = null;
-	    if (request.getGroups() == null  || request.getGroups().isEmpty()) {
-			if (request.getSize() > 0)
-			doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(), false,
-				new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "createdTime"));
-		    else
-			doctorContactCollections = doctorContactsRepository.findByDoctorIdAndIsBlocked(request.getDoctorId(), false,
-				new Sort(Sort.Direction.DESC, "createdTime"));
-			patientIds = CollectionUtils.collect(doctorContactCollections, new BeanToPropertyValueTransformer("contactId"));
-	    }else{
-	    	patientIds = getPatientIdsForGroups(request.getGroups());
-		    int from = Math.max(0,request.getPage()*request.getSize());
-		    int to = Math.min(patientIds.size(),(request.getPage()+1)*request.getSize());
-	
-		    patientIds = ((List<String>) patientIds).subList(from,to);
-
-	    }
-	    if (( doctorContactCollections == null || doctorContactCollections.isEmpty()) && (patientIds == null || patientIds.isEmpty())) {
-		return 0;
-	    }
-
-	    
-	   
-		List<String> uniqueIds = new ArrayList<String>();
-		int count = 0;
-		if (patientIds != null && !patientIds.isEmpty()) {
-		    for (String patientId : patientIds) {
-			if (!uniqueIds.contains(patientId)) {
-			    uniqueIds.add(patientId);
-			    PatientCollection patientCollection = null;
-			    if (DPDoctorUtils.anyStringEmpty(request.getLocationId(), request.getHospitalId())) {
-				patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientId, request.getDoctorId(), request.getLocationId(), request.getHospitalId());
-			    } else {
-				patientCollection = patientRepository.findByUserIdDoctorId(patientId, request.getDoctorId());
-			    }
-			    if(patientCollection!=null) count = count+1;
-			}}}
-	    return count;
-	} catch (Exception e) {
+    	int response = 0;
+	    Collection<String> patientIds = null;
+     try {
+		if (request.getGroups() != null  && !request.getGroups().isEmpty()){
+			patientIds = getPatientIdsForGroups(request.getGroups());
+			if(patientIds != null && !patientIds.isEmpty())
+				response = getSpecifiedPatientCount(patientIds, request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getUpdatedTime(), request.getDiscarded());
+		}else{
+			response =  getSpecifiedPatientCount(null, request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getUpdatedTime(), request.getDiscarded());
+		}
+		} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
-
+    return response;
     }
 
     /**
      * This service gives lists of all groups for doctor.
      */
     @Override
+    @Transactional
     public List<Group> getAllGroups(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
 	List<Group> groups = null;
 	List<GroupCollection> groupCollections = null;
@@ -629,6 +549,7 @@ public class ContactsServiceImpl implements ContactsService {
     }
 
     @Override
+    @Transactional
     public Boolean importContacts(ImportContactsRequest request) {
 	Boolean response = false;
 	ImportContactsRequestCollection importContactsRequestCollection = null;
@@ -653,6 +574,7 @@ public class ContactsServiceImpl implements ContactsService {
     }
 
     @Override
+    @Transactional
     public Boolean exportContacts(ExportContactsRequest request) {
 	Boolean response = false;
 	ExportContactsRequestCollection exportContactsRequestCollection = null;
@@ -670,6 +592,7 @@ public class ContactsServiceImpl implements ContactsService {
     }
 
     @Override
+    @Transactional
     public List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId, String updatedTime,
 	    boolean discarded) {
 	List<RegisteredPatientDetails> registeredPatientDetails = null;
@@ -695,10 +618,6 @@ public class ContactsServiceImpl implements ContactsService {
 		registeredPatientDetails = new ArrayList<RegisteredPatientDetails>();
 		for (PatientCollection patientCollection : patientCollections) {
 		    UserCollection userCollection = userRepository.findOne(patientCollection.getUserId());
-		    AddressCollection addressCollection = new AddressCollection();
-		    if (patientCollection.getAddressId() != null) {
-			addressCollection = addressRepository.findOne(patientCollection.getAddressId());
-		    }
 		    List<PatientGroupCollection> patientGroupCollections = patientGroupRepository.findByPatientId(patientCollection.getUserId());
 		    @SuppressWarnings("unchecked")
 		    Collection<String> groupIds = CollectionUtils.collect(patientGroupCollections, new BeanToPropertyValueTransformer("groupId"));
@@ -712,6 +631,8 @@ public class ContactsServiceImpl implements ContactsService {
 		    Patient patient = new Patient();
 		    BeanUtil.map(patientCollection, patient);
 		    patient.setPatientId(patientCollection.getId());
+		    String referredBy = patientCollection.getReferredBy();
+		    patientCollection.setReferredBy(null);
 		    BeanUtil.map(patientCollection, registeredPatientDetail);
 
 		    Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(doctorId, userCollection.getId(), hospitalId,
@@ -725,10 +646,11 @@ public class ContactsServiceImpl implements ContactsService {
 			patient.setIsDataAvailableWithOtherDoctor(true);
 		    patient.setIsPatientOTPVerified(otpService.checkOTPVerified(doctorId, locationId, hospitalId, userCollection.getId()));
 		    registeredPatientDetail.setPatient(patient);
-		    Address address = new Address();
-		    BeanUtil.map(addressCollection, address);
-		    registeredPatientDetail.setAddress(address);
-		    groupCollections = (List<GroupCollection>) groupRepository.find(groupIds, doctorId, locationId, hospitalId, false);
+		    registeredPatientDetail.setAddress(patientCollection.getAddress());
+		    
+		    if(!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))groupCollections = (List<GroupCollection>) groupRepository.find(groupIds, doctorId, locationId, hospitalId, false);
+		    else groupCollections = (List<GroupCollection>) groupRepository.find(groupIds, doctorId, false);
+		   
 		    groups = new ArrayList<Group>();
 		    BeanUtil.map(groupCollections, groups);
 		    registeredPatientDetail.setGroups(groups);
@@ -742,17 +664,15 @@ public class ContactsServiceImpl implements ContactsService {
 		    if (patientCollection.getDob() != null) {
 			registeredPatientDetail.setDob(patientCollection.getDob());
 		    }
-		    PatientAdmissionCollection patientAdmissionCollection = patientAdmissionRepository.findByPatientIdAndDoctorId(userCollection.getId(),
-			    doctorId);
-		    if (patientAdmissionCollection != null) {
+		    
 			Reference reference = new Reference();
-			if (patientAdmissionCollection.getReferredBy() != null) {
-			    ReferencesCollection referencesCollection = referenceRepository.findOne(patientAdmissionCollection.getReferredBy());
+			if (referredBy != null) {
+			    ReferencesCollection referencesCollection = referenceRepository.findOne(referredBy);
 			    if (referencesCollection != null)
 				BeanUtil.map(referencesCollection, reference);
 			}
 			registeredPatientDetail.setReferredBy(reference);
-		    }
+		    
 		    registeredPatientDetails.add(registeredPatientDetail);
 		}
 	    }
@@ -766,6 +686,7 @@ public class ContactsServiceImpl implements ContactsService {
     }
 
     @Override
+    @Transactional
     public PatientGroupAddEditRequest addGroupToPatient(PatientGroupAddEditRequest request) {
 	PatientGroupAddEditRequest response = new PatientGroupAddEditRequest();
 	PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(request.getPatientId(), request.getDoctorId(),

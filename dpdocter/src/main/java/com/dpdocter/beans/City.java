@@ -10,7 +10,9 @@ public class City {
 
     private Boolean isActivated = true;
 
-    private String stateId;
+    private String state;
+
+    private String country;
 
     private double latitude;
 
@@ -48,34 +50,42 @@ public class City {
 	this.isActivated = isActivated;
     }
 
-    public String getStateId() {
-	return stateId;
-    }
+	public String getState() {
+		return state;
+	}
 
-    public void setStateId(String stateId) {
-	this.stateId = stateId;
-    }
+	public void setState(String state) {
+		this.state = state;
+	}
 
-    public double getLatitude() {
-	return latitude;
-    }
+	public String getCountry() {
+		return country;
+	}
 
-    public void setLatitude(double latitude) {
-	this.latitude = latitude;
-    }
+	public void setCountry(String country) {
+		this.country = country;
+	}
 
-    public double getLongitude() {
-	return longitude;
-    }
+	public double getLatitude() {
+		return latitude;
+	}
 
-    public void setLongitude(double longitude) {
-	this.longitude = longitude;
-    }
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
+
+	public double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
+	}
 
 	@Override
 	public String toString() {
 		return "City [id=" + id + ", city=" + city + ", explanation=" + explanation + ", isActivated=" + isActivated
-				+ ", stateId=" + stateId + ", latitude=" + latitude + ", longitude=" + longitude + "]";
+				+ ", state=" + state + ", country=" + country + ", latitude=" + latitude + ", longitude=" + longitude
+				+ "]";
 	}
-
 }

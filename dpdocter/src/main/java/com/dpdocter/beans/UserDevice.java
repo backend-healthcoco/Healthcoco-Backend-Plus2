@@ -2,6 +2,7 @@ package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.DeviceType;
+import com.dpdocter.enums.RoleEnum;
 
 public class UserDevice extends GenericCollection{
 
@@ -13,6 +14,8 @@ public class UserDevice extends GenericCollection{
 
     private String deviceId;
 
+    private RoleEnum role;
+    
 	public String getId() {
 		return id;
 	}
@@ -45,9 +48,17 @@ public class UserDevice extends GenericCollection{
 		this.deviceId = deviceId;
 	}
 
+	public RoleEnum getRole() {
+		return role;
+	}
+
+	public void setRole(RoleEnum role) {
+		this.role = role;
+	}
+
 	@Override
 	public String toString() {
-		return "UserDevice [id=" + id + ", userId=" + userId + ", deviceType=" + deviceType + ", deviceId="
-				+ deviceId + "]";
+		return "UserDevice [id=" + id + ", userId=" + userId + ", deviceType=" + deviceType + ", deviceId=" + deviceId
+				+ ", role=" + role + "]";
 	}
 }

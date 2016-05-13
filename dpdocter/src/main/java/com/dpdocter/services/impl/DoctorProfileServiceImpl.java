@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.DoctorExperience;
@@ -112,6 +113,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     private UserLocationRepository userLocationRepository;
 
     @Override
+    @Transactional
     public Boolean addEditName(DoctorNameAddEditRequest request) {
 	UserCollection userCollection = null;
 	DoctorCollection doctorCollection = null;
@@ -134,6 +136,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
+    @Transactional
     public DoctorExperience addEditExperience(DoctorExperienceAddEditRequest request) {
 	DoctorCollection doctorCollection = null;
 	DoctorExperience response = new DoctorExperience();
@@ -154,6 +157,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
+    @Transactional
     public Boolean addEditContact(DoctorContactAddEditRequest request) {
 	UserCollection userCollection = null;
 	DoctorCollection doctorCollection = null;
@@ -176,6 +180,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
+    @Transactional
     public Boolean addEditEducation(DoctorEducationAddEditRequest request) {
 	DoctorCollection doctorCollection = null;
 	Boolean response = false;
@@ -193,6 +198,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
+    @Transactional
     public Boolean addEditMedicalCouncils(List<MedicalCouncil> medicalCouncils) {
 	List<MedicalCouncilCollection> medicalCouncilCollections = null;
 	Boolean response = false;
@@ -217,6 +223,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
+    @Transactional
     public List<MedicalCouncil> getMedicalCouncils(int page, int size, String updatedTime) {
 	List<MedicalCouncil> medicalCouncils = null;
 	List<MedicalCouncilCollection> medicalCouncilCollections = null;
@@ -238,6 +245,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
+    @Transactional
     public List<String> addEditSpeciality(DoctorSpecialityAddEditRequest request) {
 	DoctorCollection doctorCollection = null;
 	List<SpecialityCollection> specialityCollections = null;
@@ -284,6 +292,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
+    @Transactional
     public Boolean addEditAchievement(DoctorAchievementAddEditRequest request) {
 	DoctorCollection doctorCollection = null;
 	Boolean response = false;
@@ -301,6 +310,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
+    @Transactional
     public Boolean addEditProfessionalStatement(DoctorProfessionalStatementAddEditRequest request) {
 	DoctorCollection doctorCollection = null;
 	Boolean response = false;
@@ -318,6 +328,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
+    @Transactional
     public Boolean addEditRegistrationDetail(DoctorRegistrationAddEditRequest request) {
 	DoctorCollection doctorCollection = null;
 	Boolean response = false;
@@ -335,6 +346,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
+    @Transactional
     public Boolean addEditExperienceDetail(DoctorExperienceDetailAddEditRequest request) {
 	DoctorCollection doctorCollection = null;
 	Boolean response = false;
@@ -352,6 +364,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
+    @Transactional
     public String addEditProfilePicture(DoctorProfilePictureAddEditRequest request) {
 	UserCollection userCollection = null;
 	String response = "";
@@ -378,6 +391,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
+    @Transactional
     public String addEditCoverPicture(DoctorProfilePictureAddEditRequest request) {
 	UserCollection userCollection = null;
 	String response = "";
@@ -404,6 +418,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
     @SuppressWarnings("unchecked")
     @Override
+    @Transactional
     public DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId) {
 	DoctorProfile doctorProfile = null;
 	UserCollection userCollection = null;
@@ -417,6 +432,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	try {
 	    userCollection = userRepository.findOne(doctorId);
 	    doctorCollection = doctorRepository.findByUserId(doctorId);
+	    if(userCollection == null || doctorCollection == null){
+		    logger.error("No user found");
+		    throw new BusinessException(ServiceError.NoRecord, "No user found");	
+	    }
 	    if (locationId == null) {
 		List<UserLocationCollection> userLocationCollections = userLocationRepository.findByUserId(userCollection.getId());
 		for (Iterator<UserLocationCollection> iterator = userLocationCollections.iterator(); iterator.hasNext();) {
@@ -425,14 +444,11 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 		    locationCollection = locationRepository.findOne(userLocationCollection.getLocationId());
 		    if (locationCollection != null) {
-			String address = locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() + ", "
-				: "" + locationCollection.getCity() != null ? locationCollection.getCity() + ", "
-					: "" + locationCollection.getState() != null ? locationCollection.getState()
-						: "" + locationCollection.getState() != null && locationCollection.getPostalCode() != null ? " - "
-							: "" + locationCollection.getPostalCode() != null ? locationCollection.getPostalCode() + ", "
-								: "" + locationCollection.getState() != null && locationCollection.getPostalCode() == null
-									? ", "
-									: "" + locationCollection.getCountry() != null ? locationCollection.getCountry() : "";
+			String address = locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress()
+				: "" + locationCollection.getCity() != null ? ", "+locationCollection.getCity()
+					: "" + locationCollection.getPostalCode() != null ? ", "+locationCollection.getPostalCode() 
+								: "" + locationCollection.getState() != null ? ", "+locationCollection.getState() 
+									: "" + locationCollection.getCountry() != null ? ", "+locationCollection.getCountry() : "";
 
 			doctorClinic.setClinicAddress(address);
 			BeanUtil.map(locationCollection, doctorClinic);
@@ -450,14 +466,11 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 		    locationCollection = locationRepository.findOne(locationId);
 		    if (locationCollection != null) {
-			String address = locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() + ", "
-				: "" + locationCollection.getCity() != null ? locationCollection.getCity() + ", "
-					: "" + locationCollection.getState() != null ? locationCollection.getState()
-						: "" + locationCollection.getState() != null && locationCollection.getPostalCode() != null ? " - "
-							: "" + locationCollection.getPostalCode() != null ? locationCollection.getPostalCode() + ", "
-								: "" + locationCollection.getState() != null && locationCollection.getPostalCode() == null
-									? ", "
-									: "" + locationCollection.getCountry() != null ? locationCollection.getCountry() : "";
+		    	String address = locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress()
+						: "" + locationCollection.getCity() != null ? ", "+locationCollection.getCity()
+							: "" + locationCollection.getPostalCode() != null ? ", "+locationCollection.getPostalCode() 
+										: "" + locationCollection.getState() != null ? ", "+locationCollection.getState() 
+											: "" + locationCollection.getCountry() != null ? ", "+locationCollection.getCountry() : "";
 
 			BeanUtil.map(locationCollection, doctorClinic);
 			doctorClinic.setClinicAddress(address);
@@ -513,6 +526,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
+    @Transactional
     public Boolean insertProfessionalMemberships(List<ProfessionalMembership> professionalMemberships) {
 	List<ProfessionalMembershipCollection> professionalMembershipCollections = null;
 	Boolean response = false;
@@ -534,6 +548,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
+    @Transactional
     public List<ProfessionalMembership> getProfessionalMemberships(int page, int size, String updatedTime) {
 	List<ProfessionalMembership> professionalMemberships = null;
 	List<ProfessionalMembershipCollection> professionalMembershipCollections = null;
@@ -556,6 +571,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
+    @Transactional
     public Boolean addEditProfessionalMembership(DoctorProfessionalAddEditRequest request) {
 	DoctorCollection doctorCollection = null;
 	List<ProfessionalMembershipCollection> professionalMembershipCollections = null;
@@ -595,6 +611,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
+    @Transactional
     public Boolean addEditAppointmentNumbers(DoctorAppointmentNumbersAddEditRequest request) {
 	DoctorClinicProfileCollection doctorClinicProfileCollection = null;
 	Boolean response = false;
@@ -620,6 +637,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
+    @Transactional
     public Boolean addEditVisitingTime(DoctorVisitingTimeAddEditRequest request) {
 	DoctorClinicProfileCollection doctorClinicProfileCollection = null;
 	Boolean response = false;
@@ -645,6 +663,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
+    @Transactional
     public Boolean addEditConsultationFee(DoctorConsultationFeeAddEditRequest request) {
 	DoctorClinicProfileCollection doctorClinicProfileCollection = null;
 	Boolean response = false;
@@ -671,6 +690,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
+    @Transactional
     public Boolean addEditAppointmentSlot(DoctorAppointmentSlotAddEditRequest request) {
 	DoctorClinicProfileCollection doctorClinicProfileCollection = null;
 	Boolean response = false;
@@ -696,6 +716,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
+    @Transactional
     public Boolean addEditGeneralInfo(DoctorGeneralInfo request) {
 	boolean response = false;
 	DoctorClinicProfileCollection doctorClinicProfileCollection = null;
@@ -723,6 +744,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
+    @Transactional
     public List<Speciality> getSpecialities(int page, int size, String updatedTime) {
 	List<Speciality> specialities = null;
 	List<SpecialityCollection> specialitiesCollections = null;
@@ -745,6 +767,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
+    @Transactional
     public List<EducationInstitute> getEducationInstitutes(int page, int size, String updatedTime) {
 	List<EducationInstitute> educationInstitutes = null;
 	List<EducationInstituteCollection> educationInstituteCollections = null;
@@ -767,6 +790,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
+    @Transactional
     public List<EducationQualification> getEducationQualifications(int page, int size, String updatedTime) {
 	List<EducationQualification> qualifications = null;
 	List<EducationQualificationCollection> qualificationCollections = null;
@@ -788,6 +812,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
+    @Transactional
     public DoctorMultipleDataAddEditResponse addEditMultipleData(DoctorMultipleDataAddEditRequest request) {
 	UserCollection userCollection = null;
 	DoctorCollection doctorCollection = null;
@@ -892,6 +917,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
+    @Transactional
     public Boolean addEditFacility(DoctorAddEditFacilityRequest request) {
 	DoctorClinicProfileCollection doctorClinicProfileCollection = null;
 	Boolean response = false;
@@ -920,6 +946,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
+    @Transactional
     public Boolean addEditGender(DoctorGenderAddEditRequest request) {
 	DoctorCollection doctorCollection = null;
 	Boolean response = false;
@@ -938,6 +965,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     }
 
     @Override
+    @Transactional
     public Boolean addEditDOB(DoctorDOBAddEditRequest request) {
 	DoctorCollection doctorCollection = null;
 	Boolean response = false;

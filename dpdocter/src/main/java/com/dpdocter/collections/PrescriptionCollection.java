@@ -2,6 +2,9 @@ package com.dpdocter.collections;
 
 import java.util.List;
 
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -9,6 +12,9 @@ import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.TestAndRecordData;
 
 @Document(collection = "prescription_cl")
+@CompoundIndexes({
+    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
+})
 public class PrescriptionCollection extends GenericCollection {
     @Field
     private String id;
@@ -19,7 +25,7 @@ public class PrescriptionCollection extends GenericCollection {
     @Field
     private String name;
 
-    @Field
+    @Indexed
     private String doctorId;
 
     @Field
@@ -35,9 +41,9 @@ public class PrescriptionCollection extends GenericCollection {
     private List<PrescriptionItem> items;
 
     @Field
-    private List<TestAndRecordData> tests;
+    private List<TestAndRecordData> diagnosticTests;
 
-    @Field
+    @Indexed
     private String patientId;
 
     @Field
@@ -124,14 +130,6 @@ public class PrescriptionCollection extends GenericCollection {
 	this.prescriptionCode = prescriptionCode;
     }
 
-    public List<TestAndRecordData> getTests() {
-	return tests;
-    }
-
-    public void setTests(List<TestAndRecordData> tests) {
-	this.tests = tests;
-    }
-
     public String getAdvice() {
 	return advice;
     }
@@ -164,12 +162,20 @@ public class PrescriptionCollection extends GenericCollection {
 		this.uniqueEmrId = uniqueEmrId;
 	}
 
+	public List<TestAndRecordData> getDiagnosticTests() {
+		return diagnosticTests;
+	}
+
+	public void setDiagnosticTests(List<TestAndRecordData> diagnosticTests) {
+		this.diagnosticTests = diagnosticTests;
+	}
+
 	@Override
 	public String toString() {
 		return "PrescriptionCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", name=" + name + ", doctorId="
 				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
-				+ ", items=" + items + ", tests=" + tests + ", patientId=" + patientId + ", prescriptionCode="
-				+ prescriptionCode + ", inHistory=" + inHistory + ", advice=" + advice + ", isFeedbackAvailable="
-				+ isFeedbackAvailable + "]";
+				+ ", items=" + items + ", diagnosticTests=" + diagnosticTests + ", patientId=" + patientId
+				+ ", prescriptionCode=" + prescriptionCode + ", inHistory=" + inHistory + ", advice=" + advice
+				+ ", isFeedbackAvailable=" + isFeedbackAvailable + "]";
 	}
 }

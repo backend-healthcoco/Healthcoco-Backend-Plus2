@@ -21,8 +21,6 @@ public interface ContactsService {
 
     Boolean deleteGroup(String groupId, Boolean discarded);
 
-    List<PatientCard> getDoctorsRecentlyVisitedContacts(String doctorId, int size, int page);
-
     int getContactsTotalSize(GetDoctorContactsRequest request);
 
     Boolean importContacts(ImportContactsRequest request);

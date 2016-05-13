@@ -35,7 +35,7 @@ public class SolrRegistrationApi {
     @Autowired
     private SolrRegistrationService solrRegistrationService;
 
-    @Value(value = "${IMAGE_PATH}")
+    @Value(value = "${image.path}")
     private String imagePath;
 
     @Path(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT)

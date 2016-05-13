@@ -3,12 +3,18 @@ package com.dpdocter.collections;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.VitalSigns;
 
 @Document(collection = "clinical_notes_cl")
+@CompoundIndexes({
+    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
+})
 public class ClinicalNotesCollection extends GenericCollection {
 
     @Id
@@ -41,7 +47,7 @@ public class ClinicalNotesCollection extends GenericCollection {
     @Field
     private List<String> comments;
 
-    @Field
+    @Indexed
     private String doctorId;
 
     @Field
@@ -50,6 +56,9 @@ public class ClinicalNotesCollection extends GenericCollection {
     @Field
     private String hospitalId;
 
+    @Indexed
+    private String patientId;
+    
     @Field
     private Boolean discarded = false;
 
@@ -187,13 +196,21 @@ public class ClinicalNotesCollection extends GenericCollection {
 		this.uniqueEmrId = uniqueEmrId;
 	}
 
+	public String getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicalNotesCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", notes=" + notes
 				+ ", observations=" + observations + ", investigations=" + investigations + ", diagnoses=" + diagnoses
 				+ ", complaints=" + complaints + ", diagrams=" + diagrams + ", diagramsPaths=" + diagramsPaths
 				+ ", comments=" + comments + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + ", discarded=" + discarded + ", inHistory=" + inHistory + ", vitalSigns=" + vitalSigns
-				+ "]";
+				+ hospitalId + ", patientId=" + patientId + ", discarded=" + discarded + ", inHistory=" + inHistory
+				+ ", vitalSigns=" + vitalSigns + "]";
 	}
 }

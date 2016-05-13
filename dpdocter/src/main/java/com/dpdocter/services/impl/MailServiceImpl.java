@@ -19,6 +19,7 @@ import javax.mail.util.ByteArrayDataSource;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClient;
@@ -62,6 +63,7 @@ public class MailServiceImpl implements MailService {
      *            should be NULL. This method sends Simple mails,MIME mails
      */
     @Override
+    @Transactional
     public void sendEmail(String to, String subject, String body, MailAttachment mailAttachment) throws MessagingException {
 	try {
 	    Session session = Session.getInstance(new Properties());
@@ -100,6 +102,7 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
+    @Transactional
     public void sendEmailMultiAttach(String to, String subject, String body, List<MailAttachment> mailAttachments) throws MessagingException {
 	try {
 	    Session session = Session.getInstance(new Properties());

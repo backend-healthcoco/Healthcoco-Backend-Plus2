@@ -3,6 +3,7 @@ package com.dpdocter.collections;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -24,7 +25,7 @@ public class DoctorCollection extends GenericCollection {
     @Field
     private List<String> otherEmailAddresses;
 
-    @Field
+    @Indexed
     private String userId;
 
     @Field
@@ -33,7 +34,7 @@ public class DoctorCollection extends GenericCollection {
     @Field
     private List<Education> education;
 
-    @Field
+    @Indexed
     private List<String> specialities;
 
     @Field

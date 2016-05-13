@@ -43,7 +43,7 @@ public class PatientVisitApi {
     @Autowired
     private OTPService otpService;
 
-    @Value(value = "${IMAGE_PATH}")
+    @Value(value = "${image.path}")
     private String imagePath;
 
     @Path(value = PathProxy.PatientVisitUrls.ADD_MULTIPLE_DATA)

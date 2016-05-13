@@ -2,15 +2,9 @@ package com.dpdocter.tests;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import org.apache.commons.io.FilenameUtils;
-
-import com.dpdocter.services.impl.PushNotificationServicesImpl;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
-
-import common.util.web.DPDoctorUtils;
+import java.util.TimeZone;
 
 
 
@@ -83,7 +77,14 @@ public class GeneralTests {
 //	    	}
 	    		 
 	    		 public static void main(String[] args) throws UnsupportedEncodingException, NoSuchAlgorithmException  {
-	    			 System.out.println(new Date("2016-04-18T18:30:00.000Z").getTime());
-	    		 }
+	    			 Date dateObj = new Date(Long.parseLong("1464373800000"));//1464413400000
+	    			 SimpleDateFormat sdf = new SimpleDateFormat();
+	    			 sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+	    			 System.out.println(sdf.format(dateObj));
+	    
+	    			 dateObj = new Date(Long.parseLong("2016-05-28T00:00:00.000Z"));//1464413400000
+	    			 System.out.println(sdf.format(dateObj));
+	    
+	    			  }
 	    		 
 }  	

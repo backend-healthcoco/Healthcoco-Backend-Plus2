@@ -3,7 +3,6 @@ package com.dpdocter.services.impl;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,13 +18,11 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.solr.core.query.Criteria;
-import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Age;
 import com.dpdocter.beans.ClinicalNotes;
@@ -52,8 +49,6 @@ import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.InvestigationCollection;
 import com.dpdocter.collections.NotesCollection;
 import com.dpdocter.collections.ObservationCollection;
-import com.dpdocter.collections.PatientAdmissionCollection;
-import com.dpdocter.collections.PatientClinicalNotesCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
@@ -78,8 +73,6 @@ import com.dpdocter.repository.InvestigationRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.NotesRepository;
 import com.dpdocter.repository.ObservationRepository;
-import com.dpdocter.repository.PatientAdmissionRepository;
-import com.dpdocter.repository.PatientClinicalNotesRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
@@ -95,11 +88,9 @@ import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailService;
 import com.dpdocter.solr.document.SolrComplaintsDocument;
 import com.dpdocter.solr.document.SolrDiagnosesDocument;
-import com.dpdocter.solr.document.SolrDoctorDocument;
 import com.dpdocter.solr.document.SolrInvestigationsDocument;
 import com.dpdocter.solr.document.SolrNotesDocument;
 import com.dpdocter.solr.document.SolrObservationsDocument;
-import com.dpdocter.solr.document.SolrSpecialityDocument;
 import com.dpdocter.solr.services.SolrClinicalNotesService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -113,9 +104,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
     @Autowired
     private ClinicalNotesRepository clinicalNotesRepository;
-
-    @Autowired
-    private PatientClinicalNotesRepository patientClinicalNotesRepository;
 
     @Autowired
     private ComplaintRepository complaintRepository;
@@ -166,9 +154,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     private PatientRepository patientRepository;
 
     @Autowired
-    private PatientAdmissionRepository patientAdmissionRepository;
-
-    @Autowired
     private SolrClinicalNotesService solrClinicalNotesService;
 
     @Autowired
@@ -177,13 +162,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
      @Autowired
      private ReferenceRepository referenceRepository;
 
-     @Value(value = "${IMAGE_PATH}")
+     @Value(value = "${image.path}")
      private String imagePath;
      
      @Value(value = "${ClinicalNotes.getPatientsClinicalNotesWithVerifiedOTP}")
      private String getPatientsClinicalNotesWithVerifiedOTP;
     
     @Override
+    @Transactional
     @SuppressWarnings("unchecked")
     public ClinicalNotes addNotes(ClinicalNotesAddRequest request) {
 	ClinicalNotes clinicalNotes = null;
@@ -329,19 +315,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    clinicalNotes = new ClinicalNotes();
 	    BeanUtil.map(clinicalNotesCollection, clinicalNotes);
 
-	    if (clinicalNotesCollection != null) {
-		if (request.getId() == null) {
-		    // map the clinical notes with patient
-		    PatientClinicalNotesCollection patientClinicalNotesCollection = new PatientClinicalNotesCollection();
-		    patientClinicalNotesCollection.setClinicalNotesId(clinicalNotesCollection.getId());
-		    patientClinicalNotesCollection.setPatientId(request.getPatientId());
-		    patientClinicalNotesCollection.setCreatedTime(createdTime);
-		    patientClinicalNotesRepository.save(patientClinicalNotesCollection);
-		    clinicalNotes.setPatientId(patientClinicalNotesCollection.getPatientId());
-		}
-
-	    }
-
 	    // Setting detail of complaints, investigations, observations,
 	    // diagnoses, notes and diagrams into response.
 	    List<Complaint> complaints = IteratorUtils.toList(complaintRepository.findAll(complaintIds).iterator());
@@ -374,6 +347,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
+    @Transactional
     public ClinicalNotes getNotesById(String id) {
 	ClinicalNotes clinicalNote = null;
 	try {
@@ -475,14 +449,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    }
 		}
 
-		List<PatientClinicalNotesCollection> patientClinicalNotesCollections = patientClinicalNotesRepository.findByClinicalNotesId(id);
-		String patientId = "";
-		if (patientClinicalNotesCollections != null && !patientClinicalNotesCollections.isEmpty()) {
-		    for (PatientClinicalNotesCollection patientClinicalNotesCollection : patientClinicalNotesCollections) {
-			patientId += patientClinicalNotesCollection.getPatientId();
-		    }
-		}
-		clinicalNote.setPatientId(patientId);
 		PatientVisitCollection patientVisitCollection = patientVisitRepository.findByClinialNotesId(clinicalNote.getId());
 		if (patientVisitCollection != null)
 		    clinicalNote.setVisitId(patientVisitCollection.getId());
@@ -497,6 +463,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
     @SuppressWarnings("unchecked")
     @Override
+    @Transactional
     public ClinicalNotes editNotes(ClinicalNotesEditRequest request) {
 	ClinicalNotes clinicalNotes = null;
 	List<String> complaintIds = null;
@@ -636,21 +603,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    clinicalNotesCollection.setUpdatedTime(new Date());
 	    clinicalNotesCollection.setUniqueEmrId(oldClinicalNotesCollection.getUniqueEmrId());
 	    clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
-	    if (clinicalNotesCollection != null) {
-		if (request.getId() == null) {
-		    // map the clinical notes with patient
-		    PatientClinicalNotesCollection patientClinicalNotesCollection = new PatientClinicalNotesCollection();
-		    patientClinicalNotesCollection.setClinicalNotesId(clinicalNotesCollection.getId());
-		    patientClinicalNotesCollection.setPatientId(request.getPatientId());
-		    patientClinicalNotesRepository.save(patientClinicalNotesCollection);
-		} else {
-		    PatientClinicalNotesCollection patientClinicalNotesCollection = patientClinicalNotesRepository
-			    .findByPatientIdClinicalNotesId(request.getPatientId(), clinicalNotesCollection.getId());
-		    patientClinicalNotesCollection.setUpdatedTime(new Date());
-		    patientClinicalNotesRepository.save(patientClinicalNotesCollection);
-		}
-
-	    }
+	    
 	    clinicalNotes = new ClinicalNotes();
 	    BeanUtil.map(clinicalNotesCollection, clinicalNotes);
 
@@ -677,7 +630,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    clinicalNotes.setDiagnoses(diagnoses);
 	    clinicalNotes.setNotes(notes);
 	    clinicalNotes.setDiagrams(diagrams);
-	    clinicalNotes.setPatientId(request.getPatientId());
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
@@ -689,19 +641,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
+    @Transactional
     public void deleteNote(String id, Boolean discarded) {
 	try {
-	    List<PatientClinicalNotesCollection> patientClinicalNotesCollections = patientClinicalNotesRepository.findByClinicalNotesId(id);
-	    if (patientClinicalNotesCollections != null) {
-		for (PatientClinicalNotesCollection patientClinicalNotesCollection : patientClinicalNotesCollections) {
-		    patientClinicalNotesCollection.setDiscarded(discarded);
-		    patientClinicalNotesCollection.setUpdatedTime(new Date());
-		    patientClinicalNotesRepository.save(patientClinicalNotesCollection);
-		}
-
-	    }
 	    ClinicalNotesCollection clinicalNotes = clinicalNotesRepository.findOne(id);
 	    clinicalNotes.setDiscarded(discarded);
+	    clinicalNotes.setUpdatedTime(new Date());
 	    clinicalNotesRepository.save(clinicalNotes);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -711,119 +656,151 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
     }
 
-    @Override
-    public List<ClinicalNotes> getPatientsClinicalNotesWithVerifiedOTP(int page, int size, String patientId, String updatedTime, boolean discarded,
-	    boolean inHistory) {
-	List<ClinicalNotes> clinicalNotesList = null;
-	List<PatientClinicalNotesCollection> patientClinicalNotesCollections = null;
-	boolean[] discards = new boolean[2];
-	discards[0] = false;
+	@Override
+	@Transactional
+	public List<ClinicalNotes> getClinicalNotes(int page, int size, String doctorId, String locationId,	String hospitalId, String patientId, String updatedTime, Boolean isOTPVerified, Boolean discarded, Boolean inHistory) {
+		List<ClinicalNotesCollection> clinicalNotesCollections = null;
+		List<ClinicalNotes> clinicalNotes = null;
+		boolean[] discards = new boolean[2];
+		discards[0] = false;
 
-	try {
-	    if (discarded)
-		discards[1] = true;
+		boolean[] inHistorys = new boolean[2];
+		inHistorys[0] = true;
+		inHistorys[1] = true;
 
-	    long createdTimeStamp = Long.parseLong(updatedTime);
-	    if (size > 0)
-		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, discards, new Date(createdTimeStamp),
-			new PageRequest(page, size, Direction.DESC, "createdTime"));
-	    else
-		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, discards, new Date(createdTimeStamp),
-			new Sort(Sort.Direction.DESC, "createdTime"));
+		try {
+		    if (discarded)discards[1] = true;
+		    if (!inHistory)inHistorys[1] = false;
 
-	    if (patientClinicalNotesCollections != null) {
-		@SuppressWarnings("unchecked")
-		Collection<String> clinicalNotesIds = CollectionUtils.collect(patientClinicalNotesCollections,
-			new BeanToPropertyValueTransformer("clinicalNotesId"));
-		clinicalNotesList = new ArrayList<ClinicalNotes>();
-		for (String clinicalNotesId : clinicalNotesIds) {
-		    ClinicalNotes clinicalNotes = getNotesById(clinicalNotesId);
-		    if (clinicalNotes != null) {
-			clinicalNotes.setPatientId(patientId);
-			if (!inHistory)
-			    clinicalNotesList.add(clinicalNotes);
-			else if (clinicalNotes.isInHistory())
-			    clinicalNotesList.add(clinicalNotes);
+		    long createdTimestamp = Long.parseLong(updatedTime);
+
+		    if (!isOTPVerified) {
+			if (locationId == null && hospitalId == null) {
+			    if (size > 0)
+				clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(doctorId, patientId, new Date(createdTimestamp), discards, inHistorys,
+					new PageRequest(page, size, Direction.DESC, "createdTime"));
+			    else
+				clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(doctorId, patientId, new Date(createdTimestamp), discards, inHistorys,
+					new Sort(Sort.Direction.DESC, "createdTime"));
+			} else {
+			    if (size > 0)
+				clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(doctorId, hospitalId, locationId, patientId,
+					new Date(createdTimestamp), discards, inHistorys, new PageRequest(page, size, Direction.DESC, "createdTime"));
+			    else
+				clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(doctorId, hospitalId, locationId, patientId,
+					new Date(createdTimestamp), discards, inHistorys, new Sort(Sort.Direction.DESC, "createdTime"));
+			}
+		    } else {
+			if (size > 0)
+			    clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(patientId, new Date(createdTimestamp), discards, inHistorys,
+				    new PageRequest(page, size, Direction.DESC, "createdTime"));
+			else
+			    clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(patientId, new Date(createdTimestamp), discards, inHistorys, new Sort(
+				    Sort.Direction.DESC, "createdTime"));
 		    }
+		    
+		    if(clinicalNotesCollections != null && !clinicalNotesCollections.isEmpty()){
+		    	clinicalNotes = new ArrayList<ClinicalNotes>();
+		    	 for(ClinicalNotesCollection clinicalNotesCollection : clinicalNotesCollections) {
+		    			ClinicalNotes clinicalNote = getClinicalNote(clinicalNotesCollection);
+		    			clinicalNotes.add(clinicalNote);
+		    		    }
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(" Error Occurred While Getting Clinical Notes");
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Clinical Notes");
 		}
-	    } else {
-		logger.warn(getPatientsClinicalNotesWithVerifiedOTP+" : " + patientId);
-		throw new BusinessException(ServiceError.NoRecord, getPatientsClinicalNotesWithVerifiedOTP+" : " + patientId);
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		return clinicalNotes;
 	}
-	return clinicalNotesList;
-    }
 
-    @Override
-    public List<ClinicalNotes> getPatientsClinicalNotesWithoutVerifiedOTP(int page, int size, String patientId, String doctorId, String locationId,
-	    String hospitalId, String updatedTime, boolean discarded, boolean inHistory) {
-	List<ClinicalNotes> clinicalNotesList = null;
-	List<PatientClinicalNotesCollection> patientClinicalNotesCollections = null;
-	boolean[] discards = new boolean[2];
-	discards[0] = false;
+	public ClinicalNotes getClinicalNote(ClinicalNotesCollection clinicalNotesCollection){
+		   ClinicalNotes clinicalNote = new ClinicalNotes();
+			BeanUtil.map(clinicalNotesCollection, clinicalNote);
+			@SuppressWarnings("unchecked")
+			List<ComplaintCollection> complaintCollections = IteratorUtils
+				.toList(complaintRepository.findAll(clinicalNotesCollection.getComplaints()).iterator());
+			if (complaintCollections != null) {
+			    List<Complaint> complaints = new ArrayList<Complaint>();
+			    for (ComplaintCollection complaintCollection : complaintCollections) {
+				Complaint complaint = new Complaint();
+				complaint.setComplaint(complaintCollection.getComplaint());
+				BeanUtil.map(complaintCollection, complaint);
+				complaints.add(complaint);
+			    }
+			    clinicalNote.setComplaints(complaints);
+			}
+			@SuppressWarnings("unchecked")
+			List<ObservationCollection> observationCollections = IteratorUtils
+				.toList(observationRepository.findAll(clinicalNotesCollection.getObservations()).iterator());
+			if (observationCollections != null) {
+			    List<Observation> observations = new ArrayList<Observation>();
+			    for (ObservationCollection observationCollection : observationCollections) {
+				Observation observation = new Observation();
+				BeanUtil.map(observationCollection, observation);
+				observations.add(observation);
+			    }
+			    clinicalNote.setObservations(observations);
+			}
+			@SuppressWarnings("unchecked")
+			List<InvestigationCollection> investigationCollections = IteratorUtils
+				.toList(investigationRepository.findAll(clinicalNotesCollection.getInvestigations()).iterator());
+			if (investigationCollections != null) {
+			    List<Investigation> investigations = new ArrayList<Investigation>();
+			    for (InvestigationCollection investigationCollection : investigationCollections) {
+				Investigation investigation = new Investigation();
+				BeanUtil.map(investigationCollection, investigation);
+				investigations.add(investigation);
+			    }
+			    clinicalNote.setInvestigations(investigations);
+			}
+			@SuppressWarnings("unchecked")
+			List<DiagnosisCollection> diagnosisCollections = IteratorUtils
+				.toList(diagnosisRepository.findAll(clinicalNotesCollection.getDiagnoses()).iterator());
+			if (diagnosisCollections != null) {
+			    List<Diagnoses> diagnosisList = new ArrayList<Diagnoses>();
+			    for (DiagnosisCollection diagnosisCollection : diagnosisCollections) {
+				Diagnoses diagnosis = new Diagnoses();
+				BeanUtil.map(diagnosisCollection, diagnosis);
+				diagnosisList.add(diagnosis);
+			    }
+			    clinicalNote.setDiagnoses(diagnosisList);
+			}
 
-	try {
-	    if (discarded)
-		discards[1] = true;
-
-	    long createdTimeStamp = Long.parseLong(updatedTime);
-	    if (size > 0)
-		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Date(createdTimeStamp),
-			new PageRequest(page, size, Direction.DESC, "createdTime"));
-	    else
-		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, new Date(createdTimeStamp),
-			new Sort(Sort.Direction.DESC, "createdTime"));
-	    if (patientClinicalNotesCollections != null) {
-		@SuppressWarnings("unchecked")
-		Collection<String> clinicalNotesIds = CollectionUtils.collect(patientClinicalNotesCollections,
-			new BeanToPropertyValueTransformer("clinicalNotesId"));
-		clinicalNotesList = new ArrayList<ClinicalNotes>();
-		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
-		    for (String clinicalNotesId : clinicalNotesIds) {
-			ClinicalNotes clinicalNotes = getNotesById(clinicalNotesId);
-			if (clinicalNotes != null) {
-			    clinicalNotes.setPatientId(patientId);
-			    if (clinicalNotes.getDoctorId().equals(doctorId)) {
-				if (!inHistory)
-				    clinicalNotesList.add(clinicalNotes);
-				else if (clinicalNotes.isInHistory())
-				    clinicalNotesList.add(clinicalNotes);
+			@SuppressWarnings("unchecked")
+			List<NotesCollection> notesCollections = IteratorUtils.toList(notesRepository.findAll(clinicalNotesCollection.getNotes()).iterator());
+			if (notesCollections != null) {
+			    List<Notes> notes = new ArrayList<Notes>();
+			    for (NotesCollection notesCollection : notesCollections) {
+				Notes note = new Notes();
+				BeanUtil.map(notesCollection, note);
+				notes.add(note);
+			    }
+			    clinicalNote.setNotes(notes);
+			}
+			if (clinicalNotesCollection.getDiagrams() != null) {
+			    @SuppressWarnings("unchecked")
+			    List<DiagramsCollection> diagramsCollections = IteratorUtils
+				    .toList(diagramsRepository.findAll(clinicalNotesCollection.getDiagrams()).iterator());
+			    if (diagramsCollections != null) {
+				List<Diagram> diagrams = new ArrayList<Diagram>();
+				for (DiagramsCollection diagramsCollection : diagramsCollections) {
+				    Diagram diagram = new Diagram();
+				    BeanUtil.map(diagramsCollection, diagram);
+				    diagrams.add(diagram);
+				}
+				clinicalNote.setDiagrams(diagrams);
 			    }
 			}
-		    }
-		} else {
-		    for (String clinicalNotesId : clinicalNotesIds) {
-			ClinicalNotes clinicalNotes = getNotesById(clinicalNotesId);
-			if (clinicalNotes != null) {
-			    clinicalNotes.setPatientId(patientId);
-			    if (clinicalNotes.getDoctorId().equals(doctorId) && clinicalNotes.getLocationId().equals(locationId)
-				    && clinicalNotes.getHospitalId().equals(hospitalId)) {
-				if (!inHistory)
-				    clinicalNotesList.add(clinicalNotes);
-				else if (clinicalNotes.isInHistory())
-				    clinicalNotesList.add(clinicalNotes);
-			    }
-			}
 
-		    }
-		}
-	    } else {
-		logger.warn(getPatientsClinicalNotesWithVerifiedOTP+" : " + patientId);
-		throw new BusinessException(ServiceError.NoRecord, getPatientsClinicalNotesWithVerifiedOTP+" : " + patientId);
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+			PatientVisitCollection patientVisitCollection = patientVisitRepository.findByClinialNotesId(clinicalNote.getId());
+			if (patientVisitCollection != null) clinicalNote.setVisitId(patientVisitCollection.getId());
+
+			return clinicalNote;
 	}
-	return clinicalNotesList;
-    }
 
     @Override
+    @Transactional
     public Complaint addEditComplaint(Complaint complaint) {
 	try {
 	    ComplaintCollection complaintCollection = new ComplaintCollection();
@@ -847,6 +824,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
+    @Transactional
     public Observation addEditObservation(Observation observation) {
 	try {
 	    ObservationCollection observationCollection = new ObservationCollection();
@@ -870,6 +848,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
+    @Transactional
     public Investigation addEditInvestigation(Investigation investigation) {
 	try {
 	    InvestigationCollection investigationCollection = new InvestigationCollection();
@@ -893,6 +872,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
+    @Transactional
     public Diagnoses addEditDiagnosis(Diagnoses diagnosis) {
 	try {
 	    DiagnosisCollection diagnosisCollection = new DiagnosisCollection();
@@ -916,6 +896,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
+    @Transactional
     public Notes addEditNotes(Notes notes) {
 	try {
 	    NotesCollection notesCollection = new NotesCollection();
@@ -939,6 +920,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
+    @Transactional
     public Diagram addEditDiagram(Diagram diagram) {
 	try {
 	    if (diagram.getDiagram() != null) {
@@ -975,6 +957,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
+    @Transactional
     public void deleteComplaint(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
 	try {
 	    ComplaintCollection complaintCollection = complaintRepository.findOne(id);
@@ -1008,6 +991,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
+    @Transactional
     public void deleteObservation(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
 	try {
 	    ObservationCollection observationCollection = observationRepository.findOne(id);
@@ -1039,6 +1023,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
+    @Transactional
     public void deleteInvestigation(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
 	try {
 	    InvestigationCollection investigationCollection = investigationRepository.findOne(id);
@@ -1070,6 +1055,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
+    @Transactional
     public void deleteDiagnosis(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
 	try {
 	    DiagnosisCollection diagnosisCollection = diagnosisRepository.findOne(id);
@@ -1100,6 +1086,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
+    @Transactional
     public void deleteNotes(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
 	try {
 	    NotesCollection notesCollection = notesRepository.findOne(id);
@@ -1131,6 +1118,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
+    @Transactional
     public void deleteDiagram(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
 	try {
 	    DiagramsCollection diagramsCollection = diagramsRepository.findOne(id);
@@ -1162,18 +1150,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
+    @Transactional
     public Integer getClinicalNotesCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified) {
-	List<ClinicalNotesCollection> clinicalNotesCollections = null;
 	Integer clinicalNotesCount = 0;
 	try {
-	    if (isOTPVerified) {
-		clinicalNotesCount = patientClinicalNotesRepository.findCount(patientId);
-	    } else {
-		clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(doctorId, hospitalId, locationId);
-		@SuppressWarnings("unchecked")
-		List<String> clinicalNotesIds = (List<String>) CollectionUtils.collect(clinicalNotesCollections, new BeanToPropertyValueTransformer("id"));
-		clinicalNotesCount = patientClinicalNotesRepository.findCount(patientId, clinicalNotesIds);
-	    }
+		if(isOTPVerified)clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCount(patientId, false);
+	    else clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCount(doctorId, patientId, hospitalId, locationId, false);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
@@ -1183,6 +1165,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
+    @Transactional
     public List<Object> getClinicalItems(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId,
 	    String updatedTime, Boolean discarded) {
 	List<Object> response = new ArrayList<Object>();
@@ -1972,17 +1955,23 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    
 	    DoctorCollection doctorCollection = doctorRepository.findByUserId(doctorId);
-    	
-	    List<SpecialityCollection> specialityCollections = specialityRepository.findById(doctorCollection.getSpecialities());
-	    @SuppressWarnings("unchecked")
-	    Collection<String> specialities = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("speciality"));
+	    Collection<String> specialities = null;
 	    
-	    if (size > 0)
-		diagramCollections = diagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discards, specialities,
-			new PageRequest(page, size, Direction.DESC, "createdTime"));
-	    else
-		diagramCollections = diagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discards, specialities, new Sort(Sort.Direction.DESC, "createdTime"));
-
+	    if(doctorCollection != null){
+	    	List<SpecialityCollection> specialityCollections = specialityRepository.findById(doctorCollection.getSpecialities());
+		    if(specialityCollections != null && !specialityCollections.isEmpty())specialities = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("speciality"));  
+	    }
+	    if(specialities != null){
+	    	if (size > 0)
+	    		diagramCollections = diagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discards, specialities, new PageRequest(page, size, Direction.DESC, "createdTime"));
+	    	    else
+	    		diagramCollections = diagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discards, specialities, new Sort(Sort.Direction.DESC, "createdTime"));
+	    }else{
+	    	if (size > 0)
+	    		diagramCollections = diagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC, "createdTime"));
+	    	    else
+	    		diagramCollections = diagramsRepository.findGlobalDiagrams(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
+	    }
 	    if (diagramCollections != null) {
 		response = new ArrayList<Object>();
 		BeanUtil.map(diagramCollections, response);
@@ -2052,6 +2041,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
+    @Transactional
     public void emailClinicalNotes(String clinicalNotesId, String doctorId, String locationId, String hospitalId, String emailAddress) {
 	MailAttachment mailAttachment = createMailData(clinicalNotesId, doctorId, locationId, hospitalId);
 	try {
@@ -2064,6 +2054,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
+    @Transactional
     public MailAttachment getClinicalNotesMailData(String clinicalNotesId, String doctorId, String locationId, String hospitalId) {
 	return createMailData(clinicalNotesId, doctorId, locationId, hospitalId);
     }
@@ -2073,10 +2064,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	Map<String, Object> parameters = new HashMap<String, Object>();
 	MailAttachment mailAttachment = null;
 	PatientCollection patient = null;
-	PatientAdmissionCollection patientAdmission = null;
 	UserCollection user = null;
 	EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
-	String patientId = null;
 	try {
 	    clinicalNotesCollection = clinicalNotesRepository.findOne(clinicalNotesId);
 	    if (clinicalNotesCollection != null) {
@@ -2163,16 +2152,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			else
 			    parameters.put("diagramIds", null);
 		    }
-		    List<PatientClinicalNotesCollection> patientClinicalNotesCollection = patientClinicalNotesRepository.findByClinicalNotesId(clinicalNotesId);
-		    if (patientClinicalNotesCollection != null && !patientClinicalNotesCollection.isEmpty()) {
-			patientId = patientClinicalNotesCollection.get(0).getPatientId();
-			patientAdmission = patientAdmissionRepository.findByUserIdAndDoctorId(patientId, doctorId);
-		    } else {
-			logger.warn("No patient found");
-			throw new BusinessException(ServiceError.NotFound, "No patient found");
-		    }
-		    user = userRepository.findOne(patientId);
-		    patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientId, doctorId, locationId, hospitalId);
+		    user = userRepository.findOne(clinicalNotesCollection.getPatientId());
+		    patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(clinicalNotesCollection.getPatientId(), doctorId, locationId, hospitalId);
 
 		    emailTrackCollection.setDoctorId(doctorId);
 		    emailTrackCollection.setHospitalId(hospitalId);
@@ -2214,8 +2195,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 
 		String patientName = "", dob = "", gender = "", mobileNumber = "", refferedBy = "", pid = "", date = "", resourceId = "", logoURL = "";
-		if (patientAdmission != null && patientAdmission.getReferredBy() != null) {
-		    ReferencesCollection referencesCollection = referenceRepository.findOne(patientAdmission.getReferredBy());
+		if (patient.getReferredBy() != null) {
+		    ReferencesCollection referencesCollection = referenceRepository.findOne(patient.getReferredBy());
 		    if (referencesCollection != null)
 			refferedBy = referencesCollection.getReference();
 		}
@@ -2416,44 +2397,40 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     }
 
     @Override
+    @Transactional
     public List<ClinicalNotes> getClinicalNotes(String patientId, int page, int size, String updatedTime, Boolean discarded) {
-	List<ClinicalNotes> clinicalNotesList = null;
-	List<PatientClinicalNotesCollection> patientClinicalNotesCollections = null;
-	boolean[] discards = new boolean[2];
-	discards[0] = false;
-	try {
-	    if (discarded)
-		discards[1] = true;
+		List<ClinicalNotesCollection> clinicalNotesCollections = null;
+		List<ClinicalNotes> clinicalNotes = null;
+		boolean[] discards = new boolean[2];
+		discards[0] = false;
 
-	    long createdTimeStamp = Long.parseLong(updatedTime);
-	    if (size > 0)
-		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, discards, new Date(createdTimeStamp),
-			new PageRequest(page, size, Direction.DESC, "createdTime"));
-	    else
-		patientClinicalNotesCollections = patientClinicalNotesRepository.findByPatientId(patientId, discards, new Date(createdTimeStamp),
-			new Sort(Sort.Direction.DESC, "createdTime"));
+		boolean[] inHistorys = new boolean[2];
+		inHistorys[0] = true;
+		inHistorys[1] = false;
 
-	    if (patientClinicalNotesCollections != null) {
-		@SuppressWarnings("unchecked")
-		Collection<String> clinicalNotesIds = CollectionUtils.collect(patientClinicalNotesCollections,
-			new BeanToPropertyValueTransformer("clinicalNotesId"));
-		clinicalNotesList = new ArrayList<ClinicalNotes>();
-		for (String clinicalNotesId : clinicalNotesIds) {
-		    ClinicalNotes clinicalNotes = getNotesById(clinicalNotesId);
-		    if (clinicalNotes != null) {
-			clinicalNotes.setPatientId(patientId);
-			clinicalNotesList.add(clinicalNotes);
+		try {
+		    if (discarded)discards[1] = true;
+		    long createdTimestamp = Long.parseLong(updatedTime);
+
+			if (size > 0)
+			    clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(patientId, new Date(createdTimestamp), discards, inHistorys,
+				    new PageRequest(page, size, Direction.DESC, "createdTime"));
+			else
+			    clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(patientId, new Date(createdTimestamp), discards, inHistorys, new Sort(
+				    Sort.Direction.DESC, "createdTime"));
+		    
+		    if(clinicalNotesCollections != null && !clinicalNotesCollections.isEmpty()){
+		    	clinicalNotes = new ArrayList<ClinicalNotes>();
+		    	 for(ClinicalNotesCollection clinicalNotesCollection : clinicalNotesCollections) {
+		    			ClinicalNotes clinicalNote = getClinicalNote(clinicalNotesCollection);
+		    			clinicalNotes.add(clinicalNote);
+		          }
 		    }
-		}
-	    } else {
-		logger.warn("No Clinical Notes found for patient Id : " + patientId);
-		throw new BusinessException(ServiceError.NoRecord, "No Clinical Notes found for patient Id : " + patientId);
-	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
-	return clinicalNotesList;
+	return clinicalNotes;
     }
 }

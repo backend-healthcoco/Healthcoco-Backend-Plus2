@@ -1,5 +1,7 @@
 package com.dpdocter.solr.document;
 
+import java.util.Date;
+
 import org.apache.solr.client.solrj.beans.Field;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -19,6 +21,9 @@ public class SolrSpecialityDocument {
 
     @Field
     private String code;
+    
+    @Field
+    private Date updatedTime = new Date();
 
     public String getId() {
 	return id;
@@ -52,9 +57,17 @@ public class SolrSpecialityDocument {
 		this.superSpeciality = superSpeciality;
 	}
 
+	public Date getUpdatedTime() {
+		return updatedTime;
+	}
+
+	public void setUpdatedTime(Date updatedTime) {
+		this.updatedTime = updatedTime;
+	}
+
 	@Override
 	public String toString() {
 		return "SolrSpecialityDocument [id=" + id + ", speciality=" + speciality + ", superSpeciality="
-				+ superSpeciality + ", code=" + code + "]";
+				+ superSpeciality + ", code=" + code + ", updatedTime=" + updatedTime + "]";
 	}
 }

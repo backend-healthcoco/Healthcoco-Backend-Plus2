@@ -1,6 +1,7 @@
 package com.dpdocter.collections;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -16,10 +17,10 @@ public class RoleCollection extends GenericCollection {
     @Field
     private String explanation;
 
-    @Field
+    @Indexed
     private String locationId;
 
-    @Field
+    @Indexed
     private String hospitalId;
 
     @Field

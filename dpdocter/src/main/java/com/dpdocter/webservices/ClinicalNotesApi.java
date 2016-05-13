@@ -73,7 +73,7 @@ public class ClinicalNotesApi {
     @Autowired
     private OTPService otpService;
 
-    @Value(value = "${IMAGE_PATH}")
+    @Value(value = "${image.path}")
     private String imagePath;
 
     @Path(value = PathProxy.ClinicalNotesUrls.SAVE_CLINICAL_NOTE)
@@ -142,30 +142,42 @@ public class ClinicalNotesApi {
 	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 	    @QueryParam(value = "patientId") String patientId, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
-	return getAllNotes(page, size, doctorId, locationId, hospitalId, patientId, updatedTime,
-		otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), discarded);
+	
+    	List<ClinicalNotes> clinicalNotes =  clinicalNotesService.getClinicalNotes(page, size, doctorId, locationId, hospitalId, patientId, updatedTime,
+		otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), discarded, false);
+    	
+    	if (clinicalNotes != null && !clinicalNotes.isEmpty()) {
+    	    for (ClinicalNotes clinicalNote : clinicalNotes) {
+    		if (clinicalNote.getDiagrams() != null && !clinicalNote.getDiagrams().isEmpty()) {
+    		    clinicalNote.setDiagrams(getFinalDiagrams(clinicalNote.getDiagrams()));
+    		}
+    	    }
+    	}
+    	Response<ClinicalNotes> response = new Response<ClinicalNotes>();
+    	response.setDataList(clinicalNotes);
+    	return response;
     }
 
-    private Response<ClinicalNotes> getAllNotes(int page, int size, String doctorId, String locationId, String hospitalId, String patientId, String updatedTime,
-	    Boolean isOTPVerified, Boolean discarded) {
-	List<ClinicalNotes> clinicalNotes = null;
-	if (isOTPVerified) {
-	    clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithVerifiedOTP(page, size, patientId, updatedTime, discarded, false);
-	} else {
-	    clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(page, size, patientId, doctorId, locationId, hospitalId,
-		    updatedTime, discarded, false);
-	}
-	if (clinicalNotes != null && !clinicalNotes.isEmpty()) {
-	    for (ClinicalNotes clinicalNote : clinicalNotes) {
-		if (clinicalNote.getDiagrams() != null && !clinicalNote.getDiagrams().isEmpty()) {
-		    clinicalNote.setDiagrams(getFinalDiagrams(clinicalNote.getDiagrams()));
-		}
-	    }
-	}
-	Response<ClinicalNotes> response = new Response<ClinicalNotes>();
-	response.setDataList(clinicalNotes);
-	return response;
-    }
+//    private Response<ClinicalNotes> getAllNotes(int page, int size, String doctorId, String locationId, String hospitalId, String patientId, String updatedTime,
+//	    Boolean isOTPVerified, Boolean discarded) {
+//	List<ClinicalNotes> clinicalNotes = null;
+//	if (isOTPVerified) {
+//	    clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithVerifiedOTP(page, size, patientId, updatedTime, discarded, false);
+//	} else {
+//	    clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(page, size, patientId, doctorId, locationId, hospitalId,
+//		    updatedTime, discarded, false);
+//	}
+//	if (clinicalNotes != null && !clinicalNotes.isEmpty()) {
+//	    for (ClinicalNotes clinicalNote : clinicalNotes) {
+//		if (clinicalNote.getDiagrams() != null && !clinicalNote.getDiagrams().isEmpty()) {
+//		    clinicalNote.setDiagrams(getFinalDiagrams(clinicalNote.getDiagrams()));
+//		}
+//	    }
+//	}
+//	Response<ClinicalNotes> response = new Response<ClinicalNotes>();
+//	response.setDataList(clinicalNotes);
+//	return response;
+//    }
 
     @Path(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_PATIENT_ID)
     @GET
