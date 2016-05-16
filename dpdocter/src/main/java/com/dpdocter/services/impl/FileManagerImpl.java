@@ -65,10 +65,8 @@ public class FileManagerImpl implements FileManager {
 	    String contentType = URLConnection.guessContentTypeFromStream(fis);
 	    
 	    ObjectMetadata metadata = new ObjectMetadata();
-//	    byte[] resultByte = DigestUtils.md5(fis);
-//	    String streamMD5 = new String(Base64.encodeBase64(resultByte));
-//	    byte[] contentBytes = IOUtils.toByteArray(fis);
-//	    metadata.setContentLength(Long.valueOf(contentBytes.length));
+	    byte[] contentBytes = IOUtils.toByteArray(new ByteArrayInputStream(base64));
+	    metadata.setContentLength(contentBytes.length);
 	    metadata.setContentEncoding(fileDetails.getFileExtension());
 	    metadata.setContentType(contentType);
 	    metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);     
@@ -129,11 +127,7 @@ public class FileManagerImpl implements FileManager {
 
 	    String contentType = URLConnection.guessContentTypeFromStream(objectData);
 	    ObjectMetadata metadata = new ObjectMetadata();
-//	    byte[] resultByte = DigestUtils.md5(objectData);
-//	    String streamMD5 = new String(Base64.encodeBase64(resultByte));
-//	    metadata.setContentMD5(streamMD5);
-//	    byte[] contentBytes = IOUtils.toByteArray(objectData);
-//	    metadata.setContentLength(Long.valueOf(contentBytes.length));
+	    metadata.setContentLength(buffer.length);
 	    metadata.setContentEncoding(fileDetails.getFileExtension());
 	    metadata.setContentType(contentType);
 	    metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
@@ -159,9 +153,8 @@ public class FileManagerImpl implements FileManager {
 	try {
 		InputStream fis = file.getEntityAs(InputStream.class);
 	    ObjectMetadata metadata = new ObjectMetadata();
-//	    byte[] resultByte = DigestUtils.md5(fis);
-//	    String streamMD5 = new String(Base64.encodeBase64(resultByte));
-//	    metadata.setContentMD5(streamMD5);    
+	    byte[] contentBytes = IOUtils.toByteArray(fis);
+	    metadata.setContentLength(contentBytes.length);
 	    metadata.setContentEncoding(file.getContentDisposition().getType());
 	    metadata.setContentType(file.getMediaType().getType());
 	    metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);

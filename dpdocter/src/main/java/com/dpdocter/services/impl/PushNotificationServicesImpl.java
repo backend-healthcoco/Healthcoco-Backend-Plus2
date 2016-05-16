@@ -127,7 +127,6 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 				notification.setText(message);
 
 					String jsonOutput = mapper.writeValueAsString(notification);
-					System.out.println("Json Output : " + jsonOutput);
 					Message messageObj = new Message.Builder().timeToLive(30)
 							.delayWhileIdle(true)
 							.addData("message", jsonOutput).build();

@@ -5,6 +5,8 @@ import java.util.List;
 public class PatientCard {
     private String id;
 
+    private String userId;
+
     private String firstName;
 
     private String userName;
@@ -223,14 +225,23 @@ public class PatientCard {
 	this.isPatientOTPVerified = isPatientOTPVerified;
     }
 
-    @Override
-    public String toString() {
-	return "PatientCard [id=" + id + ", firstName=" + firstName + ", userName=" + userName + ", emailAddress=" + emailAddress + ", imageUrl=" + imageUrl
-		+ ", thumbnailUrl=" + thumbnailUrl + ", bloodGroup=" + bloodGroup + ", PID=" + PID + ", gender=" + gender + ", mobileNumber=" + mobileNumber
-		+ ", secPhoneNumber=" + secPhoneNumber + ", dob=" + dob + ", count=" + count + ", dateOfVisit=" + dateOfVisit + ", groups=" + groups
-		+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorSepecificPatientId="
-		+ doctorSepecificPatientId + ", colorCode=" + colorCode + ", isDataAvailableWithOtherDoctor=" + isDataAvailableWithOtherDoctor
-		+ ", isPatientOTPVerified=" + isPatientOTPVerified + "]";
-    }
+	public String getUserId() {
+		return userId;
+	}
 
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientCard [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", userName=" + userName
+				+ ", emailAddress=" + emailAddress + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl
+				+ ", bloodGroup=" + bloodGroup + ", PID=" + PID + ", gender=" + gender + ", mobileNumber="
+				+ mobileNumber + ", secPhoneNumber=" + secPhoneNumber + ", dob=" + dob + ", count=" + count
+				+ ", dateOfVisit=" + dateOfVisit + ", groups=" + groups + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", doctorSepecificPatientId=" + doctorSepecificPatientId
+				+ ", colorCode=" + colorCode + ", isDataAvailableWithOtherDoctor=" + isDataAvailableWithOtherDoctor
+				+ ", isPatientOTPVerified=" + isPatientOTPVerified + "]";
+	}
 }
