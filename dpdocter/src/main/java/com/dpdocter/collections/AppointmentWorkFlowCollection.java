@@ -27,6 +27,9 @@ public class AppointmentWorkFlowCollection extends GenericCollection {
     @Field
     private Date date;
 
+    @Field
+    private String cancelledBy;
+    
     public String getId() {
 	return id;
     }
@@ -67,8 +70,17 @@ public class AppointmentWorkFlowCollection extends GenericCollection {
 	this.date = date;
     }
 
-    @Override
-    public String toString() {
-	return "AppointmentWorkFlowCollection [id=" + id + ", appointmentId=" + appointmentId + ", time=" + time + ", state=" + state + ", date=" + date + "]";
-    }
+	public String getCancelledBy() {
+		return cancelledBy;
+	}
+
+	public void setCancelledBy(String cancelledBy) {
+		this.cancelledBy = cancelledBy;
+	}
+
+	@Override
+	public String toString() {
+		return "AppointmentWorkFlowCollection [id=" + id + ", appointmentId=" + appointmentId + ", time=" + time
+				+ ", state=" + state + ", date=" + date + ", cancelledBy=" + cancelledBy + "]";
+	}
 }

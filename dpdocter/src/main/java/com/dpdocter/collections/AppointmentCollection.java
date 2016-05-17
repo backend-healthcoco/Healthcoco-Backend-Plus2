@@ -70,6 +70,9 @@ public class AppointmentCollection extends GenericCollection {
     @Field
     private Boolean isAllDayEvent = false;
     
+    @Field
+    private String cancelledBy;
+    
     public String getId() {
 	return id;
     }
@@ -206,6 +209,14 @@ public class AppointmentCollection extends GenericCollection {
 		this.isAllDayEvent = isAllDayEvent;
 	}
 
+	public String getCancelledBy() {
+		return cancelledBy;
+	}
+
+	public void setCancelledBy(String cancelledBy) {
+		this.cancelledBy = cancelledBy;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentCollection [id=" + id + ", subject=" + subject + ", explanation=" + explanation
@@ -213,6 +224,6 @@ public class AppointmentCollection extends GenericCollection {
 				+ ", appointmentId=" + appointmentId + ", time=" + time + ", patientId=" + patientId + ", state="
 				+ state + ", type=" + type + ", isRescheduled=" + isRescheduled + ", fromDate=" + fromDate + ", toDate="
 				+ toDate + ", isCalenderBlocked=" + isCalenderBlocked + ", isFeedbackAvailable=" + isFeedbackAvailable
-				+ ", isAllDayEvent=" + isAllDayEvent + "]";
+				+ ", isAllDayEvent=" + isAllDayEvent + ", cancelledBy=" + cancelledBy + "]";
 	}
 }

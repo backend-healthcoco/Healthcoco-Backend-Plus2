@@ -57,6 +57,8 @@ public class Appointment extends GenericCollection {
 
     private Double longitude;
 
+    private String cancelledBy;
+    
     public String getId() {
 	return id;
     }
@@ -241,6 +243,14 @@ public class Appointment extends GenericCollection {
 		this.clinicNumber = clinicNumber;
 	}
 
+	public String getCancelledBy() {
+		return cancelledBy;
+	}
+
+	public void setCancelledBy(String cancelledBy) {
+		this.cancelledBy = cancelledBy;
+	}
+
 	@Override
 	public String toString() {
 		return "Appointment [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
@@ -250,7 +260,6 @@ public class Appointment extends GenericCollection {
 				+ isCalenderBlocked + ", isFeedbackAvailable=" + isFeedbackAvailable + ", isAllDayEvent="
 				+ isAllDayEvent + ", doctorName=" + doctorName + ", locationName=" + locationName + ", clinicAddress="
 				+ clinicAddress + ", clinicNumber=" + clinicNumber + ", latitude=" + latitude + ", longitude="
-				+ longitude + "]";
+				+ longitude + ", cancelledBy=" + cancelledBy + "]";
 	}
-
 }

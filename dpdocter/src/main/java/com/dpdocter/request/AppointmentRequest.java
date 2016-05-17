@@ -38,6 +38,8 @@ public class AppointmentRequest {
 
     private Boolean notifyDoctorByEmail;
 
+    private String cancelledBy;
+    
     public String getAppointmentId() {
 	return appointmentId;
     }
@@ -158,6 +160,14 @@ public class AppointmentRequest {
 		this.explanation = explanation;
 	}
 
+	public String getCancelledBy() {
+		return cancelledBy;
+	}
+
+	public void setCancelledBy(String cancelledBy) {
+		this.cancelledBy = cancelledBy;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentRequest [appointmentId=" + appointmentId + ", state=" + state + ", explanation="
@@ -165,6 +175,6 @@ public class AppointmentRequest {
 				+ ", patientId=" + patientId + ", time=" + time + ", fromDate=" + fromDate + ", toDate=" + toDate
 				+ ", createdBy=" + createdBy + ", notifyPatientBySms=" + notifyPatientBySms + ", notifyPatientByEmail="
 				+ notifyPatientByEmail + ", notifyDoctorBySms=" + notifyDoctorBySms + ", notifyDoctorByEmail="
-				+ notifyDoctorByEmail + "]";
+				+ notifyDoctorByEmail + ", cancelledBy=" + cancelledBy + "]";
 	}
 }
