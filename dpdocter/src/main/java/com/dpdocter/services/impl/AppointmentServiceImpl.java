@@ -356,7 +356,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	        UserCollection patient = userRepository.findOne(appointmentCollection.getPatientId());
 	    
 	    if (userCollection != null && locationCollection != null && patient != null) {
-			UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
+			UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(appointmentCollection.getDoctorId(), appointmentCollection.getLocationId());
 	        DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
 	    	
 //		    SimpleDateFormat sdf = new SimpleDateFormat();

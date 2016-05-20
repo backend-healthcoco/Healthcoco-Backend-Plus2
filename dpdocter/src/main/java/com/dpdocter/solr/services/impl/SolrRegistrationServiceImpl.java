@@ -617,16 +617,16 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 	try {
 	    SolrDoctorDocument doctorDocuments = solrDoctorRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
 	    List<SolrWorkingSchedule> solrWorkingSchedules = new ArrayList<SolrWorkingSchedule>();
-	    if (request.getWorkingSchedules() != null) {
-		for (WorkingSchedule workingSchedule : request.getWorkingSchedules()) {
-		    SolrWorkingSchedule solrWorkingSchedule = new SolrWorkingSchedule();
-		    solrWorkingSchedule.setWorkingDay(workingSchedule.getWorkingDay());
-		    List<WorkingHours> hours = workingSchedule.getWorkingHours();
-		    solrWorkingSchedule.setWorkingHours(hours);
-		    solrWorkingSchedules.add(solrWorkingSchedule);
-		}
-	    }
-	    doctorDocuments.setWorkingSchedules(solrWorkingSchedules);
+//	    if (request.getWorkingSchedules() != null) {
+//		for (WorkingSchedule workingSchedule : request.getWorkingSchedules()) {
+//		    SolrWorkingSchedule solrWorkingSchedule = new SolrWorkingSchedule();
+//		    solrWorkingSchedule.setWorkingDay(workingSchedule.getWorkingDay());
+//		    List<WorkingHours> hours = workingSchedule.getWorkingHours();
+//		    solrWorkingSchedule.setWorkingHours(hours);
+//		    solrWorkingSchedules.add(solrWorkingSchedule);
+//		}
+//	    }
+	    doctorDocuments.setWorkingSchedules(request.getWorkingSchedules());
 	    doctorDocuments = solrDoctorRepository.save(doctorDocuments);
 	    BeanUtil.map(doctorDocuments, request);
 	    transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, true);

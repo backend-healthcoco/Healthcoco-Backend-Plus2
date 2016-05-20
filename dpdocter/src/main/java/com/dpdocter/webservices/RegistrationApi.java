@@ -208,17 +208,17 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.DELETE_REFERRENCE)
     @DELETE
-    public Response<Boolean> deleteReferrence(@PathParam("referrenceId") String referrenceId,
+    public Response<Reference> deleteReferrence(@PathParam("referrenceId") String referrenceId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (referrenceId == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.referrenceId is null");
 	}
-	registrationService.deleteReferrence(referrenceId, discarded);
+	Reference reference = registrationService.deleteReferrence(referrenceId, discarded);
 	transnationalService.addResource(referrenceId, Resource.REFERENCE, false);
 	solrRegistrationService.addEditReference(referrenceId);
 
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
+	Response<Reference> response = new Response<Reference>();
+	response.setData(reference);
 	return response;
     }
 
@@ -586,10 +586,10 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.DELETE_ROLE)
     @DELETE
-    public Response<Boolean> deleteRole(@PathParam(value = "roleId") String roleId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-	registrationService.deleteRole(roleId, discarded);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
+    public Response<Role> deleteRole(@PathParam(value = "roleId") String roleId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    	Role role = registrationService.deleteRole(roleId, discarded);
+	Response<Role> response = new Response<Role>();
+	response.setData(role);
 	return response;
     }
 

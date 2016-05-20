@@ -34,7 +34,7 @@ public interface RecordsService {
 
     Tags addEditTag(Tags tags);
 
-    void deleteTag(String tagId);
+    Tags deleteTag(String tagId, Boolean discarded);
 
     List<Tags> getAllTags(String doctorId, String locationId, String hospitalId);
 
@@ -42,7 +42,7 @@ public interface RecordsService {
 
     FileDownloadResponse getRecordFile(String recordId);
 
-    void deleteRecord(String recordId, Boolean discarded);
+    Records deleteRecord(String recordId, Boolean discarded);
 
     Integer getRecordCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified);
 

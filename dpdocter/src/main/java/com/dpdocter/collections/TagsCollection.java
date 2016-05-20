@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "tags_cl")
-public class TagsCollection {
+public class TagsCollection extends GenericCollection{
     @Id
     private String id;
 
@@ -23,6 +23,9 @@ public class TagsCollection {
 
     @Field
     private String doctorId;
+
+    @Field
+    private Boolean discarded = false;
 
     public String getId() {
 	return id;
@@ -72,10 +75,17 @@ public class TagsCollection {
 	this.doctorId = doctorId;
     }
 
-    @Override
-    public String toString() {
-	return "TagsCollection [id=" + id + ", tag=" + tag + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", explanation=" + explanation
-		+ ", doctorId=" + doctorId + "]";
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	@Override
+	public String toString() {
+		return "TagsCollection [id=" + id + ", tag=" + tag + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", explanation=" + explanation + ", doctorId=" + doctorId + ", discarded=" + discarded + "]";
+	}
 }

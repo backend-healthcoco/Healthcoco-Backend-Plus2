@@ -523,7 +523,8 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Override
     @Transactional
-    public void deleteRecord(String recordId, Boolean discarded) {
+    public Records deleteRecord(String recordId, Boolean discarded) {
+    	Records response = null;
 	try {
 	    RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
 	    if (recordsCollection == null) {
@@ -533,6 +534,8 @@ public class RecordsServiceImpl implements RecordsService {
 	    recordsCollection.setDiscarded(discarded);
 	    recordsCollection.setUpdatedTime(new Date());
 	    recordsRepository.save(recordsCollection);
+	    response = new Records();
+	    BeanUtil.map(recordsCollection, response);
 	    pushNotificationServices.notifyUser(recordsCollection.getPatientId(), "Report:"+recordsCollection.getUniqueEmrId()+" is discarded");
 	} catch (BusinessException e) {
 	    logger.error(e);
@@ -542,20 +545,30 @@ public class RecordsServiceImpl implements RecordsService {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
-
+	return response;
     }
 
     @Override
     @Transactional
-    public void deleteTag(String tagId) {
+    public Tags deleteTag(String tagId, Boolean discarded) {
+    	Tags response = null;
 	try {
-	    tagsRepository.delete(tagId);
+		TagsCollection tagsCollection = tagsRepository.findOne(tagId);
+	    if (tagsCollection == null) {
+		logger.warn("Tag Not found.Check tag Id");
+		throw new BusinessException(ServiceError.NoRecord, "Tag Not found.Check tag Id");
+	    }
+	    tagsCollection.setDiscarded(discarded);
+	    tagsCollection.setUpdatedTime(new Date());
+	    tagsRepository.save(tagsCollection);
+	    response = new Tags();
+	    BeanUtil.map(tagsCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
-
+	return response;
     }
 
     @Override

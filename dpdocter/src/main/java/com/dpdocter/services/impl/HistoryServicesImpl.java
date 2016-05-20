@@ -31,6 +31,7 @@ import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.MailData;
 import com.dpdocter.beans.MedicalData;
 import com.dpdocter.beans.MedicalHistoryHandler;
+import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.Records;
 import com.dpdocter.collections.ClinicalNotesCollection;
@@ -171,8 +172,8 @@ public class HistoryServicesImpl implements HistoryServices {
 
     @Override
     @Transactional
-    public Boolean deleteDisease(String diseaseId, String doctorId, String hospitalId, String locationId, Boolean discarded) {
-	Boolean response = false;
+    public DiseaseAddEditResponse deleteDisease(String diseaseId, String doctorId, String hospitalId, String locationId, Boolean discarded) {
+    	DiseaseAddEditResponse response = null;
 	DiseasesCollection disease = null;
 	try {
 	    disease = diseasesRepository.findOne(diseaseId);
@@ -182,7 +183,8 @@ public class HistoryServicesImpl implements HistoryServices {
 			disease.setDiscarded(discarded);
 			disease.setUpdatedTime(new Date());
 			disease = diseasesRepository.save(disease);
-			response = true;
+			response = new DiseaseAddEditResponse();
+			BeanUtil.map(disease, response);
 		    } else {
 			logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 			throw new BusinessException(ServiceError.NotAuthorized, "Invalid Doctor Id, Hospital Id, Or Location Id");
@@ -206,9 +208,10 @@ public class HistoryServicesImpl implements HistoryServices {
     @SuppressWarnings("unchecked")
     @Override
     @Transactional
-    public boolean addReportToHistory(String reportId, String patientId, String doctorId, String hospitalId, String locationId) {
-	HistoryCollection historyCollection = null;
-	RecordsCollection recordsCollection = null;
+    public Records addReportToHistory(String reportId, String patientId, String doctorId, String hospitalId, String locationId) {
+    	Records response = null;
+    	HistoryCollection historyCollection = null;
+    	RecordsCollection recordsCollection = null;
 	try {
 	    GeneralData report = new GeneralData();
 	    report.setData(reportId);
@@ -226,8 +229,6 @@ public class HistoryServicesImpl implements HistoryServices {
 		    // check if this report id is already added into history.
 		    if (!reports.contains(reportId)) {
 			historyCollection.getGeneralRecords().add(0, report);
-		    } else {
-			return true;
 		    }
 		    // if no report is added into history then add it .
 		} else {
@@ -255,6 +256,8 @@ public class HistoryServicesImpl implements HistoryServices {
 		recordsCollection.setInHistory(true);
 		recordsCollection.setUpdatedTime(new Date());
 		recordsRepository.save(recordsCollection);
+		response = new Records();
+		BeanUtil.map(recordsCollection, response);
 	    }
 
 	} catch (Exception e) {
@@ -262,14 +265,15 @@ public class HistoryServicesImpl implements HistoryServices {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
-	return true;
+	return response;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     @Transactional
-    public boolean addClinicalNotesToHistory(String clinicalNotesId, String patientId, String doctorId, String hospitalId, String locationId) {
-	HistoryCollection historyCollection = null;
+    public ClinicalNotes addClinicalNotesToHistory(String clinicalNotesId, String patientId, String doctorId, String hospitalId, String locationId) {
+    	ClinicalNotes response = null;
+    	HistoryCollection historyCollection = null;
 	ClinicalNotesCollection clinicalNotesCollection = null;
 	try {
 	    GeneralData clinicalNote = new GeneralData();
@@ -287,8 +291,6 @@ public class HistoryServicesImpl implements HistoryServices {
 		    // history.
 		    if (!clinicalNotes.contains(clinicalNotesId)) {
 			historyCollection.getGeneralRecords().add(0, clinicalNote);
-		    } else {
-			return true;
 		    }
 		    // if no clinicalNote is added into history then add it .
 		} else {
@@ -315,6 +317,8 @@ public class HistoryServicesImpl implements HistoryServices {
 		clinicalNotesCollection.setInHistory(true);
 		clinicalNotesCollection.setUpdatedTime(new Date());
 		clinicalNotesRepository.save(clinicalNotesCollection);
+		response = new ClinicalNotes();
+		BeanUtil.map(clinicalNotesCollection, response);
 	    }
 
 	} catch (Exception e) {
@@ -323,14 +327,15 @@ public class HistoryServicesImpl implements HistoryServices {
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 
 	}
-	return true;
+	return response;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     @Transactional
-    public boolean addPrescriptionToHistory(String prescriptionId, String patientId, String doctorId, String hospitalId, String locationId) {
-	HistoryCollection historyCollection = null;
+    public Prescription addPrescriptionToHistory(String prescriptionId, String patientId, String doctorId, String hospitalId, String locationId) {
+    	Prescription response = null;
+    	HistoryCollection historyCollection = null;
 	PrescriptionCollection prescriptionCollection = null;
 	try {
 	    GeneralData prescription = new GeneralData();
@@ -348,8 +353,6 @@ public class HistoryServicesImpl implements HistoryServices {
 		    // history.
 		    if (!prescriptions.contains(prescriptionId)) {
 			historyCollection.getGeneralRecords().add(0, prescription);
-		    } else {
-			return true;
 		    }
 		    // if no prescription is added into history then add it .
 		} else {
@@ -376,6 +379,8 @@ public class HistoryServicesImpl implements HistoryServices {
 		prescriptionCollection.setUpdatedTime(new Date());
 		prescriptionCollection.setInHistory(true);
 		prescriptionRepository.save(prescriptionCollection);
+		response = new Prescription();
+		BeanUtil.map(prescriptionCollection, response);
 	    }
 
 	} catch (Exception e) {
@@ -384,13 +389,14 @@ public class HistoryServicesImpl implements HistoryServices {
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 
 	}
-	return true;
+	return response;
     }
 
     @Override
     @Transactional
-    public boolean addPatientTreatmentToHistory(String treatmentId, String patientId, String doctorId, String hospitalId, String locationId) {
-	HistoryCollection historyCollection = null;
+    public PatientTreatment addPatientTreatmentToHistory(String treatmentId, String patientId, String doctorId, String hospitalId, String locationId) {
+    	PatientTreatment response = null;
+    	HistoryCollection historyCollection = null;
 	PatientTreatmentCollection patientTreatmentCollection;
 	try {
 	    GeneralData patientTreatment = new GeneralData();
@@ -408,8 +414,6 @@ public class HistoryServicesImpl implements HistoryServices {
 		    // history.
 		    if (!patientTreatments.contains(treatmentId)) {
 			historyCollection.getGeneralRecords().add(0, patientTreatment);
-		    } else {
-			return true;
 		    }
 		    // if no patient treatments is added into history then add
 		    // it .
@@ -438,6 +442,8 @@ public class HistoryServicesImpl implements HistoryServices {
 		patientTreatmentCollection.setUpdatedTime(new Date());
 		patientTreatmentCollection.setInHistory(true);
 		patientTreamentRepository.save(patientTreatmentCollection);
+		response = new PatientTreatment();
+		BeanUtil.map(patientTreatmentCollection, response);
 	    }
 
 	} catch (Exception e) {
@@ -446,13 +452,14 @@ public class HistoryServicesImpl implements HistoryServices {
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 
 	}
-	return true;
+	return response;
     }
 
     @Override
     @Transactional
-    public boolean assignMedicalHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId) {
-	HistoryCollection historyCollection = null;
+    public HistoryDetailsResponse assignMedicalHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId) {
+    	HistoryDetailsResponse response = null;
+    	HistoryCollection historyCollection = null;
 	try {
 	    // check if history for this patient is already added .
 	    historyCollection = historyRepository.findHistory(doctorId, locationId, hospitalId, patientId);
@@ -463,8 +470,6 @@ public class HistoryServicesImpl implements HistoryServices {
 		    // check if this diseaseId id is already added into history.
 		    if (!medicalHistoryList.contains(diseaseId)) {
 			medicalHistoryList.add(diseaseId);
-		    } else {
-			return false;
 		    }
 		    // if no medicalHistory is added into history then add it .
 		} else {
@@ -483,20 +488,32 @@ public class HistoryServicesImpl implements HistoryServices {
 	    }
 	    // finally add history into db.
 	    historyRepository.save(historyCollection);
+	    BeanUtil.map(historyCollection, response);
+		List<String> medicalHistoryIds = historyCollection.getMedicalhistory();
+		if (medicalHistoryIds != null && !medicalHistoryIds.isEmpty()) {
+		    List<DiseaseListResponse> medicalHistory = getDiseasesByIds(medicalHistoryIds);
+		    response.setMedicalhistory(medicalHistory);
+		}
 
+		List<String> familyHistoryIds = historyCollection.getFamilyhistory();
+		if (familyHistoryIds != null && !familyHistoryIds.isEmpty()) {
+		    List<DiseaseListResponse> familyHistory = getDiseasesByIds(familyHistoryIds);
+		    response.setFamilyhistory(familyHistory);
+		}
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 
 	}
-	return true;
+	return response;
     }
 
     @Override
     @Transactional
-    public boolean assignFamilyHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId) {
-	HistoryCollection historyCollection = null;
+    public HistoryDetailsResponse assignFamilyHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId) {
+    	HistoryDetailsResponse response = null;
+    	HistoryCollection historyCollection = null;
 	try {
 	    // check if history for this patient is already added .
 	    historyCollection = historyRepository.findHistory(doctorId, locationId, hospitalId, patientId);
@@ -507,8 +524,6 @@ public class HistoryServicesImpl implements HistoryServices {
 		    // check if this diseaseId id is already added into history.
 		    if (!familyHistoryList.contains(diseaseId)) {
 			familyHistoryList.add(diseaseId);
-		    } else {
-			return false;
 		    }
 		    // if no familyHistory is added into history then add it .
 		} else {
@@ -526,13 +541,26 @@ public class HistoryServicesImpl implements HistoryServices {
 	    }
 	    // finally add history into db.
 	    historyRepository.save(historyCollection);
+	    BeanUtil.map(historyCollection, response);
+		List<String> medicalHistoryIds = historyCollection.getMedicalhistory();
+		if (medicalHistoryIds != null && !medicalHistoryIds.isEmpty()) {
+		    List<DiseaseListResponse> medicalHistory = getDiseasesByIds(medicalHistoryIds);
+		    response.setMedicalhistory(medicalHistory);
+		}
+
+		List<String> familyHistoryIds = historyCollection.getFamilyhistory();
+		if (familyHistoryIds != null && !familyHistoryIds.isEmpty()) {
+		    List<DiseaseListResponse> familyHistory = getDiseasesByIds(familyHistoryIds);
+		    response.setFamilyhistory(familyHistory);
+		}
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 
 	}
-	return true;
+	return response;
     }
 
     @Override
@@ -582,8 +610,9 @@ public class HistoryServicesImpl implements HistoryServices {
 
     @Override
     @Transactional
-    public boolean removeReports(String reportId, String patientId, String doctorId, String hospitalId, String locationId) {
-	HistoryCollection historyCollection = null;
+    public Records removeReports(String reportId, String patientId, String doctorId, String hospitalId, String locationId) {
+    	Records response = null;
+    	HistoryCollection historyCollection = null;
 	RecordsCollection recordsCollection = null;
 	try {
 	    historyCollection = historyRepository.findHistory(doctorId, locationId, hospitalId, patientId);
@@ -606,6 +635,8 @@ public class HistoryServicesImpl implements HistoryServices {
 			    recordsCollection.setInHistory(false);
 			    recordsCollection.setUpdatedTime(new Date());
 			    recordsRepository.save(recordsCollection);
+			    response = new Records();
+				BeanUtil.map(recordsCollection, response);
 			}
 		    } else {
 			logger.warn("This reports is not found for this patient to remove.");
@@ -624,13 +655,14 @@ public class HistoryServicesImpl implements HistoryServices {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
-	return true;
+	return response;
     }
 
     @Override
     @Transactional
-    public boolean removeClinicalNotes(String clinicalNotesId, String patientId, String doctorId, String hospitalId, String locationId) {
-	HistoryCollection historyCollection = null;
+    public ClinicalNotes removeClinicalNotes(String clinicalNotesId, String patientId, String doctorId, String hospitalId, String locationId) {
+    	ClinicalNotes response = null;
+    	HistoryCollection historyCollection = null;
 	ClinicalNotesCollection clinicalNotesCollection = null;
 	try {
 	    historyCollection = historyRepository.findHistory(doctorId, locationId, hospitalId, patientId);
@@ -654,6 +686,8 @@ public class HistoryServicesImpl implements HistoryServices {
 			    clinicalNotesCollection.setInHistory(false);
 			    clinicalNotesCollection.setUpdatedTime(new Date());
 			    clinicalNotesRepository.save(clinicalNotesCollection);
+			    response = new ClinicalNotes();
+				BeanUtil.map(clinicalNotesCollection, response);
 
 			}
 		    } else {
@@ -673,13 +707,14 @@ public class HistoryServicesImpl implements HistoryServices {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
-	return true;
+	return response;
     }
 
     @Override
     @Transactional
-    public boolean removePrescription(String prescriptionId, String patientId, String doctorId, String hospitalId, String locationId) {
-	HistoryCollection historyCollection = null;
+    public Prescription removePrescription(String prescriptionId, String patientId, String doctorId, String hospitalId, String locationId) {
+    	Prescription response = null;
+    	HistoryCollection historyCollection = null;
 	PrescriptionCollection prescriptionCollection = null;
 	try {
 	    historyCollection = historyRepository.findHistory(doctorId, locationId, hospitalId, patientId);
@@ -703,6 +738,8 @@ public class HistoryServicesImpl implements HistoryServices {
 			    prescriptionCollection.setInHistory(false);
 			    prescriptionCollection.setUpdatedTime(new Date());
 			    prescriptionRepository.save(prescriptionCollection);
+			    response = new Prescription();
+			    BeanUtil.map(prescriptionCollection, response);
 			}
 		    } else {
 			logger.warn("This prescription is not found for this patient to remove.");
@@ -721,13 +758,14 @@ public class HistoryServicesImpl implements HistoryServices {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
-	return true;
+	return response;
     }
 
     @Override
     @Transactional
-    public boolean removeMedicalHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId) {
-	HistoryCollection historyCollection = null;
+    public HistoryDetailsResponse removeMedicalHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId) {
+    	HistoryDetailsResponse response = null;
+    	HistoryCollection historyCollection = null;
 	try {
 	    historyCollection = historyRepository.findHistory(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
@@ -740,6 +778,18 @@ public class HistoryServicesImpl implements HistoryServices {
 			} else {
 			    historyCollection.setUpdatedTime(new Date());
 			    historyRepository.save(historyCollection);
+			    BeanUtil.map(historyCollection, response);
+				List<String> medicalHistoryIds = historyCollection.getMedicalhistory();
+				if (medicalHistoryIds != null && !medicalHistoryIds.isEmpty()) {
+				    List<DiseaseListResponse> medicalHistoryList = getDiseasesByIds(medicalHistoryIds);
+				    response.setMedicalhistory(medicalHistoryList);
+				}
+
+				List<String> familyHistoryIds = historyCollection.getFamilyhistory();
+				if (familyHistoryIds != null && !familyHistoryIds.isEmpty()) {
+				    List<DiseaseListResponse> familyHistory = getDiseasesByIds(familyHistoryIds);
+				    response.setFamilyhistory(familyHistory);
+				}
 			}
 		    } else {
 			logger.warn("This disease is not found for this patient to remove.");
@@ -758,13 +808,14 @@ public class HistoryServicesImpl implements HistoryServices {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
-	return true;
+	return response;
     }
 
     @Override
     @Transactional
-    public boolean removeFamilyHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId) {
-	HistoryCollection historyCollection = null;
+    public HistoryDetailsResponse removeFamilyHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId) {
+    	HistoryDetailsResponse response = null;
+    	HistoryCollection historyCollection = null;
 	try {
 	    historyCollection = historyRepository.findHistory(doctorId, locationId, hospitalId, patientId);
 	    if (historyCollection != null) {
@@ -777,6 +828,18 @@ public class HistoryServicesImpl implements HistoryServices {
 			} else {
 			    historyCollection.setUpdatedTime(new Date());
 			    historyRepository.save(historyCollection);
+			    BeanUtil.map(historyCollection, response);
+				List<String> medicalHistoryIds = historyCollection.getMedicalhistory();
+				if (medicalHistoryIds != null && !medicalHistoryIds.isEmpty()) {
+				    List<DiseaseListResponse> medicalHistory = getDiseasesByIds(medicalHistoryIds);
+				    response.setMedicalhistory(medicalHistory);
+				}
+
+				List<String> familyHistoryIds = historyCollection.getFamilyhistory();
+				if (familyHistoryIds != null && !familyHistoryIds.isEmpty()) {
+				    List<DiseaseListResponse> familyHistoryList = getDiseasesByIds(familyHistoryIds);
+				    response.setFamilyhistory(familyHistoryList);
+				}
 			}
 		    } else {
 			logger.warn("This disease is not found for this patient to remove.");
@@ -795,7 +858,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
-	return true;
+	return response;
     }
 
     private boolean checkIfHistoryRemovedCompletely(HistoryCollection historyCollection) {
@@ -1649,8 +1712,9 @@ public class HistoryServicesImpl implements HistoryServices {
 
     @Override
     @Transactional
-    public boolean removePatientTreatment(String treatmentId, String patientId, String doctorId, String hospitalId, String locationId) {
-	HistoryCollection historyCollection = null;
+    public PatientTreatment removePatientTreatment(String treatmentId, String patientId, String doctorId, String hospitalId, String locationId) {
+    	PatientTreatment response = null;
+    	HistoryCollection historyCollection = null;
 	PatientTreatmentCollection patientTreatmentCollection;
 	try {
 	    historyCollection = historyRepository.findHistory(doctorId, locationId, hospitalId, patientId);
@@ -1675,6 +1739,8 @@ public class HistoryServicesImpl implements HistoryServices {
 			    patientTreatmentCollection.setInHistory(false);
 			    patientTreatmentCollection.setUpdatedTime(new Date());
 			    patientTreamentRepository.save(patientTreatmentCollection);
+			    response = new PatientTreatment();
+			    BeanUtil.map(patientTreatmentCollection, response);
 			}
 		    } else {
 			logger.warn("This patient treatment is not found for this patient to remove.");
@@ -1693,6 +1759,6 @@ public class HistoryServicesImpl implements HistoryServices {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
-	return true;
+	return response;
     }
 }

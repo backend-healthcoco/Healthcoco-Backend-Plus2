@@ -196,7 +196,8 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 
     @Override
     @Transactional
-    public Boolean deletePrintSettings(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
+    public PrintSettings deletePrintSettings(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
+    	PrintSettings response = null;
 	try {
 	    PrintSettingsCollection printSettingsCollection = printSettingsRepository.findOne(id);
 	    if (printSettingsCollection != null) {
@@ -207,7 +208,8 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			printSettingsCollection.setDiscarded(discarded);
 			printSettingsCollection.setUpdatedTime(new Date());
 			printSettingsRepository.save(printSettingsCollection);
-			return true;
+			response = new PrintSettings();
+			BeanUtil.map(printSettingsCollection, response);
 		    } else {
 			logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Doctor Id, Hospital Id, Or Location Id");
@@ -226,7 +228,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
-
+	return response;
     }
-
+    
 }

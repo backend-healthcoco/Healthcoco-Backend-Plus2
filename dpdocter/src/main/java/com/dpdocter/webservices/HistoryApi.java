@@ -26,6 +26,8 @@ import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.GeneralData;
 import com.dpdocter.beans.MedicalData;
 import com.dpdocter.beans.MedicalHistoryHandler;
+import com.dpdocter.beans.PatientTreatment;
+import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.Records;
 import com.dpdocter.enums.HistoryFilter;
 import com.dpdocter.enums.VisitedFor;
@@ -92,15 +94,15 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.DELETE_DISEASE)
     @DELETE
-    public Response<Boolean> deleteDisease(@PathParam(value = "diseaseId") String diseaseId, @PathParam(value = "doctorId") String doctorId,
+    public Response<DiseaseAddEditResponse> deleteDisease(@PathParam(value = "diseaseId") String diseaseId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(diseaseId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
 	    logger.warn("Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	}
-	Boolean diseaseDeleteResponse = historyServices.deleteDisease(diseaseId, doctorId, hospitalId, locationId, discarded);
-	Response<Boolean> response = new Response<Boolean>();
+	DiseaseAddEditResponse diseaseDeleteResponse = historyServices.deleteDisease(diseaseId, doctorId, hospitalId, locationId, discarded);
+	Response<DiseaseAddEditResponse> response = new Response<DiseaseAddEditResponse>();
 	response.setData(diseaseDeleteResponse);
 	return response;
     }
@@ -120,7 +122,7 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.ADD_REPORT_TO_HISTORY)
     @GET
-    public Response<Boolean> addReportToHistory(@PathParam(value = "reportId") String reportId, @PathParam(value = "patientId") String patientId,
+    public Response<Records> addReportToHistory(@PathParam(value = "reportId") String reportId, @PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId) {
 	if (StringUtils.isEmpty(reportId) || StringUtils.isEmpty(patientId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId)
@@ -128,30 +130,30 @@ public class HistoryApi {
 	    logger.warn("Report Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Report Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	}
-	boolean addReportToHistoryResponse = historyServices.addReportToHistory(reportId, patientId, doctorId, hospitalId, locationId);
-	Response<Boolean> response = new Response<Boolean>();
+	Records addReportToHistoryResponse = historyServices.addReportToHistory(reportId, patientId, doctorId, hospitalId, locationId);
+	Response<Records> response = new Response<Records>();
 	response.setData(addReportToHistoryResponse);
 	return response;
     }
 
     @Path(value = PathProxy.HistoryUrls.ADD_CLINICAL_NOTES_TO_HISTORY)
     @GET
-    public Response<Boolean> addClinicalNotesToHistory(@PathParam(value = "clinicalNotesId") String clinicalNotesId,
+    public Response<ClinicalNotes> addClinicalNotesToHistory(@PathParam(value = "clinicalNotesId") String clinicalNotesId,
 	    @PathParam(value = "patientId") String patientId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
 	if (DPDoctorUtils.anyStringEmpty(clinicalNotesId, patientId, doctorId, hospitalId, locationId)) {
 	    logger.warn("Clinical Notes Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Clinical Notes Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	}
-	boolean addClinicalNotesToHistoryResponse = historyServices.addClinicalNotesToHistory(clinicalNotesId, patientId, doctorId, hospitalId, locationId);
-	Response<Boolean> response = new Response<Boolean>();
+	ClinicalNotes addClinicalNotesToHistoryResponse = historyServices.addClinicalNotesToHistory(clinicalNotesId, patientId, doctorId, hospitalId, locationId);
+	Response<ClinicalNotes> response = new Response<ClinicalNotes>();
 	response.setData(addClinicalNotesToHistoryResponse);
 	return response;
     }
 
     @Path(value = PathProxy.HistoryUrls.ADD_PRESCRIPTION_TO_HISTORY)
     @GET
-    public Response<Boolean> addPrescriptionToHistory(@PathParam(value = "prescriptionId") String prescriptionId,
+    public Response<Prescription> addPrescriptionToHistory(@PathParam(value = "prescriptionId") String prescriptionId,
 	    @PathParam(value = "patientId") String patientId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
 	if (DPDoctorUtils.anyStringEmpty(prescriptionId, patientId, doctorId, hospitalId, locationId)) {
@@ -159,16 +161,16 @@ public class HistoryApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Prescription Id, Patient Id, Doctor Id, Hosoital Id, Location Id Cannot Be Empty");
 	}
 
-	boolean addPrescriptionToHistoryResponse = historyServices.addPrescriptionToHistory(prescriptionId, patientId, doctorId, hospitalId, locationId);
+	Prescription addPrescriptionToHistoryResponse = historyServices.addPrescriptionToHistory(prescriptionId, patientId, doctorId, hospitalId, locationId);
 
-	Response<Boolean> response = new Response<Boolean>();
+	Response<Prescription> response = new Response<Prescription>();
 	response.setData(addPrescriptionToHistoryResponse);
 	return response;
     }
 
     @Path(value = PathProxy.HistoryUrls.ADD_PATIENT_TREATMENT_TO_HISTORY)
     @GET
-    public Response<Boolean> addPatientTreatmentToHistory(@PathParam(value = "treatmentId") String treatmentId,
+    public Response<PatientTreatment> addPatientTreatmentToHistory(@PathParam(value = "treatmentId") String treatmentId,
 	    @PathParam(value = "patientId") String patientId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
 	if (DPDoctorUtils.anyStringEmpty(treatmentId, patientId, doctorId, hospitalId, locationId)) {
@@ -176,47 +178,47 @@ public class HistoryApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Treatment Id, Patient Id, Doctor Id, Hosoital Id, Location Id Cannot Be Empty");
 	}
 
-	boolean addPatientTreatmentToHistoryResponse = historyServices.addPatientTreatmentToHistory(treatmentId, patientId, doctorId, hospitalId, locationId);
+	PatientTreatment addPatientTreatmentToHistoryResponse = historyServices.addPatientTreatmentToHistory(treatmentId, patientId, doctorId, hospitalId, locationId);
 
-	Response<Boolean> response = new Response<Boolean>();
+	Response<PatientTreatment> response = new Response<PatientTreatment>();
 	response.setData(addPatientTreatmentToHistoryResponse);
 	return response;
     }
 
     @Path(value = PathProxy.HistoryUrls.ASSIGN_MEDICAL_HISTORY)
     @GET
-    public Response<Boolean> assignMedicalHistory(@PathParam(value = "diseaseId") String diseaseId, @PathParam(value = "patientId") String patientId,
+    public Response<HistoryDetailsResponse> assignMedicalHistory(@PathParam(value = "diseaseId") String diseaseId, @PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId) {
 	if (DPDoctorUtils.anyStringEmpty(diseaseId, patientId, doctorId, hospitalId, locationId)) {
 	    logger.warn("Disease Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Disease Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	}
-	boolean assignMedicalHistoryResponse = historyServices.assignMedicalHistory(diseaseId, patientId, doctorId, hospitalId, locationId);
+	HistoryDetailsResponse assignMedicalHistoryResponse = historyServices.assignMedicalHistory(diseaseId, patientId, doctorId, hospitalId, locationId);
 
 	// patient track
 	patientTrackService.addRecord(patientId, doctorId, locationId, hospitalId, VisitedFor.PERSONAL_HISTORY);
 
-	Response<Boolean> response = new Response<Boolean>();
+	Response<HistoryDetailsResponse> response = new Response<HistoryDetailsResponse>();
 	response.setData(assignMedicalHistoryResponse);
 	return response;
     }
 
     @Path(value = PathProxy.HistoryUrls.ASSIGN_FAMILY_HISTORY)
     @GET
-    public Response<Boolean> assignFamilyHistory(@PathParam(value = "diseaseId") String diseaseId, @PathParam(value = "patientId") String patientId,
+    public Response<HistoryDetailsResponse> assignFamilyHistory(@PathParam(value = "diseaseId") String diseaseId, @PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId) {
 	if (DPDoctorUtils.anyStringEmpty(diseaseId, patientId, doctorId, hospitalId, locationId)) {
 	    logger.warn("Disease Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Disease Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	}
-	boolean assignFamilyHistoryResponse = historyServices.assignFamilyHistory(diseaseId, patientId, doctorId, hospitalId, locationId);
+	HistoryDetailsResponse assignFamilyHistoryResponse = historyServices.assignFamilyHistory(diseaseId, patientId, doctorId, hospitalId, locationId);
 
 	// patient track
 	patientTrackService.addRecord(patientId, doctorId, locationId, hospitalId, VisitedFor.FAMILY_HISTORY);
 
-	Response<Boolean> response = new Response<Boolean>();
+	Response<HistoryDetailsResponse> response = new Response<HistoryDetailsResponse>();
 	response.setData(assignFamilyHistoryResponse);
 	return response;
     }
@@ -238,90 +240,90 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.REMOVE_REPORTS)
     @GET
-    public Response<Boolean> removeReports(@PathParam(value = "reportId") String reportId, @PathParam(value = "patientId") String patientId,
+    public Response<Records> removeReports(@PathParam(value = "reportId") String reportId, @PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId) {
 	if (DPDoctorUtils.anyStringEmpty(reportId, patientId, doctorId, hospitalId, locationId)) {
 	    logger.warn("Report Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Report Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	}
-	boolean removeReportsResponse = historyServices.removeReports(reportId, patientId, doctorId, hospitalId, locationId);
-	Response<Boolean> response = new Response<Boolean>();
+	Records removeReportsResponse = historyServices.removeReports(reportId, patientId, doctorId, hospitalId, locationId);
+	Response<Records> response = new Response<Records>();
 	response.setData(removeReportsResponse);
 	return response;
     }
 
     @Path(value = PathProxy.HistoryUrls.REMOVE_CLINICAL_NOTES)
     @GET
-    public Response<Boolean> removeClinicalNotes(@PathParam(value = "clinicalNotesId") String clinicalNotesId, @PathParam(value = "patientId") String patientId,
+    public Response<ClinicalNotes> removeClinicalNotes(@PathParam(value = "clinicalNotesId") String clinicalNotesId, @PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId) {
 	if (DPDoctorUtils.anyStringEmpty(clinicalNotesId, patientId, doctorId, hospitalId, locationId)) {
 	    logger.warn("Clinical Notes Id, Patient Id, Doctor Id, Hospital Id, Location Id");
 	    throw new BusinessException(ServiceError.InvalidInput, "Clinical Notes Id, Patient Id, Doctor Id, Hospital Id, Location Id");
 	}
-	boolean removeClinicalNotesResponse = historyServices.removeClinicalNotes(clinicalNotesId, patientId, doctorId, hospitalId, locationId);
-	Response<Boolean> response = new Response<Boolean>();
+	ClinicalNotes removeClinicalNotesResponse = historyServices.removeClinicalNotes(clinicalNotesId, patientId, doctorId, hospitalId, locationId);
+	Response<ClinicalNotes> response = new Response<ClinicalNotes>();
 	response.setData(removeClinicalNotesResponse);
 	return response;
     }
 
     @Path(value = PathProxy.HistoryUrls.REMOVE_PRESCRIPTION)
     @GET
-    public Response<Boolean> removePrescription(@PathParam(value = "prescriptionId") String prescriptionId, @PathParam(value = "patientId") String patientId,
+    public Response<Prescription> removePrescription(@PathParam(value = "prescriptionId") String prescriptionId, @PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId) {
 	if (DPDoctorUtils.anyStringEmpty(prescriptionId, patientId, doctorId, hospitalId, locationId)) {
 	    logger.warn("Prescription Id, Patient Id, Doctor Id, Hosoital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Prescription Id, Patient Id, Doctor Id, Hosoital Id, Location Id Cannot Be Empty");
 	}
-	boolean removePrescriptionResponse = historyServices.removePrescription(prescriptionId, patientId, doctorId, hospitalId, locationId);
-	Response<Boolean> response = new Response<Boolean>();
+	Prescription removePrescriptionResponse = historyServices.removePrescription(prescriptionId, patientId, doctorId, hospitalId, locationId);
+	Response<Prescription> response = new Response<Prescription>();
 	response.setData(removePrescriptionResponse);
 	return response;
     }
 
     @Path(value = PathProxy.HistoryUrls.REMOVE_PATIENT_TREATMENT)
     @GET
-    public Response<Boolean> removePatientTreatment(@PathParam(value = "treatmentId") String treatmentId, @PathParam(value = "patientId") String patientId,
+    public Response<PatientTreatment> removePatientTreatment(@PathParam(value = "treatmentId") String treatmentId, @PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId) {
 	if (DPDoctorUtils.anyStringEmpty(treatmentId, patientId, doctorId, hospitalId, locationId)) {
 	    logger.warn("TreatmentId Id, Patient Id, Doctor Id, Hosoital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "TreatmentId Id, Patient Id, Doctor Id, Hosoital Id, Location Id Cannot Be Empty");
 	}
-	boolean removePrescriptionResponse = historyServices.removePatientTreatment(treatmentId, patientId, doctorId, hospitalId, locationId);
-	Response<Boolean> response = new Response<Boolean>();
+	PatientTreatment removePrescriptionResponse = historyServices.removePatientTreatment(treatmentId, patientId, doctorId, hospitalId, locationId);
+	Response<PatientTreatment> response = new Response<PatientTreatment>();
 	response.setData(removePrescriptionResponse);
 	return response;
     }
 
     @Path(value = PathProxy.HistoryUrls.REMOVE_MEDICAL_HISTORY)
     @GET
-    public Response<Boolean> removeMedicalHistory(@PathParam(value = "diseaseId") String diseaseId, @PathParam(value = "patientId") String patientId,
+    public Response<HistoryDetailsResponse> removeMedicalHistory(@PathParam(value = "diseaseId") String diseaseId, @PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId) {
 	if (DPDoctorUtils.anyStringEmpty(diseaseId, patientId, doctorId, hospitalId, locationId)) {
 	    logger.warn("Disease Id, Patient Id, Doctor Id, Hospital Id, Location Id");
 	    throw new BusinessException(ServiceError.InvalidInput, "Disease Id, Patient Id, Doctor Id, Hospital Id, Location Id");
 	}
-	boolean removeMedicalHistoryResponse = historyServices.removeMedicalHistory(diseaseId, patientId, doctorId, hospitalId, locationId);
-	Response<Boolean> response = new Response<Boolean>();
+	HistoryDetailsResponse removeMedicalHistoryResponse = historyServices.removeMedicalHistory(diseaseId, patientId, doctorId, hospitalId, locationId);
+	Response<HistoryDetailsResponse> response = new Response<HistoryDetailsResponse>();
 	response.setData(removeMedicalHistoryResponse);
 	return response;
     }
 
     @Path(value = PathProxy.HistoryUrls.REMOVE_FAMILY_HISTORY)
     @GET
-    public Response<Boolean> removeFamilyHistory(@PathParam(value = "diseaseId") String diseaseId, @PathParam(value = "patientId") String patientId,
+    public Response<HistoryDetailsResponse> removeFamilyHistory(@PathParam(value = "diseaseId") String diseaseId, @PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId) {
 	if (DPDoctorUtils.anyStringEmpty(diseaseId, patientId, doctorId, hospitalId, locationId)) {
 	    logger.warn("Disease Id, Patient Id, Doctor Id, Hospital Id, Location Id");
 	    throw new BusinessException(ServiceError.InvalidInput, "Disease Id, Patient Id, Doctor Id, Hospital Id, Location Id");
 	}
-	boolean removeFamilyHistoryResponse = historyServices.removeFamilyHistory(diseaseId, patientId, doctorId, hospitalId, locationId);
-	Response<Boolean> response = new Response<Boolean>();
+	HistoryDetailsResponse removeFamilyHistoryResponse = historyServices.removeFamilyHistory(diseaseId, patientId, doctorId, hospitalId, locationId);
+	Response<HistoryDetailsResponse> response = new Response<HistoryDetailsResponse>();
 	response.setData(removeFamilyHistoryResponse);
 	return response;
     }

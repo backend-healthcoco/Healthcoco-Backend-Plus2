@@ -19,7 +19,7 @@ public interface ContactsService {
 
     Group addEditGroup(Group group);
 
-    Boolean deleteGroup(String groupId, Boolean discarded);
+    Group deleteGroup(String groupId, Boolean discarded);
 
     int getContactsTotalSize(GetDoctorContactsRequest request);
 

@@ -158,9 +158,9 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 		    if (city != null && location != null)
 			solrLocationDocuments = solrDoctorRepository.findByCityLocationName(city, location, searchTerm);
 		    else if (city != null)
-			solrDoctorDocuments = solrDoctorRepository.findByCityLocationName(city, searchTerm);
+		    	solrLocationDocuments = solrDoctorRepository.findByCityLocationName(city, searchTerm);
 		    else if (location != null)
-			solrDoctorDocuments = solrDoctorRepository.findByLocationLocationName(location, searchTerm);
+		    	solrLocationDocuments = solrDoctorRepository.findByLocationLocationName(location, searchTerm);
 		}
 	    } else {
 		if (DPDoctorUtils.allStringsEmpty(city, location)) {
@@ -169,11 +169,11 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 
 		} else {
 		    if (city != null && location != null)
-			solrDoctorDocuments = solrDoctorRepository.findByCityLocation(city, location);
+		    	solrLocationDocuments = solrDoctorRepository.findByCityLocation(city, location);
 		    else if (city != null)
-			solrDoctorDocuments = solrDoctorRepository.findByCity(city);
+		    	solrLocationDocuments = solrDoctorRepository.findByCity(city);
 		    else if (location != null)
-			solrDoctorDocuments = solrDoctorRepository.findByLocation(location);
+		    	solrLocationDocuments = solrDoctorRepository.findByLocation(location);
 		}
 	    }
 

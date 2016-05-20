@@ -443,8 +443,8 @@ public class ContactsServiceImpl implements ContactsService {
 
     @Override
     @Transactional
-    public Boolean deleteGroup(String groupId, Boolean discarded) {
-	Boolean response = false;
+    public Group deleteGroup(String groupId, Boolean discarded) {
+    	Group response = null;
 	GroupCollection groupCollection = null;
 	List<PatientGroupCollection> patientGroupCollection = null;
 	try {
@@ -466,7 +466,8 @@ public class ContactsServiceImpl implements ContactsService {
 			patientGroupRepository.save(patientGroup);
 		    }
 		}
-		response = true;
+		response = new Group();
+		BeanUtil.map(groupCollection, response);
 	    } else {
 		logger.error(groupNotFound);
 		throw new BusinessException(ServiceError.NotFound, groupNotFound);

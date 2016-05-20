@@ -14,6 +14,7 @@ import org.apache.commons.collections.IteratorUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -282,8 +283,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
     @Override
     @Transactional
-    public Boolean deleteDrug(String drugId, String doctorId, String hospitalId, String locationId, Boolean discarded) {
-	Boolean response = false;
+    public Drug deleteDrug(String drugId, String doctorId, String hospitalId, String locationId, Boolean discarded) {
+    	Drug response = null;
 	DrugCollection drugCollection = null;
 	try {
 	    drugCollection = drugRepository.findOne(drugId);
@@ -294,7 +295,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			drugCollection.setDiscarded(discarded);
 			drugCollection.setUpdatedTime(new Date());
 			drugCollection = drugRepository.save(drugCollection);
-			response = true;
+			response = new Drug();
+			BeanUtil.map(drugCollection, response);
 		    } else {
 			logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 			throw new BusinessException(ServiceError.NotAuthorized, "Invalid Doctor Id, Hospital Id, Or Location Id");
@@ -317,8 +319,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
     @Override
     @Transactional
-    public Boolean deleteDrug(String drugId, Boolean discarded) {
-	Boolean response = false;
+    public Drug deleteDrug(String drugId, Boolean discarded) {
+    	Drug response = null;
 	DrugCollection drugCollection = null;
 	try {
 	    drugCollection = drugRepository.findOne(drugId);
@@ -326,7 +328,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		drugCollection.setUpdatedTime(new Date());
 		drugCollection.setDiscarded(discarded);
 		drugCollection = drugRepository.save(drugCollection);
-		response = true;
+		response = new Drug();
+		BeanUtil.map(drugCollection, response);
 	    } else {
 		logger.warn("Drug Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Drug Not Found");
@@ -471,8 +474,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
     @Override
     @Transactional
-    public Boolean deleteTemplate(String templateId, String doctorId, String hospitalId, String locationId, Boolean discarded) {
-	Boolean response = false;
+    public TemplateAddEditResponseDetails deleteTemplate(String templateId, String doctorId, String hospitalId, String locationId, Boolean discarded) {
+    	TemplateAddEditResponseDetails response = null;
 	TemplateCollection templateCollection = null;
 	try {
 	    templateCollection = templateRepository.findOne(templateId);
@@ -483,7 +486,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			templateCollection.setUpdatedTime(new Date());
 			templateCollection.setDiscarded(discarded);
 			templateCollection = templateRepository.save(templateCollection);
-			response = true;
+			response = new TemplateAddEditResponseDetails();
+			BeanUtil.map(templateCollection, response);
 		    } else {
 			logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 			throw new BusinessException(ServiceError.NotAuthorized, "Invalid Doctor Id, Hospital Id, Or Location Id");
@@ -743,8 +747,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
     @Override
     @Transactional
-    public Boolean deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId, String patientId, Boolean discarded) {
-	Boolean response = false;
+    public Prescription deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId, String patientId, Boolean discarded) {
+    	Prescription response = null;
 	PrescriptionCollection prescriptionCollection = null;
 	try {
 	    prescriptionCollection = prescriptionRepository.findOne(prescriptionId);
@@ -756,7 +760,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			prescriptionCollection.setDiscarded(discarded);
 			prescriptionCollection.setUpdatedTime(new Date());
 			prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
-			response = true;
+			response = new Prescription();
+			BeanUtil.map(prescriptionCollection,response);
 			pushNotificationServices.notifyUser(patientId, "Prescription:"+prescriptionCollection.getUniqueEmrId()+" is discarded");
 		    } else {
 			logger.warn("Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");
@@ -1124,9 +1129,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
     @Override
     @Transactional
-    public Boolean deleteDrugType(String drugTypeId, Boolean discarded) {
+    public DrugTypeAddEditResponse deleteDrugType(String drugTypeId, Boolean discarded) {
 
-	Boolean response = false;
+    	DrugTypeAddEditResponse response = null;
 	DrugTypeCollection drugTypeCollection = null;
 	try {
 	    drugTypeCollection = drugTypeRepository.findOne(drugTypeId);
@@ -1134,7 +1139,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		drugTypeCollection.setDiscarded(discarded);
 		drugTypeCollection.setUpdatedTime(new Date());
 		drugTypeCollection = drugTypeRepository.save(drugTypeCollection);
-		response = true;
+		response = new DrugTypeAddEditResponse();
+		BeanUtil.map(drugTypeCollection, response);
 	    } else {
 		logger.warn("Drug Type Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Drug Type Not Found");
@@ -1194,9 +1200,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
     @Override
     @Transactional
-    public Boolean deleteDrugStrength(String drugStrengthId, Boolean discarded) {
+    public DrugStrengthAddEditResponse deleteDrugStrength(String drugStrengthId, Boolean discarded) {
 
-	Boolean response = false;
+    	DrugStrengthAddEditResponse response = null;
 	DrugStrengthUnitCollection drugStrengthCollection = null;
 	try {
 	    drugStrengthCollection = drugStrengthRepository.findOne(drugStrengthId);
@@ -1204,7 +1210,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		drugStrengthCollection.setUpdatedTime(new Date());
 		drugStrengthCollection.setDiscarded(discarded);
 		drugStrengthCollection = drugStrengthRepository.save(drugStrengthCollection);
-		response = true;
+		response = new DrugStrengthAddEditResponse();
+		BeanUtil.map(drugStrengthCollection, response);
 	    } else {
 		logger.warn("Drug Strength Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Drug Strength Not Found");
@@ -1264,8 +1271,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
     @Override
     @Transactional
-    public Boolean deleteDrugDosage(String drugDosageId, Boolean discarded) {
-	Boolean response = false;
+    public DrugDosageAddEditResponse deleteDrugDosage(String drugDosageId, Boolean discarded) {
+    	DrugDosageAddEditResponse response = null;
 	DrugDosageCollection drugDosageCollection = null;
 	try {
 	    drugDosageCollection = drugDosageRepository.findOne(drugDosageId);
@@ -1273,7 +1280,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		drugDosageCollection.setDiscarded(discarded);
 		drugDosageCollection.setUpdatedTime(new Date());
 		drugDosageCollection = drugDosageRepository.save(drugDosageCollection);
-		response = true;
+		response = new DrugDosageAddEditResponse();
+		BeanUtil.map(drugDosageCollection, response);
 	    } else {
 		logger.warn("Drug Dosage Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Drug Dosage Not Found");
@@ -1334,8 +1342,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
     @Override
     @Transactional
-    public Boolean deleteDrugDirection(String drugDirectionId, Boolean discarded) {
-	Boolean response = false;
+    public DrugDirectionAddEditResponse deleteDrugDirection(String drugDirectionId, Boolean discarded) {
+    	DrugDirectionAddEditResponse response = null;
 	DrugDirectionCollection drugDirectionCollection = null;
 	try {
 	    drugDirectionCollection = drugDirectionRepository.findOne(drugDirectionId);
@@ -1343,7 +1351,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		drugDirectionCollection.setDiscarded(discarded);
 		drugDirectionCollection.setUpdatedTime(new Date());
 		drugDirectionCollection = drugDirectionRepository.save(drugDirectionCollection);
-		response = true;
+		response = new DrugDirectionAddEditResponse();
+		BeanUtil.map(drugDirectionCollection, response);
 	    } else {
 		logger.warn("Drug Dosage Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Drug Dosage Not Found");
@@ -1404,8 +1413,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
     @Override
     @Transactional
-    public Boolean deleteDrugDurationUnit(String drugDurationUnitId, Boolean discarded) {
-	Boolean response = false;
+    public DrugDurationUnitAddEditResponse deleteDrugDurationUnit(String drugDurationUnitId, Boolean discarded) {
+    	DrugDurationUnitAddEditResponse response = null;
 	DrugDurationUnitCollection drugDurationUnitCollection = null;
 	try {
 	    drugDurationUnitCollection = drugDurationUnitRepository.findOne(drugDurationUnitId);
@@ -1413,7 +1422,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		drugDurationUnitCollection.setDiscarded(discarded);
 		drugDurationUnitCollection.setUpdatedTime(new Date());
 		drugDurationUnitCollection = drugDurationUnitRepository.save(drugDurationUnitCollection);
-		response = true;
+		response = new DrugDurationUnitAddEditResponse();
+		BeanUtil.map(drugDurationUnitCollection, response);
 	    } else {
 		logger.warn("Drug Duration Unit Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Drug Duration Unit Not Found");
@@ -3008,8 +3018,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
     @Override
     @Transactional
-    public Boolean deleteLabTest(String labTestId, String hospitalId, String locationId, Boolean discarded) {
-	Boolean response = false;
+    public LabTest deleteLabTest(String labTestId, String hospitalId, String locationId, Boolean discarded) {
+    	LabTest response = null;
 	LabTestCollection labTestCollection = null;
 	try {
 	    labTestCollection = labTestRepository.findOne(labTestId);
@@ -3019,7 +3029,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			labTestCollection.setDiscarded(discarded);
 			labTestCollection.setUpdatedTime(new Date());
 			labTestCollection = labTestRepository.save(labTestCollection);
-			response = true;
+			response = new LabTest();
+			BeanUtil.map(labTestCollection, response);
 		    } else {
 			logger.warn("Invalid Hospital Id, Or Location Id");
 			throw new BusinessException(ServiceError.NotAuthorized, "Invalid Hospital Id, Or Location Id");
@@ -3043,8 +3054,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
     @Override
     @Transactional
-    public Boolean deleteLabTest(String labTestId, Boolean discarded) {
-	Boolean response = false;
+    public LabTest deleteLabTest(String labTestId, Boolean discarded) {
+    	LabTest response = null;
 	LabTestCollection labTestCollection = null;
 	try {
 	    labTestCollection = labTestRepository.findOne(labTestId);
@@ -3052,7 +3063,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		labTestCollection.setUpdatedTime(new Date());
 		labTestCollection.setDiscarded(discarded);
 		labTestCollection = labTestRepository.save(labTestCollection);
-		response = true;
+		response = new LabTest();
+		BeanUtil.map(labTestCollection, response);
 	    } else {
 		logger.warn("Lab Test Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Lab Test Not Found");
@@ -3235,8 +3247,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Override
 	@Transactional
-	public Boolean deleteDiagnosticTest(String diagnosticTestId, String hospitalId, String locationId, Boolean discarded) {	
-		Boolean response = false;
+	public DiagnosticTest deleteDiagnosticTest(String diagnosticTestId, String hospitalId, String locationId, Boolean discarded) {	
+		DiagnosticTest response = null;
 		DiagnosticTestCollection diagnosticTestCollection = null;
 		try {
 		    diagnosticTestCollection = diagnosticTestRepository.findOne(diagnosticTestId);
@@ -3246,7 +3258,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				diagnosticTestCollection.setDiscarded(discarded);
 				diagnosticTestCollection.setUpdatedTime(new Date());
 				diagnosticTestCollection = diagnosticTestRepository.save(diagnosticTestCollection);
-				response = true;
+				response = new DiagnosticTest();
+				BeanUtil.map(diagnosticTestCollection, response);
 			    } else {
 				logger.warn("Invalid Hospital Id, Or Location Id");
 				throw new BusinessException(ServiceError.NotAuthorized, "Invalid Hospital Id, Or Location Id");
@@ -3269,8 +3282,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Override
 	@Transactional
-	public Boolean deleteDiagnosticTest(String diagnosticTestId, Boolean discarded) {
-		Boolean response = false;
+	public DiagnosticTest deleteDiagnosticTest(String diagnosticTestId, Boolean discarded) {
+		DiagnosticTest response = null;
 		DiagnosticTestCollection diagnosticTestCollection = null;
 		try {
 			diagnosticTestCollection = diagnosticTestRepository.findOne(diagnosticTestId);
@@ -3278,7 +3291,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    	diagnosticTestCollection.setUpdatedTime(new Date());
 		    	diagnosticTestCollection.setDiscarded(discarded);
 		    	diagnosticTestCollection = diagnosticTestRepository.save(diagnosticTestCollection);
-			response = true;
+			response = new DiagnosticTest();
+			BeanUtil.map(diagnosticTestCollection, response);
 		    } else {
 			logger.warn("Diagnostic Test Not Found");
 			throw new BusinessException(ServiceError.NotFound, "Diagnostic Test Not Found");

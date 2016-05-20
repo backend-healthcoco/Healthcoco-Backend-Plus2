@@ -1,5 +1,6 @@
 package com.dpdocter.solr.document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.solr.client.solrj.beans.Field;
@@ -11,14 +12,16 @@ import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.DoctorExperience;
+import com.dpdocter.beans.WorkingHours;
+import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.enums.Currency;
+import com.dpdocter.enums.Day;
 import com.dpdocter.enums.DoctorExperienceUnit;
 import com.dpdocter.enums.TimeUnit;
 import com.dpdocter.solr.beans.DoctorLocation;
-import com.dpdocter.solr.beans.SolrWorkingSchedule;
 
 @SolrDocument(solrCoreName = "doctors")
-public class SolrDoctorDocument extends DoctorLocation {
+public class SolrDoctorDocument extends DoctorLocation{
     @Id
     @Field
     private String id;
@@ -51,8 +54,50 @@ public class SolrDoctorDocument extends DoctorLocation {
     private Currency consultationFeeCurrency;
 
     @Field
-    private List<SolrWorkingSchedule> workingSchedules;
+    private List<WorkingSchedule> workingSchedules;
 
+    @Field
+    private List<Integer> mondayWorkingHoursFromTime;
+    
+    @Field
+    private List<Integer> mondayWorkingHoursToTime;
+    
+    @Field
+    private List<Integer> tuesdayWorkingHoursFromTime;
+    
+    @Field
+    private List<Integer> tuesdayWorkingHoursToTime;
+    
+    @Field
+    private List<Integer> wednessdayWorkingHoursFromTime;
+    
+    @Field
+    private List<Integer> wednessdayWorkingHoursToTime;
+    
+    @Field
+    private List<Integer> thursdayWorkingHoursFromTime;
+    
+    @Field
+    private List<Integer> thursdayWorkingHoursToTime;
+    
+    @Field
+    private List<Integer> fridayWorkingHoursFromTime;
+    
+    @Field
+    private List<Integer> fridayWorkingHoursToTime;
+    
+    @Field
+    private List<Integer> saturdayWorkingHoursFromTime;
+    
+    @Field
+    private List<Integer> saturdayWorkingHoursToTime;
+    
+    @Field
+    private List<Integer> sundayWorkingHoursFromTime;
+    
+    @Field
+    private List<Integer> sundayWorkingHoursToTime;
+    
     @Field
     private List<String> specialities;
 
@@ -179,12 +224,50 @@ public class SolrDoctorDocument extends DoctorLocation {
 	}
     }
 
-    public List<SolrWorkingSchedule> getWorkingSchedules() {
+    public List<WorkingSchedule> getWorkingSchedules() {
 	return workingSchedules;
     }
 
-    public void setWorkingSchedules(List<SolrWorkingSchedule> workingSchedules) {
+    public void setWorkingSchedules(List<WorkingSchedule> workingSchedules) {
 	this.workingSchedules = workingSchedules;
+	if(this.workingSchedules != null && !this.workingSchedules.isEmpty()){
+		for(WorkingSchedule solrWorkingSchedule : this.workingSchedules){
+			List<Integer> fromTime = new  ArrayList<Integer>(), toTime = new ArrayList<Integer>();
+			if(solrWorkingSchedule.getWorkingHours() != null && !solrWorkingSchedule.getWorkingHours().isEmpty())
+			for(WorkingHours workingHours: solrWorkingSchedule.getWorkingHours()){
+					fromTime.add(workingHours.getFromTime());
+					toTime.add(workingHours.getToTime());
+			}
+			if(solrWorkingSchedule.getWorkingDay().getDay().equalsIgnoreCase(Day.MONDAY.getDay())){
+				this.mondayWorkingHoursFromTime = fromTime;
+				this.mondayWorkingHoursToTime = toTime;
+			}
+			else if(solrWorkingSchedule.getWorkingDay().getDay().equalsIgnoreCase(Day.TUESDAY.getDay())){
+				this.tuesdayWorkingHoursFromTime = fromTime;
+				this.tuesdayWorkingHoursToTime = toTime;
+			}
+			else if(solrWorkingSchedule.getWorkingDay().getDay().equalsIgnoreCase(Day.WEDNESDAY.getDay())){
+				this.wednessdayWorkingHoursFromTime = fromTime;
+				this.wednessdayWorkingHoursToTime = toTime;
+			}
+			else if(solrWorkingSchedule.getWorkingDay().getDay().equalsIgnoreCase(Day.THURSDAY.getDay())){
+				this.thursdayWorkingHoursFromTime = fromTime;
+				this.thursdayWorkingHoursToTime = toTime;
+			}
+			else if(solrWorkingSchedule.getWorkingDay().getDay().equalsIgnoreCase(Day.FRIDAY.getDay())){
+				this.fridayWorkingHoursFromTime = fromTime;
+				this.fridayWorkingHoursToTime = toTime;
+			}
+			else if(solrWorkingSchedule.getWorkingDay().getDay().equalsIgnoreCase(Day.SATURDAY.getDay())){
+				this.saturdayWorkingHoursFromTime = fromTime;
+				this.saturdayWorkingHoursToTime = toTime;
+			}
+			else if(solrWorkingSchedule.getWorkingDay().getDay().equalsIgnoreCase(Day.SUNDAY.getDay())){
+				this.sundayWorkingHoursFromTime = fromTime;
+				this.sundayWorkingHoursToTime = toTime;
+			}
+		}
+	}
     }
 
     public String getUserId() {
@@ -420,19 +503,140 @@ public class SolrDoctorDocument extends DoctorLocation {
 		this.timeZone = timeZone;
 	}
 
+	public List<Integer> getMondayWorkingHoursFromTime() {
+		return mondayWorkingHoursFromTime;
+	}
+
+	public void setMondayWorkingHoursFromTime(List<Integer> mondayWorkingHoursFromTime) {
+		this.mondayWorkingHoursFromTime = mondayWorkingHoursFromTime;
+	}
+
+	public List<Integer> getMondayWorkingHoursToTime() {
+		return mondayWorkingHoursToTime;
+	}
+
+	public void setMondayWorkingHoursToTime(List<Integer> mondayWorkingHoursToTime) {
+		this.mondayWorkingHoursToTime = mondayWorkingHoursToTime;
+	}
+
+	public List<Integer> getTuesdayWorkingHoursFromTime() {
+		return tuesdayWorkingHoursFromTime;
+	}
+
+	public void setTuesdayWorkingHoursFromTime(List<Integer> tuesdayWorkingHoursFromTime) {
+		this.tuesdayWorkingHoursFromTime = tuesdayWorkingHoursFromTime;
+	}
+
+	public List<Integer> getTuesdayWorkingHoursToTime() {
+		return tuesdayWorkingHoursToTime;
+	}
+
+	public void setTuesdayWorkingHoursToTime(List<Integer> tuesdayWorkingHoursToTime) {
+		this.tuesdayWorkingHoursToTime = tuesdayWorkingHoursToTime;
+	}
+
+	public List<Integer> getWednessdayWorkingHoursFromTime() {
+		return wednessdayWorkingHoursFromTime;
+	}
+
+	public void setWednessdayWorkingHoursFromTime(List<Integer> wednessdayWorkingHoursFromTime) {
+		this.wednessdayWorkingHoursFromTime = wednessdayWorkingHoursFromTime;
+	}
+
+	public List<Integer> getWednessdayWorkingHoursToTime() {
+		return wednessdayWorkingHoursToTime;
+	}
+
+	public void setWednessdayWorkingHoursToTime(List<Integer> wednessdayWorkingHoursToTime) {
+		this.wednessdayWorkingHoursToTime = wednessdayWorkingHoursToTime;
+	}
+
+	public List<Integer> getThursdayWorkingHoursFromTime() {
+		return thursdayWorkingHoursFromTime;
+	}
+
+	public void setThursdayWorkingHoursFromTime(List<Integer> thursdayWorkingHoursFromTime) {
+		this.thursdayWorkingHoursFromTime = thursdayWorkingHoursFromTime;
+	}
+
+	public List<Integer> getThursdayWorkingHoursToTime() {
+		return thursdayWorkingHoursToTime;
+	}
+
+	public void setThursdayWorkingHoursToTime(List<Integer> thursdayWorkingHoursToTime) {
+		this.thursdayWorkingHoursToTime = thursdayWorkingHoursToTime;
+	}
+
+	public List<Integer> getFridayWorkingHoursFromTime() {
+		return fridayWorkingHoursFromTime;
+	}
+
+	public void setFridayWorkingHoursFromTime(List<Integer> fridayWorkingHoursFromTime) {
+		this.fridayWorkingHoursFromTime = fridayWorkingHoursFromTime;
+	}
+
+	public List<Integer> getFridayWorkingHoursToTime() {
+		return fridayWorkingHoursToTime;
+	}
+
+	public void setFridayWorkingHoursToTime(List<Integer> fridayWorkingHoursToTime) {
+		this.fridayWorkingHoursToTime = fridayWorkingHoursToTime;
+	}
+
+	public List<Integer> getSaturdayWorkingHoursFromTime() {
+		return saturdayWorkingHoursFromTime;
+	}
+
+	public void setSaturdayWorkingHoursFromTime(List<Integer> saturdayWorkingHoursFromTime) {
+		this.saturdayWorkingHoursFromTime = saturdayWorkingHoursFromTime;
+	}
+
+	public List<Integer> getSaturdayWorkingHoursToTime() {
+		return saturdayWorkingHoursToTime;
+	}
+
+	public void setSaturdayWorkingHoursToTime(List<Integer> saturdayWorkingHoursToTime) {
+		this.saturdayWorkingHoursToTime = saturdayWorkingHoursToTime;
+	}
+
+	public List<Integer> getSundayWorkingHoursFromTime() {
+		return sundayWorkingHoursFromTime;
+	}
+
+	public void setSundayWorkingHoursFromTime(List<Integer> sundayWorkingHoursFromTime) {
+		this.sundayWorkingHoursFromTime = sundayWorkingHoursFromTime;
+	}
+
+	public List<Integer> getSundayWorkingHoursToTime() {
+		return sundayWorkingHoursToTime;
+	}
+
+	public void setSundayWorkingHoursToTime(List<Integer> sundayWorkingHoursToTime) {
+		this.sundayWorkingHoursToTime = sundayWorkingHoursToTime;
+	}
+
 	@Override
 	public String toString() {
 		return "SolrDoctorDocument [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", gender=" + gender
 				+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", imageUrl=" + imageUrl
 				+ ", consultationFee=" + consultationFee + ", consultationFeeAmount=" + consultationFeeAmount
 				+ ", consultationFeeCurrency=" + consultationFeeCurrency + ", workingSchedules=" + workingSchedules
-				+ ", specialities=" + specialities + ", experience=" + experience + ", experienceNum=" + experienceNum
-				+ ", experiencePeriod=" + experiencePeriod + ", facility=" + facility + ", appointmentBookingNumber="
-				+ appointmentBookingNumber + ", appointmentSlot=" + appointmentSlot + ", appointmentSlotTime="
-				+ appointmentSlotTime + ", appointmentSlotTimeUnit=" + appointmentSlotTimeUnit + ", isActive="
-				+ isActive + ", isVerified=" + isVerified + ", coverImageUrl=" + coverImageUrl + ", colorCode="
-				+ colorCode + ", userState=" + userState + ", registerNumber=" + registerNumber + ", days=" + days
-				+ ", months=" + months + ", years=" + years + ", dob=" + dob + ", distance=" + distance + ", userUId="
-				+ userUId + ", timeZone=" + timeZone + "]";
+				+ ", mondayWorkingHoursFromTime=" + mondayWorkingHoursFromTime + ", mondayWorkingHoursToTime="
+				+ mondayWorkingHoursToTime + ", tuesdayWorkingHoursFromTime=" + tuesdayWorkingHoursFromTime
+				+ ", tuesdayWorkingHoursToTime=" + tuesdayWorkingHoursToTime + ", wednessdayWorkingHoursFromTime="
+				+ wednessdayWorkingHoursFromTime + ", wednessdayWorkingHoursToTime=" + wednessdayWorkingHoursToTime
+				+ ", thursdayWorkingHoursFromTime=" + thursdayWorkingHoursFromTime + ", thursdayWorkingHoursToTime="
+				+ thursdayWorkingHoursToTime + ", fridayWorkingHoursFromTime=" + fridayWorkingHoursFromTime
+				+ ", fridayWorkingHoursToTime=" + fridayWorkingHoursToTime + ", saturdayWorkingHoursFromTime="
+				+ saturdayWorkingHoursFromTime + ", saturdayWorkingHoursToTime=" + saturdayWorkingHoursToTime
+				+ ", sundayWorkingHoursFromTime=" + sundayWorkingHoursFromTime + ", sundayWorkingHoursToTime="
+				+ sundayWorkingHoursToTime + ", specialities=" + specialities + ", experience=" + experience
+				+ ", experienceNum=" + experienceNum + ", experiencePeriod=" + experiencePeriod + ", facility="
+				+ facility + ", appointmentBookingNumber=" + appointmentBookingNumber + ", appointmentSlot="
+				+ appointmentSlot + ", appointmentSlotTime=" + appointmentSlotTime + ", appointmentSlotTimeUnit="
+				+ appointmentSlotTimeUnit + ", isActive=" + isActive + ", isVerified=" + isVerified + ", coverImageUrl="
+				+ coverImageUrl + ", colorCode=" + colorCode + ", userState=" + userState + ", registerNumber="
+				+ registerNumber + ", days=" + days + ", months=" + months + ", years=" + years + ", dob=" + dob
+				+ ", distance=" + distance + ", userUId=" + userUId + ", timeZone=" + timeZone + "]";
 	}
 }

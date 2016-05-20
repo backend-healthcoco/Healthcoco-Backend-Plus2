@@ -468,14 +468,13 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		    LocationCollection locationCollection = locationRepository.findOne(collection.getLocationId());
 		    DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(collection.getId());
 		    SolrDoctorDocument doctorDocument = new SolrDoctorDocument();
-		    if (locationCollection != null)
-			BeanUtil.map(locationCollection, doctorDocument);
-		    if (userCollection != null)
-			BeanUtil.map(userCollection, doctorDocument);
-		    if (doctorCollection != null)
-			BeanUtil.map(doctorCollection, doctorDocument);
-		    if (clinicProfileCollection != null)
-			BeanUtil.map(clinicProfileCollection, doctorDocument);
+		    if (locationCollection != null){
+		    	locationCollection.setWorkingSchedules(null);
+		    	BeanUtil.map(locationCollection, doctorDocument);
+		    }
+		    if (userCollection != null)BeanUtil.map(userCollection, doctorDocument);
+		    if (doctorCollection != null)BeanUtil.map(doctorCollection, doctorDocument);
+		    if (clinicProfileCollection != null)BeanUtil.map(clinicProfileCollection, doctorDocument);
 		    else {
 			doctorDocument.setWorkingSchedules(null);
 		    }

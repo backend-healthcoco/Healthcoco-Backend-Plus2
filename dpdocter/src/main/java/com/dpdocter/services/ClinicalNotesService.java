@@ -20,7 +20,7 @@ public interface ClinicalNotesService {
 
     ClinicalNotes editNotes(ClinicalNotesEditRequest request);
 
-    void deleteNote(String id, Boolean discarded);
+    ClinicalNotes deleteNote(String id, Boolean discarded);
 
 //    List<ClinicalNotes> getPatientsClinicalNotesWithVerifiedOTP(int page, int size, String patientId, String updatedTime, boolean discarded, boolean inHistory);
 //
@@ -39,17 +39,17 @@ public interface ClinicalNotesService {
 
     Diagram addEditDiagram(Diagram diagram);
 
-    void deleteComplaint(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+    Complaint deleteComplaint(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
-    void deleteObservation(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+    Observation deleteObservation(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
-    void deleteInvestigation(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+    Investigation deleteInvestigation(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
-    void deleteDiagnosis(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+    Diagnoses deleteDiagnosis(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
-    void deleteNotes(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+    Notes deleteNotes(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
-    void deleteDiagram(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+    Diagram deleteDiagram(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
     Integer getClinicalNotesCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified);
 

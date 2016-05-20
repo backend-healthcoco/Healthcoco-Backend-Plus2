@@ -965,7 +965,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
     @Override
     @Transactional
-    public Boolean deleteVisit(String visitId, Boolean discarded) {
+    public PatientVisit deleteVisit(String visitId, Boolean discarded) {
+    	PatientVisit response = null;
 	try {
 	    PatientVisitCollection patientVisitCollection = patientVisitRepository.findOne(visitId);
 	    if (patientVisitCollection != null) {
@@ -973,7 +974,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		patientVisitCollection.setDiscarded(discarded);
 		patientVisitCollection.setUpdatedTime(new Date());
 		patientVisitRepository.save(patientVisitCollection);
-
+		response = new PatientVisit();
+		BeanUtil.map(patientVisitCollection, response);
 		if (patientVisitCollection.getClinicalNotesId() != null) {
 		    for (String clinicalNotesId : patientVisitCollection.getClinicalNotesId()) {
 			clinicalNotesService.deleteNote(clinicalNotesId, discarded);
@@ -1000,7 +1002,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
-	return true;
+	return response;
     }
 
     @Override

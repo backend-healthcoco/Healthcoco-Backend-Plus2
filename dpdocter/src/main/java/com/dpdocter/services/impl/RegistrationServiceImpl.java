@@ -808,13 +808,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     @Transactional
-    public void deleteReferrence(String referenceId, Boolean discarded) {
+    public Reference deleteReferrence(String referenceId, Boolean discarded) {
+    	Reference response = null;
 	try {
 	    ReferencesCollection referrencesCollection = referrenceRepository.findOne(referenceId);
 	    if (referrencesCollection != null) {
 		referrencesCollection.setDiscarded(discarded);
 		referrencesCollection.setUpdatedTime(new Date());
 		referrenceRepository.save(referrencesCollection);
+		response = new Reference();
 	    } else {
 		logger.warn("Invalid Referrence Id!");
 		throw new BusinessException(ServiceError.InvalidInput, "Invalid Referrence Id!");
@@ -828,7 +830,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
-
+	return response;
     }
 
     @Override
@@ -1809,18 +1811,22 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     @Transactional
-    public void deleteRole(String roleId, Boolean discarded) {
+    public Role deleteRole(String roleId, Boolean discarded) {
+    	Role response = null;
 	try {
 	    RoleCollection roleCollection = roleRepository.findOne(roleId);
 	    if (roleCollection != null) {
 		roleCollection.setDiscarded(discarded);
 		roleCollection = roleRepository.save(roleCollection);
+		response = new Role();
+		BeanUtil.map(roleCollection, response);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+	return response;
     }
 
     @Override

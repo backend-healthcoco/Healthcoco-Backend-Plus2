@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 public class Drug {
     private String id;
 
@@ -11,7 +13,7 @@ public class Drug {
 
     private Strength strength;
 
-    private String genericId;
+    private List<String> genericIds;
 
     private String drugCode;
 
@@ -69,15 +71,15 @@ public class Drug {
 	this.strength = strength;
     }
 
-    public String getGenericId() {
-	return genericId;
-    }
+    public List<String> getGenericIds() {
+		return genericIds;
+	}
 
-    public void setGenericId(String genericId) {
-	this.genericId = genericId;
-    }
+	public void setGenericIds(List<String> genericIds) {
+		this.genericIds = genericIds;
+	}
 
-    public String getDrugCode() {
+	public String getDrugCode() {
 	return drugCode;
     }
 
@@ -144,7 +146,7 @@ public class Drug {
 	@Override
 	public String toString() {
 		return "Drug [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation=" + explanation
-				+ ", strength=" + strength + ", genericId=" + genericId + ", drugCode=" + drugCode + ", discarded="
+				+ ", strength=" + strength + ", genericIds=" + genericIds + ", drugCode=" + drugCode + ", discarded="
 				+ discarded + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP=" + MRP + ", doctorId="
 				+ doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + "]";
 	}

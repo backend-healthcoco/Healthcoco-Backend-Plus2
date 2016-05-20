@@ -2,8 +2,12 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.MedicalData;
 import com.dpdocter.beans.MedicalHistoryHandler;
+import com.dpdocter.beans.PatientTreatment;
+import com.dpdocter.beans.Prescription;
+import com.dpdocter.beans.Records;
 import com.dpdocter.request.DiseaseAddEditRequest;
 import com.dpdocter.response.DiseaseAddEditResponse;
 import com.dpdocter.response.DiseaseListResponse;
@@ -15,38 +19,38 @@ public interface HistoryServices {
 
     DiseaseAddEditResponse editDiseases(DiseaseAddEditRequest request);
 
-    Boolean deleteDisease(String diseaseId, String doctorId, String hospitalId, String locationId, Boolean discarded);
+    DiseaseAddEditResponse deleteDisease(String diseaseId, String doctorId, String hospitalId, String locationId, Boolean discarded);
 
     List<DiseaseListResponse> getDiseases(String range, int page, int size, String doctorId, String hospitalId, String locationId, String updatedTime,
 	    Boolean discarded);
 
     List<DiseaseListResponse> getDiseasesByIds(List<String> diseasesIds);
 
-    boolean addReportToHistory(String reportId, String patientId, String doctorId, String hospitalId, String locationId);
+    Records addReportToHistory(String reportId, String patientId, String doctorId, String hospitalId, String locationId);
 
-    boolean addClinicalNotesToHistory(String clinicalNotesId, String patientId, String doctorId, String hospitalId, String locationId);
+    ClinicalNotes addClinicalNotesToHistory(String clinicalNotesId, String patientId, String doctorId, String hospitalId, String locationId);
 
-    boolean addPrescriptionToHistory(String prescriptionId, String patientId, String doctorId, String hospitalId, String locationId);
+    Prescription addPrescriptionToHistory(String prescriptionId, String patientId, String doctorId, String hospitalId, String locationId);
 
-    boolean addPatientTreatmentToHistory(String treatmentId, String patientId, String doctorId, String hospitalId, String locationId);
+    PatientTreatment addPatientTreatmentToHistory(String treatmentId, String patientId, String doctorId, String hospitalId, String locationId);
 
-    boolean assignMedicalHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId);
+    HistoryDetailsResponse assignMedicalHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId);
 
-    boolean assignFamilyHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId);
+    HistoryDetailsResponse assignFamilyHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId);
 
     boolean addSpecialNotes(List<String> specialNotes, String patientId, String doctorId, String hospitalId, String locationId);
 
-    boolean removeReports(String reportId, String patientId, String doctorId, String hospitalId, String locationId);
+    Records removeReports(String reportId, String patientId, String doctorId, String hospitalId, String locationId);
 
-    boolean removeClinicalNotes(String clinicalNotesId, String patientId, String doctorId, String hospitalId, String locationId);
+    ClinicalNotes removeClinicalNotes(String clinicalNotesId, String patientId, String doctorId, String hospitalId, String locationId);
 
-    boolean removePrescription(String prescriptionId, String patientId, String doctorId, String hospitalId, String locationId);
+    Prescription removePrescription(String prescriptionId, String patientId, String doctorId, String hospitalId, String locationId);
 
-    boolean removePatientTreatment(String treatmentId, String patientId, String doctorId, String hospitalId, String locationId);
+    PatientTreatment removePatientTreatment(String treatmentId, String patientId, String doctorId, String hospitalId, String locationId);
 
-    boolean removeMedicalHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId);
+    HistoryDetailsResponse removeMedicalHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId);
 
-    boolean removeFamilyHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId);
+    HistoryDetailsResponse removeFamilyHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId);
 
     List<HistoryDetailsResponse> getPatientHistoryDetailsWithoutVerifiedOTP(String patientId, String doctorId, String hospitalId, String locationId,
 	    List<String> historyFilter, int page, int size, String updatedTime);

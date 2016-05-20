@@ -181,19 +181,19 @@ public class RecordsApi {
 
     @Path(value = PathProxy.RecordsUrls.DELETE_RECORD)
     @DELETE
-    public Response<Boolean> deleteRecords(@PathParam("recordId") String recordId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-	recordsService.deleteRecord(recordId, discarded);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
+    public Response<Records> deleteRecords(@PathParam("recordId") String recordId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    	Records records = recordsService.deleteRecord(recordId, discarded);
+	Response<Records> response = new Response<Records>();
+	response.setData(records);
 	return response;
     }
 
     @Path(value = PathProxy.RecordsUrls.DELETE_TAG)
     @DELETE
-    public Response<Boolean> deleteTag(@PathParam("tagid") String tagid) {
-	recordsService.deleteTag(tagid);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
+    public Response<Tags> deleteTag(@PathParam("tagid") String tagid, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    	Tags tags = recordsService.deleteTag(tagid, discarded);
+	Response<Tags> response = new Response<Tags>();
+	response.setData(tags);
 	return response;
     }
 

@@ -105,7 +105,7 @@ public class PrintSettingsApi {
 
     @Path(value = PathProxy.PrintSettingsUrls.DELETE_PRINT_SETTINGS)
     @DELETE
-    public Response<Boolean> deletePrintSettings(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
+    public Response<PrintSettings> deletePrintSettings(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 
@@ -113,8 +113,8 @@ public class PrintSettingsApi {
 	    logger.warn("Id, DoctorId or locationId or hospitalId cannot be null");
 	    throw new BusinessException(ServiceError.InvalidInput, "Id, DoctorId or locationId or hospitalId cannot be null");
 	}
-	Boolean printSettings = printSettingsService.deletePrintSettings(id, doctorId, locationId, hospitalId, discarded);
-	Response<Boolean> response = new Response<Boolean>();
+	PrintSettings printSettings = printSettingsService.deletePrintSettings(id, doctorId, locationId, hospitalId, discarded);
+	Response<PrintSettings> response = new Response<PrintSettings>();
 	response.setData(printSettings);
 	return response;
     }

@@ -642,18 +642,23 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
     @Override
     @Transactional
-    public void deleteNote(String id, Boolean discarded) {
+    public ClinicalNotes deleteNote(String id, Boolean discarded) {
+    	ClinicalNotes response = null;
 	try {
 	    ClinicalNotesCollection clinicalNotes = clinicalNotesRepository.findOne(id);
-	    clinicalNotes.setDiscarded(discarded);
-	    clinicalNotes.setUpdatedTime(new Date());
-	    clinicalNotesRepository.save(clinicalNotes);
+	    if(clinicalNotes != null){
+	    	clinicalNotes.setDiscarded(discarded);
+		    clinicalNotes.setUpdatedTime(new Date());
+		    clinicalNotes = clinicalNotesRepository.save(clinicalNotes);
+		    response = new ClinicalNotes();
+		    BeanUtil.map(clinicalNotes, response);
+	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
-
+	return response;
     }
 
 	@Override
@@ -958,8 +963,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
     @Override
     @Transactional
-    public void deleteComplaint(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
-	try {
+    public Complaint deleteComplaint(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
+	Complaint response = null;
+    try {
 	    ComplaintCollection complaintCollection = complaintRepository.findOne(id);
 	    if (complaintCollection != null) {
 		if (complaintCollection.getDoctorId() != null && complaintCollection.getHospitalId() != null && complaintCollection.getLocationId() != null) {
@@ -969,6 +975,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			complaintCollection.setDiscarded(discarded);
 			complaintCollection.setUpdatedTime(new Date());
 			complaintRepository.save(complaintCollection);
+			response = new Complaint();
+			BeanUtil.map(complaintCollection, response);
 		    } else {
 			logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Doctor Id, Hospital Id, Or Location Id");
@@ -987,13 +995,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
-
+    	 return response;
     }
 
     @Override
     @Transactional
-    public void deleteObservation(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
-	try {
+    public Observation deleteObservation(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
+	Observation response = null;
+    	try {
 	    ObservationCollection observationCollection = observationRepository.findOne(id);
 	    if (observationCollection != null) {
 		if (observationCollection.getDoctorId() != null && observationCollection.getHospitalId() != null
@@ -1003,6 +1012,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			observationCollection.setDiscarded(discarded);
 			observationCollection.setUpdatedTime(new Date());
 			observationRepository.save(observationCollection);
+			response = new Observation();
+			BeanUtil.map(observationCollection, response);
 		    } else {
 			logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Doctor Id, Hospital Id, Or Location Id");
@@ -1020,12 +1031,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+    	return response;
     }
 
     @Override
     @Transactional
-    public void deleteInvestigation(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
-	try {
+    public Investigation deleteInvestigation(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
+    	Investigation response = null;
+    	try {
 	    InvestigationCollection investigationCollection = investigationRepository.findOne(id);
 	    if (investigationCollection != null) {
 		if (investigationCollection.getDoctorId() != null && investigationCollection.getHospitalId() != null
@@ -1035,6 +1048,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			investigationCollection.setDiscarded(discarded);
 			investigationCollection.setUpdatedTime(new Date());
 			investigationRepository.save(investigationCollection);
+			response = new  Investigation();
+			BeanUtil.map(investigationCollection, response);
 		    } else {
 			logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Doctor Id, Hospital Id, Or Location Id");
@@ -1052,12 +1067,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+    	return response;
     }
 
     @Override
     @Transactional
-    public void deleteDiagnosis(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
-	try {
+    public Diagnoses deleteDiagnosis(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
+	Diagnoses response = null;
+    	try {
 	    DiagnosisCollection diagnosisCollection = diagnosisRepository.findOne(id);
 	    if (diagnosisCollection != null) {
 		if (diagnosisCollection.getDoctorId() != null && diagnosisCollection.getHospitalId() != null && diagnosisCollection.getLocationId() != null) {
@@ -1066,6 +1083,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			diagnosisCollection.setDiscarded(discarded);
 			diagnosisCollection.setUpdatedTime(new Date());
 			diagnosisRepository.save(diagnosisCollection);
+			response = new Diagnoses();
+			BeanUtil.map(diagnosisCollection, response);
 		    } else {
 			logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Doctor Id, Hospital Id, Or Location Id");
@@ -1083,12 +1102,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+    	return response;
     }
 
     @Override
     @Transactional
-    public void deleteNotes(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
-	try {
+    public Notes deleteNotes(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
+	Notes response = null;
+    	try {
 	    NotesCollection notesCollection = notesRepository.findOne(id);
 	    if (notesCollection != null) {
 		if (notesCollection.getDoctorId() != null && notesCollection.getHospitalId() != null && notesCollection.getLocationId() != null) {
@@ -1097,6 +1118,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			notesCollection.setDiscarded(discarded);
 			notesCollection.setUpdatedTime(new Date());
 			notesRepository.save(notesCollection);
+			response = new Notes();
+			BeanUtil.map(notesCollection, response);
 		    } else {
 			logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Doctor Id, Hospital Id, Or Location Id");
@@ -1115,12 +1138,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+    	return response;
     }
 
     @Override
     @Transactional
-    public void deleteDiagram(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
-	try {
+    public Diagram deleteDiagram(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
+	Diagram response = null;
+    	try {
 	    DiagramsCollection diagramsCollection = diagramsRepository.findOne(id);
 	    if (diagramsCollection != null) {
 		if (diagramsCollection.getDoctorId() != null && diagramsCollection.getHospitalId() != null && diagramsCollection.getLocationId() != null) {
@@ -1129,6 +1154,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			diagramsCollection.setDiscarded(discarded);
 			diagramsCollection.setUpdatedTime(new Date());
 			diagramsRepository.save(diagramsCollection);
+			response = new Diagram();
+			BeanUtil.map(diagramsCollection, response);
 		    } else {
 			logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Doctor Id, Hospital Id, Or Location Id");
@@ -1147,6 +1174,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
+    	return response;
     }
 
     @Override

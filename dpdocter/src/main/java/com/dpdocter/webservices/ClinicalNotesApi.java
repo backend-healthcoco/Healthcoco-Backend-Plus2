@@ -117,11 +117,11 @@ public class ClinicalNotesApi {
 
     @Path(value = PathProxy.ClinicalNotesUrls.DELETE_CLINICAL_NOTES)
     @DELETE
-    public Response<Boolean> deleteNotes(@PathParam(value = "clinicalNotesId") String clinicalNotesId,
+    public Response<ClinicalNotes> deleteNotes(@PathParam(value = "clinicalNotesId") String clinicalNotesId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-	clinicalNotesService.deleteNote(clinicalNotesId, discarded);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
+    	ClinicalNotes clinicalNotes = clinicalNotesService.deleteNote(clinicalNotesId, discarded);
+	Response<ClinicalNotes> response = new Response<ClinicalNotes>();
+	response.setData(clinicalNotes);
 	return response;
     }
 
@@ -316,86 +316,86 @@ public class ClinicalNotesApi {
 
     @Path(value = PathProxy.ClinicalNotesUrls.DELETE_COMPLAINT)
     @DELETE
-    public Response<Boolean> deleteComplaint(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
+    public Response<Complaint> deleteComplaint(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-	clinicalNotesService.deleteComplaint(id, doctorId, locationId, hospitalId, discarded);
+    	Complaint complaint = clinicalNotesService.deleteComplaint(id, doctorId, locationId, hospitalId, discarded);
 	transnationalService.addResource(id, Resource.COMPLAINT, false);
 
 	solrClinicalNotesService.deleteComplaints(id, discarded);
 
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
+	Response<Complaint> response = new Response<Complaint>();
+	response.setData(complaint);
 	return response;
     }
 
     @Path(value = PathProxy.ClinicalNotesUrls.DELETE_OBSERVATION)
     @DELETE
-    public Response<Boolean> deleteObservation(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
+    public Response<Observation> deleteObservation(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-	clinicalNotesService.deleteObservation(id, doctorId, locationId, hospitalId, discarded);
+    	Observation observation = clinicalNotesService.deleteObservation(id, doctorId, locationId, hospitalId, discarded);
 	transnationalService.addResource(id, Resource.OBSERVATION, false);
 	solrClinicalNotesService.deleteObservations(id, discarded);
 
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
+	Response<Observation> response = new Response<Observation>();
+	response.setData(observation);
 	return response;
     }
 
     @Path(value = PathProxy.ClinicalNotesUrls.DELETE_INVESTIGATION)
     @DELETE
-    public Response<Boolean> deleteInvestigation(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
+    public Response<Investigation> deleteInvestigation(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-	clinicalNotesService.deleteInvestigation(id, doctorId, locationId, hospitalId, discarded);
+    	Investigation investigation = clinicalNotesService.deleteInvestigation(id, doctorId, locationId, hospitalId, discarded);
 	transnationalService.addResource(id, Resource.INVESTIGATION, false);
 	solrClinicalNotesService.deleteInvestigations(id, discarded);
 
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
+	Response<Investigation> response = new Response<Investigation>();
+	response.setData(investigation);
 	return response;
     }
 
     @Path(value = PathProxy.ClinicalNotesUrls.DELETE_DIAGNOSIS)
     @DELETE
-    public Response<Boolean> deleteDiagnosis(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
+    public Response<Diagnoses> deleteDiagnosis(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-	clinicalNotesService.deleteDiagnosis(id, doctorId, locationId, hospitalId, discarded);
+    	Diagnoses diagnoses = clinicalNotesService.deleteDiagnosis(id, doctorId, locationId, hospitalId, discarded);
 	transnationalService.addResource(id, Resource.DIAGNOSIS, false);
 	solrClinicalNotesService.deleteDiagnoses(id, discarded);
 
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
+	Response<Diagnoses> response = new Response<Diagnoses>();
+	response.setData(diagnoses);
 	return response;
     }
 
     @Path(value = PathProxy.ClinicalNotesUrls.DELETE_NOTE)
     @DELETE
-    public Response<Boolean> deleteNote(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
+    public Response<Notes> deleteNote(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-	clinicalNotesService.deleteNotes(id, doctorId, locationId, hospitalId, discarded);
+    	Notes notes = clinicalNotesService.deleteNotes(id, doctorId, locationId, hospitalId, discarded);
 	transnationalService.addResource(id, Resource.NOTES, false);
 	solrClinicalNotesService.deleteNotes(id, discarded);
 
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
+	Response<Notes> response = new Response<Notes>();
+	response.setData(notes);
 	return response;
     }
 
     @Path(value = PathProxy.ClinicalNotesUrls.DELETE_DIAGRAM)
     @DELETE
-    public Response<Boolean> deleteDiagram(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
+    public Response<Diagram> deleteDiagram(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-	clinicalNotesService.deleteDiagram(id, doctorId, locationId, hospitalId, discarded);
+    	Diagram diagram = clinicalNotesService.deleteDiagram(id, doctorId, locationId, hospitalId, discarded);
 	transnationalService.addResource(id, Resource.DIAGRAM, false);
 	solrClinicalNotesService.deleteDiagrams(id, discarded);
 
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
+	Response<Diagram> response = new Response<Diagram>();
+	response.setData(diagram);
 	return response;
     }
 

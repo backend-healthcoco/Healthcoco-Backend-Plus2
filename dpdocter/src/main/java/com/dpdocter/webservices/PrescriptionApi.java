@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.DiagnosticTest;
+import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.Prescription;
@@ -135,35 +136,35 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG)
     @DELETE
-    public Response<Boolean> deleteDrug(@PathParam(value = "drugId") String drugId, @PathParam(value = "doctorId") String doctorId,
+    public Response<Drug> deleteDrug(@PathParam(value = "drugId") String drugId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(drugId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
 	    logger.warn("Drug Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	}
-	Boolean drugDeleteResponse = prescriptionServices.deleteDrug(drugId, doctorId, hospitalId, locationId, discarded);
+	Drug drugDeleteResponse = prescriptionServices.deleteDrug(drugId, doctorId, hospitalId, locationId, discarded);
 
 	transnationalService.addResource(drugId, Resource.DRUG, false);
 	// Below service call will delete the drug in solr index.
 	solrPrescriptionService.deleteDrug(drugId, discarded);
-	Response<Boolean> response = new Response<Boolean>();
+	Response<Drug> response = new Response<Drug>();
 	response.setData(drugDeleteResponse);
 	return response;
     }
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_GLOBAL_DRUG)
     @DELETE
-    public Response<Boolean> deleteDrug(@PathParam(value = "drugId") String drugId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    public Response<Drug> deleteDrug(@PathParam(value = "drugId") String drugId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(drugId)) {
 	    logger.warn("Drug Id, Doctor Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Id, Doctor Id Cannot Be Empty");
 	}
-	Boolean drugDeleteResponse = prescriptionServices.deleteDrug(drugId, discarded);
+	Drug drugDeleteResponse = prescriptionServices.deleteDrug(drugId, discarded);
 	transnationalService.addResource(drugId, Resource.DRUG, false);
 	// Below service call will delete the drug in solr index.
 	solrPrescriptionService.deleteDrug(drugId, discarded);
-	Response<Boolean> response = new Response<Boolean>();
+	Response<Drug> response = new Response<Drug>();
 	response.setData(drugDeleteResponse);
 	return response;
     }
@@ -223,32 +224,32 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_LAB_TEST)
     @DELETE
-    public Response<Boolean> deleteLabTest(@PathParam(value = "labTestId") String labTestId, @PathParam(value = "locationId") String locationId,
+    public Response<LabTest> deleteLabTest(@PathParam(value = "labTestId") String labTestId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(labTestId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
 	    logger.warn("Lab Test Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Lab Test Id, Hospital Id, Location Id Cannot Be Empty");
 	}
-	Boolean labTestDeleteResponse = prescriptionServices.deleteLabTest(labTestId, hospitalId, locationId, discarded);
+	LabTest labTestDeleteResponse = prescriptionServices.deleteLabTest(labTestId, hospitalId, locationId, discarded);
 	transnationalService.addResource(labTestId, Resource.LABTEST, false);
 	solrPrescriptionService.deleteLabTest(labTestId, discarded);
-	Response<Boolean> response = new Response<Boolean>();
+	Response<LabTest> response = new Response<LabTest>();
 	response.setData(labTestDeleteResponse);
 	return response;
     }
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_GLOBAL_LAB_TEST)
     @DELETE
-    public Response<Boolean> deleteLabTest(@PathParam(value = "labTestId") String labTestId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    public Response<LabTest> deleteLabTest(@PathParam(value = "labTestId") String labTestId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(labTestId)) {
 	    logger.warn("Lab Test Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Lab Test Id Cannot Be Empty");
 	}
-	Boolean labTestDeleteResponse = prescriptionServices.deleteLabTest(labTestId, discarded);
+	LabTest labTestDeleteResponse = prescriptionServices.deleteLabTest(labTestId, discarded);
 	transnationalService.addResource(labTestId, Resource.LABTEST, false);
 	solrPrescriptionService.deleteLabTest(labTestId, discarded);
 
-	Response<Boolean> response = new Response<Boolean>();
+	Response<LabTest> response = new Response<LabTest>();
 	response.setData(labTestDeleteResponse);
 	return response;
     }
@@ -308,15 +309,15 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_TEMPLATE)
     @DELETE
-    public Response<Boolean> deleteTemplate(@PathParam(value = "templateId") String templateId, @PathParam(value = "doctorId") String doctorId,
+    public Response<TemplateAddEditResponseDetails> deleteTemplate(@PathParam(value = "templateId") String templateId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(templateId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
 	    logger.warn("Template Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Template Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	}
-	Boolean templateDeleteResponse = prescriptionServices.deleteTemplate(templateId, doctorId, hospitalId, locationId, discarded);
-	Response<Boolean> response = new Response<Boolean>();
+	TemplateAddEditResponseDetails templateDeleteResponse = prescriptionServices.deleteTemplate(templateId, doctorId, hospitalId, locationId, discarded);
+	Response<TemplateAddEditResponseDetails> response = new Response<TemplateAddEditResponseDetails>();
 	response.setData(templateDeleteResponse);
 	return response;
     }
@@ -416,15 +417,15 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_PRESCRIPTION)
     @DELETE
-    public Response<Boolean> deletePrescription(@PathParam(value = "prescriptionId") String prescriptionId, @PathParam(value = "doctorId") String doctorId,
+    public Response<Prescription> deletePrescription(@PathParam(value = "prescriptionId") String prescriptionId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @PathParam(value = "patientId") String patientId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(prescriptionId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
 	    logger.warn("Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	}
-	Boolean prescriptionDeleteResponse = prescriptionServices.deletePrescription(prescriptionId, doctorId, hospitalId, locationId, patientId, discarded);
-	Response<Boolean> response = new Response<Boolean>();
+	Prescription prescriptionDeleteResponse = prescriptionServices.deletePrescription(prescriptionId, doctorId, hospitalId, locationId, patientId, discarded);
+	Response<Prescription> response = new Response<Prescription>();
 	response.setData(prescriptionDeleteResponse);
 	return response;
     }
@@ -516,15 +517,15 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_TYPE)
     @DELETE
-    public Response<Boolean> deleteDrugType(@PathParam(value = "drugTypeId") String drugTypeId,
+    public Response<DrugTypeAddEditResponse> deleteDrugType(@PathParam(value = "drugTypeId") String drugTypeId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(drugTypeId)) {
 	    logger.warn("Drug Type Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Type Id Cannot Be Empty");
 	}
-	Boolean drugTypeDeleteResponse = prescriptionServices.deleteDrugType(drugTypeId, discarded);
+	DrugTypeAddEditResponse drugTypeDeleteResponse = prescriptionServices.deleteDrugType(drugTypeId, discarded);
 
-	Response<Boolean> response = new Response<Boolean>();
+	Response<DrugTypeAddEditResponse> response = new Response<DrugTypeAddEditResponse>();
 	response.setData(drugTypeDeleteResponse);
 	return response;
     }
@@ -561,15 +562,15 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_STRENGTH)
     @DELETE
-    public Response<Boolean> deleteDrugStrength(@PathParam(value = "drugStrengthId") String drugStrengthId,
+    public Response<DrugStrengthAddEditResponse> deleteDrugStrength(@PathParam(value = "drugStrengthId") String drugStrengthId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(drugStrengthId)) {
 	    logger.warn("Drug Strength Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Strength Id Cannot Be Empty");
 	}
-	Boolean drugStrengthDeleteResponse = prescriptionServices.deleteDrugStrength(drugStrengthId, discarded);
+	DrugStrengthAddEditResponse drugStrengthDeleteResponse = prescriptionServices.deleteDrugStrength(drugStrengthId, discarded);
 
-	Response<Boolean> response = new Response<Boolean>();
+	Response<DrugStrengthAddEditResponse> response = new Response<DrugStrengthAddEditResponse>();
 	response.setData(drugStrengthDeleteResponse);
 	return response;
     }
@@ -605,15 +606,15 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DOSAGE)
     @DELETE
-    public Response<Boolean> deleteDrugDosage(@PathParam(value = "drugDosageId") String drugDosageId,
+    public Response<DrugDosageAddEditResponse> deleteDrugDosage(@PathParam(value = "drugDosageId") String drugDosageId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(drugDosageId)) {
 	    logger.warn("Drug Dosage Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Dosage Id Cannot Be Empty");
 	}
-	Boolean drugDosageDeleteResponse = prescriptionServices.deleteDrugDosage(drugDosageId, discarded);
+	DrugDosageAddEditResponse drugDosageDeleteResponse = prescriptionServices.deleteDrugDosage(drugDosageId, discarded);
 
-	Response<Boolean> response = new Response<Boolean>();
+	Response<DrugDosageAddEditResponse> response = new Response<DrugDosageAddEditResponse>();
 	response.setData(drugDosageDeleteResponse);
 	return response;
     }
@@ -650,15 +651,15 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DIRECTION)
     @DELETE
-    public Response<Boolean> deleteDrugDirection(@PathParam(value = "drugDirectionId") String drugDirectionId,
+    public Response<DrugDirectionAddEditResponse> deleteDrugDirection(@PathParam(value = "drugDirectionId") String drugDirectionId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(drugDirectionId)) {
 	    logger.warn("Drug Direction Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Direction Id Cannot Be Empty");
 	}
-	Boolean drugDirectionDeleteResponse = prescriptionServices.deleteDrugDirection(drugDirectionId, discarded);
+	DrugDirectionAddEditResponse drugDirectionDeleteResponse = prescriptionServices.deleteDrugDirection(drugDirectionId, discarded);
 
-	Response<Boolean> response = new Response<Boolean>();
+	Response<DrugDirectionAddEditResponse> response = new Response<DrugDirectionAddEditResponse>();
 	response.setData(drugDirectionDeleteResponse);
 	return response;
     }
@@ -695,15 +696,15 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DURATION_UNIT)
     @DELETE
-    public Response<Boolean> deleteDrugDurationUnit(@PathParam(value = "drugDurationUnitId") String drugDurationUnitId,
+    public Response<DrugDurationUnitAddEditResponse> deleteDrugDurationUnit(@PathParam(value = "drugDurationUnitId") String drugDurationUnitId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(drugDurationUnitId)) {
 	    logger.warn("Drug Duration Unit Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Duration Unit Id Cannot Be Empty");
 	}
-	Boolean drugDurationUnitDeleteResponse = prescriptionServices.deleteDrugDurationUnit(drugDurationUnitId, discarded);
+	DrugDurationUnitAddEditResponse drugDurationUnitDeleteResponse = prescriptionServices.deleteDrugDurationUnit(drugDurationUnitId, discarded);
 
-	Response<Boolean> response = new Response<Boolean>();
+	Response<DrugDurationUnitAddEditResponse> response = new Response<DrugDurationUnitAddEditResponse>();
 	response.setData(drugDurationUnitDeleteResponse);
 	return response;
     }
@@ -782,34 +783,34 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DIAGNOSTIC_TEST)
     @DELETE
-    public Response<Boolean> deleteDiagnosticTest(@PathParam(value = "diagnosticTestId") String diagnosticTestId,
+    public Response<DiagnosticTest> deleteDiagnosticTest(@PathParam(value = "diagnosticTestId") String diagnosticTestId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(diagnosticTestId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
 	    logger.warn("Diagnostic Test Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Diagnostic Test Id, Hospital Id, Location Id Cannot Be Empty");
 	}
-	Boolean labTestDeleteResponse = prescriptionServices.deleteDiagnosticTest(diagnosticTestId, hospitalId, locationId, discarded);
+	DiagnosticTest labTestDeleteResponse = prescriptionServices.deleteDiagnosticTest(diagnosticTestId, hospitalId, locationId, discarded);
 	transnationalService.addResource(diagnosticTestId, Resource.DIAGNOSTICTEST, false);
 	solrPrescriptionService.deleteDiagnosticTest(diagnosticTestId, discarded);
-	Response<Boolean> response = new Response<Boolean>();
+	Response<DiagnosticTest> response = new Response<DiagnosticTest>();
 	response.setData(labTestDeleteResponse);
 	return response;
     }
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_GLOBAL_DIAGNOSTIC_TEST)
     @DELETE
-    public Response<Boolean> deleteDiagnosticTest(@PathParam(value = "diagnosticTestId") String diagnosticTestId,
+    public Response<DiagnosticTest> deleteDiagnosticTest(@PathParam(value = "diagnosticTestId") String diagnosticTestId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(diagnosticTestId)) {
 	    logger.warn("Diagnostic Test Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Diagnostic Test Id Cannot Be Empty");
 	}
-	Boolean labTestDeleteResponse = prescriptionServices.deleteDiagnosticTest(diagnosticTestId, discarded);
+	DiagnosticTest labTestDeleteResponse = prescriptionServices.deleteDiagnosticTest(diagnosticTestId, discarded);
 	transnationalService.addResource(diagnosticTestId, Resource.DIAGNOSTICTEST, false);
 	solrPrescriptionService.deleteDiagnosticTest(diagnosticTestId, discarded);
 
-	Response<Boolean> response = new Response<Boolean>();
+	Response<DiagnosticTest> response = new Response<DiagnosticTest>();
 	response.setData(labTestDeleteResponse);
 	return response;
     }

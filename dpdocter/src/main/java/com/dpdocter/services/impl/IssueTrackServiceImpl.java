@@ -256,7 +256,8 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 
     @Override
     @Transactional
-    public Boolean deleteIssue(String issueId, String doctorId, String locationId, String hospitalId, Boolean discarded) {
+    public IssueTrack deleteIssue(String issueId, String doctorId, String locationId, String hospitalId, Boolean discarded) {
+    	IssueTrack response = null;
 	try {
 	    IssueTrackCollection issueTrackCollection = issueTrackRepository.findOne(issueId);
 	    if (issueTrackCollection != null) {
@@ -267,7 +268,8 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 			issueTrackCollection.setDiscarded(discarded);
 			issueTrackCollection.setUpdatedTime(new Date());
 			issueTrackRepository.save(issueTrackCollection);
-			return true;
+			response = new IssueTrack();
+			BeanUtil.map(issueTrackCollection, response);
 		    } else {
 			logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Doctor Id, Hospital Id, Or Location Id");
@@ -286,7 +288,7 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
-
+	return response;
     }
 
 }

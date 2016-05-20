@@ -205,9 +205,9 @@ public class ContactsApi {
 
     @Path(value = PathProxy.ContactsUrls.DELETE_GROUP)
     @DELETE
-    public Response<Boolean> deleteGroup(@PathParam("groupId") String groupId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-	Boolean groupDeleteResponse = contactsService.deleteGroup(groupId, discarded);
-	Response<Boolean> response = new Response<Boolean>();
+    public Response<Group> deleteGroup(@PathParam("groupId") String groupId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    	Group groupDeleteResponse = contactsService.deleteGroup(groupId, discarded);
+	Response<Group> response = new Response<Group>();
 	response.setData(groupDeleteResponse);
 	return response;
     }

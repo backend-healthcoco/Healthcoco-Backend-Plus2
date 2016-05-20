@@ -3,6 +3,7 @@ package com.dpdocter.services;
 import java.util.List;
 
 import com.dpdocter.beans.DiagnosticTest;
+import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.MailAttachment;
@@ -33,9 +34,9 @@ public interface PrescriptionServices {
 
     DrugAddEditResponse editDrug(DrugAddEditRequest request);
 
-    Boolean deleteDrug(String drugId, String doctorId, String hospitalId, String locationIdString, Boolean discarded);
+    Drug deleteDrug(String drugId, String doctorId, String hospitalId, String locationIdString, Boolean discarded);
 
-    Boolean deleteDrug(String drugId, Boolean discarded);
+    Drug deleteDrug(String drugId, Boolean discarded);
 
     DrugAddEditResponse getDrugById(String drugId);
 
@@ -43,7 +44,7 @@ public interface PrescriptionServices {
 
     TemplateAddEditResponseDetails editTemplate(TemplateAddEditRequest request);
 
-    Boolean deleteTemplate(String templateId, String doctorId, String hospitalId, String locationId, Boolean discarded);
+    TemplateAddEditResponseDetails deleteTemplate(String templateId, String doctorId, String hospitalId, String locationId, Boolean discarded);
 
     TemplateAddEditResponseDetails getTemplate(String templateId, String doctorId, String hospitalId, String locationId);
 
@@ -51,7 +52,7 @@ public interface PrescriptionServices {
 
     PrescriptionAddEditResponseDetails editPrescription(PrescriptionAddEditRequest request);
 
-    Boolean deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId, String patientId, Boolean discarded);
+    Prescription deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId, String patientId, Boolean discarded);
 
     List<Prescription> getPrescriptions(int page, int size, String doctorId, String hospitalId, String locationId, String patientId, String updatedTime,
 	    boolean isOTPVerified, boolean discarded, boolean inHistory);
@@ -85,19 +86,19 @@ public interface PrescriptionServices {
 
     DrugDirectionAddEditResponse editDrugDirection(DrugDirectionAddEditRequest request);
 
-    Boolean deleteDrugType(String drugTypeId, Boolean discarded);
+    DrugTypeAddEditResponse deleteDrugType(String drugTypeId, Boolean discarded);
 
-    Boolean deleteDrugStrength(String drugStrengthId, Boolean discarded);
+    DrugStrengthAddEditResponse deleteDrugStrength(String drugStrengthId, Boolean discarded);
 
-    Boolean deleteDrugDosage(String drugDosageId, Boolean discarded);
+    DrugDosageAddEditResponse deleteDrugDosage(String drugDosageId, Boolean discarded);
 
-    Boolean deleteDrugDirection(String drugDirectionId, Boolean discarded);
+    DrugDirectionAddEditResponse deleteDrugDirection(String drugDirectionId, Boolean discarded);
 
     DrugDurationUnitAddEditResponse addDrugDurationUnit(DrugDurationUnitAddEditRequest request);
 
     DrugDurationUnitAddEditResponse editDrugDurationUnit(DrugDurationUnitAddEditRequest request);
 
-    Boolean deleteDrugDurationUnit(String drugDurationUnitId, Boolean discarded);
+    DrugDurationUnitAddEditResponse deleteDrugDurationUnit(String drugDurationUnitId, Boolean discarded);
 
     List<Object> getPrescriptionItems(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded);
@@ -112,9 +113,9 @@ public interface PrescriptionServices {
 
     LabTest editLabTest(LabTest request);
 
-    Boolean deleteLabTest(String labTestId, String hospitalId, String locationId, Boolean discarded);
+    LabTest deleteLabTest(String labTestId, String hospitalId, String locationId, Boolean discarded);
 
-    Boolean deleteLabTest(String labTestId, Boolean discarded);
+    LabTest deleteLabTest(String labTestId, Boolean discarded);
 
     LabTest getLabTestById(String labTestId);
 
@@ -126,9 +127,9 @@ public interface PrescriptionServices {
 
     DiagnosticTest getDiagnosticTest(String diagnosticTestId);
 
-    Boolean deleteDiagnosticTest(String diagnosticTestId, Boolean discarded);
+    DiagnosticTest deleteDiagnosticTest(String diagnosticTestId, Boolean discarded);
 
-    Boolean deleteDiagnosticTest(String diagnosticTestId, String hospitalId, String locationId, Boolean discarded);
+    DiagnosticTest deleteDiagnosticTest(String diagnosticTestId, String hospitalId, String locationId, Boolean discarded);
 
     PrescriptionTestAndRecord checkPrescriptionExists(String uniqueEmrId, String patientId);
 

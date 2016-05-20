@@ -44,7 +44,7 @@ public interface RegistrationService {
 
     Reference addEditReference(Reference referrence);
 
-    void deleteReferrence(String referrenceId, Boolean discarded);
+    Reference deleteReferrence(String referrenceId, Boolean discarded);
 
     List<ReferenceDetail> getReferences(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded);
@@ -93,7 +93,7 @@ public interface RegistrationService {
 
     List<ClinicDoctorResponse> getDoctors(int page, int size, String locationId, String hospitalId, String updatedTime);
 
-    void deleteRole(String roleId, Boolean discarded);
+    Role deleteRole(String roleId, Boolean discarded);
 
     void deleteUser(String userId, String locationId, Boolean discarded);
 
