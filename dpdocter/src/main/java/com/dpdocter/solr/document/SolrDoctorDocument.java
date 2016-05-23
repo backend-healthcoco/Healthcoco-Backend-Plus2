@@ -1,6 +1,5 @@
 package com.dpdocter.solr.document;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.solr.client.solrj.beans.Field;
@@ -12,10 +11,8 @@ import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.DoctorExperience;
-import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.enums.Currency;
-import com.dpdocter.enums.Day;
 import com.dpdocter.enums.DoctorExperienceUnit;
 import com.dpdocter.enums.TimeUnit;
 import com.dpdocter.solr.beans.DoctorLocation;

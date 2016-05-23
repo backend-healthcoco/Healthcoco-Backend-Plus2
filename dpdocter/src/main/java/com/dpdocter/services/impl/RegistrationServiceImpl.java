@@ -817,6 +817,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		referrencesCollection.setUpdatedTime(new Date());
 		referrenceRepository.save(referrencesCollection);
 		response = new Reference();
+		BeanUtil.map(referrencesCollection, response);
 	    } else {
 		logger.warn("Invalid Referrence Id!");
 		throw new BusinessException(ServiceError.InvalidInput, "Invalid Referrence Id!");

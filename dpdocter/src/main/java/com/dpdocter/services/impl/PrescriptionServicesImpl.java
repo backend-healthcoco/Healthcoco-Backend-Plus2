@@ -761,7 +761,43 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			prescriptionCollection.setUpdatedTime(new Date());
 			prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 			response = new Prescription();
-			BeanUtil.map(prescriptionCollection,response);
+			List<TestAndRecordData> tests = prescriptionCollection.getDiagnosticTests();
+			prescriptionCollection.setDiagnosticTests(null);
+			BeanUtil.map(prescriptionCollection, response);
+			if (prescriptionCollection.getItems() != null) {
+			List<PrescriptionItemDetail> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetail>();
+			for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
+			    PrescriptionItemDetail prescriptionItemDetails = new PrescriptionItemDetail();
+			    BeanUtil.map(prescriptionItem, prescriptionItemDetails);
+			    if (prescriptionItem.getDrugId() != null) {
+				DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
+				Drug drug = new Drug();
+				if (drugCollection != null)
+				    BeanUtil.map(drugCollection, drug);
+				prescriptionItemDetails.setDrug(drug);
+			    }
+			    prescriptionItemDetailsList.add(prescriptionItemDetails);
+			}
+			response.setItems(prescriptionItemDetailsList);
+		    }
+			PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(response.getId());
+			if (patientVisitCollection != null) response.setVisitId(patientVisitCollection.getId());
+			
+			if(tests != null && !tests.isEmpty()){
+				List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
+			    	for(TestAndRecordData data : tests){
+			    		if(data.getTestId() != null){
+			    			DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(data.getTestId());
+				    		DiagnosticTest diagnosticTest = new DiagnosticTest();
+				    		if(diagnosticTestCollection !=null){
+				    			BeanUtil.map(diagnosticTestCollection, diagnosticTest);
+				    		}
+				    		diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
+			    		}
+			    }
+			    	response.setDiagnosticTests(diagnosticTests);
+			}
+
 			pushNotificationServices.notifyUser(patientId, "Prescription:"+prescriptionCollection.getUniqueEmrId()+" is discarded");
 		    } else {
 			logger.warn("Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");

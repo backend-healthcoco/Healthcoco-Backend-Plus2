@@ -25,6 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.ClinicalNotes;
+import com.dpdocter.beans.DiagnosticTest;
+import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.GeneralData;
 import com.dpdocter.beans.History;
 import com.dpdocter.beans.MailAttachment;
@@ -33,9 +35,14 @@ import com.dpdocter.beans.MedicalData;
 import com.dpdocter.beans.MedicalHistoryHandler;
 import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.Prescription;
+import com.dpdocter.beans.PrescriptionItem;
+import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.Records;
+import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.collections.ClinicalNotesCollection;
+import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DiseasesCollection;
+import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.NotesCollection;
 import com.dpdocter.collections.PatientTreatmentCollection;
@@ -48,7 +55,9 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.ClinicalNotesRepository;
+import com.dpdocter.repository.DiagnosticTestRepository;
 import com.dpdocter.repository.DiseasesRepository;
+import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.NotesRepository;
@@ -62,6 +71,7 @@ import com.dpdocter.response.DiseaseAddEditResponse;
 import com.dpdocter.response.DiseaseListResponse;
 import com.dpdocter.response.HistoryDetailsResponse;
 import com.dpdocter.response.PatientTreatmentResponse;
+import com.dpdocter.response.TestAndRecordDataResponse;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.MailService;
@@ -91,6 +101,9 @@ public class HistoryServicesImpl implements HistoryServices {
     private PrescriptionServices prescriptionServices;
 
     @Autowired
+    private DrugRepository drugRepository;
+
+    @Autowired
     private PatientTreatmentServices patientTreatmentServices;
 
     @Autowired
@@ -104,6 +117,9 @@ public class HistoryServicesImpl implements HistoryServices {
 
     @Autowired
     private PrescriptionRepository prescriptionRepository;
+
+    @Autowired
+    private DiagnosticTestRepository diagnosticTestRepository;
 
     @Autowired
     private PatientTreamentRepository patientTreamentRepository;
@@ -380,9 +396,43 @@ public class HistoryServicesImpl implements HistoryServices {
 		prescriptionCollection.setInHistory(true);
 		prescriptionRepository.save(prescriptionCollection);
 		response = new Prescription();
+		List<TestAndRecordData> tests = prescriptionCollection.getDiagnosticTests();
+		prescriptionCollection.setDiagnosticTests(null);
 		BeanUtil.map(prescriptionCollection, response);
+		if (prescriptionCollection.getItems() != null) {
+		List<PrescriptionItemDetail> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetail>();
+		for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
+		    PrescriptionItemDetail prescriptionItemDetails = new PrescriptionItemDetail();
+		    BeanUtil.map(prescriptionItem, prescriptionItemDetails);
+		    if (prescriptionItem.getDrugId() != null) {
+			DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
+			Drug drug = new Drug();
+			if (drugCollection != null)
+			    BeanUtil.map(drugCollection, drug);
+			prescriptionItemDetails.setDrug(drug);
+		    }
+		    prescriptionItemDetailsList.add(prescriptionItemDetails);
+		}
+		response.setItems(prescriptionItemDetailsList);
 	    }
-
+		PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(response.getId());
+		if (patientVisitCollection != null) response.setVisitId(patientVisitCollection.getId());
+		
+		if(tests != null && !tests.isEmpty()){
+			List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
+		    	for(TestAndRecordData data : tests){
+		    		if(data.getTestId() != null){
+		    			DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(data.getTestId());
+			    		DiagnosticTest diagnosticTest = new DiagnosticTest();
+			    		if(diagnosticTestCollection !=null){
+			    			BeanUtil.map(diagnosticTestCollection, diagnosticTest);
+			    		}
+			    		diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
+		    		}
+		    }
+		    	response.setDiagnosticTests(diagnosticTests);
+	    }
+	   }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
@@ -739,8 +789,43 @@ public class HistoryServicesImpl implements HistoryServices {
 			    prescriptionCollection.setUpdatedTime(new Date());
 			    prescriptionRepository.save(prescriptionCollection);
 			    response = new Prescription();
-			    BeanUtil.map(prescriptionCollection, response);
-			}
+				List<TestAndRecordData> tests = prescriptionCollection.getDiagnosticTests();
+				prescriptionCollection.setDiagnosticTests(null);
+				BeanUtil.map(prescriptionCollection, response);
+				if (prescriptionCollection.getItems() != null) {
+				List<PrescriptionItemDetail> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetail>();
+				for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
+				    PrescriptionItemDetail prescriptionItemDetails = new PrescriptionItemDetail();
+				    BeanUtil.map(prescriptionItem, prescriptionItemDetails);
+				    if (prescriptionItem.getDrugId() != null) {
+					DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
+					Drug drug = new Drug();
+					if (drugCollection != null)
+					    BeanUtil.map(drugCollection, drug);
+					prescriptionItemDetails.setDrug(drug);
+				    }
+				    prescriptionItemDetailsList.add(prescriptionItemDetails);
+				}
+				response.setItems(prescriptionItemDetailsList);
+			    }
+				PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(response.getId());
+				if (patientVisitCollection != null) response.setVisitId(patientVisitCollection.getId());
+				
+				if(tests != null && !tests.isEmpty()){
+					List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
+				    	for(TestAndRecordData data : tests){
+				    		if(data.getTestId() != null){
+				    			DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(data.getTestId());
+					    		DiagnosticTest diagnosticTest = new DiagnosticTest();
+					    		if(diagnosticTestCollection !=null){
+					    			BeanUtil.map(diagnosticTestCollection, diagnosticTest);
+					    		}
+					    		diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
+				    		}
+				    }
+				    	response.setDiagnosticTests(diagnosticTests);
+			    }
+			   }
 		    } else {
 			logger.warn("This prescription is not found for this patient to remove.");
 			throw new BusinessException(ServiceError.NoRecord, "This prescription is not found for this patient to remove.");

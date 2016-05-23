@@ -262,6 +262,7 @@ public class ContactsServiceImpl implements ContactsService {
 		    PatientCard patientCard = new PatientCard();
 		    BeanUtil.map(patientCollection, patientCard);
 		    BeanUtil.map(userCollection, patientCard);
+		    patientCard.setUserId(userCollection.getId());
 		    patientCard.setImageUrl(patientCollection.getImageUrl());
 		    patientCard.setThumbnailUrl(patientCollection.getThumbnailUrl());
 		    patientCard.setGroups(groups);
@@ -329,6 +330,7 @@ public class ContactsServiceImpl implements ContactsService {
 			    PatientCard patientCard = new PatientCard();
 			    BeanUtil.map(patientCollection, patientCard);
 			    BeanUtil.map(userCollection, patientCard);
+			    patientCard.setUserId(userCollection.getId());
 			    patientCard.setGroups(groups);
 			    patientCard.setDoctorSepecificPatientId(patientCollection.getUserId());
 			    patientCard.setImageUrl(patientCollection.getImageUrl());

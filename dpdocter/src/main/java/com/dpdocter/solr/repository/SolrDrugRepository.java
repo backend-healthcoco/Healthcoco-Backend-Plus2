@@ -20,7 +20,7 @@ public interface SolrDrugRepository extends SolrCrudRepository<SolrDrugDocument,
     @Query("updatedTime: {?0 TO *} AND ( discarded: ?1 OR discarded:false)")
     public List<SolrDrugDocument> getCustomGlobalDrugs(Date date, boolean discarded, Sort sort);
 
-    @Query("updatedTime: {?0 TO *} AND (discarded: ?1 OR discarded:false) AND (drugName:?2* OR explanation:?2* OR drugCode:?2*)")
+    @Query("updatedTime: {?0 TO *} AND (discarded: ?1 OR discarded:false) AND drugName:?2")
     public List<SolrDrugDocument> getCustomGlobalDrugs(Date date, boolean discarded, String searchTerm, Pageable pageRequest);
 
     @Query("updatedTime: {?0 TO *} AND discarded:false AND (drugName:?2* OR explanation:?2* OR drugCode:?2*)")

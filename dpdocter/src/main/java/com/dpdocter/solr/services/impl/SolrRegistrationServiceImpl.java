@@ -16,7 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.solr.core.SolrTemplate;
-import org.springframework.data.solr.core.geo.GeoLocation;
+import org.springframework.data.solr.core.geo.Point;
 import org.springframework.data.solr.core.query.Criteria;
 import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.stereotype.Service;
@@ -27,8 +27,6 @@ import com.dpdocter.beans.ClinicProfile;
 import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.DoctorExperience;
 import com.dpdocter.beans.DoctorGeneralInfo;
-import com.dpdocter.beans.WorkingHours;
-import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.enums.AdvancedSearchType;
 import com.dpdocter.enums.Resource;
@@ -558,7 +556,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 		request.setYears(request.getDob().getYears() + "");
 	    }
 	    if (request.getLatitude() != null && request.getLongitude() != null) {
-		request.setGeoLocation(new GeoLocation(request.getLatitude(), request.getLongitude()));
+		request.setGeoLocation(new Point(request.getLatitude(), request.getLongitude()));
 	    }
 	    solrDoctorRepository.save(request);
 	    transnationalService.addResource(request.getUserId(), Resource.DOCTOR, true);
@@ -772,7 +770,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 		BeanUtil.map(doctorLocation, doctorDocument);
 		doctorDocument.setId(id);
 		if (doctorLocation.getLatitude() != null && doctorLocation.getLongitude() != null) {
-		    doctorDocument.setGeoLocation(new GeoLocation(doctorLocation.getLatitude(), doctorLocation.getLongitude()));
+		    doctorDocument.setGeoLocation(new Point(doctorLocation.getLatitude(), doctorLocation.getLongitude()));
 		}
 		solrDoctorRepository.save(doctorDocument);
 		transnationalService.addResource(doctorLocation.getLocationId(), Resource.LOCATION, true);

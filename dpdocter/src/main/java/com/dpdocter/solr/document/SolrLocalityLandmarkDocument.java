@@ -2,7 +2,7 @@ package com.dpdocter.solr.document;
 
 import org.apache.solr.client.solrj.beans.Field;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.solr.core.geo.GeoLocation;
+import org.springframework.data.solr.core.geo.Point;
 import org.springframework.data.solr.core.mapping.SolrDocument;
 
 @SolrDocument(solrCoreName = "localitiesAndLandmarks")
@@ -26,7 +26,7 @@ public class SolrLocalityLandmarkDocument {
 
     @SuppressWarnings("deprecation")
     @Field
-    private GeoLocation geoLocation;
+    private Point geoLocation;
 
     @Field
     private double latitude;
@@ -66,11 +66,11 @@ public class SolrLocalityLandmarkDocument {
 	this.landmark = landmark;
     }
     
-    public GeoLocation getGeoLocation() {
+    public Point getGeoLocation() {
 	return geoLocation;
     }
 
-    public void setGeoLocation(GeoLocation geoLocation) {
+    public void setGeoLocation(Point geoLocation) {
 	this.geoLocation = geoLocation;
     }
 

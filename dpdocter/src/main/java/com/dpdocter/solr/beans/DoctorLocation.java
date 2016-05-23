@@ -1,15 +1,9 @@
 package com.dpdocter.solr.beans;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.solr.client.solrj.beans.Field;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.solr.core.geo.GeoLocation;
-
-import com.dpdocter.beans.WorkingHours;
-import com.dpdocter.beans.WorkingSchedule;
-import com.dpdocter.enums.Day;
+import org.springframework.data.solr.core.geo.Point;
 
 public class DoctorLocation {
     @Field
@@ -37,7 +31,7 @@ public class DoctorLocation {
     private String websiteUrl;
 
     @Field
-    private GeoLocation geoLocation;
+    private Point geoLocation;
 
     @Field
     private Double latitude;
@@ -269,11 +263,11 @@ public class DoctorLocation {
 	this.specialization = specialization;
     }
 
-    public GeoLocation getGeoLocation() {
+    public Point getGeoLocation() {
 	return geoLocation;
     }
 
-    public void setGeoLocation(GeoLocation geoLocation) {
+    public void setGeoLocation(Point geoLocation) {
 	this.geoLocation = geoLocation;
     }
 

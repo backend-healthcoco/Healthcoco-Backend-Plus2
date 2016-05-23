@@ -10,6 +10,9 @@
 	<profiles>
 		<profile>
 			<id>local</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -30,9 +33,6 @@
 		</profile>
 		<profile>
 			<id>stagging</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -251,7 +251,85 @@
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-solr</artifactId>
 			<version>1.2.6.RELEASE</version>
-		</dependency>
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>solr-solrj</artifactId> -->
+<!-- 					<groupId>org.apache.solr</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!--   			<groupId>org.apache.solr</groupId> -->
+<!-- 			<artifactId>solr-core</artifactId> -->
+<!-- 			<version>6.0.0</version> -->
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jetty-security</artifactId> -->
+<!-- 					<groupId>org.eclipse.jetty</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jetty-servlet</artifactId> -->
+<!-- 					<groupId>org.eclipse.jetty</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jetty-http</artifactId> -->
+<!-- 					<groupId>org.eclipse.jetty</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jetty-deploy</artifactId> -->
+<!-- 					<groupId>org.eclipse.jetty</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jetty-jmx</artifactId> -->
+<!-- 					<groupId>org.eclipse.jetty</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jetty-xml</artifactId> -->
+<!-- 					<groupId>org.eclipse.jetty</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jetty-servlets</artifactId> -->
+<!-- 					<groupId>org.eclipse.jetty</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jetty-io</artifactId> -->
+<!-- 					<groupId>org.eclipse.jetty</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jetty-webapp</artifactId> -->
+<!-- 					<groupId>org.eclipse.jetty</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jetty-util</artifactId> -->
+<!-- 					<groupId>org.eclipse.jetty</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jetty-server</artifactId> -->
+<!-- 					<groupId>org.eclipse.jetty</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jetty-continuation</artifactId> -->
+<!-- 					<groupId>org.eclipse.jetty</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jetty-rewrite</artifactId> -->
+<!-- 					<groupId>org.eclipse.jetty</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>javax.servlet-api</artifactId> -->
+<!-- 					<groupId>javax.servlet</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>solr-solrj</artifactId> -->
+<!-- 					<groupId>org.apache.solr</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!--     <groupId>org.apache.solr</groupId> -->
+<!--     <artifactId>solr-solrj</artifactId> -->
+<!--     <version>5.5.1</version> -->
+</dependency>
 		<!-- Log4j -->
 		<dependency>
 			<groupId>log4j</groupId>

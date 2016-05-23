@@ -21,7 +21,7 @@ public interface UserRepository extends MongoRepository<UserCollection, String> 
     @Query("{'emailAddress' : {$regex : '^?0$', $options : 'i'}}")
     public List<UserCollection> findByEmailAddressIgnoreCase(String emailAddress);
 
-    @Query("{'firstName':?0,'emailAddress':?3,'mobileNumber':?4}")
+    @Query("{'firstName':?0,'emailAddress':?1,'mobileNumber':?2}")
     public UserCollection checkPatient(String firstName, String emailAddress, String mobileNumber);
 
     @Query("{'mobileNumber':?0}")

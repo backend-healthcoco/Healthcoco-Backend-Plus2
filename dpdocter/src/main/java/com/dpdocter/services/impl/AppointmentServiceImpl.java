@@ -358,13 +358,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    if (userCollection != null && locationCollection != null && patient != null) {
 			UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(appointmentCollection.getDoctorId(), appointmentCollection.getLocationId());
 	        DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
-	    	
-//		    SimpleDateFormat sdf = new SimpleDateFormat();
-//			if(clinicProfileCollection != null)sdf.setTimeZone(TimeZone.getTimeZone(clinicProfileCollection.getTimeZone()));
-//			else sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-//		    if(request.getFromDate() != null)request.setFromDate(new Date(sdf.format(request.getFromDate())));
-//		    if(request.getToDate() != null)request.setToDate(new Date(sdf.format(request.getToDate())));
-		    
+	    
 		    AppointmentCollection appointmentCollectionToCheck = null;
 		    if (request.getState().equals(AppointmentState.RESCHEDULE))
 			appointmentCollectionToCheck = appointmentRepository.findAppointmentbyUserLocationIdTimeDate(appointmentCollection.getDoctorId(),
@@ -406,6 +400,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    	if(bookedSlotCollection != null) {
 			    		bookedSlotCollection.setFromDate(appointmentCollection.getFromDate());
 			    		bookedSlotCollection.setToDate(appointmentCollection.getToDate());
+			    		bookedSlotCollection.setTime(request.getTime());
 					    bookedSlotCollection.setUpdatedTime(new Date());
 			    		appointmentBookedSlotRepository.save(bookedSlotCollection);
 			    	}
@@ -463,10 +458,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    }
 		    response = new Appointment();
 		    BeanUtil.map(appointmentCollection, response);
-//		    if(appointmentCollection.getFromDate() != null)response.setFromDate(new Date(sdf.format(appointmentCollection.getFromDate())));
-//			if(appointmentCollection.getToDate() != null)response.setToDate(new Date(sdf.format(appointmentCollection.getToDate())));
 			PatientCard patientCard = new PatientCard();
 	    	BeanUtil.map(patient, patientCard);
+	    	patientCard.setUserId(patient.getId());
 	    	response.setPatient(patientCard);
 		     
 		    if(appointmentCollection.getState().getState().equalsIgnoreCase(AppointmentState.CONFIRM.getState())){
@@ -505,25 +499,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 		LocationCollection locationCollection = locationRepository.findOne(request.getLocationId());
 		UserCollection patient = userRepository.findOne(request.getPatientId());
 	    AppointmentCollection appointmentCollection = appointmentRepository.findAppointmentbyUserLocationIdTimeDate(request.getDoctorId(), request.getLocationId(), request.getTime().getFromTime(), request.getTime().getToTime(), request.getFromDate(), request.getToDate(), AppointmentState.CANCEL.getState());
-////	    Aggregation.match((Criteria.where("userId").is(request.getDoctorId()).and("locationId").is(request.getDoctorId()))),
-	    
-	    
-	    
-//	    Aggregation aggregation = Aggregation.newAggregation(
-//				Aggregation.lookup("doctor_clinic_profile_cl",("_id").toString()
-//						, "userLocationId", "clinicProfile")
-//				new CustomAggregationOperation(
-//				        new BasicDBObject(
-//				            "$lookup",
-//				            new BasicDBObject("from", "doctor_clinic_profile_cl")
-//				                .append("localField","id")
-//				                .append("foreignField", "userLocationId")
-//				                .append("as", "clinicProfile")
-//				        ))
-//				    );
-	    
-//	    AggregationResults<UserLocationCollection> groupResults = mongoTemplate.aggregate(aggregation, UserLocationCollection.class, UserLocationCollection.class);
-//	    List<UserLocationCollection> results = groupResults.getMappedResults();
 
 	    userLocationCollection = userLocationRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
         clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
@@ -598,10 +573,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    if (appointmentCollection != null) {
 				response = new Appointment();
 				BeanUtil.map(appointmentCollection, response);
-//				if(appointmentCollection.getFromDate() != null)response.setFromDate(new Date(sdf.format(appointmentCollection.getFromDate())));
-//				if(appointmentCollection.getToDate() != null)response.setToDate(new Date(sdf.format(appointmentCollection.getToDate())));
 				PatientCard patientCard = new PatientCard();
 		    	BeanUtil.map(patient, patientCard);
+		    	patientCard.setUserId(patient.getId());
 		    	response.setPatient(patientCard);
 			    }
 			    
@@ -804,6 +778,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    		UserCollection userCollection = userRepository.findOne(collection.getPatientId());
 		    		patient = new PatientCard();
 			    	BeanUtil.map(userCollection, patient);
+			    	patient.setUserId(patient.getId());
 		    	}		    	
 		    	BeanUtil.map(collection, appointment);
 		    	appointment.setPatient(patient);
@@ -912,16 +887,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    			appointment.setClinicAddress(address);
 			    			appointment.setLatitude(locationCollection.getLatitude());
 			    			appointment.setLongitude(locationCollection.getLongitude());
-			    			UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(appointment.getDoctorId(), appointment.getLocationId());
-			    			if(userLocationCollection != null){
-			    				DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
-				    	    	
-				    		    SimpleDateFormat sdf = new SimpleDateFormat();
-				    			if(clinicProfileCollection != null)sdf.setTimeZone(TimeZone.getTimeZone(clinicProfileCollection.getTimeZone()));
-				    			else sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-				    		    if(appointment.getFromDate() != null)appointment.setFromDate(new Date(sdf.format(appointment.getFromDate())));
-				    		    if(appointment.getToDate() != null)appointment.setToDate(new Date(sdf.format(appointment.getToDate())));    
-			    			}
 			    		}
 			    	}
 			    	response.add(appointment);
