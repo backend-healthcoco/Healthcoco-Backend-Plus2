@@ -282,8 +282,8 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 	    if (!DPDoctorUtils.anyStringEmpty(location)) {
 			doctorSearchCriteria = doctorSearchCriteria.and("locationName").is(location);
 		   }
-	    if(booking)doctorSearchCriteria = doctorSearchCriteria.and("facility").is(DoctorFacility.BOOK.getType());
-	    if(calling)doctorSearchCriteria = doctorSearchCriteria.and("facility").is(DoctorFacility.CALL.getType());
+	    if(booking != null && booking)doctorSearchCriteria = doctorSearchCriteria.and("facility").is(DoctorFacility.BOOK.getType());
+	    if(calling != null && calling)doctorSearchCriteria = doctorSearchCriteria.and("facility").is(DoctorFacility.CALL.getType());
 		        
 	    if (!DPDoctorUtils.anyStringEmpty(symptom)) {
 		List<SolrSymptomsDocument> solrSymptomsDocuments = solrSymptomRepository.findAll(symptom);

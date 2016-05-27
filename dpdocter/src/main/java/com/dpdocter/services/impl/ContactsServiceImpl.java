@@ -633,7 +633,7 @@ public class ContactsServiceImpl implements ContactsService {
 		    }
 		    Patient patient = new Patient();
 		    BeanUtil.map(patientCollection, patient);
-		    patient.setPatientId(patientCollection.getId());
+		    patient.setPatientId(userCollection.getId());
 		    String referredBy = patientCollection.getReferredBy();
 		    patientCollection.setReferredBy(null);
 		    BeanUtil.map(patientCollection, registeredPatientDetail);
@@ -679,7 +679,6 @@ public class ContactsServiceImpl implements ContactsService {
 		    registeredPatientDetails.add(registeredPatientDetail);
 		}
 	    }
-
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
