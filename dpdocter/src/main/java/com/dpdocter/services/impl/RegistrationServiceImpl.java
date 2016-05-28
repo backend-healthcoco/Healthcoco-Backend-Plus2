@@ -74,6 +74,7 @@ import com.dpdocter.collections.UserLocationCollection;
 import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.enums.ColorCode;
 import com.dpdocter.enums.ColorCode.RandomEnum;
+import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.FeedbackType;
 import com.dpdocter.enums.Range;
 import com.dpdocter.enums.RoleEnum;
@@ -405,7 +406,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		BeanUtil.map(groupCollections, groups);
 	    }
 	    registeredPatientDetails.setGroups(groups);
-	    pushNotificationServices.notifyUser(patientCollection.getId(), "You are register");
+	    pushNotificationServices.notifyUser(patientCollection.getId(), "You are register", ComponentType.PATIENT.getType(), patientCollection.getUserId());
 	    if (userCollection.getMobileNumber() != null) {
 		SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 		smsTrackDetail.setDoctorId(patientCollection.getDoctorId());

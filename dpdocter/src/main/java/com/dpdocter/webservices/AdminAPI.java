@@ -15,11 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Resume;
 import com.dpdocter.beans.User;
+import com.dpdocter.response.DoctorResponse;
 import com.dpdocter.services.AdminServices;
 
 import common.util.web.Response;
@@ -63,26 +63,31 @@ public class AdminAPI {
 	public Response<Location> getClinics(@QueryParam(value = "page") int page, @QueryParam(value = "size") int size, @QueryParam(value = "hospitalId") String hospitalId){
 		
 		List<Location> locations = adminServices.getClinics(page, size, hospitalId);
-		if(locations != null && !locations.isEmpty()){
-			for(Location location : locations){
-				if (location.getImages() != null && !location.getImages().isEmpty()) {
-					for (ClinicImage clinicImage : location.getImages()) {
-					    if (clinicImage.getImageUrl() != null) {
-						clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl()));
-					    }
-					    if (clinicImage.getThumbnailUrl() != null) {
-						clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
-					    }
-					}
-				    }
-				    if (location.getLogoUrl() != null)
-				    	location.setLogoUrl(getFinalImageURL(location.getLogoUrl()));
-				    if (location.getLogoThumbnailUrl() != null)
-				    	location.setLogoThumbnailUrl(getFinalImageURL(location.getLogoThumbnailUrl()));
-			}
-		}
+		
 		Response<Location> response = new Response<Location>();
 		response.setDataList(locations);
+		return response;
+	}
+	
+	@Path(value = PathProxy.AdminUrls.GET_LABS)
+	@GET
+	public Response<Location> getLabs(@QueryParam(value = "page") int page, @QueryParam(value = "size") int size, @QueryParam(value = "hospitalId") String hospitalId){
+		
+		List<Location> locations = adminServices.getLabs(page, size, hospitalId);
+		
+		Response<Location> response = new Response<Location>();
+		response.setDataList(locations);
+		return response;
+	}
+	
+	@Path(value = PathProxy.AdminUrls.GET_DOCTORS)
+	@GET
+	public Response<DoctorResponse> getDoctors(@QueryParam(value = "page") int page, @QueryParam(value = "size") int size, @QueryParam(value = "locationId") String locationId){
+		
+		List<DoctorResponse> doctorResponses = adminServices.getDoctors(page, size, locationId);
+		
+		Response<DoctorResponse> response = new Response<DoctorResponse>();
+		response.setDataList(doctorResponses);
 		return response;
 	}
 	

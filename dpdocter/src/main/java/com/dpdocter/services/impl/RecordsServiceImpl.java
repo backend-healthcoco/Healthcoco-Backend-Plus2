@@ -212,9 +212,9 @@ public class RecordsServiceImpl implements RecordsService {
 	    }
 	    if(prescriptionCollection != null && prescriptionCollection.getDoctorId().equalsIgnoreCase(recordsCollection.getDoctorId()) &&
 	    		prescriptionCollection.getLocationId().equalsIgnoreCase(recordsCollection.getLocationId()) && prescriptionCollection.getHospitalId().equalsIgnoreCase(recordsCollection.getHospitalId()))
-	    pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId(), "Report:"+recordsCollection.getUniqueEmrId()+" is uploaded by lab");
+	    pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId(), "Report:"+recordsCollection.getUniqueEmrId()+" is uploaded by lab", ComponentType.REPORTS.getType(), recordsCollection.getId());
 
-	    pushNotificationServices.notifyUser(recordsCollection.getPatientId(), "Report:"+recordsCollection.getUniqueEmrId()+" is uploaded by lab");
+	    pushNotificationServices.notifyUser(recordsCollection.getPatientId(), "Report:"+recordsCollection.getUniqueEmrId()+" is uploaded by lab", ComponentType.REPORTS.getType(), recordsCollection.getId());
 	    Records records = new Records();
 	    BeanUtil.map(recordsCollection, records);
 
@@ -300,7 +300,7 @@ public class RecordsServiceImpl implements RecordsService {
 
 	    recordsCollection = recordsRepository.save(recordsCollection);
 
-	    pushNotificationServices.notifyUser(recordsCollection.getPatientId(), "Report:"+recordsCollection.getUniqueEmrId()+" is uploaded by lab");
+	    pushNotificationServices.notifyUser(recordsCollection.getPatientId(), "Report:"+recordsCollection.getUniqueEmrId()+" is uploaded by lab", ComponentType.REPORTS.getType(), recordsCollection.getId());
 
 	    BeanUtil.map(recordsCollection, records);
 	    return records;
@@ -536,7 +536,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    recordsRepository.save(recordsCollection);
 	    response = new Records();
 	    BeanUtil.map(recordsCollection, response);
-	    pushNotificationServices.notifyUser(recordsCollection.getPatientId(), "Report:"+recordsCollection.getUniqueEmrId()+" is discarded");
+	    pushNotificationServices.notifyUser(recordsCollection.getPatientId(), "Report:"+recordsCollection.getUniqueEmrId()+" is discarded", ComponentType.REPORTS.getType(), recordsCollection.getId());
 	} catch (BusinessException e) {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -931,11 +931,11 @@ public class RecordsServiceImpl implements RecordsService {
 		    
 		    if(prescriptionCollection != null && prescriptionCollection.getDoctorId().equalsIgnoreCase(recordsCollection.getDoctorId()) &&
 		    		prescriptionCollection.getLocationId().equalsIgnoreCase(recordsCollection.getLocationId()) && prescriptionCollection.getHospitalId().equalsIgnoreCase(recordsCollection.getHospitalId()))
-		    pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId(), "Report:"+recordsCollection.getUniqueEmrId()+" is uploaded by lab");
+		    pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId(), "Report:"+recordsCollection.getUniqueEmrId()+" is uploaded by lab", ComponentType.REPORTS.getType(), recordsCollection.getId());
 
 	    }
 	    
-	    pushNotificationServices.notifyUser(recordsCollection.getPatientId(), "Report:"+recordsCollection.getUniqueEmrId()+" is uploaded by lab");
+	    pushNotificationServices.notifyUser(recordsCollection.getPatientId(), "Report:"+recordsCollection.getUniqueEmrId()+" is uploaded by lab", ComponentType.REPORTS.getType(), recordsCollection.getId());
 
 	    recordsCollection = recordsRepository.save(recordsCollection);
 	    Records records = new Records();

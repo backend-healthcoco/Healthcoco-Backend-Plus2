@@ -15,6 +15,7 @@ import com.dpdocter.beans.Notification;
 import com.dpdocter.beans.UserDevice;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserDeviceCollection;
+import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.DeviceType;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
@@ -29,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gcm.server.Message;
 import com.google.android.gcm.server.Result;
 import com.google.android.gcm.server.Sender;
+import com.mongodb.BasicDBObject;
 import com.notnoop.apns.APNS;
 import com.notnoop.apns.ApnsService;
 
@@ -97,16 +99,16 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 
 	@Override
 	@Transactional
-	public Boolean notifyUser(String patientId, String message) {
+	public Boolean notifyUser(String patientId, String message, String type, String typeId) {
 		Boolean response = false;
 		try{
 			UserDeviceCollection userDeviceCollection = userDeviceRepository.findByUserId(patientId);
 			if(userDeviceCollection != null){
 				if(userDeviceCollection.getDeviceType() != null){
 					if(userDeviceCollection.getDeviceType().getType().equalsIgnoreCase(DeviceType.ANDROID.getType()))
-						pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(), message);
+						pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(), message, type, typeId);
 					else if(userDeviceCollection.getDeviceType().getType().equalsIgnoreCase(DeviceType.IOS.getType()))
-						pushNotificationOnIosDevices(userDeviceCollection.getDeviceId(), message);
+						pushNotificationOnIosDevices(userDeviceCollection.getDeviceId(), message, type, typeId);
 				}
 			}
 		} catch (Exception e) {
@@ -117,16 +119,25 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 		return response;
 	}
 	
-	public void pushNotificationOnAndroidDevices(String deviceId, String message) {
+	public void pushNotificationOnAndroidDevices(String deviceId, String message, String type, String typeId) {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			Sender sender = new Sender(GEOCODING_SERVICES_API_KEY);
 
-				Notification notification = new Notification();
-				notification.setNotificationType("Healthcoco");
-				notification.setText(message);
+//				Notification notification = new Notification();
+//				notification.setNotificationType("Healthcoco");
+//				notification.setText(message);
 
-					String jsonOutput = mapper.writeValueAsString(notification);
+			BasicDBObject basicDBObject = new BasicDBObject();
+			basicDBObject.put("type", "Healthcoco");
+			basicDBObject.put("text", message);
+			if(!DPDoctorUtils.anyStringEmpty(type)){
+				if(type.equalsIgnoreCase(ComponentType.PRESCRIPTIONS.getType()))basicDBObject.put("rxId", typeId);
+				else if(type.equalsIgnoreCase(ComponentType.REPORTS.getType()))basicDBObject.put("rId", typeId);
+				else if(type.equalsIgnoreCase(ComponentType.PATIENT.getType()))basicDBObject.put("pId", typeId);
+				else if(type.equalsIgnoreCase(ComponentType.DOCTOR.getType()))basicDBObject.put("drId", typeId);
+			}
+					String jsonOutput = mapper.writeValueAsString(basicDBObject);
 					Message messageObj = new Message.Builder().timeToLive(30)
 							.delayWhileIdle(true)
 							.addData("message", jsonOutput).build();
@@ -140,7 +151,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 		}
 	}
 	
-	public void pushNotificationOnIosDevices(String deviceId, String message) {
+	public void pushNotificationOnIosDevices(String deviceId, String message, String type, String typeId) {
 		try {
 			ApnsService service = APNS
 					.newService()
@@ -149,7 +160,12 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 					.build();
 			Map<String, Object> customValues = new HashMap<String, Object>();
 			customValues.put("type", "Healthcoco");
-			
+			if(!DPDoctorUtils.anyStringEmpty(type)){
+				if(type.equalsIgnoreCase(ComponentType.PRESCRIPTIONS.getType()))customValues.put("rxId", typeId);
+				else if(type.equalsIgnoreCase(ComponentType.REPORTS.getType()))customValues.put("rId", typeId);
+				else if(type.equalsIgnoreCase(ComponentType.PATIENT.getType()))customValues.put("pId", typeId);
+				else if(type.equalsIgnoreCase(ComponentType.DOCTOR.getType()))customValues.put("drId", typeId);
+			}
 					String payload = APNS.newPayload()
 							.alertBody(message)
 							.sound(iosNotificationSoundFilepath)

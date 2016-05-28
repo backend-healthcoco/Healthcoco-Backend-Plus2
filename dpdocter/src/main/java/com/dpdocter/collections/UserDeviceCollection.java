@@ -23,6 +23,9 @@ public class UserDeviceCollection extends GenericCollection{
     private String deviceId;
 
     @Field
+    private String pushToken;
+
+    @Field
     private RoleEnum role;
     
 	public String getId() {
@@ -65,9 +68,18 @@ public class UserDeviceCollection extends GenericCollection{
 		this.role = role;
 	}
 
+	public String getPushToken() {
+		return pushToken;
+	}
+
+	public void setPushToken(String pushToken) {
+		this.pushToken = pushToken;
+	}
+
 	@Override
 	public String toString() {
 		return "UserDeviceCollection [id=" + id + ", userId=" + userId + ", deviceType=" + deviceType + ", deviceId="
-				+ deviceId + ", role=" + role + "]";
+				+ deviceId + ", pushToken=" + pushToken + ", role=" + role + "]";
 	}
+
 }

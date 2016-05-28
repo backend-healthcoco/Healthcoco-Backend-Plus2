@@ -5,18 +5,25 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.solr.core.geo.GeoLocation;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Hospital;
@@ -46,6 +53,7 @@ import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.ResumeRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.response.DoctorResponse;
 import com.dpdocter.services.AdminServices;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.LocationServices;
@@ -59,6 +67,7 @@ import com.dpdocter.solr.repository.SolrDrugRepository;
 import com.dpdocter.solr.repository.SolrEducationInstituteRepository;
 import com.dpdocter.solr.repository.SolrEducationQualificationRepository;
 import com.dpdocter.solr.services.SolrCityService;
+import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 
@@ -118,6 +127,12 @@ public class AdminServicesImpl implements AdminServices {
     @Autowired
     private DrugTypeRepository drugTypeRepository;
 
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    @Value(value = "${image.path}")
+    private String imagePath;
+
 	@Override
 	@Transactional
 	public List<User> getInactiveUsers(int page, int size) {
@@ -165,16 +180,32 @@ public class AdminServicesImpl implements AdminServices {
 		try{
 			List<LocationCollection> locationCollections = null;
 			if(DPDoctorUtils.anyStringEmpty(hospitalId)){
-				if(size > 0)locationCollections = locationRepository.findAll(new PageRequest(page, size, Direction.DESC, "createdTime")).getContent();
-				else locationCollections = locationRepository.findAll(new Sort(Direction.DESC, "createdTime"));
+				if(size > 0)locationCollections = locationRepository.findClinics(true, new PageRequest(page, size, Direction.DESC, "createdTime"));
+				else locationCollections = locationRepository.findClinics(true, new Sort(Direction.DESC, "createdTime"));
 			}else{
-				if(size > 0)locationCollections = locationRepository.find(hospitalId, new PageRequest(page, size, Direction.DESC, "createdTime"));
-				else locationCollections = locationRepository.find(hospitalId, new Sort(Direction.DESC, "createdTime"));
+				if(size > 0)locationCollections = locationRepository.findClinics(hospitalId, true, new PageRequest(page, size, Direction.DESC, "createdTime"));
+				else locationCollections = locationRepository.findClinics(hospitalId, true, new Sort(Direction.DESC, "createdTime"));
 			}
 			if(locationCollections != null){
 				response = new ArrayList<Location>();
-				BeanUtil.map(locationCollections, response);
-			}
+//				for(LocationCollection location : locationCollections){
+//						if (location.getImages() != null && !location.getImages().isEmpty()) {
+//							for (ClinicImage clinicImage : location.getImages()) {
+//							    if (clinicImage.getImageUrl() != null) {
+//								clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl()));
+//							    }
+//							    if (clinicImage.getThumbnailUrl() != null) {
+//								clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
+//							    }
+//							}
+//						    }
+//						    if (location.getLogoUrl() != null)
+//						    	location.setLogoUrl(getFinalImageURL(location.getLogoUrl()));
+//						    if (location.getLogoThumbnailUrl() != null)
+//						    	location.setLogoThumbnailUrl(getFinalImageURL(location.getLogoThumbnailUrl()));
+//					}
+					BeanUtil.map(locationCollections, response);
+				}
 		}catch(Exception e){
 			logger.error("Error while getting clinics "+ e.getMessage());
 			e.printStackTrace();
@@ -467,6 +498,90 @@ public class AdminServicesImpl implements AdminServices {
 		    }
 		}
 		System.out.println("Education Qualification done");				
+	}
+	private String getFinalImageURL(String imageURL) {
+		if (imageURL != null) {
+		    return imagePath + imageURL;
+		} else
+		    return null;
+	    }
+
+	@Override
+	public List<DoctorResponse> getDoctors(int page, int size, String locationId) {
+		List<DoctorResponse> response = null;
+		try{
+			 Aggregation aggregation = null;
+			 if(size > 0){
+				 if(DPDoctorUtils.anyStringEmpty(locationId)){
+					 aggregation = Aggregation.newAggregation(new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
+						              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))),Aggregation.skip((page) * size), Aggregation.limit(size));
+				 }else{
+					 aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("locationId").is(locationId)), new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
+				              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))),Aggregation.skip((page) * size), Aggregation.limit(size));
+				 }
+			 }else{
+				 if(DPDoctorUtils.anyStringEmpty(locationId)){
+					 aggregation = Aggregation.newAggregation(new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
+						              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))));
+				 }else{
+					 aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("locationId").is(locationId)), new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
+				              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))));
+				 }
+			 }
+			 Aggregation.newAggregation(new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
+				              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))));
+	    AggregationResults<UserCollection> results = mongoTemplate.aggregate(aggregation, UserCollection.class, UserCollection.class);
+	    List<UserCollection> userCollections = results.getMappedResults();
+	    if(userCollections != null){
+	    	response = new ArrayList<DoctorResponse>();
+	    	BeanUtil.map(userCollections, response);
+	    }
+		}catch(Exception e){
+			logger.error("Error while getting doctors "+ e.getMessage());
+			e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown,"Error while getting doctors "+ e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public List<Location> getLabs(int page, int size, String hospitalId) {
+		List<Location> response = null;
+		try{
+			List<LocationCollection> locationCollections = null;
+			if(DPDoctorUtils.anyStringEmpty(hospitalId)){
+				if(size > 0)locationCollections = locationRepository.findLabs(true, new PageRequest(page, size, Direction.DESC, "createdTime"));
+				else locationCollections = locationRepository.findLabs(true, new Sort(Direction.DESC, "createdTime"));
+			}else{
+				if(size > 0)locationCollections = locationRepository.findLabs(hospitalId, true, new PageRequest(page, size, Direction.DESC, "createdTime"));
+				else locationCollections = locationRepository.findLabs(hospitalId, true, new Sort(Direction.DESC, "createdTime"));
+			}
+			if(locationCollections != null){
+				response = new ArrayList<Location>();
+//				for(LocationCollection location : locationCollections){
+//						if (location.getImages() != null && !location.getImages().isEmpty()) {
+//							for (ClinicImage clinicImage : location.getImages()) {
+//							    if (clinicImage.getImageUrl() != null) {
+//								clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl()));
+//							    }
+//							    if (clinicImage.getThumbnailUrl() != null) {
+//								clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
+//							    }
+//							}
+//						    }
+//						    if (location.getLogoUrl() != null)
+//						    	location.setLogoUrl(getFinalImageURL(location.getLogoUrl()));
+//						    if (location.getLogoThumbnailUrl() != null)
+//						    	location.setLogoThumbnailUrl(getFinalImageURL(location.getLogoThumbnailUrl()));
+//					}
+					BeanUtil.map(locationCollections, response);
+				}
+		}catch(Exception e){
+			logger.error("Error while getting clinics "+ e.getMessage());
+			e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown,"Error while getting inactive clinics "+ e.getMessage());
+		}
+		return response;
 	}
 
 }

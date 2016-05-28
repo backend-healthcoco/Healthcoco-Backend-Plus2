@@ -631,7 +631,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		   response.setDiagnosticTests(tests);
 		}
 	    response.setVisitId(request.getVisitId());
-	    pushNotificationServices.notifyUser(prescriptionCollection.getPatientId(), "Prescription:"+prescriptionCollection.getUniqueEmrId()+" is added by doctor");
+	    pushNotificationServices.notifyUser(prescriptionCollection.getPatientId(), "Prescription:"+prescriptionCollection.getUniqueEmrId()+" is added by doctor", ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId());
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Prescription");
@@ -736,7 +736,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    }
 		   response.setDiagnosticTests(tests);
 		}
-	    pushNotificationServices.notifyUser(prescriptionCollection.getPatientId(), "Prescription:"+prescriptionCollection.getUniqueEmrId()+" is edited by doctor");
+	    pushNotificationServices.notifyUser(prescriptionCollection.getPatientId(), "Prescription:"+prescriptionCollection.getUniqueEmrId()+" is edited by doctor", ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId());
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Prescription");
@@ -798,7 +798,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    	response.setDiagnosticTests(diagnosticTests);
 			}
 
-			pushNotificationServices.notifyUser(patientId, "Prescription:"+prescriptionCollection.getUniqueEmrId()+" is discarded");
+			pushNotificationServices.notifyUser(patientId, "Prescription:"+prescriptionCollection.getUniqueEmrId()+" is discarded", ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId());
 		    } else {
 			logger.warn("Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");
 			throw new BusinessException(ServiceError.NotAuthorized, "Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");
@@ -861,7 +861,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		else
 		    prescriptionCollections = prescriptionRepository.getPrescription(patientId, new Date(createdTimestamp), discards, inHistorys, new Sort(
 			    Sort.Direction.DESC, "createdTime"));
-	    pushNotificationServices.notifyUser(patientId, "Global records");
+	    pushNotificationServices.notifyUser(patientId, "Global records", null, null);
 	    }
 
 	    if (prescriptionCollections != null) {
@@ -1547,7 +1547,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	switch (PrescriptionItems.valueOf(type.toUpperCase())) {
 
-	case DRUG: {
+	case DRUGS: {
 
 	    switch (Range.valueOf(range.toUpperCase())) {
 

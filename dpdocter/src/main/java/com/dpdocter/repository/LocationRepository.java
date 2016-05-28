@@ -14,9 +14,27 @@ import com.dpdocter.collections.LocationCollection;
 public interface LocationRepository extends MongoRepository<LocationCollection, String> {
 
 	@Query("{'hospitalId':?0}")
-	List<LocationCollection> find(String hospitalId, Pageable pageRequest);
+	List<LocationCollection> findClinics(String hospitalId, boolean isClinic, Pageable pageRequest);
 
 	@Query("{'hospitalId':?0}")
-	List<LocationCollection> find(String hospitalId, Sort sort);
+	List<LocationCollection> findClinics(String hospitalId, boolean isClinic, Sort sort);
+
+	@Query("{'isClinic':?0}")
+	List<LocationCollection> findClinics(boolean isClinic, Pageable pageRequest);
+
+	@Query("{'isClinic':?0}")
+	List<LocationCollection> findClinics(boolean isClinic, Sort sort);
+
+	@Query("{'hospitalId':?0}")
+	List<LocationCollection> findLabs(String hospitalId, boolean isLab, Pageable pageRequest);
+
+	@Query("{'hospitalId':?0}")
+	List<LocationCollection> findLabs(String hospitalId, boolean isLab, Sort sort);
+
+	@Query("{'isLab':?0}")
+	List<LocationCollection> findLabs(boolean isLab, Pageable pageRequest);
+
+	@Query("{'isLab':?0}")
+	List<LocationCollection> findLabs(boolean isLab, Sort sort);
 
 }

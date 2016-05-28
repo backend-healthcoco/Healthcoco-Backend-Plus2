@@ -732,6 +732,10 @@ public interface PathProxy {
 
 	public static final String GET_CLINICS = "/clinics";
 
+	public static final String GET_LABS = "/labs";
+	
+	public static final String GET_DOCTORS = "/doctors";
+	
 //	public static final String GET_USERS = "/users/{locationId}/{hospitalId}"; this API is in RegsiterAPI
 
 //	public static final String GET_FEEDBACKS = "/feedbacks"; API is already there
