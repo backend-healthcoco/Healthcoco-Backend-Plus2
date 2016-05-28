@@ -16,7 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.solr.core.SolrTemplate;
-import org.springframework.data.solr.core.geo.Point;
+import org.springframework.data.solr.core.geo.GeoLocation;
 import org.springframework.data.solr.core.query.Criteria;
 import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.stereotype.Service;
@@ -544,7 +544,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
     public boolean addDoctor(SolrDoctorDocument request) {
 	boolean response = false;
 	try {
-	    SolrDoctorDocument doctorDocument = solrDoctorRepository.findByUserIdAndLocationId(request.getUserId(), request.getLocationId());
+	    SolrDoctorDocument doctorDocument = null;//solrDoctorRepository.findByUserIdAndLocationId(request.getUserId(), request.getLocationId());
 	    if (doctorDocument != null)
 		request.setId(doctorDocument.getId());
 	    else
@@ -556,7 +556,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 		request.setYears(request.getDob().getYears() + "");
 	    }
 	    if (request.getLatitude() != null && request.getLongitude() != null) {
-		request.setGeoLocation(new Point(request.getLatitude(), request.getLongitude()));
+		request.setGeoLocation(new GeoLocation(request.getLatitude(), request.getLongitude()));
 	    }
 	    solrDoctorRepository.save(request);
 	    transnationalService.addResource(request.getUserId(), Resource.DOCTOR, true);
@@ -770,7 +770,7 @@ public class SolrRegistrationServiceImpl implements SolrRegistrationService {
 		BeanUtil.map(doctorLocation, doctorDocument);
 		doctorDocument.setId(id);
 		if (doctorLocation.getLatitude() != null && doctorLocation.getLongitude() != null) {
-		    doctorDocument.setGeoLocation(new Point(doctorLocation.getLatitude(), doctorLocation.getLongitude()));
+		    doctorDocument.setGeoLocation(new GeoLocation(doctorLocation.getLatitude(), doctorLocation.getLongitude()));
 		}
 		solrDoctorRepository.save(doctorDocument);
 		transnationalService.addResource(doctorLocation.getLocationId(), Resource.LOCATION, true);

@@ -2,7 +2,7 @@ package com.dpdocter.solr.document;
 
 import org.apache.solr.client.solrj.beans.Field;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.solr.core.geo.Point;
+import org.springframework.data.solr.core.geo.GeoLocation;
 import org.springframework.data.solr.core.mapping.SolrDocument;
 
 @SolrDocument(solrCoreName = "cities")
@@ -29,7 +29,7 @@ public class SolrCityDocument {
 
     @SuppressWarnings("deprecation")
     @Field
-    private Point geoLocation;
+    private GeoLocation geoLocation;
 
     @Field
     private double latitude;
@@ -85,11 +85,11 @@ public class SolrCityDocument {
 		this.country = country;
 	}
 
-	public Point getGeoLocation() {
+	public GeoLocation getGeoLocation() {
 	return geoLocation;
     }
 
-    public void setGeoLocation(Point geoLocation) {
+    public void setGeoLocation(GeoLocation geoLocation) {
 	this.geoLocation = geoLocation;
     }
 

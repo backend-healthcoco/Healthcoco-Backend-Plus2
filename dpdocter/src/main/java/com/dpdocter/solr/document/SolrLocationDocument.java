@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.solr.client.solrj.beans.Field;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
-import org.springframework.data.solr.core.geo.Point;
+import org.springframework.data.solr.core.geo.GeoLocation;
 import org.springframework.data.solr.core.mapping.SolrDocument;
 
 import com.dpdocter.beans.WorkingHours;
@@ -41,7 +41,7 @@ public class SolrLocationDocument {
     private String websiteUrl;
 
     @Field
-    private Point geoLocation;
+    private GeoLocation geoLocation;
 
     @Field
     private Double latitude;
@@ -209,11 +209,11 @@ public class SolrLocationDocument {
 		this.websiteUrl = websiteUrl;
 	}
 
-	public Point getGeoLocation() {
+	public GeoLocation getGeoLocation() {
 		return geoLocation;
 	}
 
-	public void setGeoLocation(Point geoLocation) {
+	public void setGeoLocation(GeoLocation geoLocation) {
 		this.geoLocation = geoLocation;
 	}
 

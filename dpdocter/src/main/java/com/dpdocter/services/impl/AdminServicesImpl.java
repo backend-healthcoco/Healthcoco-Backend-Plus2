@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.solr.core.geo.Point;
+import org.springframework.data.solr.core.geo.GeoLocation;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -263,7 +263,7 @@ public class AdminServicesImpl implements AdminServices {
 			    cityCollection = cityRepository.save(cityCollection);
 			    SolrCityDocument solrCities = new SolrCityDocument();
 				BeanUtil.map(cityCollection, solrCities);
-				solrCities.setGeoLocation(new Point(cityCollection.getLatitude(), cityCollection.getLongitude()));
+				solrCities.setGeoLocation(new GeoLocation(cityCollection.getLatitude(), cityCollection.getLongitude()));
 				solrCityService.addCities(solrCities);
 		    }
 		} catch (Exception e) {

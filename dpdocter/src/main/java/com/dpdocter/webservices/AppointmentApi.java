@@ -15,7 +15,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.solr.core.geo.Point;
+import org.springframework.data.solr.core.geo.GeoLocation;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.Appointment;
@@ -185,7 +185,7 @@ public class AppointmentApi {
 	transnationalService.addResource(request.getId(), Resource.LANDMARKLOCALITY, false);
 	SolrLocalityLandmarkDocument solrLocalityLandmark = new SolrLocalityLandmarkDocument();
 	BeanUtil.map(locality, solrLocalityLandmark);
-	solrLocalityLandmark.setGeoLocation(new Point(locality.getLatitude(), locality.getLongitude()));
+	solrLocalityLandmark.setGeoLocation(new GeoLocation(locality.getLatitude(), locality.getLongitude()));
 	solrCityService.addLocalityLandmark(solrLocalityLandmark);
 
 	Response<LandmarkLocality> response = new Response<LandmarkLocality>();

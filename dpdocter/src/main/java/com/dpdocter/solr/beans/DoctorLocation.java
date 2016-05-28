@@ -1,9 +1,14 @@
 package com.dpdocter.solr.beans;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.solr.client.solrj.beans.Field;
-import org.springframework.data.solr.core.geo.Point;
+import org.springframework.data.solr.core.geo.GeoLocation;
+
+import com.dpdocter.beans.WorkingHours;
+import com.dpdocter.beans.WorkingSchedule;
+import com.dpdocter.enums.Day;
 
 public class DoctorLocation {
     @Field
@@ -31,7 +36,7 @@ public class DoctorLocation {
     private String websiteUrl;
 
     @Field
-    private Point geoLocation;
+    private GeoLocation geoLocation;
 
     @Field
     private Double latitude;
@@ -263,11 +268,11 @@ public class DoctorLocation {
 	this.specialization = specialization;
     }
 
-    public Point getGeoLocation() {
+    public GeoLocation getGeoLocation() {
 	return geoLocation;
     }
 
-    public void setGeoLocation(Point geoLocation) {
+    public void setGeoLocation(GeoLocation geoLocation) {
 	this.geoLocation = geoLocation;
     }
 
@@ -357,6 +362,21 @@ public class DoctorLocation {
 
 	public void setLocationUId(String locationUId) {
 		this.locationUId = locationUId;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorLocation [locationId=" + locationId + ", hospitalId=" + hospitalId + ", locationName="
+				+ locationName + ", country=" + country + ", state=" + state + ", city=" + city + ", postalCode="
+				+ postalCode + ", websiteUrl=" + websiteUrl + ", geoLocation=" + geoLocation + ", latitude=" + latitude
+				+ ", longitude=" + longitude + ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress="
+				+ locationEmailAddress + ", streetAddress=" + streetAddress + ", locality=" + locality
+				+ ", clinicNumber=" + clinicNumber + ", alternateClinicNumbers=" + alternateClinicNumbers
+				+ ", specialization=" + specialization + ", isClinic=" + isClinic + ", isLab=" + isLab
+				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
+				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", images=" + images + ", logoUrl=" + logoUrl
+				+ ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", locationUId="
+				+ locationUId + "]";
 	}
 
 //	public List<WorkingSchedule> getClinicWorkingSchedules() {
@@ -517,20 +537,34 @@ public class DoctorLocation {
 //	public void setClinicSundayWorkingHoursToTime(List<Integer> clinicSundayWorkingHoursToTime) {
 //		this.clinicSundayWorkingHoursToTime = clinicSundayWorkingHoursToTime;
 //	}
-
-	@Override
-	public String toString() {
-		return "DoctorLocation [locationId=" + locationId + ", hospitalId=" + hospitalId + ", locationName="
-				+ locationName + ", country=" + country + ", state=" + state + ", city=" + city + ", postalCode="
-				+ postalCode + ", websiteUrl=" + websiteUrl + ", geoLocation=" + geoLocation + ", latitude=" + latitude
-				+ ", longitude=" + longitude + ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress="
-				+ locationEmailAddress + ", streetAddress=" + streetAddress + ", locality=" + locality
-				+ ", clinicNumber=" + clinicNumber + ", alternateClinicNumbers=" + alternateClinicNumbers
-				+ ", specialization=" + specialization + ", isClinic=" + isClinic + ", isLab=" + isLab
-				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
-				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", images=" + images + ", logoUrl=" + logoUrl
-				+ ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", locationUId="
-				+ locationUId + "]";
-	}
-
+//
+//	@Override
+//	public String toString() {
+//		return "DoctorLocation [locationId=" + locationId + ", hospitalId=" + hospitalId + ", locationName="
+//				+ locationName + ", country=" + country + ", state=" + state + ", city=" + city + ", postalCode="
+//				+ postalCode + ", websiteUrl=" + websiteUrl + ", geoLocation=" + geoLocation + ", latitude=" + latitude
+//				+ ", longitude=" + longitude + ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress="
+//				+ locationEmailAddress + ", streetAddress=" + streetAddress + ", locality=" + locality
+//				+ ", clinicNumber=" + clinicNumber + ", alternateClinicNumbers=" + alternateClinicNumbers
+//				+ ", specialization=" + specialization + ", isClinic=" + isClinic + ", isLab=" + isLab
+//				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
+//				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", images=" + images + ", logoUrl=" + logoUrl
+//				+ ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", locationUId="
+//				+ locationUId + ", clinicWorkingSchedules=" + clinicWorkingSchedules
+//				+ ", clinicMondayWorkingHoursFromTime=" + clinicMondayWorkingHoursFromTime
+//				+ ", clinicMondayWorkingHoursToTime=" + clinicMondayWorkingHoursToTime
+//				+ ", clinicTuesdayWorkingHoursFromTime=" + clinicTuesdayWorkingHoursFromTime
+//				+ ", clinicTuesdayWorkingHoursToTime=" + clinicTuesdayWorkingHoursToTime
+//				+ ", clinicWednessdayWorkingHoursFromTime=" + clinicWednessdayWorkingHoursFromTime
+//				+ ", clinicWednessdayWorkingHoursToTime=" + clinicWednessdayWorkingHoursToTime
+//				+ ", clinicThursdayWorkingHoursFromTime=" + clinicThursdayWorkingHoursFromTime
+//				+ ", clinicThursdayWorkingHoursToTime=" + clinicThursdayWorkingHoursToTime
+//				+ ", clinicFridayWorkingHoursFromTime=" + clinicFridayWorkingHoursFromTime
+//				+ ", clinicFridayWorkingHoursToTime=" + clinicFridayWorkingHoursToTime
+//				+ ", clinicSaturdayWorkingHoursFromTime=" + clinicSaturdayWorkingHoursFromTime
+//				+ ", clinicSaturdayWorkingHoursToTime=" + clinicSaturdayWorkingHoursToTime
+//				+ ", clinicSundayWorkingHoursFromTime=" + clinicSundayWorkingHoursFromTime
+//				+ ", clinicSundayWorkingHoursToTime=" + clinicSundayWorkingHoursToTime + "]";
+//	}
+	
 }

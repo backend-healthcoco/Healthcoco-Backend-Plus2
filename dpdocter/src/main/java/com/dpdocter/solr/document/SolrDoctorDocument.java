@@ -94,7 +94,7 @@ public class SolrDoctorDocument extends DoctorLocation{
 //    
 //    @Field
 //    private List<Integer> sundayWorkingHoursToTime;
-    
+//    
     @Field
     private List<String> specialities;
 
@@ -500,6 +500,22 @@ public class SolrDoctorDocument extends DoctorLocation{
 		this.timeZone = timeZone;
 	}
 
+	@Override
+	public String toString() {
+		return "SolrDoctorDocument [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", gender=" + gender
+				+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", imageUrl=" + imageUrl
+				+ ", consultationFee=" + consultationFee + ", consultationFeeAmount=" + consultationFeeAmount
+				+ ", consultationFeeCurrency=" + consultationFeeCurrency + ", workingSchedules=" + workingSchedules
+				+ ", specialities=" + specialities + ", experience=" + experience + ", experienceNum=" + experienceNum
+				+ ", experiencePeriod=" + experiencePeriod + ", facility=" + facility + ", appointmentBookingNumber="
+				+ appointmentBookingNumber + ", appointmentSlot=" + appointmentSlot + ", appointmentSlotTime="
+				+ appointmentSlotTime + ", appointmentSlotTimeUnit=" + appointmentSlotTimeUnit + ", isActive="
+				+ isActive + ", isVerified=" + isVerified + ", coverImageUrl=" + coverImageUrl + ", colorCode="
+				+ colorCode + ", userState=" + userState + ", registerNumber=" + registerNumber + ", days=" + days
+				+ ", months=" + months + ", years=" + years + ", dob=" + dob + ", distance=" + distance + ", userUId="
+				+ userUId + ", timeZone=" + timeZone + "]";
+	}
+
 //	public List<Integer> getMondayWorkingHoursFromTime() {
 //		return mondayWorkingHoursFromTime;
 //	}
@@ -611,13 +627,32 @@ public class SolrDoctorDocument extends DoctorLocation{
 //	public void setSundayWorkingHoursToTime(List<Integer> sundayWorkingHoursToTime) {
 //		this.sundayWorkingHoursToTime = sundayWorkingHoursToTime;
 //	}
-
-	@Override
-	public String toString() {
-		return "SolrDoctorDocument [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", gender=" + gender
-				+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", imageUrl=" + imageUrl
-				+ ", consultationFee=" + consultationFee + ", consultationFeeAmount=" + consultationFeeAmount
-				+ ", consultationFeeCurrency=" + consultationFeeCurrency + ", workingSchedules=" + workingSchedules
-				+ "]";
-	}
+//
+//	@Override
+//	public String toString() {
+//		return "SolrDoctorDocument [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", gender=" + gender
+//				+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", imageUrl=" + imageUrl
+//				+ ", consultationFee=" + consultationFee + ", consultationFeeAmount=" + consultationFeeAmount
+//				+ ", consultationFeeCurrency=" + consultationFeeCurrency + ", workingSchedules=" + workingSchedules
+//				+ ", mondayWorkingHoursFromTime=" + mondayWorkingHoursFromTime + ", mondayWorkingHoursToTime="
+//				+ mondayWorkingHoursToTime + ", tuesdayWorkingHoursFromTime=" + tuesdayWorkingHoursFromTime
+//				+ ", tuesdayWorkingHoursToTime=" + tuesdayWorkingHoursToTime + ", wednessdayWorkingHoursFromTime="
+//				+ wednessdayWorkingHoursFromTime + ", wednessdayWorkingHoursToTime=" + wednessdayWorkingHoursToTime
+//				+ ", thursdayWorkingHoursFromTime=" + thursdayWorkingHoursFromTime + ", thursdayWorkingHoursToTime="
+//				+ thursdayWorkingHoursToTime + ", fridayWorkingHoursFromTime=" + fridayWorkingHoursFromTime
+//				+ ", fridayWorkingHoursToTime=" + fridayWorkingHoursToTime + ", saturdayWorkingHoursFromTime="
+//				+ saturdayWorkingHoursFromTime + ", saturdayWorkingHoursToTime=" + saturdayWorkingHoursToTime
+//				+ ", sundayWorkingHoursFromTime=" + sundayWorkingHoursFromTime + ", sundayWorkingHoursToTime="
+//				+ sundayWorkingHoursToTime + ", specialities=" + specialities + ", experience=" + experience
+//				+ ", experienceNum=" + experienceNum + ", experiencePeriod=" + experiencePeriod + ", facility="
+//				+ facility + ", appointmentBookingNumber=" + appointmentBookingNumber + ", appointmentSlot="
+//				+ appointmentSlot + ", appointmentSlotTime=" + appointmentSlotTime + ", appointmentSlotTimeUnit="
+//				+ appointmentSlotTimeUnit + ", isActive=" + isActive + ", isVerified=" + isVerified + ", coverImageUrl="
+//				+ coverImageUrl + ", colorCode=" + colorCode + ", userState=" + userState + ", registerNumber="
+//				+ registerNumber + ", days=" + days + ", months=" + months + ", years=" + years + ", dob=" + dob
+//				+ ", distance=" + distance + ", userUId=" + userUId + ", timeZone=" + timeZone + "]";
+//	}
+//
+	
+	
 }
