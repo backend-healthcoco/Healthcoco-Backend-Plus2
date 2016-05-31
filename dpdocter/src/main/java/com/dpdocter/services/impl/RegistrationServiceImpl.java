@@ -684,6 +684,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 					    isPartOfClinic = true;
 					    break;
 					}
+				    }else{
+				    	BeanUtil.map(patientCollection, user);
+				    	BeanUtil.map(userCollection, user);
 				    }
 				}
 			    }

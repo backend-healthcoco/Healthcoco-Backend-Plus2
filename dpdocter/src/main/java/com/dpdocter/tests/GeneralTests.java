@@ -1,10 +1,16 @@
 package com.dpdocter.tests;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
+
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.BasicDBObject;
 
 
 
@@ -76,15 +82,18 @@ public class GeneralTests {
 //        }
 //	    	}
 	    		 
-	    		 public static void main(String[] args) throws UnsupportedEncodingException, NoSuchAlgorithmException  {
+	    		 public static void main(String[] args) throws NoSuchAlgorithmException, JsonGenerationException, JsonMappingException, IOException  {
 	    			 Date dateObj = new Date(Long.parseLong("1464373800000"));//1464413400000
 	    			 SimpleDateFormat sdf = new SimpleDateFormat();
 	    			 sdf.setTimeZone(TimeZone.getTimeZone("IST"));
 	    			 System.out.println(sdf.format(dateObj));
 	    
-	    			 dateObj = new Date(Long.parseLong("2016-05-28T00:00:00.000Z"));//1464413400000
+//	    			 dateObj = new Date(Long.parseLong("2016-05-28T00:00:00.000Z"));//1464413400000
 	    			 System.out.println(sdf.format(dateObj));
-	    
+	    			 BasicDBObject basicDBObject = new BasicDBObject();
+	    				basicDBObject.put("type", "Healthcoco");
+	    				ObjectMapper mapper = new ObjectMapper();
+	    				System.out.println(mapper.writeValueAsString(basicDBObject));
 	    			  }
 	    		 
 }  	

@@ -59,6 +59,14 @@ public class Appointment extends GenericCollection {
 
     private String cancelledBy;
     
+    private Boolean notifyPatientBySms;
+
+    private Boolean notifyPatientByEmail;
+
+    private Boolean notifyDoctorBySms;
+
+    private Boolean notifyDoctorByEmail;
+
     public String getId() {
 	return id;
     }
@@ -251,6 +259,38 @@ public class Appointment extends GenericCollection {
 		this.cancelledBy = cancelledBy;
 	}
 
+	public Boolean getNotifyPatientBySms() {
+		return notifyPatientBySms;
+	}
+
+	public void setNotifyPatientBySms(Boolean notifyPatientBySms) {
+		this.notifyPatientBySms = notifyPatientBySms;
+	}
+
+	public Boolean getNotifyPatientByEmail() {
+		return notifyPatientByEmail;
+	}
+
+	public void setNotifyPatientByEmail(Boolean notifyPatientByEmail) {
+		this.notifyPatientByEmail = notifyPatientByEmail;
+	}
+
+	public Boolean getNotifyDoctorBySms() {
+		return notifyDoctorBySms;
+	}
+
+	public void setNotifyDoctorBySms(Boolean notifyDoctorBySms) {
+		this.notifyDoctorBySms = notifyDoctorBySms;
+	}
+
+	public Boolean getNotifyDoctorByEmail() {
+		return notifyDoctorByEmail;
+	}
+
+	public void setNotifyDoctorByEmail(Boolean notifyDoctorByEmail) {
+		this.notifyDoctorByEmail = notifyDoctorByEmail;
+	}
+
 	@Override
 	public String toString() {
 		return "Appointment [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
@@ -260,6 +300,8 @@ public class Appointment extends GenericCollection {
 				+ isCalenderBlocked + ", isFeedbackAvailable=" + isFeedbackAvailable + ", isAllDayEvent="
 				+ isAllDayEvent + ", doctorName=" + doctorName + ", locationName=" + locationName + ", clinicAddress="
 				+ clinicAddress + ", clinicNumber=" + clinicNumber + ", latitude=" + latitude + ", longitude="
-				+ longitude + ", cancelledBy=" + cancelledBy + "]";
+				+ longitude + ", cancelledBy=" + cancelledBy + ", notifyPatientBySms=" + notifyPatientBySms
+				+ ", notifyPatientByEmail=" + notifyPatientByEmail + ", notifyDoctorBySms=" + notifyDoctorBySms
+				+ ", notifyDoctorByEmail=" + notifyDoctorByEmail + "]";
 	}
 }

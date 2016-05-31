@@ -787,7 +787,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<licence>UHJvamVjdHxkcGRvY3Rlci5kcGRvY3RlcnwyMDE2LTA1LTE5fHRydWUjTUMwQ0ZRQ0REYVhWU0dyNlJMSFhWSnE5TGtlN1NoM3dZZ0lVVjNIQjRDR0hBTVBJR2pWaW1TWlE4ZVE0WnBZPQ==</licence>
+					<licence>UHJvamVjdHxvcmcuYXBhY2hlLnRpa2EudGlrYS1zZXJ2ZXJ8MjAxNi0wOC0wMXx0cnVlI01Dd0NGRklXRzRqRmNTZXNJb2laRElKZVF4RXpieUNTQWhSMHBmTzZCMUdMbDBPQ1B1WmJYQ3NpZElZSCtRPT0=</licence>
 					<output>
 						<title>DP Doctor API</title>
 						<html>

@@ -1124,6 +1124,7 @@ public class SignUpServiceImpl implements SignUpService {
 		    	if(patientCollection == null){
 		    		patientCollection = new PatientCollection();
 		    		BeanUtil.map(userCollection, patientCollection);
+		    		patientCollection.setId(null);
 			    	patientCollection.setUserId(userCollection.getId());
 			    	patientCollection.setDoctorId(null);
 			    	patientCollection.setLocationId(null);

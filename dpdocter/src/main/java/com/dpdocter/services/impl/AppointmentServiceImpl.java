@@ -406,7 +406,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    	}
 			    }
 		    }
-		    
+			appointmentCollection.setExplanation(request.getExplanation());
+		    appointmentCollection.setNotifyDoctorByEmail(request.getNotifyDoctorByEmail());
+		    appointmentCollection.setNotifyDoctorBySms(request.getNotifyDoctorBySms());
+		    appointmentCollection.setNotifyPatientByEmail(request.getNotifyPatientByEmail());
+		    appointmentCollection.setNotifyPatientBySms(request.getNotifyPatientByEmail());
 		    appointmentCollection.setUpdatedTime(new Date());
 		    appointmentCollection = appointmentRepository.save(appointmentCollection);
 		  //sendSMS after appointment is saved	
@@ -1168,23 +1172,25 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    	appointmentCollection.setFromDate(request.getFromDate());
 			    	appointmentCollection.setToDate(request.getToDate());
 				    appointmentCollection.setTime(request.getTime());
-				    
+				    appointmentCollection.setIsCalenderBlocked(request.getIsCalenderBlocked());
+				    appointmentCollection.setExplanation(request.getExplanation());
 			    	if(request.getState().equals(AppointmentState.RESCHEDULE)){
 				    	appointmentCollection.setIsRescheduled(true);
 				    	appointmentCollection.setState(AppointmentState.CONFIRM);
 				    	AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository.findByAppointmentId(appointmentCollection.getAppointmentId());
-				    	if(bookedSlotCollection != null) {
-				    		if(appointmentCollection.getIsCalenderBlocked()){
+		    			
+				    	if(request.getIsCalenderBlocked()){
+				    		if(bookedSlotCollection != null) {
 				    			bookedSlotCollection.setFromDate(appointmentCollection.getFromDate());
 				    			bookedSlotCollection.setToDate(appointmentCollection.getToDate());
 							    bookedSlotCollection.setTime(appointmentCollection.getTime());
 							    bookedSlotCollection.setUpdatedTime(new Date());
-					    		appointmentBookedSlotRepository.save(bookedSlotCollection);
-				    		}else{
-				    			appointmentBookedSlotRepository.delete(bookedSlotCollection);
-				    		}
-				    	}
-				    }
+					    		appointmentBookedSlotRepository.save(bookedSlotCollection);	
+					    	}
+			    		}else{
+			    			if(bookedSlotCollection != null) appointmentBookedSlotRepository.delete(bookedSlotCollection);
+			    		}
+				      }
 			    }
 			    appointmentCollection.setUpdatedTime(new Date());
 			    appointmentCollection = appointmentRepository.save(appointmentCollection);

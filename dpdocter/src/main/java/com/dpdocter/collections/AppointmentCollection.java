@@ -73,6 +73,18 @@ public class AppointmentCollection extends GenericCollection {
     @Field
     private String cancelledBy;
     
+    @Field
+    private Boolean notifyPatientBySms;
+
+    @Field
+    private Boolean notifyPatientByEmail;
+
+    @Field
+    private Boolean notifyDoctorBySms;
+
+    @Field
+    private Boolean notifyDoctorByEmail;
+
     public String getId() {
 	return id;
     }
@@ -217,6 +229,38 @@ public class AppointmentCollection extends GenericCollection {
 		this.cancelledBy = cancelledBy;
 	}
 
+	public Boolean getNotifyPatientBySms() {
+		return notifyPatientBySms;
+	}
+
+	public void setNotifyPatientBySms(Boolean notifyPatientBySms) {
+		this.notifyPatientBySms = notifyPatientBySms;
+	}
+
+	public Boolean getNotifyPatientByEmail() {
+		return notifyPatientByEmail;
+	}
+
+	public void setNotifyPatientByEmail(Boolean notifyPatientByEmail) {
+		this.notifyPatientByEmail = notifyPatientByEmail;
+	}
+
+	public Boolean getNotifyDoctorBySms() {
+		return notifyDoctorBySms;
+	}
+
+	public void setNotifyDoctorBySms(Boolean notifyDoctorBySms) {
+		this.notifyDoctorBySms = notifyDoctorBySms;
+	}
+
+	public Boolean getNotifyDoctorByEmail() {
+		return notifyDoctorByEmail;
+	}
+
+	public void setNotifyDoctorByEmail(Boolean notifyDoctorByEmail) {
+		this.notifyDoctorByEmail = notifyDoctorByEmail;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentCollection [id=" + id + ", subject=" + subject + ", explanation=" + explanation
@@ -224,6 +268,8 @@ public class AppointmentCollection extends GenericCollection {
 				+ ", appointmentId=" + appointmentId + ", time=" + time + ", patientId=" + patientId + ", state="
 				+ state + ", type=" + type + ", isRescheduled=" + isRescheduled + ", fromDate=" + fromDate + ", toDate="
 				+ toDate + ", isCalenderBlocked=" + isCalenderBlocked + ", isFeedbackAvailable=" + isFeedbackAvailable
-				+ ", isAllDayEvent=" + isAllDayEvent + ", cancelledBy=" + cancelledBy + "]";
+				+ ", isAllDayEvent=" + isAllDayEvent + ", cancelledBy=" + cancelledBy + ", notifyPatientBySms="
+				+ notifyPatientBySms + ", notifyPatientByEmail=" + notifyPatientByEmail + ", notifyDoctorBySms="
+				+ notifyDoctorBySms + ", notifyDoctorByEmail=" + notifyDoctorByEmail + "]";
 	}
 }
