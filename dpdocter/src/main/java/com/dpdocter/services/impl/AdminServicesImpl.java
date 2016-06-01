@@ -23,6 +23,7 @@ import org.springframework.data.solr.core.geo.GeoLocation;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.ContactUs;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.GeocodedLocation;
@@ -31,6 +32,7 @@ import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Resume;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.CityCollection;
+import com.dpdocter.collections.ContactUsCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.DrugTypeCollection;
@@ -44,6 +46,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.CityRepository;
+import com.dpdocter.repository.ContactUsRepository;
 import com.dpdocter.repository.DiagnosticTestRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.DrugTypeRepository;
@@ -87,6 +90,9 @@ public class AdminServicesImpl implements AdminServices {
 	
 	@Autowired
 	ResumeRepository resumeRepository;
+	
+	@Autowired
+	ContactUsRepository contactUsRepository;
 	
 	@Autowired
     private FileManager fileManager;
@@ -584,4 +590,45 @@ public class AdminServicesImpl implements AdminServices {
 		return response;
 	}
 
+	@Override
+	@Transactional
+	public ContactUs addContactUs(ContactUs request) {
+		ContactUs response = null;
+		try{
+			ContactUsCollection contactUsCollection = new ContactUsCollection();
+			BeanUtil.map(request, contactUsCollection);
+			contactUsCollection.setCreatedTime(new Date());
+			contactUsCollection = contactUsRepository.save(contactUsCollection);
+			if(contactUsCollection != null){
+				response = new ContactUs();
+				BeanUtil.map(contactUsCollection, response);
+			}
+		}catch(Exception e){
+			logger.error("Error while adding contact us "+ e.getMessage());
+			e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown,"Error while adding contact us "+ e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public List<ContactUs> getContactUs(int page, int size) {
+		List<ContactUs> response = null;
+		try{
+			List<ContactUsCollection> contactUs = null;
+			if(size > 0)contactUs = contactUsRepository.findAll(new PageRequest(page, size, Direction.DESC, "createdTime")).getContent();
+			else contactUs = contactUsRepository.findAll(new Sort(Direction.DESC, "createdTime"));
+			
+			if(contactUs != null){
+				response = new ArrayList<ContactUs>();
+				BeanUtil.map(contactUs, response);
+			}
+		}catch(Exception e){
+			logger.error("Error while getting clinics "+ e.getMessage());
+			e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown,"Error while getting inactive clinics "+ e.getMessage());
+		}
+		return response;
+	}
 }

@@ -40,6 +40,8 @@ import com.dpdocter.services.SignUpService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrDoctorDocument;
 import com.dpdocter.solr.services.SolrRegistrationService;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -48,6 +50,7 @@ import common.util.web.Response;
 @Path(PathProxy.SIGNUP_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(value = PathProxy.ADMIN_BASE_URL, description = "Endpoint for signup")
 public class SignUpApi {
 
     private static Logger logger = Logger.getLogger(SignUpApi.class.getName());
@@ -69,6 +72,7 @@ public class SignUpApi {
 
     @Path(value = PathProxy.SignUpUrls.ADMIN_SIGNUP)
     @POST
+    @ApiOperation(value = PathProxy.SignUpUrls.ADMIN_SIGNUP, notes = PathProxy.SignUpUrls.ADMIN_SIGNUP)
     public Response<User> adminSignup(PatientSignUpRequest request) {
 	if (request == null) {
 	    logger.warn("Request send  is NULL");
@@ -92,6 +96,7 @@ public class SignUpApi {
 
     @Path(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP)
     @POST
+    @ApiOperation(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP, notes = PathProxy.SignUpUrls.DOCTOR_SIGNUP)
     public Response<DoctorSignUp> doctorSignup(DoctorSignupRequest request) {
 	if (request == null) {
 	    logger.warn("Request send  is NULL");
@@ -124,6 +129,7 @@ public class SignUpApi {
 
     @Path(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP_HANDHELD)
     @POST
+    @ApiOperation(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP_HANDHELD, notes = PathProxy.SignUpUrls.DOCTOR_SIGNUP_HANDHELD)
     public Response<DoctorSignUp> doctorHandheld(DoctorSignupHandheldRequest request) {
 	if (request == null) {
 	    logger.warn("Request send  is NULL");
@@ -155,6 +161,7 @@ public class SignUpApi {
 
     @Path(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP_HANDHELD_CONTINUE)
     @POST
+    @ApiOperation(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP_HANDHELD_CONTINUE, notes = PathProxy.SignUpUrls.DOCTOR_SIGNUP_HANDHELD_CONTINUE)
     public Response<DoctorSignUp> doctorHandheldContinue(DoctorSignupHandheldContinueRequest request) {
 	if (request == null) {
 	    logger.warn("Request send  is NULL");
@@ -186,6 +193,7 @@ public class SignUpApi {
 
     @Path(value = PathProxy.SignUpUrls.PATIENT_SIGNUP)
     @POST
+    @ApiOperation(value = PathProxy.SignUpUrls.PATIENT_SIGNUP, notes = PathProxy.SignUpUrls.PATIENT_SIGNUP)
     public Response<User> patientSignup(PatientSignUpRequest request) {
 	if (request == null) {
 	    logger.warn("Request send  is NULL");
@@ -218,6 +226,7 @@ public class SignUpApi {
      */
     @Path(value = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE)
     @POST
+    @ApiOperation(value = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE, notes = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE)
     public Response<User> patientSignupMobile(PatientSignupRequestMobile request) {
 	if (request == null) {
 	    logger.warn("Request send is NULL");
@@ -253,6 +262,7 @@ public class SignUpApi {
      */
     @Path(value = PathProxy.SignUpUrls.VERIFY_UNLOCK_PATIENT)
     @POST
+    @ApiOperation(value = PathProxy.SignUpUrls.VERIFY_UNLOCK_PATIENT, notes = PathProxy.SignUpUrls.VERIFY_UNLOCK_PATIENT)
     public Response<Boolean> verifyOrUnlockPatient(VerifyUnlockPatientRequest request) {
 	boolean flag = false;
 	if ((request.getVerifyOrUnlock().getFlag()).equals(FlagEnum.VERIFY.getFlag())) {
@@ -268,6 +278,7 @@ public class SignUpApi {
 
     @Path(value = PathProxy.SignUpUrls.PATIENT_PROFILE_PIC_CHANGE)
     @POST
+    @ApiOperation(value = PathProxy.SignUpUrls.PATIENT_PROFILE_PIC_CHANGE, notes = PathProxy.SignUpUrls.PATIENT_PROFILE_PIC_CHANGE)
     public Response<User> patientProfilePicChange(PatientProfilePicChangeRequest request) {
 	if (request == null) {
 	    logger.warn("Request send  is NULL");
@@ -292,6 +303,7 @@ public class SignUpApi {
     @Produces(MediaType.TEXT_HTML)
     @Path(value = PathProxy.SignUpUrls.VERIFY_USER)
     @GET
+    @ApiOperation(value = PathProxy.SignUpUrls.VERIFY_USER, notes = PathProxy.SignUpUrls.VERIFY_USER)
     public String verifyUser(@PathParam(value = "tokenId") String tokenId) {
 	if (tokenId == null) {
 	    logger.warn("Invalid Input");
@@ -304,6 +316,7 @@ public class SignUpApi {
 
     @Path(value = PathProxy.SignUpUrls.ACTIVATE_USER)
     @GET
+    @ApiOperation(value = PathProxy.SignUpUrls.ACTIVATE_USER, notes = PathProxy.SignUpUrls.ACTIVATE_USER)
     public Response<Boolean> activateUser(@PathParam("userId") String userId, @DefaultValue(value = "true") @QueryParam("activate") Boolean activate) {
 	if (DPDoctorUtils.anyStringEmpty(userId)) {
 	    logger.warn("Invalid Input. User Id Cannot Be Empty");
@@ -317,6 +330,7 @@ public class SignUpApi {
 
     @Path(value = PathProxy.SignUpUrls.CHECK_IF_USERNAME_EXIST)
     @GET
+    @ApiOperation(value = PathProxy.SignUpUrls.CHECK_IF_USERNAME_EXIST, notes = PathProxy.SignUpUrls.CHECK_IF_USERNAME_EXIST)
     public Response<Boolean> checkUsernameExist(@PathParam(value = "username") String username) {
 	if (username == null) {
 	    logger.warn("Invalid Input");
@@ -329,6 +343,7 @@ public class SignUpApi {
 
     @Path(value = PathProxy.SignUpUrls.CHECK_IF_MOBNUM_EXIST)
     @GET
+    @ApiOperation(value = PathProxy.SignUpUrls.CHECK_IF_MOBNUM_EXIST, notes = PathProxy.SignUpUrls.CHECK_IF_MOBNUM_EXIST)
     public Response<Boolean> checkMobileNumExist(@PathParam(value = "mobileNumber") String mobileNumber) {
 	if (mobileNumber == null) {
 	    logger.warn("Invalid Input");
@@ -341,6 +356,7 @@ public class SignUpApi {
 
     @Path(value = PathProxy.SignUpUrls.CHECK_MOBNUM_SIGNEDUP)
     @GET
+    @ApiOperation(value = PathProxy.SignUpUrls.CHECK_MOBNUM_SIGNEDUP, notes = PathProxy.SignUpUrls.CHECK_MOBNUM_SIGNEDUP)
     public Response<PateientSignUpCheckResponse> checkMobileNumberSignedUp(@PathParam(value = "mobileNumber") String mobileNumber) {
 	if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
 	    logger.warn("Invalid Input. Mobile Number Cannot Be Empty!");
@@ -355,6 +371,7 @@ public class SignUpApi {
 
     @Path(value = PathProxy.SignUpUrls.CHECK_IF_EMAIL_ADDR_EXIST)
     @GET
+    @ApiOperation(value = PathProxy.SignUpUrls.CHECK_IF_EMAIL_ADDR_EXIST, notes = PathProxy.SignUpUrls.CHECK_IF_EMAIL_ADDR_EXIST)
     public Response<Boolean> checkEmailExist(@PathParam(value = "emailaddress") String emailaddress) {
 	if (emailaddress == null) {
 	    logger.warn("Invalid Input");
@@ -389,6 +406,7 @@ public class SignUpApi {
 
     @Path(value = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR)
     @GET
+    @ApiOperation(value = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR, notes = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR)
     public Response<Boolean> resendVerificationEmail(@PathParam(value = "emailaddress") String emailaddress) {
 	if (DPDoctorUtils.anyStringEmpty(emailaddress)) {
 	    logger.warn("Invalid Input");

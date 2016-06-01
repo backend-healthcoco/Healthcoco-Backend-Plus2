@@ -22,6 +22,8 @@ import com.dpdocter.beans.IssueTrack;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.services.IssueTrackService;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -30,6 +32,7 @@ import common.util.web.Response;
 @Path(PathProxy.ISSUE_TRACK_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(value = PathProxy.ISSUE_TRACK_BASE_URL, description = "Endpoint for issue track")
 public class IssueTrackApi {
 
     private static Logger logger = Logger.getLogger(IssueTrackApi.class.getName());
@@ -39,6 +42,7 @@ public class IssueTrackApi {
 
     @Path(value = PathProxy.IssueTrackUrls.RAISE_ISSUE)
     @POST
+    @ApiOperation(value = PathProxy.IssueTrackUrls.RAISE_ISSUE, notes = PathProxy.IssueTrackUrls.RAISE_ISSUE)
     public Response<IssueTrack> addEditIssue(IssueTrack request) {
 
 	if (request == null) {
@@ -54,6 +58,7 @@ public class IssueTrackApi {
 
     @Path(value = PathProxy.IssueTrackUrls.DELETE_ISSUE)
     @DELETE
+    @ApiOperation(value = PathProxy.IssueTrackUrls.DELETE_ISSUE, notes = PathProxy.IssueTrackUrls.DELETE_ISSUE)
     public Response<IssueTrack> deleteIssue(@PathParam(value = "issueId") String issueId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
@@ -70,6 +75,7 @@ public class IssueTrackApi {
     }
 
     @GET
+    @ApiOperation(value = "GET_ISSUE", notes = "GET_ISSUE")
     public Response<IssueTrack> getIssues(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
@@ -85,6 +91,7 @@ public class IssueTrackApi {
 
     @Path(value = PathProxy.IssueTrackUrls.UPDATE_STATUS_DOCTOR_SPECIFIC)
     @GET
+    @ApiOperation(value = PathProxy.IssueTrackUrls.UPDATE_STATUS_DOCTOR_SPECIFIC, notes = PathProxy.IssueTrackUrls.UPDATE_STATUS_DOCTOR_SPECIFIC)
     public Response<Boolean> updateIssueStatus(@PathParam("issueId") String issueId, @PathParam("status") String status,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId) {
@@ -101,6 +108,7 @@ public class IssueTrackApi {
 
     @Path(value = PathProxy.IssueTrackUrls.UPDATE_STATUS_ADMIN)
     @GET
+    @ApiOperation(value = PathProxy.IssueTrackUrls.UPDATE_STATUS_ADMIN, notes = PathProxy.IssueTrackUrls.UPDATE_STATUS_ADMIN)
     public Response<Boolean> updateIssueStatus(@PathParam("issueId") String issueId, @PathParam("status") String status) {
 	if (DPDoctorUtils.anyStringEmpty(issueId, status)) {
 	    logger.warn("IssueId or Status cannot be null");

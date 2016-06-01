@@ -41,6 +41,8 @@ import com.dpdocter.response.HistoryDetailsResponse;
 import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientVisitService;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -49,6 +51,7 @@ import common.util.web.Response;
 @Path(PathProxy.HISTORY_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(value = PathProxy.HISTORY_BASE_URL, description = "Endpoint for history")
 public class HistoryApi {
 
     private static Logger logger = Logger.getLogger(HistoryApi.class.getName());
@@ -67,6 +70,7 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.ADD_DISEASE)
     @POST
+    @ApiOperation(value = PathProxy.HistoryUrls.ADD_DISEASE, notes = PathProxy.HistoryUrls.ADD_DISEASE)
     public Response<DiseaseAddEditResponse> addDiseases(List<DiseaseAddEditRequest> request) {
 	if (request == null) {
 	    logger.warn("Request Sent Is NULL");
@@ -80,6 +84,7 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.EDIT_DISEASE)
     @PUT
+    @ApiOperation(value = PathProxy.HistoryUrls.EDIT_DISEASE, notes = PathProxy.HistoryUrls.EDIT_DISEASE)
     public Response<DiseaseAddEditResponse> editDisease(@PathParam(value = "diseaseId") String diseaseId, DiseaseAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Request Sent Is NULL");
@@ -94,6 +99,7 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.DELETE_DISEASE)
     @DELETE
+    @ApiOperation(value = PathProxy.HistoryUrls.DELETE_DISEASE, notes = PathProxy.HistoryUrls.DELETE_DISEASE)
     public Response<DiseaseAddEditResponse> deleteDisease(@PathParam(value = "diseaseId") String diseaseId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
@@ -109,6 +115,7 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.GET_DISEASES)
     @GET
+    @ApiOperation(value = PathProxy.HistoryUrls.GET_DISEASES, notes = PathProxy.HistoryUrls.GET_DISEASES)
     public Response<DiseaseListResponse> getDiseases(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
 	    @QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
@@ -122,6 +129,7 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.ADD_REPORT_TO_HISTORY)
     @GET
+    @ApiOperation(value = PathProxy.HistoryUrls.ADD_REPORT_TO_HISTORY, notes = PathProxy.HistoryUrls.ADD_REPORT_TO_HISTORY)
     public Response<Records> addReportToHistory(@PathParam(value = "reportId") String reportId, @PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId) {
@@ -138,6 +146,7 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.ADD_CLINICAL_NOTES_TO_HISTORY)
     @GET
+    @ApiOperation(value = PathProxy.HistoryUrls.ADD_CLINICAL_NOTES_TO_HISTORY, notes = PathProxy.HistoryUrls.ADD_CLINICAL_NOTES_TO_HISTORY)
     public Response<ClinicalNotes> addClinicalNotesToHistory(@PathParam(value = "clinicalNotesId") String clinicalNotesId,
 	    @PathParam(value = "patientId") String patientId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
@@ -153,6 +162,7 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.ADD_PRESCRIPTION_TO_HISTORY)
     @GET
+    @ApiOperation(value = PathProxy.HistoryUrls.ADD_PRESCRIPTION_TO_HISTORY, notes = PathProxy.HistoryUrls.ADD_PRESCRIPTION_TO_HISTORY)
     public Response<Prescription> addPrescriptionToHistory(@PathParam(value = "prescriptionId") String prescriptionId,
 	    @PathParam(value = "patientId") String patientId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
@@ -170,6 +180,7 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.ADD_PATIENT_TREATMENT_TO_HISTORY)
     @GET
+    @ApiOperation(value = PathProxy.HistoryUrls.ADD_PATIENT_TREATMENT_TO_HISTORY, notes = PathProxy.HistoryUrls.ADD_PATIENT_TREATMENT_TO_HISTORY)
     public Response<PatientTreatment> addPatientTreatmentToHistory(@PathParam(value = "treatmentId") String treatmentId,
 	    @PathParam(value = "patientId") String patientId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
@@ -187,6 +198,7 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.ASSIGN_MEDICAL_HISTORY)
     @GET
+    @ApiOperation(value = PathProxy.HistoryUrls.ASSIGN_MEDICAL_HISTORY, notes = PathProxy.HistoryUrls.ASSIGN_MEDICAL_HISTORY)
     public Response<HistoryDetailsResponse> assignMedicalHistory(@PathParam(value = "diseaseId") String diseaseId, @PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId) {
@@ -206,6 +218,7 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.ASSIGN_FAMILY_HISTORY)
     @GET
+    @ApiOperation(value = PathProxy.HistoryUrls.ASSIGN_FAMILY_HISTORY, notes = PathProxy.HistoryUrls.ASSIGN_FAMILY_HISTORY)
     public Response<HistoryDetailsResponse> assignFamilyHistory(@PathParam(value = "diseaseId") String diseaseId, @PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId) {
@@ -225,6 +238,7 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.ADD_SPECIAL_NOTES)
     @POST
+    @ApiOperation(value = PathProxy.HistoryUrls.ADD_SPECIAL_NOTES, notes = PathProxy.HistoryUrls.ADD_SPECIAL_NOTES)
     public Response<Boolean> addSpecialNotes(SpecialNotesAddRequest request) {
 	if (request == null) {
 	    logger.warn("Request Sent Is NULL");
@@ -240,6 +254,7 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.REMOVE_REPORTS)
     @GET
+    @ApiOperation(value = PathProxy.HistoryUrls.REMOVE_REPORTS, notes = PathProxy.HistoryUrls.REMOVE_REPORTS)
     public Response<Records> removeReports(@PathParam(value = "reportId") String reportId, @PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId) {
@@ -255,6 +270,7 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.REMOVE_CLINICAL_NOTES)
     @GET
+    @ApiOperation(value = PathProxy.HistoryUrls.REMOVE_CLINICAL_NOTES, notes = PathProxy.HistoryUrls.REMOVE_CLINICAL_NOTES)
     public Response<ClinicalNotes> removeClinicalNotes(@PathParam(value = "clinicalNotesId") String clinicalNotesId, @PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId) {
@@ -270,6 +286,7 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.REMOVE_PRESCRIPTION)
     @GET
+    @ApiOperation(value = PathProxy.HistoryUrls.REMOVE_PRESCRIPTION, notes = PathProxy.HistoryUrls.REMOVE_PRESCRIPTION)
     public Response<Prescription> removePrescription(@PathParam(value = "prescriptionId") String prescriptionId, @PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId) {
@@ -285,6 +302,7 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.REMOVE_PATIENT_TREATMENT)
     @GET
+    @ApiOperation(value = PathProxy.HistoryUrls.REMOVE_PATIENT_TREATMENT, notes = PathProxy.HistoryUrls.REMOVE_PATIENT_TREATMENT)
     public Response<PatientTreatment> removePatientTreatment(@PathParam(value = "treatmentId") String treatmentId, @PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId) {
@@ -300,6 +318,7 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.REMOVE_MEDICAL_HISTORY)
     @GET
+    @ApiOperation(value = PathProxy.HistoryUrls.REMOVE_MEDICAL_HISTORY, notes = PathProxy.HistoryUrls.REMOVE_MEDICAL_HISTORY)
     public Response<HistoryDetailsResponse> removeMedicalHistory(@PathParam(value = "diseaseId") String diseaseId, @PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId) {
@@ -315,6 +334,7 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.REMOVE_FAMILY_HISTORY)
     @GET
+    @ApiOperation(value = PathProxy.HistoryUrls.REMOVE_FAMILY_HISTORY, notes = PathProxy.HistoryUrls.REMOVE_FAMILY_HISTORY)
     public Response<HistoryDetailsResponse> removeFamilyHistory(@PathParam(value = "diseaseId") String diseaseId, @PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId) {
@@ -330,6 +350,7 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.GET_PATIENT_HISTORY_OTP_VERIFIED)
     @GET
+    @ApiOperation(value = PathProxy.HistoryUrls.GET_PATIENT_HISTORY_OTP_VERIFIED, notes = PathProxy.HistoryUrls.GET_PATIENT_HISTORY_OTP_VERIFIED)
     public Response<HistoryDetailsResponse> getPatientHistoryDetailsOTP(@PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId, @MatrixParam("historyFilter") List<String> historyFilter,
@@ -366,6 +387,7 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.GET_PATIENT_HISTORY)
     @GET
+    @ApiOperation(value = PathProxy.HistoryUrls.GET_PATIENT_HISTORY, notes = PathProxy.HistoryUrls.GET_PATIENT_HISTORY)
     public Response<HistoryDetailsResponse> getPatientHistory(@PathParam(value = "patientId") String patientId,
 	    @MatrixParam("historyFilter") List<String> historyFilter, @QueryParam("page") int page, @QueryParam("size") int size,
 	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
@@ -392,6 +414,7 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.HANDLE_MEDICAL_HISTORY)
     @POST
+    @ApiOperation(value = PathProxy.HistoryUrls.HANDLE_MEDICAL_HISTORY, notes = PathProxy.HistoryUrls.HANDLE_MEDICAL_HISTORY)
     public Response<Boolean> handleMedicalHistory(MedicalHistoryHandler request) {
 	if (request == null) {
 	    logger.warn("Request Cannot Be Null");
@@ -410,6 +433,7 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.GET_MEDICAL_AND_FAMILY_HISTORY)
     @GET
+    @ApiOperation(value = PathProxy.HistoryUrls.GET_MEDICAL_AND_FAMILY_HISTORY, notes = PathProxy.HistoryUrls.GET_MEDICAL_AND_FAMILY_HISTORY)
     public Response<HistoryDetailsResponse> getMedicalAndFamilyHistory(@PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId) {
@@ -426,6 +450,7 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.HANDLE_FAMILY_HISTORY)
     @POST
+    @ApiOperation(value = PathProxy.HistoryUrls.HANDLE_FAMILY_HISTORY, notes = PathProxy.HistoryUrls.HANDLE_FAMILY_HISTORY)
     public Response<Boolean> handleFamilyHistory(MedicalHistoryHandler request) {
 	if (request == null) {
 	    logger.warn("Request Cannot Be Null");
@@ -444,6 +469,7 @@ public class HistoryApi {
 
     @Path(value = PathProxy.HistoryUrls.MAIL_MEDICAL_DATA)
     @POST
+    @ApiOperation(value = PathProxy.HistoryUrls.MAIL_MEDICAL_DATA, notes = PathProxy.HistoryUrls.MAIL_MEDICAL_DATA)
     public Response<Boolean> mailMedicalData(MedicalData medicalData) {
 	if (medicalData == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Medical Data Cannot Be Empty");
@@ -524,6 +550,7 @@ public class HistoryApi {
     }
 
     @GET
+    @ApiOperation(value = "GET_MULTIPLE_DATA", notes = "GET_MULTIPLE_DATA")
     public Response<HistoryDetailsResponse> getMultipleData(@QueryParam(value = "doctorId") String doctorId,
 	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 	    @QueryParam(value = "patientId") String patientId, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,

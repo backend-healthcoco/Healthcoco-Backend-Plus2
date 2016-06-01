@@ -17,6 +17,8 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.BroadcastNotificationRequest;
 import com.dpdocter.services.PushNotificationServices;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -25,6 +27,7 @@ import common.util.web.Response;
 @Path(PathProxy.PUSH_NOTIFICATION_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(value = PathProxy.PUSH_NOTIFICATION_BASE_URL, description = "Endpoint for push notification")
 public class PushNotificationApi {
 
     private static Logger logger = Logger.getLogger(PushNotificationApi.class.getName());
@@ -34,6 +37,7 @@ public class PushNotificationApi {
 	
 	@Path(value = PathProxy.PushNotificationUrls.ADD_DEVICE)
 	@POST
+	@ApiOperation(value = PathProxy.PushNotificationUrls.ADD_DEVICE, notes = PathProxy.PushNotificationUrls.ADD_DEVICE)
 	public Response<UserDevice> addDevice(UserDevice request){
 		if(request == null){
 			    logger.warn("Invalid Input");
@@ -47,6 +51,7 @@ public class PushNotificationApi {
 	
 	@Path(value = PathProxy.PushNotificationUrls.BROADCAST_NOTIFICATION)
 	@POST
+	@ApiOperation(value = PathProxy.PushNotificationUrls.BROADCAST_NOTIFICATION, notes = PathProxy.PushNotificationUrls.BROADCAST_NOTIFICATION)
 	public Response<Boolean> broadcastNotification(BroadcastNotificationRequest request){
 		if(request == null){
 			    logger.warn("Invalid Input");

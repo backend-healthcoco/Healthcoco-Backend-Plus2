@@ -24,6 +24,8 @@ import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.services.PrintSettingsService;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -32,6 +34,7 @@ import common.util.web.Response;
 @Path(PathProxy.PRINT_SETTINGS_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(value = PathProxy.PRINT_SETTINGS_BASE_URL, description = "Endpoint for print settings")
 public class PrintSettingsApi {
 
     private static Logger logger = Logger.getLogger(PrintSettingsApi.class.getName());
@@ -44,6 +47,7 @@ public class PrintSettingsApi {
 
     @Path(value = PathProxy.PrintSettingsUrls.SAVE_SETTINGS_DEFAULT_DATA)
     @POST
+    @ApiOperation(value = "SAVE_SETTINGS_DEFAULT_DATA", notes = "SAVE_SETTINGS_DEFAULT_DATA")
     public Response<PrintSettingsDefaultData> saveDefaultSettings(PrintSettingsDefaultData request) {
 
 	if (request == null) {
@@ -57,6 +61,7 @@ public class PrintSettingsApi {
     }
 
     @GET
+    @ApiOperation(value = "GET_SETTINGS_DEFAULT_DATA", notes = "GET_SETTINGS_DEFAULT_DATA")
     public Response<PrintSettingsDefaultData> getDefaultSettings() {
 
 	List<PrintSettingsDefaultData> printSettingsData = printSettingsService.getDefaultSettings();
@@ -67,6 +72,7 @@ public class PrintSettingsApi {
 
     @Path(value = PathProxy.PrintSettingsUrls.SAVE_PRINT_SETTINGS)
     @POST
+    @ApiOperation(value = "SAVE_PRINT_SETTINGS", notes = "SAVE_PRINT_SETTINGS")
     public Response<PrintSettings> saveSettings(PrintSettings request) {
 
 	if (request == null) {
@@ -83,6 +89,7 @@ public class PrintSettingsApi {
 
     @Path(value = PathProxy.PrintSettingsUrls.GET_PRINT_SETTINGS)
     @GET
+    @ApiOperation(value = "GET_PRINT_SETTINGS", notes = "GET_PRINT_SETTINGS")
     public Response<PrintSettings> getSettings(@PathParam(value = "printFilter") String printFilter, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId, @QueryParam(value = "page") int page,
 	    @QueryParam(value = "size") int size, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -105,6 +112,7 @@ public class PrintSettingsApi {
 
     @Path(value = PathProxy.PrintSettingsUrls.DELETE_PRINT_SETTINGS)
     @DELETE
+    @ApiOperation(value = "DELETE_PRINT_SETTINGS", notes = "DELETE_PRINT_SETTINGS")
     public Response<PrintSettings> deletePrintSettings(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {

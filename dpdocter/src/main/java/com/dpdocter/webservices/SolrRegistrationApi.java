@@ -1,4 +1,4 @@
-package com.dpdocter.solr.webservices;
+package com.dpdocter.webservices;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -20,6 +20,8 @@ import com.dpdocter.solr.beans.AdvancedSearch;
 import com.dpdocter.solr.response.SolrPatientResponseDetails;
 import com.dpdocter.solr.services.SolrRegistrationService;
 import com.dpdocter.webservices.PathProxy;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -28,6 +30,7 @@ import common.util.web.Response;
 @Path(PathProxy.SOLR_REGISTRATION_BASEURL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(value = PathProxy.SOLR_REGISTRATION_BASEURL, description = "Endpoint for solr register")
 public class SolrRegistrationApi {
 
     private static Logger logger = Logger.getLogger(SolrRegistrationApi.class.getName());
@@ -40,6 +43,7 @@ public class SolrRegistrationApi {
 
     @Path(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT)
     @GET
+    @ApiOperation(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT, notes = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT)
     public Response<SolrPatientResponseDetails> searchPatient(@PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @PathParam(value = "searchTerm") String searchTerm, @QueryParam("page") int page, @QueryParam("size") int size) {
@@ -57,6 +61,7 @@ public class SolrRegistrationApi {
 
     @Path(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT_ADV)
     @POST
+    @ApiOperation(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT_ADV, notes = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT_ADV)
     public Response<SolrPatientResponseDetails> searchPatient(AdvancedSearch request) {
 
 	if (request == null) {

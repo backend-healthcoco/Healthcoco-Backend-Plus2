@@ -36,6 +36,8 @@ import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrLocalityLandmarkDocument;
 import com.dpdocter.solr.services.SolrCityService;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -44,6 +46,7 @@ import common.util.web.Response;
 @Path(PathProxy.APPOINTMENT_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(value = PathProxy.APPOINTMENT_BASE_URL, description = "Endpoint for appointment")
 public class AppointmentApi {
 
     @Autowired
@@ -55,71 +58,9 @@ public class AppointmentApi {
     @Autowired
     private TransactionalManagementService transnationalService;
 
-//    @Path(value = PathProxy.AppointmentUrls.ADD_COUNTRY)
-//    @POST
-//    public Response<Country> addCountry(Country request) {
-//	if (request == null) {
-//	    throw new BusinessException(ServiceError.InvalidInput, "Request sent is NULL");
-//	} else if (request.getCountry() == null) {
-//	    throw new BusinessException(ServiceError.InvalidInput, "Country cannot be NULL");
-//	}
-//	Country country = appointmentService.addCountry(request);
-//
-//	transnationalService.addResource(country.getId(), Resource.COUNTRY, false);
-//	SolrCountryDocument solrCountry = new SolrCountryDocument();
-//	BeanUtil.map(country, solrCountry);
-//	solrCountry.setGeoLocation(new GeoLocation(country.getLatitude(), country.getLongitude()));
-//	solrCityService.addCountry(solrCountry);
-//
-//	Response<Country> response = new Response<Country>();
-//	response.setData(country);
-//	return response;
-//    }
-//
-//    @Path(value = PathProxy.AppointmentUrls.ADD_STATE)
-//    @POST
-//    public Response<State> addState(State request) {
-//	if (request == null) {
-//	    throw new BusinessException(ServiceError.InvalidInput, "Request sent is NULL");
-//	} else if (request.getState() == null) {
-//	    throw new BusinessException(ServiceError.InvalidInput, "Country cannot be NULL");
-//	}
-//	State state = appointmentService.addState(request);
-//
-//	transnationalService.addResource(state.getId(), Resource.STATE, false);
-//	SolrStateDocument solrState = new SolrStateDocument();
-//	BeanUtil.map(state, solrState);
-//	solrState.setGeoLocation(new GeoLocation(state.getLatitude(), state.getLongitude()));
-//	solrCityService.addState(solrState);
-//
-//	Response<State> response = new Response<State>();
-//	response.setData(state);
-//	return response;
-//    }
-//
-//    @Path(value = PathProxy.AppointmentUrls.ADD_CITY)
-//    @POST
-//    public Response<City> addCity(City request) {
-//	if (request == null) {
-//	    throw new BusinessException(ServiceError.InvalidInput, "Request sent is NULL");
-//	} else if (request.getCity() == null) {
-//	    throw new BusinessException(ServiceError.InvalidInput, "City cannot be NULL");
-//	}
-//	City city = appointmentService.addCity(request);
-//
-//	transnationalService.addResource(city.getId(), Resource.CITY, false);
-//	SolrCityDocument solrCities = new SolrCityDocument();
-//	BeanUtil.map(city, solrCities);
-//	solrCities.setGeoLocation(new GeoLocation(city.getLatitude(), city.getLongitude()));
-//	solrCityService.addCities(solrCities);
-//
-//	Response<City> response = new Response<City>();
-//	response.setData(city);
-//	return response;
-//    }
-
     @Path(value = PathProxy.AppointmentUrls.ACTIVATE_DEACTIVATE_CITY)
     @GET
+    @ApiOperation(value = PathProxy.AppointmentUrls.ACTIVATE_DEACTIVATE_CITY, notes = PathProxy.AppointmentUrls.ACTIVATE_DEACTIVATE_CITY)
     public Response<Boolean> activateCity(@PathParam(value = "cityId") String cityId, @DefaultValue("true") @QueryParam("activate") Boolean activate) {
 	if (cityId == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -136,6 +77,7 @@ public class AppointmentApi {
 
     @Path(value = PathProxy.AppointmentUrls.GET_COUNTRIES)
     @GET
+    @ApiOperation(value = PathProxy.AppointmentUrls.GET_COUNTRIES, notes = PathProxy.AppointmentUrls.GET_COUNTRIES)
     public Response<City> getCountries() {
 	List<City> countries = appointmentService.getCountries();
 	Response<City> response = new Response<City>();
@@ -145,6 +87,7 @@ public class AppointmentApi {
 
     @Path(value = PathProxy.AppointmentUrls.GET_STATES)
     @GET
+    @ApiOperation(value = PathProxy.AppointmentUrls.GET_STATES, notes = PathProxy.AppointmentUrls.GET_STATES)
     public Response<City> getStates(@QueryParam(value = "country") String country) {
 	List<City> states = appointmentService.getStates(country);
 	Response<City> response = new Response<City>();
@@ -154,6 +97,7 @@ public class AppointmentApi {
 
     @Path(value = PathProxy.AppointmentUrls.GET_CITY)
     @GET
+    @ApiOperation(value = PathProxy.AppointmentUrls.GET_CITY, notes = PathProxy.AppointmentUrls.GET_CITY)
     public Response<City> getCities(@QueryParam(value = "state") String state) {
 	List<City> cities = appointmentService.getCities(state);
 	Response<City> response = new Response<City>();
@@ -163,6 +107,7 @@ public class AppointmentApi {
 
     @Path(value = PathProxy.AppointmentUrls.GET_CITY_ID)
     @GET
+    @ApiOperation(value = PathProxy.AppointmentUrls.GET_CITY_ID, notes = PathProxy.AppointmentUrls.GET_CITY_ID)
     public Response<City> getCityById(@PathParam(value = "cityId") String cityId) {
 	if (cityId == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -177,6 +122,7 @@ public class AppointmentApi {
 
     @Path(value = PathProxy.AppointmentUrls.ADD_LANDMARK_LOCALITY)
     @POST
+    @ApiOperation(value = PathProxy.AppointmentUrls.ADD_LANDMARK_LOCALITY, notes = PathProxy.AppointmentUrls.ADD_LANDMARK_LOCALITY)
     public Response<LandmarkLocality> addLandmaklLocality(LandmarkLocality request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request sent is NULL");
@@ -195,6 +141,7 @@ public class AppointmentApi {
 
     @Path(value = PathProxy.AppointmentUrls.GET_CLINIC)
     @GET
+    @ApiOperation(value = PathProxy.AppointmentUrls.GET_CLINIC, notes = PathProxy.AppointmentUrls.GET_CLINIC)
     public Response<Clinic> getClinic(@PathParam(value = "locationId") String locationId) {
 
 	if (DPDoctorUtils.anyStringEmpty(locationId)) {
@@ -209,6 +156,7 @@ public class AppointmentApi {
 
     @Path(value = PathProxy.AppointmentUrls.GET_LAB)
     @GET
+    @ApiOperation(value = PathProxy.AppointmentUrls.GET_LAB, notes = PathProxy.AppointmentUrls.GET_LAB)
     public Response<Lab> getLabs(@PathParam("locationId") String locationId) {
 	if (DPDoctorUtils.anyStringEmpty(locationId)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Location Id cannot be empty");
@@ -220,6 +168,7 @@ public class AppointmentApi {
     }
 
     @POST
+    @ApiOperation(value = "ADD_APPOINTMENT", notes = "ADD_APPOINTMENT")
     public Response<Appointment> BookAppoinment(AppointmentRequest request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "request cannot be null");
@@ -238,6 +187,7 @@ public class AppointmentApi {
     }
 
     @GET
+    @ApiOperation(value = "GET_APPOINTMENTS", notes = "GET_APPOINTMENTS")
     public Response<Appointment> getDoctorAppointments(@QueryParam(value = "locationId") String locationId,
 	    @MatrixParam(value = "doctorId") List<String> doctorId, @QueryParam(value = "patientId") String patientId, @QueryParam(value = "from") String from,
 	    @QueryParam(value = "to") String to, @QueryParam(value = "page") int page, @QueryParam(value = "size") int size, @DefaultValue(value="0") @QueryParam(value = "updatedTime") String updatedTime) {
@@ -250,6 +200,7 @@ public class AppointmentApi {
 
     @Path(value = PathProxy.AppointmentUrls.GET_PATIENT_APPOINTMENTS)
     @GET
+    @ApiOperation(value = PathProxy.AppointmentUrls.GET_PATIENT_APPOINTMENTS, notes = PathProxy.AppointmentUrls.GET_PATIENT_APPOINTMENTS)
     public Response<Appointment> getPatientAppointments(@QueryParam(value = "locationId") String locationId, @QueryParam(value = "doctorId") String doctorId,
 	    @QueryParam(value = "patientId") String patientId, @QueryParam(value = "from") String from, @QueryParam(value = "to") String to,
 	    @QueryParam(value = "page") int page, @QueryParam(value = "size") int size, @DefaultValue(value="0") @QueryParam(value = "updatedTime") String updatedTime) {
@@ -262,6 +213,7 @@ public class AppointmentApi {
 
     @Path(value = PathProxy.AppointmentUrls.GET_TIME_SLOTS)
     @GET
+    @ApiOperation(value = PathProxy.AppointmentUrls.GET_TIME_SLOTS, notes = PathProxy.AppointmentUrls.GET_TIME_SLOTS)
     public Response<SlotDataResponse> getTimeSlots(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId, @PathParam("date") String date) {
 	
 	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
@@ -276,6 +228,7 @@ public class AppointmentApi {
 
     @Path(value = PathProxy.AppointmentUrls.ADD_EDIT_EVENT)
     @POST
+    @ApiOperation(value = PathProxy.AppointmentUrls.ADD_EDIT_EVENT, notes = PathProxy.AppointmentUrls.ADD_EDIT_EVENT)
     public Response<Appointment> addEditEvent(EventRequest request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "request cannot be null");
@@ -293,6 +246,7 @@ public class AppointmentApi {
 
     @Path(value = PathProxy.AppointmentUrls.SEND_REMINDER)
     @GET
+    @ApiOperation(value = PathProxy.AppointmentUrls.SEND_REMINDER, notes = PathProxy.AppointmentUrls.SEND_REMINDER)
     public Response<Boolean> sendReminder(@PathParam(value = "appointmentId") String appointmentId) {
 	if (DPDoctorUtils.anyStringEmpty(appointmentId)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Appointment Id cannot be null");
@@ -306,6 +260,7 @@ public class AppointmentApi {
 
     @Path(value = PathProxy.AppointmentUrls.ADD_PATIENT_IN_QUEUE)
     @POST
+    @ApiOperation(value = PathProxy.AppointmentUrls.ADD_PATIENT_IN_QUEUE, notes = PathProxy.AppointmentUrls.ADD_PATIENT_IN_QUEUE)
     public Response<PatientQueue> addPatientInQueue(PatientQueueAddEditRequest request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "request cannot be null");
@@ -319,6 +274,7 @@ public class AppointmentApi {
 
     @Path(value = PathProxy.AppointmentUrls.REARRANGE_PATIENT_IN_QUEUE)
     @GET
+    @ApiOperation(value = PathProxy.AppointmentUrls.REARRANGE_PATIENT_IN_QUEUE, notes = PathProxy.AppointmentUrls.REARRANGE_PATIENT_IN_QUEUE)
     public Response<PatientQueue> rearrangePatientInQueue(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "appointmentId") String appointmentId, @PathParam(value = "sequenceNo") int sequenceNo) {
@@ -334,6 +290,7 @@ public class AppointmentApi {
 
     @Path(value = PathProxy.AppointmentUrls.GET_PATIENT_QUEUE)
     @GET
+    @ApiOperation(value = PathProxy.AppointmentUrls.GET_PATIENT_QUEUE, notes = PathProxy.AppointmentUrls.GET_PATIENT_QUEUE)
     public Response<PatientQueue> getPatientQueue(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {

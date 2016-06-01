@@ -1,4 +1,4 @@
-package com.dpdocter.solr.webservices;
+package com.dpdocter.webservices;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +24,8 @@ import com.dpdocter.solr.document.SolrSpecialityDocument;
 import com.dpdocter.solr.response.LabResponse;
 import com.dpdocter.solr.services.SolrAppointmentService;
 import com.dpdocter.webservices.PathProxy;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 import common.util.web.Response;
 
@@ -31,6 +33,7 @@ import common.util.web.Response;
 @Path(PathProxy.SOLR_APPOINTMENT_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(value = PathProxy.SOLR_APPOINTMENT_BASE_URL, description = "Endpoint for solr appointment")
 public class SolrAppointmentApi {
 
     @Autowired
@@ -41,6 +44,7 @@ public class SolrAppointmentApi {
 
     @Path(value = PathProxy.SolrAppointmentUrls.SEARCH)
     @GET
+    @ApiOperation(value = PathProxy.SolrAppointmentUrls.SEARCH, notes = PathProxy.SolrAppointmentUrls.SEARCH)
     public Response<AppointmentSearchResponse> search(@QueryParam("city") String city, @QueryParam("location") String location,
 	    @QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude, @QueryParam("searchTerm") String searchTerm) {
 
@@ -53,6 +57,7 @@ public class SolrAppointmentApi {
 
     @Path(value = PathProxy.SolrAppointmentUrls.GET_DOCTORS)
     @GET
+    @ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_DOCTORS, notes = PathProxy.SolrAppointmentUrls.GET_DOCTORS)
     public Response<SolrDoctorDocument> getDoctors(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("city") String city,
 	    @QueryParam("location") String location, @QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
 	    @QueryParam("speciality") String speciality, @QueryParam("symptom") String symptom, @QueryParam("booking") Boolean booking,
@@ -70,6 +75,7 @@ public class SolrAppointmentApi {
 
     @Path(value = PathProxy.SolrAppointmentUrls.GET_LABS)
     @GET
+    @ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_LABS, notes = PathProxy.SolrAppointmentUrls.GET_LABS)
     public Response<LabResponse> getLabs(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("city") String city, @QueryParam("location") String location,
 	    @QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude, @QueryParam("test") String test,
 	    @QueryParam("booking") Boolean booking, @QueryParam("calling") Boolean calling) {
@@ -96,6 +102,7 @@ public class SolrAppointmentApi {
 
     @Path(value = PathProxy.SolrAppointmentUrls.ADD_SPECIALITY)
     @POST
+    @ApiOperation(value = PathProxy.SolrAppointmentUrls.ADD_SPECIALITY, notes = PathProxy.SolrAppointmentUrls.ADD_SPECIALITY)
     public Response<Boolean> addSpeciality(List<SolrSpecialityDocument> request) {
 	if (request == null || request.isEmpty()) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Specialities Cannot Be Empty");

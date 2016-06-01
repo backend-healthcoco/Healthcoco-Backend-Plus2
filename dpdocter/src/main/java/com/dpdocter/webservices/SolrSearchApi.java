@@ -1,3 +1,4 @@
+package com.dpdocter.webservices;
 /*
  * package com.dpdocter.solr.webservices;
  * 

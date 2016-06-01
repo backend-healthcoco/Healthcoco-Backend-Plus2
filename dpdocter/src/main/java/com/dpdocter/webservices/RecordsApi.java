@@ -39,6 +39,8 @@ import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.RecordsService;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -47,6 +49,7 @@ import common.util.web.Response;
 @Path(PathProxy.RECORDS_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(value = PathProxy.RECORDS_BASE_URL, description = "Endpoint for records")
 public class RecordsApi {
     @Autowired
     private RecordsService recordsService;
@@ -62,6 +65,7 @@ public class RecordsApi {
 
     @POST
     @Path(value = PathProxy.RecordsUrls.ADD_RECORDS)
+    @ApiOperation(value = PathProxy.RecordsUrls.ADD_RECORDS, notes = PathProxy.RecordsUrls.ADD_RECORDS)
     public Response<Records> addRecords(RecordsAddRequest request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -86,6 +90,7 @@ public class RecordsApi {
 
     @Path(value = PathProxy.RecordsUrls.TAG_RECORD)
     @POST
+    @ApiOperation(value = PathProxy.RecordsUrls.TAG_RECORD, notes = PathProxy.RecordsUrls.TAG_RECORD)
     public Response<Boolean> tagRecord(TagRecordRequest request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -98,6 +103,7 @@ public class RecordsApi {
 
     @Path(value = PathProxy.RecordsUrls.SEARCH_RECORD)
     @POST
+    @ApiOperation(value = PathProxy.RecordsUrls.SEARCH_RECORD, notes = PathProxy.RecordsUrls.SEARCH_RECORD)
     public Response<Records> searchRecords(RecordsSearchRequest request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -112,6 +118,7 @@ public class RecordsApi {
 
     @Path(value = PathProxy.RecordsUrls.GET_RECORDS_PATIENT_ID)
     @GET
+    @ApiOperation(value = PathProxy.RecordsUrls.GET_RECORDS_PATIENT_ID, notes = PathProxy.RecordsUrls.GET_RECORDS_PATIENT_ID)
     public Response<Records> getRecordsByPatientId(@PathParam("patientId") String patientId, @QueryParam("page") int page, @QueryParam("size") int size,
 	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (DPDoctorUtils.anyStringEmpty(patientId)) {
@@ -128,6 +135,7 @@ public class RecordsApi {
 
     @Path(value = PathProxy.RecordsUrls.GET_RECORD_COUNT)
     @GET
+    @ApiOperation(value = PathProxy.RecordsUrls.GET_RECORD_COUNT, notes = PathProxy.RecordsUrls.GET_RECORD_COUNT)
     public Response<Integer> getRecordCount(@PathParam("doctorId") String doctorId, @PathParam("patientId") String patientId,
 	    @PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
 	Boolean isOTPVerified = otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId);
@@ -139,6 +147,7 @@ public class RecordsApi {
 
     @Path(value = PathProxy.RecordsUrls.GET_ALL_TAGS)
     @GET
+    @ApiOperation(value = PathProxy.RecordsUrls.GET_ALL_TAGS, notes = PathProxy.RecordsUrls.GET_ALL_TAGS)
     public Response<Tags> getAllTags(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
 	    @PathParam("hospitalId") String hospitalId) {
 	List<Tags> tags = recordsService.getAllTags(doctorId, locationId, hospitalId);
@@ -149,6 +158,7 @@ public class RecordsApi {
 
     @Path(value = PathProxy.RecordsUrls.CREATE_TAG)
     @POST
+    @ApiOperation(value = PathProxy.RecordsUrls.CREATE_TAG, notes = PathProxy.RecordsUrls.CREATE_TAG)
     public Response<Tags> createTag(Tags tags) {
 	if (tags == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -161,6 +171,7 @@ public class RecordsApi {
 
     @Path(value = PathProxy.RecordsUrls.GET_PATIENT_EMAIL_ADD)
     @GET
+    @ApiOperation(value = PathProxy.RecordsUrls.GET_PATIENT_EMAIL_ADD, notes = PathProxy.RecordsUrls.GET_PATIENT_EMAIL_ADD)
     public Response<String> getPatientEmailId(@PathParam("patientId") String patientId) {
 	String emailAdd = recordsService.getPatientEmailAddress(patientId);
 	Response<String> response = new Response<String>();
@@ -170,6 +181,7 @@ public class RecordsApi {
 
     @Path(value = PathProxy.RecordsUrls.EMAIL_RECORD)
     @GET
+    @ApiOperation(value = PathProxy.RecordsUrls.EMAIL_RECORD, notes = PathProxy.RecordsUrls.EMAIL_RECORD)
     public Response<Boolean> emailRecords(@PathParam("recordId") String recordId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @PathParam("emailAddress") String emailAddress) {
@@ -181,6 +193,7 @@ public class RecordsApi {
 
     @Path(value = PathProxy.RecordsUrls.DELETE_RECORD)
     @DELETE
+    @ApiOperation(value = PathProxy.RecordsUrls.DELETE_RECORD, notes = PathProxy.RecordsUrls.DELETE_RECORD)
     public Response<Records> deleteRecords(@PathParam("recordId") String recordId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
     	Records records = recordsService.deleteRecord(recordId, discarded);
 	Response<Records> response = new Response<Records>();
@@ -190,6 +203,7 @@ public class RecordsApi {
 
     @Path(value = PathProxy.RecordsUrls.DELETE_TAG)
     @DELETE
+    @ApiOperation(value = PathProxy.RecordsUrls.DELETE_TAG, notes = PathProxy.RecordsUrls.DELETE_TAG)
     public Response<Tags> deleteTag(@PathParam("tagid") String tagid, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
     	Tags tags = recordsService.deleteTag(tagid, discarded);
 	Response<Tags> response = new Response<Tags>();
@@ -199,6 +213,7 @@ public class RecordsApi {
 
     @Path(value = PathProxy.RecordsUrls.DOWNLOAD_RECORD)
     @GET
+    @ApiOperation(value = PathProxy.RecordsUrls.DOWNLOAD_RECORD, notes = PathProxy.RecordsUrls.DOWNLOAD_RECORD)
     public javax.ws.rs.core.Response downloadRecords(@PathParam("recordId") String recordId) {
     	FileDownloadResponse file = recordsService.getRecordFile(recordId);
 	if (file == null) {
@@ -212,6 +227,7 @@ public class RecordsApi {
 
     @Path(value = PathProxy.RecordsUrls.GET_FLEXIBLE_COUNTS)
     @POST
+    @ApiOperation(value = PathProxy.RecordsUrls.GET_FLEXIBLE_COUNTS, notes = PathProxy.RecordsUrls.GET_FLEXIBLE_COUNTS)
     public Response<FlexibleCounts> getCounts(FlexibleCounts flexibleCounts) {
 	FlexibleCounts flexibleCountsResponse = recordsService.getFlexibleCounts(flexibleCounts);
 	Response<FlexibleCounts> response = new Response<FlexibleCounts>();
@@ -221,6 +237,7 @@ public class RecordsApi {
 
     @Path(value = PathProxy.RecordsUrls.EDIT_RECORD)
     @PUT
+    @ApiOperation(value = PathProxy.RecordsUrls.EDIT_RECORD, notes = PathProxy.RecordsUrls.EDIT_RECORD)
     public Response<Records> editRecords(@PathParam(value = "recordId") String recordId, RecordsEditRequest request) {
 	if (DPDoctorUtils.anyStringEmpty(recordId) || request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -247,6 +264,7 @@ public class RecordsApi {
 
     @Path(value = PathProxy.RecordsUrls.CHANGE_LABEL_AND_DESCRIPTION_RECORD)
     @POST
+    @ApiOperation(value = PathProxy.RecordsUrls.CHANGE_LABEL_AND_DESCRIPTION_RECORD, notes = PathProxy.RecordsUrls.CHANGE_LABEL_AND_DESCRIPTION_RECORD)
     public Response<Boolean> changeLabelAndDescription(ChangeRecordLabelDescriptionRequest request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -260,6 +278,7 @@ public class RecordsApi {
     @POST
     @Path(value = PathProxy.RecordsUrls.ADD_RECORDS_MULTIPART)
     @Consumes({ MediaType.MULTIPART_FORM_DATA })
+    @ApiOperation(value = PathProxy.RecordsUrls.ADD_RECORDS_MULTIPART, notes = PathProxy.RecordsUrls.ADD_RECORDS_MULTIPART)
     public Response<Records> addRecordsMultipart(@FormDataParam("file") FormDataBodyPart file, @FormDataParam("data") FormDataBodyPart data) {
     	data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
     	RecordsAddRequestMultipart request = data.getValueAs(RecordsAddRequestMultipart.class);
@@ -285,6 +304,7 @@ public class RecordsApi {
     @POST
     @Path(value = PathProxy.RecordsUrls.SAVE_RECORDS_IMAGE)
     @Consumes({ MediaType.MULTIPART_FORM_DATA })
+    @ApiOperation(value = PathProxy.RecordsUrls.SAVE_RECORDS_IMAGE, notes = PathProxy.RecordsUrls.SAVE_RECORDS_IMAGE)
     public Response<String> saveRecordsImage(@FormDataParam("file") FormDataBodyPart file, @FormDataParam("patientId") FormDataBodyPart patientId) {
     	patientId.setMediaType(MediaType.APPLICATION_JSON_TYPE);
     	String patientIdString = patientId.getValueAs(String.class);

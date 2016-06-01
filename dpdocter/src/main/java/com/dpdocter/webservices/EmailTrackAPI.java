@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.EmailTrack;
 import com.dpdocter.services.EmailTackService;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 import common.util.web.Response;
 
@@ -22,6 +24,7 @@ import common.util.web.Response;
 @Path(PathProxy.EMAIL_TRACK_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(value = PathProxy.EMAIL_TRACK_BASE_URL, description = "Endpoint for email track")
 public class EmailTrackAPI {
 
     private static Logger logger = Logger.getLogger(EmailTrackAPI.class.getName());
@@ -30,6 +33,7 @@ public class EmailTrackAPI {
     private EmailTackService emailTackService;
 
     @GET
+    @ApiOperation(value = "GET_EMAIL_DETAILS", notes = "GET_EMAIL_DETAILS")
     public Response<EmailTrack> getEmailDetails(@QueryParam(value = "patientId") String patientId, @QueryParam(value = "doctorId") String doctorId,
 	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId, @QueryParam("page") int page,
 	    @QueryParam("size") int size) {

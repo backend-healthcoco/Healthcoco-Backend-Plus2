@@ -56,6 +56,8 @@ import com.dpdocter.solr.document.SolrDiagnosticTestDocument;
 import com.dpdocter.solr.document.SolrDrugDocument;
 import com.dpdocter.solr.document.SolrLabTestDocument;
 import com.dpdocter.solr.services.SolrPrescriptionService;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -64,6 +66,7 @@ import common.util.web.Response;
 @Path(PathProxy.PRESCRIPTION_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(value = PathProxy.PRESCRIPTION_BASE_URL, description = "Endpoint for prescription")
 public class PrescriptionApi {
 
     private static Logger logger = Logger.getLogger(PrescriptionApi.class.getName());
@@ -85,6 +88,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.ADD_DRUG)
     @POST
+    @ApiOperation(value = PathProxy.PrescriptionUrls.ADD_DRUG, notes = PathProxy.PrescriptionUrls.ADD_DRUG)
     public Response<DrugAddEditResponse> addDrug(DrugAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Request Sent Is NULL");
@@ -111,6 +115,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG)
     @PUT
+    @ApiOperation(value = PathProxy.PrescriptionUrls.EDIT_DRUG, notes = PathProxy.PrescriptionUrls.EDIT_DRUG)
     public Response<DrugAddEditResponse> editDrug(@PathParam(value = "drugId") String drugId, DrugAddEditRequest request) {
 	if (StringUtils.isEmpty(drugId) || request == null) {
 	    logger.warn("Request Sent Is NULL");
@@ -136,6 +141,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG)
     @DELETE
+    @ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_DRUG, notes = PathProxy.PrescriptionUrls.DELETE_DRUG)
     public Response<Drug> deleteDrug(@PathParam(value = "drugId") String drugId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
@@ -155,6 +161,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_GLOBAL_DRUG)
     @DELETE
+    @ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_GLOBAL_DRUG, notes = PathProxy.PrescriptionUrls.DELETE_GLOBAL_DRUG)
     public Response<Drug> deleteDrug(@PathParam(value = "drugId") String drugId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(drugId)) {
 	    logger.warn("Drug Id, Doctor Id Cannot Be Empty");
@@ -171,6 +178,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.GET_DRUG_ID)
     @GET
+    @ApiOperation(value = PathProxy.PrescriptionUrls.GET_DRUG_ID, notes = PathProxy.PrescriptionUrls.GET_DRUG_ID)
     public Response<DrugAddEditResponse> getDrugDetails(@PathParam("drugId") String drugId) {
 	if (drugId == null) {
 	    logger.error("DrugId Is NULL");
@@ -184,6 +192,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.ADD_LAB_TEST)
     @POST
+    @ApiOperation(value = PathProxy.PrescriptionUrls.ADD_LAB_TEST, notes = PathProxy.PrescriptionUrls.ADD_LAB_TEST)
     public Response<LabTest> addLabTest(LabTest request) {
 	if (request == null) {
 	    logger.warn("Request Sent Is NULL");
@@ -203,6 +212,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_LAB_TEST)
     @PUT
+    @ApiOperation(value = PathProxy.PrescriptionUrls.EDIT_LAB_TEST, notes = PathProxy.PrescriptionUrls.EDIT_LAB_TEST)
     public Response<LabTest> editLabTest(@PathParam(value = "labTestId") String labTestId, LabTest request) {
 	if (StringUtils.isEmpty(labTestId) || request == null) {
 	    logger.warn("Request Sent Is NULL");
@@ -224,6 +234,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_LAB_TEST)
     @DELETE
+    @ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_LAB_TEST, notes = PathProxy.PrescriptionUrls.DELETE_LAB_TEST)
     public Response<LabTest> deleteLabTest(@PathParam(value = "labTestId") String labTestId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(labTestId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
@@ -240,6 +251,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_GLOBAL_LAB_TEST)
     @DELETE
+    @ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_GLOBAL_LAB_TEST, notes = PathProxy.PrescriptionUrls.DELETE_GLOBAL_LAB_TEST)
     public Response<LabTest> deleteLabTest(@PathParam(value = "labTestId") String labTestId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(labTestId)) {
 	    logger.warn("Lab Test Id Cannot Be Empty");
@@ -256,6 +268,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.GET_LAB_TEST_BY_ID)
     @GET
+    @ApiOperation(value = PathProxy.PrescriptionUrls.GET_LAB_TEST_BY_ID, notes = PathProxy.PrescriptionUrls.GET_LAB_TEST_BY_ID)
     public Response<LabTest> getLabTestDetails(@PathParam("labTestId") String labTestId) {
 	if (labTestId == null) {
 	    logger.error("Lab Test Id Is NULL");
@@ -269,6 +282,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.ADD_TEMPLATE)
     @POST
+    @ApiOperation(value = PathProxy.PrescriptionUrls.ADD_TEMPLATE, notes = PathProxy.PrescriptionUrls.ADD_TEMPLATE)
     public Response<TemplateAddEditResponse> addTemplate(TemplateAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Request Sent Is NULL");
@@ -282,6 +296,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.ADD_TEMPLATE_HANDHELD)
     @POST
+    @ApiOperation(value = PathProxy.PrescriptionUrls.ADD_TEMPLATE_HANDHELD, notes = PathProxy.PrescriptionUrls.ADD_TEMPLATE_HANDHELD)
     public Response<TemplateAddEditResponseDetails> addTemplateHandheld(TemplateAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Request Sent Is NULL");
@@ -295,6 +310,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_TEMPLATE)
     @PUT
+    @ApiOperation(value = PathProxy.PrescriptionUrls.EDIT_TEMPLATE, notes = PathProxy.PrescriptionUrls.EDIT_TEMPLATE)
     public Response<TemplateAddEditResponseDetails> editTemplate(@PathParam(value = "templateId") String templateId, TemplateAddEditRequest request) {
 	if (StringUtils.isEmpty(templateId) || request == null) {
 	    logger.warn("Request Sent Is NULL");
@@ -309,6 +325,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_TEMPLATE)
     @DELETE
+    @ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_TEMPLATE, notes = PathProxy.PrescriptionUrls.DELETE_TEMPLATE)
     public Response<TemplateAddEditResponseDetails> deleteTemplate(@PathParam(value = "templateId") String templateId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
@@ -324,6 +341,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.GET_TEMPLATE_TEMPLATE_ID)
     @GET
+    @ApiOperation(value = PathProxy.PrescriptionUrls.GET_TEMPLATE_TEMPLATE_ID, notes = PathProxy.PrescriptionUrls.GET_TEMPLATE_TEMPLATE_ID)
     public Response<TemplateAddEditResponseDetails> getTemplate(@PathParam(value = "templateId") String templateId,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId) {
@@ -339,6 +357,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.GET_TEMPLATE)
     @GET
+    @ApiOperation(value = PathProxy.PrescriptionUrls.GET_TEMPLATE, notes = PathProxy.PrescriptionUrls.GET_TEMPLATE)
     public Response<TemplateAddEditResponseDetails> getAllTemplates(@QueryParam("page") int page, @QueryParam("size") int size,
 	    @QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
@@ -357,6 +376,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.ADD_PRESCRIPTION)
     @POST
+    @ApiOperation(value = PathProxy.PrescriptionUrls.ADD_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.ADD_PRESCRIPTION)
     public Response<PrescriptionAddEditResponse> addPrescription(PrescriptionAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Request Sent Is NULL");
@@ -378,6 +398,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.ADD_PRESCRIPTION_HANDHELD)
     @POST
+    @ApiOperation(value = PathProxy.PrescriptionUrls.ADD_PRESCRIPTION_HANDHELD, notes = PathProxy.PrescriptionUrls.ADD_PRESCRIPTION_HANDHELD)
     public Response<PrescriptionAddEditResponseDetails> addPrescriptionHandheld(PrescriptionAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Request Sent Is NULL");
@@ -397,6 +418,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_PRESCRIPTION)
     @PUT
+    @ApiOperation(value = PathProxy.PrescriptionUrls.EDIT_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.EDIT_PRESCRIPTION)
     public Response<PrescriptionAddEditResponseDetails> editPrescription(@PathParam(value = "prescriptionId") String prescriptionId,
 	    PrescriptionAddEditRequest request) {
 	if (StringUtils.isEmpty(prescriptionId) || request == null) {
@@ -417,6 +439,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_PRESCRIPTION)
     @DELETE
+    @ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.DELETE_PRESCRIPTION)
     public Response<Prescription> deletePrescription(@PathParam(value = "prescriptionId") String prescriptionId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @PathParam(value = "patientId") String patientId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
@@ -432,6 +455,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION)
     @GET
+    @ApiOperation(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.GET_PRESCRIPTION)
     public Response<Prescription> getPrescription(@PathParam(value = "prescriptionId") String prescriptionId) {
 	if (DPDoctorUtils.anyStringEmpty(prescriptionId)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Prescription or Patient Id Cannot Be Empty");
@@ -445,6 +469,7 @@ public class PrescriptionApi {
     }
 
     @GET
+    @ApiOperation(value = "GET_PRESCRIPTIONS", notes = "GET_PRESCRIPTIONS")
     public Response<Prescription> getPrescription(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
 	    @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId, @QueryParam("patientId") String patientId,
 	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
@@ -461,6 +486,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_PATIENT_ID)
     @GET
+    @ApiOperation(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_PATIENT_ID, notes = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_PATIENT_ID)
     public Response<Prescription> getPrescriptionByPatientId(@PathParam("patientId") String patientId, @QueryParam("page") int page,
 	    @QueryParam("size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
@@ -476,6 +502,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_COUNT)
     @GET
+    @ApiOperation(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_COUNT, notes = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_COUNT)
     public Response<Integer> getPrescriptionCount(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
 
@@ -488,6 +515,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.ADD_DRUG_TYPE)
     @POST
+    @ApiOperation(value = PathProxy.PrescriptionUrls.ADD_DRUG_TYPE, notes = PathProxy.PrescriptionUrls.ADD_DRUG_TYPE)
     public Response<DrugTypeAddEditResponse> addDrugType(DrugTypeAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Request Sent Is NULL");
@@ -502,6 +530,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_TYPE)
     @PUT
+    @ApiOperation(value = PathProxy.PrescriptionUrls.EDIT_DRUG_TYPE, notes = PathProxy.PrescriptionUrls.EDIT_DRUG_TYPE)
     public Response<DrugTypeAddEditResponse> editDrugType(@PathParam(value = "drugTypeId") String drugTypeId, DrugTypeAddEditRequest request) {
 	if (StringUtils.isEmpty(drugTypeId) || request == null) {
 	    logger.warn("Request Sent Is NULL");
@@ -517,6 +546,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_TYPE)
     @DELETE
+    @ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_DRUG_TYPE, notes = PathProxy.PrescriptionUrls.DELETE_DRUG_TYPE)
     public Response<DrugTypeAddEditResponse> deleteDrugType(@PathParam(value = "drugTypeId") String drugTypeId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(drugTypeId)) {
@@ -532,6 +562,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.ADD_DRUG_STRENGTH)
     @POST
+    @ApiOperation(value = PathProxy.PrescriptionUrls.ADD_DRUG_STRENGTH, notes = PathProxy.PrescriptionUrls.ADD_DRUG_STRENGTH)
     public Response<DrugStrengthAddEditResponse> addDrugStrength(DrugStrengthAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Request Sent Is NULL");
@@ -546,6 +577,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_STRENGTH)
     @PUT
+    @ApiOperation(value = PathProxy.PrescriptionUrls.EDIT_DRUG_STRENGTH, notes = PathProxy.PrescriptionUrls.EDIT_DRUG_STRENGTH)
     public Response<DrugStrengthAddEditResponse> editDrugStrength(@PathParam(value = "drugStrengthId") String drugStrengthId,
 	    DrugStrengthAddEditRequest request) {
 	if (StringUtils.isEmpty(drugStrengthId) || request == null) {
@@ -562,6 +594,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_STRENGTH)
     @DELETE
+    @ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_DRUG_STRENGTH, notes = PathProxy.PrescriptionUrls.DELETE_DRUG_STRENGTH)
     public Response<DrugStrengthAddEditResponse> deleteDrugStrength(@PathParam(value = "drugStrengthId") String drugStrengthId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(drugStrengthId)) {
@@ -577,6 +610,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.ADD_DRUG_DOSAGE)
     @POST
+    @ApiOperation(value = PathProxy.PrescriptionUrls.ADD_DRUG_DOSAGE, notes = PathProxy.PrescriptionUrls.ADD_DRUG_DOSAGE)
     public Response<DrugDosageAddEditResponse> addDrugDosage(DrugDosageAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Request Sent Is NULL");
@@ -591,6 +625,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DOSAGE)
     @PUT
+    @ApiOperation(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DOSAGE, notes = PathProxy.PrescriptionUrls.EDIT_DRUG_DOSAGE)
     public Response<DrugDosageAddEditResponse> editDrugDosage(@PathParam(value = "drugDosageId") String drugDosageId, DrugDosageAddEditRequest request) {
 	if (StringUtils.isEmpty(drugDosageId) || request == null) {
 	    logger.warn("Request Sent Is NULL");
@@ -606,6 +641,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DOSAGE)
     @DELETE
+    @ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DOSAGE, notes = PathProxy.PrescriptionUrls.DELETE_DRUG_DOSAGE)
     public Response<DrugDosageAddEditResponse> deleteDrugDosage(@PathParam(value = "drugDosageId") String drugDosageId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(drugDosageId)) {
@@ -621,6 +657,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.ADD_DRUG_DIRECTION)
     @POST
+    @ApiOperation(value = PathProxy.PrescriptionUrls.ADD_DRUG_DIRECTION, notes = PathProxy.PrescriptionUrls.ADD_DRUG_DIRECTION)
     public Response<DrugDirectionAddEditResponse> addDrugDirection(DrugDirectionAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Request Sent Is NULL");
@@ -635,6 +672,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DIRECTION)
     @PUT
+    @ApiOperation(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DIRECTION, notes = PathProxy.PrescriptionUrls.EDIT_DRUG_DIRECTION)
     public Response<DrugDirectionAddEditResponse> editDrugDirection(@PathParam(value = "drugDirectionId") String drugDirectionId,
 	    DrugDirectionAddEditRequest request) {
 	if (StringUtils.isEmpty(drugDirectionId) || request == null) {
@@ -651,6 +689,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DIRECTION)
     @DELETE
+    @ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DIRECTION, notes = PathProxy.PrescriptionUrls.DELETE_DRUG_DIRECTION)
     public Response<DrugDirectionAddEditResponse> deleteDrugDirection(@PathParam(value = "drugDirectionId") String drugDirectionId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(drugDirectionId)) {
@@ -666,6 +705,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.ADD_DRUG_DURATION_UNIT)
     @POST
+    @ApiOperation(value = PathProxy.PrescriptionUrls.ADD_DRUG_DURATION_UNIT, notes = PathProxy.PrescriptionUrls.ADD_DRUG_DURATION_UNIT)
     public Response<DrugDurationUnitAddEditResponse> addDrugDurationUnit(DrugDurationUnitAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Request Sent Is NULL");
@@ -680,6 +720,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DURATION_UNIT)
     @PUT
+    @ApiOperation(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DURATION_UNIT, notes = PathProxy.PrescriptionUrls.EDIT_DRUG_DURATION_UNIT)
     public Response<DrugDurationUnitAddEditResponse> editDrugDurationUnit(@PathParam(value = "drugDurationUnitId") String drugDurationUnitId,
 	    DrugDurationUnitAddEditRequest request) {
 	if (StringUtils.isEmpty(drugDurationUnitId) || request == null) {
@@ -696,6 +737,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DURATION_UNIT)
     @DELETE
+    @ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DURATION_UNIT, notes = PathProxy.PrescriptionUrls.DELETE_DRUG_DURATION_UNIT)
     public Response<DrugDurationUnitAddEditResponse> deleteDrugDurationUnit(@PathParam(value = "drugDurationUnitId") String drugDurationUnitId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(drugDurationUnitId)) {
@@ -711,6 +753,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_ITEMS)
     @GET
+    @ApiOperation(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_ITEMS, notes = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_ITEMS)
     public Response<Object> getPrescriptionItems(@PathParam("type") String type, @PathParam("range") String range, @QueryParam("page") int page,
 	    @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -730,6 +773,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.EMAIL_PRESCRIPTION)
     @GET
+    @ApiOperation(value = PathProxy.PrescriptionUrls.EMAIL_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.EMAIL_PRESCRIPTION)
     public Response<Boolean> emailPrescription(@PathParam(value = "prescriptionId") String prescriptionId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @PathParam(value = "emailAddress") String emailAddress) {
@@ -748,6 +792,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.SMS_PRESCRIPTION)
     @GET
+    @ApiOperation(value = PathProxy.PrescriptionUrls.SMS_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.SMS_PRESCRIPTION)
     public Response<Boolean> smsPrescription(@PathParam(value = "prescriptionId") String prescriptionId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @PathParam(value = "mobileNumber") String mobileNumber) {
@@ -765,6 +810,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.ADD_EDIT_DIAGNOSTIC_TEST)
     @POST
+    @ApiOperation(value = PathProxy.PrescriptionUrls.ADD_EDIT_DIAGNOSTIC_TEST, notes = PathProxy.PrescriptionUrls.ADD_EDIT_DIAGNOSTIC_TEST)
     public Response<DiagnosticTest> addEditDiagnosticTest(DiagnosticTest request) {
 	if (request == null) {
 	    logger.warn("Request Sent Is NULL");
@@ -783,6 +829,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_DIAGNOSTIC_TEST)
     @DELETE
+    @ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_DIAGNOSTIC_TEST, notes = PathProxy.PrescriptionUrls.DELETE_DIAGNOSTIC_TEST)
     public Response<DiagnosticTest> deleteDiagnosticTest(@PathParam(value = "diagnosticTestId") String diagnosticTestId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
@@ -800,6 +847,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.DELETE_GLOBAL_DIAGNOSTIC_TEST)
     @DELETE
+    @ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_GLOBAL_DIAGNOSTIC_TEST, notes = PathProxy.PrescriptionUrls.DELETE_GLOBAL_DIAGNOSTIC_TEST)
     public Response<DiagnosticTest> deleteDiagnosticTest(@PathParam(value = "diagnosticTestId") String diagnosticTestId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (StringUtils.isEmpty(diagnosticTestId)) {
@@ -817,6 +865,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.GET_DIAGNOSTIC_TEST_BY_ID)
     @GET
+    @ApiOperation(value = PathProxy.PrescriptionUrls.GET_DIAGNOSTIC_TEST_BY_ID, notes = PathProxy.PrescriptionUrls.GET_DIAGNOSTIC_TEST_BY_ID)
     public Response<DiagnosticTest> getDiagnosticTest(@PathParam("diagnosticTestId") String diagnosticTestId) {
 	if (diagnosticTestId == null) {
 	    logger.error("Diagnostic Test Id Is NULL");
@@ -830,6 +879,7 @@ public class PrescriptionApi {
 
     @Path(value = PathProxy.PrescriptionUrls.CHECK_PRESCRIPTION_EXISTS_FOR_PATIENT)
     @GET
+    @ApiOperation(value = PathProxy.PrescriptionUrls.CHECK_PRESCRIPTION_EXISTS_FOR_PATIENT, notes = PathProxy.PrescriptionUrls.CHECK_PRESCRIPTION_EXISTS_FOR_PATIENT)
     public Response<PrescriptionTestAndRecord> checkPrescriptionExists(@PathParam("uniqueEmrId") String uniqueEmrId, @PathParam("patientId") String patientId) {
 	PrescriptionTestAndRecord dataResponse = prescriptionServices.checkPrescriptionExists(uniqueEmrId, patientId);
 
@@ -840,6 +890,7 @@ public class PrescriptionApi {
     
     @Path(value = PathProxy.PrescriptionUrls.ADD_EDIT_GENERIC_CODE)
     @POST
+    @ApiOperation(value = PathProxy.PrescriptionUrls.ADD_EDIT_GENERIC_CODE, notes = PathProxy.PrescriptionUrls.ADD_EDIT_GENERIC_CODE)
     public Response<GenericCode> addEditGenericCode(GenericCode request) {
 	if (request == null) {
 	    logger.warn("Request Sent Is NULL");
@@ -855,6 +906,7 @@ public class PrescriptionApi {
     /**action = ADD OR REMOVE**/		
     @Path(value = PathProxy.PrescriptionUrls.ADD_REMOVE_GENERIC_CODE_TO_DRUG)
     @GET
+    @ApiOperation(value = PathProxy.PrescriptionUrls.ADD_REMOVE_GENERIC_CODE_TO_DRUG, notes = PathProxy.PrescriptionUrls.ADD_REMOVE_GENERIC_CODE_TO_DRUG)
     public Response<Boolean> addRemoveGenericCode(@PathParam(value = "action") String action,
 	    @PathParam(value = "genericId") String genericId, @PathParam(value = "drugCode") String drugCode) {
 	if (DPDoctorUtils.anyStringEmpty(action, genericId, drugCode)) {

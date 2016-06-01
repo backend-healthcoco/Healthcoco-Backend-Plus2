@@ -1,4 +1,4 @@
-package com.dpdocter.solr.webservices;
+package com.dpdocter.webservices;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;

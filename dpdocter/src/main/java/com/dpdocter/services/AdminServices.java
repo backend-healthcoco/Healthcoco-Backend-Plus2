@@ -2,6 +2,7 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import com.dpdocter.beans.ContactUs;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Resume;
@@ -33,5 +34,9 @@ public interface AdminServices {
 	List<DoctorResponse> getDoctors(int page, int size, String locationId);
 
 	List<Location> getLabs(int page, int size, String hospitalId);
+
+	ContactUs addContactUs(ContactUs request);
+
+	List<ContactUs> getContactUs(int page, int size);
 
 }

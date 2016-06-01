@@ -1,4 +1,4 @@
-package com.dpdocter.solr.webservices;
+package com.dpdocter.webservices;
 
 import java.util.List;
 
@@ -25,6 +25,8 @@ import com.dpdocter.beans.Speciality;
 import com.dpdocter.response.DiseaseListResponse;
 import com.dpdocter.solr.services.SolrMasterService;
 import com.dpdocter.webservices.PathProxy;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 import common.util.web.Response;
 
@@ -32,6 +34,7 @@ import common.util.web.Response;
 @Path(PathProxy.SOLR_MASTER_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(value = PathProxy.SOLR_MASTER_BASE_URL, description = "Endpoint for solr master")
 public class SolrMasterApi {
 
     @Autowired
@@ -39,6 +42,7 @@ public class SolrMasterApi {
 
     @Path(value = PathProxy.SolrMasterUrls.SEARCH_REFERENCE)
     @GET
+    @ApiOperation(value = PathProxy.SolrMasterUrls.SEARCH_REFERENCE, notes = PathProxy.SolrMasterUrls.SEARCH_REFERENCE)
     public Response<Reference> searchReference(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
 	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -53,6 +57,7 @@ public class SolrMasterApi {
 
     @Path(value = PathProxy.SolrMasterUrls.SEARCH_DISEASE)
     @GET
+    @ApiOperation(value = PathProxy.SolrMasterUrls.SEARCH_DISEASE, notes = PathProxy.SolrMasterUrls.SEARCH_DISEASE)
     public Response<DiseaseListResponse> searchDisease(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
 	    @QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded,
@@ -67,6 +72,7 @@ public class SolrMasterApi {
 
     @Path(value = PathProxy.SolrMasterUrls.SEARCH_BLOOD_GROUP)
     @GET
+    @ApiOperation(value = PathProxy.SolrMasterUrls.SEARCH_BLOOD_GROUP, notes = PathProxy.SolrMasterUrls.SEARCH_BLOOD_GROUP)
     public Response<BloodGroup> searchBloodGroup(@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 	    @QueryParam(value = "searchTerm") String searchTerm, @QueryParam("page") int page, @QueryParam("size") int size) {
 
@@ -78,6 +84,7 @@ public class SolrMasterApi {
 
     @Path(value = PathProxy.SolrMasterUrls.SEARCH_PROFESSION)
     @GET
+    @ApiOperation(value = PathProxy.SolrMasterUrls.SEARCH_PROFESSION, notes = PathProxy.SolrMasterUrls.SEARCH_PROFESSION)
     public Response<Profession> searchProfession(@QueryParam(value = "searchTerm") String searchTerm,
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @QueryParam("page") int page, @QueryParam("size") int size) {
 
@@ -89,6 +96,7 @@ public class SolrMasterApi {
 
     @Path(value = PathProxy.SolrMasterUrls.SEARCH_PROFESSIONAL_MEMBERSHIP)
     @GET
+    @ApiOperation(value = PathProxy.SolrMasterUrls.SEARCH_PROFESSIONAL_MEMBERSHIP, notes = PathProxy.SolrMasterUrls.SEARCH_PROFESSIONAL_MEMBERSHIP)
     public Response<ProfessionalMembership> searchProfessionalMembership(@QueryParam(value = "searchTerm") String searchTerm,
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @QueryParam("page") int page, @QueryParam("size") int size) {
 
@@ -100,6 +108,7 @@ public class SolrMasterApi {
 
     @Path(value = PathProxy.SolrMasterUrls.SEARCH_EDUCATION_INSTITUTE)
     @GET
+    @ApiOperation(value = PathProxy.SolrMasterUrls.SEARCH_EDUCATION_INSTITUTE, notes = PathProxy.SolrMasterUrls.SEARCH_EDUCATION_INSTITUTE)
     public Response<EducationInstitute> searchEducationInstitute(@QueryParam(value = "searchTerm") String searchTerm,
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @QueryParam("page") int page, @QueryParam("size") int size) {
 
@@ -111,6 +120,7 @@ public class SolrMasterApi {
 
     @Path(value = PathProxy.SolrMasterUrls.SEARCH_EDUCATION_QUALIFICATION)
     @GET
+    @ApiOperation(value = PathProxy.SolrMasterUrls.SEARCH_EDUCATION_QUALIFICATION, notes = PathProxy.SolrMasterUrls.SEARCH_EDUCATION_QUALIFICATION)
     public Response<EducationQualification> searchEducationQualification(@QueryParam(value = "searchTerm") String searchTerm,
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @QueryParam("page") int page, @QueryParam("size") int size) {
 
@@ -122,6 +132,7 @@ public class SolrMasterApi {
 
     @Path(value = PathProxy.SolrMasterUrls.SEARCH_MEDICAL_COUNCIL)
     @GET
+    @ApiOperation(value = PathProxy.SolrMasterUrls.SEARCH_MEDICAL_COUNCIL, notes = PathProxy.SolrMasterUrls.SEARCH_MEDICAL_COUNCIL)
     public Response<MedicalCouncil> searchMedicalCouncil(@QueryParam(value = "searchTerm") String searchTerm,
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @QueryParam("page") int page, @QueryParam("size") int size) {
 
@@ -133,6 +144,7 @@ public class SolrMasterApi {
 
     @Path(value = PathProxy.SolrMasterUrls.SEARCH_SPECIALITY)
     @GET
+    @ApiOperation(value = PathProxy.SolrMasterUrls.SEARCH_SPECIALITY, notes = PathProxy.SolrMasterUrls.SEARCH_SPECIALITY)
     public Response<Speciality> searchSpeciality(@QueryParam(value = "searchTerm") String searchTerm,
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @QueryParam("page") int page, @QueryParam("size") int size) {
 

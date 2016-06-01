@@ -699,7 +699,7 @@ public interface PathProxy {
 
     public static final String GENERAL_TESTS_URL = BASE_URL + "/tests";
 
-    public static final String SOLR_MASTER_BASE_URL = BASE_URL + "/solr/";
+    public static final String SOLR_MASTER_BASE_URL = BASE_URL + "/solr/master";
 
     public interface SolrMasterUrls {
 
@@ -751,6 +751,10 @@ public interface PathProxy {
 	public static final String ADD_RESUMES = "/resumes/add";
 
 	public static final String GET_RESUMES = "/resumes";
+
+	public static final String ADD_CONTACT_US = "/contactUs/add";
+
+	public static final String GET_CONTACT_US = "/contactUs";
 
 	public static final String GET_PATIENT = "/patients";
 

@@ -1,4 +1,4 @@
-package com.dpdocter.solr.webservices;
+package com.dpdocter.webservices;
 
 import java.util.List;
 
@@ -19,6 +19,8 @@ import com.dpdocter.solr.document.SolrDiagnosticTestDocument;
 import com.dpdocter.solr.document.SolrDrugDocument;
 import com.dpdocter.solr.services.SolrPrescriptionService;
 import com.dpdocter.webservices.PathProxy;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 import common.util.web.Response;
 
@@ -26,45 +28,15 @@ import common.util.web.Response;
 @Path(PathProxy.SOLR_PRESCRIPTION_BASEURL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(value = PathProxy.SOLR_PRESCRIPTION_BASEURL, description = "Endpoint for solr prescription")
 public class SolrPrescriptionApi {
-
-    // private static Logger logger =
-    // Logger.getLogger(SolrPrescriptionApi.class.getName());
 
     @Autowired
     private SolrPrescriptionService solrPrescriptionService;
-
-    /*
-     * @Path(value = PathProxy.SolrPrescriptionUrls.ADD_DRUG)
-     * 
-     * @POST public Response<Boolean> addDrug(SolrDrug request) { if (request ==
-     * null) { throw new BusinessException(ServiceError.InvalidInput,
-     * "Invalid Input"); } boolean addDrugResponse =
-     * solrPrescriptionService.addDrug(request); Response<Boolean> response =
-     * new Response<Boolean>(); response.setData(addDrugResponse); return
-     * response; }
-     * 
-     * @Path(value = PathProxy.SolrPrescriptionUrls.EDIT_DRUG)
-     * 
-     * @POST public Response<Boolean> editDrug(SolrDrug request) { if (request
-     * == null) { throw new BusinessException(ServiceError.InvalidInput,
-     * "Invalid Input"); } boolean editDrugResponse =
-     * solrPrescriptionService.editDrug(request); Response<Boolean> response =
-     * new Response<Boolean>(); response.setData(editDrugResponse); return
-     * response; }
-     * 
-     * @Path(value = PathProxy.SolrPrescriptionUrls.DELETE_DRUG)
-     * 
-     * @GET public Response<Boolean> deleteDrug(@PathParam(value = "id") String
-     * id) { if (DPDoctorUtils.anyStringEmpty(id)) { throw new
-     * BusinessException(ServiceError.InvalidInput, "Invalid Input"); } boolean
-     * deleteDrugResponse = solrPrescriptionService.deleteDrug(id);
-     * Response<Boolean> response = new Response<Boolean>();
-     * response.setData(deleteDrugResponse); return response; }
-     */
-
+    
     @Path(value = PathProxy.SolrPrescriptionUrls.SEARCH_DRUG)
     @GET
+    @ApiOperation(value = PathProxy.SolrPrescriptionUrls.SEARCH_DRUG, notes = PathProxy.SolrPrescriptionUrls.SEARCH_DRUG)
     public Response<SolrDrugDocument> searchDrug(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
 	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -79,6 +51,7 @@ public class SolrPrescriptionApi {
 
     @Path(value = PathProxy.SolrPrescriptionUrls.SEARCH_LAB_TEST)
     @GET
+    @ApiOperation(value = PathProxy.SolrPrescriptionUrls.SEARCH_LAB_TEST, notes = PathProxy.SolrPrescriptionUrls.SEARCH_LAB_TEST)
     public Response<LabTest> searchLabTest(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
 	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
@@ -92,6 +65,7 @@ public class SolrPrescriptionApi {
 
     @Path(value = PathProxy.SolrPrescriptionUrls.SEARCH_DIAGNOSTIC_TEST)
     @GET
+    @ApiOperation(value = PathProxy.SolrPrescriptionUrls.SEARCH_DIAGNOSTIC_TEST, notes = PathProxy.SolrPrescriptionUrls.SEARCH_DIAGNOSTIC_TEST)
     public Response<SolrDiagnosticTestDocument> searchDiagnosticTest(@PathParam("range") String range, @QueryParam("page") int page,
 	    @QueryParam("size") int size, @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,

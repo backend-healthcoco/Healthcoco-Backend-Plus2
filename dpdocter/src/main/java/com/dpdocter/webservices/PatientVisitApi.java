@@ -3,6 +3,7 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -25,6 +26,8 @@ import com.dpdocter.request.AddMultipleDataRequest;
 import com.dpdocter.response.PatientVisitResponse;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientVisitService;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -33,6 +36,7 @@ import common.util.web.Response;
 @Path(PathProxy.PATIENT_VISIT_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(value = PathProxy.PATIENT_VISIT_BASE_URL, description = "Endpoint for patient visit")
 public class PatientVisitApi {
 
     private static Logger logger = Logger.getLogger(PatientVisitApi.class.getName());
@@ -48,6 +52,7 @@ public class PatientVisitApi {
 
     @Path(value = PathProxy.PatientVisitUrls.ADD_MULTIPLE_DATA)
     @POST
+    @ApiOperation(value = PathProxy.PatientVisitUrls.ADD_MULTIPLE_DATA, notes = PathProxy.PatientVisitUrls.ADD_MULTIPLE_DATA)
     public Response<PatientVisitResponse> addMultipleData(AddMultipleDataRequest request) {
 
 	if (request == null) {
@@ -62,6 +67,7 @@ public class PatientVisitApi {
 
     @Path(value = PathProxy.PatientVisitUrls.EMAIL)
     @GET
+    @ApiOperation(value = PathProxy.PatientVisitUrls.EMAIL, notes = PathProxy.PatientVisitUrls.EMAIL)
     public Response<Boolean> email(@PathParam(value = "visitId") String visitId, @PathParam(value = "emailAddress") String emailAddress) {
 
 	if (DPDoctorUtils.anyStringEmpty(visitId, emailAddress)) {
@@ -76,6 +82,7 @@ public class PatientVisitApi {
 
     @Path(value = PathProxy.PatientVisitUrls.GET_VISIT)
     @GET
+    @ApiOperation(value = PathProxy.PatientVisitUrls.GET_VISIT, notes = PathProxy.PatientVisitUrls.GET_VISIT)
     public Response<PatientVisitResponse> getVisit(@PathParam("visitId") String visitId) {
 	if (DPDoctorUtils.anyStringEmpty(visitId)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Patient Visit Id Cannot Be Empty!");
@@ -90,6 +97,7 @@ public class PatientVisitApi {
 
     @Path(value = PathProxy.PatientVisitUrls.GET_VISITS)
     @GET
+    @ApiOperation(value = PathProxy.PatientVisitUrls.GET_VISITS, notes = PathProxy.PatientVisitUrls.GET_VISITS)
     public Response<PatientVisitResponse> getVisit(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "patientId") String patientId, @QueryParam(value = "page") int page,
 	    @QueryParam(value = "size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
@@ -108,6 +116,7 @@ public class PatientVisitApi {
 
     @Path(value = PathProxy.PatientVisitUrls.GET_VISITS_HANDHELD)
     @GET
+    @ApiOperation(value = PathProxy.PatientVisitUrls.GET_VISITS_HANDHELD, notes = PathProxy.PatientVisitUrls.GET_VISITS_HANDHELD)
     public Response<PatientVisit> getVisitsHandheld(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "patientId") String patientId, @QueryParam(value = "page") int page,
 	    @QueryParam(value = "size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
@@ -125,7 +134,8 @@ public class PatientVisitApi {
     }
 
     @Path(value = PathProxy.PatientVisitUrls.DELETE_VISITS)
-    @GET
+    @DELETE
+    @ApiOperation(value = PathProxy.PatientVisitUrls.DELETE_VISITS, notes = PathProxy.PatientVisitUrls.DELETE_VISITS)
     public Response<PatientVisit> deleteVisit(@PathParam(value = "visitId") String visitId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 
 	if (StringUtils.isEmpty(visitId)) {
@@ -141,6 +151,7 @@ public class PatientVisitApi {
 
     @Path(value = PathProxy.PatientVisitUrls.SMS_VISITS)
     @GET
+    @ApiOperation(value = PathProxy.PatientVisitUrls.SMS_VISITS, notes = PathProxy.PatientVisitUrls.SMS_VISITS)
     public Response<Boolean> smsPrescription(@PathParam(value = "visitId") String visitId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @PathParam(value = "mobileNumber") String mobileNumber) {

@@ -53,6 +53,8 @@ import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.services.DoctorProfileService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.services.SolrRegistrationService;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -61,6 +63,7 @@ import common.util.web.Response;
 @Path(PathProxy.DOCTOR_PROFILE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(value = PathProxy.DOCTOR_PROFILE_URL, description = "Endpoint for doctor profile")
 public class DoctorProfileApi {
 
     private static Logger logger = Logger.getLogger(DoctorProfileApi.class.getName());
@@ -79,6 +82,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_NAME)
     @POST
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_NAME, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_NAME)
     public Response<Boolean> addEditName(DoctorNameAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Request Cannot Be null");
@@ -94,6 +98,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_EXPERIENCE)
     @POST
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_EXPERIENCE, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_EXPERIENCE)
     public Response<Boolean> addEditExperience(DoctorExperienceAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Doctor Experience Request Is Empty");
@@ -109,6 +114,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_CONTACT)
     @POST
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_CONTACT, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_CONTACT)
     public Response<Boolean> addEditContact(DoctorContactAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Doctor Contact Request Is Empty");
@@ -122,6 +128,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_EDUCATION)
     @POST
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_EDUCATION, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_EDUCATION)
     public Response<Boolean> addEditEducation(DoctorEducationAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Doctor Education Request Is Empty");
@@ -135,6 +142,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_MEDICAL_COUNCILS)
     @POST
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_MEDICAL_COUNCILS, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_MEDICAL_COUNCILS)
     public Response<Boolean> addEditMedicalCouncils(List<MedicalCouncil> medicalCouncils) {
 	if (medicalCouncils == null || medicalCouncils.isEmpty()) {
 	    logger.warn("Medical Councils Cannot Be Empty");
@@ -148,6 +156,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.GET_MEDICAL_COUNCILS)
     @GET
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.GET_MEDICAL_COUNCILS, notes = PathProxy.DoctorProfileUrls.GET_MEDICAL_COUNCILS)
     public Response<MedicalCouncil> getMedicalCouncils(@QueryParam("page") int page, @QueryParam("size") int size,
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
 	List<MedicalCouncil> medicalCouncils = doctorProfileService.getMedicalCouncils(page, size, updatedTime);
@@ -158,6 +167,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_SPECIALITY)
     @POST
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_SPECIALITY, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_SPECIALITY)
     public Response<Boolean> addEditSpeciality(DoctorSpecialityAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Doctor Speciality Request Is Empty");
@@ -174,6 +184,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_ACHIEVEMENT)
     @POST
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_ACHIEVEMENT, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_ACHIEVEMENT)
     public Response<Boolean> addEditAchievement(DoctorAchievementAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Doctor Achievement Request Is Empty");
@@ -187,6 +198,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFESSIONAL_STATEMENT)
     @POST
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFESSIONAL_STATEMENT, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFESSIONAL_STATEMENT)
     public Response<Boolean> addEditProfessionalStatement(DoctorProfessionalStatementAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Doctor Professional Request Is Empty");
@@ -200,6 +212,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_REGISTRATION_DETAIL)
     @POST
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_REGISTRATION_DETAIL, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_REGISTRATION_DETAIL)
     public Response<Boolean> addEditRegistrationDetail(DoctorRegistrationAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Doctor Registration Detail Request Is Empty");
@@ -213,6 +226,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_EXPERIENCE_DETAIL)
     @POST
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_EXPERIENCE_DETAIL, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_EXPERIENCE_DETAIL)
     public Response<Boolean> addEditExperienceDetail(DoctorExperienceDetailAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Doctor Experience Detail Request Is Empty");
@@ -226,6 +240,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFILE_PICTURE)
     @POST
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFILE_PICTURE, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFILE_PICTURE)
     public Response<String> addEditProfilePicture(DoctorProfilePictureAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Doctor Profile Picture Request Is Empty");
@@ -243,6 +258,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_COVER_PICTURE)
     @POST
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_COVER_PICTURE, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_COVER_PICTURE)
     public Response<String> addEditCoverPicture(DoctorProfilePictureAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Doctor Profile Picture Request Is Empty");
@@ -257,6 +273,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFESSIONAL_MEMBERSHIP)
     @POST
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFESSIONAL_MEMBERSHIP, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFESSIONAL_MEMBERSHIP)
     public Response<Boolean> addEditProfessionalMembership(DoctorProfessionalAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Doctor Professional Membership Request Is Empty");
@@ -270,6 +287,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE)
     @GET
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE, notes = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE)
     public Response<DoctorProfile> getDoctorProfile(@PathParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 	    @QueryParam("hospitalId") String hospitalId) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
@@ -310,6 +328,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.INSERT_PROFESSIONAL_MEMBERSHIPS)
     @POST
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.INSERT_PROFESSIONAL_MEMBERSHIPS, notes = PathProxy.DoctorProfileUrls.INSERT_PROFESSIONAL_MEMBERSHIPS)
     public Response<Boolean> insertProfessionalMemberships(List<ProfessionalMembership> professionalMemberships) {
 	if (professionalMemberships == null || professionalMemberships.isEmpty()) {
 	    logger.warn("Professional Memberships Cannot Be Empty");
@@ -323,6 +342,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.GET_PROFESSIONAL_MEMBERSHIPS)
     @GET
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.GET_PROFESSIONAL_MEMBERSHIPS, notes = PathProxy.DoctorProfileUrls.GET_PROFESSIONAL_MEMBERSHIPS)
     public Response<ProfessionalMembership> getProfessionalMemberships(@QueryParam("page") int page, @QueryParam("size") int size,
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
 	List<ProfessionalMembership> professionalMemberships = doctorProfileService.getProfessionalMemberships(page, size, updatedTime);
@@ -333,6 +353,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_APPOINTMENT_NUMBERS)
     @POST
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_APPOINTMENT_NUMBERS, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_APPOINTMENT_NUMBERS)
     public Response<Boolean> addEditAppointmentNumbers(DoctorAppointmentNumbersAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Doctor Contact Request Is Empty");
@@ -349,6 +370,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_VISITING_TIME)
     @POST
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_VISITING_TIME, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_VISITING_TIME)
     public Response<Boolean> addEditVisitingTime(DoctorVisitingTimeAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Doctor Contact Request Is Empty");
@@ -368,6 +390,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_CONSULTATION_FEE)
     @POST
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_CONSULTATION_FEE, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_CONSULTATION_FEE)
     public Response<Boolean> addEditConsultationFee(DoctorConsultationFeeAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Doctor Contact Request Is Empty");
@@ -387,6 +410,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_APPOINTMENT_SLOT)
     @POST
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_APPOINTMENT_SLOT, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_APPOINTMENT_SLOT)
     public Response<Boolean> addEditAppointmentSlot(DoctorAppointmentSlotAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Doctor Contact Request Is Empty");
@@ -404,6 +428,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_GENERAL_INFO)
     @POST
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_GENERAL_INFO, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_GENERAL_INFO)
     public Response<Boolean> addEditGeneralInfo(DoctorGeneralInfo request) {
 	if (request == null) {
 	    logger.warn("Doctor Contact Request Is Empty");
@@ -431,6 +456,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.GET_SPECIALITIES)
     @GET
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.GET_SPECIALITIES, notes = PathProxy.DoctorProfileUrls.GET_SPECIALITIES)
     public Response<Speciality> getSpeciality(@QueryParam("page") int page, @QueryParam("size") int size,
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
 	List<Speciality> specialities = doctorProfileService.getSpecialities(page, size, updatedTime);
@@ -441,6 +467,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.GET_EDUCATION_INSTITUTES)
     @GET
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.GET_EDUCATION_INSTITUTES, notes = PathProxy.DoctorProfileUrls.GET_EDUCATION_INSTITUTES)
     public Response<EducationInstitute> getEducationInstitutes(@QueryParam("page") int page, @QueryParam("size") int size,
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
 	List<EducationInstitute> educationInstitutes = doctorProfileService.getEducationInstitutes(page, size, updatedTime);
@@ -451,6 +478,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.GET_EDUCATION_QUALIFICATIONS)
     @GET
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.GET_EDUCATION_QUALIFICATIONS, notes = PathProxy.DoctorProfileUrls.GET_EDUCATION_QUALIFICATIONS)
     public Response<EducationQualification> getEducationQualifications(@QueryParam("page") int page, @QueryParam("size") int size,
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
 	List<EducationQualification> qualifications = doctorProfileService.getEducationQualifications(page, size, updatedTime);
@@ -461,6 +489,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_MULTIPLE_DATA)
     @POST
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_MULTIPLE_DATA, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_MULTIPLE_DATA)
     public Response<DoctorMultipleDataAddEditResponse> addEditMultipleData(DoctorMultipleDataAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Request Cannot Be null");
@@ -482,6 +511,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_FACILITY)
     @POST
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_FACILITY, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_FACILITY)
     public Response<Boolean> addEditFacility(DoctorAddEditFacilityRequest request) {
 	if (request == null) {
 	    logger.warn("Request Is Empty");
@@ -501,6 +531,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_GENDER)
     @POST
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_GENDER, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_GENDER)
     public Response<Boolean> addEditGender(DoctorGenderAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Request Cannot Be null");
@@ -516,6 +547,7 @@ public class DoctorProfileApi {
 
     @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_DOB)
     @POST
+    @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_DOB, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_DOB)
     public Response<Boolean> addEditDOB(DoctorDOBAddEditRequest request) {
 	if (request == null) {
 	    logger.warn("Request Cannot Be null");

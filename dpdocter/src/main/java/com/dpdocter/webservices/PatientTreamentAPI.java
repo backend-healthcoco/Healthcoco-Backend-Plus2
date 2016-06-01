@@ -22,6 +22,8 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.PatientTreatmentResponse;
 import com.dpdocter.services.PatientTreatmentServices;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -30,12 +32,14 @@ import common.util.web.Response;
 @Path(PathProxy.PATIENT_TREATMENT_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(value = PathProxy.PATIENT_TREATMENT_BASE_URL, description = "Endpoint for patient treatment")
 public class PatientTreamentAPI {
     @Autowired
     private PatientTreatmentServices patientTreatmentServices;
 
     @Path(PathProxy.PatientTreatmentURLs.ADD_EDIT_PRODUCT_SERVICE)
     @POST
+    @ApiOperation(value = PathProxy.PatientTreatmentURLs.ADD_EDIT_PRODUCT_SERVICE, notes = PathProxy.PatientTreatmentURLs.ADD_EDIT_PRODUCT_SERVICE)
     public Response<Boolean> addEditProductService(ProductAndService productAndService) {
 	if (productAndService == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Cannot Be Empty");
@@ -49,6 +53,7 @@ public class PatientTreamentAPI {
 
     @Path(PathProxy.PatientTreatmentURLs.ADD_EDIT_PRODUCT_SERVICE_COST)
     @POST
+    @ApiOperation(value = PathProxy.PatientTreatmentURLs.ADD_EDIT_PRODUCT_SERVICE_COST, notes = PathProxy.PatientTreatmentURLs.ADD_EDIT_PRODUCT_SERVICE_COST)
     public Response<Boolean> addEditProductServiceCost(ProductAndService productAndService) {
 	if (productAndService == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Cannot Be Empty");
@@ -64,6 +69,7 @@ public class PatientTreamentAPI {
 
     @Path(PathProxy.PatientTreatmentURLs.GET_PRODUCTS_AND_SERVICES)
     @GET
+    @ApiOperation(value = PathProxy.PatientTreatmentURLs.GET_PRODUCTS_AND_SERVICES, notes = PathProxy.PatientTreatmentURLs.GET_PRODUCTS_AND_SERVICES)
     public Response<ProductAndService> getProductsAndServices(@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 	    @QueryParam("doctorId") String doctorId) {
 	if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId, doctorId)) {
@@ -78,6 +84,7 @@ public class PatientTreamentAPI {
 
     @Path(PathProxy.PatientTreatmentURLs.ADD_EDIT_PATIENT_TREATMENT)
     @POST
+    @ApiOperation(value = PathProxy.PatientTreatmentURLs.ADD_EDIT_PATIENT_TREATMENT, notes = PathProxy.PatientTreatmentURLs.ADD_EDIT_PATIENT_TREATMENT)
     public Response<PatientTreatmentResponse> addEditPatientTreatment(@QueryParam("treatmentId") String treatmentId,
 	    @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId, @QueryParam("doctorId") String doctorId,
 	    List<PatientTreatment> patientTreatments) {
@@ -97,6 +104,7 @@ public class PatientTreamentAPI {
 
     @Path(PathProxy.PatientTreatmentURLs.DELETE_PATIENT_TREATMENT)
     @DELETE
+    @ApiOperation(value = PathProxy.PatientTreatmentURLs.DELETE_PATIENT_TREATMENT, notes = PathProxy.PatientTreatmentURLs.DELETE_PATIENT_TREATMENT)
     public Response<Boolean> deletePatientTreatment(@QueryParam("treatmentId") String treatmentId, @QueryParam("locationId") String locationId,
 	    @QueryParam("hospitalId") String hospitalId, @QueryParam("doctorId") String doctorId) {
 	if (DPDoctorUtils.anyStringEmpty(treatmentId, locationId, hospitalId, doctorId)) {
@@ -112,6 +120,7 @@ public class PatientTreamentAPI {
 
     @Path(PathProxy.PatientTreatmentURLs.GET_PATIENT_TREATMENT_BY_ID)
     @GET
+    @ApiOperation(value = PathProxy.PatientTreatmentURLs.GET_PATIENT_TREATMENT_BY_ID, notes = PathProxy.PatientTreatmentURLs.GET_PATIENT_TREATMENT_BY_ID)
     public Response<PatientTreatmentResponse> getPatientTreatmentById(@PathParam("treatmentId") String treatmentId) {
 	if (DPDoctorUtils.anyStringEmpty(treatmentId)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "TreatmentId cannot be empty");
@@ -126,6 +135,7 @@ public class PatientTreamentAPI {
 
     @Path(PathProxy.PatientTreatmentURLs.GET_PATIENT_TREATMENTS)
     @GET
+    @ApiOperation(value = PathProxy.PatientTreatmentURLs.GET_PATIENT_TREATMENTS, notes = PathProxy.PatientTreatmentURLs.GET_PATIENT_TREATMENTS)
     public Response<PatientTreatmentResponse> getPatientTreatments(@QueryParam("page") int page, @QueryParam("size") int size,
 	    @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId, @QueryParam("doctorId") String doctorId,
 	    @QueryParam("patientId") String patientId, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,

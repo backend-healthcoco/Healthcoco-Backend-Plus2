@@ -19,6 +19,8 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.ForgotUsernamePasswordRequest;
 import com.dpdocter.request.ResetPasswordRequest;
 import com.dpdocter.services.ForgotPasswordService;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -27,6 +29,7 @@ import common.util.web.Response;
 @Path(PathProxy.FORGOT_PASSWORD_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(value = PathProxy.FORGOT_PASSWORD_BASE_URL, description = "Endpoint for forgot password")
 public class ForgotPasswordApi {
 
     private static Logger logger = Logger.getLogger(ForgotPasswordApi.class.getName());
@@ -39,6 +42,7 @@ public class ForgotPasswordApi {
 
     @Path(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_DOCTOR)
     @POST
+    @ApiOperation(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_DOCTOR, notes = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_DOCTOR)
     public Response<String> forgotPassword(ForgotUsernamePasswordRequest request) {
 	if (request == null) {
 	    logger.warn("Invalid Input");
@@ -52,6 +56,7 @@ public class ForgotPasswordApi {
 
     @Path(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_PATIENT)
     @POST
+    @ApiOperation(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_PATIENT, notes = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_PATIENT)
     public Response<Boolean> forgotPasswordForPatient(ForgotUsernamePasswordRequest request) {
 	if (request == null) {
 	    logger.warn("Invalid Input");
@@ -65,6 +70,7 @@ public class ForgotPasswordApi {
 
     @Path(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PATIENT)
     @POST
+    @ApiOperation(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PATIENT, notes = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PATIENT)
     public Response<Boolean> resetPasswordPatient(ResetPasswordRequest request) {
 
 	Boolean isReset = forgotPasswordService.resetPasswordPatient(request);
@@ -75,6 +81,7 @@ public class ForgotPasswordApi {
 
     @Path(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD)
     @POST
+    @ApiOperation(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD, notes = PathProxy.ForgotPasswordUrls.RESET_PASSWORD)
     public Response<String> resetPassword(ResetPasswordRequest request) {
 	if (request == null) {
 	    logger.warn("Invalid Input");
@@ -88,6 +95,7 @@ public class ForgotPasswordApi {
 
     @Path(value = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED)
     @GET
+    @ApiOperation(value = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED, notes = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED)
     public Response<String> checkLinkIsAlreadyUsed(@PathParam(value = "userId") String userId) {
 	if (DPDoctorUtils.anyStringEmpty(userId)) {
 	    logger.warn("Invalid Input");
@@ -101,6 +109,7 @@ public class ForgotPasswordApi {
 
     @Path(value = PathProxy.ForgotPasswordUrls.FORGOT_USERNAME)
     @POST
+    @ApiOperation(value = PathProxy.ForgotPasswordUrls.FORGOT_USERNAME, notes = PathProxy.ForgotPasswordUrls.FORGOT_USERNAME)
     public Response<Boolean> forgotUsername(ForgotUsernamePasswordRequest request) {
 	if (request == null) {
 	    logger.warn("Invalid Input");

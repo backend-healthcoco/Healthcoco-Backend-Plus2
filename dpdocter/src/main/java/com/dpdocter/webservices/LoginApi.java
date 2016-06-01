@@ -21,6 +21,8 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.LoginPatientRequest;
 import com.dpdocter.request.LoginRequest;
 import com.dpdocter.services.LoginService;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -32,6 +34,7 @@ import common.util.web.Response;
 @Path(PathProxy.LOGIN_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(value = PathProxy.LOGIN_BASE_URL, description = "Endpoint for login")
 public class LoginApi {
 
     private static Logger logger = Logger.getLogger(LoginApi.class.getName());
@@ -44,6 +47,7 @@ public class LoginApi {
 
     @Path(value = PathProxy.LoginUrls.LOGIN_ADMIN)
     @POST
+    @ApiOperation(value = PathProxy.LoginUrls.LOGIN_ADMIN, notes = PathProxy.LoginUrls.LOGIN_ADMIN)
     public Response<User> adminLogin(LoginPatientRequest request) {
 	if (request == null) {
 	    logger.warn("Invalid Input");
@@ -63,24 +67,10 @@ public class LoginApi {
 	    response.setData(loginResponse);
 	return response;
     }
-//    @Resource(name = "authenticationManager")
-//    private AuthenticationManager authenticationManager; // specific for Spring Security
-//
-//    public boolean login(String username, String password) {
-//        try {
-//            Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-//            if (authenticate.isAuthenticated()) {
-//                SecurityContextHolder.getContext().setAuthentication(authenticate);             
-//                return true;
-//            }
-//        }
-//        catch (AuthenticationException e) {         
-//        }
-//        return false;
-//    }
-    
+
     @Path(value = PathProxy.LoginUrls.LOGIN_USER)
     @POST
+    @ApiOperation(value = PathProxy.LoginUrls.LOGIN_USER, notes = PathProxy.LoginUrls.LOGIN_USER)
     public Response<LoginResponse> login(LoginRequest request) {
 	if (request == null) {
 	    logger.warn("Invalid Input");
@@ -110,6 +100,7 @@ public class LoginApi {
 
     @Path(value = PathProxy.LoginUrls.LOGIN_PATIENT)
     @POST
+    @ApiOperation(value = PathProxy.LoginUrls.LOGIN_PATIENT, notes = PathProxy.LoginUrls.LOGIN_PATIENT)
     public Response<User> loginPatient(LoginPatientRequest request) {
 	if (request == null) {
 	    logger.warn("Invalid Input");

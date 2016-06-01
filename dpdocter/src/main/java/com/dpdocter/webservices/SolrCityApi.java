@@ -1,4 +1,4 @@
-package com.dpdocter.solr.webservices;
+package com.dpdocter.webservices;
 
 import java.util.List;
 
@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.solr.beans.SolrCityLandmarkLocalityResponse;
 import com.dpdocter.solr.services.SolrCityService;
 import com.dpdocter.webservices.PathProxy;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 import common.util.web.Response;
 
@@ -22,6 +24,7 @@ import common.util.web.Response;
 @Path(PathProxy.SOLR_CITY_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(value = PathProxy.SOLR_CITY_BASE_URL, description = "Endpoint for solr city")
 public class SolrCityApi {
 
     @Autowired
@@ -29,6 +32,7 @@ public class SolrCityApi {
 
     @Path(value = PathProxy.SolrCityUrls.SEARCH_LOCATION)
     @GET
+    @ApiOperation(value = PathProxy.SolrCityUrls.SEARCH_LOCATION, notes = PathProxy.SolrCityUrls.SEARCH_LOCATION)
     public Response<SolrCityLandmarkLocalityResponse> searchLocation(@QueryParam(value = "searchTerm") String searchTerm,
 	    @QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude) {
 
