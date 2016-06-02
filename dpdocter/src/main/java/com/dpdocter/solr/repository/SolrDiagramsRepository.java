@@ -1,6 +1,5 @@
 package com.dpdocter.solr.repository;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 

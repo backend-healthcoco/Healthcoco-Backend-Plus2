@@ -1,7 +1,6 @@
 package com.dpdocter.services;
 
 import com.dpdocter.beans.UserDevice;
-import com.dpdocter.enums.ComponentType;
 import com.dpdocter.request.BroadcastNotificationRequest;
 
 public interface PushNotificationServices {

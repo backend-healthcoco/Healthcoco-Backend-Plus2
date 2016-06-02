@@ -1,5 +1,4 @@
 package com.dpdocter.tests;
-
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Value;

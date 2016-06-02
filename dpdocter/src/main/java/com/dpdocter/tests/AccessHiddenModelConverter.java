@@ -11,12 +11,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import scala.Option;
-import scala.collection.immutable.Map;
-
 import com.wordnik.swagger.annotations.ApiModelProperty;
 import com.wordnik.swagger.converter.SwaggerSchemaConverter;
 import com.wordnik.swagger.model.Model;
+
+import scala.Option;
+import scala.collection.immutable.Map;
 
 /**
  * API model schema filter to enable hiding of API model attributes.

@@ -2,8 +2,6 @@ package com.dpdocter.request;
 
 import java.util.List;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
 public class DoctorSignupHandheldContinueRequest {
 
     private String userId;

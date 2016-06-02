@@ -1,14 +1,9 @@
 package com.dpdocter.solr.beans;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.solr.client.solrj.beans.Field;
 import org.springframework.data.solr.core.geo.GeoLocation;
-
-import com.dpdocter.beans.WorkingHours;
-import com.dpdocter.beans.WorkingSchedule;
-import com.dpdocter.enums.Day;
 
 public class DoctorLocation {
     @Field

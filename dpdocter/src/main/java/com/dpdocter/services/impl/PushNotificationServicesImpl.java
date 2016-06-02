@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dpdocter.beans.Notification;
 import com.dpdocter.beans.UserDevice;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserDeviceCollection;

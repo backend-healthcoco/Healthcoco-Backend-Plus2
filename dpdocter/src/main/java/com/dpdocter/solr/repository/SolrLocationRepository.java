@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.data.solr.repository.Query;
 import org.springframework.data.solr.repository.SolrCrudRepository;
 
-import com.dpdocter.solr.document.SolrDoctorDocument;
 import com.dpdocter.solr.document.SolrLocationDocument;
 
 public interface SolrLocationRepository extends SolrCrudRepository<SolrLocationDocument, String> {

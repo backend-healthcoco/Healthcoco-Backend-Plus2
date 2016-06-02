@@ -23,7 +23,6 @@ import com.dpdocter.solr.document.SolrDoctorDocument;
 import com.dpdocter.solr.document.SolrSpecialityDocument;
 import com.dpdocter.solr.response.LabResponse;
 import com.dpdocter.solr.services.SolrAppointmentService;
-import com.dpdocter.webservices.PathProxy;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 

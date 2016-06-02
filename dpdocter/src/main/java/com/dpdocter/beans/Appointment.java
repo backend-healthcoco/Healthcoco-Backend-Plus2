@@ -1,9 +1,6 @@
 package com.dpdocter.beans;
 
 import java.util.Date;
-import java.util.List;
-
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.AppointmentState;

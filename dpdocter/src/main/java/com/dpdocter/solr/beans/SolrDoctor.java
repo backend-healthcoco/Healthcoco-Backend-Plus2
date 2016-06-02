@@ -2,8 +2,6 @@ package com.dpdocter.solr.beans;
 
 import java.util.List;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.DoctorExperience;

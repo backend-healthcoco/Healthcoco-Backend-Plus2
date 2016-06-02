@@ -19,7 +19,6 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.solr.beans.AdvancedSearch;
 import com.dpdocter.solr.response.SolrPatientResponseDetails;
 import com.dpdocter.solr.services.SolrRegistrationService;
-import com.dpdocter.webservices.PathProxy;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 

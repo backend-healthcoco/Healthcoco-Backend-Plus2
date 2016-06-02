@@ -2,8 +2,6 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-import org.apache.solr.client.solrj.beans.Field;
-
 public class ClinicProfile {
 
     private String id;

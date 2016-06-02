@@ -18,7 +18,6 @@ import com.dpdocter.beans.LabTest;
 import com.dpdocter.solr.document.SolrDiagnosticTestDocument;
 import com.dpdocter.solr.document.SolrDrugDocument;
 import com.dpdocter.solr.services.SolrPrescriptionService;
-import com.dpdocter.webservices.PathProxy;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 

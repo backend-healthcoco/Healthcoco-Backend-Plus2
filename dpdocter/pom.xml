@@ -776,14 +776,19 @@
 			<groupId>com.wordnik</groupId>
 			<artifactId>swagger-jersey2-jaxrs_2.10</artifactId>
 			<version>1.3.8</version>
-		</dependency>
+			<exclusions>
+				<exclusion>
+					<artifactId>jersey-common</artifactId>
+					<groupId>org.glassfish.jersey.core</groupId>
+				</exclusion>
+			</exclusions>
+        </dependency>
 		<dependency>
 			<groupId>org.mortbay.jetty</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>3.0.20100224</version>
 			<scope>provided</scope>
-		</dependency>
-		
+		</dependency>	
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
