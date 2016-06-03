@@ -15,10 +15,10 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.EmailTrack;
 import com.dpdocter.services.EmailTackService;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
 
 import common.util.web.Response;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Component
 @Path(PathProxy.EMAIL_TRACK_BASE_URL)

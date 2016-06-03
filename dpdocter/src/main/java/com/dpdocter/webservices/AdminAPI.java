@@ -22,10 +22,10 @@ import com.dpdocter.beans.Resume;
 import com.dpdocter.beans.User;
 import com.dpdocter.response.DoctorResponse;
 import com.dpdocter.services.AdminServices;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
 
 import common.util.web.Response;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Component
 @Path(PathProxy.ADMIN_BASE_URL)

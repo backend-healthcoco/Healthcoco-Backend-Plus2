@@ -21,11 +21,12 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.LoginPatientRequest;
 import com.dpdocter.request.LoginRequest;
 import com.dpdocter.services.LoginService;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
+import com.dpdocter.webservices.PathProxy;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 /**
  * @author veeraj

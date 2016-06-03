@@ -24,10 +24,10 @@ import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.Speciality;
 import com.dpdocter.response.DiseaseListResponse;
 import com.dpdocter.solr.services.SolrMasterService;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
 
 import common.util.web.Response;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Component
 @Path(PathProxy.SOLR_MASTER_BASE_URL)

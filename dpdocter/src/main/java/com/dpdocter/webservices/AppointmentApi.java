@@ -36,11 +36,11 @@ import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrLocalityLandmarkDocument;
 import com.dpdocter.solr.services.SolrCityService;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Component
 @Path(PathProxy.APPOINTMENT_BASE_URL)

@@ -39,11 +39,11 @@ import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.RecordsService;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Component
 @Path(PathProxy.RECORDS_BASE_URL)

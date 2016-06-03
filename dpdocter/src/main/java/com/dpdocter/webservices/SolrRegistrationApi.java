@@ -19,11 +19,11 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.solr.beans.AdvancedSearch;
 import com.dpdocter.solr.response.SolrPatientResponseDetails;
 import com.dpdocter.solr.services.SolrRegistrationService;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Component
 @Path(PathProxy.SOLR_REGISTRATION_BASEURL)

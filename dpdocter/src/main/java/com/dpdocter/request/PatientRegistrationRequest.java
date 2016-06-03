@@ -7,7 +7,6 @@ import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.Relations;
-
 public class PatientRegistrationRequest {
     private String userId;
 

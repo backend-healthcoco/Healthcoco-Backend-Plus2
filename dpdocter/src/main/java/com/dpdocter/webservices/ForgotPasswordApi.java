@@ -19,11 +19,11 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.ForgotUsernamePasswordRequest;
 import com.dpdocter.request.ResetPasswordRequest;
 import com.dpdocter.services.ForgotPasswordService;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Component
 @Path(PathProxy.FORGOT_PASSWORD_BASE_URL)

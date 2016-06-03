@@ -54,11 +54,11 @@ import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrPatientDocument;
 import com.dpdocter.solr.services.SolrRegistrationService;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 /**
  * @author veeraj
@@ -89,7 +89,7 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.PATIENT_REGISTER)
     @POST
-    @ApiOperation(value = PathProxy.RegistrationUrls.PATIENT_REGISTER, notes = PathProxy.RegistrationUrls.PATIENT_REGISTER)
+    @ApiOperation(value = PathProxy.RegistrationUrls.PATIENT_REGISTER, notes = PathProxy.RegistrationUrls.PATIENT_REGISTER, response = Response.class)
     public Response<RegisteredPatientDetails> patientRegister(PatientRegistrationRequest request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -117,7 +117,7 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.EDIT_PATIENT_PROFILE)
     @PUT
-    @ApiOperation(value = PathProxy.RegistrationUrls.EDIT_PATIENT_PROFILE, notes = PathProxy.RegistrationUrls.EDIT_PATIENT_PROFILE)
+    @ApiOperation(value = PathProxy.RegistrationUrls.EDIT_PATIENT_PROFILE, notes = PathProxy.RegistrationUrls.EDIT_PATIENT_PROFILE, response = Response.class)
     public Response<RegisteredPatientDetails> editPatientRegister(PatientRegistrationRequest request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -138,7 +138,7 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM)
     @GET
-    @ApiOperation(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM, notes = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM)
+    @ApiOperation(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM, notes = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM, response = Response.class)
     public Response<User> getExistingPatients(@PathParam("mobileNumber") String mobileNumber, @PathParam("doctorId") String doctorId,
 	    @PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
 	if (mobileNumber == null) {
@@ -165,7 +165,7 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM_COUNT)
     @GET
-    @ApiOperation(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM_COUNT, notes = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM_COUNT)
+    @ApiOperation(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM_COUNT, notes = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM_COUNT, response = Response.class)
     public Response<Integer> getExistingPatientsCount(@PathParam("mobileNumber") String mobileNumber) {
 	if (mobileNumber == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.Phone Number is null");
@@ -182,7 +182,7 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.GET_PATIENT_PROFILE)
     @GET
-    @ApiOperation(value = PathProxy.RegistrationUrls.GET_PATIENT_PROFILE, notes = PathProxy.RegistrationUrls.GET_PATIENT_PROFILE)
+    @ApiOperation(value = PathProxy.RegistrationUrls.GET_PATIENT_PROFILE, notes = PathProxy.RegistrationUrls.GET_PATIENT_PROFILE, response = Response.class)
     public Response<RegisteredPatientDetails> getPatientProfile(@PathParam("userId") String userId, @QueryParam("doctorId") String doctorId,
 	    @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId) {
 	if (userId == null) {
@@ -202,7 +202,7 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.ADD_REFERRENCE)
     @POST
-    @ApiOperation(value = PathProxy.RegistrationUrls.ADD_REFERRENCE, notes = PathProxy.RegistrationUrls.ADD_REFERRENCE)
+    @ApiOperation(value = PathProxy.RegistrationUrls.ADD_REFERRENCE, notes = PathProxy.RegistrationUrls.ADD_REFERRENCE, response = Response.class)
     public Response<Reference> addReference(Reference request) {
 	if (request == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -217,7 +217,7 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.DELETE_REFERRENCE)
     @DELETE
-    @ApiOperation(value = PathProxy.RegistrationUrls.DELETE_REFERRENCE, notes = PathProxy.RegistrationUrls.DELETE_REFERRENCE)
+    @ApiOperation(value = PathProxy.RegistrationUrls.DELETE_REFERRENCE, notes = PathProxy.RegistrationUrls.DELETE_REFERRENCE, response = Response.class)
     public Response<Reference> deleteReferrence(@PathParam("referrenceId") String referrenceId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (referrenceId == null) {
@@ -234,7 +234,7 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.GET_REFERRENCES)
     @GET
-    @ApiOperation(value = PathProxy.RegistrationUrls.GET_REFERRENCES, notes = PathProxy.RegistrationUrls.GET_REFERRENCES)
+    @ApiOperation(value = PathProxy.RegistrationUrls.GET_REFERRENCES, notes = PathProxy.RegistrationUrls.GET_REFERRENCES, response = Response.class)
     public Response<ReferenceDetail> getReferences(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
 	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -248,7 +248,7 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.PATIENT_ID_GENERATOR)
     @GET
-    @ApiOperation(value = PathProxy.RegistrationUrls.PATIENT_ID_GENERATOR, notes = PathProxy.RegistrationUrls.PATIENT_ID_GENERATOR)
+    @ApiOperation(value = PathProxy.RegistrationUrls.PATIENT_ID_GENERATOR, notes = PathProxy.RegistrationUrls.PATIENT_ID_GENERATOR, response = Response.class)
     public Response<String> patientIDGenerator(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
 	    @PathParam("hospitalId") String hospitalId) {
 
@@ -270,7 +270,7 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.GET_PATIENT_INITIAL_COUNTER)
     @GET
-    @ApiOperation(value = PathProxy.RegistrationUrls.GET_PATIENT_INITIAL_COUNTER, notes = PathProxy.RegistrationUrls.GET_PATIENT_INITIAL_COUNTER)
+    @ApiOperation(value = PathProxy.RegistrationUrls.GET_PATIENT_INITIAL_COUNTER, notes = PathProxy.RegistrationUrls.GET_PATIENT_INITIAL_COUNTER, response = Response.class)
     public Response<PatientInitialAndCounter> getPatientInitialAndCounter(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId) {
 
 	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId)) {
@@ -284,7 +284,7 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_ID_GENERATOR_LOGIC)
     @GET
-    @ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_ID_GENERATOR_LOGIC, notes = PathProxy.RegistrationUrls.UPDATE_PATIENT_ID_GENERATOR_LOGIC)
+    @ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_ID_GENERATOR_LOGIC, notes = PathProxy.RegistrationUrls.UPDATE_PATIENT_ID_GENERATOR_LOGIC, response = Response.class)
     public Response<String> updatePatientInitialAndCounter(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
 	    @PathParam("patientInitial") String patientInitial, @PathParam("patientCounter") int patientCounter) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, patientInitial, new Integer(patientCounter).toString())) {
@@ -298,7 +298,7 @@ public class RegistrationApi {
 
     @Path(value = PathProxy.RegistrationUrls.GET_CLINIC_DETAILS)
     @GET
-    @ApiOperation(value = PathProxy.RegistrationUrls.GET_CLINIC_DETAILS, notes = PathProxy.RegistrationUrls.GET_CLINIC_DETAILS)
+    @ApiOperation(value = PathProxy.RegistrationUrls.GET_CLINIC_DETAILS, notes = PathProxy.RegistrationUrls.GET_CLINIC_DETAILS, response = Response.class)
     public Response<Location> getClinicDetails(@PathParam("clinicId") String clinicId) {
 	if (DPDoctorUtils.anyStringEmpty(clinicId)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Clinic Id Cannot Be Empty");

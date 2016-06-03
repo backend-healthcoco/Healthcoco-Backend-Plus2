@@ -13,7 +13,10 @@ public class Response<T> {
 
     private List<T> dataList;
 
-    public T getData() {
+    public Response() {
+	}
+
+	public T getData() {
 	return data;
     }
 

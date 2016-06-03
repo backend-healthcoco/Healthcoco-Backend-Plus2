@@ -22,16 +22,12 @@
 			<param-name>
 				com.sun.jersey.config.property.packages
 			</param-name>
-			<param-value>com.dpdocter.webservices;com.dpdocter.beans</param-value>
+			<param-value>com.dpdocter.webservices;com.dpdocter.beans;com.dpdocter.request;com.dpdocter.response;com.util.web;com.dpdocter.solr.webservices</param-value>
 		</init-param>
 		<init-param>
-			<param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
-			<param-value>true</param-value>
-		</init-param>
-<!-- 		<init-param> -->
-<!-- 			<param-name>javax.ws.rs.Application</param-name> -->
-<!-- 			<param-value>com.dpdocter.services.impl.Spring4WithSwagger</param-value> -->
-<!-- 		</init-param> -->
+            <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
+            <param-value>true</param-value>
+        </init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 
