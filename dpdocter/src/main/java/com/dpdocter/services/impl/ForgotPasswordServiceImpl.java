@@ -108,12 +108,12 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		}
 	    } else {
 		logger.warn("User not Found.");
-		throw new BusinessException(ServiceError.NoRecord, "User not Found.");
+		throw new BusinessException(ServiceError.Unknown, "User not Found.");
 	    }
 	    return response;
 	} catch (BusinessException be) {
 	    logger.error(be + " User not Found.");
-	    throw new BusinessException(ServiceError.NoRecord, "User not Found.");
+	    throw new BusinessException(ServiceError.Unknown, "User not Found.");
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
@@ -142,7 +142,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		}
 		if (!isPatient) {
 		    logger.warn("No Patient Found");
-		    throw new BusinessException(ServiceError.NoRecord, "No Patient Found");
+		    throw new BusinessException(ServiceError.Unknown, "No Patient Found");
 		}
 		if (request.getMobileNumber() != null && !request.getMobileNumber().isEmpty()) {
 		    String OTP = LoginUtils.generateOTP();
@@ -166,7 +166,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		}
 	    } else {
 		logger.warn("User not Found");
-		throw new BusinessException(ServiceError.NoRecord, "User not Found");
+		throw new BusinessException(ServiceError.Unknown, "User not Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();

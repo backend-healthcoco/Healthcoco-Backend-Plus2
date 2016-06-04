@@ -263,6 +263,9 @@ public class AdminServicesImpl implements AdminServices {
 			}
 			if(resumeCollections != null){
 				response = new ArrayList<Resume>();
+				for(ResumeCollection resumeCollection : resumeCollections){
+					resumeCollection.setPath(getFinalImageURL(resumeCollection.getPath()));
+				}
 				BeanUtil.map(resumeCollections, response);
 			}
 		}catch(Exception e){

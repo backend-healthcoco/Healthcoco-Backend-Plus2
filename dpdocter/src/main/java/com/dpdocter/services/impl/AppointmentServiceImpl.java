@@ -373,9 +373,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy");
 			if(clinicProfileCollection != null)sdf.setTimeZone(TimeZone.getTimeZone(clinicProfileCollection.getTimeZone()));
 			else sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-		    
+			
+			String _24HourTime = String.format("%02d:%02d", appointmentCollection.getTime().getFromTime() / 60, appointmentCollection.getTime().getFromTime() % 60);
+	        SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+	        SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+	        Date _24HourDt = _24HourSDF.parse(_24HourTime);
+	        
 		    String patientName = patient.getFirstName() != null?patient.getFirstName().split(" ")[0] :"", appointmentId= appointmentCollection.getAppointmentId(), 
-					dateTime= String.format("%02d:%02d", appointmentCollection.getTime().getFromTime() / 60, appointmentCollection.getTime().getFromTime() % 60)+" "+new Date(sdf.format(appointmentCollection.getFromDate())),
+					dateTime= _12HourSDF.format(_24HourDt)+" "+sdf.format(appointmentCollection.getFromDate()),
 					doctorName=userCollection.getTitle()+" "+userCollection.getFirstName(),clinicName= locationCollection.getLocationName(),clinicContactNum=locationCollection.getClinicNumber() != null ? locationCollection.getClinicNumber() :"";
 					
 			if(request.getState().getState().equals(AppointmentState.CANCEL.getState())){
@@ -507,12 +512,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    userLocationCollection = userLocationRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
         clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
     	
-//	    SimpleDateFormat sdf = new SimpleDateFormat();
-//		if(clinicProfileCollection != null)sdf.setTimeZone(TimeZone.getTimeZone(clinicProfileCollection.getTimeZone()));
-//		else sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-//		if(request.getFromDate() != null)request.setFromDate(new Date(sdf.format(request.getFromDate())));
-//		if(request.getToDate() != null)request.setToDate(new Date(sdf.format(request.getToDate())));
-		
 	    if(userCollection != null && locationCollection != null && patient != null){
 			
 			if(appointmentCollection == null) {			
@@ -524,9 +523,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy");
 				if(clinicProfileCollection != null)sdf.setTimeZone(TimeZone.getTimeZone(clinicProfileCollection.getTimeZone()));
 				else sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-			    
+				String _24HourTime = String.format("%02d:%02d", appointmentCollection.getTime().getFromTime() / 60, appointmentCollection.getTime().getFromTime() % 60);
+		        SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+		        SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+		        Date _24HourDt = _24HourSDF.parse(_24HourTime);
+		        
 			    String patientName = patient.getFirstName() != null?patient.getFirstName().split(" ")[0] :"", appointmentId= appointmentCollection.getAppointmentId(), 
-						dateTime= String.format("%02d:%02d", appointmentCollection.getTime().getFromTime() / 60, appointmentCollection.getTime().getFromTime() % 60)+" "+new Date(sdf.format(appointmentCollection.getFromDate())),
+						dateTime= _12HourSDF.format(_24HourDt)+" "+sdf.format(appointmentCollection.getFromDate()),
 						doctorName=userCollection.getTitle()+" "+userCollection.getFirstName(),clinicName= locationCollection.getLocationName(),clinicContactNum=locationCollection.getClinicNumber() != null ? locationCollection.getClinicNumber() :"";
 						
 			    if(request.getCreatedBy().equals(AppointmentCreatedBy.DOCTOR)){
@@ -1087,16 +1090,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 		Appointment response = null;
 		try {
 			UserCollection userCollection = userRepository.findOne(request.getDoctorId());
-			UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
-	        DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
-	    	
-		    SimpleDateFormat sdf = new SimpleDateFormat();
-			if(clinicProfileCollection != null)sdf.setTimeZone(TimeZone.getTimeZone(clinicProfileCollection.getTimeZone()));
-			else sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-			if(request.getFromDate() != null)request.setFromDate(new Date(sdf.format(request.getFromDate())));
-			if(request.getToDate() != null)request.setToDate(new Date(sdf.format(request.getToDate())));
-		    
-			AppointmentCollection appointmentCollection = appointmentRepository.findAppointmentbyUserLocationIdTimeDate(request.getDoctorId(), request.getLocationId(), request.getTime().getFromTime(), request.getTime().getToTime(), request.getFromDate(), request.getToDate(), AppointmentState.CANCEL.getState());
+			
+		    AppointmentCollection appointmentCollection = appointmentRepository.findAppointmentbyUserLocationIdTimeDate(request.getDoctorId(), request.getLocationId(), request.getTime().getFromTime(), request.getTime().getToTime(), request.getFromDate(), request.getToDate(), AppointmentState.CANCEL.getState());
 			
 		    if(userCollection != null){
 				if (appointmentCollection == null || !request.getIsCalenderBlocked()) {
@@ -1140,16 +1135,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 		Appointment response = null;
 		try {
 		    AppointmentCollection appointmentCollection = appointmentRepository.findOne(request.getId());
-		    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
-	        DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
-	    	
-		    SimpleDateFormat sdf = new SimpleDateFormat();
-			if(clinicProfileCollection != null)sdf.setTimeZone(TimeZone.getTimeZone(clinicProfileCollection.getTimeZone()));
-			else sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-			if(request.getFromDate() != null)request.setFromDate(new Date(sdf.format(request.getFromDate())));
-			if(request.getToDate() != null)request.setToDate(new Date(sdf.format(request.getToDate())));
-		    
-		    
 		    if (appointmentCollection != null) {
 		    	AppointmentCollection appointmentCollectionToCheck = null;
 		    	if(request.getState().equals(AppointmentState.RESCHEDULE)){

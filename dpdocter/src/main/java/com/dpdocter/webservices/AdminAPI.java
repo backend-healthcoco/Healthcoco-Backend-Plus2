@@ -118,11 +118,6 @@ public class AdminAPI {
 	public Response<Resume> getResumes(@QueryParam(value = "page") int page, @QueryParam(value = "size") int size, @QueryParam(value = "type") String type){
 		
 		List<Resume> resumes = adminServices.getResumes(page, size, type);
-		if(resumes != null && !resumes.isEmpty()){
-			for(Resume resume : resumes){
-				resume.setPath(getFinalImageURL(resume.getPath()));
-			}
-		}
 		Response<Resume> response = new Response<Resume>();
 		response.setDataList(resumes);
 		return response;

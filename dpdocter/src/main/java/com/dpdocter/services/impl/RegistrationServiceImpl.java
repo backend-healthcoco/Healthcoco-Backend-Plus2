@@ -1916,6 +1916,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 			recordsCollection.setUpdatedTime(new Date());
 			recordsRepository.save(recordsCollection);
 		    }
+		}else{
+			feedbackCollection.setIsVisible(true);
 		}
 		UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(feedbackCollection.getDoctorId(),
 			feedbackCollection.getLocationId());
@@ -2033,14 +2035,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    	//THis is for ADMIN so isVisible = false
 	    	if(DPDoctorUtils.anyStringEmpty(type)){
 	    		if (size > 0)
-					feedbackCollections = feedbackRepository.find(false, new Date(createdTimeStamp), new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
+					feedbackCollections = feedbackRepository.find(new Date(createdTimeStamp), new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
 				else
-					feedbackCollections = feedbackRepository.find(false, new Date(createdTimeStamp), new Sort(Direction.DESC, "createdTime"));
+					feedbackCollections = feedbackRepository.find(new Date(createdTimeStamp), new Sort(Direction.DESC, "createdTime"));
 	    	}else{
 	    		if (size > 0)
-					feedbackCollections = feedbackRepository.findByType(type, false, new Date(createdTimeStamp), new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
+					feedbackCollections = feedbackRepository.findByType(type, new Date(createdTimeStamp), new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
 				else
-					feedbackCollections = feedbackRepository.findByType(type, false, new Date(createdTimeStamp), new Sort(Direction.DESC, "createdTime"));
+					feedbackCollections = feedbackRepository.findByType(type, new Date(createdTimeStamp), new Sort(Direction.DESC, "createdTime"));
 	    	}
 	    }
 	    else {

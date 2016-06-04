@@ -1693,9 +1693,18 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		labTestCollections = labTestRepository.getGlobalLabTests(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
 
 	    if (!labTestCollections.isEmpty()) {
-		response = new ArrayList<Object>();
-		BeanUtil.map(labTestCollections, response);
-	    }
+			response = new ArrayList<Object>();
+			for(LabTestCollection labTestCollection : labTestCollections){
+				LabTest labTest = new LabTest();
+				BeanUtil.map(labTestCollection, labTest);
+				DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(labTestCollection.getTestId());
+				DiagnosticTest diagnosticTest = new DiagnosticTest();
+				BeanUtil.map(diagnosticTestCollection, diagnosticTest);
+				labTest.setTest(diagnosticTest);
+				response.add(labTest);
+			}
+			
+		    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting LabTests");
@@ -1725,9 +1734,18 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    Sort.Direction.DESC, "createdTime"));
 	    }
 	    if (!labTestCollections.isEmpty()) {
-		response = new ArrayList<Object>();
-		BeanUtil.map(labTestCollections, response);
-	    }
+			response = new ArrayList<Object>();
+			for(LabTestCollection labTestCollection : labTestCollections){
+				LabTest labTest = new LabTest();
+				BeanUtil.map(labTestCollection, labTest);
+				DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(labTestCollection.getTestId());
+				DiagnosticTest diagnosticTest = new DiagnosticTest();
+				BeanUtil.map(diagnosticTestCollection, diagnosticTest);
+				labTest.setTest(diagnosticTest);
+				response.add(labTest);
+			}
+			
+		    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting LabTests");
@@ -1763,7 +1781,16 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    }
 	    if (!labTestCollections.isEmpty()) {
 		response = new ArrayList<Object>();
-		BeanUtil.map(labTestCollections, response);
+		for(LabTestCollection labTestCollection : labTestCollections){
+			LabTest labTest = new LabTest();
+			BeanUtil.map(labTestCollection, labTest);
+			DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(labTestCollection.getTestId());
+			DiagnosticTest diagnosticTest = new DiagnosticTest();
+			BeanUtil.map(diagnosticTestCollection, diagnosticTest);
+			labTest.setTest(diagnosticTest);
+			response.add(labTest);
+		}
+		
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();

@@ -2,6 +2,7 @@ package com.dpdocter.tests;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -81,18 +82,18 @@ public class GeneralTests {
 //        }
 //	    	}
 	    		 
-	    		 public static void main(String[] args) throws NoSuchAlgorithmException, JsonGenerationException, JsonMappingException, IOException  {
-	    			 Date dateObj = new Date(Long.parseLong("1464373800000"));//1464413400000
-	    			 SimpleDateFormat sdf = new SimpleDateFormat();
-	    			 sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-	    			 System.out.println(sdf.format(dateObj));
-	    
-//	    			 dateObj = new Date(Long.parseLong("2016-05-28T00:00:00.000Z"));//1464413400000
-	    			 System.out.println(sdf.format(dateObj));
-	    			 BasicDBObject basicDBObject = new BasicDBObject();
-	    				basicDBObject.put("type", "Healthcoco");
-	    				ObjectMapper mapper = new ObjectMapper();
-	    				System.out.println(mapper.writeValueAsString(basicDBObject));
-	    			  }
+	    		 public static void main(String[] args) throws NoSuchAlgorithmException, JsonGenerationException, JsonMappingException, IOException, ParseException  {
+	    			 SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy");
+	    				sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+	    				System.out.println(sdf.format(new Date()));
+	    				
+	    				String _24HourTime = "22:15";
+	    		           SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+	    		           SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+	    		           Date _24HourDt = _24HourSDF.parse(_24HourTime);
+	    		           System.out.println(_24HourDt);
+	    		           System.out.println(_12HourSDF.format(_24HourDt));
+	    			    
+	    		 }
 	    		 
 }  	

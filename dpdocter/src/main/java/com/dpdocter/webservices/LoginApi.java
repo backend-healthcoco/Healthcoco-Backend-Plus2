@@ -48,7 +48,7 @@ public class LoginApi {
 
     @Path(value = PathProxy.LoginUrls.LOGIN_ADMIN)
     @POST
-    @ApiOperation(value = PathProxy.LoginUrls.LOGIN_ADMIN, notes = PathProxy.LoginUrls.LOGIN_ADMIN)
+    @ApiOperation(value = PathProxy.LoginUrls.LOGIN_ADMIN, notes = PathProxy.LoginUrls.LOGIN_ADMIN, tags = PathProxy.LoginUrls.LOGIN_ADMIN)
     public Response<User> adminLogin(LoginPatientRequest request) {
 	if (request == null) {
 	    logger.warn("Invalid Input");
