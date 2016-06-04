@@ -108,6 +108,7 @@ import com.dpdocter.request.ClinicProfileHandheld;
 import com.dpdocter.request.DoctorRegisterRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.ClinicDoctorResponse;
+import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.PatientInitialAndCounter;
 import com.dpdocter.response.PatientStatusResponse;
 import com.dpdocter.response.RegisterDoctorResponse;
@@ -319,10 +320,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 		String path = "profile-images";
 		// save image
 		request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
-		String imageUrl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
-		patientCollection.setImageUrl(imageUrl);
-		String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
-		patientCollection.setThumbnailUrl(thumbnailUrl);
+		ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getImage(), path, true);
+		patientCollection.setImageUrl(imageURLResponse.getImageUrl());
+		patientCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
 
 	    }
 
@@ -479,14 +479,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    String path = "profile-images";
 		    // save image
 		    request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
-		    String imageUrl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
-		    patientCollection.setImageUrl(imageUrl);
+		    ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getImage(), path, true);
+		    patientCollection.setImageUrl(imageURLResponse.getImageUrl());
 		    userCollection.setImageUrl(null);
-		    registeredPatientDetails.setImageUrl(imageUrl);
-		    String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
-		    patientCollection.setThumbnailUrl(thumbnailUrl);
+		    registeredPatientDetails.setImageUrl(imageURLResponse.getImageUrl());
+		    patientCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
 		    userCollection.setThumbnailUrl(null);
-		    registeredPatientDetails.setThumbnailUrl(thumbnailUrl);
+		    registeredPatientDetails.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
 		}
 		
 
@@ -581,15 +580,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    String path = "profile-images";
 		    // save image
 		    request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
-		    String imageUrl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
-		    patientCollection.setImageUrl(imageUrl);
+		    ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getImage(), path, true);
+		    patientCollection.setImageUrl(imageURLResponse.getImageUrl());
 		    userCollection.setImageUrl(null);
-		    registeredPatientDetails.setImageUrl(imageUrl);
-		    
-		    String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
-		    patientCollection.setThumbnailUrl(thumbnailUrl);
+		    registeredPatientDetails.setImageUrl(imageURLResponse.getImageUrl());
+		    patientCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
 		    userCollection.setThumbnailUrl(null);
-		    registeredPatientDetails.setThumbnailUrl(thumbnailUrl);
+		    registeredPatientDetails.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
 		}
 		registeredPatientDetails.setUserId(userCollection.getId());
 		patientCollection = patientRepository.save(patientCollection);
@@ -662,15 +659,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     @Transactional
-    public List<User> getUsersByPhoneNumber(String phoneNumber, String doctorId, String locationId, String hospitalId) {
-	List<User> users = null;
+    public List<RegisteredPatientDetails> getUsersByPhoneNumber(String phoneNumber, String doctorId, String locationId, String hospitalId) {
+	List<RegisteredPatientDetails> users = null;
 	try {
 	    List<UserCollection> userCollections = userRepository.findByMobileNumber(phoneNumber);
 	    if (userCollections != null) {
-		users = new ArrayList<User>();
+		users = new ArrayList<RegisteredPatientDetails>();
 		for (UserCollection userCollection : userCollections) {
 		    if (!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress())) {
-			User user = new User();
+		    	RegisteredPatientDetails user = new RegisteredPatientDetails();
 			
 			if (locationId != null && hospitalId != null) {
 			    List<PatientCollection> patientCollections = patientRepository.findByUserId(userCollection.getId());
@@ -685,13 +682,16 @@ public class RegistrationServiceImpl implements RegistrationService {
 					    break;
 					}
 				    }else{
-				    	BeanUtil.map(patientCollection, user);
+				    	Patient patient = new Patient();
+				    	BeanUtil.map(patientCollection, patient);
 				    	BeanUtil.map(userCollection, user);
+				    	patient.setPatientId(patientCollection.getUserId());
+				    	user.setPatient(patient);
 				    }
 				}
 			    }
 			    if(!isPartOfClinic){
-			    	user.setId(userCollection.getId());
+			    	user.setUserId(userCollection.getId());
 			    	user.setFirstName(userCollection.getFirstName());
 			    	user.setMobileNumber(userCollection.getMobileNumber());
 			    }else{
@@ -1317,17 +1317,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    String path = "clinic" + File.separator + "logos";
 		    // save image
 		    request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
-		    String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
-		    locationCollection.setLogoUrl(imageurl);
-
-		    String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
-		    locationCollection.setLogoThumbnailUrl(thumbnailUrl);
+		    ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getImage(), path, true);
+		    locationCollection.setLogoUrl(imageURLResponse.getImageUrl());
+		    locationCollection.setLogoThumbnailUrl(imageURLResponse.getThumbnailUrl());
 		    locationCollection = locationRepository.save(locationCollection);
 
 		    List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository.findByLocationId(request.getId());
 		    if (printSettingsCollections != null) {
 			for (PrintSettingsCollection printSettingsCollection : printSettingsCollections) {
-			    printSettingsCollection.setClinicLogoUrl(imageurl);
+			    printSettingsCollection.setClinicLogoUrl(imageURLResponse.getImageUrl());
 			    printSettingsRepository.save(printSettingsCollection);
 			}
 		    }
@@ -1363,11 +1361,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 			counter++;
 			String path = "clinic" + File.separator + "images";
 			image.setFileName(image.getFileName() + new Date().getTime());
-			String imageurl = fileManager.saveImageAndReturnImageUrl(image, path);
-			String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(image, path);
+			ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(image, path, true);
 			ClinicImage clinicImage = new ClinicImage();
-			clinicImage.setImageUrl(imageurl);
-			clinicImage.setThumbnailUrl(thumbnailUrl);
+			clinicImage.setImageUrl(imageURLResponse.getImageUrl());
+			clinicImage.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
 			clinicImage.setCounter(counter);
 			response.add(clinicImage);
 		    }

@@ -51,6 +51,7 @@ import com.dpdocter.request.ExportContactsRequest;
 import com.dpdocter.request.GetDoctorContactsRequest;
 import com.dpdocter.request.ImportContactsRequest;
 import com.dpdocter.request.PatientGroupAddEditRequest;
+import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.ContactsService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.OTPService;
@@ -560,8 +561,8 @@ public class ContactsServiceImpl implements ContactsService {
 	    if (request.getContactsFile() != null) {
 		request.getContactsFile().setFileName(request.getContactsFile().getFileName() + new Date().getTime());
 		String path = "contacts" + File.separator + request.getDoctorId();
-		String contactsFileUrl = fileManager.saveImageAndReturnImageUrl(request.getContactsFile(), path);
-		request.setContactsFileUrl(contactsFileUrl);
+		ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getContactsFile(), path, false);
+		request.setContactsFileUrl(imageURLResponse.getImageUrl());
 
 	    }
 	    importContactsRequestCollection = new ImportContactsRequestCollection();

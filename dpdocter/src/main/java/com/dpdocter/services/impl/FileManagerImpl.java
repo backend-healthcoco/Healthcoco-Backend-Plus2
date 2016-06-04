@@ -26,6 +26,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.dpdocter.beans.FileDetails;
+import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.FileManager;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
@@ -53,7 +54,8 @@ public class FileManagerImpl implements FileManager {
 
     @Override
     @Transactional
-    public String saveImageAndReturnImageUrl(FileDetails fileDetails, String path) throws Exception {
+    public ImageURLResponse saveImageAndReturnImageUrl(FileDetails fileDetails, String path, Boolean createThumbnail) throws Exception {
+    ImageURLResponse response = new ImageURLResponse();
 	String fileName = fileDetails.getFileName() + "." + fileDetails.getFileExtension();
 	String imageUrl = path + "/" + fileName;
 
@@ -72,7 +74,8 @@ public class FileManagerImpl implements FileManager {
 	    metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);     
 	    
 	    s3client.putObject(new PutObjectRequest(bucketName, imageUrl, fis, metadata));
-	
+	    response.setImageUrl(imageUrl);
+	    if(createThumbnail)response.setThumbnailUrl(saveThumbnailAndReturnThumbNailUrl(fileDetails, path));
 	} catch (AmazonServiceException ase) {
 	    System.out.println("Error Message:    " + ase.getMessage() + " HTTP Status Code: " + ase.getStatusCode() + " AWS Error Code:   "
 		    + ase.getErrorCode() + " Error Type:       " + ase.getErrorType() + " Request ID:       " + ase.getRequestId());
@@ -81,7 +84,7 @@ public class FileManagerImpl implements FileManager {
 		    "Caught an AmazonClientException, which means the client encountered an internal error while trying to communicate with S3, such as not being able to access the network.");
 	    System.out.println("Error Message: " + ace.getMessage());
 	}
-	return imageUrl;
+	return response;
     }
 
     @Override
@@ -120,6 +123,9 @@ public class FileManagerImpl implements FileManager {
 	    String fileName = fileDetails.getFileName() + "_thumb." + fileDetails.getFileExtension();
 	    thumbnailUrl = path + "/" + fileName;
 
+	    originalImage.flush();
+	    originalImage = null;
+	    
 	    ByteArrayOutputStream outstream = new ByteArrayOutputStream();
 	    ImageIO.write(img, fileDetails.getFileExtension(), outstream);
 	    byte[] buffer = outstream.toByteArray();

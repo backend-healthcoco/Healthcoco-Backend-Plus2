@@ -44,6 +44,8 @@ public class RegisteredPatientDetails extends GenericCollection {
 
     private Reference referredBy;
 
+    private Boolean isPartOfClinic;
+    
     public String getUserId() {
 	return userId;
     }
@@ -196,12 +198,23 @@ public class RegisteredPatientDetails extends GenericCollection {
 	this.referredBy = referredBy;
     }
 
-    @Override
-    public String toString() {
-	return "RegisteredPatientDetails [firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", imageUrl=" + imageUrl
-		+ ", thumbnailUrl=" + thumbnailUrl + ", dob=" + dob + ", userId=" + userId + ", userName=" + userName + ", mobileNumber=" + mobileNumber
-		+ ", gender=" + gender + ", patient=" + patient + ", address=" + address + ", groups=" + groups + ", doctorId=" + doctorId + ", locationId="
-		+ locationId + ", hospitalId=" + hospitalId + ", PID=" + PID + ", colorCode=" + colorCode + ", referredBy=" + referredBy + "]";
-    }
+	public Boolean getIsPartOfClinic() {
+		return isPartOfClinic;
+	}
+
+	public void setIsPartOfClinic(Boolean isPartOfClinic) {
+		this.isPartOfClinic = isPartOfClinic;
+	}
+
+	@Override
+	public String toString() {
+		return "RegisteredPatientDetails [firstName=" + firstName + ", lastName=" + lastName + ", middleName="
+				+ middleName + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", dob=" + dob
+				+ ", userId=" + userId + ", userName=" + userName + ", mobileNumber=" + mobileNumber + ", gender="
+				+ gender + ", patient=" + patient + ", address=" + address + ", groups=" + groups + ", doctorId="
+				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", PID=" + PID
+				+ ", colorCode=" + colorCode + ", referredBy=" + referredBy + ", isPartOfClinic=" + isPartOfClinic
+				+ "]";
+	}
 
 }

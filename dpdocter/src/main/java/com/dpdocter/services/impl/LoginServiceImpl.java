@@ -25,6 +25,8 @@ import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.LocationAndAccessControl;
 import com.dpdocter.beans.LoginResponse;
+import com.dpdocter.beans.Patient;
+import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Role;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.HospitalCollection;
@@ -260,8 +262,8 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     @Transactional
-    public List<User>  loginPatient(LoginPatientRequest request) {
-    	List<User> response = null;
+    public List<RegisteredPatientDetails>  loginPatient(LoginPatientRequest request) {
+    	List<RegisteredPatientDetails> response = null;
 	try {
 		Criteria criteria = new Criteria("mobileNumber").is(request.getMobileNumber());
 		Query query = new Query(); query.addCriteria(criteria);
@@ -270,7 +272,7 @@ public class LoginServiceImpl implements LoginService {
 		for(UserCollection userCollection : userCollections){
 			if(userCollection.getEmailAddress() != null){
 				if(!userCollection.getEmailAddress().equalsIgnoreCase(userCollection.getUserName())){
-				    User user = new User();
+					RegisteredPatientDetails user = new RegisteredPatientDetails();
 				    char[] salt = userCollection.getSalt();
 					char[] passwordWithSalt = new char[request.getPassword().length + salt.length]; 
 					for(int i = 0; i < request.getPassword().length; i++)
@@ -283,13 +285,18 @@ public class LoginServiceImpl implements LoginService {
 				    }
 				    BeanUtil.map(userCollection, user);
 				    PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(),null,null, null);
-				    if(patientCollection != null)BeanUtil.map(patientCollection, user);
-				    user.setId(userCollection.getId());
-				    if(response == null)response = new ArrayList<User>();
+				    if(patientCollection != null){
+				    	Patient patient = new Patient();
+				    	BeanUtil.map(patientCollection, patient);
+				    	patient.setPatientId(patientCollection.getUserId());
+				    	user.setPatient(patient);
+				    }
+				    user.setUserId(userCollection.getId());
+				    if(response == null)response = new ArrayList<RegisteredPatientDetails>();
 				    response.add(user);
 				}
 			}else{
-				User user = new User();
+				RegisteredPatientDetails user = new RegisteredPatientDetails();
 				char[] salt = userCollection.getSalt();
 				char[] passwordWithSalt = new char[request.getPassword().length + salt.length]; 
 				for(int i = 0; i < request.getPassword().length; i++)
@@ -302,9 +309,14 @@ public class LoginServiceImpl implements LoginService {
 			    }
 				BeanUtil.map(userCollection, user);
 				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(),null,null, null);
-				if(patientCollection != null)BeanUtil.map(patientCollection, user);
-				user.setId(userCollection.getId());
-				if(response == null)response = new ArrayList<User>();
+				if(patientCollection != null){
+			    	Patient patient = new Patient();
+			    	BeanUtil.map(patientCollection, patient);
+			    	patient.setPatientId(patientCollection.getUserId());
+			    	user.setPatient(patient);
+			    }
+			    user.setUserId(userCollection.getId());
+				if(response == null)response = new ArrayList<RegisteredPatientDetails>();
 				response.add(user);
 			}		
 		}

@@ -139,7 +139,7 @@ public class RegistrationApi {
     @Path(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM)
     @GET
     @ApiOperation(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM, notes = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM, response = Response.class)
-    public Response<User> getExistingPatients(@PathParam("mobileNumber") String mobileNumber, @PathParam("doctorId") String doctorId,
+    public Response<RegisteredPatientDetails> getExistingPatients(@PathParam("mobileNumber") String mobileNumber, @PathParam("doctorId") String doctorId,
 	    @PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
 	if (mobileNumber == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.Mobile Number is null");
@@ -150,11 +150,11 @@ public class RegistrationApi {
 	if (hospitalId == null) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.hospitalId is null");
 	}
-	Response<User> response = new Response<User>();
+	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 
-	List<User> users = registrationService.getUsersByPhoneNumber(mobileNumber, doctorId, locationId, hospitalId);
+	List<RegisteredPatientDetails> users = registrationService.getUsersByPhoneNumber(mobileNumber, doctorId, locationId, hospitalId);
 	if (users != null && !users.isEmpty()) {
-	    for (User user : users) {
+	    for (RegisteredPatientDetails user : users) {
 		user.setImageUrl(getFinalImageURL(user.getImageUrl()));
 		user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
 	    }
@@ -172,7 +172,7 @@ public class RegistrationApi {
 	}
 	Response<Integer> response = new Response<Integer>();
 	Integer patientCountByMobNum = 0;
-	List<User> users = registrationService.getUsersByPhoneNumber(mobileNumber, null, null, null);
+	List<RegisteredPatientDetails> users = registrationService.getUsersByPhoneNumber(mobileNumber, null, null, null);
 	if (users != null) {
 	    patientCountByMobNum = users.size();
 	}

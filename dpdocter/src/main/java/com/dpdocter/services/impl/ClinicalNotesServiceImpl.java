@@ -81,6 +81,7 @@ import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.ClinicalNotesAddRequest;
 import com.dpdocter.request.ClinicalNotesEditRequest;
+import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.FileManager;
@@ -931,8 +932,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    if (diagram.getDiagram() != null) {
 		String path = "clinicalNotes" + File.separator + "diagrams";
 		diagram.getDiagram().setFileName(diagram.getDiagram().getFileName() + new Date().getTime());
-		String diagramUrl = fileManager.saveImageAndReturnImageUrl(diagram.getDiagram(), path);
-		diagram.setDiagramUrl(diagramUrl);
+		ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(diagram.getDiagram(), path, false);
+		diagram.setDiagramUrl(imageURLResponse.getImageUrl());
 
 	    }
 	    DiagramsCollection diagramsCollection = new DiagramsCollection();

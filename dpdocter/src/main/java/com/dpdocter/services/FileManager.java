@@ -1,10 +1,11 @@
 package com.dpdocter.services;
 
 import com.dpdocter.beans.FileDetails;
+import com.dpdocter.response.ImageURLResponse;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
 public interface FileManager {
-    String saveImageAndReturnImageUrl(FileDetails fileDetails, String path) throws Exception;
+    ImageURLResponse saveImageAndReturnImageUrl(FileDetails fileDetails, String path, Boolean createThumbnail) throws Exception;
 
     String saveThumbnailAndReturnThumbNailUrl(FileDetails fileDetails, String path);
 

@@ -60,6 +60,7 @@ import com.dpdocter.request.RecordsAddRequestMultipart;
 import com.dpdocter.request.RecordsEditRequest;
 import com.dpdocter.request.RecordsSearchRequest;
 import com.dpdocter.request.TagRecordRequest;
+import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.FileManager;
@@ -167,11 +168,11 @@ public class RecordsServiceImpl implements RecordsService {
 		request.getFileDetails().setFileName(request.getFileDetails().getFileName() + createdTime.getTime());
 		String path = "records" + File.separator + request.getPatientId();
 		
-		String recordUrl = fileManager.saveImageAndReturnImageUrl(request.getFileDetails(), path);
+		ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getFileDetails(), path, false);
 		String fileName = request.getFileDetails().getFileName() + "." + request.getFileDetails().getFileExtension();
 		String recordPath = path + File.separator + fileName;
 
-		recordsCollection.setRecordsUrl(recordUrl);
+		recordsCollection.setRecordsUrl(imageURLResponse.getImageUrl());
 		recordsCollection.setRecordsPath(recordPath);
 		recordsCollection.setRecordsLabel(recordLabel);
 	    }
@@ -246,11 +247,11 @@ public class RecordsServiceImpl implements RecordsService {
 		request.getFileDetails().setFileName(request.getFileDetails().getFileName() + new Date().getTime());
 		String path = request.getPatientId() + File.separator + "records";
 		// save image
-		String recordUrl = fileManager.saveImageAndReturnImageUrl(request.getFileDetails(), path);
+		ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getFileDetails(), path, false);
 		String fileName = request.getFileDetails().getFileName() + "." + request.getFileDetails().getFileExtension();
 		String recordPath = path + File.separator + fileName;
 
-		recordsCollection.setRecordsUrl(recordUrl);
+		recordsCollection.setRecordsUrl(imageURLResponse.getImageUrl());
 		recordsCollection.setRecordsPath(recordPath);
 		recordsCollection.setRecordsLabel(recordLabel);
 

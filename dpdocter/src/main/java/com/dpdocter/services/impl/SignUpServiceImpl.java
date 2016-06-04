@@ -70,6 +70,7 @@ import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.PatientProfilePicChangeRequest;
 import com.dpdocter.request.PatientSignUpRequest;
 import com.dpdocter.request.PatientSignupRequestMobile;
+import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.PateientSignUpCheckResponse;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.FileManager;
@@ -323,11 +324,9 @@ public class SignUpServiceImpl implements SignUpService {
 		String path = "profile-pic";
 		// save image
 		request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
-		String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
-		userCollection.setImageUrl(imageurl);
-
-		String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
-		userCollection.setThumbnailUrl(thumbnailUrl);
+		ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getImage(), path, true);
+		userCollection.setImageUrl(imageURLResponse.getImageUrl());
+		userCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
 	    }
 	    userCollection.setCreatedTime(new Date());
 	    userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
@@ -781,11 +780,9 @@ public class SignUpServiceImpl implements SignUpService {
 			String path = "profile-image";
 			// save image
 			request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
-			String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
-			patientCollection.setImageUrl(imageurl);
-
-			String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
-			patientCollection.setThumbnailUrl(thumbnailUrl);
+			ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getImage(), path, true);
+			patientCollection.setImageUrl(imageURLResponse.getImageUrl());
+			patientCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
 		    }
 
 	    patientCollection = patientRepository.save(patientCollection);
@@ -877,18 +874,16 @@ public class SignUpServiceImpl implements SignUpService {
 			    String path = "profile-image";
 			    // save image
 			    request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
-			    String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
-			    patientCollection.setImageUrl(imageurl);
-
-			    String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
-			    patientCollection.setThumbnailUrl(thumbnailUrl);
+			    ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getImage(), path, true);
+			    patientCollection.setImageUrl(imageURLResponse.getImageUrl());
+			    patientCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
 			    patientCollection.setUpdatedTime(new Date());
 			    patientCollection = patientRepository.save(patientCollection);
 
 			    user = new User();
 			    BeanUtil.map(userCollection, user);
-			    user.setImageUrl(imageurl);
-			    user.setThumbnailUrl(thumbnailUrl);
+			    user.setImageUrl(imageURLResponse.getImageUrl());
+			    user.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
 			}
 		}else{
 			logger.warn("No patient found for this doctor");
@@ -1170,11 +1165,9 @@ public class SignUpServiceImpl implements SignUpService {
 	    if (request.getImage() != null) {
 		String path = "profile-image";
 		request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
-		String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
-		userCollection.setImageUrl(imageurl);
-
-		String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
-		userCollection.setThumbnailUrl(thumbnailUrl);
+		ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getImage(), path, true);
+		userCollection.setImageUrl(imageURLResponse.getImageUrl());
+		userCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
 	    }
 	    char[] salt = DPDoctorUtils.generateSalt();
 		userCollection.setSalt(salt);

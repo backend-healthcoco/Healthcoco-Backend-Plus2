@@ -69,6 +69,7 @@ import com.dpdocter.request.DoctorRegistrationAddEditRequest;
 import com.dpdocter.request.DoctorSpecialityAddEditRequest;
 import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
 import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
+import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.DoctorProfileService;
 import com.dpdocter.services.FileManager;
 
@@ -374,10 +375,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		String path = "profile-image";
 		// save image
 		request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
-		String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
-		userCollection.setImageUrl(imageurl);
-		String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
-		userCollection.setThumbnailUrl(thumbnailUrl);
+		ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getImage(), path, true);
+		userCollection.setImageUrl(imageURLResponse.getImageUrl());
+		userCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
 
 		userCollection = userRepository.save(userCollection);
 		response = userCollection.getImageUrl();
@@ -401,10 +401,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		String path = "cover-image";
 		// save image
 		request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
-		String imageurl = fileManager.saveImageAndReturnImageUrl(request.getImage(), path);
-		userCollection.setCoverImageUrl(imageurl);
-		String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getImage(), path);
-		userCollection.setCoverThumbnailImageUrl(thumbnailUrl);
+		ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getImage(), path, true);
+		userCollection.setCoverImageUrl(imageURLResponse.getImageUrl());
+		userCollection.setCoverThumbnailImageUrl(imageURLResponse.getThumbnailUrl());
 		userCollection = userRepository.save(userCollection);
 		response = userCollection.getCoverImageUrl();
 	    }
@@ -882,24 +881,22 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		    String path = "profile-image";
 		    // save image
 		    request.getProfileImage().setFileName(request.getProfileImage().getFileName() + new Date().getTime());
-		    String imageurl = fileManager.saveImageAndReturnImageUrl(request.getProfileImage(), path);
-		    userCollection.setImageUrl(imageurl);
-		    String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getProfileImage(), path);
-		    userCollection.setThumbnailUrl(thumbnailUrl);
-		    response.setProfileImageUrl(imageurl);
-		    response.setThumbnailProfileImageUrl(thumbnailUrl);
+		    ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getProfileImage(), path, true);
+		    userCollection.setImageUrl(imageURLResponse.getImageUrl());
+		    userCollection.setThumbnailUrl(imageURLResponse.getImageUrl());
+		    response.setProfileImageUrl(imageURLResponse.getImageUrl());
+		    response.setThumbnailProfileImageUrl(imageURLResponse.getImageUrl());
 		}
 
 		if (request.getCoverImage() != null) {
 		    String path = "cover-image";
 		    // save image
 		    request.getCoverImage().setFileName(request.getCoverImage().getFileName() + new Date().getTime());
-		    String imageurl = fileManager.saveImageAndReturnImageUrl(request.getCoverImage(), path);
-		    userCollection.setCoverImageUrl(imageurl);
-		    String thumbnailUrl = fileManager.saveThumbnailAndReturnThumbNailUrl(request.getCoverImage(), path);
-		    userCollection.setCoverThumbnailImageUrl(thumbnailUrl);
-		    response.setCoverImageUrl(imageurl);
-		    response.setThumbnailCoverImageUrl(thumbnailUrl);
+		    ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getCoverImage(), path, true);
+		    userCollection.setCoverImageUrl(imageURLResponse.getImageUrl());
+		    userCollection.setCoverThumbnailImageUrl(imageURLResponse.getThumbnailUrl());
+		    response.setCoverImageUrl(imageURLResponse.getImageUrl());
+		    response.setThumbnailCoverImageUrl(imageURLResponse.getThumbnailUrl());
 		}
 		userCollection = userRepository.save(userCollection);
 		doctorCollection = doctorRepository.save(doctorCollection);

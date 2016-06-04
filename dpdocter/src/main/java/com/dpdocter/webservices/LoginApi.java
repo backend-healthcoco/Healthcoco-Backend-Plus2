@@ -15,13 +15,13 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.LoginResponse;
+import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.LoginPatientRequest;
 import com.dpdocter.request.LoginRequest;
 import com.dpdocter.services.LoginService;
-import com.dpdocter.webservices.PathProxy;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -102,19 +102,19 @@ public class LoginApi {
     @Path(value = PathProxy.LoginUrls.LOGIN_PATIENT)
     @POST
     @ApiOperation(value = PathProxy.LoginUrls.LOGIN_PATIENT, notes = PathProxy.LoginUrls.LOGIN_PATIENT)
-    public Response<User> loginPatient(LoginPatientRequest request) {
+    public Response<RegisteredPatientDetails> loginPatient(LoginPatientRequest request) {
 	if (request == null) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
-	List<User> users = loginService.loginPatient(request);
+	List<RegisteredPatientDetails> users = loginService.loginPatient(request);
 	if(users != null && !users.isEmpty()){
-		for(User user : users){
+		for(RegisteredPatientDetails user : users){
 			user.setImageUrl(getFinalImageURL(user.getImageUrl()));
 			user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
 		}
 	}
-	Response<User> response = new Response<User>();
+	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 	response.setDataList(users);
 	return response;
     }

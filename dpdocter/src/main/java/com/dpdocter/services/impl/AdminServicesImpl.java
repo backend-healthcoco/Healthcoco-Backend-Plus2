@@ -57,6 +57,7 @@ import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.ResumeRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.DoctorResponse;
+import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.AdminServices;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.LocationServices;
@@ -232,8 +233,8 @@ public class AdminServicesImpl implements AdminServices {
 				request.getFileDetails().setFileName(request.getFileDetails().getFileName() + (new Date()).getTime());
 				String path = "resume" + File.separator + request.getType();
 				// save image
-				String resumeUrl = fileManager.saveImageAndReturnImageUrl(request.getFileDetails(), path);
-				resumeCollection.setPath(resumeUrl);
+				ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getFileDetails(), path, false);
+				resumeCollection.setPath(imageURLResponse.getImageUrl());
 			    }
 			resumeCollection = resumeRepository.save(resumeCollection);
 			if(resumeCollection != null){
@@ -539,8 +540,8 @@ public class AdminServicesImpl implements AdminServices {
 			 }
 			 Aggregation.newAggregation(new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
 				              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))));
-	    AggregationResults<UserCollection> results = mongoTemplate.aggregate(aggregation, UserCollection.class, UserCollection.class);
-	    List<UserCollection> userCollections = results.getMappedResults();
+	    AggregationResults<DoctorResponse> results = mongoTemplate.aggregate(aggregation, UserCollection.class, DoctorResponse.class);
+	    List<DoctorResponse> userCollections = results.getMappedResults();
 	    if(userCollections != null){
 	    	response = new ArrayList<DoctorResponse>();
 	    	BeanUtil.map(userCollections, response);

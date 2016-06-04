@@ -19,7 +19,7 @@
 	
 	<context:component-scan base-package="com.dpdocter"/>
 	<context:property-placeholder
-		location="classpath:jdbc.properties,classpath:mail.properties,classpath:commons.properties,classpath:sms.properties,classpath:jasperreports_extension.properties,classpath:exceptions.properties,classpath:swagger.properties"
+		location="classpath:jdbc.properties,classpath:mail.properties,classpath:commons.properties,classpath:sms.properties,classpath:jasperreports_extension.properties,classpath:exceptions.properties"
 		ignore-unresolvable="true" />
 	<import resource="application-context-solr.xml" />
 	<import resource="database-connection.xml" />
