@@ -371,12 +371,21 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 			appointmentCollection.setState(request.getState());
 			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy");
-			if(clinicProfileCollection != null)sdf.setTimeZone(TimeZone.getTimeZone(clinicProfileCollection.getTimeZone()));
-			else sdf.setTimeZone(TimeZone.getTimeZone("IST"));
 			
 			String _24HourTime = String.format("%02d:%02d", appointmentCollection.getTime().getFromTime() / 60, appointmentCollection.getTime().getFromTime() % 60);
 	        SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
 	        SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+	        if(clinicProfileCollection != null){
+	        	sdf.setTimeZone(TimeZone.getTimeZone(clinicProfileCollection.getTimeZone()));
+	        	_24HourSDF.setTimeZone(TimeZone.getTimeZone(clinicProfileCollection.getTimeZone()));
+	        	_12HourSDF.setTimeZone(TimeZone.getTimeZone(clinicProfileCollection.getTimeZone()));
+	        }
+			else{
+				sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+				_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+				_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+			}
+				        
 	        Date _24HourDt = _24HourSDF.parse(_24HourTime);
 	        
 		    String patientName = patient.getFirstName() != null?patient.getFirstName().split(" ")[0] :"", appointmentId= appointmentCollection.getAppointmentId(), 
@@ -521,11 +530,21 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    appointmentCollection.setAppointmentId(UniqueIdInitial.APPOINTMENT.getInitial()+DPDoctorUtils.generateRandomId());
 			    
 			    SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy");
-				if(clinicProfileCollection != null)sdf.setTimeZone(TimeZone.getTimeZone(clinicProfileCollection.getTimeZone()));
-				else sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-				String _24HourTime = String.format("%02d:%02d", appointmentCollection.getTime().getFromTime() / 60, appointmentCollection.getTime().getFromTime() % 60);
+				
+			    String _24HourTime = String.format("%02d:%02d", appointmentCollection.getTime().getFromTime() / 60, appointmentCollection.getTime().getFromTime() % 60);
 		        SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
 		        SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+		        if(clinicProfileCollection != null){
+		        	sdf.setTimeZone(TimeZone.getTimeZone(clinicProfileCollection.getTimeZone()));
+		        	_24HourSDF.setTimeZone(TimeZone.getTimeZone(clinicProfileCollection.getTimeZone()));
+		        	_12HourSDF.setTimeZone(TimeZone.getTimeZone(clinicProfileCollection.getTimeZone()));
+		        }
+				else{
+					sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+					_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+					_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+				}
+				
 		        Date _24HourDt = _24HourSDF.parse(_24HourTime);
 		        
 			    String patientName = patient.getFirstName() != null?patient.getFirstName().split(" ")[0] :"", appointmentId= appointmentCollection.getAppointmentId(), 
@@ -749,7 +768,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    
 	    if(!DPDoctorUtils.anyStringEmpty(patientId))criteria.and("patientId").is(patientId);
 	    
-	    Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+	    Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 	        	
 	    if(!DPDoctorUtils.anyStringEmpty(from)){
 	    	localCalendar.setTime(new Date(Long.parseLong(from)));
@@ -807,16 +826,16 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    			appointment.setClinicAddress(address);
 		    			appointment.setLatitude(locationCollection.getLatitude());
 		    			appointment.setLongitude(locationCollection.getLongitude());
-		    			UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(appointment.getDoctorId(), appointment.getLocationId());
-		    			if(userLocationCollection != null){
-		    				DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
-			    	    	
-			    		    SimpleDateFormat sdf = new SimpleDateFormat();
-			    			if(clinicProfileCollection != null)sdf.setTimeZone(TimeZone.getTimeZone(clinicProfileCollection.getTimeZone()));
-			    			else sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-			    		    if(appointment.getFromDate() != null)appointment.setFromDate(new Date(sdf.format(appointment.getFromDate())));
-			    		    if(appointment.getToDate() != null)appointment.setToDate(new Date(sdf.format(appointment.getToDate())));    
-		    			}
+//		    			UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(appointment.getDoctorId(), appointment.getLocationId());
+//		    			if(userLocationCollection != null){
+//		    				DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
+//			    	    	
+//			    		    SimpleDateFormat sdf = new SimpleDateFormat();
+//			    			if(clinicProfileCollection != null)sdf.setTimeZone(TimeZone.getTimeZone(clinicProfileCollection.getTimeZone()));
+//			    			else sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+//			    		    if(appointment.getFromDate() != null)appointment.setFromDate(new Date(sdf.format(appointment.getFromDate())));
+//			    		    if(appointment.getToDate() != null)appointment.setToDate(new Date(sdf.format(appointment.getToDate())));    
+//		    			}
 		    		}
 		    	}
 		    	response.add(appointment);
@@ -844,7 +863,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    
 		    if(!DPDoctorUtils.anyStringEmpty(patientId))criteria.and("patientId").is(patientId);
 		    
-		    Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		    Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 		    if(!DPDoctorUtils.anyStringEmpty(from)){
 		    	localCalendar.setTime(new Date(Long.parseLong(from)));
 			    int currentDay = localCalendar.get(Calendar.DATE);

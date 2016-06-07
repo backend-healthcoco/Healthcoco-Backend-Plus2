@@ -502,6 +502,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 		registeredPatientDetails.setHospitalId(patientCollection.getHospitalId());
 		registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
 	    registeredPatientDetails.setAddress(patientCollection.getAddress());
+	    
+	    patientCollection = patientRepository.save(patientCollection);
 	    } else {
 		patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(request.getUserId(), request.getDoctorId(),
 			request.getLocationId(), request.getHospitalId());
