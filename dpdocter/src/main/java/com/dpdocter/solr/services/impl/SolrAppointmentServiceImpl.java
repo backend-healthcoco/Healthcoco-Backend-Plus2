@@ -111,7 +111,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 	try {
 	    List<SolrSpecialityDocument> solrSpecialityDocuments = solrSpecialityRepository.findByQueryAnnotation(searchTerm);
 
-	    List<SolrSymptomsDocument> solrSymptomsDocuments = solrSymptomRepository.findAll(searchTerm);
+	    List<SolrSymptomsDocument> solrSymptomsDocuments = null;//solrSymptomRepository.findAll(searchTerm);
 
 	    List<SolrDoctorDocument> solrDoctorDocuments = null;
 	    if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {

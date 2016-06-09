@@ -671,7 +671,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    if (!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress())) {
 		    	RegisteredPatientDetails user = new RegisteredPatientDetails();
 			
-			if (locationId != null && hospitalId != null) {
+//			if (locationId != null && hospitalId != null) {
 			    List<PatientCollection> patientCollections = patientRepository.findByUserId(userCollection.getId());
 			    boolean isPartOfClinic = false;
 			    if (patientCollections != null) {
@@ -686,6 +686,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				    }else{
 				    	Patient patient = new Patient();
 				    	BeanUtil.map(patientCollection, patient);
+				    	BeanUtil.map(patientCollection, user);
 				    	BeanUtil.map(userCollection, user);
 				    	patient.setPatientId(patientCollection.getUserId());
 				    	user.setPatient(patient);
@@ -700,7 +701,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			    	BeanUtil.map(userCollection, user);
 			    }
 			    user.setIsPartOfClinic(isPartOfClinic);
-			}
+//			}
 			users.add(user);
 		    }
 		}

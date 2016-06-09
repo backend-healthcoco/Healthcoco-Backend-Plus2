@@ -283,11 +283,12 @@ public class LoginServiceImpl implements LoginService {
 						    	logger.warn(login);
 								throw new BusinessException(ServiceError.InvalidInput, login);
 				    }
-				    BeanUtil.map(userCollection, user);
 				    PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(),null,null, null);
 				    if(patientCollection != null){
 				    	Patient patient = new Patient();
 				    	BeanUtil.map(patientCollection, patient);
+				    	BeanUtil.map(patientCollection, user);
+				    	BeanUtil.map(userCollection, user);
 				    	patient.setPatientId(patientCollection.getUserId());
 				    	user.setPatient(patient);
 				    }
@@ -307,11 +308,12 @@ public class LoginServiceImpl implements LoginService {
 					    	logger.warn(login);
 							throw new BusinessException(ServiceError.InvalidInput, login);
 			    }
-				BeanUtil.map(userCollection, user);
 				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(),null,null, null);
 				if(patientCollection != null){
-			    	Patient patient = new Patient();
+					Patient patient = new Patient();
 			    	BeanUtil.map(patientCollection, patient);
+			    	BeanUtil.map(patientCollection, user);
+			    	BeanUtil.map(userCollection, user);
 			    	patient.setPatientId(patientCollection.getUserId());
 			    	user.setPatient(patient);
 			    }
