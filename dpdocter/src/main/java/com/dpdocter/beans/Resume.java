@@ -16,7 +16,7 @@ public class Resume extends GenericCollection{
 
     private String path;
 
-    private FileDetails fileDetails;
+    private FileDetails file;
     
 	public String getId() {
 		return id;
@@ -66,18 +66,19 @@ public class Resume extends GenericCollection{
 		this.path = path;
 	}
 
-	public FileDetails getFileDetails() {
-		return fileDetails;
+	public FileDetails getFile() {
+		return file;
 	}
 
-	public void setFileDetails(FileDetails fileDetails) {
-		this.fileDetails = fileDetails;
+	public void setFile(FileDetails file) {
+		this.file = file;
 	}
 
 	@Override
 	public String toString() {
 		return "Resume [id=" + id + ", type=" + type + ", name=" + name + ", emailAddress=" + emailAddress
-				+ ", mobileNumber=" + mobileNumber + ", path=" + path + ", fileDetails=" + fileDetails + "]";
+				+ ", mobileNumber=" + mobileNumber + ", path=" + path + ", file=" + file + "]";
 	}
+
 }
 

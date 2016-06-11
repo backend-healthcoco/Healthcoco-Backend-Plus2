@@ -229,11 +229,11 @@ public class AdminServicesImpl implements AdminServices {
 			ResumeCollection resumeCollection = new ResumeCollection();
 			BeanUtil.map(request, resumeCollection);
 			resumeCollection.setCreatedTime(new Date());
-			if (request.getFileDetails() != null) {
-				request.getFileDetails().setFileName(request.getFileDetails().getFileName() + (new Date()).getTime());
+			if (request.getFile() != null) {
+				request.getFile().setFileName(request.getFile().getFileName() + (new Date()).getTime());
 				String path = "resume" + File.separator + request.getType();
 				// save image
-				ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getFileDetails(), path, false);
+				ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getFile(), path, false);
 				resumeCollection.setPath(imageURLResponse.getImageUrl());
 			    }
 			resumeCollection = resumeRepository.save(resumeCollection);

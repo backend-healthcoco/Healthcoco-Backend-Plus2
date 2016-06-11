@@ -206,9 +206,12 @@ public class HistoryServicesImpl implements HistoryServices {
 			throw new BusinessException(ServiceError.NotAuthorized, "Invalid Doctor Id, Hospital Id, Or Location Id");
 		    }
 		} else {
-		    logger.warn("Cannot Delete Global Disease");
-		    throw new BusinessException(ServiceError.NotAuthorized, "Cannot Delete Global Disease");
-		}
+			disease.setDiscarded(discarded);
+			disease.setUpdatedTime(new Date());
+			disease = diseasesRepository.save(disease);
+			response = new DiseaseAddEditResponse();
+			BeanUtil.map(disease, response);
+		    }
 	    } else {
 		logger.warn("Disease Not Found");
 		throw new BusinessException(ServiceError.NotFound, "Disease Not Found");
