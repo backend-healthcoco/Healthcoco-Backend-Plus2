@@ -983,8 +983,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Doctor Id, Hospital Id, Or Location Id");
 		    }
 		} else {
-		    logger.warn("Cant delete Global Complaint.");
-		    throw new BusinessException(ServiceError.NotAuthorized, "Cant delete Global Complaint.");
+			complaintCollection.setDiscarded(discarded);
+			complaintCollection.setUpdatedTime(new Date());
+			complaintRepository.save(complaintCollection);
+			response = new Complaint();
+			BeanUtil.map(complaintCollection, response);
 		}
 
 	    } else {
@@ -1020,8 +1023,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Doctor Id, Hospital Id, Or Location Id");
 		    }
 		} else {
-		    logger.warn("Cant delete Global Observation.");
-		    throw new BusinessException(ServiceError.NotAuthorized, "Cant delete Global Observation.");
+			observationCollection.setDiscarded(discarded);
+			observationCollection.setUpdatedTime(new Date());
+			observationRepository.save(observationCollection);
+			response = new Observation();
+			BeanUtil.map(observationCollection, response);
 		}
 	    } else {
 		logger.warn("Observation not found!");
@@ -1056,8 +1062,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Doctor Id, Hospital Id, Or Location Id");
 		    }
 		} else {
-		    logger.warn("Cant delete Global Investigation.");
-		    throw new BusinessException(ServiceError.NotAuthorized, "Cant delete Global Investigation.");
+			investigationCollection.setDiscarded(discarded);
+			investigationCollection.setUpdatedTime(new Date());
+			investigationRepository.save(investigationCollection);
+			response = new  Investigation();
+			BeanUtil.map(investigationCollection, response);
 		}
 	    } else {
 		logger.warn("Investigation not found!");
@@ -1091,8 +1100,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Doctor Id, Hospital Id, Or Location Id");
 		    }
 		} else {
-		    logger.warn("Cant delete Global Diagnosis.");
-		    throw new BusinessException(ServiceError.NotAuthorized, "Cant delete Global Diagnosis.");
+			diagnosisCollection.setDiscarded(discarded);
+			diagnosisCollection.setUpdatedTime(new Date());
+			diagnosisRepository.save(diagnosisCollection);
+			response = new Diagnoses();
+			BeanUtil.map(diagnosisCollection, response);
 		}
 	    } else {
 		logger.warn("Diagnosis not found!");
@@ -1126,9 +1138,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Doctor Id, Hospital Id, Or Location Id");
 		    }
 		} else {
-		    logger.warn("Cant delete Global Notes.");
-		    throw new BusinessException(ServiceError.NotAuthorized, "Cant delete Global Notes.");
-		}
+			notesCollection.setDiscarded(discarded);
+			notesCollection.setUpdatedTime(new Date());
+			notesRepository.save(notesCollection);
+			response = new Notes();
+			BeanUtil.map(notesCollection, response);
+		   }
 
 	    } else {
 		logger.warn("Notes not found!");
@@ -1162,8 +1177,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Doctor Id, Hospital Id, Or Location Id");
 		    }
 		} else {
-		    logger.warn("Cant delete Global Diagram.");
-		    throw new BusinessException(ServiceError.NotAuthorized, "Cant delete Global Diagram.");
+			diagramsCollection.setDiscarded(discarded);
+			diagramsCollection.setUpdatedTime(new Date());
+			diagramsRepository.save(diagramsCollection);
+			response = new Diagram();
+			BeanUtil.map(diagramsCollection, response);
 		}
 
 	    } else {

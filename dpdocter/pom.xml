@@ -95,7 +95,7 @@
 			<artifactId>jersey-json</artifactId>
 			<version>1.8</version>
 		</dependency>
-		<!-- Spring 3 dependencies -->
+		<!-- Spring 4 dependencies -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
