@@ -236,38 +236,45 @@ public class SignUpServiceImpl implements SignUpService {
 	    	logger.error("User has not verified his mail so user cannot be activated");
 			throw new BusinessException(ServiceError.Unknown, "User has not verified his mail so user cannot be activated");
 	    }
-		userCollection.setIsActive(activate);
-		if(activate)userCollection.setUserState(UserState.USERSTATECOMPLETE);
-		else userCollection.setUserState(UserState.NOTACTIVATED);
-		userRepository.save(userCollection);
-		response = true;
-		if (userCollection.getMobileNumber() != null && activate) {
-		    SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+	    if(activate){
+	    	userCollection.setIsActive(activate);
+			if(activate)userCollection.setUserState(UserState.USERSTATECOMPLETE);
+			else userCollection.setUserState(UserState.NOTACTIVATED);
+			userRepository.save(userCollection);
+			response = true;
+			if (userCollection.getMobileNumber() != null && activate) {
+			    SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 
-		    smsTrackDetail.setType("AFTER_VERIFICATION_TO_DOCTOR");
-		    SMSDetail smsDetail = new SMSDetail();
-		    smsDetail.setUserId(userCollection.getId());
-		    smsDetail.setUserName(userCollection.getFirstName());
-		    SMS sms = new SMS();
-		    sms.setSmsText("Hi " + (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName()
-			    + ",Your Healthcoco+ account has been activated,for any query please mail us at support@healthcoco.com ");
+			    smsTrackDetail.setType("AFTER_VERIFICATION_TO_DOCTOR");
+			    SMSDetail smsDetail = new SMSDetail();
+			    smsDetail.setUserId(userCollection.getId());
+			    smsDetail.setUserName(userCollection.getFirstName());
+			    SMS sms = new SMS();
+			    sms.setSmsText("Hi " + (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName()
+				    + ",Your Healthcoco+ account has been activated,for any query please mail us at support@healthcoco.com ");
 
-		    SMSAddress smsAddress = new SMSAddress();
-		    smsAddress.setRecipient(userCollection.getMobileNumber());
-		    sms.setSmsAddress(smsAddress);
+			    SMSAddress smsAddress = new SMSAddress();
+			    smsAddress.setRecipient(userCollection.getMobileNumber());
+			    sms.setSmsAddress(smsAddress);
 
-		    smsDetail.setSms(sms);
-		    smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-		    List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-		    smsDetails.add(smsDetail);
-		    smsTrackDetail.setSmsDetails(smsDetails);
-		    sMSServices.sendSMS(smsTrackDetail, true);
-		}
+			    smsDetail.setSms(sms);
+			    smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+			    List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+			    smsDetails.add(smsDetail);
+			    smsTrackDetail.setSmsDetails(smsDetails);
+			    sMSServices.sendSMS(smsTrackDetail, true);
+			}
 
-	    } else {
-		logger.error("User Not Found For The Given User Id");
-		throw new BusinessException(ServiceError.NotFound, "User Not Found For The Given User Id");
+		    } 
+	    else{
+	    	
 	    }
+	    }
+	    else {
+			logger.error("User Not Found For The Given User Id");
+			throw new BusinessException(ServiceError.NotFound, "User Not Found For The Given User Id");
+		    }
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error While Verifying User");
@@ -275,6 +282,62 @@ public class SignUpServiceImpl implements SignUpService {
 	}
 	return response;
     }
+
+	@Override
+	public Boolean activateLocation(String locationId, Boolean activate) {
+//		UserCollection userCollection = null;
+		Boolean response = false;
+//		try {
+//		    userCollection = userRepository.findOne(userId);
+//		    if (userCollection != null) {
+//		    
+//		    if(userCollection.getUserState().getState().equalsIgnoreCase(UserState.USERSTATEINCOMPLETE.getState())){
+//		    	logger.error("User State is incomplete so user cannot be activated");
+//				throw new BusinessException(ServiceError.Unknown, "User State is incomplete so user cannot be activated");
+//		    }
+//		    else if(userCollection.getUserState().getState().equalsIgnoreCase(UserState.NOTVERIFIED.getState())){
+//		    	logger.error("User has not verified his mail so user cannot be activated");
+//				throw new BusinessException(ServiceError.Unknown, "User has not verified his mail so user cannot be activated");
+//		    }
+//			userCollection.setIsActive(activate);
+//			if(activate)userCollection.setUserState(UserState.USERSTATECOMPLETE);
+//			else userCollection.setUserState(UserState.NOTACTIVATED);
+//			userRepository.save(userCollection);
+//			response = true;
+//			if (userCollection.getMobileNumber() != null && activate) {
+//			    SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+//
+//			    smsTrackDetail.setType("AFTER_VERIFICATION_TO_DOCTOR");
+//			    SMSDetail smsDetail = new SMSDetail();
+//			    smsDetail.setUserId(userCollection.getId());
+//			    smsDetail.setUserName(userCollection.getFirstName());
+//			    SMS sms = new SMS();
+//			    sms.setSmsText("Hi " + (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName()
+//				    + ",Your Healthcoco+ account has been activated,for any query please mail us at support@healthcoco.com ");
+//
+//			    SMSAddress smsAddress = new SMSAddress();
+//			    smsAddress.setRecipient(userCollection.getMobileNumber());
+//			    sms.setSmsAddress(smsAddress);
+//
+//			    smsDetail.setSms(sms);
+//			    smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+//			    List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+//			    smsDetails.add(smsDetail);
+//			    smsTrackDetail.setSmsDetails(smsDetails);
+//			    sMSServices.sendSMS(smsTrackDetail, true);
+//			}
+//
+//		    } else {
+//			logger.error("User Not Found For The Given User Id");
+//			throw new BusinessException(ServiceError.NotFound, "User Not Found For The Given User Id");
+//		    }
+//		} catch (Exception e) {
+//		    e.printStackTrace();
+//		    logger.error(e + " Error While Verifying User");
+//		    throw new BusinessException(ServiceError.Unknown, "Error While Verifying User");
+//		}
+		return response;
+	}
 
     @Override
     @Transactional

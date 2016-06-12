@@ -642,77 +642,83 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    if(DPDoctorUtils.anyStringEmpty(clinicName))clinicName="";
 	    if(DPDoctorUtils.anyStringEmpty(clinicContactNum))clinicContactNum="";
 	    if(smsFormatCollection != null){
-	    		if(smsFormatCollection.getContent().contains(SMSContent.PATIENT_NAME.getContent()) && patientName != null && patientName != "")
-	    			 patientName = " "+patientName;
-	    		 else patientName = "";
-	    		 if(smsFormatCollection.getContent().contains(SMSContent.APPOINTMENT_ID.getContent()) && appointmentId != null && appointmentId != "")
-	    			 appointmentId = " "+appointmentId;
-	    		 else appointmentId = "";
-	    		 if(smsFormatCollection.getContent().contains(SMSContent.DATE_TIME.getContent()) && dateTime != null && dateTime != "")
-	    			 dateTime = " "+dateTime;
-	    		 else dateTime ="";
-	    		 if(smsFormatCollection.getContent().contains(SMSContent.DOCTOR_NAME.getContent()) && doctorName != null && doctorName != "")
-	    			 doctorName = " "+doctorName;
-	    		 else doctorName ="";
-	    		 if(smsFormatCollection.getContent().contains(SMSContent.CLINIC_NAME.getContent()) && clinicName != null && clinicName != "");
-	    		 else clinicName ="";
-	    		 if(smsFormatCollection.getContent().equals(SMSContent.CLINIC_CONTACT_NUMBER.getContent()) && clinicContactNum != null && clinicContactNum != "")
-	    			 clinicContactNum = " "+ clinicContactNum;
-	    		 else clinicContactNum = "";
+//	    		if(!SMSFormatType.CONFIRMED_APPOINTMENT.getType().equalsIgnoreCase(formatType)){
+//	    			if(smsFormatCollection.getContent().contains(SMSContent.PATIENT_NAME.getContent()) && patientName != null && patientName != "")
+//		    			 patientName = " "+patientName;
+//		    		 else patientName = "";
+//	    		}
+//	    		
+//	    		 if(smsFormatCollection.getContent().contains(SMSContent.APPOINTMENT_ID.getContent()) && appointmentId != null && appointmentId != "")
+//	    			 appointmentId = " "+appointmentId;
+//	    		 else appointmentId = "";
+//	    		 if(smsFormatCollection.getContent().contains(SMSContent.DATE_TIME.getContent()) && dateTime != null && dateTime != "")
+//	    			 dateTime = " "+dateTime;
+//	    		 else dateTime ="";
+//	    		 if(!SMSFormatType.CONFIRMED_APPOINTMENT.getType().equalsIgnoreCase(formatType)){
+//	    			 if(smsFormatCollection.getContent().contains(SMSContent.DOCTOR_NAME.getContent()) && doctorName != null && doctorName != "")
+//	    				 doctorName = " "+doctorName;
+//	    			 else doctorName ="";
+//	    		 }
+	    		 
+	    		 if(type.equalsIgnoreCase("CONFIRMED_APPOINTMENT_TO_PATIENT") || type.equalsIgnoreCase("TENTATIVE_APPOINTMENT_TO_PATIENT") ||
+	    				 type.equalsIgnoreCase("CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR")){
+	    			 if(!smsFormatCollection.getContent().contains(SMSContent.CLINIC_NAME.getContent()) || clinicName == null)clinicName ="";
+	    			 if(!smsFormatCollection.getContent().equals(SMSContent.CLINIC_CONTACT_NUMBER.getContent()) || clinicContactNum == null)clinicContactNum = "";
+	    		 }
 	    	}
-	    else{
-	    	if(!DPDoctorUtils.anyStringEmpty(patientName))patientName = " "+patientName;
-	    	if(!DPDoctorUtils.anyStringEmpty(appointmentId))appointmentId = " "+appointmentId;
-	    	if(!DPDoctorUtils.anyStringEmpty(dateTime))dateTime = " "+dateTime;
-	    	if(!DPDoctorUtils.anyStringEmpty(doctorName))doctorName = " "+doctorName;
-	    	if(!DPDoctorUtils.anyStringEmpty(clinicContactNum))clinicContactNum = " "+ clinicContactNum;
-	    }
+//	    else{
+//	    	if(!DPDoctorUtils.anyStringEmpty(patientName))patientName = " "+patientName;
+//	    	if(!DPDoctorUtils.anyStringEmpty(appointmentId))appointmentId = " "+appointmentId;
+//	    	if(!DPDoctorUtils.anyStringEmpty(dateTime))dateTime = " "+dateTime;
+//	    	if(!DPDoctorUtils.anyStringEmpty(doctorName))doctorName = " "+doctorName;
+//	    	if(!DPDoctorUtils.anyStringEmpty(clinicContactNum))clinicContactNum = " "+ clinicContactNum;
+//	    }
 	    String text = "";
 	    switch (type) {
 		case "CONFIRMED_APPOINTMENT_TO_PATIENT" :{
-			text = "Hi"+patientName+",your appointment"+appointmentId+" has been confirmed"+(dateTime!= ""?" for"+dateTime:"")+(doctorName!= ""?" with"+doctorName:"")+ (clinicName!= ""?","+clinicName:"")+(clinicContactNum!= ""?","+clinicContactNum:"");
+			text = "Your appointment "+appointmentId+" with "+doctorName+(clinicName!= ""?", "+clinicName:"")+(clinicContactNum!= ""?", "+clinicContactNum:"")+" has been confirmed @ "+dateTime+".";
 			smsDetail.setUserName(patientName);
 		}
 		break;
 
 		case "CONFIRMED_APPOINTMENT_TO_DOCTOR" :{
-			text = "Your appointment with"+patientName+" has been scheduled"+(dateTime!= ""?" for"+dateTime:"")+(clinicName!= ""?" at "+clinicName:"");
+			text = "Healthcoco! Your appointment with "+patientName+" has been scheduled @ "+dateTime + (clinicName!= ""?" at "+clinicName:"")+".";
 			smsDetail.setUserName(doctorName);
 		}
 		break;
 		
 		case "CONFIRMED_APPOINTMENT_REQUEST_TO_DOCTOR" :{
-			text = "Healthcoco,You have an appointment request" +(patientName!=""?" from"+patientName :"")+ (dateTime!= ""?" for"+dateTime:"")+(clinicName!= ""?" at "+clinicName:"");
+			text = "Healthcoco! You have an appointment request from "+patientName+" for "+dateTime+" at "+clinicName+".";
 			smsDetail.setUserName(doctorName);
 		}
 		break;
 		
 		case "TENTATIVE_APPOINTMENT_TO_PATIENT" :{
-			text = "Hi"+patientName+",your appointment"+appointmentId+(dateTime!= ""?" for"+dateTime:"")+(doctorName!= ""?" with"+doctorName:"")+(clinicName!= ""?","+clinicName:"")+(clinicContactNum!= ""?","+clinicContactNum:"")+" has been sent for confirmation";
+			text = "Your appointment "+appointmentId+" @ "+dateTime+" with "+doctorName+(clinicName!= ""?", "+clinicName:"")+(clinicContactNum!= ""?", "+clinicContactNum:"")+" has been sent for confirmation.";
 			smsDetail.setUserName(patientName);
 		}
 		break;
 		
 		case "CANCEL_APPOINTMENT_TO_DOCTOR_BY_DOCTOR" :{
-			text = "Healthcoco,your appointment"+(patientName !=""?" with"+patientName:"")+(dateTime!= ""?" for"+dateTime:"") +(clinicName!= ""?" at "+clinicName:"")+" has been cancelled";
+			text = "Your appointment"+" with "+patientName+" for "+dateTime+" at " +clinicName+" has been cancelled as per your request.";
 			smsDetail.setUserName(doctorName);
 		}
 		break;
 		
 		case "CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR" :{
-			text = "Hi"+patientName+",your appointment"+appointmentId+(dateTime!= ""?" for"+dateTime:"")+(doctorName!= ""?" with"+doctorName:"")+(clinicName!= ""?","+clinicName:"")+(clinicContactNum!= ""?","+clinicContactNum:"")+" has been cancelled";
+			text = "Your appointment "+appointmentId+" @ "+dateTime+" has been cancelled by "+doctorName+(clinicName!= ""?", "+clinicName:"")+(clinicContactNum!= ""?", "+clinicContactNum:"")+".Request you to book again.";
 			smsDetail.setUserName(patientName);
 		}
 		break;
 		
 		case "CANCEL_APPOINTMENT_TO_DOCTOR_BY_PATIENT" :{
-			text = "Healthcoco,your appointment"+(patientName !=""?" with"+patientName:"")+(dateTime!= ""?" for"+dateTime:"") +(clinicName!= ""?" at "+clinicName:"")+", has been cancelled by Patient";
+			text = "Healthcoco! Your appointment"+" with "+patientName+" @ "+dateTime+" at "+clinicName+", has been cancelled by patient.";
 			smsDetail.setUserName(doctorName);
 		}
 		break;
 		
 		case "CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT" :{
-			text = "Hi"+patientName+",your appointment"+appointmentId+(dateTime!= ""?" for"+dateTime:"")+(doctorName!= ""?" with"+doctorName:"")+", has been cancelled as per your request";
+			text = "Your appointment "+appointmentId+" for "+dateTime+" with "+doctorName+" has been cancelled as per your request";
 			smsDetail.setUserName(patientName);
 		}
 		break;

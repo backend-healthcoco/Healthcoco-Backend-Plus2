@@ -52,4 +52,6 @@ public interface SignUpService {
     User adminSignUp(PatientSignUpRequest request);
 
 	Boolean resendVerificationEmail(String emailaddress, UriInfo uriInfo);
+
+	Boolean activateLocation(String locationId, Boolean activate);
 }

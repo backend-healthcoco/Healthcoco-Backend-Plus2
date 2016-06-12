@@ -1858,6 +1858,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 	try {
 	    locationCollection = locationRepository.findOne(request.getId());
 	    if (locationCollection != null) {
+	    if(request.getIsClinic().equals(false) && request.getIsLab().equals(false)){
+	    	logger.error("Location has to be either Clinic or Lab or Both");
+		    throw new BusinessException(ServiceError.Unknown, "Location has to be either Clinic or Lab or Both");
+	    }
 		locationCollection.setIsLab(request.getIsLab());
 		locationCollection.setIsClinic(request.getIsClinic());
 		if (request.getIsLab()) {

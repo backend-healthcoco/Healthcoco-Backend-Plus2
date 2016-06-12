@@ -12,6 +12,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 
+import common.util.web.DPDoctorUtils;
+
 
 
 public class GeneralTests {
@@ -93,6 +95,7 @@ public class GeneralTests {
 	    		           Date _24HourDt = _24HourSDF.parse(_24HourTime);
 	    		           System.out.println(_24HourDt);
 	    		           System.out.println(_12HourSDF.format(_24HourDt));
+	    		           System.out.println(null.equalsIgnoreCase(null));
 	    			    
 	    		 }
 	    		 

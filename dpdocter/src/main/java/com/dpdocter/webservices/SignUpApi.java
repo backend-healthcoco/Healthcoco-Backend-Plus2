@@ -328,6 +328,20 @@ public class SignUpApi {
 	return response;
     }
 
+    @Path(value = PathProxy.SignUpUrls.ACTIVATE_LOCATION)
+    @GET
+    @ApiOperation(value = PathProxy.SignUpUrls.ACTIVATE_LOCATION, notes = PathProxy.SignUpUrls.ACTIVATE_LOCATION)
+    public Response<Boolean> activateLocation(@PathParam("locationId") String locationId, @DefaultValue(value = "true") @QueryParam("activate") Boolean activate) {
+	if (DPDoctorUtils.anyStringEmpty(locationId)) {
+	    logger.warn("Invalid Input. Location Id Cannot Be Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Location Id Cannot Be Empty");
+	}
+	Boolean verifyUserResponse = signUpService.activateLocation(locationId, activate);
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(verifyUserResponse);
+	return response;
+    }
+
     @Path(value = PathProxy.SignUpUrls.CHECK_IF_USERNAME_EXIST)
     @GET
     @ApiOperation(value = PathProxy.SignUpUrls.CHECK_IF_USERNAME_EXIST, notes = PathProxy.SignUpUrls.CHECK_IF_USERNAME_EXIST)

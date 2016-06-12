@@ -27,6 +27,8 @@ public interface PathProxy {
 
 	public static final String ACTIVATE_USER = "/activate/{userId}";
 
+	public static final String ACTIVATE_LOCATION = "/activate/{locationId}";
+	
 	public static final String VERIFY_USER = "/verify/{tokenId}";
 
 	public static final String CHECK_IF_USERNAME_EXIST = "/check-username-exists/{username}";
