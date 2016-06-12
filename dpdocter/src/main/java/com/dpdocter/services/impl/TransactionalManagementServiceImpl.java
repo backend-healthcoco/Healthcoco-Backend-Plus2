@@ -1,9 +1,13 @@
 package com.dpdocter.services.impl;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -71,6 +75,8 @@ import com.dpdocter.solr.services.SolrCityService;
 import com.dpdocter.solr.services.SolrClinicalNotesService;
 import com.dpdocter.solr.services.SolrPrescriptionService;
 import com.dpdocter.solr.services.SolrRegistrationService;
+
+import common.util.web.DPDoctorUtils;
 
 @Service
 public class TransactionalManagementServiceImpl implements TransactionalManagementService {
@@ -207,13 +213,39 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			}
 		}
 	    }
+	    //Expire invalid otp
 	    checkOTP();
+	    
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
 	}
     }
 
+  //Appointment Reminder to Doctor, if appointment > 0
+    @Scheduled(cron = "0 0 7 * * *")
+    public void sendreminderToDoctor(){
+    	try{
+    		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+        	
+    	    localCalendar.setTime(new Date());
+    		int currentDayFromTime = localCalendar.get(Calendar.DATE);
+    		int currentMonthFromTime = localCalendar.get(Calendar.MONTH) + 1;
+    		int currentYearFromTime = localCalendar.get(Calendar.YEAR);
+    		DateTime fromTime = new DateTime(currentYearFromTime, currentMonthFromTime, currentDayFromTime, 0, 0, 0);
+    		    
+    	    localCalendar.setTime(new Date());
+    		int currentDay = localCalendar.get(Calendar.DATE);
+    		int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+    		int currentYear = localCalendar.get(Calendar.YEAR);
+    		DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
+    	    	
+    	    
+    	}catch(Exception e){
+    		e.printStackTrace();
+    	    logger.error(e);
+    	}
+    }
     public void checkOTP() {
 	try {
 	    List<OTPCollection> otpCollections = otpRepository.findNonExpiredOtp(OTPState.EXPIRED.getState());

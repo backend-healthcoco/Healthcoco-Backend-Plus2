@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+
+import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -85,17 +88,30 @@ public class GeneralTests {
 //	    	}
 	    		 
 	    		 public static void main(String[] args) throws NoSuchAlgorithmException, JsonGenerationException, JsonMappingException, IOException, ParseException  {
-	    			 SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy");
-	    				sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-	    				System.out.println(sdf.format(new Date()));
-	    				
-	    				String _24HourTime = "22:15";
-	    		           SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
-	    		           SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
-	    		           Date _24HourDt = _24HourSDF.parse(_24HourTime);
-	    		           System.out.println(_24HourDt);
-	    		           System.out.println(_12HourSDF.format(_24HourDt));
-	    		           System.out.println(null.equalsIgnoreCase(null));
+//	    			 SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy");
+//	    				sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+//	    				System.out.println(sdf.format(new Date()));
+//	    				
+//	    				String _24HourTime = "22:15";
+//	    		           SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+//	    		           SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+//	    		           Date _24HourDt = _24HourSDF.parse(_24HourTime);
+//	    		           System.out.println(_24HourDt);
+//	    		           System.out.println(_12HourSDF.format(_24HourDt));
+	    		           Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+	    		        	
+	    		    	    localCalendar.setTime(new Date());
+	    		    		int currentDayFromTime = localCalendar.get(Calendar.DATE);
+	    		    		int currentMonthFromTime = localCalendar.get(Calendar.MONTH) + 1;
+	    		    		int currentYearFromTime = localCalendar.get(Calendar.YEAR);
+	    		    		DateTime fromTime = new DateTime(currentYearFromTime, currentMonthFromTime, currentDayFromTime, 0, 0, 0);
+	    		    		System.out.println(fromTime);    
+	    		    	    localCalendar.setTime(new Date());
+	    		    		int currentDay = localCalendar.get(Calendar.DATE);
+	    		    		int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+	    		    		int currentYear = localCalendar.get(Calendar.YEAR);
+	    		    		DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
+	    		    	    System.out.println(toTime);
 	    			    
 	    		 }
 	    		 

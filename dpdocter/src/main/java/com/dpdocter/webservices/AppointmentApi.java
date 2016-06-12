@@ -244,14 +244,28 @@ public class AppointmentApi {
 	return response;
     }
 
-    @Path(value = PathProxy.AppointmentUrls.SEND_REMINDER)
+    @Path(value = PathProxy.AppointmentUrls.SEND_REMINDER_TO_PATIENT)
     @GET
-    @ApiOperation(value = PathProxy.AppointmentUrls.SEND_REMINDER, notes = PathProxy.AppointmentUrls.SEND_REMINDER)
-    public Response<Boolean> sendReminder(@PathParam(value = "appointmentId") String appointmentId) {
+    @ApiOperation(value = PathProxy.AppointmentUrls.SEND_REMINDER_TO_PATIENT, notes = PathProxy.AppointmentUrls.SEND_REMINDER_TO_PATIENT)
+    public Response<Boolean> sendReminderToPatient(@PathParam(value = "appointmentId") String appointmentId) {
 	if (DPDoctorUtils.anyStringEmpty(appointmentId)) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Appointment Id cannot be null");
 	}
-	Boolean sendReminder = appointmentService.sendReminder(appointmentId);
+	Boolean sendReminder = appointmentService.sendReminderToPatient(appointmentId);
+
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(sendReminder);
+	return response;
+    }
+
+    @Path(value = PathProxy.AppointmentUrls.SEND_REMINDER_TO_DOCTOR)
+    @GET
+    @ApiOperation(value = PathProxy.AppointmentUrls.SEND_REMINDER_TO_DOCTOR, notes = PathProxy.AppointmentUrls.SEND_REMINDER_TO_DOCTOR)
+    public Response<Boolean> sendReminderToDoctor(@PathParam(value = "appointmentId") String appointmentId) {
+	if (DPDoctorUtils.anyStringEmpty(appointmentId)) {
+	    throw new BusinessException(ServiceError.InvalidInput, "Appointment Id cannot be null");
+	}
+	Boolean sendReminder = appointmentService.sendReminderToDoctor(appointmentId);
 
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(sendReminder);

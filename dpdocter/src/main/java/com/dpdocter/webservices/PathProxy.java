@@ -611,7 +611,9 @@ public interface PathProxy {
 
 	public static final String GET_TIME_SLOTS = "getTimeSlots/{doctorId}/{locationId}/{date}";
 
-	public static final String SEND_REMINDER = "/sendReminder/{appointmentId}";
+	public static final String SEND_REMINDER_TO_PATIENT = "/sendReminder/patient/{appointmentId}";
+	
+	public static final String SEND_REMINDER_TO_DOCTOR = "/sendReminder/doctor/{appointmentId}";
 
 	public static final String ADD_PATIENT_IN_QUEUE = "/queue/add";
 

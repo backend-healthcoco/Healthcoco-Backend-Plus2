@@ -48,12 +48,14 @@ public interface AppointmentService {
 
     Appointment updateEvent(EventRequest request);
 
-    Boolean sendReminder(String appointmentId);
+    Boolean sendReminderToPatient(String appointmentId);
 
     List<PatientQueue> addPatientInQueue(PatientQueueAddEditRequest request);
 
     List<PatientQueue> rearrangePatientInQueue(String doctorId, String locationId, String hospitalId, String patientId, String appointmentId, int sequenceNo);
 
     List<PatientQueue> getPatientQueue(String doctorId, String locationId, String hospitalId);
+
+	Boolean sendReminderToDoctor(String appointmentId);
 
 }

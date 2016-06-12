@@ -250,8 +250,7 @@ public class SignUpServiceImpl implements SignUpService {
 			    smsDetail.setUserId(userCollection.getId());
 			    smsDetail.setUserName(userCollection.getFirstName());
 			    SMS sms = new SMS();
-			    sms.setSmsText("Hi " + (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName()
-				    + ",Your Healthcoco+ account has been activated,for any query please mail us at support@healthcoco.com ");
+			    sms.setSmsText("Healthcoco "+(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName()+", Your Healthcoco+ account has been activated,Download the Healthcoco+ app now: https://healthcoco.com/doctors/app. For queries, please feel free to contact us at support@healthcoco.com.");
 
 			    SMSAddress smsAddress = new SMSAddress();
 			    smsAddress.setRecipient(userCollection.getMobileNumber());
@@ -734,8 +733,7 @@ public class SignUpServiceImpl implements SignUpService {
 		smsDetail.setUserId(userCollection.getId());
 		smsDetail.setUserName(userCollection.getFirstName());
 		SMS sms = new SMS();
-		sms.setSmsText("Hi " + (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName()
-			+ ",Thank you for signing up with Healthcoco.We will contact you shortly to get you started with Healthcoco+");
+		sms.setSmsText("Welcome "+(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName()+" to Healthcoco.We will contact you shortly to get you started.Download the Healthcoco+ app now:https://healthcoco.com/doctors/app. For queries, please feel free to contact us at support@healthcoco.com.");
 
 		SMSAddress smsAddress = new SMSAddress();
 		smsAddress.setRecipient(userCollection.getMobileNumber());

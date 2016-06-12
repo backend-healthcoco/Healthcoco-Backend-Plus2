@@ -2960,8 +2960,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    if (userCollection != null)
 				smsDetail.setUserName(userCollection.getFirstName());
 			    SMS sms = new SMS();
-			    String uniqueId = (prescriptionCollection.getUniqueEmrId() !=null ? ("PID:"+prescriptionCollection.getUniqueEmrId()):"");
-			    sms.setSmsText("Hi "+patientName+", Prescription"+uniqueId+" by "+doctorName+" "+prescriptionDetails+".Pls call"+clinicContactNum+" in case of query");
+			    sms.setSmsText("Hi "+patientName+", your prescription "+prescriptionCollection.getUniqueEmrId()+" by "+doctorName+". "+prescriptionDetails+
+			    		".For queries,contact Doctor"+clinicContactNum+".");
 
 			    SMSAddress smsAddress = new SMSAddress();
 			    smsAddress.setRecipient(mobileNumber);

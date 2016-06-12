@@ -661,7 +661,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 //	    		 }
 	    		 
 	    		 if(type.equalsIgnoreCase("CONFIRMED_APPOINTMENT_TO_PATIENT") || type.equalsIgnoreCase("TENTATIVE_APPOINTMENT_TO_PATIENT") ||
-	    				 type.equalsIgnoreCase("CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR")){
+	    				 type.equalsIgnoreCase("CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR") || type.equalsIgnoreCase("APPOINTMENT_REMINDER_TO_PATIENT")||
+	    				 type.equalsIgnoreCase("RESCHEDULE_APPOINTMENT_TO_PATIENT")){
 	    			 if(!smsFormatCollection.getContent().contains(SMSContent.CLINIC_NAME.getContent()) || clinicName == null)clinicName ="";
 	    			 if(!smsFormatCollection.getContent().equals(SMSContent.CLINIC_CONTACT_NUMBER.getContent()) || clinicContactNum == null)clinicContactNum = "";
 	    		 }
@@ -724,19 +725,19 @@ public class AppointmentServiceImpl implements AppointmentService {
 		break;
 		
 		case "APPOINTMENT_REMINDER_TO_PATIENT" :{
-			text = "Hi"+patientName+",you have an upcoming appointment"+appointmentId+dateTime+doctorName+clinicName+clinicContactNum;
+			text = "You have an upcoming appointment "+appointmentId+" @ "+dateTime+" with "+doctorName+(clinicName!= ""?", "+clinicName:"")+(clinicContactNum!= ""?", "+clinicContactNum:"")+".";
 			smsDetail.setUserName(patientName);
 		}
 		break;
 		
 		case "RESCHEDULE_APPOINTMENT_TO_PATIENT" :{
-			text = "Hi"+patientName+",your appointment"+appointmentId+(doctorName!= ""?" with"+doctorName:"")+clinicName+clinicContactNum+" has been rescheduled"+(dateTime != ""?" to "+dateTime:"");
+			text = "Your appointment "+appointmentId+" with "+doctorName+(clinicName!= ""?", "+clinicName:"")+(clinicContactNum!= ""?", "+clinicContactNum:"")+" has been rescheduled @ "+dateTime+".";
 			smsDetail.setUserName(patientName);
 		}
 		break;
 		
 		case "RESCHEDULE_APPOINTMENT_TO_DOCTOR" :{
-			text = "Your appointment with"+patientName+"has been rescheduled to "+dateTime+" at "+clinicName;
+			text = "Your appointment with "+patientName+"has been rescheduled to "+dateTime+" at "+clinicName+".";
 			smsDetail.setUserName(doctorName);
 		}
 		break;
@@ -1223,7 +1224,37 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Override
 	@Transactional
-	public Boolean sendReminder(String appointmentId) {
+	public Boolean sendReminderToPatient(String appointmentId) {
+		Boolean response = false;
+		try {
+			AppointmentCollection appointmentCollection = appointmentRepository.findByAppointmentId(appointmentId);
+			if(appointmentCollection != null){
+				if(appointmentCollection.getPatientId() != null){
+					UserCollection userCollection = userRepository.findOne(appointmentCollection.getDoctorId());
+					UserCollection patient = userRepository.findOne(appointmentCollection.getPatientId());
+					LocationCollection locationCollection = locationRepository.findOne(appointmentCollection.getLocationId());
+					if(userCollection != null && locationCollection != null && patient != null){
+						String patientName=patient.getFirstName(),  
+								dateTime= String.format("%02d:%02d", appointmentCollection.getTime().getFromTime() / 60, appointmentCollection.getTime().getFromTime() % 60)+" "+new SimpleDateFormat("MMM dd,yyyy").format(appointmentCollection.getFromDate()),
+								doctorName=userCollection.getTitle()+" "+userCollection.getFirstName(),clinicName= locationCollection.getLocationName(),clinicContactNum=locationCollection.getClinicNumber() != null ? locationCollection.getClinicNumber() :"";
+						sendMsg(SMSFormatType.APPOINTMENT_REMINDER.getType(), "APPOINTMENT_REMINDER_TO_PATIENT", appointmentCollection.getDoctorId(),appointmentCollection.getLocationId(), appointmentCollection.getHospitalId(), appointmentCollection.getPatientId(), patient.getMobileNumber(), patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum);
+						response = true;
+					}
+				}
+			}else{
+				logger.error(appointmentDoesNotExist);
+			    throw new BusinessException(ServiceError.InvalidInput, appointmentDoesNotExist);
+			}
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public Boolean sendReminderToDoctor(String appointmentId) {
 		Boolean response = false;
 		try {
 			AppointmentCollection appointmentCollection = appointmentRepository.findByAppointmentId(appointmentId);
