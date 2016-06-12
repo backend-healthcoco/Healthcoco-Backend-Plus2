@@ -9,6 +9,7 @@ import java.util.TimeZone;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -239,6 +240,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     		int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
     		int currentYear = localCalendar.get(Calendar.YEAR);
     		DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
+    		
+//    		Aggregation aggregation = Agg
     	    	
     	    
     	}catch(Exception e){
