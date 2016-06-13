@@ -670,6 +670,10 @@ public class RegistrationApi {
     public Response<PatientStatusResponse> getPatientStatus(@PathParam("patientId") String patientId, @PathParam("doctorId") String doctorId,
 	    @PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
 
+    if(DPDoctorUtils.anyStringEmpty(patientId, doctorId, locationId, hospitalId)){
+    	logger.warn("Invalid Input.PatientId, DoctorId, LocationId or hospitalId cannot be null");
+    	throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.PatientId, DoctorId, LocationId or hospitalId cannot be null");
+    }
 	Response<PatientStatusResponse> response = new Response<PatientStatusResponse>();
 
 	PatientStatusResponse patientStatusResponse = registrationService.getPatientStatus(patientId, doctorId, locationId, hospitalId);

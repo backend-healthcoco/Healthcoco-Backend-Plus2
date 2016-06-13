@@ -262,21 +262,22 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		    specialityCollections = specialityRepository.findAll();
 		    specialities = new ArrayList<String>();
 		    for (String speciality : request.getSpeciality()) {
-			Boolean specialityFound = false;
+//			Boolean specialityFound = false;
 			for (SpecialityCollection specialityCollection : specialityCollections) {
-			    if (speciality.trim().equalsIgnoreCase(specialityCollection.getSpeciality())) {
+			    if (speciality.trim().equalsIgnoreCase(specialityCollection.getSuperSpeciality())) {
 				specialities.add(specialityCollection.getId());
-				specialityFound = true;
+//				specialityFound = true;
 				break;
 			    }
 			}
-			if (!specialityFound) {
-			    SpecialityCollection specialityCollection = new SpecialityCollection();
-			    specialityCollection.setSpeciality(speciality);
-			    specialityCollection.setCreatedTime(new Date());
-			    specialityCollection = specialityRepository.save(specialityCollection);
-			    specialities.add(specialityCollection.getId());
-			}
+//			if (!specialityFound) {
+//			    SpecialityCollection specialityCollection = new SpecialityCollection();
+//			    specialityCollection.setSpeciality(speciality);
+//			    specialityCollection.setSuperSpeciality(speciality);
+//			    specialityCollection.setCreatedTime(new Date());
+//			    specialityCollection = specialityRepository.save(specialityCollection);
+//			    specialities.add(specialityCollection.getId());
+//			}
 		    }
 		}
 	    }

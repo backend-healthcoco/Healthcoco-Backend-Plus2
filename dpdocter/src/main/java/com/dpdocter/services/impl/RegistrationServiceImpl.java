@@ -699,6 +699,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			    	user.setMobileNumber(userCollection.getMobileNumber());
 			    }else{
 			    	BeanUtil.map(userCollection, user);
+			    	user.setUserId(userCollection.getId());
 			    }
 			    user.setIsPartOfClinic(isPartOfClinic);
 //			}
