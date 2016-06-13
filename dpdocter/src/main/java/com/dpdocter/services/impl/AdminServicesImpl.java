@@ -517,29 +517,48 @@ public class AdminServicesImpl implements AdminServices {
 	    }
 
 	@Override
-	public List<DoctorResponse> getDoctors(int page, int size, String locationId) {
+	public List<DoctorResponse> getDoctors(int page, int size, String locationId, String state) {
 		List<DoctorResponse> response = null;
 		try{
 			 Aggregation aggregation = null;
-			 if(size > 0){
-				 if(DPDoctorUtils.anyStringEmpty(locationId)){
-					 aggregation = Aggregation.newAggregation(new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
-						              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))),Aggregation.skip((page) * size), Aggregation.limit(size));
+			 if(DPDoctorUtils.anyStringEmpty(state)){
+				 if(size > 0){
+					 if(DPDoctorUtils.anyStringEmpty(locationId)){
+						 aggregation = Aggregation.newAggregation(new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
+							              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))),Aggregation.skip((page) * size), Aggregation.limit(size));
+					 }else{
+						 aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("locationId").is(locationId)), new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
+					              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))),Aggregation.skip((page) * size), Aggregation.limit(size));
+					 }
 				 }else{
-					 aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("locationId").is(locationId)), new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
-				              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))),Aggregation.skip((page) * size), Aggregation.limit(size));
+					 if(DPDoctorUtils.anyStringEmpty(locationId)){
+						 aggregation = Aggregation.newAggregation(new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
+							              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))));
+					 }else{
+						 aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("locationId").is(locationId)), new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
+					              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))));
+					 }
 				 }
 			 }else{
-				 if(DPDoctorUtils.anyStringEmpty(locationId)){
-					 aggregation = Aggregation.newAggregation(new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
-						              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))));
+				 if(size > 0){
+					 if(DPDoctorUtils.anyStringEmpty(locationId)){
+						 aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("userState").is(state)), new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
+							              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))),Aggregation.skip((page) * size), Aggregation.limit(size));
+					 }else{
+						 aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("locationId").is(locationId).and("userState").is(state)), new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
+					              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))),Aggregation.skip((page) * size), Aggregation.limit(size));
+					 }
 				 }else{
-					 aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("locationId").is(locationId)), new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
-				              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))));
+					 if(DPDoctorUtils.anyStringEmpty(locationId)){
+						 aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("userState").is(state)), new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
+							              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))));
+					 }else{
+						 aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("locationId").is(locationId).and("userState").is(state)), new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
+					              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))));
+					 }
 				 }
 			 }
-			 Aggregation.newAggregation(new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
-				              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))));
+			 
 	    AggregationResults<DoctorResponse> results = mongoTemplate.aggregate(aggregation, UserCollection.class, DoctorResponse.class);
 	    response = results.getMappedResults();
 	    }catch(Exception e){

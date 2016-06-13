@@ -91,9 +91,10 @@ public class AdminAPI {
 	@Path(value = PathProxy.AdminUrls.GET_DOCTORS)
 	@GET
 	@ApiOperation(value = PathProxy.AdminUrls.GET_DOCTORS, notes = PathProxy.AdminUrls.GET_DOCTORS)
-	public Response<DoctorResponse> getDoctors(@QueryParam(value = "page") int page, @QueryParam(value = "size") int size, @QueryParam(value = "locationId") String locationId){
+	public Response<DoctorResponse> getDoctors(@QueryParam(value = "page") int page, @QueryParam(value = "size") int size, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "state") String state){
 		
-		List<DoctorResponse> doctorResponses = adminServices.getDoctors(page, size, locationId);
+		List<DoctorResponse> doctorResponses = adminServices.getDoctors(page, size, locationId, state);
 		
 		Response<DoctorResponse> response = new Response<DoctorResponse>();
 		response.setDataList(doctorResponses);

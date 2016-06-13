@@ -31,7 +31,7 @@ public interface AdminServices {
 
 	void importEducationQualification();
 
-	List<DoctorResponse> getDoctors(int page, int size, String locationId);
+	List<DoctorResponse> getDoctors(int page, int size, String locationId, String state);
 
 	List<Location> getLabs(int page, int size, String hospitalId);
 
