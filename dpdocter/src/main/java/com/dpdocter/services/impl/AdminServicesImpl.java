@@ -541,12 +541,8 @@ public class AdminServicesImpl implements AdminServices {
 			 Aggregation.newAggregation(new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
 				              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))));
 	    AggregationResults<DoctorResponse> results = mongoTemplate.aggregate(aggregation, UserCollection.class, DoctorResponse.class);
-	    List<DoctorResponse> userCollections = results.getMappedResults();
-	    if(userCollections != null){
-	    	response = new ArrayList<DoctorResponse>();
-	    	BeanUtil.map(userCollections, response);
-	    }
-		}catch(Exception e){
+	    response = results.getMappedResults();
+	    }catch(Exception e){
 			logger.error("Error while getting doctors "+ e.getMessage());
 			e.printStackTrace();
 		    throw new BusinessException(ServiceError.Unknown,"Error while getting doctors "+ e.getMessage());

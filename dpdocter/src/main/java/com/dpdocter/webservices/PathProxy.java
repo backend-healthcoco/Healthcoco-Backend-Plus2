@@ -27,7 +27,7 @@ public interface PathProxy {
 
 	public static final String ACTIVATE_USER = "/activate/{userId}";
 
-	public static final String ACTIVATE_LOCATION = "/activate/{locationId}";
+	public static final String ACTIVATE_LOCATION = "/activate/location/{locationId}";
 	
 	public static final String VERIFY_USER = "/verify/{tokenId}";
 
@@ -613,8 +613,6 @@ public interface PathProxy {
 
 	public static final String SEND_REMINDER_TO_PATIENT = "/sendReminder/patient/{appointmentId}";
 	
-	public static final String SEND_REMINDER_TO_DOCTOR = "/sendReminder/doctor/{appointmentId}";
-
 	public static final String ADD_PATIENT_IN_QUEUE = "/queue/add";
 
 	public static final String REARRANGE_PATIENT_IN_QUEUE = "/queue/{doctorId}/{locationId}/{hospitalId}/{patientId}/{appointmentId}/{sequenceNo}/rearrange";

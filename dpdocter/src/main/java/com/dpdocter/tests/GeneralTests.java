@@ -98,20 +98,20 @@ public class GeneralTests {
 //	    		           Date _24HourDt = _24HourSDF.parse(_24HourTime);
 //	    		           System.out.println(_24HourDt);
 //	    		           System.out.println(_12HourSDF.format(_24HourDt));
-	    		           Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+	    		           Calendar localCalendar = Calendar.getInstance();
 	    		        	
 	    		    	    localCalendar.setTime(new Date());
 	    		    		int currentDayFromTime = localCalendar.get(Calendar.DATE);
 	    		    		int currentMonthFromTime = localCalendar.get(Calendar.MONTH) + 1;
 	    		    		int currentYearFromTime = localCalendar.get(Calendar.YEAR);
 	    		    		DateTime fromTime = new DateTime(currentYearFromTime, currentMonthFromTime, currentDayFromTime, 0, 0, 0);
-	    		    		System.out.println(fromTime);    
+	    		    		System.out.println(fromTime.getMinuteOfHour());    
 	    		    	    localCalendar.setTime(new Date());
 	    		    		int currentDay = localCalendar.get(Calendar.DATE);
 	    		    		int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 	    		    		int currentYear = localCalendar.get(Calendar.YEAR);
 	    		    		DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
-	    		    	    System.out.println(toTime);
+	    		    	    System.out.println(toTime.getMinuteOfHour());
 	    			    
 	    		 }
 	    		 

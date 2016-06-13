@@ -185,7 +185,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 			if(response.size() >= 50)break;
 		    AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
 		    appointmentSearchResponse.setId(speciality.getId());
-		    appointmentSearchResponse.setResponse(speciality.getSpeciality());
+		    appointmentSearchResponse.setResponse(speciality.getSuperSpeciality());
 		    appointmentSearchResponse.setResponseType(AppointmentResponseType.SPECIALITY);
 		    response.add(appointmentSearchResponse);
 		}
@@ -332,7 +332,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
         query.addProjectionOnField("score");
 
         StringBuffer buf = new StringBuffer("");
-        if(!DPDoctorUtils.anyStringEmpty(latitude,longitude))buf.append("{!geofilt pt="+latitude+","+longitude+" sfield=geoLocation d="+10.0+" score=distance}");
+        if(!DPDoctorUtils.anyStringEmpty(latitude,longitude))buf.append("{!geofilt pt="+latitude+","+longitude+" sfield=geoLocation d="+30.0+" score=distance}");
 
 	    query.addCriteria(new SimpleStringCriteria(buf.toString()));
 	    

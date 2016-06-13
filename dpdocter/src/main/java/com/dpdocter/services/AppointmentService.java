@@ -56,6 +56,4 @@ public interface AppointmentService {
 
     List<PatientQueue> getPatientQueue(String doctorId, String locationId, String hospitalId);
 
-	Boolean sendReminderToDoctor(String appointmentId);
-
 }

@@ -258,20 +258,6 @@ public class AppointmentApi {
 	return response;
     }
 
-    @Path(value = PathProxy.AppointmentUrls.SEND_REMINDER_TO_DOCTOR)
-    @GET
-    @ApiOperation(value = PathProxy.AppointmentUrls.SEND_REMINDER_TO_DOCTOR, notes = PathProxy.AppointmentUrls.SEND_REMINDER_TO_DOCTOR)
-    public Response<Boolean> sendReminderToDoctor(@PathParam(value = "appointmentId") String appointmentId) {
-	if (DPDoctorUtils.anyStringEmpty(appointmentId)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Appointment Id cannot be null");
-	}
-	Boolean sendReminder = appointmentService.sendReminderToDoctor(appointmentId);
-
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(sendReminder);
-	return response;
-    }
-
     @Path(value = PathProxy.AppointmentUrls.ADD_PATIENT_IN_QUEUE)
     @POST
     @ApiOperation(value = PathProxy.AppointmentUrls.ADD_PATIENT_IN_QUEUE, notes = PathProxy.AppointmentUrls.ADD_PATIENT_IN_QUEUE)

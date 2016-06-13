@@ -1254,36 +1254,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Override
 	@Transactional
-	public Boolean sendReminderToDoctor(String appointmentId) {
-		Boolean response = false;
-		try {
-			AppointmentCollection appointmentCollection = appointmentRepository.findByAppointmentId(appointmentId);
-			if(appointmentCollection != null){
-				if(appointmentCollection.getPatientId() != null){
-					UserCollection userCollection = userRepository.findOne(appointmentCollection.getDoctorId());
-					UserCollection patient = userRepository.findOne(appointmentCollection.getPatientId());
-					LocationCollection locationCollection = locationRepository.findOne(appointmentCollection.getLocationId());
-					if(userCollection != null && locationCollection != null && patient != null){
-						String patientName=patient.getFirstName(),  
-								dateTime= String.format("%02d:%02d", appointmentCollection.getTime().getFromTime() / 60, appointmentCollection.getTime().getFromTime() % 60)+" "+new SimpleDateFormat("MMM dd,yyyy").format(appointmentCollection.getFromDate()),
-								doctorName=userCollection.getTitle()+" "+userCollection.getFirstName(),clinicName= locationCollection.getLocationName(),clinicContactNum=locationCollection.getClinicNumber() != null ? locationCollection.getClinicNumber() :"";
-						sendMsg(SMSFormatType.APPOINTMENT_REMINDER.getType(), "APPOINTMENT_REMINDER_TO_PATIENT", appointmentCollection.getDoctorId(),appointmentCollection.getLocationId(), appointmentCollection.getHospitalId(), appointmentCollection.getPatientId(), patient.getMobileNumber(), patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum);
-						response = true;
-					}
-				}
-			}else{
-				logger.error(appointmentDoesNotExist);
-			    throw new BusinessException(ServiceError.InvalidInput, appointmentDoesNotExist);
-			}
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return response;
-	}
-
-	@Override
-	@Transactional
 	public List<PatientQueue> addPatientInQueue(PatientQueueAddEditRequest request) {
 		List<PatientQueue> response = null;
 		try{

@@ -9,12 +9,19 @@ import java.util.TimeZone;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.ClinicImage;
+import com.dpdocter.beans.SMS;
+import com.dpdocter.beans.SMSAddress;
+import com.dpdocter.beans.SMSDetail;
+import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.CityCollection;
 import com.dpdocter.collections.ComplaintCollection;
 import com.dpdocter.collections.DiagnosisCollection;
@@ -30,11 +37,16 @@ import com.dpdocter.collections.NotesCollection;
 import com.dpdocter.collections.OTPCollection;
 import com.dpdocter.collections.ObservationCollection;
 import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PatientVisitCollection;
+import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TransactionalCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
+import com.dpdocter.enums.AppointmentState;
+import com.dpdocter.enums.AppointmentType;
 import com.dpdocter.enums.OTPState;
 import com.dpdocter.enums.Resource;
+import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -57,7 +69,9 @@ import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.TransnationalRepositiory;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.response.AppointmentDoctorReminderResponse;
 import com.dpdocter.services.OTPService;
+import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.beans.DoctorLocation;
 import com.dpdocter.solr.document.SolrCityDocument;
@@ -76,8 +90,6 @@ import com.dpdocter.solr.services.SolrCityService;
 import com.dpdocter.solr.services.SolrClinicalNotesService;
 import com.dpdocter.solr.services.SolrPrescriptionService;
 import com.dpdocter.solr.services.SolrRegistrationService;
-
-import common.util.web.DPDoctorUtils;
 
 @Service
 public class TransactionalManagementServiceImpl implements TransactionalManagementService {
@@ -156,6 +168,12 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     @Autowired
     private OTPService otpService;
 
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    @Autowired
+    private SMSServices sMSServices;
+
     @Scheduled(fixedDelay = 1800000)
     @Override
     @Transactional
@@ -225,7 +243,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
   //Appointment Reminder to Doctor, if appointment > 0
     @Scheduled(cron = "0 0 7 * * *")
-    public void sendreminderToDoctor(){
+    @Override
+    @Transactional
+    public void sendReminderToDoctor(){
     	try{
     		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
         	
@@ -241,9 +261,42 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     		int currentYear = localCalendar.get(Calendar.YEAR);
     		DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
     		
-//    		Aggregation aggregation = Agg
-    	    	
-    	    
+    		Aggregation aggregation = Aggregation.newAggregation(
+    				Aggregation.match(new Criteria("state").is(AppointmentState.CONFIRM.getState()).and("type").is(AppointmentType.APPOINTMENT.getType()).and("fromDate").gte(fromTime).and("toDate").lte(toTime)),
+    				Aggregation.group("doctorId").count().as("total"), Aggregation.project("total").and("doctorId").previousOperation());
+    		AggregationResults<AppointmentDoctorReminderResponse> aggregationResults = mongoTemplate.aggregate(aggregation, AppointmentCollection.class,
+    				AppointmentDoctorReminderResponse.class);
+
+    		List<AppointmentDoctorReminderResponse> appointmentDoctorReminderResponses = aggregationResults.getMappedResults();
+
+    		if(appointmentDoctorReminderResponses != null && !appointmentDoctorReminderResponses.isEmpty())
+    		for(AppointmentDoctorReminderResponse appointmentDoctorReminderResponse : appointmentDoctorReminderResponses){
+    			if(appointmentDoctorReminderResponse.getTotal() > 0){
+    				UserCollection userCollection = userRepository.findOne(appointmentDoctorReminderResponse.getDoctorId());
+        			if(userCollection != null){
+        				
+        				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+        				smsTrackDetail.setDoctorId(userCollection.getId());
+        			    smsTrackDetail.setType("APPOINTMENT");
+        			    SMSDetail smsDetail = new SMSDetail();
+        			    smsDetail.setUserId(userCollection.getId());
+        			    SMS sms = new SMS();
+        			    smsDetail.setUserName(userCollection.getFirstName());
+        			    sms.setSmsText("Healthcoco! You have "+appointmentDoctorReminderResponse.getTotal()+" appointments scheduled today. Have a Healthy and Happy day!!");
+
+        			    SMSAddress smsAddress = new SMSAddress();
+        			    smsAddress.setRecipient(userCollection.getMobileNumber());
+        			    sms.setSmsAddress(smsAddress);
+
+        			    smsDetail.setSms(sms);
+        			    smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+        			    List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+        			    smsDetails.add(smsDetail);
+        			    smsTrackDetail.setSmsDetails(smsDetails);
+        			    sMSServices.sendSMS(smsTrackDetail, true);
+        			}
+    			}
+    		}
     	}catch(Exception e){
     		e.printStackTrace();
     	    logger.error(e);

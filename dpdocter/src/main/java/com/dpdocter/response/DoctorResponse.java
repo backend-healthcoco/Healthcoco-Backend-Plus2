@@ -4,7 +4,7 @@ import com.dpdocter.enums.UserState;
 
 public class DoctorResponse {
 
-	private String userId;
+	private String id;
 	
 	private String firstName;
 	
@@ -16,12 +16,12 @@ public class DoctorResponse {
 
     private String userUId;
 
-	public String getUserId() {
-		return userId;
+	public String getId() {
+		return id;
 	}
 
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public String getFirstName() {
@@ -66,7 +66,7 @@ public class DoctorResponse {
 
 	@Override
 	public String toString() {
-		return "DoctorResponse [userId=" + userId + ", firstName=" + firstName + ", isActive=" + isActive
-				+ ", emailAddress=" + emailAddress + ", userState=" + userState + ", userUId=" + userUId + "]";
+		return "DoctorResponse [id=" + id + ", firstName=" + firstName + ", isActive=" + isActive + ", emailAddress="
+				+ emailAddress + ", userState=" + userState + ", userUId=" + userUId + "]";
 	}
 }

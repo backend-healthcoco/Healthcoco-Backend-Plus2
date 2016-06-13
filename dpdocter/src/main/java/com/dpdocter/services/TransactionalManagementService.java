@@ -30,4 +30,6 @@ public interface TransactionalManagementService {
 
     void checkDoctor(String resourceId, String locationId);
 
+	void sendReminderToDoctor();
+
 }
