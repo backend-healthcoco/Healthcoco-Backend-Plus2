@@ -242,7 +242,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     }
 
   //Appointment Reminder to Doctor, if appointment > 0
-    @Scheduled(cron = "0 0 7 * * *")
+    @Scheduled(cron = "0 0/30 7 * * *", zone = "IST")
     @Override
     @Transactional
     public void sendReminderToDoctor(){

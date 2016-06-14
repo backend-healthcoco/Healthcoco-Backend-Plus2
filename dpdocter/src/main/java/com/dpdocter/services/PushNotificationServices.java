@@ -11,4 +11,6 @@ public interface PushNotificationServices {
 
 	Boolean broadcastNotification(BroadcastNotificationRequest request);
 
+	void pushNotificationOnIosDevices(String pushToken, String message, String type, String typeId);
+
 }

@@ -40,7 +40,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 
 	private static Logger logger = Logger.getLogger(PushNotificationServicesImpl.class.getName());
 	
-	@Value("${geocoding.services.api.key}")
+	@Value("${android.google.services.api.key}")
     private String GEOCODING_SERVICES_API_KEY;
 
 	@Value("${ios.certificate.password}")
@@ -105,9 +105,9 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 			if(userDeviceCollection != null){
 				if(userDeviceCollection.getDeviceType() != null){
 					if(userDeviceCollection.getDeviceType().getType().equalsIgnoreCase(DeviceType.ANDROID.getType()))
-						pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(), message, type, typeId);
+						pushNotificationOnAndroidDevices(userDeviceCollection.getPushToken(), message, type, typeId);
 					else if(userDeviceCollection.getDeviceType().getType().equalsIgnoreCase(DeviceType.IOS.getType()))
-						pushNotificationOnIosDevices(userDeviceCollection.getDeviceId(), message, type, typeId);
+						pushNotificationOnIosDevices(userDeviceCollection.getPushToken(), message, type, typeId);
 				}
 			}
 		} catch (Exception e) {
@@ -118,7 +118,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 		return response;
 	}
 	
-	public void pushNotificationOnAndroidDevices(String deviceId, String message, String type, String typeId) {
+	public void pushNotificationOnAndroidDevices(String pushToken, String message, String type, String typeId) {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			Sender sender = new Sender(GEOCODING_SERVICES_API_KEY);
@@ -131,17 +131,17 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 			basicDBObject.put("type", "Healthcoco");
 			basicDBObject.put("text", message);
 			if(!DPDoctorUtils.anyStringEmpty(type)){
-				if(type.equalsIgnoreCase(ComponentType.PRESCRIPTIONS.getType()))basicDBObject.put("rxId", typeId);
-				else if(type.equalsIgnoreCase(ComponentType.REPORTS.getType()))basicDBObject.put("rId", typeId);
-				else if(type.equalsIgnoreCase(ComponentType.PATIENT.getType()))basicDBObject.put("pId", typeId);
-				else if(type.equalsIgnoreCase(ComponentType.DOCTOR.getType()))basicDBObject.put("drId", typeId);
+				if(type.equalsIgnoreCase(ComponentType.PRESCRIPTIONS.getType()))basicDBObject.put("XI", typeId);
+				else if(type.equalsIgnoreCase(ComponentType.REPORTS.getType()))basicDBObject.put("RI", typeId);
+				else if(type.equalsIgnoreCase(ComponentType.PATIENT.getType()))basicDBObject.put("PI", typeId);
+				else if(type.equalsIgnoreCase(ComponentType.DOCTOR.getType()))basicDBObject.put("DI", typeId);
 			}
 					String jsonOutput = mapper.writeValueAsString(basicDBObject);
 					Message messageObj = new Message.Builder().timeToLive(30)
 							.delayWhileIdle(true)
 							.addData("message", jsonOutput).build();
 
-					Result result = sender.send(messageObj, deviceId, 1);
+					Result result = sender.send(messageObj, pushToken, 1);
 					logger.info("Message Result: " + result.toString());
 		} catch (JsonProcessingException jpe) {
 			jpe.printStackTrace();
@@ -150,7 +150,8 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 		}
 	}
 	
-	public void pushNotificationOnIosDevices(String deviceId, String message, String type, String typeId) {
+	@Override
+	public void pushNotificationOnIosDevices(String pushToken, String message, String type, String typeId) {
 		try {
 			ApnsService service = APNS
 					.newService()
@@ -160,16 +161,16 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 			Map<String, Object> customValues = new HashMap<String, Object>();
 			customValues.put("type", "Healthcoco");
 			if(!DPDoctorUtils.anyStringEmpty(type)){
-				if(type.equalsIgnoreCase(ComponentType.PRESCRIPTIONS.getType()))customValues.put("rxId", typeId);
-				else if(type.equalsIgnoreCase(ComponentType.REPORTS.getType()))customValues.put("rId", typeId);
-				else if(type.equalsIgnoreCase(ComponentType.PATIENT.getType()))customValues.put("pId", typeId);
-				else if(type.equalsIgnoreCase(ComponentType.DOCTOR.getType()))customValues.put("drId", typeId);
+				if(type.equalsIgnoreCase(ComponentType.PRESCRIPTIONS.getType()))customValues.put("XI", typeId);
+				else if(type.equalsIgnoreCase(ComponentType.REPORTS.getType()))customValues.put("RI", typeId);
+				else if(type.equalsIgnoreCase(ComponentType.PATIENT.getType()))customValues.put("PI", typeId);
+				else if(type.equalsIgnoreCase(ComponentType.DOCTOR.getType()))customValues.put("DI", typeId);
 			}
 					String payload = APNS.newPayload()
 							.alertBody(message)
 							.sound(iosNotificationSoundFilepath)
 							.customFields(customValues).build();
-					service.push(deviceId, payload);
+					service.push(pushToken, payload);
         } catch (Exception e) {
 			e.printStackTrace();
 		}

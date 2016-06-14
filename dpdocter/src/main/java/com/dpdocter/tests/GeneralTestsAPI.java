@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.services.LocationServices;
+import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrDoctorDocument;
 import com.dpdocter.solr.document.SolrLabTestDocument;
@@ -46,7 +47,7 @@ public class GeneralTestsAPI {
     private SolrLabTestRepository solrLabTestRepository;
 
     @Autowired
-    private TransactionalManagementService transactionalManagementService;
+    private PushNotificationServices pushNotificationServices;
 
     @Path(value = "/geocodeLocation/{address}")
     @GET
@@ -94,14 +95,23 @@ public class GeneralTestsAPI {
 	return response;
     }
 
-    @Path(value = "reminder")
+    @Path(value = "push")
     @GET
     public Response<Boolean> reminder() {
     	    
-    	transactionalManagementService.sendReminderToDoctor();
+    	pushNotificationServices.notifyUser("570ca16fe4b07c04418b3568", "Hello", "Healthcoco", "1");
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
     }
 
+    @Path(value = "pushIOS")
+    @GET
+    public Response<Boolean> pushIOS() {
+    	    
+    	pushNotificationServices.pushNotificationOnIosDevices("bb", "Hello", "h", "a");
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(true);
+	return response;
+    }
 }
