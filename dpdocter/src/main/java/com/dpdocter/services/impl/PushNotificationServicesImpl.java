@@ -3,6 +3,7 @@ package com.dpdocter.services.impl;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -66,14 +67,17 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 			UserDeviceCollection userDeviceCollection = null;
 			if(!DPDoctorUtils.anyStringEmpty(request.getUserId())){
 				UserCollection userCollection = userRepository.findOne(request.getUserId());
-				userDeviceCollection = userDeviceRepository.findByUserId(request.getUserId());
+				userDeviceCollection = userDeviceRepository.findByDeviceId(request.getDeviceId());
 				if(userDeviceCollection == null){
 					userDeviceCollection = new UserDeviceCollection();
 					BeanUtil.map(request, userDeviceCollection);
 					userDeviceCollection.setCreatedTime(new Date());
 				}else{
+					userDeviceCollection.setUserId(request.getUserId());
 					userDeviceCollection.setDeviceId(request.getDeviceId());
+					userDeviceCollection.setPushToken(request.getPushToken());
 					userDeviceCollection.setDeviceType(request.getDeviceType());
+					userDeviceCollection.setRole(request.getRole());
 					userDeviceCollection.setUpdatedTime(new Date());
 				}
 				if(userCollection != null){
@@ -101,13 +105,15 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 	public Boolean notifyUser(String patientId, String message, String type, String typeId) {
 		Boolean response = false;
 		try{
-			UserDeviceCollection userDeviceCollection = userDeviceRepository.findByUserId(patientId);
-			if(userDeviceCollection != null){
-				if(userDeviceCollection.getDeviceType() != null){
-					if(userDeviceCollection.getDeviceType().getType().equalsIgnoreCase(DeviceType.ANDROID.getType()))
-						pushNotificationOnAndroidDevices(userDeviceCollection.getPushToken(), message, type, typeId);
-					else if(userDeviceCollection.getDeviceType().getType().equalsIgnoreCase(DeviceType.IOS.getType()))
-						pushNotificationOnIosDevices(userDeviceCollection.getPushToken(), message, type, typeId);
+			List<UserDeviceCollection> userDeviceCollections = userDeviceRepository.findByUserId(patientId);
+			if(userDeviceCollections != null && !userDeviceCollections.isEmpty()){
+				for(UserDeviceCollection userDeviceCollection : userDeviceCollections){
+					if(userDeviceCollection.getDeviceType() != null){
+						if(userDeviceCollection.getDeviceType().getType().equalsIgnoreCase(DeviceType.ANDROID.getType()))
+							pushNotificationOnAndroidDevices(userDeviceCollection.getPushToken(), message, type, typeId);
+						else if(userDeviceCollection.getDeviceType().getType().equalsIgnoreCase(DeviceType.IOS.getType()))
+							pushNotificationOnIosDevices(userDeviceCollection.getPushToken(), message, type, typeId);
+					}
 				}
 			}
 		} catch (Exception e) {

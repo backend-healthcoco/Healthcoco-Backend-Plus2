@@ -329,7 +329,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    doctor.setDoctorClinicProfile(doctorClinicProfile);
 			}
 			if(doctor.getSpecialities() != null && !doctor.getSpecialities().isEmpty()){
-				List<String> specialities = (List<String>) CollectionUtils.collect((Collection<?>) specialityRepository.findAll(doctor.getSpecialities()),new BeanToPropertyValueTransformer("speciality"));
+				List<String> specialities = (List<String>) CollectionUtils.collect((Collection<?>) specialityRepository.findAll(doctor.getSpecialities()),new BeanToPropertyValueTransformer("superSpeciality"));
 				doctor.setSpecialities(specialities);
 			}
 			doctors.add(doctor);

@@ -8,8 +8,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import javax.xml.bind.DatatypeConverter;
+
 import org.joda.time.DateTime;
 
+import com.dpdocter.services.PushNotificationServices;
+import com.dpdocter.services.impl.PushNotificationServicesImpl;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -88,31 +92,9 @@ public class GeneralTests {
 //	    	}
 	    		 
 	    		 public static void main(String[] args) throws NoSuchAlgorithmException, JsonGenerationException, JsonMappingException, IOException, ParseException  {
-//	    			 SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy");
-//	    				sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-//	    				System.out.println(sdf.format(new Date()));
-//	    				
-//	    				String _24HourTime = "22:15";
-//	    		           SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
-//	    		           SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
-//	    		           Date _24HourDt = _24HourSDF.parse(_24HourTime);
-//	    		           System.out.println(_24HourDt);
-//	    		           System.out.println(_12HourSDF.format(_24HourDt));
-	    		           Calendar localCalendar = Calendar.getInstance();
-	    		        	
-	    		    	    localCalendar.setTime(new Date());
-	    		    		int currentDayFromTime = localCalendar.get(Calendar.DATE);
-	    		    		int currentMonthFromTime = localCalendar.get(Calendar.MONTH) + 1;
-	    		    		int currentYearFromTime = localCalendar.get(Calendar.YEAR);
-	    		    		DateTime fromTime = new DateTime(currentYearFromTime, currentMonthFromTime, currentDayFromTime, 0, 0, 0);
-	    		    		System.out.println(fromTime.getMinuteOfHour());    
-	    		    	    localCalendar.setTime(new Date());
-	    		    		int currentDay = localCalendar.get(Calendar.DATE);
-	    		    		int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-	    		    		int currentYear = localCalendar.get(Calendar.YEAR);
-	    		    		DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
-	    		    	    System.out.println(toTime.getMinuteOfHour());
-	    			    
+	    			 byte[] bytes = DatatypeConverter.parseHexBinary("cQAIX5sr69w:APA91bFZgKEOIx4jW5x-BWy1M2S2F2uKA2UuHjPex-adlj7ArOMsVecSkcJzYmHKZX07xdPF_9Mr0jpvRzkJ2x5hCLHMoxQArP-mWePJI0gJ8vN7Zx7tVupVkqchOid_EPiQDjIxOYgN");
+	    			 String result= new String(bytes, "UTF-8");
+	    			 System.out.println(result);
 	    		 }
 	    		 
 }  	
