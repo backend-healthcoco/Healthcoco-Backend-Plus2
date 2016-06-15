@@ -351,7 +351,7 @@ public class SolrAppointmentServiceImpl implements SolrAppointmentService {
 			for (String specialityId : doctorDocument.getSpecialities()) {
 			    SpecialityCollection specialityCollection = specialityRepository.findOne(specialityId);
 			    if (specialityCollection != null)
-				specialities.add(specialityCollection.getSpeciality());
+				specialities.add(specialityCollection.getSuperSpeciality());
 			}
 			doctorDocument.setSpecialities(specialities);
 		    }

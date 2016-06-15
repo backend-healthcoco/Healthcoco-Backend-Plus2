@@ -490,7 +490,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    // set specialities using speciality ids
 	    if (doctorProfile.getSpecialities() != null) {
 		specialities = (List<String>) CollectionUtils.collect((Collection<?>) specialityRepository.findAll(doctorProfile.getSpecialities()),
-			new BeanToPropertyValueTransformer("speciality"));
+			new BeanToPropertyValueTransformer("superSpeciality"));
 	    }
 	    doctorProfile.setSpecialities(specialities);
 
@@ -854,23 +854,23 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			specialities = new ArrayList<String>();
 			specialitiesresponse = new ArrayList<String>();
 			for (String speciality : request.getSpeciality()) {
-			    Boolean specialityFound = false;
+//			    Boolean specialityFound = false;
 			    for (SpecialityCollection specialityCollection : specialityCollections) {
-				if (speciality.trim().equalsIgnoreCase(specialityCollection.getSpeciality())) {
+				if (speciality.trim().equalsIgnoreCase(specialityCollection.getSuperSpeciality())) {
 				    specialities.add(specialityCollection.getId());
-				    specialitiesresponse.add(specialityCollection.getSpeciality());
-				    specialityFound = true;
+				    specialitiesresponse.add(specialityCollection.getSuperSpeciality());
+//				    specialityFound = true;
 				    break;
 				}
 			    }
-			    if (!specialityFound) {
-				SpecialityCollection specialityCollection = new SpecialityCollection();
-				specialityCollection.setSpeciality(speciality);
-				specialityCollection.setCreatedTime(new Date());
-				specialityCollection = specialityRepository.save(specialityCollection);
-				specialities.add(specialityCollection.getId());
-				specialitiesresponse.add(specialityCollection.getSpeciality());
-			    }
+//			    if (!specialityFound) {
+//				SpecialityCollection specialityCollection = new SpecialityCollection();
+//				specialityCollection.setSpeciality(speciality);
+//				specialityCollection.setCreatedTime(new Date());
+//				specialityCollection = specialityRepository.save(specialityCollection);
+//				specialities.add(specialityCollection.getId());
+//				specialitiesresponse.add(specialityCollection.getSpeciality());
+//			    }
 			}
 			doctorCollection.setSpecialities(specialities);
 		    } else {
