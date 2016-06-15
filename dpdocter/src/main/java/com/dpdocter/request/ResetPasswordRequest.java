@@ -3,8 +3,10 @@ package com.dpdocter.request;
 public class ResetPasswordRequest {
     private String userId;
 
-    private String password;
+    private char[] password;
 
+    private String mobileNumber;
+    
     public String getUserId() {
 	return userId;
     }
@@ -13,17 +15,25 @@ public class ResetPasswordRequest {
 	this.userId = userId;
     }
 
-    public String getPassword() {
+    public char[] getPassword() {
 	return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(char[] password) {
 	this.password = password;
     }
 
-    @Override
-    public String toString() {
-	return "ResetPasswordRequest [userId=" + userId + ", password=" + password + "]";
-    }
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
 
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+
+	@Override
+	public String toString() {
+		return "ResetPasswordRequest [userId=" + userId + ", password=" + password + ", mobileNumber=" + mobileNumber
+				+ "]";
+	}
 }

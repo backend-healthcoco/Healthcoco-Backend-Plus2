@@ -13,7 +13,7 @@ public class RegisteredPatientDetails extends GenericCollection {
     private String middleName;
 
     private String imageUrl;
-    
+
     private String thumbnailUrl;
 
     private DOB dob;
@@ -42,6 +42,10 @@ public class RegisteredPatientDetails extends GenericCollection {
 
     private String colorCode;
 
+    private Reference referredBy;
+
+    private Boolean isPartOfClinic;
+    
     public String getUserId() {
 	return userId;
     }
@@ -178,12 +182,28 @@ public class RegisteredPatientDetails extends GenericCollection {
 	this.colorCode = colorCode;
     }
 
-	public String getThumbnailUrl() {
-		return thumbnailUrl;
+    public String getThumbnailUrl() {
+	return thumbnailUrl;
+    }
+
+    public void setThumbnailUrl(String thumbnailUrl) {
+	this.thumbnailUrl = thumbnailUrl;
+    }
+
+    public Reference getReferredBy() {
+	return referredBy;
+    }
+
+    public void setReferredBy(Reference referredBy) {
+	this.referredBy = referredBy;
+    }
+
+	public Boolean getIsPartOfClinic() {
+		return isPartOfClinic;
 	}
 
-	public void setThumbnailUrl(String thumbnailUrl) {
-		this.thumbnailUrl = thumbnailUrl;
+	public void setIsPartOfClinic(Boolean isPartOfClinic) {
+		this.isPartOfClinic = isPartOfClinic;
 	}
 
 	@Override
@@ -193,7 +213,8 @@ public class RegisteredPatientDetails extends GenericCollection {
 				+ ", userId=" + userId + ", userName=" + userName + ", mobileNumber=" + mobileNumber + ", gender="
 				+ gender + ", patient=" + patient + ", address=" + address + ", groups=" + groups + ", doctorId="
 				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", PID=" + PID
-				+ ", colorCode=" + colorCode + "]";
+				+ ", colorCode=" + colorCode + ", referredBy=" + referredBy + ", isPartOfClinic=" + isPartOfClinic
+				+ "]";
 	}
 
 }

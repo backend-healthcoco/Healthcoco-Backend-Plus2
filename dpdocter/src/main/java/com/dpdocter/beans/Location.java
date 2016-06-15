@@ -17,8 +17,6 @@ public class Location {
 
     private String city;
 
-    private String locationPhoneNumber;
-
     private String postalCode;
 
     private String websiteUrl;
@@ -26,7 +24,7 @@ public class Location {
     private List<ClinicImage> images;
 
     private String logoUrl;
-    
+
     private String logoThumbnailUrl;
 
     private String hospitalId;
@@ -47,14 +45,26 @@ public class Location {
 
     private String locality;
 
-    private String mobileNumber;
+    private String clinicNumber;
 
-    private String alternateNumber;
+    private List<String> alternateClinicNumbers;
 
     private List<WorkingSchedule> workingSchedules;
 
     private boolean isTwentyFourSevenOpen;
 
+    private Boolean isClinic = true;
+
+    private Boolean isLab = false;
+
+    private Boolean isOnlineReportsAvailable = false;
+
+    private Boolean isNABLAccredited = false;
+
+    private Boolean isHomeServiceAvailable = false;
+
+    private String locationUId;
+    
     public String getId() {
 	return id;
     }
@@ -93,14 +103,6 @@ public class Location {
 
     public void setCity(String city) {
 	this.city = city;
-    }
-
-    public String getLocationPhoneNumber() {
-	return locationPhoneNumber;
-    }
-
-    public void setLocationPhoneNumber(String locationPhoneNumber) {
-	this.locationPhoneNumber = locationPhoneNumber;
     }
 
     public String getPostalCode() {
@@ -207,22 +209,6 @@ public class Location {
 	this.locality = locality;
     }
 
-    public String getMobileNumber() {
-	return mobileNumber;
-    }
-
-    public void setMobileNumber(String mobileNumber) {
-	this.mobileNumber = mobileNumber;
-    }
-
-    public String getAlternateNumber() {
-	return alternateNumber;
-    }
-
-    public void setAlternateNumber(String alternateNumber) {
-	this.alternateNumber = alternateNumber;
-    }
-
     public List<WorkingSchedule> getWorkingSchedules() {
 	return workingSchedules;
     }
@@ -239,24 +225,90 @@ public class Location {
 	this.isTwentyFourSevenOpen = isTwentyFourSevenOpen;
     }
 
-	public String getLogoThumbnailUrl() {
-		return logoThumbnailUrl;
+    public String getLogoThumbnailUrl() {
+	return logoThumbnailUrl;
+    }
+
+    public void setLogoThumbnailUrl(String logoThumbnailUrl) {
+	this.logoThumbnailUrl = logoThumbnailUrl;
+    }
+
+    public Boolean getIsLab() {
+	return isLab;
+    }
+
+    public void setIsLab(Boolean isLab) {
+	this.isLab = isLab;
+    }
+
+    public Boolean getIsOnlineReportsAvailable() {
+	return isOnlineReportsAvailable;
+    }
+
+    public void setIsOnlineReportsAvailable(Boolean isOnlineReportsAvailable) {
+	this.isOnlineReportsAvailable = isOnlineReportsAvailable;
+    }
+
+    public Boolean getIsNABLAccredited() {
+	return isNABLAccredited;
+    }
+
+    public void setIsNABLAccredited(Boolean isNABLAccredited) {
+	this.isNABLAccredited = isNABLAccredited;
+    }
+
+    public Boolean getIsHomeServiceAvailable() {
+	return isHomeServiceAvailable;
+    }
+
+    public void setIsHomeServiceAvailable(Boolean isHomeServiceAvailable) {
+	this.isHomeServiceAvailable = isHomeServiceAvailable;
+    }
+
+    public Boolean getIsClinic() {
+	return isClinic;
+    }
+
+    public void setIsClinic(Boolean isClinic) {
+	this.isClinic = isClinic;
+    }
+
+	public String getClinicNumber() {
+		return clinicNumber;
 	}
 
-	public void setLogoThumbnailUrl(String logoThumbnailUrl) {
-		this.logoThumbnailUrl = logoThumbnailUrl;
+	public void setClinicNumber(String clinicNumber) {
+		this.clinicNumber = clinicNumber;
+	}
+
+	public List<String> getAlternateClinicNumbers() {
+		return alternateClinicNumbers;
+	}
+
+	public void setAlternateClinicNumbers(List<String> alternateClinicNumbers) {
+		this.alternateClinicNumbers = alternateClinicNumbers;
+	}
+
+	public String getLocationUId() {
+		return locationUId;
+	}
+
+	public void setLocationUId(String locationUId) {
+		this.locationUId = locationUId;
 	}
 
 	@Override
 	public String toString() {
 		return "Location [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state
-				+ ", city=" + city + ", locationPhoneNumber=" + locationPhoneNumber + ", postalCode=" + postalCode
-				+ ", websiteUrl=" + websiteUrl + ", images=" + images + ", logoUrl=" + logoUrl + ", logoThumbnailUrl="
-				+ logoThumbnailUrl + ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude="
-				+ longitude + ", tagLine=" + tagLine + ", landmarkDetails=" + landmarkDetails
-				+ ", locationEmailAddress=" + locationEmailAddress + ", specialization=" + specialization
-				+ ", streetAddress=" + streetAddress + ", locality=" + locality + ", mobileNumber=" + mobileNumber
-				+ ", alternateNumber=" + alternateNumber + ", workingSchedules=" + workingSchedules
-				+ ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + "]";
+				+ ", city=" + city + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", images=" + images
+				+ ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + ", hospitalId=" + hospitalId
+				+ ", latitude=" + latitude + ", longitude=" + longitude + ", tagLine=" + tagLine + ", landmarkDetails="
+				+ landmarkDetails + ", locationEmailAddress=" + locationEmailAddress + ", specialization="
+				+ specialization + ", streetAddress=" + streetAddress + ", locality=" + locality + ", clinicNumber="
+				+ clinicNumber + ", alternateClinicNumbers=" + alternateClinicNumbers + ", workingSchedules="
+				+ workingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + ", isClinic=" + isClinic
+				+ ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited="
+				+ isNABLAccredited + ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", locationUId="
+				+ locationUId + "]";
 	}
 }

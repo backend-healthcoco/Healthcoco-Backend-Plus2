@@ -11,9 +11,15 @@ public class RecordsSearchRequest {
 
     private String hospitalId;
 
-    private String updatedTime;
+    private String updatedTime = "0";
 
-    private Boolean discarded;
+    private Boolean discarded = true;
+
+    private int page;
+
+    private int size;
+
+    private Boolean isOTPVerified = false;
 
     public String getLocationId() {
 	return locationId;
@@ -71,9 +77,34 @@ public class RecordsSearchRequest {
 	this.discarded = discarded;
     }
 
+    public int getPage() {
+	return page;
+    }
+
+    public void setPage(int page) {
+	this.page = page;
+    }
+
+    public int getSize() {
+	return size;
+    }
+
+    public void setSize(int size) {
+	this.size = size;
+    }
+
+    public Boolean getIsOTPVerified() {
+	return isOTPVerified;
+    }
+
+    public void setIsOTPVerified(Boolean isOTPVerified) {
+	this.isOTPVerified = isOTPVerified;
+    }
+
     @Override
     public String toString() {
 	return "RecordsSearchRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", tagId=" + tagId + ", locationId=" + locationId + ", hospitalId="
-		+ hospitalId + ", updatedTime=" + updatedTime + ", discarded=" + discarded + "]";
+		+ hospitalId + ", updatedTime=" + updatedTime + ", discarded=" + discarded + ", page=" + page + ", size=" + size + ", isOTPVerified="
+		+ isOTPVerified + "]";
     }
 }

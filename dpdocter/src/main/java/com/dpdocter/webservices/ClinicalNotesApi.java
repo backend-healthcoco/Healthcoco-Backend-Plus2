@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -11,9 +12,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +28,7 @@ import com.dpdocter.beans.Notes;
 import com.dpdocter.beans.Observation;
 import com.dpdocter.collections.DiagramsCollection;
 import com.dpdocter.enums.ClinicalItems;
+import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -36,7 +36,9 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.ClinicalNotesAddRequest;
 import com.dpdocter.request.ClinicalNotesEditRequest;
 import com.dpdocter.services.ClinicalNotesService;
+import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientVisitService;
+import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.document.SolrComplaintsDocument;
 import com.dpdocter.solr.document.SolrDiagnosesDocument;
 import com.dpdocter.solr.document.SolrDiagramsDocument;
@@ -44,13 +46,17 @@ import com.dpdocter.solr.document.SolrInvestigationsDocument;
 import com.dpdocter.solr.document.SolrNotesDocument;
 import com.dpdocter.solr.document.SolrObservationsDocument;
 import com.dpdocter.solr.services.SolrClinicalNotesService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Component
 @Path(PathProxy.CLINICAL_NOTES_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(value = PathProxy.CLINICAL_NOTES_BASE_URL, description = "Endpoint for clinical notes")
 public class ClinicalNotesApi {
 
     private static Logger logger = Logger.getLogger(ClinicalNotesApi.class.getName());
@@ -64,14 +70,18 @@ public class ClinicalNotesApi {
     @Autowired
     private PatientVisitService patientTrackService;
 
-    @Context
-    private UriInfo uriInfo;
+    @Autowired
+    private TransactionalManagementService transnationalService;
 
-    @Value(value = "${IMAGE_URL_ROOT_PATH}")
-    private String imageUrlRootPath;
+    @Autowired
+    private OTPService otpService;
+
+    @Value(value = "${image.path}")
+    private String imagePath;
 
     @Path(value = PathProxy.ClinicalNotesUrls.SAVE_CLINICAL_NOTE)
     @POST
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.SAVE_CLINICAL_NOTE, notes = PathProxy.ClinicalNotesUrls.SAVE_CLINICAL_NOTE)
     public Response<ClinicalNotes> addNotes(ClinicalNotesAddRequest request) {
 	ClinicalNotes clinicalNotes = clinicalNotesService.addNotes(request);
 
@@ -80,7 +90,9 @@ public class ClinicalNotesApi {
 	    String visitId = patientTrackService.addRecord(clinicalNotes, VisitedFor.CLINICAL_NOTES, request.getVisitId());
 	    clinicalNotes.setVisitId(visitId);
 	}
-
+	if (clinicalNotes.getDiagrams() != null && !clinicalNotes.getDiagrams().isEmpty()) {
+	    clinicalNotes.setDiagrams(getFinalDiagrams(clinicalNotes.getDiagrams()));
+	}
 	Response<ClinicalNotes> response = new Response<ClinicalNotes>();
 	response.setData(clinicalNotes);
 	return response;
@@ -88,6 +100,7 @@ public class ClinicalNotesApi {
 
     @Path(value = PathProxy.ClinicalNotesUrls.EDIT_CLINICAL_NOTES)
     @PUT
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.EDIT_CLINICAL_NOTES, notes = PathProxy.ClinicalNotesUrls.EDIT_CLINICAL_NOTES)
     public Response<ClinicalNotes> editNotes(@PathParam(value = "clinicalNotesId") String clinicalNotesId, ClinicalNotesEditRequest request) {
 	if (DPDoctorUtils.anyStringEmpty(clinicalNotesId) || request == null) {
 	    logger.warn("Invalid Input");
@@ -95,7 +108,13 @@ public class ClinicalNotesApi {
 	}
 	request.setId(clinicalNotesId);
 	ClinicalNotes clinicalNotes = clinicalNotesService.editNotes(request);
-
+	if (clinicalNotes != null) {
+	    String visitId = patientTrackService.editRecord(clinicalNotes.getId(), VisitedFor.CLINICAL_NOTES);
+	    clinicalNotes.setVisitId(visitId);
+	}
+	if (clinicalNotes.getDiagrams() != null && !clinicalNotes.getDiagrams().isEmpty()) {
+	    clinicalNotes.setDiagrams(getFinalDiagrams(clinicalNotes.getDiagrams()));
+	}
 	Response<ClinicalNotes> response = new Response<ClinicalNotes>();
 	response.setData(clinicalNotes);
 	return response;
@@ -103,15 +122,18 @@ public class ClinicalNotesApi {
 
     @Path(value = PathProxy.ClinicalNotesUrls.DELETE_CLINICAL_NOTES)
     @DELETE
-    public Response<Boolean> deleteNotes(@PathParam(value = "clinicalNotesId") String clinicalNotesId, @QueryParam("discarded") Boolean discarded) {
-	clinicalNotesService.deleteNote(clinicalNotesId, discarded);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_CLINICAL_NOTES, notes = PathProxy.ClinicalNotesUrls.DELETE_CLINICAL_NOTES)
+    public Response<ClinicalNotes> deleteNotes(@PathParam(value = "clinicalNotesId") String clinicalNotesId,
+	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    	ClinicalNotes clinicalNotes = clinicalNotesService.deleteNote(clinicalNotesId, discarded);
+	Response<ClinicalNotes> response = new Response<ClinicalNotes>();
+	response.setData(clinicalNotes);
 	return response;
     }
 
     @Path(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_ID)
     @GET
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_ID, notes = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_ID)
     public Response<ClinicalNotes> getNotesById(@PathParam(value = "clinicalNotesId") String clinicalNotesId) {
 	ClinicalNotes clinicalNotes = clinicalNotesService.getNotesById(clinicalNotesId);
 	if (clinicalNotes.getDiagrams() != null && !clinicalNotes.getDiagrams().isEmpty()) {
@@ -123,29 +145,35 @@ public class ClinicalNotesApi {
     }
 
     @GET
+    @ApiOperation(value = "GET_CLINICAL_NOTES", notes = "GET_CLINICAL_NOTES")
     public Response<ClinicalNotes> getNotes(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
-	    @QueryParam(value = "patientId") String patientId, @QueryParam("updatedTime") String updatedTime,
-	    @QueryParam(value = "isOTPVerified") Boolean isOTPVerified, @QueryParam(value = "discarded") Boolean discarded) {
-	return getAllNotes(page, size, doctorId, locationId, hospitalId, patientId, updatedTime, isOTPVerified, discarded);
+	    @QueryParam(value = "patientId") String patientId, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
+	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
+	
+    	List<ClinicalNotes> clinicalNotes =  clinicalNotesService.getClinicalNotes(page, size, doctorId, locationId, hospitalId, patientId, updatedTime,
+		otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), discarded, false);
+    	
+    	if (clinicalNotes != null && !clinicalNotes.isEmpty()) {
+    	    for (ClinicalNotes clinicalNote : clinicalNotes) {
+    		if (clinicalNote.getDiagrams() != null && !clinicalNote.getDiagrams().isEmpty()) {
+    		    clinicalNote.setDiagrams(getFinalDiagrams(clinicalNote.getDiagrams()));
+    		}
+    	    }
+    	}
+    	Response<ClinicalNotes> response = new Response<ClinicalNotes>();
+    	response.setDataList(clinicalNotes);
+    	return response;
     }
 
-    private Response<ClinicalNotes> getAllNotes(int page, int size, String doctorId, String locationId, String hospitalId, String patientId,
-	    String updatedTime, Boolean isOTPVerified, Boolean discarded) {
-	List<ClinicalNotes> clinicalNotes = null;
+    @Path(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_PATIENT_ID)
+    @GET
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_PATIENT_ID, notes = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_PATIENT_ID)
+    public Response<ClinicalNotes> getNotes(@PathParam(value = "patientId") String patientId, @QueryParam("page") int page, @QueryParam("size") int size,
+	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 
-	if (isOTPVerified != null) {
-	    if (isOTPVerified) {
-		clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithVerifiedOTP(page, size, patientId, updatedTime, discarded != null ? discarded
-			: true);
-	    } else {
-		clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(page, size, patientId, doctorId, locationId, hospitalId,
-			updatedTime, discarded != null ? discarded : true);
-	    }
-	} else {
-	    clinicalNotes = clinicalNotesService.getPatientsClinicalNotesWithoutVerifiedOTP(page, size, patientId, doctorId, locationId, hospitalId,
-		    updatedTime, discarded != null ? discarded : true);
-	}
+	List<ClinicalNotes> clinicalNotes = null;
+	clinicalNotes = clinicalNotesService.getClinicalNotes(patientId, page, size, updatedTime, discarded);
 
 	if (clinicalNotes != null && !clinicalNotes.isEmpty()) {
 	    for (ClinicalNotes clinicalNote : clinicalNotes) {
@@ -159,21 +187,13 @@ public class ClinicalNotesApi {
 	return response;
     }
 
-    @Path(value = PathProxy.ClinicalNotesUrls.GET_CLINIC_NOTES_COUNT)
-    @GET
-    public Response<Integer> getClinicalNotesCount(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "patientId") String patientId,
-	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
-	Integer clinicalNotesCount = clinicalNotesService.getClinicalNotesCount(doctorId, patientId, locationId, hospitalId);
-	Response<Integer> response = new Response<Integer>();
-	response.setData(clinicalNotesCount);
-	return response;
-    }
-
     @Path(value = PathProxy.ClinicalNotesUrls.ADD_COMPLAINT)
     @POST
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_COMPLAINT, notes = PathProxy.ClinicalNotesUrls.ADD_COMPLAINT)
     public Response<Complaint> addComplaint(Complaint request) {
 	Complaint complaint = clinicalNotesService.addEditComplaint(request);
 
+	transnationalService.addResource(complaint.getId(), Resource.COMPLAINT, false);
 	// Below service call will add or edit complaint in solr index.
 	SolrComplaintsDocument solrComplaints = new SolrComplaintsDocument();
 	BeanUtil.map(complaint, solrComplaints);
@@ -190,8 +210,11 @@ public class ClinicalNotesApi {
 
     @Path(value = PathProxy.ClinicalNotesUrls.ADD_OBSERVATION)
     @POST
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_OBSERVATION, notes = PathProxy.ClinicalNotesUrls.ADD_OBSERVATION)
     public Response<Observation> addObservation(Observation request) {
 	Observation observation = clinicalNotesService.addEditObservation(request);
+
+	transnationalService.addResource(observation.getId(), Resource.OBSERVATION, false);
 
 	SolrObservationsDocument solrObservations = new SolrObservationsDocument();
 	BeanUtil.map(observation, solrObservations);
@@ -207,8 +230,11 @@ public class ClinicalNotesApi {
 
     @Path(value = PathProxy.ClinicalNotesUrls.ADD_INVESTIGATION)
     @POST
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_INVESTIGATION, notes = PathProxy.ClinicalNotesUrls.ADD_INVESTIGATION)
     public Response<Investigation> addInvestigation(Investigation request) {
 	Investigation investigation = clinicalNotesService.addEditInvestigation(request);
+
+	transnationalService.addResource(investigation.getId(), Resource.INVESTIGATION, false);
 
 	SolrInvestigationsDocument solrInvestigations = new SolrInvestigationsDocument();
 	BeanUtil.map(investigation, solrInvestigations);
@@ -217,6 +243,7 @@ public class ClinicalNotesApi {
 	} else {
 	    solrClinicalNotesService.editInvestigations(solrInvestigations);
 	}
+
 	Response<Investigation> response = new Response<Investigation>();
 	response.setData(investigation);
 	return response;
@@ -224,9 +251,11 @@ public class ClinicalNotesApi {
 
     @Path(value = PathProxy.ClinicalNotesUrls.ADD_DIAGNOSIS)
     @POST
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_DIAGNOSIS, notes = PathProxy.ClinicalNotesUrls.ADD_DIAGNOSIS)
     public Response<Diagnoses> addDiagnosis(Diagnoses request) {
 	Diagnoses diagnosis = clinicalNotesService.addEditDiagnosis(request);
 
+	transnationalService.addResource(diagnosis.getId(), Resource.DIAGNOSIS, false);
 	// Add diagnosis in solr index.
 	SolrDiagnosesDocument solrDiagnoses = new SolrDiagnosesDocument();
 	BeanUtil.map(diagnosis, solrDiagnoses);
@@ -243,9 +272,11 @@ public class ClinicalNotesApi {
 
     @Path(value = PathProxy.ClinicalNotesUrls.ADD_NOTES)
     @POST
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_NOTES, notes = PathProxy.ClinicalNotesUrls.ADD_NOTES)
     public Response<Notes> addNotes(Notes request) {
 	Notes notes = clinicalNotesService.addEditNotes(request);
 
+	transnationalService.addResource(notes.getId(), Resource.NOTES, false);
 	// add notes in solr index.
 	SolrNotesDocument solrNotes = new SolrNotesDocument();
 	BeanUtil.map(notes, solrNotes);
@@ -254,7 +285,6 @@ public class ClinicalNotesApi {
 	} else {
 	    solrClinicalNotesService.editNotes(solrNotes);
 	}
-
 	Response<Notes> response = new Response<Notes>();
 	response.setData(notes);
 	return response;
@@ -262,16 +292,14 @@ public class ClinicalNotesApi {
 
     @Path(value = PathProxy.ClinicalNotesUrls.ADD_DIAGRAM)
     @POST
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_DIAGRAM, notes = PathProxy.ClinicalNotesUrls.ADD_DIAGRAM)
     public Response<Diagram> addDiagram(Diagram request) {
 	Diagram diagram = clinicalNotesService.addEditDiagram(request);
-
+	transnationalService.addResource(diagram.getId(), Resource.DIAGRAM, false);
 	SolrDiagramsDocument solrDiagrams = new SolrDiagramsDocument();
 	BeanUtil.map(diagram, solrDiagrams);
-	if (request.getId() == null) {
-	    solrClinicalNotesService.addDiagrams(solrDiagrams);
-	} else {
-	    solrClinicalNotesService.editDiagrams(solrDiagrams);
-	}
+	solrClinicalNotesService.addDiagrams(solrDiagrams);
+	
 	if (diagram.getDiagramUrl() != null) {
 	    diagram.setDiagramUrl(getFinalImageURL(diagram.getDiagramUrl()));
 	}
@@ -282,83 +310,102 @@ public class ClinicalNotesApi {
 
     @Path(value = PathProxy.ClinicalNotesUrls.DELETE_COMPLAINT)
     @DELETE
-    public Response<Boolean> deleteComplaint(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
-	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId, @QueryParam("discarded") Boolean discarded) {
-	clinicalNotesService.deleteComplaint(id, doctorId, locationId, hospitalId, discarded);
-	// Delete complaint in solr index.
-//	solrClinicalNotesService.deleteComplaints(id);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_COMPLAINT, notes = PathProxy.ClinicalNotesUrls.DELETE_COMPLAINT)
+    public Response<Complaint> deleteComplaint(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    	Complaint complaint = clinicalNotesService.deleteComplaint(id, doctorId, locationId, hospitalId, discarded);
+	transnationalService.addResource(id, Resource.COMPLAINT, false);
+
+	solrClinicalNotesService.deleteComplaints(id, discarded);
+
+	Response<Complaint> response = new Response<Complaint>();
+	response.setData(complaint);
 	return response;
     }
 
     @Path(value = PathProxy.ClinicalNotesUrls.DELETE_OBSERVATION)
     @DELETE
-    public Response<Boolean> deleteObservation(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
-	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId, @QueryParam("discarded") Boolean discarded) {
-	clinicalNotesService.deleteObservation(id, doctorId, locationId, hospitalId, discarded);
-//	solrClinicalNotesService.deleteObservations(id);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_OBSERVATION, notes = PathProxy.ClinicalNotesUrls.DELETE_OBSERVATION)
+    public Response<Observation> deleteObservation(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    	Observation observation = clinicalNotesService.deleteObservation(id, doctorId, locationId, hospitalId, discarded);
+	transnationalService.addResource(id, Resource.OBSERVATION, false);
+	solrClinicalNotesService.deleteObservations(id, discarded);
+
+	Response<Observation> response = new Response<Observation>();
+	response.setData(observation);
 	return response;
     }
 
     @Path(value = PathProxy.ClinicalNotesUrls.DELETE_INVESTIGATION)
     @DELETE
-    public Response<Boolean> deleteInvestigation(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
-	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId, @QueryParam("discarded") Boolean discarded) {
-	clinicalNotesService.deleteInvestigation(id, doctorId, locationId, hospitalId, discarded);
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_INVESTIGATION, notes = PathProxy.ClinicalNotesUrls.DELETE_INVESTIGATION)
+    public Response<Investigation> deleteInvestigation(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    	Investigation investigation = clinicalNotesService.deleteInvestigation(id, doctorId, locationId, hospitalId, discarded);
+	transnationalService.addResource(id, Resource.INVESTIGATION, false);
+	solrClinicalNotesService.deleteInvestigations(id, discarded);
 
-//	solrClinicalNotesService.deleteInvestigations(id);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
+	Response<Investigation> response = new Response<Investigation>();
+	response.setData(investigation);
 	return response;
     }
 
     @Path(value = PathProxy.ClinicalNotesUrls.DELETE_DIAGNOSIS)
     @DELETE
-    public Response<Boolean> deleteDiagnosis(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
-	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId, @QueryParam("discarded") Boolean discarded) {
-	clinicalNotesService.deleteDiagnosis(id, doctorId, locationId, hospitalId, discarded);
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_DIAGNOSIS, notes = PathProxy.ClinicalNotesUrls.DELETE_DIAGNOSIS)
+    public Response<Diagnoses> deleteDiagnosis(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    	Diagnoses diagnoses = clinicalNotesService.deleteDiagnosis(id, doctorId, locationId, hospitalId, discarded);
+	transnationalService.addResource(id, Resource.DIAGNOSIS, false);
+	solrClinicalNotesService.deleteDiagnoses(id, discarded);
 
-	// delete diagnosis in solr index.
-//	solrClinicalNotesService.deleteDiagnoses(id);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
+	Response<Diagnoses> response = new Response<Diagnoses>();
+	response.setData(diagnoses);
 	return response;
     }
 
     @Path(value = PathProxy.ClinicalNotesUrls.DELETE_NOTE)
     @DELETE
-    public Response<Boolean> deleteNote(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
-	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId, @QueryParam("discarded") Boolean discarded) {
-	clinicalNotesService.deleteNotes(id, doctorId, locationId, hospitalId, discarded);
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_NOTE, notes = PathProxy.ClinicalNotesUrls.DELETE_NOTE)
+    public Response<Notes> deleteNote(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    	Notes notes = clinicalNotesService.deleteNotes(id, doctorId, locationId, hospitalId, discarded);
+	transnationalService.addResource(id, Resource.NOTES, false);
+	solrClinicalNotesService.deleteNotes(id, discarded);
 
-	// delete notes in solr index.
-//	solrClinicalNotesService.deleteNotes(id);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
+	Response<Notes> response = new Response<Notes>();
+	response.setData(notes);
 	return response;
     }
 
     @Path(value = PathProxy.ClinicalNotesUrls.DELETE_DIAGRAM)
     @DELETE
-    public Response<Boolean> deleteDiagram(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
-	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId, @QueryParam("discarded") Boolean discarded) {
-	clinicalNotesService.deleteDiagram(id, doctorId, locationId, hospitalId, discarded);
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_DIAGRAM, notes = PathProxy.ClinicalNotesUrls.DELETE_DIAGRAM)
+    public Response<Diagram> deleteDiagram(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    	Diagram diagram = clinicalNotesService.deleteDiagram(id, doctorId, locationId, hospitalId, discarded);
+	transnationalService.addResource(id, Resource.DIAGRAM, false);
+	solrClinicalNotesService.deleteDiagrams(id, discarded);
 
-//	solrClinicalNotesService.deleteDiagrams(id);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
+	Response<Diagram> response = new Response<Diagram>();
+	response.setData(diagram);
 	return response;
     }
 
     @Path(value = PathProxy.ClinicalNotesUrls.GET_CINICAL_ITEMS)
     @GET
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.GET_CINICAL_ITEMS, notes = PathProxy.ClinicalNotesUrls.GET_CINICAL_ITEMS)
     public Response<Object> getClinicalItems(@PathParam("type") String type, @PathParam("range") String range, @QueryParam("page") int page,
 	    @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
-	    @QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "updatedTime") String updatedTime,
-	    @QueryParam(value = "discarded") Boolean discarded) {
+	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 
 	if (DPDoctorUtils.anyStringEmpty(type, range)) {
 	    logger.warn("Invalid Input. Type or Range Cannot Be Empty");
@@ -368,7 +415,7 @@ public class ClinicalNotesApi {
 		discarded != null ? discarded : true);
 	if (clinicalItems != null && !clinicalItems.isEmpty() && ClinicalItems.DIAGRAMS.getType().equalsIgnoreCase(type)) {
 	    for (Object clinicalItem : clinicalItems) {
-		    ((DiagramsCollection) clinicalItem).setDiagramUrl(getFinalImageURL(((DiagramsCollection) clinicalItem).getDiagramUrl()));
+		((DiagramsCollection) clinicalItem).setDiagramUrl(getFinalImageURL(((DiagramsCollection) clinicalItem).getDiagramUrl()));
 	    }
 	}
 	Response<Object> response = new Response<Object>();
@@ -378,6 +425,7 @@ public class ClinicalNotesApi {
 
     @Path(value = PathProxy.ClinicalNotesUrls.EMAIL_CLINICAL_NOTES)
     @GET
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.EMAIL_CLINICAL_NOTES, notes = PathProxy.ClinicalNotesUrls.EMAIL_CLINICAL_NOTES)
     public Response<Boolean> emailClinicalNotes(@PathParam(value = "clinicalNotesId") String clinicalNotesId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @PathParam(value = "emailAddress") String emailAddress) {
@@ -405,11 +453,9 @@ public class ClinicalNotesApi {
 
     private String getFinalImageURL(String imageURL) {
 	if (imageURL != null) {
-	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-	    return finalImageURL + imageURL;
+	    return imagePath + imageURL;
 	} else
 	    return null;
-
     }
 
 }

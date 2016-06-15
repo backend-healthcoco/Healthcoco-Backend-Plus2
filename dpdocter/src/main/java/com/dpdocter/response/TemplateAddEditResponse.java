@@ -81,4 +81,5 @@ public class TemplateAddEditResponse extends GenericCollection {
 	return "TemplateAddEditResponse [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 		+ ", items=" + items + ", discarded=" + discarded + "]";
     }
+
 }

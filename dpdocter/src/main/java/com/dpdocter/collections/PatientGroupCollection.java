@@ -1,6 +1,7 @@
 package com.dpdocter.collections;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -9,11 +10,14 @@ public class PatientGroupCollection extends GenericCollection {
     @Id
     private String id;
 
-    @Field
+    @Indexed
     private String groupId;
 
-    @Field
+    @Indexed
     private String patientId;
+
+    @Field
+    private Boolean discarded = false;
 
     public String getId() {
 	return id;
@@ -39,4 +43,16 @@ public class PatientGroupCollection extends GenericCollection {
 	this.patientId = patientId;
     }
 
+    public Boolean getDiscarded() {
+	return discarded;
+    }
+
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
+
+    @Override
+    public String toString() {
+	return "PatientGroupCollection [id=" + id + ", groupId=" + groupId + ", patientId=" + patientId + ", discarded=" + discarded + "]";
+    }
 }

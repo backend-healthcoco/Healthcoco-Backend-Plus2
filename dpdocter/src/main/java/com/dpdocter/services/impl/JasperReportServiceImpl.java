@@ -1,12 +1,12 @@
 package com.dpdocter.services.impl;
 
 import java.io.File;
-import java.util.Date;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -16,14 +16,11 @@ import com.jaspersoft.mongodb.connection.MongoDbConnection;
 import ar.com.fdvs.dj.domain.constants.Page;
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRPropertiesUtil;
-import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.base.JRBaseStyle;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
@@ -33,37 +30,30 @@ public class JasperReportServiceImpl implements JasperReportService {
 
     private static Logger logger = Logger.getLogger(JasperReportServiceImpl.class.getName());
 
-    private static final String MONGO_HOST_URI = "mongodb://localhost:27017/dpdocter_db";
+    @Value(value = "${mongo.host.uri}")
+    private String MONGO_HOST_URI ;
 
-    @Value(value = "${JASPER_TEMPLATES_RESOURCE}")
-    private String REPORT_NAME;
-
+    @Value(value = "${jasper.templates.resource}")
+    private String JASPER_TEMPLATES_RESOURCE;
+       
     @SuppressWarnings("deprecation")
     @Override
-    public String createPDF(Map<String, Object> parameters, String fileName, String layout, String pageSize, String margins) {
+    @Transactional
+    public String createPDF(Map<String, Object> parameters, String fileName, String layout, String pageSize, String margins, String pdfName) {
 	try {
-	    long createdTime = new Date().getTime();
 	    MongoDbConnection mongoConnection = new MongoDbConnection(MONGO_HOST_URI, null, null);
 
 	    parameters.put("REPORT_CONNECTION", mongoConnection);
-	    parameters.put("SUBREPORT_DIR", REPORT_NAME);
+	    parameters.put("SUBREPORT_DIR", JASPER_TEMPLATES_RESOURCE);
 
 	    DefaultJasperReportsContext context = DefaultJasperReportsContext.getInstance();
 	    context.setValue("net.sf.jasperreports.extension.registry.factory.queryexecuters.mongodb",
 		    "com.jaspersoft.mongodb.query.MongoDbQueryExecuterExtensionsRegistryFactory");
-	    JRPropertiesUtil propertiesUtil = JRPropertiesUtil.getInstance(context);
-	    // propertiesUtil.setProperty(JasperDesign.PROPERTY_DEFAULT_FONT,
-	    // defaultPDFFont);
+	    // JRPropertiesUtil propertiesUtil =
+	    // JRPropertiesUtil.getInstance(context);
 
 	    JRProperties.setProperty("net.sf.jasperreports.query.executer.factory.MongoDbQuery", "com.jaspersoft.mongodb.query.MongoDbQueryExecuterFactory");
-	    JRStyle style = new JRBaseStyle();
-	    // style.setFontName("Arial");
-	    // style.setFontSize(15);
-	    // style.setForecolor(new Color(255, 0, 0));
-
-	    JasperDesign design = JRXmlLoader.load(new File(REPORT_NAME + fileName + ".jrxml"));
-
-	    design.setDefaultStyle(style);
+	    JasperDesign design = JRXmlLoader.load(new File(JASPER_TEMPLATES_RESOURCE + fileName + ".jrxml"));
 
 	    if (layout.equals("LANDSCAPE")) {
 		if (pageSize.equalsIgnoreCase("LETTER")) {
@@ -92,9 +82,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 	    JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters);
 
-	    JasperExportManager.exportReportToPdfFile(jasperPrint, REPORT_NAME + fileName + createdTime + ".pdf");
+	    JasperExportManager.exportReportToPdfFile(jasperPrint, JASPER_TEMPLATES_RESOURCE + pdfName + ".pdf");
 
-	    return REPORT_NAME + fileName + createdTime + ".pdf";
+	    return JASPER_TEMPLATES_RESOURCE + pdfName + ".pdf";
 
 	} catch (JRException e) {
 	    e.printStackTrace();

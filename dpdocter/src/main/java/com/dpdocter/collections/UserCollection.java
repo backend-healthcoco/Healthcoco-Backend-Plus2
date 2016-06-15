@@ -1,11 +1,15 @@
 package com.dpdocter.collections;
 
+import java.util.Arrays;
+import java.util.Date;
+
+import org.apache.commons.lang.WordUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.DOB;
+import com.dpdocter.enums.UserState;
 
 @Document(collection = "user_cl")
 public class UserCollection extends GenericCollection {
@@ -29,16 +33,16 @@ public class UserCollection extends GenericCollection {
     private String userName;
 
     @Field
-    private String password;
+    private char[] password;
 
     @Field
+    private char[] salt;
+
+    @Indexed
     private String emailAddress;
 
-    @Field
+    @Indexed
     private String mobileNumber;
-
-    @Field
-    private String gender;
 
     @Field
     private String imageUrl;
@@ -47,13 +51,7 @@ public class UserCollection extends GenericCollection {
     private String thumbnailUrl;
 
     @Field
-    private DOB dob;
-
-    @Field
     private Boolean isActive = false;
-
-    @Field
-    private Boolean isTempPassword = true;
 
     @Field
     private Boolean isVerified = false;
@@ -66,6 +64,18 @@ public class UserCollection extends GenericCollection {
 
     @Field
     private String colorCode;
+
+    @Field
+    private UserState userState = UserState.USERSTATECOMPLETE;
+
+    @Field
+    private Date lastSession;
+
+    @Field
+    private boolean signedUp = false;
+
+    @Field
+    private String userUId;
 
     public String getId() {
 	return id;
@@ -91,28 +101,21 @@ public class UserCollection extends GenericCollection {
 	this.userName = userName;
     }
 
-    public String getPassword() {
-	return password;
-    }
 
-    public void setPassword(String password) {
-	this.password = password;
-    }
+    public char[] getPassword() {
+		return password;
+	}
 
-    public String getMobileNumber() {
+	public void setPassword(char[] password) {
+		this.password = password;
+	}
+
+	public String getMobileNumber() {
 	return mobileNumber;
     }
 
     public void setMobileNumber(String mobileNumber) {
 	this.mobileNumber = mobileNumber;
-    }
-
-    public String getGender() {
-	return gender;
-    }
-
-    public void setGender(String gender) {
-	this.gender = gender;
     }
 
     public Boolean getIsActive() {
@@ -128,7 +131,10 @@ public class UserCollection extends GenericCollection {
     }
 
     public void setFirstName(String firstName) {
-	this.firstName = firstName;
+	if (firstName != null)
+	    this.firstName = WordUtils.capitalize(firstName.toLowerCase());
+	else
+	    this.firstName = firstName;
     }
 
     public String getLastName() {
@@ -155,14 +161,6 @@ public class UserCollection extends GenericCollection {
 	this.imageUrl = imageUrl;
     }
 
-    public DOB getDob() {
-	return dob;
-    }
-
-    public void setDob(DOB dob) {
-	this.dob = dob;
-    }
-
     public String getEmailAddress() {
 	return emailAddress;
     }
@@ -171,13 +169,13 @@ public class UserCollection extends GenericCollection {
 	this.emailAddress = emailAddress;
     }
 
-    public Boolean getIsTempPassword() {
-	return isTempPassword;
-    }
-
-    public void setIsTempPassword(Boolean isTempPassword) {
-	this.isTempPassword = isTempPassword;
-    }
+//    public Boolean getIsTempPassword() {
+//	return isTempPassword;
+//    }
+//
+//    public void setIsTempPassword(Boolean isTempPassword) {
+//	this.isTempPassword = isTempPassword;
+//    }
 
     public Boolean getIsVerified() {
 	return isVerified;
@@ -203,30 +201,71 @@ public class UserCollection extends GenericCollection {
 	this.colorCode = colorCode;
     }
 
-	public String getThumbnailUrl() {
-		return thumbnailUrl;
+    public String getThumbnailUrl() {
+	return thumbnailUrl;
+    }
+
+    public void setThumbnailUrl(String thumbnailUrl) {
+	this.thumbnailUrl = thumbnailUrl;
+    }
+
+    public String getCoverThumbnailImageUrl() {
+	return coverThumbnailImageUrl;
+    }
+
+    public void setCoverThumbnailImageUrl(String coverThumbnailImageUrl) {
+	this.coverThumbnailImageUrl = coverThumbnailImageUrl;
+    }
+
+    public UserState getUserState() {
+	return userState;
+    }
+
+    public void setUserState(UserState userState) {
+	this.userState = userState;
+    }
+
+    public Date getLastSession() {
+	return lastSession;
+    }
+
+    public void setLastSession(Date lastSession) {
+	this.lastSession = lastSession;
+    }
+
+    public boolean isSignedUp() {
+	return signedUp;
+    }
+
+    public void setSignedUp(boolean signedUp) {
+	this.signedUp = signedUp;
+    }
+
+	public char[] getSalt() {
+		return salt;
 	}
 
-	public void setThumbnailUrl(String thumbnailUrl) {
-		this.thumbnailUrl = thumbnailUrl;
+	public void setSalt(char[] salt) {
+		this.salt = salt;
 	}
 
-	public String getCoverThumbnailImageUrl() {
-		return coverThumbnailImageUrl;
+	public String getUserUId() {
+		return userUId;
 	}
 
-	public void setCoverThumbnailImageUrl(String coverThumbnailImageUrl) {
-		this.coverThumbnailImageUrl = coverThumbnailImageUrl;
+	public void setUserUId(String userUId) {
+		this.userUId = userUId;
 	}
 
 	@Override
 	public String toString() {
 		return "UserCollection [id=" + id + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName
-				+ ", middleName=" + middleName + ", userName=" + userName + ", password=" + password + ", emailAddress="
-				+ emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl=" + imageUrl
-				+ ", thumbnailUrl=" + thumbnailUrl + ", dob=" + dob + ", isActive=" + isActive + ", isTempPassword="
-				+ isTempPassword + ", isVerified=" + isVerified + ", coverImageUrl=" + coverImageUrl
-				+ ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", colorCode=" + colorCode + "]";
+				+ ", middleName=" + middleName + ", userName=" + userName + ", password=" + Arrays.toString(password)
+				+ ", salt=" + Arrays.toString(salt) + ", emailAddress=" + emailAddress + ", mobileNumber="
+				+ mobileNumber + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", isActive=" + isActive
+				+ ", isVerified=" + isVerified + ", coverImageUrl="
+				+ coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", colorCode=" + colorCode
+				+ ", userState=" + userState + ", lastSession=" + lastSession + ", signedUp=" + signedUp + ", userUId="
+				+ userUId + "]";
 	}
-	
 }

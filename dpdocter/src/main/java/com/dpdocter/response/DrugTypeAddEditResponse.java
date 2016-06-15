@@ -14,6 +14,8 @@ public class DrugTypeAddEditResponse extends GenericCollection {
 
     private String hospitalId;
 
+    private Boolean discarded = false;
+    
     public String getId() {
 	return id;
     }
@@ -54,10 +56,17 @@ public class DrugTypeAddEditResponse extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
-    @Override
-    public String toString() {
-	return "DrugTypeAddEditResponse [id=" + id + ", type=" + type + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ "]";
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	@Override
+	public String toString() {
+		return "DrugTypeAddEditResponse [id=" + id + ", type=" + type + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + "]";
+	}
 }

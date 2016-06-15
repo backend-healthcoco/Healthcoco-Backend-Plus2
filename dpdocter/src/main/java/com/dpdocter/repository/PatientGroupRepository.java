@@ -15,6 +15,7 @@ public interface PatientGroupRepository extends MongoRepository<PatientGroupColl
     @Query("{'groupId':?0,'patientId':?1}")
     PatientGroupCollection findByGroupIdAndPatientId(String groupId, String patientId);
 
+    @Query("{'patientId':?0}")
     List<PatientGroupCollection> findByPatientId(String patientId);
 
     @Query("{'patientId': {'$in': ?0}}")

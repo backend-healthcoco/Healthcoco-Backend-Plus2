@@ -3,20 +3,22 @@ package com.dpdocter.collections;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.WorkingSchedule;
+import com.dpdocter.enums.DoctorFacility;
 
 @Document(collection = "doctor_clinic_profile_cl")
 public class DoctorClinicProfileCollection extends GenericCollection {
     @Id
     private String id;
 
-    @Field
-    private String locationId;
+    @Indexed
+    private String userLocationId;
 
     @Field
     private String patientInitial = "P";
@@ -36,6 +38,18 @@ public class DoctorClinicProfileCollection extends GenericCollection {
     @Field
     private List<WorkingSchedule> workingSchedules;
 
+    @Field
+    private DoctorFacility facility = DoctorFacility.CALL;
+
+    @Field
+    private Integer noOfReviews = 0;
+
+    @Field
+    private Integer noOfRecommenations = 0;
+
+    @Field
+    private String timeZone = "IST";
+
     public String getId() {
 	return id;
     }
@@ -44,12 +58,12 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	this.id = id;
     }
 
-    public String getLocationId() {
-	return locationId;
+    public String getUserLocationId() {
+	return userLocationId;
     }
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
+    public void setUserLocationId(String userLocationId) {
+	this.userLocationId = userLocationId;
     }
 
     public String getPatientInitial() {
@@ -100,11 +114,45 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	this.workingSchedules = workingSchedules;
     }
 
-    @Override
-    public String toString() {
-	return "DoctorClinicProfileCollection [id=" + id + ", locationId=" + locationId + ", patientInitial=" + patientInitial + ", patientCounter="
-		+ patientCounter + ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee=" + consultationFee + ", appointmentSlot="
-		+ appointmentSlot + ", workingSchedules=" + workingSchedules + "]";
+    public DoctorFacility getFacility() {
+	return facility;
     }
 
+    public void setFacility(DoctorFacility facility) {
+	this.facility = facility;
+    }
+
+    public Integer getNoOfReviews() {
+	return noOfReviews;
+    }
+
+    public void setNoOfReviews(Integer noOfReviews) {
+	this.noOfReviews = noOfReviews;
+    }
+
+    public Integer getNoOfRecommenations() {
+	return noOfRecommenations;
+    }
+
+    public void setNoOfRecommenations(Integer noOfRecommenations) {
+	this.noOfRecommenations = noOfRecommenations;
+    }
+
+	public String getTimeZone() {
+		return timeZone;
+	}
+
+	public void setTimeZone(String timeZone) {
+		this.timeZone = timeZone;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorClinicProfileCollection [id=" + id + ", userLocationId=" + userLocationId + ", patientInitial="
+				+ patientInitial + ", patientCounter=" + patientCounter + ", appointmentBookingNumber="
+				+ appointmentBookingNumber + ", consultationFee=" + consultationFee + ", appointmentSlot="
+				+ appointmentSlot + ", workingSchedules=" + workingSchedules + ", facility=" + facility
+				+ ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", timeZone="
+				+ timeZone + "]";
+	}
 }

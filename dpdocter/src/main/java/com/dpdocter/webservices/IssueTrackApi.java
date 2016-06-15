@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
@@ -21,13 +22,17 @@ import com.dpdocter.beans.IssueTrack;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.services.IssueTrackService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Component
 @Path(PathProxy.ISSUE_TRACK_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(value = PathProxy.ISSUE_TRACK_BASE_URL, description = "Endpoint for issue track")
 public class IssueTrackApi {
 
     private static Logger logger = Logger.getLogger(IssueTrackApi.class.getName());
@@ -37,6 +42,7 @@ public class IssueTrackApi {
 
     @Path(value = PathProxy.IssueTrackUrls.RAISE_ISSUE)
     @POST
+    @ApiOperation(value = PathProxy.IssueTrackUrls.RAISE_ISSUE, notes = PathProxy.IssueTrackUrls.RAISE_ISSUE)
     public Response<IssueTrack> addEditIssue(IssueTrack request) {
 
 	if (request == null) {
@@ -52,27 +58,31 @@ public class IssueTrackApi {
 
     @Path(value = PathProxy.IssueTrackUrls.DELETE_ISSUE)
     @DELETE
-    public Response<Boolean> deleteIssue(@PathParam(value = "issueId") String issueId, @PathParam(value = "doctorId") String doctorId,
-	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId, @QueryParam("discarded") Boolean discarded) {
+    @ApiOperation(value = PathProxy.IssueTrackUrls.DELETE_ISSUE, notes = PathProxy.IssueTrackUrls.DELETE_ISSUE)
+    public Response<IssueTrack> deleteIssue(@PathParam(value = "issueId") String issueId, @PathParam(value = "doctorId") String doctorId,
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 
 	if (DPDoctorUtils.anyStringEmpty(issueId, doctorId, locationId, hospitalId)) {
 	    logger.warn("IssueId or DoctorId or LocationId or HospitalId cannot be null");
 	    throw new BusinessException(ServiceError.InvalidInput, "IssueId or DoctorId or LocationId or HospitalId cannot be null");
 	}
-	Boolean issueTrack = issueTrackService.deleteIssue(issueId, doctorId, locationId, hospitalId, discarded);
-	Response<Boolean> response = new Response<Boolean>();
+	IssueTrack issueTrack = issueTrackService.deleteIssue(issueId, doctorId, locationId, hospitalId, discarded);
+	Response<IssueTrack> response = new Response<IssueTrack>();
 	response.setData(issueTrack);
 
 	return response;
     }
 
     @GET
+    @ApiOperation(value = "GET_ISSUE", notes = "GET_ISSUE")
     public Response<IssueTrack> getIssues(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
-	    @QueryParam(value = "updatedTime") String updatedTime, @QueryParam(value = "discarded") Boolean discarded, @MatrixParam("scope") List<String> scope) {
+	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
+	    @MatrixParam("scope") List<String> scope) {
 
-	List<IssueTrack> issueTrack = issueTrackService.getIssues(page, size, doctorId, locationId, hospitalId, updatedTime, discarded != null ? discarded
-		: true, scope);
+	List<IssueTrack> issueTrack = issueTrackService.getIssues(page, size, doctorId, locationId, hospitalId, updatedTime,
+		discarded != null ? discarded : true, scope);
 	Response<IssueTrack> response = new Response<IssueTrack>();
 	response.setDataList(issueTrack);
 
@@ -81,6 +91,7 @@ public class IssueTrackApi {
 
     @Path(value = PathProxy.IssueTrackUrls.UPDATE_STATUS_DOCTOR_SPECIFIC)
     @GET
+    @ApiOperation(value = PathProxy.IssueTrackUrls.UPDATE_STATUS_DOCTOR_SPECIFIC, notes = PathProxy.IssueTrackUrls.UPDATE_STATUS_DOCTOR_SPECIFIC)
     public Response<Boolean> updateIssueStatus(@PathParam("issueId") String issueId, @PathParam("status") String status,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId) {
@@ -97,6 +108,7 @@ public class IssueTrackApi {
 
     @Path(value = PathProxy.IssueTrackUrls.UPDATE_STATUS_ADMIN)
     @GET
+    @ApiOperation(value = PathProxy.IssueTrackUrls.UPDATE_STATUS_ADMIN, notes = PathProxy.IssueTrackUrls.UPDATE_STATUS_ADMIN)
     public Response<Boolean> updateIssueStatus(@PathParam("issueId") String issueId, @PathParam("status") String status) {
 	if (DPDoctorUtils.anyStringEmpty(issueId, status)) {
 	    logger.warn("IssueId or Status cannot be null");

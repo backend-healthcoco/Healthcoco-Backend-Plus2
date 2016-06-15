@@ -3,15 +3,23 @@ package com.dpdocter.beans;
 import com.dpdocter.enums.DoctorExperienceUnit;
 
 public class DoctorExperience {
-    private float experience;
+    private String experience;
 
     private DoctorExperienceUnit period;
 
-    public float getExperience() {
+    public DoctorExperience() {
+	}
+
+	public DoctorExperience(String experience, DoctorExperienceUnit period) {
+		this.experience = experience;
+		this.period = period;
+	}
+
+	public String getExperience() {
 	return experience;
     }
 
-    public void setExperience(float experience) {
+    public void setExperience(String experience) {
 	this.experience = experience;
     }
 
@@ -25,7 +33,7 @@ public class DoctorExperience {
 
     @Override
     public String toString() {
-	return "DoctorExperience [experience=" + experience + ", period=" + period + "]";
+	return "{experience=" + experience + ", period=" + period + "}";
     }
 
 }

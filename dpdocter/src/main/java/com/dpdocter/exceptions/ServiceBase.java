@@ -51,6 +51,7 @@ public class ServiceBase {
     private static ClientConnectionManager cm = null;
 
     private static CookieStore cookieStore = null;
+
     static {
 	params = new BasicHttpParams();
 	HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
@@ -180,8 +181,8 @@ public class ServiceBase {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T processHttpResponse(HttpResponse response, Class<T> resultType) throws JsonParseException, JsonMappingException, IOException,
-	    InstantiationException, IllegalAccessException {
+    private <T> T processHttpResponse(HttpResponse response, Class<T> resultType)
+	    throws JsonParseException, JsonMappingException, IOException, InstantiationException, IllegalAccessException {
 	int statusCode = response.getStatusLine().getStatusCode();
 	if (statusCode == 200) {
 	    String jsonResp = EntityUtils.toString(response.getEntity(), "UTF-8");

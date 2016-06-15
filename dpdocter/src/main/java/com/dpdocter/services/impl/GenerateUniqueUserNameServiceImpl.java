@@ -4,6 +4,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.UserCollection;
@@ -25,6 +26,7 @@ public class GenerateUniqueUserNameServiceImpl implements GenerateUniqueUserName
     private UserRepository userRepository;
 
     @Override
+    @Transactional
     public String generate(User user) {
 	// UserCollection userCollection =
 	// userRepository.findByUserName(user.get)

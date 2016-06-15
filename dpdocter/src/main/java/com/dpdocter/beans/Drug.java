@@ -9,13 +9,27 @@ public class Drug {
 
     private String drugName;
 
-    private String description;
+    private String explanation;
 
     private Strength strength;
 
-    private List<String> genericNames;
+    private List<String> genericIds;
 
     private String drugCode;
+
+    private Boolean discarded;
+
+    private String companyName;
+
+    private String packSize;
+
+    private String MRP;
+
+    private String doctorId;
+
+    private String hospitalId;
+
+    private String locationId;
 
     public String getId() {
 	return id;
@@ -41,15 +55,15 @@ public class Drug {
 	this.drugName = drugName;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public Strength getStrength() {
+	public Strength getStrength() {
 	return strength;
     }
 
@@ -57,15 +71,15 @@ public class Drug {
 	this.strength = strength;
     }
 
-    public List<String> getGenericNames() {
-	return genericNames;
-    }
+    public List<String> getGenericIds() {
+		return genericIds;
+	}
 
-    public void setGenericNames(List<String> genericNames) {
-	this.genericNames = genericNames;
-    }
+	public void setGenericIds(List<String> genericIds) {
+		this.genericIds = genericIds;
+	}
 
-    public String getDrugCode() {
+	public String getDrugCode() {
 	return drugCode;
     }
 
@@ -73,10 +87,68 @@ public class Drug {
 	this.drugCode = drugCode;
     }
 
-    @Override
-    public String toString() {
-	return "Drug [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", description=" + description + ", strength=" + strength
-		+ ", genericNames=" + genericNames + ", drugCode=" + drugCode + "]";
+    public Boolean getDiscarded() {
+	return discarded;
     }
+
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
+
+    public String getCompanyName() {
+	return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+	this.companyName = companyName;
+    }
+
+    public String getPackSize() {
+	return packSize;
+    }
+
+    public void setPackSize(String packSize) {
+	this.packSize = packSize;
+    }
+
+    public String getMRP() {
+	return MRP;
+    }
+
+    public void setMRP(String mRP) {
+	MRP = mRP;
+    }
+
+    public String getDoctorId() {
+	return doctorId;
+    }
+
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
+    }
+
+    public String getHospitalId() {
+	return hospitalId;
+    }
+
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
+
+    public String getLocationId() {
+	return locationId;
+    }
+
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
+
+	@Override
+	public String toString() {
+		return "Drug [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation=" + explanation
+				+ ", strength=" + strength + ", genericIds=" + genericIds + ", drugCode=" + drugCode + ", discarded="
+				+ discarded + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP=" + MRP + ", doctorId="
+				+ doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + "]";
+	}
 
 }

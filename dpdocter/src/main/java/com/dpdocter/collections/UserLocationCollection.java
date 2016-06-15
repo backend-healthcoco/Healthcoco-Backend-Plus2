@@ -1,6 +1,7 @@
 package com.dpdocter.collections;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -9,11 +10,20 @@ public class UserLocationCollection extends GenericCollection {
     @Id
     private String id;
 
-    @Field
+    @Indexed
     private String userId;
 
-    @Field
+    @Indexed
     private String locationId;
+
+    @Field
+    private Boolean isActivate = false;
+
+    @Field
+    private Boolean isVerified = true;
+
+    @Field
+    private Boolean discarded = false;
 
     public UserLocationCollection(String userId, String locationId) {
 	this.userId = userId;
@@ -44,9 +54,33 @@ public class UserLocationCollection extends GenericCollection {
 	this.locationId = locationId;
     }
 
-    @Override
-    public String toString() {
-	return "UserLocationCollection [id=" + id + ", userId=" + userId + ", locationId=" + locationId + "]";
+    public Boolean getIsActivate() {
+	return isActivate;
     }
 
+    public void setIsActivate(Boolean isActivate) {
+	this.isActivate = isActivate;
+    }
+
+    public Boolean getIsVerified() {
+	return isVerified;
+    }
+
+    public void setIsVerified(Boolean isVerified) {
+	this.isVerified = isVerified;
+    }
+
+    public Boolean getDiscarded() {
+	return discarded;
+    }
+
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
+
+    @Override
+    public String toString() {
+	return "UserLocationCollection [id=" + id + ", userId=" + userId + ", locationId=" + locationId + ", isActivate=" + isActivate + ", isVerified="
+		+ isVerified + ", discarded=" + discarded + "]";
+    }
 }

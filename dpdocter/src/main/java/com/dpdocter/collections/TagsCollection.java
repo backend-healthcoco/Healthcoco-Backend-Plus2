@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "tags_cl")
-public class TagsCollection {
+public class TagsCollection extends GenericCollection{
     @Id
     private String id;
 
@@ -19,10 +19,13 @@ public class TagsCollection {
     private String hospitalId;
 
     @Field
-    private String description;
+    private String explanation;
 
     @Field
     private String doctorId;
+
+    @Field
+    private Boolean discarded = false;
 
     public String getId() {
 	return id;
@@ -40,15 +43,15 @@ public class TagsCollection {
 	this.tag = tag;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public String getLocationId() {
+	public String getLocationId() {
 	return locationId;
     }
 
@@ -72,10 +75,17 @@ public class TagsCollection {
 	this.doctorId = doctorId;
     }
 
-    @Override
-    public String toString() {
-	return "TagsCollection [id=" + id + ", tag=" + tag + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", description=" + description
-		+ ", doctorId=" + doctorId + "]";
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	@Override
+	public String toString() {
+		return "TagsCollection [id=" + id + ", tag=" + tag + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", explanation=" + explanation + ", doctorId=" + doctorId + ", discarded=" + discarded + "]";
+	}
 }

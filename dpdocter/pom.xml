@@ -10,9 +10,6 @@
 	<profiles>
 		<profile>
 			<id>local</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -33,6 +30,9 @@
 		</profile>
 		<profile>
 			<id>stagging</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -95,28 +95,33 @@
 			<artifactId>jersey-json</artifactId>
 			<version>1.8</version>
 		</dependency>
-		<!-- Spring 3 dependencies -->
+		<!-- Spring 4 dependencies -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
-			<version>3.2.12.RELEASE</version>
+			<version>4.1.6.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
-			<version>3.2.12.RELEASE</version>
+			<version>4.1.6.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
-			<version>3.2.12.RELEASE</version>
+			<version>4.1.6.RELEASE</version>
 		</dependency>
 		<!-- Various Application Context utilities, including EhCache, JavaMail, 
 			Quartz, and Freemarker integration Define this if you need any of these integrations -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context-support</artifactId>
-			<version>3.2.12.RELEASE</version>
+			<version>4.1.6.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<version>4.1.6.RELEASE</version>
 		</dependency>
 		<!-- Jersey + Spring -->
 		<dependency>
@@ -148,6 +153,10 @@
 					<groupId>org.springframework</groupId>
 					<artifactId>spring-asm</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-aop</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<!-- Servlet -->
@@ -172,19 +181,12 @@
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-mongodb</artifactId>
-			<version>1.5.0.RELEASE</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.mongodb</groupId>
-					<artifactId>mongo-java-driver</artifactId>
-				</exclusion>
-			</exclusions>
+			<version>1.6.1.RELEASE</version>
 		</dependency>
-		<!-- mongodb java driver -->
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongo-java-driver</artifactId>
-			<version>3.0.4</version>
+			<version>2.13.0</version>
 		</dependency>
 		<dependency>
 			<groupId>cglib</groupId>
@@ -195,13 +197,18 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.2.1</version>
+			<version>4.3.6</version>
 		</dependency>
 		<!-- APACHE-COMMONS_COLLECTIONS -->
 		<dependency>
 			<groupId>commons-collections</groupId>
 			<artifactId>commons-collections</artifactId>
-			<version>3.2.1</version>
+			<version>3.2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.3.2</version>
 		</dependency>
 		<!-- APACHE IO UTILITY -->
 		<dependency>
@@ -244,7 +251,85 @@
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-solr</artifactId>
 			<version>1.2.6.RELEASE</version>
-		</dependency>
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>solr-solrj</artifactId> -->
+<!-- 					<groupId>org.apache.solr</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!--   			<groupId>org.apache.solr</groupId> -->
+<!-- 			<artifactId>solr-core</artifactId> -->
+<!-- 			<version>6.0.0</version> -->
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jetty-security</artifactId> -->
+<!-- 					<groupId>org.eclipse.jetty</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jetty-servlet</artifactId> -->
+<!-- 					<groupId>org.eclipse.jetty</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jetty-http</artifactId> -->
+<!-- 					<groupId>org.eclipse.jetty</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jetty-deploy</artifactId> -->
+<!-- 					<groupId>org.eclipse.jetty</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jetty-jmx</artifactId> -->
+<!-- 					<groupId>org.eclipse.jetty</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jetty-xml</artifactId> -->
+<!-- 					<groupId>org.eclipse.jetty</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jetty-servlets</artifactId> -->
+<!-- 					<groupId>org.eclipse.jetty</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jetty-io</artifactId> -->
+<!-- 					<groupId>org.eclipse.jetty</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jetty-webapp</artifactId> -->
+<!-- 					<groupId>org.eclipse.jetty</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jetty-util</artifactId> -->
+<!-- 					<groupId>org.eclipse.jetty</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jetty-server</artifactId> -->
+<!-- 					<groupId>org.eclipse.jetty</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jetty-continuation</artifactId> -->
+<!-- 					<groupId>org.eclipse.jetty</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>jetty-rewrite</artifactId> -->
+<!-- 					<groupId>org.eclipse.jetty</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>javax.servlet-api</artifactId> -->
+<!-- 					<groupId>javax.servlet</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>solr-solrj</artifactId> -->
+<!-- 					<groupId>org.apache.solr</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!--     <groupId>org.apache.solr</groupId> -->
+<!--     <artifactId>solr-solrj</artifactId> -->
+<!--     <version>5.5.1</version> -->
+</dependency>
 		<!-- Log4j -->
 		<dependency>
 			<groupId>log4j</groupId>
@@ -268,11 +353,30 @@
 			<!-- <version>6.1.1</version> -->
 			<!-- <version>6.0.4</version> -->
 			<version>5.1.0</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>jackson-databind</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jackson-core</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jackson-annotations</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.jaspersoft</groupId>
 			<artifactId>com.jaspersoft.studio.data.mongodb</artifactId>
 			<version>2.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports-fonts</artifactId>
+			<version>4.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>ar.com.fdvs</groupId>
@@ -284,7 +388,7 @@
 					<groupId>jasperreports</groupId>
 				</exclusion>
 			</exclusions>
-		 </dependency>
+		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -306,31 +410,460 @@
 			<artifactId>velocity-tools</artifactId>
 			<version>2.0</version>
 		</dependency>
-	</dependencies>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15on</artifactId>
+			<version>1.50</version>
+		</dependency>
+		<!-- Google Maps Client Library -->
+		<dependency>
+			<groupId>com.google.maps</groupId>
+			<artifactId>google-maps-services</artifactId>
+			<version>0.1.9</version>
+		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk</artifactId>
+			<version>1.10.20</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>aws-java-sdk-simpledb</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-support</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-simpleworkflow</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-storagegateway</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-route53</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-importexport</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-glacier</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-sqs</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-sts</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>
+						aws-java-sdk-elasticloadbalancing
+					</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-redshift</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-iam</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>
+						aws-java-sdk-elastictranscoder
+					</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-elasticache</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>
+						aws-java-sdk-elasticbeanstalk
+					</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-datapipeline</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-rds</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-emr</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>
+						aws-java-sdk-cloudwatchmetrics
+					</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-logs</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-cloudfront</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-autoscaling</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-dynamodb</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-cloudtrail</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-directconnect</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-opsworks</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>
+						aws-java-sdk-cognitoidentity
+					</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-kms</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-swf-libraries</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-kinesis</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-sns</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-codepipeline</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-cloudsearch</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-cloudformation</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-cloudwatch</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-ec2</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-codedeploy</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-cognitosync</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-efs</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-cloudhsm</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-ecs</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-lambda</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-config</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-devicefarm</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-codecommit</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-directory</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-ssm</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>aws-java-sdk-workspaces</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>
+						aws-java-sdk-machinelearning
+					</artifactId>
+					<groupId>com.amazonaws</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jackson-databind</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+<dependency> 
+  <groupId>com.fasterxml.jackson.core</groupId>
+  <artifactId>jackson-databind</artifactId> 
+  <version>2.7.0</version> 
+</dependency>
+<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-annotations</artifactId>
+    <version>2.7.0</version>
+  </dependency>
+  <dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-core</artifactId>
+    <version>2.7.0</version>
+  </dependency>
+ <!-- Spring security Dependencies -->
+ <dependency>
+  <groupId>org.springframework.security</groupId>
+  <artifactId>spring-security-core</artifactId>
+  <version>3.2.5.RELEASE</version>
+  <exclusions>
+   <exclusion>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-beans</artifactId>
+   </exclusion>
+   <exclusion>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-core</artifactId>
+   </exclusion>
+   <exclusion>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-context</artifactId>
+   </exclusion>
+   <exclusion>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-aop</artifactId>
+   </exclusion>
+   <exclusion>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-expression</artifactId>
+   </exclusion>
+  </exclusions>
+ </dependency>
+  <dependency>
+  <groupId>org.springframework.security</groupId>
+  <artifactId>spring-security-web</artifactId>
+  <version>3.2.5.RELEASE</version>
+  <exclusions>
+   <exclusion>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-beans</artifactId>
+   </exclusion>
+   <exclusion>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-core</artifactId>
+   </exclusion>
+   <exclusion>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-context</artifactId>
+   </exclusion>
+   <exclusion>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-aop</artifactId>
+   </exclusion>
+   <exclusion>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-web</artifactId>
+   </exclusion>
+   <exclusion>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-core</artifactId>
+   </exclusion>
+   <exclusion>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-expression</artifactId>
+   </exclusion>
+  </exclusions>
+ </dependency>
+ <dependency>
+  <groupId>org.springframework.security</groupId>
+  <artifactId>spring-security-config</artifactId>
+  <version>3.2.5.RELEASE</version>
+  <exclusions>
+   <exclusion>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-beans</artifactId>
+   </exclusion>
+   <exclusion>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-core</artifactId>
+   </exclusion>
+   <exclusion>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-context</artifactId>
+   </exclusion>
+   <exclusion>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-aop</artifactId>
+   </exclusion>
+   <exclusion>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-core</artifactId>
+   </exclusion>
+  </exclusions>
+ </dependency>
+ <!-- for OAuth 2.0 -->
+<!--  <dependency> -->
+<!--   <groupId>org.springframework.security.oauth</groupId> -->
+<!--   <artifactId>spring-security-oauth2</artifactId> -->
+<!--   <version>2.0.7.RELEASE</version> -->
+<!--   <exclusions> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework</groupId> -->
+<!--     <artifactId>spring-beans</artifactId> -->
+<!--    </exclusion> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework</groupId> -->
+<!--     <artifactId>spring-core</artifactId> -->
+<!--    </exclusion> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework</groupId> -->
+<!--     <artifactId>spring-context</artifactId> -->
+<!--    </exclusion> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework.security</groupId> -->
+<!--     <artifactId>spring-security-core</artifactId> -->
+<!--    </exclusion> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework.security</groupId> -->
+<!--     <artifactId>spring-security-config</artifactId> -->
+<!--    </exclusion> -->
+<!--    <exclusion> -->
+<!--     <groupId>org.springframework.security</groupId> -->
+<!--     <artifactId>spring-security-web</artifactId> -->
+<!--    </exclusion> -->
+<!--   </exclusions> -->
+<!--  </dependency> -->
+<!-- For android GCM push notification services -->
+        <dependency>
+            <groupId>com.ganyo</groupId>
+            <artifactId>gcm-server</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+
+<!-- For IOS push notification services -->
+        <dependency>
+            <groupId>com.notnoop.apns</groupId>
+            <artifactId>apns</artifactId>
+            <version>0.2.3</version>
+            <exclusions>
+            	<exclusion>
+            		<artifactId>jackson-databind</artifactId>
+            		<groupId>com.fasterxml.jackson.core</groupId>
+            	</exclusion>
+            </exclusions>
+        </dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>18.0</version>
+		</dependency>
+		<dependency>
+	    	<groupId>io.swagger</groupId>
+	    	<artifactId>swagger-jaxrs</artifactId>
+	    	<version>1.5.0</version>
+	    <exclusions>
+	    	<exclusion>
+	    		<artifactId>jackson-databind</artifactId>
+	    		<groupId>com.fasterxml.jackson.core</groupId>
+	    	</exclusion>
+	    	<exclusion>
+	    		<artifactId>jackson-core</artifactId>
+	    		<groupId>com.fasterxml.jackson.core</groupId>
+	    	</exclusion>
+	    	<exclusion>
+	    		<artifactId>jackson-annotations</artifactId>
+	    		<groupId>com.fasterxml.jackson.core</groupId>
+	    	</exclusion>
+        </exclusions>
+		</dependency>
+		<dependency>
+		    <groupId>io.swagger</groupId>
+		    <artifactId>swagger-core</artifactId>
+		    <version>1.5.0</version>
+		    <exclusions>
+		    	<exclusion>
+		    		<artifactId>jackson-databind</artifactId>
+		    		<groupId>com.fasterxml.jackson.core</groupId>
+		    	</exclusion>
+		    	<exclusion>
+		    		<artifactId>jackson-core</artifactId>
+		    		<groupId>com.fasterxml.jackson.core</groupId>
+		    	</exclusion>
+		    	<exclusion>
+		    		<artifactId>jackson-annotations</artifactId>
+		    		<groupId>com.fasterxml.jackson.core</groupId>
+		    	</exclusion>
+		    </exclusions>
+		</dependency>
+		<dependency>
+		    <groupId>io.swagger</groupId>
+		    <artifactId>swagger-annotations</artifactId>
+		    <version>1.5.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>io.swagger</groupId>
+		    <artifactId>swagger-models</artifactId>
+		    <version>1.5.0</version>
+		    <exclusions>
+		    	<exclusion>
+		    		<artifactId>jackson-annotations</artifactId>
+		    		<groupId>com.fasterxml.jackson.core</groupId>
+		    	</exclusion>
+		    </exclusions>
+		</dependency>
+		<dependency>
+		    <groupId>org.reflections</groupId>
+		    <artifactId>reflections</artifactId>
+		    <version>0.9.10</version>
+		</dependency>
+</dependencies>
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>com.qmino</groupId>
-				<artifactId>miredot-plugin</artifactId>
-				<version>1.6.0</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>restdoc</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<licence>UHJvamVjdHxkcGRvY3Rlci5kcGRvY3RlcnwyMDE2LTA1LTE5fHRydWUjTUMwQ0ZRQ0REYVhWU0dyNlJMSFhWSnE5TGtlN1NoM3dZZ0lVVjNIQjRDR0hBTVBJR2pWaW1TWlE4ZVE0WnBZPQ==</licence>
-					<output>
-						<title>DP Doctor API</title>
-						<html>
-							<baseUrl>http://api.dpdoctor.co/</baseUrl>
-						</html>
-					</output>
-				</configuration>
-			</plugin>
-			<plugin>
+		    <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
@@ -341,15 +874,8 @@
 			</plugin>
 		</plugins>
 	</build>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>miredot</id>
-			<name>MireDot Releases</name>
-			<url>http://nexus.qmino.com/content/repositories/miredot</url>
-		</pluginRepository>
-	</pluginRepositories>
 	<repositories>
-		<repository>
+        <repository>
 			<id>spring-milestone</id>
 			<name>Spring Milestone Maven Repository</name>
 			<url>http://repo.springsource.org/libs-milestone</url>

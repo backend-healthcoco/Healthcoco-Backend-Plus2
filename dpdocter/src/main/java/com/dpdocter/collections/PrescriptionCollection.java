@@ -2,21 +2,30 @@ package com.dpdocter.collections;
 
 import java.util.List;
 
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.PrescriptionItem;
+import com.dpdocter.beans.TestAndRecordData;
 
 @Document(collection = "prescription_cl")
+@CompoundIndexes({
+    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
+})
 public class PrescriptionCollection extends GenericCollection {
     @Field
     private String id;
 
     @Field
-    private String name;
+    private String uniqueEmrId;
 
     @Field
+    private String name;
+
+    @Indexed
     private String doctorId;
 
     @Field
@@ -32,19 +41,22 @@ public class PrescriptionCollection extends GenericCollection {
     private List<PrescriptionItem> items;
 
     @Field
-    private List<LabTest> labTests;
+    private List<TestAndRecordData> diagnosticTests;
 
-    @Field
+    @Indexed
     private String patientId;
 
     @Field
     private String prescriptionCode;
 
     @Field
-    private boolean inHistory = false;
+    private Boolean inHistory = false;
 
     @Field
     private String advice;
+
+    @Field
+    private Boolean isFeedbackAvailable = false;
 
     public String getId() {
 	return id;
@@ -118,36 +130,52 @@ public class PrescriptionCollection extends GenericCollection {
 	this.prescriptionCode = prescriptionCode;
     }
 
-    public boolean isInHistory() {
+    public String getAdvice() {
+	return advice;
+    }
+
+    public void setAdvice(String advice) {
+	this.advice = advice;
+    }
+
+    public Boolean getInHistory() {
 	return inHistory;
     }
 
-    public void setInHistory(boolean inHistory) {
+    public void setInHistory(Boolean inHistory) {
 	this.inHistory = inHistory;
     }
 
-	public List<LabTest> getLabTests() {
-		return labTests;
+    public Boolean getIsFeedbackAvailable() {
+	return isFeedbackAvailable;
+    }
+
+    public void setIsFeedbackAvailable(Boolean isFeedbackAvailable) {
+	this.isFeedbackAvailable = isFeedbackAvailable;
+    }
+
+	public String getUniqueEmrId() {
+		return uniqueEmrId;
 	}
 
-	public void setLabTests(List<LabTest> labTests) {
-		this.labTests = labTests;
+	public void setUniqueEmrId(String uniqueEmrId) {
+		this.uniqueEmrId = uniqueEmrId;
 	}
 
-	public String getAdvice() {
-		return advice;
+	public List<TestAndRecordData> getDiagnosticTests() {
+		return diagnosticTests;
 	}
 
-	public void setAdvice(String advice) {
-		this.advice = advice;
+	public void setDiagnosticTests(List<TestAndRecordData> diagnosticTests) {
+		this.diagnosticTests = diagnosticTests;
 	}
 
 	@Override
 	public String toString() {
-		return "PrescriptionCollection [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", items=" + items
-				+ ", labTests=" + labTests + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode
-				+ ", inHistory=" + inHistory + ", advice=" + advice + "]";
+		return "PrescriptionCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", name=" + name + ", doctorId="
+				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ ", items=" + items + ", diagnosticTests=" + diagnosticTests + ", patientId=" + patientId
+				+ ", prescriptionCode=" + prescriptionCode + ", inHistory=" + inHistory + ", advice=" + advice
+				+ ", isFeedbackAvailable=" + isFeedbackAvailable + "]";
 	}
-
 }

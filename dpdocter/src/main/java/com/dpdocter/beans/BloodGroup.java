@@ -1,12 +1,14 @@
 package com.dpdocter.beans;
 
-public class BloodGroup {
+import com.dpdocter.collections.GenericCollection;
+
+public class BloodGroup extends GenericCollection {
 
     private String id;
 
     private String bloodGroup;
 
-    private String description;
+    private String explanation;
 
     public String getId() {
 	return id;
@@ -24,17 +26,16 @@ public class BloodGroup {
 	this.bloodGroup = bloodGroup;
     }
 
-    public String getDescription() {
-	return description;
-    }
+	public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    @Override
-    public String toString() {
-	return "BloodGroup [id=" + id + ", bloodGroup=" + bloodGroup + ", description=" + description + "]";
-    }
-
+	@Override
+	public String toString() {
+		return "BloodGroup [id=" + id + ", bloodGroup=" + bloodGroup + ", explanation=" + explanation + "]";
+	}
 }

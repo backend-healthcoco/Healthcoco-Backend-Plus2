@@ -1,28 +1,29 @@
 package com.dpdocter.beans;
 
 public class WorkingHours {
-    private String from;
+    private Integer fromTime;
 
-    private String to;
+    private Integer toTime;
 
-    public String getFrom() {
-	return from;
-    }
+	public Integer getFromTime() {
+		return fromTime;
+	}
 
-    public void setFrom(String from) {
-	this.from = from;
-    }
+	public void setFromTime(Integer fromTime) {
+		this.fromTime = fromTime;
+	}
 
-    public String getTo() {
-	return to;
-    }
+	public Integer getToTime() {
+		return toTime;
+	}
 
-    public void setTo(String to) {
-	this.to = to;
-    }
+	public void setToTime(Integer toTime) {
+		this.toTime = toTime;
+	}
 
-    @Override
-    public String toString() {
-	return "WorkingHours [from=" + from + ", to=" + to + "]";
-    }
+	@Override
+	public String toString() {
+		return "WorkingHours [fromTime=" + fromTime + ", toTime=" + toTime + "]";
+	}
+
 }

@@ -1,0 +1,37 @@
+package com.dpdocter.solr.services;
+
+import java.util.List;
+
+import com.dpdocter.beans.BloodGroup;
+import com.dpdocter.beans.EducationInstitute;
+import com.dpdocter.beans.EducationQualification;
+import com.dpdocter.beans.MedicalCouncil;
+import com.dpdocter.beans.Profession;
+import com.dpdocter.beans.ProfessionalMembership;
+import com.dpdocter.beans.Reference;
+import com.dpdocter.beans.Speciality;
+import com.dpdocter.response.DiseaseListResponse;
+
+public interface SolrMasterService {
+
+    List<Reference> searchReference(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+	    Boolean discarded, String searchTerm);
+
+    List<DiseaseListResponse> searchDisease(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+	    Boolean discarded, String searchTerm);
+
+    List<BloodGroup> searchBloodGroup(String searchTerm, String updatedTime, int page, int size);
+
+    List<Profession> searchProfession(String searchTerm, String updatedTime, int page, int size);
+
+    List<ProfessionalMembership> searchProfessionalMembership(String searchTerm, String updatedTime, int page, int size);
+
+    List<EducationInstitute> searchEducationInstitute(String searchTerm, String updatedTime, int page, int size);
+
+    List<EducationQualification> searchEducationQualification(String searchTerm, String updatedTime, int page, int size);
+
+    List<MedicalCouncil> searchMedicalCouncil(String searchTerm, String updatedTime, int page, int size);
+
+    List<Speciality> searchSpeciality(String searchTerm, String updatedTime, int page, int size);
+
+}

@@ -20,11 +20,9 @@ public class ClinicAddress {
 
     private String postalCode;
 
-    private String mobileNumber;
+    private String clinicNumber;
 
-    private String locationPhoneNumber;
-
-    private List<String> alternateNumbers;
+    private List<String> alternateClinicNumbers;
 
     private String landmarkDetails;
 
@@ -96,31 +94,24 @@ public class ClinicAddress {
 	this.postalCode = postalCode;
     }
 
-    public String getMobileNumber() {
-	return mobileNumber;
-    }
 
-    public void setMobileNumber(String mobileNumber) {
-	this.mobileNumber = mobileNumber;
-    }
+    public String getClinicNumber() {
+		return clinicNumber;
+	}
 
-    public String getLocationPhoneNumber() {
-	return locationPhoneNumber;
-    }
+	public void setClinicNumber(String clinicNumber) {
+		this.clinicNumber = clinicNumber;
+	}
 
-    public void setLocationPhoneNumber(String locationPhoneNumber) {
-	this.locationPhoneNumber = locationPhoneNumber;
-    }
+	public List<String> getAlternateClinicNumbers() {
+		return alternateClinicNumbers;
+	}
 
-    public List<String> getAlternateNumbers() {
-	return alternateNumbers;
-    }
+	public void setAlternateClinicNumbers(List<String> alternateClinicNumbers) {
+		this.alternateClinicNumbers = alternateClinicNumbers;
+	}
 
-    public void setAlternateNumbers(List<String> alternateNumbers) {
-	this.alternateNumbers = alternateNumbers;
-    }
-
-    public String getLandmarkDetails() {
+	public String getLandmarkDetails() {
 	return landmarkDetails;
     }
 
@@ -144,11 +135,13 @@ public class ClinicAddress {
 	this.longitude = longitude;
     }
 
-    @Override
-    public String toString() {
-	return "ClinicAddress [id=" + id + ", locationName=" + locationName + ", streetAddress=" + streetAddress + ", locality=" + locality + ", city=" + city
-		+ ", state=" + state + ", country=" + country + ", postalCode=" + postalCode + ", mobileNumber=" + mobileNumber + ", locationPhoneNumber="
-		+ locationPhoneNumber + ", alternateNumbers=" + alternateNumbers + ", landmarkDetails=" + landmarkDetails + ", latitude=" + latitude
-		+ ", longitude=" + longitude + "]";
-    }
+	@Override
+	public String toString() {
+		return "ClinicAddress [id=" + id + ", locationName=" + locationName + ", streetAddress=" + streetAddress
+				+ ", locality=" + locality + ", city=" + city + ", state=" + state + ", country=" + country
+				+ ", postalCode=" + postalCode + ", clinicNumber=" + clinicNumber + ", alternateClinicNumbers="
+				+ alternateClinicNumbers + ", landmarkDetails=" + landmarkDetails + ", latitude=" + latitude
+				+ ", longitude=" + longitude + "]";
+	}
+
 }

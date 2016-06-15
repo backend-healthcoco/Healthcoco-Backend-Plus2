@@ -1,15 +1,24 @@
 package com.dpdocter.services;
 
+import java.util.List;
+
+import javax.ws.rs.core.UriInfo;
+
 import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.User;
+import com.dpdocter.request.DoctorSignupHandheldContinueRequest;
+import com.dpdocter.request.DoctorSignupHandheldRequest;
 import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.PatientProfilePicChangeRequest;
 import com.dpdocter.request.PatientSignUpRequest;
+import com.dpdocter.request.PatientSignupRequestMobile;
+import com.dpdocter.response.PateientSignUpCheckResponse;
 
 public interface SignUpService {
-    String activateUser(String tokenId);
 
-    DoctorSignUp doctorSignUp(DoctorSignupRequest request);
+    Boolean activateUser(String tokenId, Boolean activate);
+
+    DoctorSignUp doctorSignUp(DoctorSignupRequest request, UriInfo uriInfo);
 
     User patientSignUp(PatientSignUpRequest request);
 
@@ -20,4 +29,29 @@ public interface SignUpService {
     Boolean checkEmailAddressExist(String email);
 
     User patientProfilePicChange(PatientProfilePicChangeRequest request);
+
+    DoctorSignUp doctorHandheld(DoctorSignupHandheldRequest request);
+
+    DoctorSignUp doctorHandheldContinue(DoctorSignupHandheldContinueRequest request, UriInfo uriInfo);
+
+    String verifyUser(String tokenId);
+
+    PateientSignUpCheckResponse checkMobileNumberSignedUp(String mobileNumber);
+
+    // User patientSignUp(PatientSignupRequestMobile request);
+    User signupNewPatient(PatientSignupRequestMobile request);
+
+    List<User> signupAlreadyRegisteredPatient(PatientSignupRequestMobile request);
+
+    boolean verifyPatientBasedOn80PercentMatchOfName(String name, String mobileNumber);
+
+    boolean unlockPatientBasedOn80PercentMatch(String name, String mobileNumber);
+
+    boolean checkMobileNumberExistForPatient(String mobileNumber);
+
+    User adminSignUp(PatientSignUpRequest request);
+
+	Boolean resendVerificationEmail(String emailaddress, UriInfo uriInfo);
+
+	Boolean activateLocation(String locationId, Boolean activate);
 }

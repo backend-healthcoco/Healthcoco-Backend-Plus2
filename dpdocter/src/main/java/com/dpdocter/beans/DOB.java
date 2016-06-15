@@ -11,13 +11,13 @@ public class DOB {
 
     private int years;
 
-    private int age;
+    private Age age;
 
     public DOB() {
 	super();
     }
 
-    public DOB(int days, int months, int years, int age) {
+    public DOB(int days, int months, int years, Age age) {
 	super();
 	this.days = days;
 	this.months = months;
@@ -30,6 +30,7 @@ public class DOB {
 	this.days = days;
 	this.months = months;
 	this.years = years;
+	this.age = getAge();
     }
 
     public int getDays() {
@@ -56,17 +57,20 @@ public class DOB {
 	this.years = years;
     }
 
-    public int getAge() {
-	if (this.age == 0) {
+    public Age getAge() {
+	if (this.age == null && this.years !=0 && this.months !=0 && this.days !=0) {
 	    LocalDate birthdate = new LocalDate(this.years, this.months, this.days);
 	    LocalDate now = new LocalDate();
 	    Period period = new Period(birthdate, now, PeriodType.yearMonthDay());
-	    this.age = period.getYears();
+	    this.age = new Age();
+	    this.age.setYears(period.getYears());
+	    this.age.setMonths(period.getMonths());
+	    this.age.setDays(period.getDays());
 	}
 	return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(Age age) {
 	this.age = age;
     }
 

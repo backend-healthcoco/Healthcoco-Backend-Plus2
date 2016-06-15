@@ -13,7 +13,7 @@ public class ReferencesCollection extends GenericCollection {
     private String reference;
 
     @Field
-    private String description;
+    private String explanation;
 
     @Field
     private String doctorId;
@@ -43,15 +43,15 @@ public class ReferencesCollection extends GenericCollection {
 	this.reference = reference;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public String getDoctorId() {
+	public String getDoctorId() {
 	return doctorId;
     }
 
@@ -85,7 +85,7 @@ public class ReferencesCollection extends GenericCollection {
 
     @Override
     public String toString() {
-	return "ReferencesCollection [id=" + id + ", reference=" + reference + ", description=" + description + ", doctorId=" + doctorId + ", locationId="
+	return "ReferencesCollection [id=" + id + ", reference=" + reference + ", explanation=" + explanation + ", doctorId=" + doctorId + ", locationId="
 		+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + "]";
     }
 

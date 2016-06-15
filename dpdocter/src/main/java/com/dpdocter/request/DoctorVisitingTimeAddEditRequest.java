@@ -48,7 +48,7 @@ public class DoctorVisitingTimeAddEditRequest {
 
     @Override
     public String toString() {
-	return "DoctorVisitingTimeAddEditRequest [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", workingSchedules="
-		+ workingSchedules + "]";
+	return "DoctorVisitingTimeAddEditRequest [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", workingSchedules=" + workingSchedules
+		+ "]";
     }
 }

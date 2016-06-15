@@ -1,9 +1,21 @@
 package common.util.web;
 
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.SecureRandom;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Random;
+import java.util.TimeZone;
+
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang3.StringUtils;
+import org.bouncycastle.jcajce.provider.digest.SHA3.DigestSHA3;
 import org.springframework.beans.factory.annotation.Value;
 
 public class DPDoctorUtils {
@@ -11,8 +23,8 @@ public class DPDoctorUtils {
     @Context
     private UriInfo uriInfo;
 
-    @Value(value = "${IMAGE_URL_ROOT_PATH}")
-    private String imageUrlRootPath;
+    @Value(value = "${OTP_VALIDATION_TIME_DIFFERENCE}")
+    private String otpTimeDifference;
 
     public static boolean anyStringEmpty(String... values) {
 	boolean result = false;
@@ -44,15 +56,70 @@ public class DPDoctorUtils {
 	return result;
     }
 
-    public static String getFinalImageURL(String imageURL) {
-	DPDoctorUtils dpDoctorUtils = DPDoctorUtils.getInstance();
-	UriInfo uriInfo = dpDoctorUtils.uriInfo;
-	String imageUrlRootPath = dpDoctorUtils.imageUrlRootPath;
-	String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-	return finalImageURL;
+    public static String formatAsSolrDate(Date date) {
+	DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+	df.setTimeZone(TimeZone.getTimeZone("UTC"));
+	String solrDate = df.format(date);
+	return solrDate;
     }
 
     private static DPDoctorUtils getInstance() {
 	return new DPDoctorUtils();
     }
+
+    public static char[] getSHA3SecurePassword(char[] password) throws UnsupportedEncodingException {
+	DigestSHA3 md = new DigestSHA3(256);
+	byte[] buffer = new byte[password.length];
+	for (int i = 0; i < buffer.length; i++) {
+		 buffer[i] = (byte) password[i];
+	 }
+	md.update(buffer);
+	byte[] digest = md.digest();
+
+	BigInteger bigInt = new BigInteger(1, digest);
+	return bigInt.toString(16).toCharArray();
+    }
+
+    public static String generateRandomId() {
+	char[] chars = "ABSDEFGHIJKLMNOPQRSTUVWXYZ1234567890".toCharArray();
+	Random r = new Random(System.currentTimeMillis());
+	char[] id = new char[8];
+	for (int i = 0; i < 8; i++) {
+	    id[i] = chars[r.nextInt(chars.length)];
+	}
+	return new String(id);
+    }
+
+    public static double distance(double lat1, double lon1, double lat2, double lon2, String string) {
+	double theta = lon1 - lon2;
+	double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
+	dist = Math.acos(dist);
+	dist = rad2deg(dist);
+	dist = dist * 60 * 1.1515;
+	if (string == "K") {
+	    dist = dist * 1.609344;
+	} else if (string == "N") {
+	    dist = dist * 0.8684;
+	}
+	return (dist);
+    }
+
+    public static double deg2rad(double deg) {
+	return (deg * Math.PI / 180.0);
+    }
+
+    public static double rad2deg(double rad) {
+	return (rad * 180.0 / Math.PI);
+    }
+
+    public static char[] generateSalt() throws NoSuchAlgorithmException, NoSuchProviderException {
+    	SecureRandom sr = SecureRandom.getInstance("SHA1PRNG", "SUN");
+        byte[] salt = new byte[16];
+        sr.nextBytes(salt);
+        char[] result = new char[salt.length];
+        for (int i = 0; i < result.length; i++) {
+        	result[i] = (char) salt[i];
+   	 }
+        return result;
+   }
 }

@@ -1,14 +1,23 @@
 package com.dpdocter.collections;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "records_cl")
+@CompoundIndexes({
+    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
+})
 public class RecordsCollection extends GenericCollection {
 
     @Id
     private String id;
+
+    @Field
+    private String uniqueEmrId;
 
     @Field
     private String recordsUrl;
@@ -17,18 +26,18 @@ public class RecordsCollection extends GenericCollection {
     private String recordsPath;
 
     @Field
-    private String recordsLable;
+    private String recordsLabel;
 
     @Field
     private String recordsType;
 
     @Field
-    private String description;
+    private String explanation;
 
-    @Field
+    @Indexed
     private String patientId;
 
-    @Field
+    @Indexed
     private String doctorId;
 
     @Field
@@ -41,7 +50,28 @@ public class RecordsCollection extends GenericCollection {
     private Boolean discarded = false;
 
     @Field
-    private boolean inHistory = false;
+    private Boolean inHistory = false;
+
+    @Field
+    private String uploadedByLocation;
+
+    @Field
+    private String prescriptionId;
+
+    @Field
+    private String prescribedByDoctorId;
+
+    @Field
+    private String prescribedByLocationId;
+
+    @Field
+    private String prescribedByHospitalId;
+
+    @Field
+    private String diagnosticTestId;
+
+    @Field
+    private Boolean isFeedbackAvailable = false;
 
     public String getId() {
 	return id;
@@ -67,15 +97,15 @@ public class RecordsCollection extends GenericCollection {
 	this.recordsPath = recordsPath;
     }
 
-    public String getRecordsLable() {
-	return recordsLable;
-    }
+    public String getRecordsLabel() {
+		return recordsLabel;
+	}
 
-    public void setRecordsLable(String recordsLable) {
-	this.recordsLable = recordsLable;
-    }
+	public void setRecordsLabel(String recordsLabel) {
+		this.recordsLabel = recordsLabel;
+	}
 
-    public String getRecordsType() {
+	public String getRecordsType() {
 	return recordsType;
     }
 
@@ -83,15 +113,15 @@ public class RecordsCollection extends GenericCollection {
 	this.recordsType = recordsType;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public String getPatientId() {
+	public String getPatientId() {
 	return patientId;
     }
 
@@ -131,18 +161,88 @@ public class RecordsCollection extends GenericCollection {
 	this.discarded = discarded;
     }
 
-    public boolean isInHistory() {
+    public String getUploadedByLocation() {
+	return uploadedByLocation;
+    }
+
+    public void setUploadedByLocation(String uploadedByLocation) {
+	this.uploadedByLocation = uploadedByLocation;
+    }
+
+    public String getUniqueEmrId() {
+		return uniqueEmrId;
+	}
+
+	public void setUniqueEmrId(String uniqueEmrId) {
+		this.uniqueEmrId = uniqueEmrId;
+	}
+
+	public String getPrescriptionId() {
+	return prescriptionId;
+    }
+
+    public void setPrescriptionId(String prescriptionId) {
+	this.prescriptionId = prescriptionId;
+    }
+
+    public String getPrescribedByDoctorId() {
+	return prescribedByDoctorId;
+    }
+
+    public void setPrescribedByDoctorId(String prescribedByDoctorId) {
+	this.prescribedByDoctorId = prescribedByDoctorId;
+    }
+
+    public String getPrescribedByLocationId() {
+	return prescribedByLocationId;
+    }
+
+    public void setPrescribedByLocationId(String prescribedByLocationId) {
+	this.prescribedByLocationId = prescribedByLocationId;
+    }
+
+    public String getPrescribedByHospitalId() {
+	return prescribedByHospitalId;
+    }
+
+    public void setPrescribedByHospitalId(String prescribedByHospitalId) {
+	this.prescribedByHospitalId = prescribedByHospitalId;
+    }
+
+    public String getDiagnosticTestId() {
+		return diagnosticTestId;
+	}
+
+	public void setDiagnosticTestId(String diagnosticTestId) {
+		this.diagnosticTestId = diagnosticTestId;
+	}
+
+	public Boolean getInHistory() {
 	return inHistory;
     }
 
-    public void setInHistory(boolean inHistory) {
+    public void setInHistory(Boolean inHistory) {
 	this.inHistory = inHistory;
     }
 
-    @Override
-    public String toString() {
-	return "RecordsCollection [id=" + id + ", recordsUrl=" + recordsUrl + ", recordsPath=" + recordsPath + ", recordsLable=" + recordsLable
-		+ ", recordsType=" + recordsType + ", description=" + description + ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId="
-		+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", inHistory=" + inHistory + "]";
+    public Boolean getIsFeedbackAvailable() {
+	return isFeedbackAvailable;
     }
+
+    public void setIsFeedbackAvailable(Boolean isFeedbackAvailable) {
+	this.isFeedbackAvailable = isFeedbackAvailable;
+    }
+
+	@Override
+	public String toString() {
+		return "RecordsCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", recordsUrl=" + recordsUrl
+				+ ", recordsPath=" + recordsPath + ", recordsLabel=" + recordsLabel + ", recordsType=" + recordsType
+				+ ", explanation=" + explanation + ", patientId=" + patientId + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ ", inHistory=" + inHistory + ", uploadedByLocation=" + uploadedByLocation + ", prescriptionId="
+				+ prescriptionId + ", prescribedByDoctorId=" + prescribedByDoctorId + ", prescribedByLocationId="
+				+ prescribedByLocationId + ", prescribedByHospitalId=" + prescribedByHospitalId + ", diagnosticTestId=" + diagnosticTestId
+				+ ", isFeedbackAvailable=" + isFeedbackAvailable + "]";
+	}
+
 }

@@ -41,7 +41,7 @@ public class ServiceExceptionMapper implements ExceptionMapper<BusinessException
     public void dump(BusinessException exception) {
 	try {
 	    System.out.println("BusinessException " + exception.getErrorCode() + " " + new Date() + ". \007");
-	    Enumeration names = requestInvoker.get().getHeaderNames();
+	    Enumeration<?> names = requestInvoker.get().getHeaderNames();
 	    while (names.hasMoreElements()) {
 		String name = names.nextElement().toString();
 		String value = requestInvoker.get().getHeader(name);

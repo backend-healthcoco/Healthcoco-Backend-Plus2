@@ -56,8 +56,8 @@ public class Observation extends GenericCollection {
 
     @Override
     public String toString() {
-	return "Observation [id=" + id + ", observation=" + observation + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-		+ hospitalId + "]";
+	return "Observation [id=" + id + ", observation=" + observation + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+		+ "]";
     }
 
 }

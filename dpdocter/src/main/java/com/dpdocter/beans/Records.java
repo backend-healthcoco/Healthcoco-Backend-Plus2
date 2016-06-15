@@ -5,27 +5,43 @@ import com.dpdocter.collections.GenericCollection;
 public class Records extends GenericCollection {
     private String id;
 
+    private String uniqueEmrId;
+
     private String doctorId;
 
     private String locationId;
 
     private String hospitalId;
 
+    private String patientId;
+
     private String recordsUrl;
 
-    private String recordsLable;
+    private String recordsLabel;
 
     private String recordsType;
 
-    private String description;
+    private String explanation;
 
-    private boolean inHistory = false;
+    private Boolean inHistory = false;
 
     private Boolean discarded = false;
 
-    private String doctorName;
+    private String uploadedByLocation;
 
     private String visitId;
+
+    private String prescriptionId;
+
+    private String prescribedByDoctorId;
+
+    private String prescribedByLocationId;
+
+    private String prescribedByHospitalId;
+
+    private String diagnosticTestId;
+
+    private Boolean isFeedbackAvailable = false;
 
     public String getId() {
 	return id;
@@ -43,15 +59,15 @@ public class Records extends GenericCollection {
 	this.recordsUrl = recordsUrl;
     }
 
-    public String getRecordsLable() {
-	return recordsLable;
-    }
+    public String getRecordsLabel() {
+		return recordsLabel;
+	}
 
-    public void setRecordsLable(String recordsLable) {
-	this.recordsLable = recordsLable;
-    }
+	public void setRecordsLabel(String recordsLabel) {
+		this.recordsLabel = recordsLabel;
+	}
 
-    public String getRecordsType() {
+	public String getRecordsType() {
 	return recordsType;
     }
 
@@ -59,23 +75,15 @@ public class Records extends GenericCollection {
 	this.recordsType = recordsType;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public boolean isInHistory() {
-	return inHistory;
-    }
-
-    public void setInHistory(boolean inHistory) {
-	this.inHistory = inHistory;
-    }
-
-    public Boolean getDiscarded() {
+	public Boolean getDiscarded() {
 	return discarded;
     }
 
@@ -107,14 +115,6 @@ public class Records extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
-    public String getDoctorName() {
-	return doctorName;
-    }
-
-    public void setDoctorName(String doctorName) {
-	this.doctorName = doctorName;
-    }
-
     public String getVisitId() {
 	return visitId;
     }
@@ -123,11 +123,95 @@ public class Records extends GenericCollection {
 	this.visitId = visitId;
     }
 
-    @Override
-    public String toString() {
-	return "Records [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", recordsUrl=" + recordsUrl
-		+ ", recordsLable=" + recordsLable + ", recordsType=" + recordsType + ", description=" + description + ", inHistory=" + inHistory
-		+ ", discarded=" + discarded + ", doctorName=" + doctorName + ", visitId=" + visitId + "]";
+    public String getPatientId() {
+	return patientId;
     }
 
+    public void setPatientId(String patientId) {
+	this.patientId = patientId;
+    }
+
+    public String getUploadedByLocation() {
+	return uploadedByLocation;
+    }
+
+    public void setUploadedByLocation(String uploadedByLocation) {
+	this.uploadedByLocation = uploadedByLocation;
+    }
+
+    public String getPrescriptionId() {
+	return prescriptionId;
+    }
+
+    public void setPrescriptionId(String prescriptionId) {
+	this.prescriptionId = prescriptionId;
+    }
+
+    public String getPrescribedByDoctorId() {
+	return prescribedByDoctorId;
+    }
+
+    public void setPrescribedByDoctorId(String prescribedByDoctorId) {
+	this.prescribedByDoctorId = prescribedByDoctorId;
+    }
+
+    public String getPrescribedByLocationId() {
+	return prescribedByLocationId;
+    }
+
+    public void setPrescribedByLocationId(String prescribedByLocationId) {
+	this.prescribedByLocationId = prescribedByLocationId;
+    }
+
+    public String getPrescribedByHospitalId() {
+	return prescribedByHospitalId;
+    }
+
+    public void setPrescribedByHospitalId(String prescribedByHospitalId) {
+	this.prescribedByHospitalId = prescribedByHospitalId;
+    }
+
+    public String getDiagnosticTestId() {
+		return diagnosticTestId;
+	}
+
+	public void setDiagnosticTestId(String diagnosticTestId) {
+		this.diagnosticTestId = diagnosticTestId;
+	}
+
+	public Boolean getInHistory() {
+	return inHistory;
+    }
+
+    public void setInHistory(Boolean inHistory) {
+	this.inHistory = inHistory;
+    }
+
+    public Boolean getIsFeedbackAvailable() {
+	return isFeedbackAvailable;
+    }
+
+    public void setIsFeedbackAvailable(Boolean isFeedbackAvailable) {
+	this.isFeedbackAvailable = isFeedbackAvailable;
+    }
+
+	public String getUniqueEmrId() {
+		return uniqueEmrId;
+	}
+
+	public void setUniqueEmrId(String uniqueEmrId) {
+		this.uniqueEmrId = uniqueEmrId;
+	}
+
+	@Override
+	public String toString() {
+		return "Records [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", recordsUrl=" + recordsUrl
+				+ ", recordsLabel=" + recordsLabel + ", recordsType=" + recordsType + ", explanation=" + explanation
+				+ ", inHistory=" + inHistory + ", discarded=" + discarded + ", uploadedByLocation=" + uploadedByLocation
+				+ ", visitId=" + visitId + ", prescriptionId=" + prescriptionId + ", prescribedByDoctorId="
+				+ prescribedByDoctorId + ", prescribedByLocationId=" + prescribedByLocationId
+				+ ", prescribedByHospitalId=" + prescribedByHospitalId + ", diagnosticTestId=" + diagnosticTestId + ", isFeedbackAvailable="
+				+ isFeedbackAvailable + "]";
+	}
 }

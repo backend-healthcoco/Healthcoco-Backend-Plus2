@@ -5,18 +5,16 @@ import java.util.List;
 public class PatientCard {
     private String id;
 
+    private String userId;
+
     private String firstName;
-
-    private String lastName;
-
-    private String middleName;
 
     private String userName;
 
     private String emailAddress;
 
     private String imageUrl;
-    
+
     private String thumbnailUrl;
 
     private String bloodGroup;
@@ -47,6 +45,10 @@ public class PatientCard {
 
     private String colorCode;
 
+    private Boolean isDataAvailableWithOtherDoctor = false;
+
+    private Boolean isPatientOTPVerified = false;
+
     public String getId() {
 	return id;
     }
@@ -61,22 +63,6 @@ public class PatientCard {
 
     public void setFirstName(String firstName) {
 	this.firstName = firstName;
-    }
-
-    public String getLastName() {
-	return lastName;
-    }
-
-    public void setLastName(String lastName) {
-	this.lastName = lastName;
-    }
-
-    public String getMiddleName() {
-	return middleName;
-    }
-
-    public void setMiddleName(String middleName) {
-	this.middleName = middleName;
     }
 
     public String getUserName() {
@@ -215,23 +201,47 @@ public class PatientCard {
 	this.colorCode = colorCode;
     }
 
-	public String getThumbnailUrl() {
-		return thumbnailUrl;
+    public String getThumbnailUrl() {
+	return thumbnailUrl;
+    }
+
+    public void setThumbnailUrl(String thumbnailUrl) {
+	this.thumbnailUrl = thumbnailUrl;
+    }
+
+    public Boolean getIsDataAvailableWithOtherDoctor() {
+	return isDataAvailableWithOtherDoctor;
+    }
+
+    public void setIsDataAvailableWithOtherDoctor(Boolean isDataAvailableWithOtherDoctor) {
+	this.isDataAvailableWithOtherDoctor = isDataAvailableWithOtherDoctor;
+    }
+
+    public Boolean getIsPatientOTPVerified() {
+	return isPatientOTPVerified;
+    }
+
+    public void setIsPatientOTPVerified(Boolean isPatientOTPVerified) {
+	this.isPatientOTPVerified = isPatientOTPVerified;
+    }
+
+	public String getUserId() {
+		return userId;
 	}
 
-	public void setThumbnailUrl(String thumbnailUrl) {
-		this.thumbnailUrl = thumbnailUrl;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 	@Override
 	public String toString() {
-		return "PatientCard [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName="
-				+ middleName + ", userName=" + userName + ", emailAddress=" + emailAddress + ", imageUrl=" + imageUrl
-				+ ", thumbnailUrl=" + thumbnailUrl + ", bloodGroup=" + bloodGroup + ", PID=" + PID + ", gender="
-				+ gender + ", mobileNumber=" + mobileNumber + ", secPhoneNumber=" + secPhoneNumber + ", dob=" + dob
-				+ ", count=" + count + ", dateOfVisit=" + dateOfVisit + ", groups=" + groups + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorSepecificPatientId="
-				+ doctorSepecificPatientId + ", colorCode=" + colorCode + "]";
+		return "PatientCard [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", userName=" + userName
+				+ ", emailAddress=" + emailAddress + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl
+				+ ", bloodGroup=" + bloodGroup + ", PID=" + PID + ", gender=" + gender + ", mobileNumber="
+				+ mobileNumber + ", secPhoneNumber=" + secPhoneNumber + ", dob=" + dob + ", count=" + count
+				+ ", dateOfVisit=" + dateOfVisit + ", groups=" + groups + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", doctorSepecificPatientId=" + doctorSepecificPatientId
+				+ ", colorCode=" + colorCode + ", isDataAvailableWithOtherDoctor=" + isDataAvailableWithOtherDoctor
+				+ ", isPatientOTPVerified=" + isPatientOTPVerified + "]";
 	}
-
 }

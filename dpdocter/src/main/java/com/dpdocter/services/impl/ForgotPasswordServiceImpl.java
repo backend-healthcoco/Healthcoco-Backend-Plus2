@@ -1,16 +1,30 @@
 package com.dpdocter.services.impl;
 
+import java.util.Date;
 import java.util.List;
 
+import javax.ws.rs.core.UriInfo;
+
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.Minutes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.collections.OTPCollection;
+import com.dpdocter.collections.SMSTrackDetail;
+import com.dpdocter.collections.TokenCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.repository.OTPRepository;
+import com.dpdocter.repository.TokenRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.ForgotUsernamePasswordRequest;
 import com.dpdocter.request.ResetPasswordRequest;
@@ -18,6 +32,10 @@ import com.dpdocter.response.ForgotPasswordResponse;
 import com.dpdocter.services.ForgotPasswordService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
+import com.dpdocter.services.SMSServices;
+
+import common.util.web.DPDoctorUtils;
+import common.util.web.LoginUtils;
 
 @Service
 public class ForgotPasswordServiceImpl implements ForgotPasswordService {
@@ -36,25 +54,57 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     @Autowired
     private MailBodyGenerator mailBodyGenerator;
 
+    @Autowired
+    private TokenRepository tokenRepository;
+
+    @Value(value = "${forgot.password.valid.time.in.mins}")
+    private String forgotPasswordValidTime;
+
+    @Value(value = "${mail.resetPasswordSuccess.subject}")
+    private String resetPasswordSub;
+
+    @Value(value = "${ForgotPassword.forgotUsername}")
+    private String forgotUsername;
+
+    @Autowired
+    private SMSServices sMSServices;
+
+    @Autowired
+    private OTPRepository otpRepository;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
     @Override
-    public ForgotPasswordResponse forgotPasswordForDoctor(ForgotUsernamePasswordRequest request) {
+    @Transactional
+    public ForgotPasswordResponse forgotPasswordForDoctor(ForgotUsernamePasswordRequest request, UriInfo uriInfo) {
 	try {
 	    UserCollection userCollection = null;
 	    ForgotPasswordResponse response = null;
 
-	    if (request.getUsername() != null) {
-		userCollection = userRepository.findByUserName(request.getUsername());
-	    }
+	    if (request.getUsername() == null)
+		request.setUsername(request.getEmailAddress());
+
+	    Criteria criteria = new Criteria("userName").regex(request.getUsername(), "i");
+		Query query = new Query(); query.addCriteria(criteria);
+		List<UserCollection> userCollections = mongoTemplate.find(query, UserCollection.class);
+		if(userCollections != null && !userCollections.isEmpty())userCollection = userCollections.get(0);
+
 	    if (userCollection != null) {
 		if (userCollection.getEmailAddress().trim().equals(request.getEmailAddress().trim())) {
+		    TokenCollection tokenCollection = new TokenCollection();
+		    tokenCollection.setResourceId(userCollection.getId());
+		    tokenCollection.setCreatedTime(new Date());
+		    tokenCollection = tokenRepository.save(tokenCollection);
+
 		    String body = mailBodyGenerator.generateForgotPasswordEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
-			    userCollection.getMiddleName(), userCollection.getLastName(), userCollection.getId());
+			    userCollection.getMiddleName(), userCollection.getLastName(), tokenCollection.getId(), uriInfo);
 		    mailService.sendEmail(userCollection.getEmailAddress(), forgotUsernamePasswordSub, body, null);
 		    response = new ForgotPasswordResponse(userCollection.getUserName(), userCollection.getMobileNumber(), userCollection.getEmailAddress(),
 			    RoleEnum.DOCTOR);
 		} else {
 		    logger.warn("Email address is empty.");
-		    throw new BusinessException(ServiceError.Unknown, "Email address is empty.");
+		    throw new BusinessException(ServiceError.InvalidInput, "Email address is empty.");
 		}
 	    } else {
 		logger.warn("User not Found.");
@@ -72,31 +122,51 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     }
 
     @Override
-    public Boolean forgotPasswordForPatient(ForgotUsernamePasswordRequest request) {
+    @Transactional
+    public Boolean forgotPasswordForPatient(ForgotUsernamePasswordRequest request, UriInfo uriInfo) {
 	Boolean flag = false;
+	Boolean isPatient = false;
 	try {
-	    UserCollection userCollection = null;
+	    List<UserCollection> userCollections = null;
 
-	    if (request.getUsername() != null) {
-		userCollection = userRepository.findByUserName(request.getUsername());
+	    if (request.getMobileNumber() != null) {
+		userCollections = userRepository.findByMobileNumber(request.getMobileNumber());
 	    }
 
-	    if (userCollection != null) {
-		if (request.getEmailAddress() != null && !request.getEmailAddress().isEmpty()) {
-		    String body = mailBodyGenerator.generateForgotPasswordEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
-			    userCollection.getMiddleName(), userCollection.getLastName(), userCollection.getId());
-		    mailService.sendEmail(userCollection.getEmailAddress(), forgotUsernamePasswordSub, body, null);
-		    flag = true;
-		} else if (request.getMobileNumber() != null && !request.getMobileNumber().isEmpty()) {
-		    // SMS logic will go here.
+	    if (userCollections != null) {
+		for (UserCollection userCollection : userCollections) {
+		    if (!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress())) {
+			isPatient = true;
+			break;
+		    }
+		}
+		if (!isPatient) {
+		    logger.warn("No Patient Found");
+		    throw new BusinessException(ServiceError.Unknown, "No Patient Found");
+		}
+		if (request.getMobileNumber() != null && !request.getMobileNumber().isEmpty()) {
+		    String OTP = LoginUtils.generateOTP();
+		    SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(null, null, null, null, null,
+			    "Your Healthcoco account verification number is: " + OTP + ".Enter this in our app to confirm your Healthcoco account.",
+			    request.getMobileNumber(), "OTPVerification");
+		    sMSServices.sendSMS(smsTrackDetail, false);
+
+		    OTPCollection otpCollection = new OTPCollection();
+		    otpCollection.setCreatedTime(new Date());
+		    otpCollection.setOtpNumber(OTP);
+		    otpCollection.setMobileNumber(request.getMobileNumber());
+		    otpCollection.setGeneratorId(request.getMobileNumber());
+		    otpCollection.setCreatedBy(request.getMobileNumber());
+		    otpCollection = otpRepository.save(otpCollection);
+
 		    flag = true;
 		} else {
 		    logger.warn("Email address or mobile number should be provided");
-		    throw new BusinessException(ServiceError.Unknown, "Email address or mobile number should be provided");
+		    throw new BusinessException(ServiceError.InvalidInput, "Email address or mobile number should be provided");
 		}
 	    } else {
-		logger.warn("User not Found.");
-		throw new BusinessException(ServiceError.Unknown, "User not Found.");
+		logger.warn("User not Found");
+		throw new BusinessException(ServiceError.Unknown, "User not Found");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -108,6 +178,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     }
 
     @Override
+    @Transactional
     public ForgotPasswordResponse getEmailAndMobNumberOfPatient(String username) {
 	try {
 	    UserCollection userCollection = null;
@@ -119,11 +190,11 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		    response = new ForgotPasswordResponse(username, userCollection.getMobileNumber(), userCollection.getEmailAddress(), RoleEnum.PATIENT);
 		} else {
 		    logger.warn("User not Found.");
-		    throw new BusinessException(ServiceError.Unknown, "User not Found.");
+		    throw new BusinessException(ServiceError.NoRecord, "User not Found.");
 		}
 	    } else {
 		logger.warn("Username cannot be empty");
-		throw new BusinessException(ServiceError.Unknown, "Username cannot be empty");
+		throw new BusinessException(ServiceError.InvalidInput, "Username cannot be empty");
 	    }
 	    return response;
 	} catch (Exception e) {
@@ -134,11 +205,19 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     }
 
     @Override
+    @Transactional
     public String resetPassword(ResetPasswordRequest request) {
 	try {
 	    UserCollection userCollection = userRepository.findOne(request.getUserId());
-	    userCollection.setPassword(request.getPassword());
-	    userCollection.setIsTempPassword(false);
+	    char[] salt = DPDoctorUtils.generateSalt();
+	    userCollection.setSalt(salt);
+	    char[] passwordWithSalt = new char[request.getPassword().length + salt.length]; 
+	    for(int i = 0; i < request.getPassword().length; i++)
+	        passwordWithSalt[i] = request.getPassword()[i];
+	    for(int i = 0; i < salt.length; i++)
+	    	passwordWithSalt[i+request.getPassword().length] = salt[i];
+	    userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt));
+//	    userCollection.setIsTempPassword(false);
 	    userRepository.save(userCollection);
 	    return "Password Changed Successfully";
 	} catch (Exception e) {
@@ -150,6 +229,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     }
 
     @Override
+    @Transactional
     public Boolean forgotUsername(ForgotUsernamePasswordRequest request) {
 	boolean flag = false;
 	try {
@@ -168,8 +248,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		    flag = true;
 		}
 	    } else {
-		logger.warn("Email Address or mobile should be provided!");
-		throw new BusinessException(ServiceError.Unknown, "Email Address or mobile should be provided!");
+		logger.warn(forgotUsername);
+		throw new BusinessException(ServiceError.InvalidInput, forgotUsername);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -177,5 +257,124 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return flag;
+    }
+
+    @Override
+    @Transactional
+    public String resetPassword(ResetPasswordRequest request, UriInfo uriInfo) {
+	try {
+	    // String startText = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01
+	    // Transitional//EN'><html><head><META http-equiv='Content-Type'
+	    // content='text/html; charset=utf-8'></head><body>"
+	    // +"<div><div style='margin-top:130px'><div style='padding:20px
+	    // 30px;border-radius:3px;background-color:#fefefe;border:1px solid
+	    // #f1f1f1;line-height:30px;margin-bottom:30px;font-family:&#39;Open
+	    // Sans&#39;,sans-serif;margin:0px
+	    // auto;min-width:200px;max-width:500px'>"
+	    // +"<div align='center'><h2
+	    // style='font-size:20px;color:#2c3335;text-align:center;letter-spacing:1px'>Reset
+	    // Password</h2><br><p
+	    // style='color:#2c3335;font-size:15px;text-align:left'>";
+	    //
+	    // String endText = "</p><br><p
+	    // style='color:#8a6d3b;font-size:15px;text-align:left'>lorem ipsum
+	    // lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem
+	    // ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem
+	    // ipsum</p>"
+	    // +"</div></div></div></div></body></html>";
+
+	    TokenCollection tokenCollection = tokenRepository.findOne(request.getUserId());
+	    if (tokenCollection == null || tokenCollection.getIsUsed()) {
+		return "Link is already Used";
+	    } else {
+		if (!isLinkValid(tokenCollection.getCreatedTime()))
+		    return "Link is Expired";
+		UserCollection userCollection = userRepository.findOne(tokenCollection.getResourceId());
+		if (userCollection == null) {
+		    return "Invalid Url.";
+		}
+		char[] salt = DPDoctorUtils.generateSalt();
+	    userCollection.setSalt(salt);
+	    char[] passwordWithSalt = new char[request.getPassword().length + salt.length]; 
+	    for(int i = 0; i < request.getPassword().length; i++)
+	        passwordWithSalt[i] = request.getPassword()[i];
+	    for(int i = 0; i < salt.length; i++)
+	    	passwordWithSalt[i+request.getPassword().length] = salt[i];
+	    userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt));
+//		userCollection.setIsTempPassword(false);
+		userRepository.save(userCollection);
+
+		tokenCollection.setIsUsed(true);
+		tokenRepository.save(tokenCollection);
+
+		String body = mailBodyGenerator.generateResetPasswordSuccessEmailBody(userCollection.getEmailAddress(), userCollection.getFirstName(), uriInfo);
+		mailService.sendEmail(userCollection.getEmailAddress(), resetPasswordSub, body, null);
+
+		return "Password Changed Successfully";
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+    }
+
+    @Override
+    @Transactional
+    public String checkLinkIsAlreadyUsed(String userId) {
+	try {
+	    TokenCollection tokenCollection = tokenRepository.findOne(userId);
+	    if (tokenCollection == null || tokenCollection.getIsUsed()) {
+		return "ALREADY_USED";
+	    } else {
+		if (!isLinkValid(tokenCollection.getCreatedTime()))
+		    return "EXPIRED";
+		UserCollection userCollection = userRepository.findOne(tokenCollection.getResourceId());
+		if (userCollection == null) {
+		    return "INVALID";
+		}
+		return "VALID";
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+    }
+
+    private boolean isLinkValid(Date createdTime) {
+	return Minutes.minutesBetween(new DateTime(createdTime), new DateTime()).isLessThan(Minutes.minutes(Integer.parseInt(forgotPasswordValidTime)));
+    }
+
+    @Override
+    @Transactional
+    public Boolean resetPasswordPatient(ResetPasswordRequest request) {
+	Boolean response = false;
+	try {
+	    List<UserCollection> userCollections = userRepository.findByMobileNumber(request.getMobileNumber());
+	    if (userCollections != null && !userCollections.isEmpty()) {
+	    	char[] salt = DPDoctorUtils.generateSalt();
+		    char[] passwordWithSalt = new char[request.getPassword().length + salt.length]; 
+		    for(int i = 0; i < request.getPassword().length; i++)
+		        passwordWithSalt[i] = request.getPassword()[i];
+		    for(int i = 0; i < salt.length; i++)
+		    	passwordWithSalt[i+request.getPassword().length] = salt[i];
+		    char[] password = DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt);
+		for (UserCollection userCollection : userCollections) {
+		    if (!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress())) {
+		    userCollection.setSalt(salt);
+			userCollection.setPassword(password);
+//			userCollection.setIsTempPassword(false);
+			userRepository.save(userCollection);
+		    }
+		}
+		response = true;
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return response;
     }
 }

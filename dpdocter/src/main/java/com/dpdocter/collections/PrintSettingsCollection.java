@@ -1,21 +1,28 @@
 package com.dpdocter.collections;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.FooterSetup;
 import com.dpdocter.beans.HeaderSetup;
 import com.dpdocter.beans.PageSetup;
+import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.enums.ComponentType;
 
 @Document(collection = "print_settings_cl")
+@CompoundIndexes({
+    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
+})
 public class PrintSettingsCollection extends GenericCollection {
 
     @Id
     private String id;
 
-    @Field
+    @Indexed
     private String doctorId;
 
     @Field
@@ -39,6 +46,12 @@ public class PrintSettingsCollection extends GenericCollection {
     @Field
     private Boolean discarded = false;
 
+    @Field
+    private String clinicLogoUrl;
+
+    @Field
+    private PrintSettingsText contentSetup;
+    
     public String getId() {
 	return id;
     }
@@ -111,10 +124,27 @@ public class PrintSettingsCollection extends GenericCollection {
 	this.discarded = discarded;
     }
 
-    @Override
-    public String toString() {
-	return "PrintSettingsCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ ", componentType=" + componentType + ", pageSetup=" + pageSetup + ", headerSetup=" + headerSetup + ", footerSetup=" + footerSetup
-		+ ", discarded=" + discarded + "]";
+    public String getClinicLogoUrl() {
+	return clinicLogoUrl;
     }
+
+    public void setClinicLogoUrl(String clinicLogoUrl) {
+	this.clinicLogoUrl = clinicLogoUrl;
+    }
+
+	public PrintSettingsText getContentSetup() {
+		return contentSetup;
+	}
+
+	public void setContentSetup(PrintSettingsText contentSetup) {
+		this.contentSetup = contentSetup;
+	}
+
+	@Override
+	public String toString() {
+		return "PrintSettingsCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", componentType=" + componentType + ", pageSetup=" + pageSetup
+				+ ", headerSetup=" + headerSetup + ", footerSetup=" + footerSetup + ", discarded=" + discarded
+				+ ", clinicLogoUrl=" + clinicLogoUrl + ", contentSetup=" + contentSetup + "]";
+	}
 }

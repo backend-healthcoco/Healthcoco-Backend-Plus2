@@ -20,12 +20,6 @@ public class HistoryDetailsResponse {
 
     private List<GeneralData> generalRecords;
 
-    /*private List<Records> reports;
-
-    private List<Prescription> prescriptions;
-
-    private List<ClinicalNotes> clinicalNotes;*/
-
     private List<DiseaseListResponse> familyhistory;
 
     private List<DiseaseListResponse> medicalhistory;

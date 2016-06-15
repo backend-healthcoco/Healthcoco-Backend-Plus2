@@ -21,24 +21,21 @@ public class DrugCollection extends GenericCollection {
     private String drugName;
 
     @Field
-    private String description;
+    private String explanation;
 
     @Field
     private Strength strength;
 
     @Field
-    private List<String> genericNames;
+    private List<String> genericIds;
 
     @Field
-    /* @Indexed(sparse = true) */
     private String doctorId;
 
     @Field
-    /* @Indexed(sparse = true) */
     private String hospitalId;
 
     @Field
-    /* @Indexed(sparse = true) */
     private String locationId;
 
     @Field
@@ -46,6 +43,15 @@ public class DrugCollection extends GenericCollection {
 
     @Field
     private String drugCode;
+
+    @Field
+    private String companyName;
+
+    @Field
+    private String packSize;
+
+    @Field
+    private String MRP;
 
     public String getId() {
 	return id;
@@ -71,15 +77,15 @@ public class DrugCollection extends GenericCollection {
 	this.drugName = drugName;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public Strength getStrength() {
+	public Strength getStrength() {
 	return strength;
     }
 
@@ -87,15 +93,15 @@ public class DrugCollection extends GenericCollection {
 	this.strength = strength;
     }
 
-    public List<String> getGenericNames() {
-	return genericNames;
-    }
+    public List<String> getGenericIds() {
+		return genericIds;
+	}
 
-    public void setGenericNames(List<String> genericNames) {
-	this.genericNames = genericNames;
-    }
+	public void setGenericIds(List<String> genericIds) {
+		this.genericIds = genericIds;
+	}
 
-    public String getDoctorId() {
+	public String getDoctorId() {
 	return doctorId;
     }
 
@@ -135,15 +141,34 @@ public class DrugCollection extends GenericCollection {
 	this.drugCode = drugCode;
     }
 
-    public void setDeleted(boolean discarded) {
-	this.discarded = discarded;
+    public String getCompanyName() {
+	return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+	this.companyName = companyName;
+    }
+
+    public String getPackSize() {
+	return packSize;
+    }
+
+    public void setPackSize(String packSize) {
+	this.packSize = packSize;
+    }
+
+    public String getMRP() {
+	return MRP;
+    }
+
+    public void setMRP(String mRP) {
+	MRP = mRP;
     }
 
     @Override
     public String toString() {
-	return "DrugCollection [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", description=" + description + ", strength=" + strength
-		+ ", genericNames=" + genericNames + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", discarded="
-		+ discarded + ", drugCode=" + drugCode + "]";
+	return "DrugCollection [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation=" + explanation + ", strength=" + strength
+		+ ", genericIds=" + genericIds + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", discarded="
+		+ discarded + ", drugCode=" + drugCode + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP=" + MRP + "]";
     }
-
 }

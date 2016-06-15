@@ -12,6 +12,12 @@ public class SpecialityCollection extends GenericCollection {
     @Field
     private String speciality;
 
+    @Field
+    private String superSpeciality;
+
+    @Field
+    private String code;
+
     public String getId() {
 	return id;
     }
@@ -28,9 +34,25 @@ public class SpecialityCollection extends GenericCollection {
 	this.speciality = speciality;
     }
 
-    @Override
-    public String toString() {
-	return "SpecialityCollection [id=" + id + ", speciality=" + speciality + "]";
+    public String getSuperSpeciality() {
+	return superSpeciality;
     }
 
+    public void setSuperSpeciality(String superSpeciality) {
+	this.superSpeciality = superSpeciality;
+    }
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	@Override
+	public String toString() {
+		return "SpecialityCollection [id=" + id + ", speciality=" + speciality + ", superSpeciality=" + superSpeciality
+				+ ", code=" + code + "]";
+	}
 }

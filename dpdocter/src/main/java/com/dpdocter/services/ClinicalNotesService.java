@@ -2,8 +2,6 @@ package com.dpdocter.services;
 
 import java.util.List;
 
-import org.springframework.data.mongodb.repository.Query;
-
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.Diagnoses;
@@ -22,12 +20,12 @@ public interface ClinicalNotesService {
 
     ClinicalNotes editNotes(ClinicalNotesEditRequest request);
 
-    void deleteNote(String id, Boolean discarded);
+    ClinicalNotes deleteNote(String id, Boolean discarded);
 
-    List<ClinicalNotes> getPatientsClinicalNotesWithVerifiedOTP(int page, int size, String patientId, String updatedTime, boolean discarded);
-
-    List<ClinicalNotes> getPatientsClinicalNotesWithoutVerifiedOTP(int page, int size, String patientId, String doctorId, String locationId, String hospitalId,
-	    String updatedTime, boolean discarded);
+//    List<ClinicalNotes> getPatientsClinicalNotesWithVerifiedOTP(int page, int size, String patientId, String updatedTime, boolean discarded, boolean inHistory);
+//
+//    List<ClinicalNotes> getPatientsClinicalNotesWithoutVerifiedOTP(int page, int size, String patientId, String doctorId, String locationId, String hospitalId,
+//	    String updatedTime, boolean discarded, boolean inHistory);
 
     Complaint addEditComplaint(Complaint complaint);
 
@@ -41,20 +39,19 @@ public interface ClinicalNotesService {
 
     Diagram addEditDiagram(Diagram diagram);
 
-    void deleteComplaint(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+    Complaint deleteComplaint(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
-    void deleteObservation(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+    Observation deleteObservation(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
-    void deleteInvestigation(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+    Investigation deleteInvestigation(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
-    void deleteDiagnosis(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+    Diagnoses deleteDiagnosis(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
-    void deleteNotes(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+    Notes deleteNotes(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
-    void deleteDiagram(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+    Diagram deleteDiagram(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
-    @Query(value = "{'doctorId': ?0, 'patientId': ?1, 'locationId': ?2, 'hospitalId': ?3}", count = true)
-    Integer getClinicalNotesCount(String doctorId, String patientId, String locationId, String hospitalId);
+    Integer getClinicalNotesCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified);
 
     List<Object> getClinicalItems(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded);
@@ -62,5 +59,9 @@ public interface ClinicalNotesService {
     void emailClinicalNotes(String clinicalNotesId, String doctorId, String locationId, String hospitalId, String emailAddress);
 
     MailAttachment getClinicalNotesMailData(String clinicalNotesId, String doctorId, String locationId, String hospitalId);
+
+    List<ClinicalNotes> getClinicalNotes(String patientId, int page, int size, String updatedTime, Boolean discarded);
+
+	List<ClinicalNotes> getClinicalNotes(int page, int size, String doctorId, String locationId, String hospitalId,	String patientId, String updatedTime, Boolean isOTPVerified, Boolean discarded, Boolean inHistory);
 
 }

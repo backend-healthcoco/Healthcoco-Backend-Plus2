@@ -4,7 +4,6 @@ package com.dpdocter.beans;
  * @author veeraj
  */
 public class Address {
-    private String id;
 
     private String country;
 
@@ -14,28 +13,14 @@ public class Address {
 
     private String postalCode;
 
-    private String roadNumber;
-
-    private String roadName;
-
-    private String houseNumber;
-
     private String locality;
-
-    private String userId;
 
     private Double latitude;
 
     private Double longitude;
 
-    public String getId() {
-	return id;
-    }
-
-    public void setId(String id) {
-	this.id = id;
-    }
-
+    private String streetAddress;
+    
     public String getCountry() {
 	return country;
     }
@@ -68,38 +53,6 @@ public class Address {
 	this.postalCode = postalCode;
     }
 
-    public String getRoadNumber() {
-	return roadNumber;
-    }
-
-    public void setRoadNumber(String roadNumber) {
-	this.roadNumber = roadNumber;
-    }
-
-    public String getRoadName() {
-	return roadName;
-    }
-
-    public void setRoadName(String roadName) {
-	this.roadName = roadName;
-    }
-
-    public String getHouseNumber() {
-	return houseNumber;
-    }
-
-    public void setHouseNumber(String houseNumber) {
-	this.houseNumber = houseNumber;
-    }
-
-    public String getUserId() {
-	return userId;
-    }
-
-    public void setUserId(String userId) {
-	this.userId = userId;
-    }
-
     public Double getLatitude() {
 	return latitude;
     }
@@ -124,11 +77,18 @@ public class Address {
 	this.locality = locality;
     }
 
-    @Override
-    public String toString() {
-	return "Address [id=" + id + ", country=" + country + ", city=" + city + ", state=" + state + ", postalCode=" + postalCode + ", roadNumber="
-		+ roadNumber + ", roadName=" + roadName + ", houseNumber=" + houseNumber + ", locality=" + locality + ", userId=" + userId + ", latitude="
-		+ latitude + ", longitude=" + longitude + "]";
-    }
+	public String getStreetAddress() {
+		return streetAddress;
+	}
 
+	public void setStreetAddress(String streetAddress) {
+		this.streetAddress = streetAddress;
+	}
+
+	@Override
+	public String toString() {
+		return "Address [country=" + country + ", city=" + city + ", state=" + state + ", postalCode=" + postalCode
+				+ ", locality=" + locality + ", latitude=" + latitude + ", longitude=" + longitude + ", streetAddress="
+				+ streetAddress + "]";
+	}
 }

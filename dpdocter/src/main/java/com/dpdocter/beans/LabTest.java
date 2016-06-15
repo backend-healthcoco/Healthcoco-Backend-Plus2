@@ -2,71 +2,71 @@ package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
 
-public class LabTest extends GenericCollection{
+public class LabTest extends GenericCollection {
 
-	private String id;
-	
-	private String testName;
-	
-	private String doctorId;
-	
-	private String locationId;
-	
-	private String hospitalId;
-	
-	private Boolean discarded;
+    private String id;
 
-	public String getId() {
-		return id;
-	}
+    private DiagnosticTest test;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    private String locationId;
 
-	public String getTestName() {
-		return testName;
-	}
+    private String hospitalId;
 
-	public void setTestName(String testName) {
-		this.testName = testName;
-	}
+    private Integer cost = 0;
 
-	public String getDoctorId() {
-		return doctorId;
-	}
+    private Boolean discarded = false;
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public String getLocationId() {
-		return locationId;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
+    public DiagnosticTest getTest() {
+	return test;
+    }
 
-	public String getHospitalId() {
-		return hospitalId;
-	}
+    public void setTest(DiagnosticTest test) {
+	this.test = test;
+    }
 
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
+    public String getLocationId() {
+	return locationId;
+    }
 
-	public Boolean getDiscarded() {
-		return discarded;
-	}
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
 
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+    public String getHospitalId() {
+	return hospitalId;
+    }
 
-	@Override
-	public String toString() {
-		return "LabTest [id=" + id + ", testName=" + testName + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", discarded=" + discarded + "]";
-	}
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
+
+    public Integer getCost() {
+	return cost;
+    }
+
+    public void setCost(Integer cost) {
+	this.cost = cost;
+    }
+
+    public Boolean getDiscarded() {
+	return discarded;
+    }
+
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
+
+    @Override
+    public String toString() {
+	return "LabTest [id=" + id + ", test=" + test + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", cost=" + cost + ", discarded="
+		+ discarded + "]";
+    }
 }

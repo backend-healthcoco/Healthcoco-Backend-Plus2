@@ -13,7 +13,7 @@ public class DiseaseAddEditResponse extends GenericCollection {
 
     private String disease;
 
-    private String description;
+    private String explanation;
 
     private Boolean discarded = false;
 
@@ -57,15 +57,15 @@ public class DiseaseAddEditResponse extends GenericCollection {
 	this.disease = disease;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public Boolean getDiscarded() {
+	public Boolean getDiscarded() {
 	return discarded;
     }
 
@@ -73,10 +73,10 @@ public class DiseaseAddEditResponse extends GenericCollection {
 	this.discarded = discarded;
     }
 
-    @Override
-    public String toString() {
-	return "DiseaseAddEditResponse [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", disease="
-		+ disease + ", description=" + description + ", discarded=" + discarded + "]";
-    }
-
+	@Override
+	public String toString() {
+		return "DiseaseAddEditResponse [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", disease=" + disease + ", explanation=" + explanation
+				+ ", discarded=" + discarded + "]";
+	}
 }

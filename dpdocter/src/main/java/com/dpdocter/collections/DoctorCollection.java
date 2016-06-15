@@ -3,10 +3,12 @@ package com.dpdocter.collections;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.Achievement;
+import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.DoctorExperience;
 import com.dpdocter.beans.DoctorExperienceDetail;
 import com.dpdocter.beans.DoctorRegistrationDetail;
@@ -23,7 +25,7 @@ public class DoctorCollection extends GenericCollection {
     @Field
     private List<String> otherEmailAddresses;
 
-    @Field
+    @Indexed
     private String userId;
 
     @Field
@@ -32,7 +34,7 @@ public class DoctorCollection extends GenericCollection {
     @Field
     private List<Education> education;
 
-    @Field
+    @Indexed
     private List<String> specialities;
 
     @Field
@@ -49,6 +51,15 @@ public class DoctorCollection extends GenericCollection {
 
     @Field
     private List<String> professionalMemberships;
+
+    @Field
+    private String registerNumber;
+
+    @Field
+    private String gender;
+
+    @Field
+    private DOB dob;
 
     public String getId() {
 	return id;
@@ -146,11 +157,36 @@ public class DoctorCollection extends GenericCollection {
 	this.professionalMemberships = professionalMemberships;
     }
 
+    public String getRegisterNumber() {
+	return registerNumber;
+    }
+
+    public void setRegisterNumber(String registerNumber) {
+	this.registerNumber = registerNumber;
+    }
+
+    public String getGender() {
+	return gender;
+    }
+
+    public void setGender(String gender) {
+	this.gender = gender;
+    }
+
+    public DOB getDob() {
+	return dob;
+    }
+
+    public void setDob(DOB dob) {
+	this.dob = dob;
+    }
+
     @Override
     public String toString() {
-	return "DoctorCollection [id=" + id + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses=" + otherEmailAddresses + ", userId="
-		+ userId + ", experience=" + experience + ", education=" + education + ", specialities=" + specialities + ", achievements=" + achievements
+	return "DoctorCollection [id=" + id + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses=" + otherEmailAddresses + ", userId=" + userId
+		+ ", experience=" + experience + ", education=" + education + ", specialities=" + specialities + ", achievements=" + achievements
 		+ ", professionalStatement=" + professionalStatement + ", registrationDetails=" + registrationDetails + ", experienceDetails="
-		+ experienceDetails + ", professionalMemberships=" + professionalMemberships + "]";
+		+ experienceDetails + ", professionalMemberships=" + professionalMemberships + ", registerNumber=" + registerNumber + ", gender=" + gender
+		+ ", dob=" + dob + "]";
     }
 }

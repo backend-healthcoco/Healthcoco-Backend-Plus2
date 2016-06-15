@@ -5,7 +5,15 @@ public class ReferenceDetail {
 
     private String reference;
 
-    private String description;
+    private String explanation;
+
+    private String doctorId;
+
+    private String locationId;
+
+    private String hospitalId;
+
+    private Boolean discarded = false;
 
     public String getId() {
 	return id;
@@ -23,17 +31,51 @@ public class ReferenceDetail {
 	this.reference = reference;
     }
 
-    public String getDescription() {
-	return description;
+    public String getExplanation() {
+		return explanation;
+	}
+
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
+
+	public String getDoctorId() {
+	return doctorId;
     }
 
-    public void setDescription(String description) {
-	this.description = description;
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
     }
 
-    @Override
-    public String toString() {
-	return "ReferenceDetail [id=" + id + ", reference=" + reference + ", description=" + description + "]";
+    public String getLocationId() {
+	return locationId;
     }
+
+    public void setLocationId(String locationId) {
+	this.locationId = locationId;
+    }
+
+    public String getHospitalId() {
+	return hospitalId;
+    }
+
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
+
+    public Boolean getDiscarded() {
+	return discarded;
+    }
+
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
+
+	@Override
+	public String toString() {
+		return "ReferenceDetail [id=" + id + ", reference=" + reference + ", explanation=" + explanation + ", doctorId="
+				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ "]";
+	}
 
 }

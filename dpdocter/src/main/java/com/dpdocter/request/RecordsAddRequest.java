@@ -8,7 +8,9 @@ public class RecordsAddRequest {
 
     private String doctorId;
 
-    private String description;
+    private String recordsUrl;
+
+    private String explanation;
 
     private FileDetails fileDetails;
 
@@ -21,6 +23,10 @@ public class RecordsAddRequest {
     private String createdBy;
 
     private String visitId;
+
+    private String prescriptionId;
+
+    private String diagnosticTestId;
 
     public String getPatientId() {
 	return patientId;
@@ -38,15 +44,15 @@ public class RecordsAddRequest {
 	this.doctorId = doctorId;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public FileDetails getFileDetails() {
+	public FileDetails getFileDetails() {
 	return fileDetails;
     }
 
@@ -94,10 +100,35 @@ public class RecordsAddRequest {
 	this.visitId = visitId;
     }
 
-    @Override
-    public String toString() {
-	return "RecordsAddRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", description=" + description + ", fileDetails=" + fileDetails
-		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", recordsType=" + recordsType + ", createdBy=" + createdBy + ", visitId="
-		+ visitId + "]";
+    public String getPrescriptionId() {
+	return prescriptionId;
     }
+
+    public void setPrescriptionId(String prescriptionId) {
+	this.prescriptionId = prescriptionId;
+    }
+
+	public String getDiagnosticTestId() {
+		return diagnosticTestId;
+	}
+
+	public void setDiagnosticTestId(String diagnosticTestId) {
+		this.diagnosticTestId = diagnosticTestId;
+	}
+
+	public String getRecordsUrl() {
+		return recordsUrl;
+	}
+
+	public void setRecordsUrl(String recordsUrl) {
+		this.recordsUrl = recordsUrl;
+	}
+
+	@Override
+	public String toString() {
+		return "RecordsAddRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", recordsUrl=" + recordsUrl
+				+ ", explanation=" + explanation + ", fileDetails=" + fileDetails + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", recordsType=" + recordsType + ", createdBy=" + createdBy
+				+ ", visitId=" + visitId + ", prescriptionId=" + prescriptionId + ", diagnosticTestId=" + diagnosticTestId + "]";
+	}
 }

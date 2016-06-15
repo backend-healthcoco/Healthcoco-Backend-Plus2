@@ -11,7 +11,7 @@ public class TemplateDrug {
 
     private String drugName;
 
-    private String description;
+    private String explanation;
 
     private Strength strength;
 
@@ -43,15 +43,15 @@ public class TemplateDrug {
 	this.drugName = drugName;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public Strength getStrength() {
+	public Strength getStrength() {
 	return strength;
     }
 
@@ -75,10 +75,11 @@ public class TemplateDrug {
 	this.drugCode = drugCode;
     }
 
-    @Override
-    public String toString() {
-	return "TemplateDrug [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", description=" + description + ", strength=" + strength
-		+ ", genericNames=" + genericNames + ", drugCode=" + drugCode + "]";
-    }
+	@Override
+	public String toString() {
+		return "TemplateDrug [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation="
+				+ explanation + ", strength=" + strength + ", genericNames=" + genericNames + ", drugCode=" + drugCode
+				+ "]";
+	}
 
 }

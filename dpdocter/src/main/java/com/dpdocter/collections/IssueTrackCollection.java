@@ -1,18 +1,24 @@
 package com.dpdocter.collections;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.enums.IssueStatus;
 
 @Document(collection = "issue_track_cl")
+@CompoundIndexes({
+    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
+})
 public class IssueTrackCollection extends GenericCollection {
 
     @Id
     private String id;
 
-    @Field
+    @Indexed
     private String doctorId;
 
     @Field
@@ -28,7 +34,7 @@ public class IssueTrackCollection extends GenericCollection {
     private String subject;
 
     @Field
-    private String description;
+    private String explanation;
 
     @Field
     private IssueStatus status = IssueStatus.OPEN;
@@ -76,15 +82,15 @@ public class IssueTrackCollection extends GenericCollection {
 	this.subject = subject;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public IssueStatus getStatus() {
+	public IssueStatus getStatus() {
 	return status;
     }
 
@@ -111,6 +117,6 @@ public class IssueTrackCollection extends GenericCollection {
     @Override
     public String toString() {
 	return "IssueTrackCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", issueCode="
-		+ issueCode + ", subject=" + subject + ", description=" + description + ", status=" + status + ", discarded=" + discarded + "]";
+		+ issueCode + ", subject=" + subject + ", explanation=" + explanation + ", status=" + status + ", discarded=" + discarded + "]";
     }
 }

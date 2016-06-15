@@ -105,8 +105,7 @@ public class Diagram extends GenericCollection {
 
     @Override
     public String toString() {
-	return "Diagram [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + ", doctorId=" + doctorId + ", locationId=" + locationId
-		+ ", hospitalId=" + hospitalId + ", diagram=" + diagram + ", fileExtension=" + fileExtension + ", discarded=" + discarded + ", speciality="
-		+ speciality + "]";
+	return "Diagram [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+		+ hospitalId + ", diagram=" + diagram + ", fileExtension=" + fileExtension + ", discarded=" + discarded + ", speciality=" + speciality + "]";
     }
 }

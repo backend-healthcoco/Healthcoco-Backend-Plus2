@@ -27,7 +27,6 @@ public class WorkingSchedule {
 
     @Override
     public String toString() {
-	return "workingSchedule [workingHours=" + workingHours + "]";
+	return "WorkingSchedule [workingDay=" + workingDay + ", workingHours=" + workingHours + "]";
     }
-
 }

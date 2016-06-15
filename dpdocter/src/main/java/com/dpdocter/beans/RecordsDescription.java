@@ -3,7 +3,7 @@ package com.dpdocter.beans;
 public class RecordsDescription {
     private String id;
 
-    private String description;
+    private String explanation;
 
     public String getId() {
 	return id;
@@ -13,17 +13,16 @@ public class RecordsDescription {
 	this.id = id;
     }
 
-    public String getDescription() {
-	return description;
-    }
+	public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    @Override
-    public String toString() {
-	return "RecordsDescription [id=" + id + ", description=" + description + "]";
-    }
-
+	@Override
+	public String toString() {
+		return "RecordsDescription [id=" + id + ", explanation=" + explanation + "]";
+	}
 }

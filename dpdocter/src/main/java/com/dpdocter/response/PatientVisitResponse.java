@@ -6,11 +6,14 @@ import java.util.List;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.Records;
+import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.VisitedFor;
 
-public class PatientVisitResponse {
+public class PatientVisitResponse extends GenericCollection {
 
     private String id;
+
+    private String uniqueEmrId;
 
     private String patientId;
 
@@ -110,11 +113,19 @@ public class PatientVisitResponse {
 	this.records = records;
     }
 
-    @Override
-    public String toString() {
-	return "PatientVisitResponse [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-		+ hospitalId + ", visitedTime=" + visitedTime + ", visitedFor=" + visitedFor + ", prescriptions=" + prescriptions + ", clinicalNotes="
-		+ clinicalNotes + ", records=" + records + "]";
-    }
+	public String getUniqueEmrId() {
+		return uniqueEmrId;
+	}
 
+	public void setUniqueEmrId(String uniqueEmrId) {
+		this.uniqueEmrId = uniqueEmrId;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientVisitResponse [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", patientId=" + patientId
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", visitedTime=" + visitedTime + ", visitedFor=" + visitedFor + ", prescriptions=" + prescriptions
+				+ ", clinicalNotes=" + clinicalNotes + ", records=" + records + "]";
+	}
 }

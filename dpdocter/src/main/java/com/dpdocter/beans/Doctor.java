@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 /**
  * @author veeraj
  */
@@ -7,9 +9,27 @@ package com.dpdocter.beans;
 public class Doctor {
     private String id;
 
+    private String firstName;
+
+    private String lastName;
+
+    private String mobileNumber;
+
+    private String emailAddress;
+
     private String imageUrl;
 
-    private String specialization;
+    private String thumbnailUrl;
+    
+    private String colorCode;
+    
+    private String coverImageUrl;
+
+    private String coverThumbnailImageUrl;
+
+    private List<String> specialities;
+
+    private DoctorClinicProfile doctorClinicProfile;
 
     public String getId() {
 	return id;
@@ -17,6 +37,38 @@ public class Doctor {
 
     public void setId(String id) {
 	this.id = id;
+    }
+
+    public String getFirstName() {
+	return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+	this.firstName = firstName;
+    }
+
+    public String getLastName() {
+	return lastName;
+    }
+
+    public void setLastName(String lastName) {
+	this.lastName = lastName;
+    }
+
+    public String getMobileNumber() {
+	return mobileNumber;
+    }
+
+    public void setMobileNumber(String mobileNumber) {
+	this.mobileNumber = mobileNumber;
+    }
+
+    public String getEmailAddress() {
+	return emailAddress;
+    }
+
+    public void setEmailAddress(String emailAddress) {
+	this.emailAddress = emailAddress;
     }
 
     public String getImageUrl() {
@@ -27,17 +79,60 @@ public class Doctor {
 	this.imageUrl = imageUrl;
     }
 
-    public String getSpecialization() {
-	return specialization;
+    public DoctorClinicProfile getDoctorClinicProfile() {
+	return doctorClinicProfile;
     }
 
-    public void setSpecialization(String specialization) {
-	this.specialization = specialization;
+    public void setDoctorClinicProfile(DoctorClinicProfile doctorClinicProfile) {
+	this.doctorClinicProfile = doctorClinicProfile;
     }
 
-    @Override
-    public String toString() {
-	return "Doctor [id=" + id + ", imageUrl=" + imageUrl + ", specialization=" + specialization + "]";
-    }
+	public List<String> getSpecialities() {
+		return specialities;
+	}
 
+	public void setSpecialities(List<String> specialities) {
+		this.specialities = specialities;
+	}
+
+	public String getThumbnailUrl() {
+		return thumbnailUrl;
+	}
+
+	public void setThumbnailUrl(String thumbnailUrl) {
+		this.thumbnailUrl = thumbnailUrl;
+	}
+
+	public String getColorCode() {
+		return colorCode;
+	}
+
+	public void setColorCode(String colorCode) {
+		this.colorCode = colorCode;
+	}
+
+	public String getCoverImageUrl() {
+		return coverImageUrl;
+	}
+
+	public void setCoverImageUrl(String coverImageUrl) {
+		this.coverImageUrl = coverImageUrl;
+	}
+
+	public String getCoverThumbnailImageUrl() {
+		return coverThumbnailImageUrl;
+	}
+
+	public void setCoverThumbnailImageUrl(String coverThumbnailImageUrl) {
+		this.coverThumbnailImageUrl = coverThumbnailImageUrl;
+	}
+
+	@Override
+	public String toString() {
+		return "Doctor [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", mobileNumber="
+				+ mobileNumber + ", emailAddress=" + emailAddress + ", imageUrl=" + imageUrl + ", thumbnailUrl="
+				+ thumbnailUrl + ", colorCode=" + colorCode + ", coverImageUrl=" + coverImageUrl
+				+ ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", specialities=" + specialities
+				+ ", doctorClinicProfile=" + doctorClinicProfile + "]";
+	}
 }

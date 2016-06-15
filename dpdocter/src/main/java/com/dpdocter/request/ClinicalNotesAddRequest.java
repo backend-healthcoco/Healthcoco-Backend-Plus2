@@ -7,6 +7,7 @@ import com.dpdocter.beans.ClinicalNotesDiagnosis;
 import com.dpdocter.beans.ClinicalNotesInvestigation;
 import com.dpdocter.beans.ClinicalNotesNote;
 import com.dpdocter.beans.ClinicalNotesObservation;
+import com.dpdocter.beans.VitalSigns;
 
 public class ClinicalNotesAddRequest {
     private String id;
@@ -34,6 +35,8 @@ public class ClinicalNotesAddRequest {
     private String createdBy;
 
     private String visitId;
+
+    private VitalSigns vitalSigns;
 
     public String getId() {
 	return id;
@@ -139,11 +142,19 @@ public class ClinicalNotesAddRequest {
 	this.visitId = visitId;
     }
 
+    public VitalSigns getVitalSigns() {
+	return vitalSigns;
+    }
+
+    public void setVitalSigns(VitalSigns vitalSigns) {
+	this.vitalSigns = vitalSigns;
+    }
+
     @Override
     public String toString() {
 	return "ClinicalNotesAddRequest [id=" + id + ", patientId=" + patientId + ", complaints=" + complaints + ", observations=" + observations
 		+ ", investigations=" + investigations + ", diagnoses=" + diagnoses + ", notes=" + notes + ", diagrams=" + diagrams + ", doctorId=" + doctorId
-		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", createdBy=" + createdBy + ", visitId=" + visitId + "]";
+		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", createdBy=" + createdBy + ", visitId=" + visitId + ", vitalSigns="
+		+ vitalSigns + "]";
     }
-
 }

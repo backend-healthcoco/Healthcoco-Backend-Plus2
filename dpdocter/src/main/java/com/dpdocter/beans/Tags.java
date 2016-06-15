@@ -1,11 +1,13 @@
 package com.dpdocter.beans;
 
-public class Tags {
+import com.dpdocter.collections.TagsCollection;
+
+public class Tags extends TagsCollection{
     private String id;
 
     private String tag;
 
-    private String description;
+    private String explanation;
 
     private String doctorId;
 
@@ -13,6 +15,8 @@ public class Tags {
 
     private String hospitalId;
 
+    private Boolean discarded = false;
+    
     public String getId() {
 	return id;
     }
@@ -29,15 +33,15 @@ public class Tags {
 	this.tag = tag;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public String getDoctorId() {
+	public String getDoctorId() {
 	return doctorId;
     }
 
@@ -61,10 +65,17 @@ public class Tags {
 	this.hospitalId = hospitalId;
     }
 
-    @Override
-    public String toString() {
-	return "Tags [id=" + id + ", tag=" + tag + ", description=" + description + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-		+ hospitalId + "]";
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	@Override
+	public String toString() {
+		return "Tags [id=" + id + ", tag=" + tag + ", explanation=" + explanation + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + "]";
+	}
 }

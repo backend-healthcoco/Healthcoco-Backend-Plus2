@@ -1,0 +1,61 @@
+package com.dpdocter.solr.document;
+
+import java.util.Date;
+
+import org.apache.solr.client.solrj.beans.Field;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.solr.core.mapping.SolrDocument;
+
+@SolrDocument(solrCoreName = "bloodGroups")
+public class SolrBloodGroupDocument {
+
+    @Id
+    @Field
+    private String id;
+
+    @Field
+    private String bloodGroup;
+
+    @Field
+    private String explanation;
+
+    @Field
+    private Date updatedTime = new Date();
+
+    public String getId() {
+	return id;
+    }
+
+    public void setId(String id) {
+	this.id = id;
+    }
+
+    public String getBloodGroup() {
+	return bloodGroup;
+    }
+
+    public void setBloodGroup(String bloodGroup) {
+	this.bloodGroup = bloodGroup;
+    }
+
+    public String getExplanation() {
+		return explanation;
+	}
+
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
+
+	public Date getUpdatedTime() {
+	return updatedTime;
+    }
+
+    public void setUpdatedTime(Date updatedTime) {
+	this.updatedTime = updatedTime;
+    }
+
+    @Override
+    public String toString() {
+	return "SolrBloodGroupDocument [id=" + id + ", bloodGroup=" + bloodGroup + ", explanation=" + explanation + ", updatedTime=" + updatedTime + "]";
+    }
+}

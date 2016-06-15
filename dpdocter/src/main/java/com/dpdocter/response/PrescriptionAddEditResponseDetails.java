@@ -2,12 +2,13 @@ package com.dpdocter.response;
 
 import java.util.List;
 
-import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.collections.GenericCollection;
 
 public class PrescriptionAddEditResponseDetails extends GenericCollection {
     private String id;
+
+    private String uniqueEmrId;
 
     private String name;
 
@@ -27,7 +28,7 @@ public class PrescriptionAddEditResponseDetails extends GenericCollection {
 
     private String visitId;
 
-    private List<LabTest> labTests;
+    private List<TestAndRecordDataResponse> diagnosticTests;
 
     private String advice;
 
@@ -111,27 +112,36 @@ public class PrescriptionAddEditResponseDetails extends GenericCollection {
 	this.visitId = visitId;
     }
 
-	public List<LabTest> getLabTests() {
-		return labTests;
+    public String getAdvice() {
+	return advice;
+    }
+
+    public void setAdvice(String advice) {
+	this.advice = advice;
+    }
+
+    public String getUniqueEmrId() {
+		return uniqueEmrId;
 	}
 
-	public void setLabTests(List<LabTest> labTests) {
-		this.labTests = labTests;
+	public void setUniqueEmrId(String uniqueEmrId) {
+		this.uniqueEmrId = uniqueEmrId;
 	}
 
-	public String getAdvice() {
-		return advice;
+	public List<TestAndRecordDataResponse> getDiagnosticTests() {
+		return diagnosticTests;
 	}
 
-	public void setAdvice(String advice) {
-		this.advice = advice;
+	public void setDiagnosticTests(List<TestAndRecordDataResponse> diagnosticTests) {
+		this.diagnosticTests = diagnosticTests;
 	}
 
 	@Override
 	public String toString() {
-		return "PrescriptionAddEditResponseDetails [id=" + id + ", name=" + name + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", items=" + items + ", patientId="
-				+ patientId + ", prescriptionCode=" + prescriptionCode + ", discarded=" + discarded + ", visitId="
-				+ visitId + ", labTests=" + labTests + ", advice=" + advice + "]";
+		return "PrescriptionAddEditResponseDetails [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", name=" + name
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", items="
+				+ items + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + ", discarded="
+				+ discarded + ", visitId=" + visitId + ", diagnosticTests=" + diagnosticTests + ", advice=" + advice
+				+ "]";
 	}
 }

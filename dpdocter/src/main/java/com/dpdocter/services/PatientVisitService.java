@@ -3,6 +3,7 @@ package com.dpdocter.services;
 import java.util.List;
 
 import com.dpdocter.beans.DoctorContactsResponse;
+import com.dpdocter.beans.PatientVisit;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.request.AddMultipleDataRequest;
 import com.dpdocter.response.PatientVisitResponse;
@@ -20,5 +21,21 @@ public interface PatientVisitService {
 
     PatientVisitResponse addMultipleData(AddMultipleDataRequest request);
 
-    List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId, int page, int size, Boolean isOTPVerified, String updatedTime);
+    PatientVisitResponse getVisit(String visitId);
+
+    List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId, int page, int size, Boolean isOTPVerified,
+	    String updatedTime);
+
+    Boolean email(String visitId, String emailAddress);
+
+    PatientVisit deleteVisit(String visitId, Boolean discarded);
+
+    Boolean smsVisit(String visitId, String doctorId, String locationId, String hospitalId, String mobileNumber);
+
+    List<PatientVisit> getVisitsHandheld(String doctorId, String locationId, String hospitalId, String patientId, int page, int size, Boolean isOTPVerified,
+	    String updatedTime);
+
+    String editRecord(String id, VisitedFor prescription);
+
+    int getVisitCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified);
 }

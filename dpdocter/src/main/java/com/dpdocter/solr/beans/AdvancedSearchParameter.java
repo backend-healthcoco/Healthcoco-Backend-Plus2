@@ -1,6 +1,6 @@
 package com.dpdocter.solr.beans;
 
-import com.dpdocter.solr.enums.AdvancedSearchType;
+import com.dpdocter.enums.AdvancedSearchType;
 
 public class AdvancedSearchParameter {
     private AdvancedSearchType searchType;

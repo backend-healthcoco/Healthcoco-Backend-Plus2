@@ -20,6 +20,8 @@ public class SMSTrack {
 
     private Date sentTime;
 
+    private String type;
+
     public String getId() {
 	return id;
     }
@@ -84,9 +86,17 @@ public class SMSTrack {
 	this.sentTime = sentTime;
     }
 
+    public String getType() {
+	return type;
+    }
+
+    public void setType(String type) {
+	this.type = type;
+    }
+
     @Override
     public String toString() {
 	return "SMSTrack [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientName=" + patientName
-		+ ", deliveryStatus=" + deliveryStatus + ", deliveredTime=" + deliveredTime + ", sentTime=" + sentTime + "]";
+		+ ", deliveryStatus=" + deliveryStatus + ", deliveredTime=" + deliveredTime + ", sentTime=" + sentTime + ", type=" + type + "]";
     }
 }

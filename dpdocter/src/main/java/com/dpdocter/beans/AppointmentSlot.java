@@ -7,7 +7,15 @@ public class AppointmentSlot {
 
     private TimeUnit timeUnit;
 
-    public float getTime() {
+    public AppointmentSlot(float time, TimeUnit timeUnit) {
+		this.time = time;
+		this.timeUnit = timeUnit;
+	}
+
+	public AppointmentSlot() {
+	}
+
+	public float getTime() {
 	return time;
     }
 

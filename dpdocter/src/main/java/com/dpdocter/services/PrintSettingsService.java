@@ -16,6 +16,6 @@ public interface PrintSettingsService {
     List<PrintSettings> getSettings(String printFilter, String doctorId, String locationId, String hospitalId, int page, int size, String updatedTime,
 	    Boolean discarded);
 
-    Boolean deletePrintSettings(String id, String doctorId, String locationId, String hospitalId);
+    PrintSettings deletePrintSettings(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
 }

@@ -9,7 +9,7 @@ public class DiseaseListResponse extends GenericCollection {
 
     private String disease;
 
-    private String description;
+    private String explanation;
 
     private String doctorId;
 
@@ -23,17 +23,18 @@ public class DiseaseListResponse extends GenericCollection {
 	// TODO Auto-generated constructor stub
     }
 
-    public DiseaseListResponse(String id, String disease, String description, String doctorId, String locationId, String hospitalId, Boolean discarded,
-	    Date createdTime, Date updatedTime) {
+    public DiseaseListResponse(String id, String disease, String explanation, String doctorId, String locationId, String hospitalId, Boolean discarded,
+	    Date createdTime, Date updatedTime, String createdBy) {
 	this.id = id;
 	this.disease = disease;
-	this.description = description;
+	this.explanation = explanation;
 	this.doctorId = doctorId;
 	this.locationId = locationId;
 	this.hospitalId = hospitalId;
 	this.discarded = discarded;
 	super.setCreatedTime(createdTime);
 	super.setUpdatedTime(updatedTime);
+	super.setCreatedBy(createdBy);
     }
 
     public String getId() {
@@ -52,15 +53,15 @@ public class DiseaseListResponse extends GenericCollection {
 	this.disease = disease;
     }
 
-    public String getDescription() {
-	return description;
-    }
+    public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public String getDoctorId() {
+	public String getDoctorId() {
 	return doctorId;
     }
 
@@ -94,8 +95,7 @@ public class DiseaseListResponse extends GenericCollection {
 
     @Override
     public String toString() {
-	return "DiseaseListResponse [id=" + id + ", disease=" + disease + ", description=" + description + ", doctorId=" + doctorId + ", locationId="
+	return "DiseaseListResponse [id=" + id + ", disease=" + disease + ", explanation=" + explanation + ", doctorId=" + doctorId + ", locationId="
 		+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + "]";
     }
-
 }

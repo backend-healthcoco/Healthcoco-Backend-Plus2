@@ -31,6 +31,10 @@ public class Patient {
 
     private List<String> notes;
 
+    private Boolean isDataAvailableWithOtherDoctor = false;
+
+    private Boolean isPatientOTPVerified = false;
+
     public String getPatientId() {
 	return patientId;
     }
@@ -143,12 +147,28 @@ public class Patient {
 	this.notes = notes;
     }
 
+    public Boolean getIsDataAvailableWithOtherDoctor() {
+	return isDataAvailableWithOtherDoctor;
+    }
+
+    public void setIsDataAvailableWithOtherDoctor(Boolean isDataAvailableWithOtherDoctor) {
+	this.isDataAvailableWithOtherDoctor = isDataAvailableWithOtherDoctor;
+    }
+
+    public Boolean getIsPatientOTPVerified() {
+	return isPatientOTPVerified;
+    }
+
+    public void setIsPatientOTPVerified(Boolean isPatientOTPVerified) {
+	this.isPatientOTPVerified = isPatientOTPVerified;
+    }
+
     @Override
     public String toString() {
 	return "Patient [patientId=" + patientId + ", bloodGroup=" + bloodGroup + ", profession=" + profession + ", relations=" + relations + ", emailAddress="
 		+ emailAddress + ", doctorId=" + doctorId + ", addressId=" + addressId + ", secMobile=" + secMobile + ", adhaarId=" + adhaarId
 		+ ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName="
-		+ insuranceName + ", notes=" + notes + "]";
+		+ insuranceName + ", notes=" + notes + ", isDataAvailableWithOtherDoctor=" + isDataAvailableWithOtherDoctor + ", isPatientOTPVerified="
+		+ isPatientOTPVerified + "]";
     }
-
 }

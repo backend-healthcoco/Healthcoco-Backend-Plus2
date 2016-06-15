@@ -4,20 +4,29 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.enums.VisitedFor;
 
 @Document(collection = "patient_visit_cl")
+@CompoundIndexes({
+    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
+})
 public class PatientVisitCollection extends GenericCollection {
     @Id
     private String id;
 
     @Field
+    private String uniqueEmrId;
+
+    @Indexed
     private String patientId;
 
-    @Field
+    @Indexed
     private String doctorId;
 
     @Field
@@ -42,6 +51,9 @@ public class PatientVisitCollection extends GenericCollection {
 
     @Field
     private List<String> recordId;
+
+    @Field
+    private Boolean discarded = false;
 
     public String getId() {
 	return id;
@@ -131,10 +143,28 @@ public class PatientVisitCollection extends GenericCollection {
 	this.recordId = recordId;
     }
 
-    @Override
-    public String toString() {
-	return "PatientVisitCollection [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-		+ hospitalId + ", visitedTime=" + visitedTime + ", visitedFor=" + visitedFor + ", total=" + total + ", prescriptionId=" + prescriptionId
-		+ ", clinicalNotesId=" + clinicalNotesId + ", recordId=" + recordId + "]";
+    public Boolean getDiscarded() {
+	return discarded;
     }
+
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
+
+	public String getUniqueEmrId() {
+		return uniqueEmrId;
+	}
+
+	public void setUniqueEmrId(String uniqueEmrId) {
+		this.uniqueEmrId = uniqueEmrId;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientVisitCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", patientId=" + patientId
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", visitedTime=" + visitedTime + ", visitedFor=" + visitedFor + ", total=" + total
+				+ ", prescriptionId=" + prescriptionId + ", clinicalNotesId=" + clinicalNotesId + ", recordId="
+				+ recordId + ", discarded=" + discarded + "]";
+	}
 }

@@ -1,9 +1,16 @@
 package com.dpdocter.services.impl;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.AccessModule;
@@ -38,78 +45,118 @@ public class AccessControlServicesImpl implements AccessControlServices {
     @Autowired
     private RoleRepository roleRepository;
 
+    @SuppressWarnings("unchecked")
     @Override
+    @Transactional
     public AccessControl getAccessControls(String roleOrUserId, String locationId, String hospitalId) {
 	AccessControl response = null;
 	try {
+	    response = new AccessControl();
 	    ArosCollection arosCollection = arosRepository.findOne(roleOrUserId, locationId, hospitalId);
+	    if (arosCollection != null) {
+		ArosAcosCollection arosAcosCollection = arosAcosRepository.findByArosId(arosCollection.getId());
+		if (arosAcosCollection != null && !arosAcosCollection.getAcosIds().isEmpty()) {
+		    Iterator<AcosCollection> acosCollectionIterator = acosRepository.findAll(arosAcosCollection.getAcosIds()).iterator();
 
-	    ArosAcosCollection arosAcosCollection = arosAcosRepository.findByArosId(arosCollection.getId());
+		    List<AcosCollection> acosCollections = IteratorUtils.toList(acosCollectionIterator);
 
-	    AcosCollection acosCollection = acosRepository.findOne(arosAcosCollection.getAcosId());
+		    List<AccessModule> accessModules = new ArrayList<AccessModule>();
 
-	    BeanUtil.map(arosCollection, response);
-	    BeanUtil.map(acosCollection, response);
-	    BeanUtil.map(arosAcosCollection, response);
+		    for (AcosCollection acosCollection : acosCollections) {
+			AccessModule accessModule = new AccessModule();
+			BeanUtil.map(acosCollection, accessModule);
+			accessModules.add(accessModule);
+		    }
+		    response.setAccessModules(accessModules);
+		    response.setId(arosAcosCollection.getId());
+		}
+	    }
+	    response.setRoleOrUserId(roleOrUserId);
+	    response.setLocationId(locationId);
+	    response.setHospitalId(hospitalId);
 	} catch (Exception e) {
 	    throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 	}
 	return response;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
+    @Transactional
     public AccessControl setAccessControls(AccessControl accessControl) {
 	AccessControl response = null;
 	try {
 	    ArosCollection arosCollection = arosRepository.findOne(accessControl.getRoleOrUserId(), accessControl.getLocationId(),
 		    accessControl.getHospitalId());
 	    ArosAcosCollection arosAcosCollection = null;
-	    AcosCollection acosCollection = null;
+	    List<AcosCollection> acosCollections = null;
 	    if (arosCollection != null) {
 		arosAcosCollection = arosAcosRepository.findByArosId(arosCollection.getId());
 
-		acosCollection = acosRepository.findOne(arosAcosCollection.getAcosId());
+		Iterator<AcosCollection> acosCollectionIterator = acosRepository.findAll(arosAcosCollection.getAcosIds()).iterator();
 
-		if (acosCollection != null) {
-		    if (acosCollection.getAccessModules() != null && !acosCollection.getAccessModules().isEmpty()) {
-			if (accessControl.getAccessModules() != null && !accessControl.getAccessModules().isEmpty()) {
-			    for (AccessModule newAccessModule : accessControl.getAccessModules()) {
-				boolean moduleMatch = false;
-				for (AccessModule accessModule : acosCollection.getAccessModules()) {
-				    if (newAccessModule.getModule().trim().equals(accessModule.getModule())) {
-					BeanUtil.map(newAccessModule, accessModule);
-					moduleMatch = true;
-					break;
-				    }
-				}
-				if (!moduleMatch) {
-				    AccessModule accessModule = new AccessModule();
-				    BeanUtil.map(newAccessModule, accessModule);
-				    List<AccessModule> updatedAccessModules = acosCollection.getAccessModules();
-				    updatedAccessModules.add(accessModule);
-				    acosCollection.setAccessModules(updatedAccessModules);
-				}
+		acosCollections = IteratorUtils.toList(acosCollectionIterator);
+
+		if (acosCollections != null) {
+		    for (AccessModule accessModule : accessControl.getAccessModules()) {
+			boolean match = false;
+			for (AcosCollection acosCollection : acosCollections) {
+			    if (accessModule.getModule() != null && accessModule.getUrl() != null
+				    && accessModule.getModule().trim().equals(acosCollection.getModule())
+				    && accessModule.getUrl().trim().equals(acosCollection.getUrl())) {
+				BeanUtil.map(accessModule, acosCollection);
+				match = true;
+				break;
 			    }
 			}
-
+			if (!match) {
+			    AcosCollection acosCollection = new AcosCollection();
+			    BeanUtil.map(accessModule, acosCollection);
+			    acosCollections.add(acosCollection);
+			}
+		    }
+		} else {
+		    acosCollections = new ArrayList<AcosCollection>();
+		    if (accessControl.getAccessModules() != null && !accessControl.getAccessModules().isEmpty()) {
+			for (AccessModule accessModule : accessControl.getAccessModules()) {
+			    AcosCollection acosCollection = new AcosCollection();
+			    BeanUtil.map(accessModule, acosCollection);
+			    acosCollections.add(acosCollection);
+			}
 		    }
 		}
-		acosCollection = acosRepository.save(acosCollection);
+		acosCollections = acosRepository.save(acosCollections);
 	    } else {
 		arosCollection = new ArosCollection();
-		acosCollection = new AcosCollection();
+		acosCollections = new ArrayList<AcosCollection>();
 		arosAcosCollection = new ArosAcosCollection();
+		if (accessControl.getAccessModules() != null && !accessControl.getAccessModules().isEmpty()) {
+		    for (AccessModule accessModule : accessControl.getAccessModules()) {
+			AcosCollection acosCollection = new AcosCollection();
+			BeanUtil.map(accessModule, acosCollection);
+			acosCollections.add(acosCollection);
+		    }
+		}
 		BeanUtil.map(accessControl, arosCollection);
-		BeanUtil.map(accessControl, acosCollection);
-		arosCollection = arosRepository.save(arosCollection);
-		acosCollection = acosRepository.save(acosCollection);
-		arosAcosCollection.setArosId(arosCollection.getId());
-		arosAcosCollection.setAcosId(acosCollection.getId());
-		arosAcosCollection = arosAcosRepository.save(arosAcosCollection);
 	    }
+
+	    arosCollection = arosRepository.save(arosCollection);
+	    acosCollections = acosRepository.save(acosCollections);
+	    arosAcosCollection.setArosId(arosCollection.getId());
+	    List<String> acosIds = new ArrayList<String>(CollectionUtils.collect(acosCollections, new BeanToPropertyValueTransformer("id")));
+	    List<String> finalAcosIds = arosAcosCollection.getAcosIds();
+	    if (finalAcosIds == null)
+		finalAcosIds = new ArrayList<String>();
+	    finalAcosIds.addAll(acosIds);
+	    finalAcosIds = new ArrayList<String>(new LinkedHashSet<String>(finalAcosIds));
+	    arosAcosCollection.setAcosIds(finalAcosIds);
+	    arosAcosCollection = arosAcosRepository.save(arosAcosCollection);
+
+	    response = new AccessControl();
 	    BeanUtil.map(arosCollection, response);
-	    BeanUtil.map(acosCollection, response);
-	    BeanUtil.map(arosAcosCollection, response);
+	    List<AccessModule> accessModules = new ArrayList<AccessModule>();
+	    BeanUtil.map(acosCollections, accessModules);
+	    response.setAccessModules(accessModules);
 	} catch (Exception e) {
 	    throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 	}

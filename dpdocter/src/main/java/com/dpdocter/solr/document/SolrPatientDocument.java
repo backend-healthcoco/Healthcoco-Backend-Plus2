@@ -28,10 +28,7 @@ public class SolrPatientDocument {
     private String firstName;
 
     @Field
-    private String middleName;
-
-    @Field
-    private String lastName;
+    private String firstNameWithoutSpace;
 
     @Field
     private String gender;
@@ -95,6 +92,9 @@ public class SolrPatientDocument {
     @Field
     private Long registrationDate;
 
+    @Field
+    private String userUId;
+
     public String getId() {
 	return id;
     }
@@ -133,22 +133,16 @@ public class SolrPatientDocument {
 
     public void setFirstName(String firstName) {
 	this.firstName = firstName;
+	if (firstName != null)
+	    setFirstNameWithoutSpace(firstName);
     }
 
-    public String getMiddleName() {
-	return middleName;
+    public String getFirstNameWithoutSpace() {
+	return firstNameWithoutSpace;
     }
 
-    public void setMiddleName(String middleName) {
-	this.middleName = middleName;
-    }
-
-    public String getLastName() {
-	return lastName;
-    }
-
-    public void setLastName(String lastName) {
-	this.lastName = lastName;
+    public void setFirstNameWithoutSpace(String firstNameWithoutSpace) {
+	this.firstNameWithoutSpace = firstNameWithoutSpace.replaceAll("\\s+", "");
     }
 
     public String getGender() {
@@ -303,32 +297,40 @@ public class SolrPatientDocument {
 	this.colorCode = colorCode;
     }
 
-	public Long getRegistrationDate() {
-		return registrationDate;
+    public Long getRegistrationDate() {
+	return registrationDate;
+    }
+
+    public void setRegistrationDate(Long registrationDate) {
+	this.registrationDate = registrationDate;
+    }
+
+    public String getThumbnailUrl() {
+	return thumbnailUrl;
+    }
+
+    public void setThumbnailUrl(String thumbnailUrl) {
+	this.thumbnailUrl = thumbnailUrl;
+    }
+
+	public String getUserUId() {
+		return userUId;
 	}
 
-	public void setRegistrationDate(Long registrationDate) {
-		this.registrationDate = registrationDate;
-	}
-
-	public String getThumbnailUrl() {
-		return thumbnailUrl;
-	}
-
-	public void setThumbnailUrl(String thumbnailUrl) {
-		this.thumbnailUrl = thumbnailUrl;
+	public void setUserUId(String userUId) {
+		this.userUId = userUId;
 	}
 
 	@Override
 	public String toString() {
 		return "SolrPatientDocument [id=" + id + ", userId=" + userId + ", PID=" + PID + ", userName=" + userName
-				+ ", firstName=" + firstName + ", middleName=" + middleName + ", lastName=" + lastName + ", gender="
-				+ gender + ", bloodGroup=" + bloodGroup + ", emailAddress=" + emailAddress + ", days=" + days
-				+ ", months=" + months + ", years=" + years + ", dob=" + dob + ", city=" + city + ", locality="
-				+ locality + ", postalCode=" + postalCode + ", mobileNumber=" + mobileNumber + ", profession="
-				+ profession + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", firstName=" + firstName + ", firstNameWithoutSpace=" + firstNameWithoutSpace + ", gender=" + gender
+				+ ", bloodGroup=" + bloodGroup + ", emailAddress=" + emailAddress + ", days=" + days + ", months="
+				+ months + ", years=" + years + ", dob=" + dob + ", city=" + city + ", locality=" + locality
+				+ ", postalCode=" + postalCode + ", mobileNumber=" + mobileNumber + ", profession=" + profession
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ ", referredBy=" + referredBy + ", createdTime=" + createdTime + ", imageUrl=" + imageUrl
 				+ ", thumbnailUrl=" + thumbnailUrl + ", colorCode=" + colorCode + ", registrationDate="
-				+ registrationDate + "]";
+				+ registrationDate + ", userUId=" + userUId + "]";
 	}
 }

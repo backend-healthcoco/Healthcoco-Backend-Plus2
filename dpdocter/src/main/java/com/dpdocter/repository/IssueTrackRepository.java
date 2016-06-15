@@ -3,7 +3,6 @@ package com.dpdocter.repository;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -14,112 +13,43 @@ import com.dpdocter.collections.IssueTrackCollection;
 
 public interface IssueTrackRepository extends MongoRepository<IssueTrackCollection, String>, PagingAndSortingRepository<IssueTrackCollection, String> {
 
-    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}}")
-    List<IssueTrackCollection> findAll(String doctorId, Date date, Pageable pageable);
+    @Query("{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
+    List<IssueTrackCollection> findAll(String doctorId, Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}}")
-    List<IssueTrackCollection> findAll(String doctorId, Date date, Sort sort);
+    @Query("{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
+    List<IssueTrackCollection> findAll(String doctorId, Date date, boolean[] discards, Sort sort);
 
-    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2}")
-    List<IssueTrackCollection> findAll(String doctorId, Date date, Boolean discarded, Pageable pageable);
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}}")
+    List<IssueTrackCollection> findAll(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2}")
-    List<IssueTrackCollection> findAll(String doctorId, Date date, Boolean discarded, Sort sort);
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}}")
+    List<IssueTrackCollection> findAll(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards, Sort sort);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}}")
-    List<IssueTrackCollection> findAll(String doctorId, String locationId, String hospitalId, Date date, Pageable pageable);
+    @Query("{'doctorId': ?0, 'status': ?1, 'updatedTime': {'$gt': ?2}, 'discarded': {$in: ?3}}")
+    List<IssueTrackCollection> findAll(String doctorId, String status, Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}}")
-    List<IssueTrackCollection> findAll(String doctorId, String locationId, String hospitalId, Date date, Sort sort);
+    @Query("{'doctorId': ?0, 'status': ?1, 'updatedTime': {'$gt': ?2}, 'discarded': {$in: ?3}}")
+    List<IssueTrackCollection> findAll(String doctorId, String status, Date date, boolean[] discards, Sort sort);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': ?4}")
-    List<IssueTrackCollection> findAll(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded, Pageable pageable);
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'status': ?3, 'updatedTime': {'$gt': ?4}, 'discarded': {$in: ?5}}")
+    List<IssueTrackCollection> findAll(String doctorId, String locationId, String hospitalId, String status, Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': ?4}")
-    List<IssueTrackCollection> findAll(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded, Sort sort);
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'status': ?3, 'updatedTime': {'$gt': ?4}, 'discarded': {$in: ?5}}")
+    List<IssueTrackCollection> findAll(String doctorId, String locationId, String hospitalId, String status, Date date, boolean[] discards, Sort sort);
 
-    @Query("{'doctorId': ?0}")
-    List<IssueTrackCollection> findAll(String doctorId, Pageable pageable);
+    @Query("{'status': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
+    List<IssueTrackCollection> findByStatus(String status, Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'doctorId': ?0}")
-    List<IssueTrackCollection> findAll(String doctorId, Sort sort);
-
-    @Query("{'doctorId': ?0, 'discarded': ?1}")
-    List<IssueTrackCollection> findAll(String doctorId, Boolean discarded, Pageable pageable);
-
-    @Query("{'doctorId': ?0, 'discarded': ?1}")
-    List<IssueTrackCollection> findAll(String doctorId, Boolean discarded, Sort sort);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2}")
-    List<IssueTrackCollection> findAll(String doctorId, String locationId, String hospitalId, Pageable pageable);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2}")
-    List<IssueTrackCollection> findAll(String doctorId, String locationId, String hospitalId, Sort sort);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3}")
-    List<IssueTrackCollection> findAll(String doctorId, String locationId, String hospitalId, Boolean discarded, Pageable pageable);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3}")
-    List<IssueTrackCollection> findAll(String doctorId, String locationId, String hospitalId, Boolean discarded, Sort sort);
-
-    @Query("{'doctorId': ?0, 'status': ?1, 'updatedTime': {'$gte': ?2}}")
-    List<IssueTrackCollection> findAll(String doctorId, String status, Date date, Pageable pageable);
-
-    @Query("{'doctorId': ?0, 'status': ?1, 'updatedTime': {'$gte': ?2}}")
-    List<IssueTrackCollection> findAll(String doctorId, String status, Date date, Sort sort);
-
-    @Query("{'doctorId': ?0, 'status': ?1, 'updatedTime': {'$gte': ?2}, 'discarded': ?3}")
-    List<IssueTrackCollection> findAll(String doctorId, String status, Date date, Boolean discarded, Pageable pageable);
-
-    @Query("{'doctorId': ?0, 'status': ?1, 'updatedTime': {'$gte': ?2}, 'discarded': ?3}")
-    List<IssueTrackCollection> findAll(String doctorId, String status, Date date, Boolean discarded, Sort sort);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'status': ?3, 'updatedTime': {'$gte': ?4}}")
-    List<IssueTrackCollection> findAll(String doctorId, String locationId, String hospitalId, String status, Date date, Pageable pageable);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'status': ?3, 'updatedTime': {'$gte': ?4}}")
-    List<IssueTrackCollection> findAll(String doctorId, String locationId, String hospitalId, String status, Date date, Sort sort);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'status': ?3, 'updatedTime': {'$gte': ?4}, 'discarded': ?5}")
-    List<IssueTrackCollection> findAll(String doctorId, String locationId, String hospitalId, String status, Date date, Boolean discarded, Pageable pageable);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'status': ?3, 'updatedTime': {'$gte': ?4}, 'discarded': ?5}")
-    List<IssueTrackCollection> findAll(String doctorId, String locationId, String hospitalId, String status, Date date, Boolean discarded, Sort sort);
-
-    @Query("{'doctorId': ?0, 'status': ?1}")
-    List<IssueTrackCollection> findAll(String doctorId, String status, Pageable pageable);
-
-    @Query("{'doctorId': ?0, 'status': ?1}")
-    List<IssueTrackCollection> findAll(String doctorId, String status, Sort sort);
-
-    @Query("{'doctorId': ?0, 'discarded': ?1, 'status': ?2}")
-    List<IssueTrackCollection> findAll(String doctorId, Boolean discarded, String status, Pageable pageable);
-
-    @Query("{'doctorId': ?0, 'discarded': ?1, 'status': ?2}")
-    List<IssueTrackCollection> findAll(String doctorId, Boolean discarded, String status, Sort sort);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'status': ?3}")
-    List<IssueTrackCollection> findAll(String doctorId, String locationId, String hospitalId, String status, Pageable pageable);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3, 'status': ?4}")
-    List<IssueTrackCollection> findAll(String doctorId, String locationId, String hospitalId, Boolean discarded, String status, Pageable pageable);
-
-    @Query("{'status': ?0}")
-    List<IssueTrackCollection> findByStatus(String status, Pageable pageable);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'status': ?3}")
-    List<IssueTrackCollection> findAll(String doctorId, String locationId, String hospitalId, String status, Sort sort);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3, 'status': ?4}")
-    List<IssueTrackCollection> findAll(String doctorId, String locationId, String hospitalId, Boolean discarded, String status, Sort sort);
-
-    @Query("{'status': ?0}")
-    List<IssueTrackCollection> findByStatus(String status, Sort sort);
-
-    @Override
-    Page<IssueTrackCollection> findAll(Pageable pageable);
+    @Query("{'status': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
+    List<IssueTrackCollection> findByStatus(String status, Date date, boolean[] discards, Sort sort);
 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2}")
     List<IssueTrackCollection> findAll(String doctorId, String locationId, String hospitalId);
+
+    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+    List<IssueTrackCollection> findAll(Date date, boolean[] discards, Pageable pageable);
+
+    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+    List<IssueTrackCollection> findAll(Date date, boolean[] discards, Sort sort);
 
 }

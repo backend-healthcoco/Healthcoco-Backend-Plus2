@@ -21,7 +21,11 @@ public class PrintSettings extends GenericCollection {
 
     private FooterSetup footerSetup;
 
+    private PrintSettingsText contentSetup;
+    
     private Boolean discarded = false;
+
+    private String clinicLogoUrl;
 
     public String getId() {
 	return id;
@@ -95,10 +99,27 @@ public class PrintSettings extends GenericCollection {
 	this.discarded = discarded;
     }
 
-    @Override
-    public String toString() {
-	return "PrintSettings [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", componentType="
-		+ componentType + ", pageSetup=" + pageSetup + ", headerSetup=" + headerSetup + ", footerSetup=" + footerSetup + ", discarded=" + discarded
-		+ "]";
+    public String getClinicLogoUrl() {
+	return clinicLogoUrl;
     }
+
+    public void setClinicLogoUrl(String clinicLogoUrl) {
+	this.clinicLogoUrl = clinicLogoUrl;
+    }
+
+	public PrintSettingsText getContentSetup() {
+		return contentSetup;
+	}
+
+	public void setContentSetup(PrintSettingsText contentSetup) {
+		this.contentSetup = contentSetup;
+	}
+
+	@Override
+	public String toString() {
+		return "PrintSettings [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", componentType=" + componentType + ", pageSetup=" + pageSetup + ", headerSetup="
+				+ headerSetup + ", footerSetup=" + footerSetup + ", contentSetup=" + contentSetup + ", discarded="
+				+ discarded + ", clinicLogoUrl=" + clinicLogoUrl + "]";
+	}
 }

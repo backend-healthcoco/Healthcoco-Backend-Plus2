@@ -1,0 +1,37 @@
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body cz-shortcut-listen="true" style="font-family: 'Open Sans', sans-serif; font-size:15px; color:#2c3335;">
+
+  <div style="margin:20px auto; max-width:800px; min-width:320px;">
+
+    <div style="margin-top:5px">
+
+      <div style="margin: 10px -20px;">
+       <img src="${imageURL}logo1.png" style="width:280px;">
+      </div>
+      <div style="border-bottom: 2px solid #0077b5;"></div>
+      
+      <div>
+        <p style="margin:20px 0px; line-height: 20px;">Healthcoco ${fName}!<br><br>
+        ${doctorName} has requested you to share your health records with him.<br> Please share One Time Password that was sent on your registered mobile number with ${doctorName} to share your health records. <br><br>If you have any questions or need help you can contact us anytime at<a style="color:#0077b5; text-decoration:none;" href="" target="_blank"> usersfirst@healthcoco.com</a>
+        <br><br>Stay Healthy and Happy,<br>The Healthcoco Team.
+      </div>
+     </div>
+
+     
+      <div style="clear:both;">
+
+    <div style="border-bottom: 2px solid #0077b5;"></div>
+
+    <div style="margin:10px auto;">
+      <p style="text-align:center;">© 2016 Healthcoco Technologies Pvt Ltd.</p>
+    </div>
+  </div>
+
+</body>
+</html>

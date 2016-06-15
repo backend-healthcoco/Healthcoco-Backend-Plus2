@@ -11,10 +11,6 @@ public class DoctorProfile {
 
     private String firstName;
 
-    private String lastName;
-
-    private String middleName;
-
     private String emailAddress;
 
     private String mobileNumber;
@@ -22,10 +18,16 @@ public class DoctorProfile {
     private String gender;
 
     private String imageUrl;
-    
+
     private String thumbnailUrl;
 
     private DOB dob;
+
+    private String colorCode;
+
+    private String coverImageUrl;
+
+    private String coverThumbnailImageUrl;
 
     private List<String> additionalNumbers;
 
@@ -47,7 +49,7 @@ public class DoctorProfile {
 
     private List<String> professionalMemberships;
 
-    private DoctorClinicProfile clinicProfile;
+    private List<DoctorClinicProfile> clinicProfile;
 
     public String getId() {
 	return id;
@@ -79,22 +81,6 @@ public class DoctorProfile {
 
     public void setFirstName(String firstName) {
 	this.firstName = firstName;
-    }
-
-    public String getLastName() {
-	return lastName;
-    }
-
-    public void setLastName(String lastName) {
-	this.lastName = lastName;
-    }
-
-    public String getMiddleName() {
-	return middleName;
-    }
-
-    public void setMiddleName(String middleName) {
-	this.middleName = middleName;
     }
 
     public String getEmailAddress() {
@@ -217,31 +203,54 @@ public class DoctorProfile {
 	this.professionalMemberships = professionalMemberships;
     }
 
-    public DoctorClinicProfile getClinicProfile() {
+    public String getThumbnailUrl() {
+	return thumbnailUrl;
+    }
+
+    public void setThumbnailUrl(String thumbnailUrl) {
+	this.thumbnailUrl = thumbnailUrl;
+    }
+
+    public List<DoctorClinicProfile> getClinicProfile() {
 	return clinicProfile;
     }
 
-    public void setClinicProfile(DoctorClinicProfile clinicProfile) {
+    public void setClinicProfile(List<DoctorClinicProfile> clinicProfile) {
 	this.clinicProfile = clinicProfile;
     }
 
-	public String getThumbnailUrl() {
-		return thumbnailUrl;
-	}
+    public String getCoverImageUrl() {
+	return coverImageUrl;
+    }
 
-	public void setThumbnailUrl(String thumbnailUrl) {
-		this.thumbnailUrl = thumbnailUrl;
-	}
+    public void setCoverImageUrl(String coverImageUrl) {
+	this.coverImageUrl = coverImageUrl;
+    }
 
-	@Override
-	public String toString() {
-		return "DoctorProfile [id=" + id + ", userId=" + userId + ", title=" + title + ", firstName=" + firstName
-				+ ", lastName=" + lastName + ", middleName=" + middleName + ", emailAddress=" + emailAddress
-				+ ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl=" + imageUrl + ", thumbnailUrl="
-				+ thumbnailUrl + ", dob=" + dob + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses="
-				+ otherEmailAddresses + ", experience=" + experience + ", education=" + education + ", specialities="
-				+ specialities + ", achievements=" + achievements + ", professionalStatement=" + professionalStatement
-				+ ", registrationDetails=" + registrationDetails + ", experienceDetails=" + experienceDetails
-				+ ", professionalMemberships=" + professionalMemberships + ", clinicProfile=" + clinicProfile + "]";
-	}
+    public String getCoverThumbnailImageUrl() {
+	return coverThumbnailImageUrl;
+    }
+
+    public void setCoverThumbnailImageUrl(String coverThumbnailImageUrl) {
+	this.coverThumbnailImageUrl = coverThumbnailImageUrl;
+    }
+
+    public String getColorCode() {
+	return colorCode;
+    }
+
+    public void setColorCode(String colorCode) {
+	this.colorCode = colorCode;
+    }
+
+    @Override
+    public String toString() {
+	return "DoctorProfile [id=" + id + ", userId=" + userId + ", title=" + title + ", firstName=" + firstName + ", emailAddress=" + emailAddress
+		+ ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", dob=" + dob
+		+ ", colorCode=" + colorCode + ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl
+		+ ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses=" + otherEmailAddresses + ", experience=" + experience + ", education="
+		+ education + ", specialities=" + specialities + ", achievements=" + achievements + ", professionalStatement=" + professionalStatement
+		+ ", registrationDetails=" + registrationDetails + ", experienceDetails=" + experienceDetails + ", professionalMemberships="
+		+ professionalMemberships + ", clinicProfile=" + clinicProfile + "]";
+    }
 }

@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -12,9 +13,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +33,11 @@ import com.dpdocter.request.ImportContactsRequest;
 import com.dpdocter.request.PatientGroupAddEditRequest;
 import com.dpdocter.services.ContactsService;
 import com.dpdocter.services.PatientVisitService;
+
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 /**
  * @author veeraj
@@ -45,6 +47,7 @@ import common.util.web.Response;
 @Path(PathProxy.CONTACTS_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(value = PathProxy.CONTACTS_BASE_URL, description = "Endpoint for contacts")
 public class ContactsApi {
 
     private static Logger logger = Logger.getLogger(ContactsApi.class.getName());
@@ -55,13 +58,11 @@ public class ContactsApi {
     @Autowired
     private PatientVisitService patientTrackService;
 
-    @Context
-    private UriInfo uriInfo;
-
-    @Value(value = "${IMAGE_URL_ROOT_PATH}")
-    private String imageUrlRootPath;
+    @Value(value = "${image.path}")
+    private String imagePath;
 
     @POST
+    @ApiOperation(value = "GET_DOCTOR_CONTACTS", notes = "GET_DOCTOR_CONTACTS")
     public Response<DoctorContactsResponse> doctorContacts(GetDoctorContactsRequest request) {
 	List<PatientCard> patientCards = contactsService.getDoctorContacts(request);
 	int ttlCount = contactsService.getContactsTotalSize(request);
@@ -81,9 +82,10 @@ public class ContactsApi {
 
     @Path(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_DOCTOR_SPECIFIC)
     @GET
+    @ApiOperation(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_DOCTOR_SPECIFIC, notes = PathProxy.ContactsUrls.DOCTOR_CONTACTS_DOCTOR_SPECIFIC)
     public Response<DoctorContactsResponse> getDoctorContacts(@PathParam("type") String type, @QueryParam("page") int page, @QueryParam("size") int size,
 	    @QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-	    @QueryParam("updatedTime") String updatedTime, @QueryParam("discarded") Boolean discarded) {
+	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 
 	DoctorContactsResponse doctorContactsResponse = null;
 
@@ -94,7 +96,10 @@ public class ContactsApi {
 
 	switch (ContactsSearchType.valueOf(type.toUpperCase())) {
 	case DOCTORCONTACTS:
-	    doctorContactsResponse = doctorContacts(page, size, doctorId, updatedTime, discarded);
+	    doctorContactsResponse = contactsService.getDoctorContactsSortedByName(doctorId, locationId, hospitalId, updatedTime, discarded, page, size);
+	    break;
+	case RECENTLYADDED:
+	    doctorContactsResponse = contactsService.getDoctorContacts(doctorId, locationId, hospitalId, updatedTime, discarded, page, size);
 	    break;
 	case RECENTLYVISITED:
 	    doctorContactsResponse = patientTrackService.recentlyVisited(doctorId, locationId, hospitalId, page, size);
@@ -106,7 +111,7 @@ public class ContactsApi {
 	    break;
 	}
 
-	if (doctorContactsResponse.getPatientCards() != null && !doctorContactsResponse.getPatientCards().isEmpty()) {
+	if (doctorContactsResponse != null && doctorContactsResponse.getPatientCards() != null && !doctorContactsResponse.getPatientCards().isEmpty()) {
 	    for (PatientCard patientCard : doctorContactsResponse.getPatientCards()) {
 		patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
 		patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
@@ -120,32 +125,15 @@ public class ContactsApi {
 
     }
 
-    private DoctorContactsResponse doctorContacts(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
-	    @QueryParam("updatedTime") String updatedTime, @QueryParam("discarded") Boolean discarded) {
-	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
-	    logger.warn("Invalid Input. Doctor Id Cannot Be Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id Cannot Be Empty");
-	}
-	List<PatientCard> patientCards = contactsService.getDoctorContacts(doctorId, updatedTime, discarded != null ? discarded : true, page, size);
-
-	int ttlCount = patientCards != null ? patientCards.size() : 0;
-
-	DoctorContactsResponse doctorContactsResponse = new DoctorContactsResponse();
-	doctorContactsResponse.setPatientCards(patientCards);
-	doctorContactsResponse.setTotalSize(ttlCount);
-	return doctorContactsResponse;
-    }
-
     @Path(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_HANDHELD)
     @GET
+    @ApiOperation(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_HANDHELD, notes = PathProxy.ContactsUrls.DOCTOR_CONTACTS_HANDHELD)
     public Response<RegisteredPatientDetails> getDoctorContactsHandheld(@QueryParam(value = "doctorId") String doctorId,
 	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
-	    @QueryParam(value = "updatedTime") String updatedTime, @QueryParam(value = "discarded") Boolean discarded) {
+	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 
-	if (discarded != null)
-	    return doctorContactsHandheld(doctorId, locationId, hospitalId, updatedTime, discarded);
-	else
-	    return doctorContactsHandheld(doctorId, locationId, hospitalId, updatedTime, true);
+	return doctorContactsHandheld(doctorId, locationId, hospitalId, updatedTime, discarded);
     }
 
     private Response<RegisteredPatientDetails> doctorContactsHandheld(String doctorId, String locationId, String hospitalId, String updatedTime,
@@ -165,6 +153,7 @@ public class ContactsApi {
 
     @Path(value = PathProxy.ContactsUrls.IMPORT_CONTACTS)
     @POST
+    @ApiOperation(value = PathProxy.ContactsUrls.IMPORT_CONTACTS, notes = PathProxy.ContactsUrls.IMPORT_CONTACTS)
     public Response<Boolean> importContacts(ImportContactsRequest request) {
 	if (request == null) {
 	    logger.warn("Invalid Input. Import Request Cannot Be Empty");
@@ -178,6 +167,7 @@ public class ContactsApi {
 
     @Path(value = PathProxy.ContactsUrls.EXPORT_CONTACTS)
     @POST
+    @ApiOperation(value = PathProxy.ContactsUrls.EXPORT_CONTACTS, notes = PathProxy.ContactsUrls.EXPORT_CONTACTS)
     public Response<Boolean> exportContacts(ExportContactsRequest request) {
 	if (request == null) {
 	    logger.warn("Invalid Input. Export Request Cannot Be Empty");
@@ -191,6 +181,7 @@ public class ContactsApi {
 
     @Path(value = PathProxy.ContactsUrls.BLOCK_CONTACT)
     @GET
+    @ApiOperation(value = PathProxy.ContactsUrls.BLOCK_CONTACT, notes = PathProxy.ContactsUrls.BLOCK_CONTACT)
     public Response<Boolean> blockPatient(@PathParam("doctorId") String doctorId, @PathParam("patientId") String patientId) {
 	contactsService.blockPatient(patientId, doctorId);
 	Response<Boolean> response = new Response<Boolean>();
@@ -200,6 +191,7 @@ public class ContactsApi {
 
     @Path(value = PathProxy.ContactsUrls.ADD_GROUP)
     @POST
+    @ApiOperation(value = PathProxy.ContactsUrls.ADD_GROUP, notes = PathProxy.ContactsUrls.ADD_GROUP)
     public Response<Group> addGroup(Group group) {
 	Group responseGroup = contactsService.addEditGroup(group);
 	Response<Group> response = new Response<Group>();
@@ -209,6 +201,7 @@ public class ContactsApi {
 
     @Path(value = PathProxy.ContactsUrls.EDIT_GROUP)
     @PUT
+    @ApiOperation(value = PathProxy.ContactsUrls.EDIT_GROUP, notes = PathProxy.ContactsUrls.EDIT_GROUP)
     public Response<Group> editGroup(@PathParam("groupId") String groupId, Group group) {
 	if (DPDoctorUtils.anyStringEmpty(groupId)) {
 	    logger.warn("Invalid Input. GroupId Cannot Be Empty");
@@ -223,15 +216,17 @@ public class ContactsApi {
 
     @Path(value = PathProxy.ContactsUrls.DELETE_GROUP)
     @DELETE
-    public Response<Boolean> deleteGroup(@PathParam("groupId") String groupId, @QueryParam("discarded") Boolean discarded) {
-	Boolean groupDeleteResponse = contactsService.deleteGroup(groupId, discarded);
-	Response<Boolean> response = new Response<Boolean>();
+    @ApiOperation(value = PathProxy.ContactsUrls.DELETE_GROUP, notes = PathProxy.ContactsUrls.DELETE_GROUP)
+    public Response<Group> deleteGroup(@PathParam("groupId") String groupId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    	Group groupDeleteResponse = contactsService.deleteGroup(groupId, discarded);
+	Response<Group> response = new Response<Group>();
 	response.setData(groupDeleteResponse);
 	return response;
     }
 
     @Path(value = PathProxy.ContactsUrls.TOTAL_COUNT)
     @POST
+    @ApiOperation(value = PathProxy.ContactsUrls.TOTAL_COUNT, notes = PathProxy.ContactsUrls.TOTAL_COUNT)
     public Response<Integer> doctorContactsCount(GetDoctorContactsRequest request) {
 	int ttlCount = contactsService.getContactsTotalSize(request);
 	Response<Integer> response = new Response<Integer>();
@@ -241,14 +236,12 @@ public class ContactsApi {
 
     @Path(value = PathProxy.ContactsUrls.GET_ALL_GROUPS)
     @GET
+    @ApiOperation(value = PathProxy.ContactsUrls.GET_ALL_GROUPS, notes = PathProxy.ContactsUrls.GET_ALL_GROUPS)
     public Response<Group> getAllGroups(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
-	    @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId, @QueryParam("updatedTime") String updatedTime,
-	    @QueryParam("discarded") Boolean discarded) {
+	    @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 
-	if (discarded != null)
-	    return getGroups(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
-	else
-	    return getGroups(page, size, doctorId, locationId, hospitalId, updatedTime, true);
+	return getGroups(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
     }
 
     private Response<Group> getGroups(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
@@ -271,6 +264,7 @@ public class ContactsApi {
 
     @Path(value = PathProxy.ContactsUrls.ADD_GROUP_TO_PATIENT)
     @POST
+    @ApiOperation(value = PathProxy.ContactsUrls.ADD_GROUP_TO_PATIENT, notes = PathProxy.ContactsUrls.ADD_GROUP_TO_PATIENT)
     public Response<PatientGroupAddEditRequest> addGroupToPatient(PatientGroupAddEditRequest request) {
 
 	PatientGroupAddEditRequest groups = contactsService.addGroupToPatient(request);
@@ -281,8 +275,7 @@ public class ContactsApi {
 
     private String getFinalImageURL(String imageURL) {
 	if (imageURL != null) {
-	    String finalImageURL = uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), imageUrlRootPath);
-	    return finalImageURL + imageURL;
+	    return imagePath + imageURL;
 	} else
 	    return null;
     }

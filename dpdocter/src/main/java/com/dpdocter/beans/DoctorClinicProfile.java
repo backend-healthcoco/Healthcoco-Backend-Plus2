@@ -2,12 +2,32 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import com.dpdocter.enums.DoctorFacility;
+
 public class DoctorClinicProfile {
     private String id;
 
+    private String doctorId;
+
     private String locationId;
 
+    private String hospitalId;
+
     private String clinicAddress;
+
+    private String locationName;
+
+    private String country;
+
+    private String state;
+
+    private String city;
+
+    private String postalCode;
+
+    private Double latitude;
+
+    private Double longitude;
 
     private String patientInitial = "P";
 
@@ -21,6 +41,32 @@ public class DoctorClinicProfile {
 
     private List<WorkingSchedule> workingSchedules;
 
+    private DoctorFacility facility;
+
+    private List<ClinicImage> images;
+
+    private String logoUrl;
+
+    private String logoThumbnailUrl;
+
+    private Integer noOfReviews = 0;
+
+    private Integer noOfRecommenations = 0;
+
+    private Boolean isClinic = true;
+
+    private Boolean isLab = false;
+
+    private Boolean isOnlineReportsAvailable = false;
+
+    private Boolean isNABLAccredited = false;
+
+    private Boolean isHomeServiceAvailable = false;
+
+    private String locality;
+    
+    private String timeZone = "IST";
+    		
     public String getId() {
 	return id;
     }
@@ -93,11 +139,195 @@ public class DoctorClinicProfile {
 	this.workingSchedules = workingSchedules;
     }
 
-    @Override
-    public String toString() {
-	return "DoctorClinicProfile [id=" + id + ", locationId=" + locationId + ", clinicAddress=" + clinicAddress + ", patientInitial=" + patientInitial
-		+ ", patientCounter=" + patientCounter + ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee=" + consultationFee
-		+ ", appointmentSlot=" + appointmentSlot + ", workingSchedules=" + workingSchedules + "]";
+    public List<ClinicImage> getImages() {
+	return images;
     }
 
+    public void setImages(List<ClinicImage> images) {
+	this.images = images;
+    }
+
+    public String getLogoUrl() {
+	return logoUrl;
+    }
+
+    public void setLogoUrl(String logoUrl) {
+	this.logoUrl = logoUrl;
+    }
+
+    public String getLogoThumbnailUrl() {
+	return logoThumbnailUrl;
+    }
+
+    public void setLogoThumbnailUrl(String logoThumbnailUrl) {
+	this.logoThumbnailUrl = logoThumbnailUrl;
+    }
+
+    public String getLocationName() {
+	return locationName;
+    }
+
+    public void setLocationName(String locationName) {
+	this.locationName = locationName;
+    }
+
+    public String getCountry() {
+	return country;
+    }
+
+    public void setCountry(String country) {
+	this.country = country;
+    }
+
+    public String getState() {
+	return state;
+    }
+
+    public void setState(String state) {
+	this.state = state;
+    }
+
+    public String getCity() {
+	return city;
+    }
+
+    public void setCity(String city) {
+	this.city = city;
+    }
+
+    public String getPostalCode() {
+	return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+	this.postalCode = postalCode;
+    }
+
+    public DoctorFacility getFacility() {
+	return facility;
+    }
+
+    public void setFacility(DoctorFacility facility) {
+	this.facility = facility;
+    }
+
+    public Integer getNoOfReviews() {
+	return noOfReviews;
+    }
+
+    public void setNoOfReviews(Integer noOfReviews) {
+	this.noOfReviews = noOfReviews;
+    }
+
+    public Integer getNoOfRecommenations() {
+	return noOfRecommenations;
+    }
+
+    public void setNoOfRecommenations(Integer noOfRecommenations) {
+	this.noOfRecommenations = noOfRecommenations;
+    }
+
+    public String getDoctorId() {
+	return doctorId;
+    }
+
+    public void setDoctorId(String doctorId) {
+	this.doctorId = doctorId;
+    }
+
+    public String getHospitalId() {
+	return hospitalId;
+    }
+
+    public void setHospitalId(String hospitalId) {
+	this.hospitalId = hospitalId;
+    }
+
+    public Double getLatitude() {
+	return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+	this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+	return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+	this.longitude = longitude;
+    }
+
+    public Boolean getIsLab() {
+	return isLab;
+    }
+
+    public void setIsLab(Boolean isLab) {
+	this.isLab = isLab;
+    }
+
+    public Boolean getIsOnlineReportsAvailable() {
+	return isOnlineReportsAvailable;
+    }
+
+    public void setIsOnlineReportsAvailable(Boolean isOnlineReportsAvailable) {
+	this.isOnlineReportsAvailable = isOnlineReportsAvailable;
+    }
+
+    public Boolean getIsNABLAccredited() {
+	return isNABLAccredited;
+    }
+
+    public void setIsNABLAccredited(Boolean isNABLAccredited) {
+	this.isNABLAccredited = isNABLAccredited;
+    }
+
+    public Boolean getIsHomeServiceAvailable() {
+	return isHomeServiceAvailable;
+    }
+
+    public void setIsHomeServiceAvailable(Boolean isHomeServiceAvailable) {
+	this.isHomeServiceAvailable = isHomeServiceAvailable;
+    }
+
+    public Boolean getIsClinic() {
+	return isClinic;
+    }
+
+    public void setIsClinic(Boolean isClinic) {
+	this.isClinic = isClinic;
+    }
+
+	public String getLocality() {
+		return locality;
+	}
+
+	public void setLocality(String locality) {
+		this.locality = locality;
+	}
+
+	public String getTimeZone() {
+		return timeZone;
+	}
+
+	public void setTimeZone(String timeZone) {
+		this.timeZone = timeZone;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorClinicProfile [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", clinicAddress=" + clinicAddress + ", locationName=" + locationName
+				+ ", country=" + country + ", state=" + state + ", city=" + city + ", postalCode=" + postalCode
+				+ ", latitude=" + latitude + ", longitude=" + longitude + ", patientInitial=" + patientInitial
+				+ ", patientCounter=" + patientCounter + ", appointmentBookingNumber=" + appointmentBookingNumber
+				+ ", consultationFee=" + consultationFee + ", appointmentSlot=" + appointmentSlot
+				+ ", workingSchedules=" + workingSchedules + ", facility=" + facility + ", images=" + images
+				+ ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + ", noOfReviews=" + noOfReviews
+				+ ", noOfRecommenations=" + noOfRecommenations + ", isClinic=" + isClinic + ", isLab=" + isLab
+				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
+				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", locality=" + locality + ", timeZone="
+				+ timeZone + "]";
+	}
 }

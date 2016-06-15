@@ -8,6 +8,8 @@ public class ClinicalNotes extends GenericCollection {
 
     private String id;
 
+    private String uniqueEmrId;
+
     private List<Complaint> complaints;
 
     private List<Observation> observations;
@@ -15,8 +17,6 @@ public class ClinicalNotes extends GenericCollection {
     private List<Investigation> investigations;
 
     private List<Diagnoses> diagnoses;
-
-    private Long createdDate;
 
     private List<Diagram> diagrams;
 
@@ -28,13 +28,15 @@ public class ClinicalNotes extends GenericCollection {
 
     private String hospitalId;
 
-    private String doctorName;
-
     private boolean inHistory = false;
 
     private Boolean discarded = false;
 
     private String visitId;
+
+    private String patientId;
+
+    private VitalSigns vitalSigns;
 
     public String getId() {
 	return id;
@@ -74,14 +76,6 @@ public class ClinicalNotes extends GenericCollection {
 
     public void setDiagnoses(List<Diagnoses> diagnoses) {
 	this.diagnoses = diagnoses;
-    }
-
-    public Long getCreatedDate() {
-	return createdDate;
-    }
-
-    public void setCreatedDate(Long createdDate) {
-	this.createdDate = createdDate;
     }
 
     public List<Diagram> getDiagrams() {
@@ -140,14 +134,6 @@ public class ClinicalNotes extends GenericCollection {
 	this.discarded = discarded;
     }
 
-    public String getDoctorName() {
-	return doctorName;
-    }
-
-    public void setDoctorName(String doctorName) {
-	this.doctorName = doctorName;
-    }
-
     public String getVisitId() {
 	return visitId;
     }
@@ -156,11 +142,36 @@ public class ClinicalNotes extends GenericCollection {
 	this.visitId = visitId;
     }
 
-    @Override
-    public String toString() {
-	return "ClinicalNotes [id=" + id + ", complaints=" + complaints + ", observations=" + observations + ", investigations=" + investigations
-		+ ", diagnoses=" + diagnoses + ", createdDate=" + createdDate + ", diagrams=" + diagrams + ", notes=" + notes + ", doctorId=" + doctorId
-		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorName=" + doctorName + ", inHistory=" + inHistory + ", discarded="
-		+ discarded + ", visitId=" + visitId + "]";
+    public String getPatientId() {
+	return patientId;
     }
+
+    public void setPatientId(String patientId) {
+	this.patientId = patientId;
+    }
+
+    public VitalSigns getVitalSigns() {
+	return vitalSigns;
+    }
+
+    public void setVitalSigns(VitalSigns vitalSigns) {
+	this.vitalSigns = vitalSigns;
+    }
+
+	public String getUniqueEmrId() {
+		return uniqueEmrId;
+	}
+
+	public void setUniqueEmrId(String uniqueEmrId) {
+		this.uniqueEmrId = uniqueEmrId;
+	}
+
+	@Override
+	public String toString() {
+		return "ClinicalNotes [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", complaints=" + complaints
+				+ ", observations=" + observations + ", investigations=" + investigations + ", diagnoses=" + diagnoses
+				+ ", diagrams=" + diagrams + ", notes=" + notes + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", inHistory=" + inHistory + ", discarded=" + discarded
+				+ ", visitId=" + visitId + ", patientId=" + patientId + ", vitalSigns=" + vitalSigns + "]";
+	}
 }

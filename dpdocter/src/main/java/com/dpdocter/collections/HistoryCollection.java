@@ -3,18 +3,24 @@ package com.dpdocter.collections;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.GeneralData;
 
 @Document(collection = "history_cl")
+@CompoundIndexes({
+    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
+})
 public class HistoryCollection extends GenericCollection {
 
     @Id
     private String id;
 
-    @Field
+    @Indexed
     private String doctorId;
 
     @Field
@@ -23,20 +29,11 @@ public class HistoryCollection extends GenericCollection {
     @Field
     private String hospitalId;
 
-    @Field
+    @Indexed
     private String patientId;
 
     @Field
     private List<GeneralData> generalRecords;
-
-    /*@Field
-    private List<String> reports;
-
-    @Field
-    private List<String> prescriptions;
-
-    @Field
-    private List<String> clinicalNotes;*/
 
     @Field
     private List<String> familyhistory;

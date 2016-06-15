@@ -1,6 +1,7 @@
 package com.dpdocter.collections;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -9,7 +10,7 @@ public class UserRoleCollection extends GenericCollection {
     @Id
     private String id;
 
-    @Field
+    @Indexed
     private String userId;
 
     @Field
@@ -18,6 +19,9 @@ public class UserRoleCollection extends GenericCollection {
     public UserRoleCollection(String userId, String roleId) {
 	this.userId = userId;
 	this.roleId = roleId;
+    }
+
+    public UserRoleCollection() {
     }
 
     public String getId() {

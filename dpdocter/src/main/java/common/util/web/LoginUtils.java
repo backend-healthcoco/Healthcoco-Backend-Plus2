@@ -4,6 +4,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 public class LoginUtils {
     public static String generateOTP() {
-	return RandomStringUtils.randomNumeric(5);
+	return RandomStringUtils.randomNumeric(6);
     }
 }

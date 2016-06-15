@@ -1,22 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:mongo="http://www.springframework.org/schema/data/mongo"
 	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
     http://www.springframework.org/schema/data/mongo
     http://www.springframework.org/schema/data/mongo/spring-mongo-1.0.xsd
+    http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
     http://www.springframework.org/schema/context
-	http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+	http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	http://www.springframework.org/schema/task
+	http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 	<context:annotation-config />
-	<context:component-scan base-package="com.dpdocter" />
+	<task:annotation-driven />
+	
+	<context:component-scan base-package="com.dpdocter"/>
 	<context:property-placeholder
-		location="classpath:jdbc.properties,classpath:mail.properties,classpath:commons.properties,classpath:sms.properties,classpath:jasperreports_extension.properties"
+		location="classpath:jdbc.properties,classpath:mail.properties,classpath:commons.properties,classpath:sms.properties,classpath:jasperreports_extension.properties,classpath:exceptions.properties"
 		ignore-unresolvable="true" />
 	<import resource="application-context-solr.xml" />
 	<import resource="database-connection.xml" />
-	<import resource="classpath:mail-config.xml" />
+	<import resource="mail-config.xml" />
 	<import resource="application-context-velocity.xml" />
+<!-- 	<import resource="spring-security.xml"/> -->
 	<mongo:repositories
 		base-package="com.dpdocter.repository, com.dpdocter.sms.repository" />
+
+<!-- Swaager configuration -->
+<bean id="apiListingResourceJSON" class="io.swagger.jaxrs.listing.ApiListingResource"/>
+<bean id="apiDeclarationProvider" class="io.swagger.jaxrs.listing.SwaggerSerializers" scope="singleton"/>
+<bean id="beanConfig" class="io.swagger.jaxrs.config.BeanConfig">
+        <property name="title" value="Swagger"/>
+        <property name="version" value="1.0.0" />
+        <property name="schemes" value="http" />
+        <property name="host" value="52.90.6.21" />
+        <property name="basePath" value="/dpdocter/api"/>
+        <property name="resourcePackage" value="com.dpdocter.webservices"/>
+        <property name="scan" value="true"/>
+</bean>
+    
 </beans>

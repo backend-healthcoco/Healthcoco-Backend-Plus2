@@ -3,7 +3,6 @@ package com.dpdocter.repository;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -13,147 +12,43 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import com.dpdocter.collections.InvestigationCollection;
 
 public interface InvestigationRepository extends MongoRepository<InvestigationCollection, String>, PagingAndSortingRepository<InvestigationCollection, String> {
-    @Query("{'$or': [{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}} , {'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?3}}]}")
-    List<InvestigationCollection> findCustomGlobalInvestigations(String doctorId, String locationId, String hospitalId, Date date, Pageable pageable);
 
-    @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': ?4},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?3},'discarded': ?4}]}")
-    List<InvestigationCollection> findCustomGlobalInvestigations(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded,
+    @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gt': ?3},'discarded': {$in: ?4}}]}")
+    List<InvestigationCollection> findCustomGlobalInvestigations(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards,
 	    Pageable pageable);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}}")
-    List<InvestigationCollection> findGlobalInvestigations(Date date, Pageable pageable);
+    @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+    List<InvestigationCollection> findGlobalInvestigations(Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
-    List<InvestigationCollection> findGlobalInvestigations(Date date, Boolean discarded, Pageable pageable);
-
-    @Query("{'doctorId': null}")
-    List<InvestigationCollection> findGlobalInvestigations(Pageable pageable);
-
-    @Query("{'doctorId': null, 'discarded': ?1}")
-    List<InvestigationCollection> findGlobalInvestigations(Boolean discarded, Pageable pageable);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}}")
-    List<InvestigationCollection> findCustomInvestigations(String doctorId, String locationId, String hospitalId, Date date, Pageable pageable);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': ?4}")
-    List<InvestigationCollection> findCustomInvestigations(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded,
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}}")
+    List<InvestigationCollection> findCustomInvestigations(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards,
 	    Pageable pageable);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2}")
-    List<InvestigationCollection> findCustomInvestigations(String doctorId, String locationId, String hospitalId, Pageable pageable);
+    @Query("{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
+    List<InvestigationCollection> findCustomInvestigations(String doctorId, Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3}")
-    List<InvestigationCollection> findCustomInvestigations(String doctorId, String locationId, String hospitalId, Boolean discarded, Pageable pageable);
+    @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}},{'doctorId': null, 'updatedTime': {'$gt': ?1},'discarded': {$in: ?2}}]}")
+    List<InvestigationCollection> findCustomGlobalInvestigations(String doctorId, Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'$or': [{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2} , {'doctorId': null, 'locationId': null, 'hospitalId': null}]}")
-    List<InvestigationCollection> findCustomGlobalInvestigations(String doctorId, String locationId, String hospitalId, Pageable pageable);
+    @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gt': ?3},'discarded': {$in: ?4}}]}")
+    List<InvestigationCollection> findCustomGlobalInvestigations(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards,
+	    Sort sort);
 
-    @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'discarded': ?3}]}")
-    List<InvestigationCollection> findCustomGlobalInvestigations(String doctorId, String locationId, String hospitalId, Boolean discarded, Pageable pageable);
+    @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+    List<InvestigationCollection> findGlobalInvestigations(Date date, boolean[] discards, Sort sort);
 
-    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}}")
-    List<InvestigationCollection> findCustomInvestigations(String doctorId, Date date, Pageable pageable);
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}}")
+    List<InvestigationCollection> findCustomInvestigations(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards, Sort sort);
 
-    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2}")
-    List<InvestigationCollection> findCustomInvestigations(String doctorId, Date date, Boolean discarded, Pageable pageable);
+    @Query("{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
+    List<InvestigationCollection> findCustomInvestigations(String doctorId, Date date, boolean[] discards, Sort sort);
 
-    @Query("{'doctorId': ?0}")
-    List<InvestigationCollection> findCustomInvestigations(String doctorId, Pageable pageable);
+    @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}},{'doctorId': null, 'updatedTime': {'$gt': ?1},'discarded': {$in: ?2}}]}")
+    List<InvestigationCollection> findCustomGlobalInvestigations(String doctorId, Date date, boolean[] discards, Sort sort);
 
-    @Query("{'doctorId': ?0, 'discarded': ?1}")
-    List<InvestigationCollection> findCustomInvestigations(String doctorId, Boolean discarded, Pageable pageable);
+    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+    List<InvestigationCollection> findCustomGlobalInvestigations(Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}},{'doctorId': null, 'updatedTime': {'$gte': ?1}}]}")
-    List<InvestigationCollection> findCustomGlobalInvestigations(String doctorId, Date date, Pageable pageable);
-
-    @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2},{'doctorId': null, 'updatedTime': {'$gte': ?1},'discarded': ?2}]}")
-    List<InvestigationCollection> findCustomGlobalInvestigations(String doctorId, Date date, Boolean discarded, Pageable pageable);
-
-    @Query("{'$or': [{'doctorId': ?0},{'doctorId': null}]}")
-    List<InvestigationCollection> findCustomGlobalInvestigations(String doctorId, Pageable pageable);
-
-    @Query("{'$or': [{'doctorId': ?0,  'discarded': ?1},{'doctorId': null, 'discarded': ?1}]}")
-    List<InvestigationCollection> findCustomGlobalInvestigations(String doctorId, Boolean discarded, Pageable pageable);
-
-    @Query("{'$or': [{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}} , {'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?3}}]}")
-    List<InvestigationCollection> findCustomGlobalInvestigations(String doctorId, String locationId, String hospitalId, Date date, Sort sort);
-
-    @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': ?4},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gte': ?3},'discarded': ?4}]}")
-    List<InvestigationCollection> findCustomGlobalInvestigations(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded, Sort sort);
-
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}}")
-    List<InvestigationCollection> findGlobalInvestigations(Date date, Sort sort);
-
-    @Query("{'doctorId': null, 'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
-    List<InvestigationCollection> findGlobalInvestigations(Date date, Boolean discarded, Sort sort);
-
-    @Query("{'doctorId': null}")
-    List<InvestigationCollection> findGlobalInvestigations(Sort sort);
-
-    @Query("{'doctorId': null, 'discarded': ?1}")
-    List<InvestigationCollection> findGlobalInvestigations(Boolean discarded, Sort sort);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}}")
-    List<InvestigationCollection> findCustomInvestigations(String doctorId, String locationId, String hospitalId, Date date, Sort sort);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gte': ?3}, 'discarded': ?4}")
-    List<InvestigationCollection> findCustomInvestigations(String doctorId, String locationId, String hospitalId, Date date, Boolean discarded, Sort sort);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2}")
-    List<InvestigationCollection> findCustomInvestigations(String doctorId, String locationId, String hospitalId, Sort sort);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3}")
-    List<InvestigationCollection> findCustomInvestigations(String doctorId, String locationId, String hospitalId, Boolean discarded, Sort sort);
-
-    @Query("{'$or': [{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2} , {'doctorId': null, 'locationId': null, 'hospitalId': null}]}")
-    List<InvestigationCollection> findCustomGlobalInvestigations(String doctorId, String locationId, String hospitalId, Sort sort);
-
-    @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'discarded': ?3}]}")
-    List<InvestigationCollection> findCustomGlobalInvestigations(String doctorId, String locationId, String hospitalId, Boolean discarded, Sort sort);
-
-    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}}")
-    List<InvestigationCollection> findCustomInvestigations(String doctorId, Date date, Sort sort);
-
-    @Query("{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2}")
-    List<InvestigationCollection> findCustomInvestigations(String doctorId, Date date, Boolean discarded, Sort sort);
-
-    @Query("{'doctorId': ?0}")
-    List<InvestigationCollection> findCustomInvestigations(String doctorId, Sort sort);
-
-    @Query("{'doctorId': ?0, 'discarded': ?1}")
-    List<InvestigationCollection> findCustomInvestigations(String doctorId, Boolean discarded, Sort sort);
-
-    @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}},{'doctorId': null, 'updatedTime': {'$gte': ?1}}]}")
-    List<InvestigationCollection> findCustomGlobalInvestigations(String doctorId, Date date, Sort sort);
-
-    @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gte': ?1}, 'discarded': ?2},{'doctorId': null, 'updatedTime': {'$gte': ?1},'discarded': ?2}]}")
-    List<InvestigationCollection> findCustomGlobalInvestigations(String doctorId, Date date, Boolean discarded, Sort sort);
-
-    @Query("{'$or': [{'doctorId': ?0},{'doctorId': null}]}")
-    List<InvestigationCollection> findCustomGlobalInvestigations(String doctorId, Sort sort);
-
-    @Query("{'$or': [{'doctorId': ?0,  'discarded': ?1},{'doctorId': null, 'discarded': ?1}]}")
-    List<InvestigationCollection> findCustomGlobalInvestigations(String doctorId, Boolean discarded, Sort sort);
-
-    @Override
-    Page<InvestigationCollection> findAll(Pageable pageable);
-
-    @Query("{'updatedTime': {'$gte': ?0}}")
-    List<InvestigationCollection> findCustomGlobalInvestigations(Date date, Pageable pageable);
-
-    @Query("{'updatedTime': {'$gte': ?0}}")
-    List<InvestigationCollection> findCustomGlobalInvestigations(Date date, Sort sort);
-
-    @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
-    List<InvestigationCollection> findCustomGlobalInvestigations(Date date, Boolean discarded, Pageable pageable);
-
-    @Query("{'updatedTime': {'$gte': ?0}, 'discarded': ?1}")
-    List<InvestigationCollection> findCustomGlobalInvestigations(Date date, Boolean discarded, Sort sort);
-
-    @Query("{'discarded': ?0}")
-    List<InvestigationCollection> findCustomGlobalInvestigations(Boolean discarded, Pageable pageable);
-
-    @Query("{'discarded': ?0}")
-    List<InvestigationCollection> findCustomGlobalInvestigations(Boolean discarded, Sort sort);
-
+    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+    List<InvestigationCollection> findCustomGlobalInvestigations(Date date, boolean[] discards, Sort sort);
 }
