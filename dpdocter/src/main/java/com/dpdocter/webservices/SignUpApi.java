@@ -23,6 +23,8 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.LocationAndAccessControl;
 import com.dpdocter.beans.User;
+import com.dpdocter.elasticsearch.document.ESDoctorDocument;
+import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -38,8 +40,6 @@ import com.dpdocter.request.VerifyUnlockPatientRequest.FlagEnum;
 import com.dpdocter.response.PateientSignUpCheckResponse;
 import com.dpdocter.services.SignUpService;
 import com.dpdocter.services.TransactionalManagementService;
-import com.dpdocter.solr.document.SolrDoctorDocument;
-import com.dpdocter.solr.services.SolrRegistrationService;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -59,7 +59,7 @@ public class SignUpApi {
     private SignUpService signUpService;
 
     @Autowired
-    private SolrRegistrationService solrRegistrationService;
+    private ESRegistrationService esRegistrationService;
 
     @Autowired
     private TransactionalManagementService transnationalService;
@@ -119,7 +119,7 @@ public class SignUpApi {
 		}
 	    }
 	    transnationalService.addResource(doctorSignUp.getUser().getId(), Resource.DOCTOR, false);
-	    solrRegistrationService.addDoctor(getSolrDoctorDocument(doctorSignUp));
+	    esRegistrationService.addDoctor(getESDoctorDocument(doctorSignUp));
 	    }
 
 	Response<DoctorSignUp> response = new Response<DoctorSignUp>();
@@ -152,7 +152,7 @@ public class SignUpApi {
 	    }
 	    // transnationalService.addResource(doctorSignUp.getUser().getId(),
 	    // Resource.DOCTOR, false);
-	    // solrRegistrationService.addDoctor(getSolrDoctorDocument(doctorSignUp));
+	    // esRegistrationService.addDoctor(getSolrDoctorDocument(doctorSignUp));
 	}
 	Response<DoctorSignUp> response = new Response<DoctorSignUp>();
 	response.setData(doctorSignUp);
@@ -183,7 +183,7 @@ public class SignUpApi {
 		}
 	    }
 	    transnationalService.addResource(doctorSignUp.getUser().getId(), Resource.DOCTOR, false);
-	    solrRegistrationService.addDoctor(getSolrDoctorDocument(doctorSignUp));
+	    esRegistrationService.addDoctor(getESDoctorDocument(doctorSignUp));
 	}
 
 	Response<DoctorSignUp> response = new Response<DoctorSignUp>();
@@ -191,27 +191,27 @@ public class SignUpApi {
 	return response;
     }
 
-    @Path(value = PathProxy.SignUpUrls.PATIENT_SIGNUP)
-    @POST
-    @ApiOperation(value = PathProxy.SignUpUrls.PATIENT_SIGNUP, notes = PathProxy.SignUpUrls.PATIENT_SIGNUP)
-    public Response<User> patientSignup(PatientSignUpRequest request) {
-	if (request == null) {
-	    logger.warn("Request send  is NULL");
-	    throw new BusinessException(ServiceError.InvalidInput, "Request send is NULL");
-	}
-	User user = signUpService.patientSignUp(request);
-	if (user != null) {
-	    if (user.getImageUrl() != null) {
-		user.setImageUrl(getFinalImageURL(user.getImageUrl()));
-	    }
-	    if (user.getThumbnailUrl() != null) {
-		user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
-	    }
-	}
-	Response<User> response = new Response<User>();
-	response.setData(user);
-	return response;
-    }
+//    @Path(value = PathProxy.SignUpUrls.PATIENT_SIGNUP)
+//    @POST
+//    @ApiOperation(value = PathProxy.SignUpUrls.PATIENT_SIGNUP, notes = PathProxy.SignUpUrls.PATIENT_SIGNUP)
+//    public Response<User> patientSignup(PatientSignUpRequest request) {
+//	if (request == null) {
+//	    logger.warn("Request send  is NULL");
+//	    throw new BusinessException(ServiceError.InvalidInput, "Request send is NULL");
+//	}
+//	User user = signUpService.patientSignUp(request);
+//	if (user != null) {
+//	    if (user.getImageUrl() != null) {
+//		user.setImageUrl(getFinalImageURL(user.getImageUrl()));
+//	    }
+//	    if (user.getThumbnailUrl() != null) {
+//		user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
+//	    }
+//	}
+//	Response<User> response = new Response<User>();
+//	response.setData(user);
+//	return response;
+//    }
 
     /**
      * This API signup patient into DB. It contains a flag
@@ -286,7 +286,7 @@ public class SignUpApi {
 	}
 	User user = signUpService.patientProfilePicChange(request);
 	transnationalService.addResource(user.getId(), Resource.PATIENT, false);
-	solrRegistrationService.patientProfilePicChange(request.getUsername(), user.getImageUrl());
+	transnationalService.checkPatient(user.getId());
 	if (user != null) {
 	    if (user.getImageUrl() != null) {
 		user.setImageUrl(getFinalImageURL(user.getImageUrl()));
@@ -323,6 +323,7 @@ public class SignUpApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. User Id Cannot Be Empty");
 	}
 	Boolean verifyUserResponse = signUpService.activateUser(userId, activate);
+	esRegistrationService.activateUser(userId);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(verifyUserResponse);
 	return response;
@@ -400,22 +401,22 @@ public class SignUpApi {
 	return imagePath + imageURL;
     }
 
-    private SolrDoctorDocument getSolrDoctorDocument(DoctorSignUp doctor) {
-	SolrDoctorDocument solrDoctorDocument = null;
+    private ESDoctorDocument getESDoctorDocument(DoctorSignUp doctor) {
+    	ESDoctorDocument esDoctorDocument = null;
 	try {
-	    solrDoctorDocument = new SolrDoctorDocument();
-	    BeanUtil.map(doctor.getUser(), solrDoctorDocument);
-	    solrDoctorDocument.setUserId(doctor.getUser().getId());
+		esDoctorDocument = new ESDoctorDocument();
+	    BeanUtil.map(doctor.getUser(), esDoctorDocument);
+	    esDoctorDocument.setUserId(doctor.getUser().getId());
 	    if (doctor.getHospital() != null && doctor.getHospital().getLocationsAndAccessControl() != null) {
 		for (LocationAndAccessControl locationAndAccessControl : doctor.getHospital().getLocationsAndAccessControl()) {
-		    BeanUtil.map(locationAndAccessControl, solrDoctorDocument);
-		    solrDoctorDocument.setLocationId(locationAndAccessControl.getId());
+		    BeanUtil.map(locationAndAccessControl, esDoctorDocument);
+		    esDoctorDocument.setLocationId(locationAndAccessControl.getId());
 		}
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}
-	return solrDoctorDocument;
+	return esDoctorDocument;
     }
 
     @Path(value = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR)

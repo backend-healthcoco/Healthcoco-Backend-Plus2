@@ -20,6 +20,7 @@ import com.dpdocter.beans.ReferenceDetail;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Role;
 import com.dpdocter.beans.User;
+import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.request.ClinicImageAddRequest;
 import com.dpdocter.request.ClinicLogoAddRequest;
 import com.dpdocter.request.ClinicProfileHandheld;
@@ -29,7 +30,6 @@ import com.dpdocter.response.ClinicDoctorResponse;
 import com.dpdocter.response.PatientInitialAndCounter;
 import com.dpdocter.response.PatientStatusResponse;
 import com.dpdocter.response.RegisterDoctorResponse;
-import com.dpdocter.solr.document.SolrDoctorDocument;
 
 public interface RegistrationService {
     User checkIfPatientExist(PatientRegistrationRequest request);
@@ -89,7 +89,7 @@ public interface RegistrationService {
 
     void checkPatientCount(String mobileNumber);
 
-    SolrDoctorDocument getSolrDoctorDocument(RegisterDoctorResponse doctorResponse);
+    ESDoctorDocument getESDoctorDocument(RegisterDoctorResponse doctorResponse);
 
     List<ClinicDoctorResponse> getDoctors(int page, int size, String locationId, String hospitalId, String updatedTime);
 

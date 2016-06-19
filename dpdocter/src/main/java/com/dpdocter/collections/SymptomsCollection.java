@@ -1,8 +1,8 @@
 package com.dpdocter.collections;
 
-import org.apache.solr.client.solrj.beans.Field;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "symptom_cl")
 public class SymptomsCollection {

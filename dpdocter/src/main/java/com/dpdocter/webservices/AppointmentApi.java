@@ -15,7 +15,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.solr.core.geo.GeoLocation;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.Appointment;
@@ -27,15 +26,12 @@ import com.dpdocter.beans.PatientQueue;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.EventRequest;
 import com.dpdocter.request.PatientQueueAddEditRequest;
 import com.dpdocter.response.SlotDataResponse;
 import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.TransactionalManagementService;
-import com.dpdocter.solr.document.SolrLocalityLandmarkDocument;
-import com.dpdocter.solr.services.SolrCityService;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -52,8 +48,8 @@ public class AppointmentApi {
     @Autowired
     private AppointmentService appointmentService;
 
-    @Autowired
-    private SolrCityService solrCityService;
+//    @Autowired
+//    private SolrCityService solrCityService;
 
     @Autowired
     private TransactionalManagementService transnationalService;
@@ -68,7 +64,7 @@ public class AppointmentApi {
 	Boolean isActivated = false;
 	isActivated = appointmentService.activateDeactivateCity(cityId, activate);
 	transnationalService.addResource(cityId, Resource.CITY, false);
-	solrCityService.activateDeactivateCity(cityId, activate);
+//	solrCityService.activateDeactivateCity(cityId, activate);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(isActivated);
 	return response;
@@ -129,10 +125,10 @@ public class AppointmentApi {
 	}
 	LandmarkLocality locality = appointmentService.addLandmaklLocality(request);
 	transnationalService.addResource(request.getId(), Resource.LANDMARKLOCALITY, false);
-	SolrLocalityLandmarkDocument solrLocalityLandmark = new SolrLocalityLandmarkDocument();
-	BeanUtil.map(locality, solrLocalityLandmark);
-	solrLocalityLandmark.setGeoLocation(new GeoLocation(locality.getLatitude(), locality.getLongitude()));
-	solrCityService.addLocalityLandmark(solrLocalityLandmark);
+//	SolrLocalityLandmarkDocument solrLocalityLandmark = new SolrLocalityLandmarkDocument();
+//	BeanUtil.map(locality, solrLocalityLandmark);
+//	solrLocalityLandmark.setGeoLocation(new GeoLocation(locality.getLatitude(), locality.getLongitude()));
+//	solrCityService.addLocalityLandmark(solrLocalityLandmark);
 
 	Response<LandmarkLocality> response = new Response<LandmarkLocality>();
 	response.setData(locality);

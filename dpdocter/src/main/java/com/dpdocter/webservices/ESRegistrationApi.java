@@ -14,11 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.solr.beans.AdvancedSearch;
 import com.dpdocter.solr.response.SolrPatientResponseDetails;
-import com.dpdocter.solr.services.SolrRegistrationService;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -30,12 +30,12 @@ import io.swagger.annotations.ApiOperation;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.SOLR_REGISTRATION_BASEURL, description = "Endpoint for solr register")
-public class SolrRegistrationApi {
+public class ESRegistrationApi {
 
-    private static Logger logger = Logger.getLogger(SolrRegistrationApi.class.getName());
+    private static Logger logger = Logger.getLogger(ESRegistrationApi.class.getName());
 
     @Autowired
-    private SolrRegistrationService solrRegistrationService;
+    private ESRegistrationService solrRegistrationService;
 
     @Value(value = "${image.path}")
     private String imagePath;

@@ -10,6 +10,9 @@
 	<profiles>
 		<profile>
 			<id>local</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -30,9 +33,6 @@
 		</profile>
 		<profile>
 			<id>stagging</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -99,29 +99,29 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
-			<version>4.1.6.RELEASE</version>
+			<version>4.2.6.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
-			<version>4.1.6.RELEASE</version>
+			<version>4.2.6.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
-			<version>4.1.6.RELEASE</version>
+			<version>4.2.6.RELEASE</version>
 		</dependency>
 		<!-- Various Application Context utilities, including EhCache, JavaMail, 
 			Quartz, and Freemarker integration Define this if you need any of these integrations -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context-support</artifactId>
-			<version>4.1.6.RELEASE</version>
+			<version>4.2.6.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aop</artifactId>
-			<version>4.1.6.RELEASE</version>
+			<version>4.2.6.RELEASE</version>
 		</dependency>
 		<!-- Jersey + Spring -->
 		<dependency>
@@ -181,7 +181,13 @@
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-mongodb</artifactId>
-			<version>1.6.1.RELEASE</version>
+			<version>1.9.1.RELEASE</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>spring-data-commons</artifactId>
+					<groupId>org.springframework.data</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.mongodb</groupId>
@@ -246,90 +252,6 @@
 			<artifactId>joda-time</artifactId>
 			<version>2.3</version>
 		</dependency>
-		<!-- Spring Data Solr -->
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-solr</artifactId>
-			<version>1.2.6.RELEASE</version>
-<!-- 			<exclusions> -->
-<!-- 				<exclusion> -->
-<!-- 					<artifactId>solr-solrj</artifactId> -->
-<!-- 					<groupId>org.apache.solr</groupId> -->
-<!-- 				</exclusion> -->
-<!-- 			</exclusions> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!--   			<groupId>org.apache.solr</groupId> -->
-<!-- 			<artifactId>solr-core</artifactId> -->
-<!-- 			<version>6.0.0</version> -->
-<!-- 			<exclusions> -->
-<!-- 				<exclusion> -->
-<!-- 					<artifactId>jetty-security</artifactId> -->
-<!-- 					<groupId>org.eclipse.jetty</groupId> -->
-<!-- 				</exclusion> -->
-<!-- 				<exclusion> -->
-<!-- 					<artifactId>jetty-servlet</artifactId> -->
-<!-- 					<groupId>org.eclipse.jetty</groupId> -->
-<!-- 				</exclusion> -->
-<!-- 				<exclusion> -->
-<!-- 					<artifactId>jetty-http</artifactId> -->
-<!-- 					<groupId>org.eclipse.jetty</groupId> -->
-<!-- 				</exclusion> -->
-<!-- 				<exclusion> -->
-<!-- 					<artifactId>jetty-deploy</artifactId> -->
-<!-- 					<groupId>org.eclipse.jetty</groupId> -->
-<!-- 				</exclusion> -->
-<!-- 				<exclusion> -->
-<!-- 					<artifactId>jetty-jmx</artifactId> -->
-<!-- 					<groupId>org.eclipse.jetty</groupId> -->
-<!-- 				</exclusion> -->
-<!-- 				<exclusion> -->
-<!-- 					<artifactId>jetty-xml</artifactId> -->
-<!-- 					<groupId>org.eclipse.jetty</groupId> -->
-<!-- 				</exclusion> -->
-<!-- 				<exclusion> -->
-<!-- 					<artifactId>jetty-servlets</artifactId> -->
-<!-- 					<groupId>org.eclipse.jetty</groupId> -->
-<!-- 				</exclusion> -->
-<!-- 				<exclusion> -->
-<!-- 					<artifactId>jetty-io</artifactId> -->
-<!-- 					<groupId>org.eclipse.jetty</groupId> -->
-<!-- 				</exclusion> -->
-<!-- 				<exclusion> -->
-<!-- 					<artifactId>jetty-webapp</artifactId> -->
-<!-- 					<groupId>org.eclipse.jetty</groupId> -->
-<!-- 				</exclusion> -->
-<!-- 				<exclusion> -->
-<!-- 					<artifactId>jetty-util</artifactId> -->
-<!-- 					<groupId>org.eclipse.jetty</groupId> -->
-<!-- 				</exclusion> -->
-<!-- 				<exclusion> -->
-<!-- 					<artifactId>jetty-server</artifactId> -->
-<!-- 					<groupId>org.eclipse.jetty</groupId> -->
-<!-- 				</exclusion> -->
-<!-- 				<exclusion> -->
-<!-- 					<artifactId>jetty-continuation</artifactId> -->
-<!-- 					<groupId>org.eclipse.jetty</groupId> -->
-<!-- 				</exclusion> -->
-<!-- 				<exclusion> -->
-<!-- 					<artifactId>jetty-rewrite</artifactId> -->
-<!-- 					<groupId>org.eclipse.jetty</groupId> -->
-<!-- 				</exclusion> -->
-<!-- 				<exclusion> -->
-<!-- 					<artifactId>javax.servlet-api</artifactId> -->
-<!-- 					<groupId>javax.servlet</groupId> -->
-<!-- 				</exclusion> -->
-<!-- 				<exclusion> -->
-<!-- 					<artifactId>solr-solrj</artifactId> -->
-<!-- 					<groupId>org.apache.solr</groupId> -->
-<!-- 				</exclusion> -->
-<!-- 			</exclusions> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!--     <groupId>org.apache.solr</groupId> -->
-<!--     <artifactId>solr-solrj</artifactId> -->
-<!--     <version>5.5.1</version> -->
-</dependency>
 		<!-- Log4j -->
 		<dependency>
 			<groupId>log4j</groupId>
@@ -350,8 +272,6 @@
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports</artifactId>
-			<!-- <version>6.1.1</version> -->
-			<!-- <version>6.0.4</version> -->
 			<version>5.1.0</version>
 			<exclusions>
 				<exclusion>
@@ -640,230 +560,236 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-<dependency> 
-  <groupId>com.fasterxml.jackson.core</groupId>
-  <artifactId>jackson-databind</artifactId> 
-  <version>2.7.0</version> 
-</dependency>
-<dependency>
-    <groupId>com.fasterxml.jackson.core</groupId>
-    <artifactId>jackson-annotations</artifactId>
-    <version>2.7.0</version>
-  </dependency>
-  <dependency>
-    <groupId>com.fasterxml.jackson.core</groupId>
-    <artifactId>jackson-core</artifactId>
-    <version>2.7.0</version>
-  </dependency>
- <!-- Spring security Dependencies -->
- <dependency>
-  <groupId>org.springframework.security</groupId>
-  <artifactId>spring-security-core</artifactId>
-  <version>3.2.5.RELEASE</version>
-  <exclusions>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-beans</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-core</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-context</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-aop</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-expression</artifactId>
-   </exclusion>
-  </exclusions>
- </dependency>
-  <dependency>
-  <groupId>org.springframework.security</groupId>
-  <artifactId>spring-security-web</artifactId>
-  <version>3.2.5.RELEASE</version>
-  <exclusions>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-beans</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-core</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-context</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-aop</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-web</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework.security</groupId>
-    <artifactId>spring-security-core</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-expression</artifactId>
-   </exclusion>
-  </exclusions>
- </dependency>
- <dependency>
-  <groupId>org.springframework.security</groupId>
-  <artifactId>spring-security-config</artifactId>
-  <version>3.2.5.RELEASE</version>
-  <exclusions>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-beans</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-core</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-context</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-aop</artifactId>
-   </exclusion>
-   <exclusion>
-    <groupId>org.springframework.security</groupId>
-    <artifactId>spring-security-core</artifactId>
-   </exclusion>
-  </exclusions>
- </dependency>
- <!-- for OAuth 2.0 -->
-<!--  <dependency> -->
-<!--   <groupId>org.springframework.security.oauth</groupId> -->
-<!--   <artifactId>spring-security-oauth2</artifactId> -->
-<!--   <version>2.0.7.RELEASE</version> -->
-<!--   <exclusions> -->
-<!--    <exclusion> -->
-<!--     <groupId>org.springframework</groupId> -->
-<!--     <artifactId>spring-beans</artifactId> -->
-<!--    </exclusion> -->
-<!--    <exclusion> -->
-<!--     <groupId>org.springframework</groupId> -->
-<!--     <artifactId>spring-core</artifactId> -->
-<!--    </exclusion> -->
-<!--    <exclusion> -->
-<!--     <groupId>org.springframework</groupId> -->
-<!--     <artifactId>spring-context</artifactId> -->
-<!--    </exclusion> -->
-<!--    <exclusion> -->
-<!--     <groupId>org.springframework.security</groupId> -->
-<!--     <artifactId>spring-security-core</artifactId> -->
-<!--    </exclusion> -->
-<!--    <exclusion> -->
-<!--     <groupId>org.springframework.security</groupId> -->
-<!--     <artifactId>spring-security-config</artifactId> -->
-<!--    </exclusion> -->
-<!--    <exclusion> -->
-<!--     <groupId>org.springframework.security</groupId> -->
-<!--     <artifactId>spring-security-web</artifactId> -->
-<!--    </exclusion> -->
-<!--   </exclusions> -->
-<!--  </dependency> -->
-<!-- For android GCM push notification services -->
-        <dependency>
-            <groupId>com.ganyo</groupId>
-            <artifactId>gcm-server</artifactId>
-            <version>1.0.2</version>
-        </dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>2.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>2.7.0</version>
+		</dependency>
+		<!-- Spring security Dependencies -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>3.2.5.RELEASE</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-beans</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-context</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-aop</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-expression</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>3.2.5.RELEASE</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-beans</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-context</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-aop</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-web</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework.security</groupId>
+					<artifactId>spring-security-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-expression</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>3.2.5.RELEASE</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-beans</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-context</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-aop</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework.security</groupId>
+					<artifactId>spring-security-core</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- for OAuth 2.0 -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.springframework.security.oauth</groupId> -->
+		<!-- <artifactId>spring-security-oauth2</artifactId> -->
+		<!-- <version>2.0.7.RELEASE</version> -->
+		<!-- <exclusions> -->
+		<!-- <exclusion> -->
+		<!-- <groupId>org.springframework</groupId> -->
+		<!-- <artifactId>spring-beans</artifactId> -->
+		<!-- </exclusion> -->
+		<!-- <exclusion> -->
+		<!-- <groupId>org.springframework</groupId> -->
+		<!-- <artifactId>spring-core</artifactId> -->
+		<!-- </exclusion> -->
+		<!-- <exclusion> -->
+		<!-- <groupId>org.springframework</groupId> -->
+		<!-- <artifactId>spring-context</artifactId> -->
+		<!-- </exclusion> -->
+		<!-- <exclusion> -->
+		<!-- <groupId>org.springframework.security</groupId> -->
+		<!-- <artifactId>spring-security-core</artifactId> -->
+		<!-- </exclusion> -->
+		<!-- <exclusion> -->
+		<!-- <groupId>org.springframework.security</groupId> -->
+		<!-- <artifactId>spring-security-config</artifactId> -->
+		<!-- </exclusion> -->
+		<!-- <exclusion> -->
+		<!-- <groupId>org.springframework.security</groupId> -->
+		<!-- <artifactId>spring-security-web</artifactId> -->
+		<!-- </exclusion> -->
+		<!-- </exclusions> -->
+		<!-- </dependency> -->
+		<!-- For android GCM push notification services -->
+		<dependency>
+			<groupId>com.ganyo</groupId>
+			<artifactId>gcm-server</artifactId>
+			<version>1.0.2</version>
+		</dependency>
 
-<!-- For IOS push notification services -->
-        <dependency>
-            <groupId>com.notnoop.apns</groupId>
-            <artifactId>apns</artifactId>
-            <version>0.2.3</version>
-            <exclusions>
-            	<exclusion>
-            		<artifactId>jackson-databind</artifactId>
-            		<groupId>com.fasterxml.jackson.core</groupId>
-            	</exclusion>
-            </exclusions>
-        </dependency>
+		<!-- For IOS push notification services -->
+		<dependency>
+			<groupId>com.notnoop.apns</groupId>
+			<artifactId>apns</artifactId>
+			<version>0.2.3</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>jackson-databind</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>18.0</version>
 		</dependency>
 		<dependency>
-	    	<groupId>io.swagger</groupId>
-	    	<artifactId>swagger-jaxrs</artifactId>
-	    	<version>1.5.0</version>
-	    <exclusions>
-	    	<exclusion>
-	    		<artifactId>jackson-databind</artifactId>
-	    		<groupId>com.fasterxml.jackson.core</groupId>
-	    	</exclusion>
-	    	<exclusion>
-	    		<artifactId>jackson-core</artifactId>
-	    		<groupId>com.fasterxml.jackson.core</groupId>
-	    	</exclusion>
-	    	<exclusion>
-	    		<artifactId>jackson-annotations</artifactId>
-	    		<groupId>com.fasterxml.jackson.core</groupId>
-	    	</exclusion>
-        </exclusions>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-jaxrs</artifactId>
+			<version>1.5.0</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>jackson-databind</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jackson-core</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jackson-annotations</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
-		    <groupId>io.swagger</groupId>
-		    <artifactId>swagger-core</artifactId>
-		    <version>1.5.0</version>
-		    <exclusions>
-		    	<exclusion>
-		    		<artifactId>jackson-databind</artifactId>
-		    		<groupId>com.fasterxml.jackson.core</groupId>
-		    	</exclusion>
-		    	<exclusion>
-		    		<artifactId>jackson-core</artifactId>
-		    		<groupId>com.fasterxml.jackson.core</groupId>
-		    	</exclusion>
-		    	<exclusion>
-		    		<artifactId>jackson-annotations</artifactId>
-		    		<groupId>com.fasterxml.jackson.core</groupId>
-		    	</exclusion>
-		    </exclusions>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-core</artifactId>
+			<version>1.5.0</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>jackson-databind</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jackson-core</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jackson-annotations</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
-		    <groupId>io.swagger</groupId>
-		    <artifactId>swagger-annotations</artifactId>
-		    <version>1.5.0</version>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-annotations</artifactId>
+			<version>1.5.0</version>
 		</dependency>
 		<dependency>
-		    <groupId>io.swagger</groupId>
-		    <artifactId>swagger-models</artifactId>
-		    <version>1.5.0</version>
-		    <exclusions>
-		    	<exclusion>
-		    		<artifactId>jackson-annotations</artifactId>
-		    		<groupId>com.fasterxml.jackson.core</groupId>
-		    	</exclusion>
-		    </exclusions>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-models</artifactId>
+			<version>1.5.0</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>jackson-annotations</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
-		    <groupId>org.reflections</groupId>
-		    <artifactId>reflections</artifactId>
-		    <version>0.9.10</version>
+			<groupId>org.reflections</groupId>
+			<artifactId>reflections</artifactId>
+			<version>0.9.10</version>
 		</dependency>
-</dependencies>
+		<!-- Elastic Search -->
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-elasticsearch</artifactId>
+			<version>2.0.2.RELEASE</version>
+		</dependency>
+	</dependencies>
 	<build>
 		<plugins>
-		    <plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
@@ -875,7 +801,7 @@
 		</plugins>
 	</build>
 	<repositories>
-        <repository>
+		<repository>
 			<id>spring-milestone</id>
 			<name>Spring Milestone Maven Repository</name>
 			<url>http://repo.springsource.org/libs-milestone</url>

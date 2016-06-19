@@ -36,7 +36,9 @@ import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.ReferenceDetail;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Role;
-import com.dpdocter.beans.User;
+import com.dpdocter.elasticsearch.document.ESPatientDocument;
+import com.dpdocter.elasticsearch.document.ESReferenceDocument;
+import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -52,8 +54,6 @@ import com.dpdocter.response.PatientStatusResponse;
 import com.dpdocter.response.RegisterDoctorResponse;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.TransactionalManagementService;
-import com.dpdocter.solr.document.SolrPatientDocument;
-import com.dpdocter.solr.services.SolrRegistrationService;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -76,7 +76,7 @@ public class RegistrationApi {
     private RegistrationService registrationService;
 
     @Autowired
-    private SolrRegistrationService solrRegistrationService;
+    private ESRegistrationService esRegistrationService;
 
     @Autowired
     private TransactionalManagementService transnationalService;
@@ -96,18 +96,17 @@ public class RegistrationApi {
 	}
 	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 	RegisteredPatientDetails registeredPatientDetails = null;
-	// User user = registrationService.checkIfPatientExist(request);
-	
+
 	if (request.getUserId() == null) {
 		registrationService.checkPatientCount(request.getMobileNumber());
 	    registeredPatientDetails = registrationService.registerNewPatient(request);
 	    transnationalService.addResource(registeredPatientDetails.getUserId(), Resource.PATIENT, false);
-	    solrRegistrationService.addPatient(getSolrPatientDocument(registeredPatientDetails));
+	    esRegistrationService.addPatient(getESPatientDocument(registeredPatientDetails));
 
 	} else {
 	    registeredPatientDetails = registrationService.registerExistingPatient(request);
 	    transnationalService.addResource(registeredPatientDetails.getUserId(), Resource.PATIENT, false);
-	    solrRegistrationService.editPatient(getSolrPatientDocument(registeredPatientDetails));
+	    esRegistrationService.addPatient(getESPatientDocument(registeredPatientDetails));
 	}
 	registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));
 	registeredPatientDetails.setThumbnailUrl(getFinalImageURL(registeredPatientDetails.getThumbnailUrl()));
@@ -128,7 +127,7 @@ public class RegistrationApi {
 	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 	RegisteredPatientDetails registeredPatientDetails = registrationService.registerExistingPatient(request);
 	transnationalService.addResource(registeredPatientDetails.getUserId(), Resource.PATIENT, false);
-	solrRegistrationService.editPatient(getSolrPatientDocument(registeredPatientDetails));
+	esRegistrationService.addPatient(getESPatientDocument(registeredPatientDetails));
 
 	registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));
 	registeredPatientDetails.setThumbnailUrl(getFinalImageURL(registeredPatientDetails.getThumbnailUrl()));
@@ -209,7 +208,9 @@ public class RegistrationApi {
 	}
 	Reference reference = registrationService.addEditReference(request);
 	transnationalService.addResource(reference.getId(), Resource.REFERENCE, false);
-	solrRegistrationService.addEditReference(request.getId());
+	ESReferenceDocument esReferenceDocument = new ESReferenceDocument();
+	BeanUtil.map(reference, esReferenceDocument);
+	esRegistrationService.addEditReference(esReferenceDocument);
 	Response<Reference> response = new Response<Reference>();
 	response.setData(reference);
 	return response;
@@ -224,9 +225,10 @@ public class RegistrationApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.referrenceId is null");
 	}
 	Reference reference = registrationService.deleteReferrence(referrenceId, discarded);
-	transnationalService.addResource(referrenceId, Resource.REFERENCE, false);
-	solrRegistrationService.addEditReference(referrenceId);
-
+	transnationalService.addResource(reference.getId(), Resource.REFERENCE, false);
+	ESReferenceDocument esReferenceDocument = new ESReferenceDocument();
+	BeanUtil.map(reference, esReferenceDocument);
+	esRegistrationService.addEditReference(esReferenceDocument);
 	Response<Reference> response = new Response<Reference>();
 	response.setData(reference);
 	return response;
@@ -335,8 +337,7 @@ public class RegistrationApi {
 	ClinicProfile clinicProfileUpdateResponse = registrationService.updateClinicProfile(request);
 	transnationalService.addResource(clinicProfileUpdateResponse.getId(), Resource.LOCATION, false);
 
-	if (clinicProfileUpdateResponse != null)
-	    transnationalService.checkLocation(request.getId());
+	if (clinicProfileUpdateResponse != null)transnationalService.checkLocation(request.getId());
 	Response<ClinicProfile> response = new Response<ClinicProfile>();
 	response.setData(clinicProfileUpdateResponse);
 	return response;
@@ -351,8 +352,7 @@ public class RegistrationApi {
 	}
 	ClinicProfile clinicProfileUpdateResponse = registrationService.updateClinicProfileHandheld(request);
 	transnationalService.addResource(clinicProfileUpdateResponse.getId(), Resource.LOCATION, false);
-	if (clinicProfileUpdateResponse != null)
-	    transnationalService.checkLocation(request.getId());
+	if (clinicProfileUpdateResponse != null)transnationalService.checkLocation(request.getId());
 	Response<ClinicProfile> response = new Response<ClinicProfile>();
 	response.setData(clinicProfileUpdateResponse);
 	return response;
@@ -367,8 +367,7 @@ public class RegistrationApi {
 	}
 	ClinicAddress clinicAddressUpdateResponse = registrationService.updateClinicAddress(request);
 	transnationalService.addResource(clinicAddressUpdateResponse.getId(), Resource.LOCATION, false);
-	if (clinicAddressUpdateResponse != null)
-	    transnationalService.checkLocation(request.getId());
+	if (clinicAddressUpdateResponse != null)transnationalService.checkLocation(request.getId());
 	Response<ClinicAddress> response = new Response<ClinicAddress>();
 	response.setData(clinicAddressUpdateResponse);
 	return response;
@@ -382,6 +381,8 @@ public class RegistrationApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
 	}
 	ClinicTiming clinicTimingUpdateResponse = registrationService.updateClinicTiming(request);
+	transnationalService.addResource(request.getId(), Resource.LOCATION, false);
+	if (clinicTimingUpdateResponse != null)transnationalService.checkLocation(request.getId());
 	Response<ClinicTiming> response = new Response<ClinicTiming>();
 	response.setData(clinicTimingUpdateResponse);
 	return response;
@@ -436,6 +437,7 @@ public class RegistrationApi {
 		clinicLogoResponse.setLogoThumbnailURL(getFinalImageURL(clinicLogoResponse.getLogoThumbnailURL()));
 	    }
 	}
+	transnationalService.addResource(request.getId(), Resource.LOCATION, false);
 	transnationalService.checkLocation(request.getId());
 	Response<ClinicLogo> response = new Response<ClinicLogo>();
 	response.setData(clinicLogoResponse);
@@ -463,6 +465,7 @@ public class RegistrationApi {
 		    clinicalImage.setThumbnailUrl(getFinalImageURL(clinicalImage.getThumbnailUrl()));
 		}
 	    }
+	    transnationalService.addResource(request.getId(), Resource.LOCATION, false);
 	    transnationalService.checkLocation(request.getId());
 	}
 	Response<ClinicImage> response = new Response<ClinicImage>();
@@ -481,6 +484,8 @@ public class RegistrationApi {
 	}
 
 	Boolean deleteImage = registrationService.deleteClinicImage(locationId, counter);
+	transnationalService.addResource(locationId, Resource.LOCATION, false);
+	transnationalService.checkLocation(locationId);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(deleteImage);
 	return response;
@@ -496,18 +501,18 @@ public class RegistrationApi {
 	return response;
     }
 
-    @Path(value = PathProxy.RegistrationUrls.ADD_PROFESSION)
-    @POST
-    @ApiOperation(value = PathProxy.RegistrationUrls.ADD_PROFESSION, notes = PathProxy.RegistrationUrls.ADD_PROFESSION)
-    public Response<Profession> addProfession(Profession request) {
-	if (request == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
-	}
-	Profession professionResponse = registrationService.addProfession(request);
-	Response<Profession> response = new Response<Profession>();
-	response.setData(professionResponse);
-	return response;
-    }
+//    @Path(value = PathProxy.RegistrationUrls.ADD_PROFESSION)
+//    @POST
+//    @ApiOperation(value = PathProxy.RegistrationUrls.ADD_PROFESSION, notes = PathProxy.RegistrationUrls.ADD_PROFESSION)
+//    public Response<Profession> addProfession(Profession request) {
+//	if (request == null) {
+//	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
+//	}
+//	Profession professionResponse = registrationService.addProfession(request);
+//	Response<Profession> response = new Response<Profession>();
+//	response.setData(professionResponse);
+//	return response;
+//    }
 
     @Path(value = PathProxy.RegistrationUrls.GET_PROFESSION)
     @GET
@@ -536,37 +541,31 @@ public class RegistrationApi {
 	    doctorResponse = registrationService.registerExisitingUser(request);
 
 	transnationalService.addResource(doctorResponse.getUserId(), Resource.DOCTOR, false);
-	if (doctorResponse != null)
-	    solrRegistrationService.addDoctor(registrationService.getSolrDoctorDocument(doctorResponse));
+	if (doctorResponse != null)esRegistrationService.addDoctor(registrationService.getESDoctorDocument(doctorResponse));
 	Response<RegisterDoctorResponse> response = new Response<RegisterDoctorResponse>();
 	response.setData(doctorResponse);
 	return response;
     }
 
-    private SolrPatientDocument getSolrPatientDocument(RegisteredPatientDetails patient) {
-	SolrPatientDocument solrPatientDocument = null;
+    private ESPatientDocument getESPatientDocument(RegisteredPatientDetails patient) {
+    	ESPatientDocument esPatientDocument = null;
 	try {
-	    solrPatientDocument = new SolrPatientDocument();
-	    if (patient.getDob() != null) {
-		solrPatientDocument.setDays(patient.getDob().getDays() + "");
-		solrPatientDocument.setMonths(patient.getDob().getMonths() + "");
-		solrPatientDocument.setYears(patient.getDob().getYears() + "");
-	    }
+	    esPatientDocument = new ESPatientDocument();
 	    if (patient.getAddress() != null) {
-		BeanUtil.map(patient.getAddress(), solrPatientDocument);
+		BeanUtil.map(patient.getAddress(), esPatientDocument);
 	    }
 	    if (patient.getPatient() != null) {
-		BeanUtil.map(patient.getPatient(), solrPatientDocument);
+		BeanUtil.map(patient.getPatient(), esPatientDocument);
 	    }
-	    BeanUtil.map(patient, solrPatientDocument);
+	    BeanUtil.map(patient, esPatientDocument);
 	    if (patient.getPatient() != null)
-		solrPatientDocument.setId(patient.getPatient().getPatientId());
+		esPatientDocument.setId(patient.getPatient().getPatientId());
 	    if (patient.getReferredBy() != null)
-		solrPatientDocument.setReferredBy(patient.getReferredBy().getId());
+		esPatientDocument.setReferredBy(patient.getReferredBy().getId());
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}
-	return solrPatientDocument;
+	return esPatientDocument;
     }
 
     private String getFinalImageURL(String imageURL) {

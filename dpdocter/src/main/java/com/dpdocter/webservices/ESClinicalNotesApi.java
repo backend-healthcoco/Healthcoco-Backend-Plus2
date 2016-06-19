@@ -13,16 +13,15 @@ import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.solr.document.SolrComplaintsDocument;
-import com.dpdocter.solr.document.SolrDiagnosesDocument;
-import com.dpdocter.solr.document.SolrDiagramsDocument;
-import com.dpdocter.solr.document.SolrInvestigationsDocument;
-import com.dpdocter.solr.document.SolrNotesDocument;
-import com.dpdocter.solr.document.SolrObservationsDocument;
-import com.dpdocter.solr.services.SolrClinicalNotesService;
+import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
+import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
+import com.dpdocter.elasticsearch.document.ESDiagramsDocument;
+import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
+import com.dpdocter.elasticsearch.document.ESNotesDocument;
+import com.dpdocter.elasticsearch.document.ESObservationsDocument;
+import com.dpdocter.elasticsearch.services.ESClinicalNotesService;
 
 import common.util.web.Response;
 import io.swagger.annotations.Api;
@@ -32,32 +31,26 @@ import io.swagger.annotations.ApiOperation;
 @Path(PathProxy.SOLR_CLINICAL_NOTES_BASEURL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Api(value = PathProxy.SOLR_CLINICAL_NOTES_BASEURL, description = "Endpoint for solr clinical notes")
-public class SolrClinicalNotesApi {
-
-    // private static Logger logger =
-    // Logger.getLogger(SolrClinicalNotesApi.class.getName());
+@Api(value = PathProxy.SOLR_CLINICAL_NOTES_BASEURL, description = "Endpoint for es clinical notes")
+public class ESClinicalNotesApi {
 
     @Value(value = "${image.path}")
     private String imagePath;
 
     @Autowired
-    private SolrClinicalNotesService solrClinicalNotesService;
+    private ESClinicalNotesService esClinicalNotesService;
     
-    @Autowired
-    private SolrTemplate solrTemplate;
-
     @Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_COMPLAINTS)
     @GET
     @ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_COMPLAINTS, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_COMPLAINTS)
-    public Response<SolrComplaintsDocument> searchComplaints(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
+    public Response<ESComplaintsDocument> searchComplaints(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
 	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
 
-	List<SolrComplaintsDocument> complaints = solrClinicalNotesService.searchComplaints(range, page, size, doctorId, locationId, hospitalId, updatedTime,
+	List<ESComplaintsDocument> complaints = esClinicalNotesService.searchComplaints(range, page, size, doctorId, locationId, hospitalId, updatedTime,
 		discarded, searchTerm);
-	Response<SolrComplaintsDocument> response = new Response<SolrComplaintsDocument>();
+	Response<ESComplaintsDocument> response = new Response<ESComplaintsDocument>();
 	response.setDataList(complaints);
 	return response;
     }
@@ -65,14 +58,14 @@ public class SolrClinicalNotesApi {
     @Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_DIAGNOSES)
     @GET
     @ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_DIAGNOSES, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_DIAGNOSES)
-    public Response<SolrDiagnosesDocument> searchDiagnoses(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
+    public Response<ESDiagnosesDocument> searchDiagnoses(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
 	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
 
-	List<SolrDiagnosesDocument> diagnoses = solrClinicalNotesService.searchDiagnoses(range, page, size, doctorId, locationId, hospitalId, updatedTime,
+	List<ESDiagnosesDocument> diagnoses = esClinicalNotesService.searchDiagnoses(range, page, size, doctorId, locationId, hospitalId, updatedTime,
 		discarded, searchTerm);
-	Response<SolrDiagnosesDocument> response = new Response<SolrDiagnosesDocument>();
+	Response<ESDiagnosesDocument> response = new Response<ESDiagnosesDocument>();
 	response.setDataList(diagnoses);
 	return response;
     }
@@ -80,14 +73,14 @@ public class SolrClinicalNotesApi {
     @Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_NOTES)
     @GET
     @ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_NOTES, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_NOTES)
-    public Response<SolrNotesDocument> searchNotes(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
+    public Response<ESNotesDocument> searchNotes(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
 	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
 
-	List<SolrNotesDocument> notes = solrClinicalNotesService.searchNotes(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
+	List<ESNotesDocument> notes = esClinicalNotesService.searchNotes(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
 		searchTerm);
-	Response<SolrNotesDocument> response = new Response<SolrNotesDocument>();
+	Response<ESNotesDocument> response = new Response<ESNotesDocument>();
 	response.setDataList(notes);
 	return response;
     }
@@ -95,42 +88,42 @@ public class SolrClinicalNotesApi {
     @Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_DIAGRAMS)
     @GET
     @ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_DIAGRAMS, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_DIAGRAMS)
-    public Response<SolrDiagramsDocument> searchDiagrams(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
+    public Response<ESDiagramsDocument> searchDiagrams(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
 	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
 
-	List<SolrDiagramsDocument> diagrams = solrClinicalNotesService.searchDiagrams(range, page, size, doctorId, locationId, hospitalId, updatedTime,
+	List<ESDiagramsDocument> diagrams = esClinicalNotesService.searchDiagrams(range, page, size, doctorId, locationId, hospitalId, updatedTime,
 		discarded, searchTerm);
 	diagrams = getFinalDiagrams(diagrams);
-	Response<SolrDiagramsDocument> response = new Response<SolrDiagramsDocument>();
+	Response<ESDiagramsDocument> response = new Response<ESDiagramsDocument>();
 	response.setDataList(diagrams);
 	return response;
     }
 
-    @Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_DIAGRAMS_BY_SPECIALITY)
-    @GET
-    @ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_DIAGRAMS_BY_SPECIALITY, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_DIAGRAMS_BY_SPECIALITY)
-    public Response<SolrDiagramsDocument> searchDiagramsBySpeciality(@PathParam(value = "searchTerm") String searchTerm) {
-
-	List<SolrDiagramsDocument> diagrams = solrClinicalNotesService.searchDiagramsBySpeciality(searchTerm);
-	diagrams = getFinalDiagrams(diagrams);
-	Response<SolrDiagramsDocument> response = new Response<SolrDiagramsDocument>();
-	response.setDataList(diagrams);
-	return response;
-    }
+//    @Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_DIAGRAMS_BY_SPECIALITY)
+//    @GET
+//    @ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_DIAGRAMS_BY_SPECIALITY, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_DIAGRAMS_BY_SPECIALITY)
+//    public Response<ESDiagramsDocument> searchDiagramsBySpeciality(@PathParam(value = "searchTerm") String searchTerm) {
+//
+//	List<ESDiagramsDocument> diagrams = esClinicalNotesService.searchDiagramsBySpeciality(searchTerm);
+//	diagrams = getFinalDiagrams(diagrams);
+//	Response<ESDiagramsDocument> response = new Response<ESDiagramsDocument>();
+//	response.setDataList(diagrams);
+//	return response;
+//    }
 
     @Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_INVESTIGATIONS)
     @GET
     @ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_INVESTIGATIONS, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_INVESTIGATIONS)
-    public Response<SolrInvestigationsDocument> searchInvestigations(@PathParam("range") String range, @QueryParam("page") int page,
+    public Response<ESInvestigationsDocument> searchInvestigations(@PathParam("range") String range, @QueryParam("page") int page,
 	    @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
 
-	List<SolrInvestigationsDocument> investigations = solrClinicalNotesService.searchInvestigations(range, page, size, doctorId, locationId, hospitalId,
+	List<ESInvestigationsDocument> investigations = esClinicalNotesService.searchInvestigations(range, page, size, doctorId, locationId, hospitalId,
 		updatedTime, discarded, searchTerm);
-	Response<SolrInvestigationsDocument> response = new Response<SolrInvestigationsDocument>();
+	Response<ESInvestigationsDocument> response = new Response<ESInvestigationsDocument>();
 	response.setDataList(investigations);
 	return response;
     }
@@ -138,20 +131,20 @@ public class SolrClinicalNotesApi {
     @Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_OBSERVATIONS)
     @GET
     @ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_OBSERVATIONS, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_OBSERVATIONS)
-    public Response<SolrObservationsDocument> searchObservations(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
+    public Response<ESObservationsDocument> searchObservations(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
 	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
 
-	List<SolrObservationsDocument> observations = solrClinicalNotesService.searchObservations(range, page, size, doctorId, locationId, hospitalId,
+	List<ESObservationsDocument> observations = esClinicalNotesService.searchObservations(range, page, size, doctorId, locationId, hospitalId,
 		updatedTime, discarded, searchTerm);
-	Response<SolrObservationsDocument> response = new Response<SolrObservationsDocument>();
+	Response<ESObservationsDocument> response = new Response<ESObservationsDocument>();
 	response.setDataList(observations);
 	return response;
     }
 
-    private List<SolrDiagramsDocument> getFinalDiagrams(List<SolrDiagramsDocument> diagrams) {
-	for (SolrDiagramsDocument diagram : diagrams) {
+    private List<ESDiagramsDocument> getFinalDiagrams(List<ESDiagramsDocument> diagrams) {
+	for (ESDiagramsDocument diagram : diagrams) {
 	    if (diagram.getDiagramUrl() != null) {
 		diagram.setDiagramUrl(getFinalImageURL(diagram.getDiagramUrl()));
 	    }

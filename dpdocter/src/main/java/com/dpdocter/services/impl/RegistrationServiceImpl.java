@@ -72,14 +72,19 @@ import com.dpdocter.collections.TokenCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
 import com.dpdocter.collections.UserRoleCollection;
+import com.dpdocter.elasticsearch.document.ESDoctorDocument;
+import com.dpdocter.elasticsearch.document.ESReferenceDocument;
+import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.ColorCode;
 import com.dpdocter.enums.ColorCode.RandomEnum;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.FeedbackType;
 import com.dpdocter.enums.Range;
+import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.Type;
 import com.dpdocter.enums.UniqueIdInitial;
+import com.dpdocter.enums.UserState;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -122,7 +127,7 @@ import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.SMSServices;
-import com.dpdocter.solr.document.SolrDoctorDocument;
+import com.dpdocter.services.TransactionalManagementService;
 
 import common.util.web.DPDoctorUtils;
 
@@ -218,6 +223,12 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Autowired
 	PushNotificationServices pushNotificationServices;
 	
+    @Autowired
+    private ESRegistrationService esRegRistrationService;
+
+    @Autowired
+    private TransactionalManagementService transnationalService;
+
     @Value(value = "${mail.signup.subject.activation}")
     private String signupSubject;
 
@@ -338,6 +349,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    referencesCollection.setHospitalId(request.getHospitalId());
 		    referencesCollection.setLocationId(request.getLocationId());
 		    referencesCollection = referrenceRepository.save(referencesCollection);
+		    transnationalService.addResource(referencesCollection.getId(), Resource.REFERENCE, false);
+			ESReferenceDocument esReferenceDocument = new ESReferenceDocument();
+			BeanUtil.map(referencesCollection, esReferenceDocument);
+			esRegRistrationService.addEditReference(esReferenceDocument);
 		}
 		patientCollection.setReferredBy(referencesCollection.getId());
 	    }
@@ -549,6 +564,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 			referencesCollection.setHospitalId(request.getHospitalId());
 			referencesCollection.setLocationId(request.getLocationId());
 			referencesCollection = referrenceRepository.save(referencesCollection);
+			transnationalService.addResource(referencesCollection.getId(), Resource.REFERENCE, false);
+			ESReferenceDocument esReferenceDocument = new ESReferenceDocument();
+			BeanUtil.map(referencesCollection, esReferenceDocument);
+			esRegRistrationService.addEditReference(esReferenceDocument);
 		    }
 		    patientCollection.setReferredBy(referencesCollection.getId());
 		}
@@ -654,7 +673,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    }
 	    if (count >= Integer.parseInt(patientCount)) {
 		logger.warn(checkPatientCount);
-		throw new BusinessException(ServiceError.NotAcceptable, checkPatientCount);
+		throw new BusinessException(ServiceError.Unknown, checkPatientCount);
 	    }
 	}
     }
@@ -1212,7 +1231,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    locationCollection = locationRepository.findOne(request.getId());
 	    if (locationCollection != null)
 		BeanUtil.map(request, locationCollection);
-	    locationCollection.setWorkingSchedules(request.getWorkingSchedules());
+	    locationCollection.setClinicWorkingSchedules(request.getClinicWorkingSchedules());
 	    locationCollection = locationRepository.save(locationCollection);
 	    response = new ClinicTiming();
 	    BeanUtil.map(locationCollection, response);
@@ -1460,6 +1479,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    userCollection.setUserName(request.getEmailAddress());
 	    userCollection.setCreatedTime(new Date());
 	    userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
+	    userCollection.setUserState(UserState.NOTVERIFIED);
 	    userCollection = userRepository.save(userCollection);
 
 	    // save doctor specific details
@@ -1800,19 +1820,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     @Transactional
-    public SolrDoctorDocument getSolrDoctorDocument(RegisterDoctorResponse doctorResponse) {
-	SolrDoctorDocument solrDoctorDocument = null;
+    public ESDoctorDocument getESDoctorDocument(RegisterDoctorResponse doctorResponse) {
+    	ESDoctorDocument esDoctorDocument = null;
 	try {
-	    solrDoctorDocument = new SolrDoctorDocument();
-	    BeanUtil.map(doctorResponse, solrDoctorDocument);
+	    esDoctorDocument = new ESDoctorDocument();
+	    BeanUtil.map(doctorResponse, esDoctorDocument);
 	    LocationCollection locationCollection = locationRepository.findOne(doctorResponse.getLocationId());
 	    if (locationCollection != null) {
-		BeanUtil.map(locationCollection, solrDoctorDocument);
-	    }
+		BeanUtil.map(locationCollection, esDoctorDocument);
+		}
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}
-	return solrDoctorDocument;
+	return esDoctorDocument;
     }
 
     @Override

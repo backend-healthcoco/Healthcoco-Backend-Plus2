@@ -15,9 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.LabTest;
-import com.dpdocter.solr.document.SolrDiagnosticTestDocument;
-import com.dpdocter.solr.document.SolrDrugDocument;
-import com.dpdocter.solr.services.SolrPrescriptionService;
+import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
+import com.dpdocter.elasticsearch.document.ESDrugDocument;
+import com.dpdocter.elasticsearch.services.ESPrescriptionService;
 
 import common.util.web.Response;
 import io.swagger.annotations.Api;
@@ -28,22 +28,22 @@ import io.swagger.annotations.ApiOperation;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.SOLR_PRESCRIPTION_BASEURL, description = "Endpoint for solr prescription")
-public class SolrPrescriptionApi {
+public class ESPrescriptionApi {
 
     @Autowired
-    private SolrPrescriptionService solrPrescriptionService;
+    private ESPrescriptionService esPrescriptionService;
     
     @Path(value = PathProxy.SolrPrescriptionUrls.SEARCH_DRUG)
     @GET
     @ApiOperation(value = PathProxy.SolrPrescriptionUrls.SEARCH_DRUG, notes = PathProxy.SolrPrescriptionUrls.SEARCH_DRUG)
-    public Response<SolrDrugDocument> searchDrug(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
+    public Response<ESDrugDocument> searchDrug(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
 	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
 
-	List<SolrDrugDocument> complaints = solrPrescriptionService.searchDrug(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
+	List<ESDrugDocument> complaints = esPrescriptionService.searchDrug(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
 		searchTerm);
-	Response<SolrDrugDocument> response = new Response<SolrDrugDocument>();
+	Response<ESDrugDocument> response = new Response<ESDrugDocument>();
 	response.setDataList(complaints);
 	return response;
     }
@@ -56,7 +56,7 @@ public class SolrPrescriptionApi {
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 	    @QueryParam(value = "searchTerm") String searchTerm) {
 
-	List<LabTest> labTests = solrPrescriptionService.searchLabTest(range, page, size, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	List<LabTest> labTests = esPrescriptionService.searchLabTest(range, page, size, locationId, hospitalId, updatedTime, discarded, searchTerm);
 	Response<LabTest> response = new Response<LabTest>();
 	response.setDataList(labTests);
 	return response;
@@ -65,14 +65,14 @@ public class SolrPrescriptionApi {
     @Path(value = PathProxy.SolrPrescriptionUrls.SEARCH_DIAGNOSTIC_TEST)
     @GET
     @ApiOperation(value = PathProxy.SolrPrescriptionUrls.SEARCH_DIAGNOSTIC_TEST, notes = PathProxy.SolrPrescriptionUrls.SEARCH_DIAGNOSTIC_TEST)
-    public Response<SolrDiagnosticTestDocument> searchDiagnosticTest(@PathParam("range") String range, @QueryParam("page") int page,
+    public Response<ESDiagnosticTestDocument> searchDiagnosticTest(@PathParam("range") String range, @QueryParam("page") int page,
 	    @QueryParam("size") int size, @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 	    @QueryParam(value = "searchTerm") String searchTerm) {
 
-	List<SolrDiagnosticTestDocument> diagnosticTests = solrPrescriptionService.searchDiagnosticTest(range, page, size, locationId, hospitalId, updatedTime,
+	List<ESDiagnosticTestDocument> diagnosticTests = esPrescriptionService.searchDiagnosticTest(range, page, size, locationId, hospitalId, updatedTime,
 		discarded, searchTerm);
-	Response<SolrDiagnosticTestDocument> response = new Response<SolrDiagnosticTestDocument>();
+	Response<ESDiagnosticTestDocument> response = new Response<ESDiagnosticTestDocument>();
 	response.setDataList(diagnosticTests);
 	return response;
     }

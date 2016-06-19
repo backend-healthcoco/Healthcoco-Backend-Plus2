@@ -98,7 +98,6 @@ import com.dpdocter.response.SlotDataResponse;
 import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.SMSServices;
-import com.dpdocter.solr.services.SolrCityService;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.DateAndTimeUtility;
@@ -143,9 +142,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Autowired
     private LabTestRepository labTestRepository;
-
-    @Autowired
-    private SolrCityService solrCityService;
 
     @Autowired
     private AppointmentBookedSlotRepository appointmentBookedSlotRepository;

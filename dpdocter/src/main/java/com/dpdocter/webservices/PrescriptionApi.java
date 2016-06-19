@@ -24,6 +24,10 @@ import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.Prescription;
+import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
+import com.dpdocter.elasticsearch.document.ESDrugDocument;
+import com.dpdocter.elasticsearch.document.ESLabTestDocument;
+import com.dpdocter.elasticsearch.services.ESPrescriptionService;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
@@ -52,10 +56,6 @@ import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.TransactionalManagementService;
-import com.dpdocter.solr.document.SolrDiagnosticTestDocument;
-import com.dpdocter.solr.document.SolrDrugDocument;
-import com.dpdocter.solr.document.SolrLabTestDocument;
-import com.dpdocter.solr.services.SolrPrescriptionService;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -75,7 +75,7 @@ public class PrescriptionApi {
     private PrescriptionServices prescriptionServices;
 
     @Autowired
-    private SolrPrescriptionService solrPrescriptionService;
+    private ESPrescriptionService esPrescriptionService;
 
     @Autowired
     private PatientVisitService patientTrackService;
@@ -97,15 +97,14 @@ public class PrescriptionApi {
 	DrugAddEditResponse drugAddEditResponse = prescriptionServices.addDrug(request);
 
 	transnationalService.addResource(drugAddEditResponse.getId(), Resource.DRUG, false);
-
 	if (drugAddEditResponse != null) {
-	    SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
-	    BeanUtil.map(drugAddEditResponse, solrDrugDocument);
+	    ESDrugDocument esDrugDocument = new ESDrugDocument();
+	    BeanUtil.map(drugAddEditResponse, esDrugDocument);
 	    if (drugAddEditResponse.getDrugType() != null) {
-		solrDrugDocument.setDrugTypeId(drugAddEditResponse.getDrugType().getId());
-		solrDrugDocument.setDrugType(drugAddEditResponse.getDrugType().getType());
+		esDrugDocument.setDrugTypeId(drugAddEditResponse.getDrugType().getId());
+		esDrugDocument.setDrugType(drugAddEditResponse.getDrugType().getType());
 	    }
-	    solrPrescriptionService.addDrug(solrDrugDocument);
+	    esPrescriptionService.addDrug(esDrugDocument);
 	}
 
 	Response<DrugAddEditResponse> response = new Response<DrugAddEditResponse>();
@@ -126,13 +125,13 @@ public class PrescriptionApi {
 
 	transnationalService.addResource(drugAddEditResponse.getId(), Resource.DRUG, false);
 	if (drugAddEditResponse != null) {
-	    SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
-	    BeanUtil.map(drugAddEditResponse, solrDrugDocument);
+	    ESDrugDocument esDrugDocument = new ESDrugDocument();
+	    BeanUtil.map(drugAddEditResponse, esDrugDocument);
 	    if (drugAddEditResponse.getDrugType() != null) {
-		solrDrugDocument.setDrugTypeId(drugAddEditResponse.getDrugType().getId());
-		solrDrugDocument.setDrugType(drugAddEditResponse.getDrugType().getType());
+		esDrugDocument.setDrugTypeId(drugAddEditResponse.getDrugType().getId());
+		esDrugDocument.setDrugType(drugAddEditResponse.getDrugType().getType());
 	    }
-	    solrPrescriptionService.editDrug(solrDrugDocument);
+	    esPrescriptionService.addDrug(esDrugDocument);
 	}
 	Response<DrugAddEditResponse> response = new Response<DrugAddEditResponse>();
 	response.setData(drugAddEditResponse);
@@ -152,8 +151,15 @@ public class PrescriptionApi {
 	Drug drugDeleteResponse = prescriptionServices.deleteDrug(drugId, doctorId, hospitalId, locationId, discarded);
 
 	transnationalService.addResource(drugId, Resource.DRUG, false);
-	// Below service call will delete the drug in solr index.
-	solrPrescriptionService.deleteDrug(drugId, discarded);
+	if (drugDeleteResponse != null) {
+	    ESDrugDocument esDrugDocument = new ESDrugDocument();
+	    BeanUtil.map(drugDeleteResponse, esDrugDocument);
+	    if (drugDeleteResponse.getDrugType() != null) {
+		esDrugDocument.setDrugTypeId(drugDeleteResponse.getDrugType().getId());
+		esDrugDocument.setDrugType(drugDeleteResponse.getDrugType().getType());
+	    }
+	    esPrescriptionService.addDrug(esDrugDocument);
+	}
 	Response<Drug> response = new Response<Drug>();
 	response.setData(drugDeleteResponse);
 	return response;
@@ -169,8 +175,15 @@ public class PrescriptionApi {
 	}
 	Drug drugDeleteResponse = prescriptionServices.deleteDrug(drugId, discarded);
 	transnationalService.addResource(drugId, Resource.DRUG, false);
-	// Below service call will delete the drug in solr index.
-	solrPrescriptionService.deleteDrug(drugId, discarded);
+	if (drugDeleteResponse != null) {
+	    ESDrugDocument esDrugDocument = new ESDrugDocument();
+	    BeanUtil.map(drugDeleteResponse, esDrugDocument);
+	    if (drugDeleteResponse.getDrugType() != null) {
+		esDrugDocument.setDrugTypeId(drugDeleteResponse.getDrugType().getId());
+		esDrugDocument.setDrugType(drugDeleteResponse.getDrugType().getType());
+	    }
+	    esPrescriptionService.addDrug(esDrugDocument);
+	}
 	Response<Drug> response = new Response<Drug>();
 	response.setData(drugDeleteResponse);
 	return response;
@@ -200,11 +213,10 @@ public class PrescriptionApi {
 	}
 	LabTest labTestResponse = prescriptionServices.addLabTest(request);
 	transnationalService.addResource(labTestResponse.getId(), Resource.LABTEST, false);
-	SolrLabTestDocument solrLabTestDocument = new SolrLabTestDocument();
-	BeanUtil.map(labTestResponse, solrLabTestDocument);
-	if (labTestResponse.getTest() != null)
-	    solrLabTestDocument.setTestId(labTestResponse.getTest().getId());
-	solrPrescriptionService.addLabTest(solrLabTestDocument);
+	ESLabTestDocument esLabTestDocument = new ESLabTestDocument();
+	BeanUtil.map(labTestResponse, esLabTestDocument);
+	if (labTestResponse.getTest() != null)esLabTestDocument.setTestId(labTestResponse.getTest().getId());
+	esPrescriptionService.addLabTest(esLabTestDocument);
 	Response<LabTest> response = new Response<LabTest>();
 	response.setData(labTestResponse);
 	return response;
@@ -220,13 +232,11 @@ public class PrescriptionApi {
 	}
 	request.setId(labTestId);
 	LabTest labTestResponse = prescriptionServices.editLabTest(request);
-	transnationalService.addResource(labTestId, Resource.LABTEST, false);
-	SolrLabTestDocument solrLabTestDocument = new SolrLabTestDocument();
-	BeanUtil.map(labTestResponse, solrLabTestDocument);
-	if (labTestResponse.getTest() != null)
-	    solrLabTestDocument.setTestId(labTestResponse.getTest().getId());
-	solrPrescriptionService.editLabTest(solrLabTestDocument);
-
+	transnationalService.addResource(labTestResponse.getId(), Resource.LABTEST, false);
+	ESLabTestDocument esLabTestDocument = new ESLabTestDocument();
+	BeanUtil.map(labTestResponse, esLabTestDocument);
+	if (labTestResponse.getTest() != null)esLabTestDocument.setTestId(labTestResponse.getTest().getId());
+	esPrescriptionService.addLabTest(esLabTestDocument);
 	Response<LabTest> response = new Response<LabTest>();
 	response.setData(labTestResponse);
 	return response;
@@ -242,8 +252,11 @@ public class PrescriptionApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Lab Test Id, Hospital Id, Location Id Cannot Be Empty");
 	}
 	LabTest labTestDeleteResponse = prescriptionServices.deleteLabTest(labTestId, hospitalId, locationId, discarded);
-	transnationalService.addResource(labTestId, Resource.LABTEST, false);
-	solrPrescriptionService.deleteLabTest(labTestId, discarded);
+	transnationalService.addResource(labTestDeleteResponse.getId(), Resource.LABTEST, false);
+	ESLabTestDocument esLabTestDocument = new ESLabTestDocument();
+	BeanUtil.map(labTestDeleteResponse, esLabTestDocument);
+	if (labTestDeleteResponse.getTest() != null)esLabTestDocument.setTestId(labTestDeleteResponse.getTest().getId());
+	esPrescriptionService.addLabTest(esLabTestDocument);
 	Response<LabTest> response = new Response<LabTest>();
 	response.setData(labTestDeleteResponse);
 	return response;
@@ -258,8 +271,11 @@ public class PrescriptionApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Lab Test Id Cannot Be Empty");
 	}
 	LabTest labTestDeleteResponse = prescriptionServices.deleteLabTest(labTestId, discarded);
-	transnationalService.addResource(labTestId, Resource.LABTEST, false);
-	solrPrescriptionService.deleteLabTest(labTestId, discarded);
+	transnationalService.addResource(labTestDeleteResponse.getId(), Resource.LABTEST, false);
+	ESLabTestDocument esLabTestDocument = new ESLabTestDocument();
+	BeanUtil.map(labTestDeleteResponse, esLabTestDocument);
+	if (labTestDeleteResponse.getTest() != null)esLabTestDocument.setTestId(labTestDeleteResponse.getTest().getId());
+	esPrescriptionService.addLabTest(esLabTestDocument);
 
 	Response<LabTest> response = new Response<LabTest>();
 	response.setData(labTestDeleteResponse);
@@ -819,9 +835,9 @@ public class PrescriptionApi {
 	DiagnosticTest diagnosticTest = prescriptionServices.addEditDiagnosticTest(request);
 	transnationalService.addResource(diagnosticTest.getId(), Resource.DIAGNOSTICTEST, false);
 
-	SolrDiagnosticTestDocument solrDiagnosticTestDocument = new SolrDiagnosticTestDocument();
-	BeanUtil.map(diagnosticTest, solrDiagnosticTestDocument);
-	solrPrescriptionService.addEditDiagnosticTest(solrDiagnosticTestDocument);
+	ESDiagnosticTestDocument esDiagnosticTestDocument = new ESDiagnosticTestDocument();
+	BeanUtil.map(diagnosticTest, esDiagnosticTestDocument);
+	esPrescriptionService.addEditDiagnosticTest(esDiagnosticTestDocument);
 	Response<DiagnosticTest> response = new Response<DiagnosticTest>();
 	response.setData(diagnosticTest);
 	return response;
@@ -837,11 +853,12 @@ public class PrescriptionApi {
 	    logger.warn("Diagnostic Test Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Diagnostic Test Id, Hospital Id, Location Id Cannot Be Empty");
 	}
-	DiagnosticTest labTestDeleteResponse = prescriptionServices.deleteDiagnosticTest(diagnosticTestId, hospitalId, locationId, discarded);
-	transnationalService.addResource(diagnosticTestId, Resource.DIAGNOSTICTEST, false);
-	solrPrescriptionService.deleteDiagnosticTest(diagnosticTestId, discarded);
+	DiagnosticTest testDeleteResponse = prescriptionServices.deleteDiagnosticTest(diagnosticTestId, hospitalId, locationId, discarded);
+	ESDiagnosticTestDocument esDiagnosticTestDocument = new ESDiagnosticTestDocument();
+	BeanUtil.map(testDeleteResponse, esDiagnosticTestDocument);
+	esPrescriptionService.addEditDiagnosticTest(esDiagnosticTestDocument);
 	Response<DiagnosticTest> response = new Response<DiagnosticTest>();
-	response.setData(labTestDeleteResponse);
+	response.setData(testDeleteResponse);
 	return response;
     }
 
@@ -854,12 +871,14 @@ public class PrescriptionApi {
 	    logger.warn("Diagnostic Test Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Diagnostic Test Id Cannot Be Empty");
 	}
-	DiagnosticTest labTestDeleteResponse = prescriptionServices.deleteDiagnosticTest(diagnosticTestId, discarded);
-	transnationalService.addResource(diagnosticTestId, Resource.DIAGNOSTICTEST, false);
-	solrPrescriptionService.deleteDiagnosticTest(diagnosticTestId, discarded);
+	DiagnosticTest testDeleteResponse = prescriptionServices.deleteDiagnosticTest(diagnosticTestId, discarded);
+	ESDiagnosticTestDocument esDiagnosticTestDocument = new ESDiagnosticTestDocument();
+	BeanUtil.map(testDeleteResponse, esDiagnosticTestDocument);
+	esPrescriptionService.addEditDiagnosticTest(esDiagnosticTestDocument);
+	
 
 	Response<DiagnosticTest> response = new Response<DiagnosticTest>();
-	response.setData(labTestDeleteResponse);
+	response.setData(testDeleteResponse);
 	return response;
     }
 

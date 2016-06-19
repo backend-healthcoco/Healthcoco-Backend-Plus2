@@ -2,234 +2,224 @@ package com.dpdocter.solr.beans;
 
 import java.util.List;
 
-import org.apache.solr.client.solrj.beans.Field;
-import org.springframework.data.solr.core.geo.GeoLocation;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.GeoPointField;
+import org.springframework.data.elasticsearch.annotations.MultiField;
+import org.springframework.data.elasticsearch.core.geo.GeoPoint;
+
+import com.dpdocter.beans.WorkingSchedule;
 
 public class DoctorLocation {
-    @Field
+    @Field(type = FieldType.String)
     private String locationId;
 
-    @Field
+    @Field(type = FieldType.String)
     private String hospitalId;
 
-    @Field
+    @Field(type = FieldType.String)
     private String locationName;
 
-    @Field
+    @Field(type = FieldType.String)
     private String country;
 
-    @Field
+    @Field(type = FieldType.String)
     private String state;
 
-    @Field
+    @Field(type = FieldType.String)
     private String city;
 
-    @Field
+    @Field(type = FieldType.String)
     private String postalCode;
 
-    @Field
+    @Field(type = FieldType.String)
     private String websiteUrl;
 
-    @Field
-    private GeoLocation geoLocation;
+    @Field(type = FieldType.Object)
+    @GeoPointField
+    private GeoPoint geoPoint;
 
-    @Field
+    @Field(type = FieldType.Double)
     private Double latitude;
 
-    @Field
+    @Field(type = FieldType.Double)
     private Double longitude;
 
-    @Field
+    @Field(type = FieldType.String)
     private String landmarkDetails;
 
-    @Field
+    @Field(type = FieldType.String)
     private String locationEmailAddress;
 
-    @Field
+    @Field(type = FieldType.String)
     private String streetAddress;
 
-    @Field
+    @Field(type = FieldType.String)
     private String locality;
 
-    @Field
+    @Field(type = FieldType.String)
     private String clinicNumber;
 
-    @Field
+    @MultiField(mainField = @Field(type = FieldType.String))
     private List<String> alternateClinicNumbers;
 
-    @Field
+    @MultiField(mainField = @Field(type = FieldType.String))
     private List<String> specialization;
 
-    @Field
+    @Field(type = FieldType.Boolean)
     private Boolean isClinic = true;
 
-    @Field
+    @Field(type = FieldType.Boolean)
     private Boolean isLab = false;
 
-    @Field
+    @Field(type = FieldType.Boolean)
     private Boolean isOnlineReportsAvailable = false;
 
-    @Field
+    @Field(type = FieldType.Boolean)
     private Boolean isNABLAccredited = false;
 
-    @Field
+    @Field(type = FieldType.Boolean)
     private Boolean isHomeServiceAvailable = false;
 
-    @Field
+    @MultiField(mainField = @Field(type = FieldType.String))
     private List<String> images;
 
-    @Field
+    @Field(type = FieldType.String)
     private String logoUrl;
 
-    @Field
+    @Field(type = FieldType.Integer)
     private Integer noOfReviews = 0;
 
-    @Field
+    @Field(type = FieldType.Integer)
     private Integer noOfRecommenations = 0;
 
-    @Field
+    @Field(type = FieldType.String)
     private String locationUId;
     
-//    @Field
-//    private List<WorkingSchedule> clinicWorkingSchedules;
-//
-//    @Field
-//    private List<Integer> clinicMondayWorkingHoursFromTime;
-//    
-//    @Field
-//    private List<Integer> clinicMondayWorkingHoursToTime;
-//    
-//    @Field
-//    private List<Integer> clinicTuesdayWorkingHoursFromTime;
-//    
-//    @Field
-//    private List<Integer> clinicTuesdayWorkingHoursToTime;
-//    
-//    @Field
-//    private List<Integer> clinicWednessdayWorkingHoursFromTime;
-//    
-//    @Field
-//    private List<Integer> clinicWednessdayWorkingHoursToTime;
-//    
-//    @Field
-//    private List<Integer> clinicThursdayWorkingHoursFromTime;
-//    
-//    @Field
-//    private List<Integer> clinicThursdayWorkingHoursToTime;
-//    
-//    @Field
-//    private List<Integer> clinicFridayWorkingHoursFromTime;
-//    
-//    @Field
-//    private List<Integer> clinicFridayWorkingHoursToTime;
-//    
-//    @Field
-//    private List<Integer> clinicSaturdayWorkingHoursFromTime;
-//    
-//    @Field
-//    private List<Integer> clinicSaturdayWorkingHoursToTime;
-//    
-//    @Field
-//    private List<Integer> clinicSundayWorkingHoursFromTime;
-//    
-//    @Field
-//    private List<Integer> clinicSundayWorkingHoursToTime;
+    @Field(type = FieldType.Nested)
+    private List<WorkingSchedule> clinicWorkingSchedules;
 
-    public String getLocationName() {
-	return locationName;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public void setLocationName(String locationName) {
-	this.locationName = locationName;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public String getCountry() {
-	return country;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setCountry(String country) {
-	this.country = country;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public String getState() {
-	return state;
-    }
+	public String getLocationName() {
+		return locationName;
+	}
 
-    public void setState(String state) {
-	this.state = state;
-    }
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
+	}
 
-    public String getCity() {
-	return city;
-    }
+	public String getCountry() {
+		return country;
+	}
 
-    public void setCity(String city) {
-	this.city = city;
-    }
+	public void setCountry(String country) {
+		this.country = country;
+	}
 
-    public String getPostalCode() {
-	return postalCode;
-    }
+	public String getState() {
+		return state;
+	}
 
-    public void setPostalCode(String postalCode) {
-	this.postalCode = postalCode;
-    }
+	public void setState(String state) {
+		this.state = state;
+	}
 
-    public String getWebsiteUrl() {
-	return websiteUrl;
-    }
+	public String getCity() {
+		return city;
+	}
 
-    public void setWebsiteUrl(String websiteUrl) {
-	this.websiteUrl = websiteUrl;
-    }
+	public void setCity(String city) {
+		this.city = city;
+	}
 
-    public Double getLatitude() {
-	return latitude;
-    }
+	public String getPostalCode() {
+		return postalCode;
+	}
 
-    public void setLatitude(Double latitude) {
-	this.latitude = latitude;
-    }
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
 
-    public Double getLongitude() {
-	return longitude;
-    }
+	public String getWebsiteUrl() {
+		return websiteUrl;
+	}
 
-    public void setLongitude(Double longitude) {
-	this.longitude = longitude;
-    }
+	public void setWebsiteUrl(String websiteUrl) {
+		this.websiteUrl = websiteUrl;
+	}
 
-    public String getLandmarkDetails() {
-	return landmarkDetails;
-    }
+	public GeoPoint getGeoPoint() {
+		return geoPoint;
+	}
 
-    public void setLandmarkDetails(String landmarkDetails) {
-	this.landmarkDetails = landmarkDetails;
-    }
+	public void setGeoPoint(GeoPoint geoPoint) {
+		this.geoPoint = geoPoint;
+	}
 
-    public String getLocationEmailAddress() {
-	return locationEmailAddress;
-    }
+	public Double getLatitude() {
+		return latitude;
+	}
 
-    public void setLocationEmailAddress(String locationEmailAddress) {
-	this.locationEmailAddress = locationEmailAddress;
-    }
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
+		geoPoint = new GeoPoint(latitude, longitude);
+	}
 
-    public String getStreetAddress() {
-	return streetAddress;
-    }
+	public Double getLongitude() {
+		return longitude;
+	}
 
-    public void setStreetAddress(String streetAddress) {
-	this.streetAddress = streetAddress;
-    }
+	public void setLongitude(Double longitude) {
+		this.longitude = longitude;
+		geoPoint = new GeoPoint(latitude, longitude);
+	}
 
-    public String getLocality() {
-	return locality;
-    }
+	public String getLandmarkDetails() {
+		return landmarkDetails;
+	}
 
-    public void setLocality(String locality) {
-	this.locality = locality;
-    }
+	public void setLandmarkDetails(String landmarkDetails) {
+		this.landmarkDetails = landmarkDetails;
+	}
+
+	public String getLocationEmailAddress() {
+		return locationEmailAddress;
+	}
+
+	public void setLocationEmailAddress(String locationEmailAddress) {
+		this.locationEmailAddress = locationEmailAddress;
+	}
+
+	public String getStreetAddress() {
+		return streetAddress;
+	}
+
+	public void setStreetAddress(String streetAddress) {
+		this.streetAddress = streetAddress;
+	}
+
+	public String getLocality() {
+		return locality;
+	}
+
+	public void setLocality(String locality) {
+		this.locality = locality;
+	}
 
 	public String getClinicNumber() {
 		return clinicNumber;
@@ -247,109 +237,85 @@ public class DoctorLocation {
 		this.alternateClinicNumbers = alternateClinicNumbers;
 	}
 
-	public String getLocationId() {
-	return locationId;
-    }
+	public List<String> getSpecialization() {
+		return specialization;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public void setSpecialization(List<String> specialization) {
+		this.specialization = specialization;
+	}
 
-    public List<String> getSpecialization() {
-	return specialization;
-    }
+	public Boolean getIsClinic() {
+		return isClinic;
+	}
 
-    public void setSpecialization(List<String> specialization) {
-	this.specialization = specialization;
-    }
+	public void setIsClinic(Boolean isClinic) {
+		this.isClinic = isClinic;
+	}
 
-    public GeoLocation getGeoLocation() {
-	return geoLocation;
-    }
+	public Boolean getIsLab() {
+		return isLab;
+	}
 
-    public void setGeoLocation(GeoLocation geoLocation) {
-	this.geoLocation = geoLocation;
-    }
+	public void setIsLab(Boolean isLab) {
+		this.isLab = isLab;
+	}
 
-    public Boolean getIsLab() {
-	return isLab;
-    }
+	public Boolean getIsOnlineReportsAvailable() {
+		return isOnlineReportsAvailable;
+	}
 
-    public void setIsLab(Boolean isLab) {
-	this.isLab = isLab;
-    }
+	public void setIsOnlineReportsAvailable(Boolean isOnlineReportsAvailable) {
+		this.isOnlineReportsAvailable = isOnlineReportsAvailable;
+	}
 
-    public Boolean getIsOnlineReportsAvailable() {
-	return isOnlineReportsAvailable;
-    }
+	public Boolean getIsNABLAccredited() {
+		return isNABLAccredited;
+	}
 
-    public void setIsOnlineReportsAvailable(Boolean isOnlineReportsAvailable) {
-	this.isOnlineReportsAvailable = isOnlineReportsAvailable;
-    }
+	public void setIsNABLAccredited(Boolean isNABLAccredited) {
+		this.isNABLAccredited = isNABLAccredited;
+	}
 
-    public Boolean getIsNABLAccredited() {
-	return isNABLAccredited;
-    }
+	public Boolean getIsHomeServiceAvailable() {
+		return isHomeServiceAvailable;
+	}
 
-    public void setIsNABLAccredited(Boolean isNABLAccredited) {
-	this.isNABLAccredited = isNABLAccredited;
-    }
+	public void setIsHomeServiceAvailable(Boolean isHomeServiceAvailable) {
+		this.isHomeServiceAvailable = isHomeServiceAvailable;
+	}
 
-    public Boolean getIsHomeServiceAvailable() {
-	return isHomeServiceAvailable;
-    }
+	public List<String> getImages() {
+		return images;
+	}
 
-    public void setIsHomeServiceAvailable(Boolean isHomeServiceAvailable) {
-	this.isHomeServiceAvailable = isHomeServiceAvailable;
-    }
+	public void setImages(List<String> images) {
+		this.images = images;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public String getLogoUrl() {
+		return logoUrl;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setLogoUrl(String logoUrl) {
+		this.logoUrl = logoUrl;
+	}
 
-    public List<String> getImages() {
-	return images;
-    }
+	public Integer getNoOfReviews() {
+		return noOfReviews;
+	}
 
-    public void setImages(List<String> images) {
-	this.images = images;
-    }
+	public void setNoOfReviews(Integer noOfReviews) {
+		this.noOfReviews = noOfReviews;
+	}
 
-    public String getLogoUrl() {
-	return logoUrl;
-    }
+	public Integer getNoOfRecommenations() {
+		return noOfRecommenations;
+	}
 
-    public void setLogoUrl(String logoUrl) {
-	this.logoUrl = logoUrl;
-    }
-
-    public Integer getNoOfReviews() {
-	return noOfReviews;
-    }
-
-    public void setNoOfReviews(Integer noOfReviews) {
-	this.noOfReviews = noOfReviews;
-    }
-
-    public Integer getNoOfRecommenations() {
-	return noOfRecommenations;
-    }
-
-    public void setNoOfRecommenations(Integer noOfRecommenations) {
-	this.noOfRecommenations = noOfRecommenations;
-    }
-
-    public Boolean getIsClinic() {
-	return isClinic;
-    }
-
-    public void setIsClinic(Boolean isClinic) {
-	this.isClinic = isClinic;
-    }
+	public void setNoOfRecommenations(Integer noOfRecommenations) {
+		this.noOfRecommenations = noOfRecommenations;
+	}
 
 	public String getLocationUId() {
 		return locationUId;
@@ -359,11 +325,19 @@ public class DoctorLocation {
 		this.locationUId = locationUId;
 	}
 
+	public List<WorkingSchedule> getClinicWorkingSchedules() {
+		return clinicWorkingSchedules;
+	}
+
+	public void setClinicWorkingSchedules(List<WorkingSchedule> clinicWorkingSchedules) {
+		this.clinicWorkingSchedules = clinicWorkingSchedules;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorLocation [locationId=" + locationId + ", hospitalId=" + hospitalId + ", locationName="
 				+ locationName + ", country=" + country + ", state=" + state + ", city=" + city + ", postalCode="
-				+ postalCode + ", websiteUrl=" + websiteUrl + ", geoLocation=" + geoLocation + ", latitude=" + latitude
+				+ postalCode + ", websiteUrl=" + websiteUrl + ", geoPoint=" + geoPoint + ", latitude=" + latitude
 				+ ", longitude=" + longitude + ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress="
 				+ locationEmailAddress + ", streetAddress=" + streetAddress + ", locality=" + locality
 				+ ", clinicNumber=" + clinicNumber + ", alternateClinicNumbers=" + alternateClinicNumbers
@@ -371,195 +345,7 @@ public class DoctorLocation {
 				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
 				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", images=" + images + ", logoUrl=" + logoUrl
 				+ ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", locationUId="
-				+ locationUId + "]";
+				+ locationUId + ", clinicWorkingSchedules=" + clinicWorkingSchedules + "]";
 	}
 
-//	public List<WorkingSchedule> getClinicWorkingSchedules() {
-//		return clinicWorkingSchedules;
-//	}
-//
-//	public void setClinicWorkingSchedules(List<WorkingSchedule> clinicWorkingSchedules) {
-//		this.clinicWorkingSchedules = clinicWorkingSchedules;
-//		if(this.clinicWorkingSchedules != null && !this.clinicWorkingSchedules.isEmpty()){
-//			for(WorkingSchedule solrWorkingSchedule : this.clinicWorkingSchedules){
-//				List<Integer> fromTime = new  ArrayList<Integer>(), toTime = new ArrayList<Integer>();
-//				if(solrWorkingSchedule.getWorkingHours() != null && !solrWorkingSchedule.getWorkingHours().isEmpty())
-//				for(WorkingHours workingHours: solrWorkingSchedule.getWorkingHours()){
-//						fromTime.add(workingHours.getFromTime());
-//						toTime.add(workingHours.getToTime());
-//				}
-//				if(solrWorkingSchedule.getWorkingDay().getDay().equalsIgnoreCase(Day.MONDAY.getDay())){
-//					this.clinicMondayWorkingHoursFromTime = fromTime;
-//					this.clinicMondayWorkingHoursToTime = toTime;
-//				}
-//				else if(solrWorkingSchedule.getWorkingDay().getDay().equalsIgnoreCase(Day.TUESDAY.getDay())){
-//					this.clinicTuesdayWorkingHoursFromTime = fromTime;
-//					this.clinicTuesdayWorkingHoursToTime = toTime;
-//				}
-//				else if(solrWorkingSchedule.getWorkingDay().getDay().equalsIgnoreCase(Day.WEDNESDAY.getDay())){
-//					this.clinicWednessdayWorkingHoursFromTime = fromTime;
-//					this.clinicWednessdayWorkingHoursToTime = toTime;
-//				}
-//				else if(solrWorkingSchedule.getWorkingDay().getDay().equalsIgnoreCase(Day.THURSDAY.getDay())){
-//					this.clinicThursdayWorkingHoursFromTime = fromTime;
-//					this.clinicThursdayWorkingHoursToTime = toTime;
-//				}
-//				else if(solrWorkingSchedule.getWorkingDay().getDay().equalsIgnoreCase(Day.FRIDAY.getDay())){
-//					this.clinicFridayWorkingHoursFromTime = fromTime;
-//					this.clinicFridayWorkingHoursToTime = toTime;
-//				}
-//				else if(solrWorkingSchedule.getWorkingDay().getDay().equalsIgnoreCase(Day.SATURDAY.getDay())){
-//					this.clinicSaturdayWorkingHoursFromTime = fromTime;
-//					this.clinicSaturdayWorkingHoursToTime = toTime;
-//				}
-//				else if(solrWorkingSchedule.getWorkingDay().getDay().equalsIgnoreCase(Day.SUNDAY.getDay())){
-//					this.clinicSundayWorkingHoursFromTime = fromTime;
-//					this.clinicSundayWorkingHoursToTime = toTime;
-//				}
-//			}
-//		}
-//
-//	}
-//
-//	public List<Integer> getClinicMondayWorkingHoursFromTime() {
-//		return clinicMondayWorkingHoursFromTime;
-//	}
-//
-//	public void setClinicMondayWorkingHoursFromTime(List<Integer> clinicMondayWorkingHoursFromTime) {
-//		this.clinicMondayWorkingHoursFromTime = clinicMondayWorkingHoursFromTime;
-//	}
-//
-//	public List<Integer> getClinicMondayWorkingHoursToTime() {
-//		return clinicMondayWorkingHoursToTime;
-//	}
-//
-//	public void setClinicMondayWorkingHoursToTime(List<Integer> clinicMondayWorkingHoursToTime) {
-//		this.clinicMondayWorkingHoursToTime = clinicMondayWorkingHoursToTime;
-//	}
-//
-//	public List<Integer> getClinicTuesdayWorkingHoursFromTime() {
-//		return clinicTuesdayWorkingHoursFromTime;
-//	}
-//
-//	public void setClinicTuesdayWorkingHoursFromTime(List<Integer> clinicTuesdayWorkingHoursFromTime) {
-//		this.clinicTuesdayWorkingHoursFromTime = clinicTuesdayWorkingHoursFromTime;
-//	}
-//
-//	public List<Integer> getClinicTuesdayWorkingHoursToTime() {
-//		return clinicTuesdayWorkingHoursToTime;
-//	}
-//
-//	public void setClinicTuesdayWorkingHoursToTime(List<Integer> clinicTuesdayWorkingHoursToTime) {
-//		this.clinicTuesdayWorkingHoursToTime = clinicTuesdayWorkingHoursToTime;
-//	}
-//
-//	public List<Integer> getClinicWednessdayWorkingHoursFromTime() {
-//		return clinicWednessdayWorkingHoursFromTime;
-//	}
-//
-//	public void setClinicWednessdayWorkingHoursFromTime(List<Integer> clinicWednessdayWorkingHoursFromTime) {
-//		this.clinicWednessdayWorkingHoursFromTime = clinicWednessdayWorkingHoursFromTime;
-//	}
-//
-//	public List<Integer> getClinicWednessdayWorkingHoursToTime() {
-//		return clinicWednessdayWorkingHoursToTime;
-//	}
-//
-//	public void setClinicWednessdayWorkingHoursToTime(List<Integer> clinicWednessdayWorkingHoursToTime) {
-//		this.clinicWednessdayWorkingHoursToTime = clinicWednessdayWorkingHoursToTime;
-//	}
-//
-//	public List<Integer> getClinicThursdayWorkingHoursFromTime() {
-//		return clinicThursdayWorkingHoursFromTime;
-//	}
-//
-//	public void setClinicThursdayWorkingHoursFromTime(List<Integer> clinicThursdayWorkingHoursFromTime) {
-//		this.clinicThursdayWorkingHoursFromTime = clinicThursdayWorkingHoursFromTime;
-//	}
-//
-//	public List<Integer> getClinicThursdayWorkingHoursToTime() {
-//		return clinicThursdayWorkingHoursToTime;
-//	}
-//
-//	public void setClinicThursdayWorkingHoursToTime(List<Integer> clinicThursdayWorkingHoursToTime) {
-//		this.clinicThursdayWorkingHoursToTime = clinicThursdayWorkingHoursToTime;
-//	}
-//
-//	public List<Integer> getClinicFridayWorkingHoursFromTime() {
-//		return clinicFridayWorkingHoursFromTime;
-//	}
-//
-//	public void setClinicFridayWorkingHoursFromTime(List<Integer> clinicFridayWorkingHoursFromTime) {
-//		this.clinicFridayWorkingHoursFromTime = clinicFridayWorkingHoursFromTime;
-//	}
-//
-//	public List<Integer> getClinicFridayWorkingHoursToTime() {
-//		return clinicFridayWorkingHoursToTime;
-//	}
-//
-//	public void setClinicFridayWorkingHoursToTime(List<Integer> clinicFridayWorkingHoursToTime) {
-//		this.clinicFridayWorkingHoursToTime = clinicFridayWorkingHoursToTime;
-//	}
-//
-//	public List<Integer> getClinicSaturdayWorkingHoursFromTime() {
-//		return clinicSaturdayWorkingHoursFromTime;
-//	}
-//
-//	public void setClinicSaturdayWorkingHoursFromTime(List<Integer> clinicSaturdayWorkingHoursFromTime) {
-//		this.clinicSaturdayWorkingHoursFromTime = clinicSaturdayWorkingHoursFromTime;
-//	}
-//
-//	public List<Integer> getClinicSaturdayWorkingHoursToTime() {
-//		return clinicSaturdayWorkingHoursToTime;
-//	}
-//
-//	public void setClinicSaturdayWorkingHoursToTime(List<Integer> clinicSaturdayWorkingHoursToTime) {
-//		this.clinicSaturdayWorkingHoursToTime = clinicSaturdayWorkingHoursToTime;
-//	}
-//
-//	public List<Integer> getClinicSundayWorkingHoursFromTime() {
-//		return clinicSundayWorkingHoursFromTime;
-//	}
-//
-//	public void setClinicSundayWorkingHoursFromTime(List<Integer> clinicSundayWorkingHoursFromTime) {
-//		this.clinicSundayWorkingHoursFromTime = clinicSundayWorkingHoursFromTime;
-//	}
-//
-//	public List<Integer> getClinicSundayWorkingHoursToTime() {
-//		return clinicSundayWorkingHoursToTime;
-//	}
-//
-//	public void setClinicSundayWorkingHoursToTime(List<Integer> clinicSundayWorkingHoursToTime) {
-//		this.clinicSundayWorkingHoursToTime = clinicSundayWorkingHoursToTime;
-//	}
-//
-//	@Override
-//	public String toString() {
-//		return "DoctorLocation [locationId=" + locationId + ", hospitalId=" + hospitalId + ", locationName="
-//				+ locationName + ", country=" + country + ", state=" + state + ", city=" + city + ", postalCode="
-//				+ postalCode + ", websiteUrl=" + websiteUrl + ", geoLocation=" + geoLocation + ", latitude=" + latitude
-//				+ ", longitude=" + longitude + ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress="
-//				+ locationEmailAddress + ", streetAddress=" + streetAddress + ", locality=" + locality
-//				+ ", clinicNumber=" + clinicNumber + ", alternateClinicNumbers=" + alternateClinicNumbers
-//				+ ", specialization=" + specialization + ", isClinic=" + isClinic + ", isLab=" + isLab
-//				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
-//				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", images=" + images + ", logoUrl=" + logoUrl
-//				+ ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", locationUId="
-//				+ locationUId + ", clinicWorkingSchedules=" + clinicWorkingSchedules
-//				+ ", clinicMondayWorkingHoursFromTime=" + clinicMondayWorkingHoursFromTime
-//				+ ", clinicMondayWorkingHoursToTime=" + clinicMondayWorkingHoursToTime
-//				+ ", clinicTuesdayWorkingHoursFromTime=" + clinicTuesdayWorkingHoursFromTime
-//				+ ", clinicTuesdayWorkingHoursToTime=" + clinicTuesdayWorkingHoursToTime
-//				+ ", clinicWednessdayWorkingHoursFromTime=" + clinicWednessdayWorkingHoursFromTime
-//				+ ", clinicWednessdayWorkingHoursToTime=" + clinicWednessdayWorkingHoursToTime
-//				+ ", clinicThursdayWorkingHoursFromTime=" + clinicThursdayWorkingHoursFromTime
-//				+ ", clinicThursdayWorkingHoursToTime=" + clinicThursdayWorkingHoursToTime
-//				+ ", clinicFridayWorkingHoursFromTime=" + clinicFridayWorkingHoursFromTime
-//				+ ", clinicFridayWorkingHoursToTime=" + clinicFridayWorkingHoursToTime
-//				+ ", clinicSaturdayWorkingHoursFromTime=" + clinicSaturdayWorkingHoursFromTime
-//				+ ", clinicSaturdayWorkingHoursToTime=" + clinicSaturdayWorkingHoursToTime
-//				+ ", clinicSundayWorkingHoursFromTime=" + clinicSundayWorkingHoursFromTime
-//				+ ", clinicSundayWorkingHoursToTime=" + clinicSundayWorkingHoursToTime + "]";
-//	}
-	
 }

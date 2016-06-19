@@ -29,10 +29,14 @@ import com.dpdocter.beans.MedicalHistoryHandler;
 import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.Records;
+import com.dpdocter.elasticsearch.document.ESDiseasesDocument;
+import com.dpdocter.elasticsearch.services.ESMasterService;
 import com.dpdocter.enums.HistoryFilter;
+import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.DiseaseAddEditRequest;
 import com.dpdocter.request.SpecialNotesAddRequest;
 import com.dpdocter.response.DiseaseAddEditResponse;
@@ -41,6 +45,7 @@ import com.dpdocter.response.HistoryDetailsResponse;
 import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientVisitService;
+import com.dpdocter.services.TransactionalManagementService;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -63,6 +68,12 @@ public class HistoryApi {
     private PatientVisitService patientTrackService;
 
     @Autowired
+    private TransactionalManagementService transactionalManagementService;
+    
+    @Autowired
+    private ESMasterService esMasterService; 
+    
+    @Autowired
     private OTPService otpService;
 
     @Value(value = "${image.path}")
@@ -77,6 +88,12 @@ public class HistoryApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
 	List<DiseaseAddEditResponse> diseases = historyServices.addDiseases(request);
+	for(DiseaseAddEditResponse addEditResponse : diseases){
+		transactionalManagementService.addResource(addEditResponse.getId(), Resource.DISEASE, false);
+		ESDiseasesDocument esDiseasesDocument = new ESDiseasesDocument();
+		BeanUtil.map(addEditResponse, esDiseasesDocument);
+		esMasterService.addEditDisease(esDiseasesDocument);
+	}
 	Response<DiseaseAddEditResponse> response = new Response<DiseaseAddEditResponse>();
 	response.setDataList(diseases);
 	return response;
@@ -92,6 +109,10 @@ public class HistoryApi {
 	}
 	request.setId(diseaseId);
 	DiseaseAddEditResponse diseases = historyServices.editDiseases(request);
+	transactionalManagementService.addResource(diseases.getId(), Resource.DISEASE, false);
+	ESDiseasesDocument esDiseasesDocument = new ESDiseasesDocument();
+	BeanUtil.map(diseases, esDiseasesDocument);
+	esMasterService.addEditDisease(esDiseasesDocument);
 	Response<DiseaseAddEditResponse> response = new Response<DiseaseAddEditResponse>();
 	response.setData(diseases);
 	return response;
