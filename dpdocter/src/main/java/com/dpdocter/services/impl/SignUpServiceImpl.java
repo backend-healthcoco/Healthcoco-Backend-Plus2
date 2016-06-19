@@ -236,13 +236,12 @@ public class SignUpServiceImpl implements SignUpService {
 	    	logger.error("User has not verified his mail so user cannot be activated");
 			throw new BusinessException(ServiceError.Unknown, "User has not verified his mail so user cannot be activated");
 	    }
-	    if(activate){
 	    	userCollection.setIsActive(activate);
 			if(activate)userCollection.setUserState(UserState.USERSTATECOMPLETE);
 			else userCollection.setUserState(UserState.NOTACTIVATED);
 			userRepository.save(userCollection);
 			response = true;
-			if (userCollection.getMobileNumber() != null && activate) {
+			if (activate && userCollection.getMobileNumber() != null) {
 			    SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 
 			    smsTrackDetail.setType("AFTER_VERIFICATION_TO_DOCTOR");
@@ -265,10 +264,6 @@ public class SignUpServiceImpl implements SignUpService {
 			}
 
 		    } 
-	    else{
-	    	
-	    }
-	    }
 	    else {
 			logger.error("User Not Found For The Given User Id");
 			throw new BusinessException(ServiceError.NotFound, "User Not Found For The Given User Id");
@@ -1242,6 +1237,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    userCollection.setIsVerified(true);
 	    userCollection.setIsActive(true);
 	    userCollection.setCreatedTime(new Date());
+	    userCollection.setUserState(UserState.ADMIN);
 	    userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
 	    userCollection = userRepository.save(userCollection);
 
