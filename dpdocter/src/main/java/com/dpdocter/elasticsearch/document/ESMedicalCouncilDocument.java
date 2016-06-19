@@ -1,0 +1,50 @@
+package com.dpdocter.elasticsearch.document;
+
+import java.util.Date;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
+
+@Document(indexName = "medicalCouncils_in", type = "medicalCouncils")
+public class ESMedicalCouncilDocument {
+
+    @Id
+    private String id;
+
+    @Field(type = FieldType.String)
+    private String medicalCouncil;
+
+    @Field(type = FieldType.Date)
+    private Date updatedTime = new Date();
+
+    public String getId() {
+	return id;
+    }
+
+    public void setId(String id) {
+	this.id = id;
+    }
+
+    public String getMedicalCouncil() {
+	return medicalCouncil;
+    }
+
+    public void setMedicalCouncil(String medicalCouncil) {
+	this.medicalCouncil = medicalCouncil;
+    }
+
+    public Date getUpdatedTime() {
+	return updatedTime;
+    }
+
+    public void setUpdatedTime(Date updatedTime) {
+	this.updatedTime = updatedTime;
+    }
+
+    @Override
+    public String toString() {
+	return "SolrMedicalCouncilDocument [id=" + id + ", medicalCouncil=" + medicalCouncil + ", updatedTime=" + updatedTime + "]";
+    }
+}
