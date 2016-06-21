@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
@@ -246,6 +247,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 	    else
 		request.setId(request.getUserId() + request.getLocationId());
 
+	    if(request.getLatitude()!= null && request.getLongitude() != null)request.setGeoPoint(new GeoPoint(request.getLatitude(), request.getLongitude()));
 	    esDoctorRepository.save(request);
 	    transnationalService.addResource(request.getUserId(), Resource.DOCTOR, true);
 	    response = true;
@@ -272,7 +274,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 		String id = doctorDocument.getId();
 		BeanUtil.map(doctorLocation, doctorDocument);
 		doctorDocument.setId(id);
-		
+		if(doctorDocument.getLatitude()!= null && doctorDocument.getLongitude() != null)doctorDocument.setGeoPoint(new GeoPoint(doctorDocument.getLatitude(), doctorDocument.getLongitude()));
 		esDoctorRepository.save(doctorDocument);
 		transnationalService.addResource(doctorLocation.getLocationId(), Resource.LOCATION, true);
 	    }

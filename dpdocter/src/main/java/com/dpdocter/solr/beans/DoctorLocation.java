@@ -35,7 +35,6 @@ public class DoctorLocation {
     @Field(type = FieldType.String)
     private String websiteUrl;
 
-    @Field(type = FieldType.Object)
     @GeoPointField
     private GeoPoint geoPoint;
 
@@ -177,7 +176,6 @@ public class DoctorLocation {
 
 	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
-		geoPoint = new GeoPoint(latitude, longitude);
 	}
 
 	public Double getLongitude() {
@@ -186,7 +184,6 @@ public class DoctorLocation {
 
 	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
-		geoPoint = new GeoPoint(latitude, longitude);
 	}
 
 	public String getLandmarkDetails() {

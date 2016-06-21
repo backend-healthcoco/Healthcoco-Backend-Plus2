@@ -8,6 +8,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 
@@ -41,11 +42,12 @@ public class ESCityServiceImpl  implements ESCityService{
     private TransactionalManagementService transnationalService;
 
     @Override
-    public boolean addCities(ESCityDocument solrCities) {
+    public boolean addCities(ESCityDocument esCityDocument) {
 	boolean response = false;
 	try {
-	    esCityRepository.save(solrCities);
-	    transnationalService.addResource(solrCities.getId(), Resource.CITY, true);
+		if(esCityDocument.getLatitude()!= null && esCityDocument.getLongitude() != null)esCityDocument.setGeoPoint(new GeoPoint(esCityDocument.getLatitude(), esCityDocument.getLongitude()));
+		esCityRepository.save(esCityDocument);
+	    transnationalService.addResource(esCityDocument.getId(), Resource.CITY, true);
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -72,6 +74,7 @@ public class ESCityServiceImpl  implements ESCityService{
     public boolean addLocalityLandmark(ESLandmarkLocalityDocument esLandmarkLocalityDocument) {
 	boolean response = false;
 	try {
+		if(esLandmarkLocalityDocument.getLatitude()!= null && esLandmarkLocalityDocument.getLongitude() != null)esLandmarkLocalityDocument.setGeoPoint(new GeoPoint(esLandmarkLocalityDocument.getLatitude(), esLandmarkLocalityDocument.getLongitude()));
 	    esLocalityLandmarkRepository.save(esLandmarkLocalityDocument);
 	    transnationalService.addResource(esLandmarkLocalityDocument.getId(), Resource.LANDMARKLOCALITY, true);
 	    response = true;

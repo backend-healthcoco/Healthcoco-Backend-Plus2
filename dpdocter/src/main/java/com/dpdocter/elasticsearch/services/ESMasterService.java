@@ -25,7 +25,7 @@ public interface ESMasterService {
 
     List<Profession> searchProfession(String searchTerm, String updatedTime, int page, int size);
 
-	List<Profession> add();
+    Boolean add();
 
     List<ProfessionalMembership> searchProfessionalMembership(String searchTerm, String updatedTime, int page, int size);
 

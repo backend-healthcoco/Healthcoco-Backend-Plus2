@@ -26,10 +26,10 @@ public class CityCollection {
     private String country;
 
     @Field
-    private double latitude;
+    private Double latitude;
 
     @Field
-    private double longitude;
+    private Double longitude;
 
     public String getId() {
 	return id;
@@ -63,19 +63,19 @@ public class CityCollection {
 	this.isActivated = isActivated;
     }
 
-    public double getLatitude() {
+    public Double getLatitude() {
 	return latitude;
     }
 
-    public void setLatitude(double latitude) {
+    public void setLatitude(Double latitude) {
 	this.latitude = latitude;
     }
 
-    public double getLongitude() {
+    public Double getLongitude() {
 	return longitude;
     }
 
-    public void setLongitude(double longitude) {
+    public void setLongitude(Double longitude) {
 	this.longitude = longitude;
     }
 

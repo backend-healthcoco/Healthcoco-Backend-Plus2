@@ -22,10 +22,10 @@ public class ESDiagramsDocument {
     private String speciality;
 
     @Field(type = FieldType.String)
-    private String doctorId = "";
+    private String doctorId;
 
     @Field(type = FieldType.String)
-    private String locationId = "";
+    private String locationId;
 
     @Field(type = FieldType.String)
     private String hospitalId;

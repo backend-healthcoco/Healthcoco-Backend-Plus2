@@ -179,6 +179,7 @@ public class DoctorCollection extends GenericCollection {
 
     public void setDob(DOB dob) {
 	this.dob = dob;
+	dob.getAge();
     }
 
     @Override

@@ -82,12 +82,11 @@ public class ESMasterApi {
 
     @Path(value = "add")
     @GET
-    @ApiOperation(value = PathProxy.SolrMasterUrls.SEARCH_PROFESSION, notes = PathProxy.SolrMasterUrls.SEARCH_PROFESSION)
-    public Response<Profession> add() {
+    public Response<Boolean> add() {
 
-	List<Profession> searchResonse = esMasterService.add();
-	Response<Profession> response = new Response<Profession>();
-	response.setDataList(searchResonse);
+    	Boolean searchResonse = esMasterService.add();
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(searchResonse);
 	return response;
     }
     

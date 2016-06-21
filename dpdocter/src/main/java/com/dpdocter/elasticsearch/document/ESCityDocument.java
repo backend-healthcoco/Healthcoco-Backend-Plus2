@@ -28,16 +28,14 @@ public class ESCityDocument {
     @Field(type = FieldType.String)
     private String country;
 
-    @Field(type = FieldType.Object)
     @GeoPointField
     private GeoPoint geoPoint;
 
+    @Field(type = FieldType.Double)
+    private Double latitude;
 
-    @Field
-    private double latitude;
-
-    @Field
-    private double longitude;
+    @Field(type = FieldType.Double)
+    private Double longitude;
 
     public String getId() {
 	return id;
@@ -95,23 +93,21 @@ public class ESCityDocument {
 		this.geoPoint = geoPoint;
 	}
 
-	public double getLatitude() {
+	public Double getLatitude() {
 	return latitude;
     }
 
-    public void setLatitude(double latitude) {
+    public void setLatitude(Double latitude) {
 	this.latitude = latitude;
-	geoPoint = new GeoPoint(latitude, longitude);
-    }
+	}
 
-    public double getLongitude() {
+    public Double getLongitude() {
 	return longitude;
     }
 
-    public void setLongitude(double longitude) {
+    public void setLongitude(Double longitude) {
 	this.longitude = longitude;
-	geoPoint = new GeoPoint(latitude, longitude);
-    }
+	}
 
 	@Override
 	public String toString() {

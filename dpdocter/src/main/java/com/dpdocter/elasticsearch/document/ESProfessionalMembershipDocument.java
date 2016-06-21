@@ -7,7 +7,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-@Document(indexName = "professionalMemberships_in", type = "professionalMemberships")
+@Document(indexName = "professionalmemberships_in", type = "professionalmemberships")
 public class ESProfessionalMembershipDocument {
 
     @Id

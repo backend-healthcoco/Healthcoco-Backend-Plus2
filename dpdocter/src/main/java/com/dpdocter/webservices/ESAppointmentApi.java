@@ -56,9 +56,9 @@ public class ESAppointmentApi {
     public Response<ESDoctorDocument> getDoctors(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("city") String city,
 	    @QueryParam("location") String location, @QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
 	    @QueryParam("speciality") String speciality, @QueryParam("symptom") String symptom, @QueryParam("booking") Boolean booking,
-	    @QueryParam("calling") Boolean calling, @QueryParam("minFee") String minFee, @QueryParam("maxFee") String maxFee,
-	    @QueryParam("minTime") String minTime, @QueryParam("maxTime") String maxTime, @MatrixParam("days") List<String> days,
-	    @QueryParam("gender") String gender, @QueryParam("minExperience") String minExperience, @QueryParam("maxExperience") String maxExperience) {
+	    @QueryParam("calling") Boolean calling, @QueryParam("minFee") int minFee, @QueryParam("maxFee") int maxFee,
+	    @QueryParam("minTime") int minTime, @QueryParam("maxTime") int maxTime, @MatrixParam("days") List<String> days,
+	    @QueryParam("gender") String gender, @QueryParam("minExperience") int minExperience, @QueryParam("maxExperience") int maxExperience) {
 
 	List<ESDoctorDocument> doctors = solrAppointmentService.getDoctors(page, size, city, location, latitude, longitude, speciality, symptom, booking,
 		calling, minFee, maxFee, minTime, maxTime, days, gender, minExperience, maxExperience);
@@ -73,9 +73,10 @@ public class ESAppointmentApi {
     @ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_LABS, notes = PathProxy.SolrAppointmentUrls.GET_LABS)
     public Response<LabResponse> getLabs(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("city") String city, @QueryParam("location") String location,
 	    @QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude, @QueryParam("test") String test,
-	    @QueryParam("booking") Boolean booking, @QueryParam("calling") Boolean calling) {
+	    @QueryParam("booking") Boolean booking, @QueryParam("calling") Boolean calling,
+	    @QueryParam("minTime") int minTime, @QueryParam("maxTime") int maxTime, @MatrixParam("days") List<String> days) {
 
-	List<LabResponse> doctors = solrAppointmentService.getLabs(page, size, city, location, latitude, longitude, test, booking, calling);
+	List<LabResponse> doctors = solrAppointmentService.getLabs(page, size, city, location, latitude, longitude, test, booking, calling, minTime, maxTime, days);
 
 	if (doctors != null && !doctors.isEmpty()) {
 	    for (LabResponse doctorDocument : doctors) {
