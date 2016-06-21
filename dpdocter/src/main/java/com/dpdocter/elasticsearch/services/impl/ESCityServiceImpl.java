@@ -139,7 +139,7 @@ public class ESCityServiceImpl  implements ESCityService{
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 			landmarks = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("landmark", searchTerm))).build(), ESLandmarkLocalityDocument.class);
 			localities = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("locality", searchTerm))).build(), ESLandmarkLocalityDocument.class);
-		    cities = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("city", searchTerm))).build(), ESCityDocument.class);
+		    cities = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder.must(QueryBuilders.matchQuery("city", searchTerm))).build(), ESCityDocument.class);
 		} else {
 		    landmarks = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder.mustNot(QueryBuilders.existsQuery("locality"))).build(), ESLandmarkLocalityDocument.class);
 		    localities = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder.mustNot(QueryBuilders.existsQuery("landmark"))).build(), ESLandmarkLocalityDocument.class);
