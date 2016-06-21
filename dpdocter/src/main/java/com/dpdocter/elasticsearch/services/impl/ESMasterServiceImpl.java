@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
@@ -24,9 +25,15 @@ import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.Speciality;
+import com.dpdocter.collections.CityCollection;
+import com.dpdocter.collections.DrugCollection;
+import com.dpdocter.collections.LandmarkLocalityCollection;
+import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESDiseasesDocument;
+import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.document.ESEducationInstituteDocument;
 import com.dpdocter.elasticsearch.document.ESEducationQualificationDocument;
+import com.dpdocter.elasticsearch.document.ESLandmarkLocalityDocument;
 import com.dpdocter.elasticsearch.document.ESMedicalCouncilDocument;
 import com.dpdocter.elasticsearch.document.ESProfessionDocument;
 import com.dpdocter.elasticsearch.document.ESProfessionalMembershipDocument;
@@ -35,6 +42,7 @@ import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
 import com.dpdocter.elasticsearch.repository.ESCityRepository;
 import com.dpdocter.elasticsearch.repository.ESDiagnosticTestRepository;
 import com.dpdocter.elasticsearch.repository.ESDiseaseRepository;
+import com.dpdocter.elasticsearch.repository.ESDrugRepository;
 import com.dpdocter.elasticsearch.repository.ESEducationInstituteRepository;
 import com.dpdocter.elasticsearch.repository.ESEducationQualificationRepository;
 import com.dpdocter.elasticsearch.repository.ESLandmarkLocalityRepository;
@@ -50,7 +58,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.CityRepository;
-import com.dpdocter.repository.DiagnosticTestRepository;
+import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.LandmarkLocalityRepository;
 import com.dpdocter.response.DiseaseListResponse;
 import com.dpdocter.services.TransactionalManagementService;
@@ -63,7 +71,10 @@ public class ESMasterServiceImpl implements ESMasterService {
     private static Logger logger = Logger.getLogger(ESMasterServiceImpl.class.getName());
 
     @Autowired
-    private DiagnosticTestRepository diagnosticTestRepository;
+    private DrugRepository drugRepository;
+    
+    @Autowired
+    private ESDrugRepository esDrugRepository;
     
     @Autowired
     private LandmarkLocalityRepository landmarkLocalityRepository;
@@ -340,41 +351,38 @@ public class ESMasterServiceImpl implements ESMasterService {
     }
 
 	@Override
-	public List<Profession> add() {
+	public Boolean add() {
 		
-//		List<DiagnosticTestCollection> diagnosticTestCollections = diagnosticTestRepository.findAll();
-//		for(DiagnosticTestCollection labTestCollection : diagnosticTestCollections){
-//			ESDiagnosticTestDocument esLabTestDocument = new ESDiagnosticTestDocument();
-//			BeanUtil.map(labTestCollection, esLabTestDocument);
-//			esDiagnosticTestRepository.save(esLabTestDocument);
-//		}
-//		List<LabTestCollection> labTestCollections = labTestRepository.findAll();
-//		for(LabTestCollection labTestCollection : labTestCollections){
-//			ESLabTestDocument esLabTestDocument = new ESLabTestDocument();
-//			BeanUtil.map(labTestCollection, esLabTestDocument);
-//			esLabTestRepository.save(esLabTestDocument);
-//		}
-//		List<LandmarkLocalityCollection> professionCollections = landmarkLocalityRepository.findAll();
-//		
-//		for(LandmarkLocalityCollection professionCollection : professionCollections){
-//			ESLandmarkLocalityDocument professionDocument = new ESLandmarkLocalityDocument();
-//			BeanUtil.map(professionCollection, professionDocument);
-//			professionDocument.setLocation(new GeoPoint(professionDocument.getLatitude(), professionDocument.getLongitude()));
-//			double[] latlon = {professionDocument.getLatitude(),professionDocument.getLongitude()};
-//			professionDocument.setLocationAsArray(latlon);
-//			esLocalityLandmarkRepository.save(professionDocument);
-//		}
-//		
-//       List<CityCollection> cityCollections = cityRepository.findAll();
-//		
-//		for(CityCollection professionCollection : cityCollections){
-//			ESCityDocument professionDocument = new ESCityDocument();
-//			BeanUtil.map(professionCollection, professionDocument);
-//			professionDocument.setGeoPoint(new GeoPoint(professionDocument.getLatitude(), professionDocument.getLongitude()));
-//			esCityRepository.save(professionDocument);
-//		}
+		List<LandmarkLocalityCollection> professionCollections = landmarkLocalityRepository.findAll();
 		
-		return null;
+		for(LandmarkLocalityCollection professionCollection : professionCollections){
+			ESLandmarkLocalityDocument professionDocument = new ESLandmarkLocalityDocument();
+			BeanUtil.map(professionCollection, professionDocument);
+			professionDocument.setGeoPoint(new GeoPoint(professionDocument.getLatitude(), professionDocument.getLongitude()));
+			esLocalityLandmarkRepository.save(professionDocument);
+		}
+		
+       List<CityCollection> cityCollections = cityRepository.findAll();
+		
+		for(CityCollection professionCollection : cityCollections){
+			ESCityDocument professionDocument = new ESCityDocument();
+			BeanUtil.map(professionCollection, professionDocument);
+			professionDocument.setGeoPoint(new GeoPoint(professionDocument.getLatitude(), professionDocument.getLongitude()));
+			esCityRepository.save(professionDocument);
+		}
+		
+		List<DrugCollection> drugCollections = drugRepository.findAll();
+		
+		for(DrugCollection drugCollection : drugCollections){
+			ESDrugDocument esDrugDocument = new ESDrugDocument();
+			BeanUtil.map(drugCollection, esDrugDocument);
+			if(drugCollection.getDrugType()!=null){
+				esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
+				esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
+			}
+			esDrugRepository.save(esDrugDocument);
+		}
+		return true;
 	}
 
     @Override

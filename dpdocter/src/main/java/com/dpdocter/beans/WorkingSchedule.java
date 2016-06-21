@@ -2,11 +2,15 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
+
 import com.dpdocter.enums.Day;
 
 public class WorkingSchedule {
     private Day workingDay;
 
+    @Field(type = FieldType.Nested)
     private List<WorkingHours> workingHours;
 
     public Day getWorkingDay() {

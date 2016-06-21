@@ -9,11 +9,11 @@ import com.dpdocter.solr.response.LabResponse;
 public interface ESAppointmentService {
 
     List<ESDoctorDocument> getDoctors(int page, int size, String city, String location, String latitude, String longitude, String speciality, String symptom,
-	    Boolean booking, Boolean calling, String minFee, String maxFee, String minTime, String maxTime, List<String> days, String gender,
-	    String minExperience, String maxExperience);
+	    Boolean booking, Boolean calling, int minFee, int maxFee, int minTime, int maxTime, List<String> days, String gender,
+	    int minExperience, int maxExperience);
 
     List<AppointmentSearchResponse> search(String city, String location, String latitude, String longitude, String searchTerm);
 
-    List<LabResponse> getLabs(int page, int size, String city, String location, String latitude, String longitude, String test, Boolean booking, Boolean calling);
+    List<LabResponse> getLabs(int page, int size, String city, String location, String latitude, String longitude, String test, Boolean booking, Boolean calling, int minTime, int maxTime, List<String> days);
 
 }
