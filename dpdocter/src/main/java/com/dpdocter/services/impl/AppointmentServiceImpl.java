@@ -222,8 +222,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 	List<City> response = new ArrayList<City>();
 	try {
 	    List<CityCollection> cities = null;
-	    if(DPDoctorUtils.allStringsEmpty(state))cities = cityRepository.findAll();
-	    else cities = cityRepository.findAll(state);
+	    if(DPDoctorUtils.allStringsEmpty(state))cities = cityRepository.findAll(new Sort(Sort.Direction.ASC, "city"));
+	    else cities = cityRepository.findAll(state, new Sort(Sort.Direction.ASC, "city"));
 	    if (cities != null) {
 		BeanUtil.map(cities, response);
 	    }
@@ -1018,7 +1018,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		List<City> response = null;
 		try {
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.group("country").first("country").as("country"),
-					Aggregation.project("country").andExclude("_id"));
+					Aggregation.project("country").andExclude("_id"), Aggregation.sort(Sort.Direction.ASC, "country"));
 			AggregationResults<City> groupResults = mongoTemplate.aggregate(aggregation, CityCollection.class, City.class);
 			response = groupResults.getMappedResults();
 
@@ -1035,7 +1035,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		List<City> response = null;
 		try {
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.group("state").first("state").as("state").first("country").as("country"),
-					Aggregation.project("state","country").andExclude("_id"));
+					Aggregation.project("state","country").andExclude("_id"), Aggregation.sort(Sort.Direction.ASC, "state"));
 			if(!DPDoctorUtils.anyStringEmpty(country))aggregation.match(Criteria.where("country").is(country));
 			AggregationResults<City> groupResults = mongoTemplate.aggregate(aggregation, CityCollection.class, City.class);
 			response = groupResults.getMappedResults();

@@ -89,9 +89,6 @@ public class ESDrugDocument {
     }
 
     public String getDoctorId() {
-	if (doctorId == null) {
-	    return "";
-	}
 	return doctorId;
     }
 
