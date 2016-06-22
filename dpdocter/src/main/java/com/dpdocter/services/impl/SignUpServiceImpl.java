@@ -253,7 +253,8 @@ public class SignUpServiceImpl implements SignUpService {
 			else userCollection.setUserState(UserState.NOTACTIVATED);
 			userRepository.save(userCollection);
 			response = true;
-    	List<UserRoleCollection> userRoleCollection = userRoleRepository.findByUserId(userCollection.getId());
+
+			List<UserRoleCollection> userRoleCollection = userRoleRepository.findByUserId(userCollection.getId());
 			@SuppressWarnings("unchecked")
 		    Collection<String> roleIds = CollectionUtils.collect(userRoleCollection, new BeanToPropertyValueTransformer("roleId"));
 		    if(roleIds != null && !roleIds.isEmpty()){
