@@ -1,6 +1,7 @@
 package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.enums.IssueStatus;
 
 public class IssueTrack extends GenericCollection {
 
@@ -19,6 +20,8 @@ public class IssueTrack extends GenericCollection {
     private String explanation;
 
     private Boolean discarded = false;
+    
+    private IssueStatus status;
 
     public String getId() {
 	return id;
@@ -84,11 +87,19 @@ public class IssueTrack extends GenericCollection {
 	this.issueCode = issueCode;
     }
 
+	public IssueStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(IssueStatus status) {
+		this.status = status;
+	}
+
 	@Override
 	public String toString() {
 		return "IssueTrack [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
 				+ hospitalId + ", issueCode=" + issueCode + ", subject=" + subject + ", explanation=" + explanation
-				+ ", discarded=" + discarded + "]";
+				+ ", discarded=" + discarded + ", status=" + status + "]";
 	}
 
 }

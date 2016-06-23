@@ -937,4 +937,14 @@ public class PrescriptionApi {
 	response.setData(addRemoveGenericCodeResponse);
 	return response;
     }
+    
+    @Path(value = PathProxy.PrescriptionUrls.DOWNLOAD_PRESCRIPTION)
+    @GET
+    @ApiOperation(value = PathProxy.PrescriptionUrls.DOWNLOAD_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.DOWNLOAD_PRESCRIPTION)
+    public Response<String> downloadPrescription(@PathParam("prescriptionId") String prescriptionId) {
+    	
+    	Response<String> response = new Response<String>();
+    	response.setData(prescriptionServices.getPrescriptionFile(prescriptionId));
+    	return response;
+    }
 }

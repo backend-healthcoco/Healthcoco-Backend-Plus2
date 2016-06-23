@@ -203,6 +203,7 @@ public interface PathProxy {
 
 	public static final String EMAIL_CLINICAL_NOTES = "/{clinicalNotesId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 
+	public static final String DOWNLOAD_CLINICAL_NOTES = "/download/{clinicalNotesId}";
     }
 
     public static final String FORGOT_PASSWORD_BASE_URL = BASE_URL + "/forgotPassword";
@@ -360,6 +361,7 @@ public interface PathProxy {
 
 	public static final String ADD_EDIT_GENERIC_CODE = "/genericCode/addEdit";
 
+	public static final String DOWNLOAD_PRESCRIPTION = "/download/{prescriptionId}";
     }
 
     public static final String HISTORY_BASE_URL = BASE_URL + "/history";
@@ -502,6 +504,8 @@ public interface PathProxy {
 	public static final String DELETE_VISITS = "/{visitId}/delete";
 
 	public static final String SMS_VISITS = "/{visitId}/{doctorId}/{locationId}/{hospitalId}/{mobileNumber}/sms";
+	
+	public static final String DOWNLOAD_PATIENT_VISIT = "/download/{visitId}";
 
     }
 

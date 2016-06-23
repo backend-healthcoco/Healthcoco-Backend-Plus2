@@ -1,6 +1,6 @@
-package com.dpdocter.solr.beans;
+package com.dpdocter.elasticsearch.beans;
 
-public class SolrLabTest {
+public class ESLabTest {
 
     private String id;
 

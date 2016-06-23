@@ -1,4 +1,4 @@
-package com.dpdocter.solr.beans;
+package com.dpdocter.elasticsearch.beans;
 
 public class State {
     private String id;

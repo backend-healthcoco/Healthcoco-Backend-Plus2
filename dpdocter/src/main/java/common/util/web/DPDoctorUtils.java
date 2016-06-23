@@ -131,7 +131,7 @@ public class DPDoctorUtils {
         return result;
    }
     
-	public static SearchQuery createGlobalQuery(int page, int size, String updatedTime, Boolean discarded, String searchTermFieldName, String searchTerm){
+	public static SearchQuery createGlobalQuery(int page, int size, String updatedTime, Boolean discarded, String searchTermFieldName, String searchTerm, String sortBy){
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)))
 				.mustNot(QueryBuilders.existsQuery("doctorId"))
@@ -142,13 +142,18 @@ public class DPDoctorUtils {
  	    if(!discarded)boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
  	    
         SearchQuery searchQuery = null;
-        if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
-        else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
+        if(anyStringEmpty(sortBy)){
+        	if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
+            else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
+        }else{
+        	if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.ASC, sortBy)).build();
+            else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
+        }
         
         return searchQuery;
 	}
 	
-	public static SearchQuery createCustomQuery(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTermFieldName, String searchTerm){
+	public static SearchQuery createCustomQuery(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTermFieldName, String searchTerm, String sortBy){
 		
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)))
     			.must(QueryBuilders.termQuery("doctorId", doctorId));
@@ -158,13 +163,18 @@ public class DPDoctorUtils {
  	    if(!discarded)boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
  	    
         SearchQuery searchQuery = null;
-        if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
-        else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
+        if(anyStringEmpty(sortBy)){
+        	if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
+            else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
+        }else{
+        	if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.ASC, sortBy)).build();
+            else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
+        }
         
         return searchQuery;
 	}
 
-	public static SearchQuery createCustomGlobalQuery(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTermFieldName, String searchTerm){
+	public static SearchQuery createCustomGlobalQuery(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTermFieldName, String searchTerm, String sortBy){
 
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)));
     	
@@ -183,9 +193,13 @@ public class DPDoctorUtils {
 	    if(!discarded)boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
 
         SearchQuery searchQuery = null;
-        if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
-        else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
-
+        if(anyStringEmpty(sortBy)){
+        	if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
+            else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
+        }else{
+        	if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.ASC, sortBy)).build();
+            else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
+        }
         return searchQuery;
 	}
 

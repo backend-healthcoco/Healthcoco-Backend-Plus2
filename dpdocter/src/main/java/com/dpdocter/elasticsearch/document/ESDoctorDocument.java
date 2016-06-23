@@ -15,7 +15,7 @@ import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.DoctorExperience;
 import com.dpdocter.beans.WorkingSchedule;
-import com.dpdocter.solr.beans.DoctorLocation;
+import com.dpdocter.elasticsearch.beans.DoctorLocation;
 
 @Document(indexName = "doctors_in", type = "doctors")
 public class ESDoctorDocument extends DoctorLocation{

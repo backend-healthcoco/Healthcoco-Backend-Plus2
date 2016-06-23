@@ -29,12 +29,17 @@ import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.elasticsearch.beans.AdvancedSearch;
+import com.dpdocter.elasticsearch.beans.AdvancedSearchParameter;
+import com.dpdocter.elasticsearch.beans.DoctorLocation;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
 import com.dpdocter.elasticsearch.repository.ESDoctorRepository;
 import com.dpdocter.elasticsearch.repository.ESPatientRepository;
 import com.dpdocter.elasticsearch.repository.ESReferenceRepository;
+import com.dpdocter.elasticsearch.response.ESPatientResponse;
+import com.dpdocter.elasticsearch.response.ESPatientResponseDetails;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.AdvancedSearchType;
 import com.dpdocter.enums.Resource;
@@ -44,11 +49,6 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.services.TransactionalManagementService;
-import com.dpdocter.solr.beans.AdvancedSearch;
-import com.dpdocter.solr.beans.AdvancedSearchParameter;
-import com.dpdocter.solr.beans.DoctorLocation;
-import com.dpdocter.solr.response.SolrPatientResponse;
-import com.dpdocter.solr.response.SolrPatientResponseDetails;
 
 import common.util.web.DPDoctorUtils;
 
@@ -96,11 +96,11 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
     }
 
     @Override
-    public SolrPatientResponseDetails searchPatient(String doctorId, String locationId, String hospitalId, String searchTerm, int page, int size) {
+    public ESPatientResponseDetails searchPatient(String doctorId, String locationId, String hospitalId, String searchTerm, int page, int size) {
 
 	List<ESPatientDocument> patients = new ArrayList<ESPatientDocument>();
-	List<SolrPatientResponse> patientsResponse = null;
-	SolrPatientResponseDetails patientResponseDetails = null;
+	List<ESPatientResponse> patientsResponse = null;
+	ESPatientResponseDetails patientResponseDetails = null;
 	try {
 
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
@@ -115,9 +115,9 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 
 		patients = elasticsearchTemplate.queryForList(searchQuery, ESPatientDocument.class);
 	    if (patients != null && !patients.isEmpty()) {
-		patientsResponse = new ArrayList<SolrPatientResponse>();
+		patientsResponse = new ArrayList<ESPatientResponse>();
 		for (ESPatientDocument patient : patients) {
-		    SolrPatientResponse patientResponse = new SolrPatientResponse();
+		    ESPatientResponse patientResponse = new ESPatientResponse();
 
 		    patient.setImageUrl(getFinalImageURL(patient.getImageUrl()));
 		    patient.setThumbnailUrl(getFinalImageURL(patient.getThumbnailUrl()));
@@ -128,7 +128,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 			patientResponse.setReferredBy(esReferenceDocument.getReference());
 		    patientsResponse.add(patientResponse);
 		}
-		patientResponseDetails = new SolrPatientResponseDetails();
+		patientResponseDetails = new ESPatientResponseDetails();
 		patientResponseDetails.setPatients(patientsResponse);
 		patientResponseDetails.setTotalSize(elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESPatientDocument.class));
 	    }
@@ -141,10 +141,10 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
     }
 
     @Override
-    public SolrPatientResponseDetails searchPatient(AdvancedSearch request) {
+    public ESPatientResponseDetails searchPatient(AdvancedSearch request) {
 	List<ESPatientDocument> patients = null;
-	List<SolrPatientResponse> response = new ArrayList<SolrPatientResponse>();
-	SolrPatientResponseDetails responseDetails = null;
+	List<ESPatientResponse> response = new ArrayList<ESPatientResponse>();
+	ESPatientResponseDetails responseDetails = null;
 	try {
 		BoolQueryBuilder boolQueryBuilder = createAdvancedSearchCriteria(request);
 		SearchQuery searchQuery = null;
@@ -156,9 +156,9 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 	    patients = elasticsearchTemplate.queryForList(searchQuery, ESPatientDocument.class);
 	    
 	    if (patients != null && !patients.isEmpty()) {
-		response = new ArrayList<SolrPatientResponse>();
+		response = new ArrayList<ESPatientResponse>();
 		for (ESPatientDocument patient : patients) {
-		    SolrPatientResponse patientResponse = new SolrPatientResponse();
+		    ESPatientResponse patientResponse = new ESPatientResponse();
 
 		    patient.setImageUrl(getFinalImageURL(patient.getImageUrl()));
 		    patient.setThumbnailUrl(getFinalImageURL(patient.getThumbnailUrl()));
@@ -169,7 +169,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 			patientResponse.setReferredBy(esReferenceDocument.getReference());
 		    response.add(patientResponse);
 		}
-		responseDetails = new SolrPatientResponseDetails();
+		responseDetails = new ESPatientResponseDetails();
 		responseDetails.setPatients(response);
 		responseDetails.setTotalSize(elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESPatientDocument.class));
 	    }

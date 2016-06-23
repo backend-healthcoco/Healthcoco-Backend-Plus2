@@ -2,9 +2,9 @@ package com.dpdocter.elasticsearch.services;
 
 import java.util.List;
 
+import com.dpdocter.elasticsearch.beans.ESCityLandmarkLocalityResponse;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESLandmarkLocalityDocument;
-import com.dpdocter.solr.beans.SolrCityLandmarkLocalityResponse;
 
 public interface ESCityService {
 
@@ -18,6 +18,6 @@ public interface ESCityService {
 //
 //    List<SolrLocalityLandmarkDocument> searchLandmarkLocality(String cityId, String type, String searchTerm);
 //
-    List<SolrCityLandmarkLocalityResponse> searchCityLandmarkLocality(String searchTerm, String latitude, String longitude);
+    List<ESCityLandmarkLocalityResponse> searchCityLandmarkLocality(String searchTerm, String latitude, String longitude);
 
 }

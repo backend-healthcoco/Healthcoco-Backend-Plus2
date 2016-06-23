@@ -15,10 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.elasticsearch.beans.AppointmentSearchResponse;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
+import com.dpdocter.elasticsearch.response.LabResponse;
 import com.dpdocter.elasticsearch.services.ESAppointmentService;
-import com.dpdocter.solr.beans.AppointmentSearchResponse;
-import com.dpdocter.solr.response.LabResponse;
 
 import common.util.web.Response;
 import io.swagger.annotations.Api;

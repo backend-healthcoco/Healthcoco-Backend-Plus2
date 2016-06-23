@@ -1,11 +1,11 @@
-package com.dpdocter.solr.beans;
+package com.dpdocter.elasticsearch.beans;
 
 import java.util.List;
 
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.enums.Day;
 
-public class SolrWorkingSchedule {
+public class ESWorkingSchedule {
 
     private Day workingDay;
 

@@ -3,6 +3,7 @@ package com.dpdocter.services;
 import java.util.List;
 
 import com.dpdocter.beans.DoctorContactsResponse;
+import com.dpdocter.beans.FileDownloadResponse;
 import com.dpdocter.beans.PatientVisit;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.request.AddMultipleDataRequest;
@@ -38,4 +39,6 @@ public interface PatientVisitService {
     String editRecord(String id, VisitedFor prescription);
 
     int getVisitCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified);
+
+    String getPatientVisitFile(String visitId);
 }

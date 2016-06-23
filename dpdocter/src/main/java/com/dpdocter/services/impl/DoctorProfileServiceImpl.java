@@ -232,9 +232,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    long updatedTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
 		medicalCouncilCollections = medicalCouncilRepository.find(new Date(updatedTimeStamp),
-			new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
+			new PageRequest(page, size, Sort.Direction.ASC, "medicalCouncil"));
 	    else
-		medicalCouncilCollections = medicalCouncilRepository.find(new Date(updatedTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+		medicalCouncilCollections = medicalCouncilRepository.find(new Date(updatedTimeStamp), new Sort(Sort.Direction.ASC, "medicalCouncil"));
 	    medicalCouncils = new ArrayList<MedicalCouncil>();
 	    BeanUtil.map(medicalCouncilCollections, medicalCouncils);
 	} catch (Exception e) {
@@ -556,10 +556,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    long updatedTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
 		professionalMembershipCollections = professionalMembershipRepository.find(new Date(updatedTimeStamp),
-			new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
+			new PageRequest(page, size, Sort.Direction.ASC, "membership"));
 	    else
 		professionalMembershipCollections = professionalMembershipRepository.find(new Date(updatedTimeStamp),
-			new Sort(Sort.Direction.DESC, "createdTime"));
+			new Sort(Sort.Direction.ASC, "membership"));
 	    professionalMemberships = new ArrayList<ProfessionalMembership>();
 	    BeanUtil.map(professionalMembershipCollections, professionalMemberships);
 	} catch (Exception e) {
@@ -775,9 +775,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    long updatedTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
 		educationInstituteCollections = educationInstituteRepository.find(new Date(updatedTimeStamp),
-			new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
+			new PageRequest(page, size, Sort.Direction.ASC, "name"));
 	    else
-		educationInstituteCollections = educationInstituteRepository.find(new Date(updatedTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+		educationInstituteCollections = educationInstituteRepository.find(new Date(updatedTimeStamp), new Sort(Sort.Direction.ASC, "name"));
 
 	    educationInstitutes = new ArrayList<EducationInstitute>();
 	    BeanUtil.map(educationInstituteCollections, educationInstitutes);
@@ -798,9 +798,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    long updatedTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
 		qualificationCollections = educationQualificationRepository.find(new Date(updatedTimeStamp),
-			new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
+			new PageRequest(page, size, Sort.Direction.ASC, "name"));
 	    else
-		qualificationCollections = educationQualificationRepository.find(new Date(updatedTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+		qualificationCollections = educationQualificationRepository.find(new Date(updatedTimeStamp), new Sort(Sort.Direction.ASC, "name"));
 	    qualifications = new ArrayList<EducationQualification>();
 	    BeanUtil.map(qualificationCollections, qualifications);
 	} catch (Exception e) {

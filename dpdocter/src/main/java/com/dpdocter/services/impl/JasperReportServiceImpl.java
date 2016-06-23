@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.services.JasperReportService;
 import com.jaspersoft.mongodb.connection.MongoDbConnection;
 
@@ -39,52 +40,55 @@ public class JasperReportServiceImpl implements JasperReportService {
     @SuppressWarnings("deprecation")
     @Override
     @Transactional
-    public String createPDF(Map<String, Object> parameters, String fileName, String layout, String pageSize, String margins, String pdfName) {
-	try {
-	    MongoDbConnection mongoConnection = new MongoDbConnection(MONGO_HOST_URI, null, null);
-
-	    parameters.put("REPORT_CONNECTION", mongoConnection);
-	    parameters.put("SUBREPORT_DIR", JASPER_TEMPLATES_RESOURCE);
-
-	    DefaultJasperReportsContext context = DefaultJasperReportsContext.getInstance();
-	    context.setValue("net.sf.jasperreports.extension.registry.factory.queryexecuters.mongodb",
-		    "com.jaspersoft.mongodb.query.MongoDbQueryExecuterExtensionsRegistryFactory");
-	    // JRPropertiesUtil propertiesUtil =
-	    // JRPropertiesUtil.getInstance(context);
-
-	    JRProperties.setProperty("net.sf.jasperreports.query.executer.factory.MongoDbQuery", "com.jaspersoft.mongodb.query.MongoDbQueryExecuterFactory");
-	    JasperDesign design = JRXmlLoader.load(new File(JASPER_TEMPLATES_RESOURCE + fileName + ".jrxml"));
-
-	    if (layout.equals("LANDSCAPE")) {
-		if (pageSize.equalsIgnoreCase("LETTER")) {
-		    design.setPageHeight(Page.Page_Letter_Landscape().getHeight());
-		    design.setPageWidth(Page.Page_Letter_Landscape().getWidth());
-		} else if (pageSize.equalsIgnoreCase("LEGAL")) {
-		    design.setPageHeight(Page.Page_Legal_Landscape().getHeight());
-		    design.setPageWidth(Page.Page_Legal_Landscape().getWidth());
-		} else {
-		    design.setPageHeight(Page.Page_A4_Landscape().getHeight());
-		    design.setPageWidth(Page.Page_A4_Landscape().getWidth());
-		}
-	    } else {
-		if (pageSize.equalsIgnoreCase("LETTER")) {
-		    design.setPageHeight(Page.Page_Letter_Portrait().getHeight());
-		    design.setPageWidth(Page.Page_Letter_Portrait().getWidth());
-		} else if (pageSize.equalsIgnoreCase("LEGAL")) {
-		    design.setPageHeight(Page.Page_Legal_Portrait().getHeight());
-		    design.setPageWidth(Page.Page_Legal_Portrait().getWidth());
-		} else {
-		    design.setPageHeight(Page.Page_A4_Portrait().getHeight());
-		    design.setPageWidth(Page.Page_A4_Portrait().getWidth());
-		}
-	    }
-	    JasperReport jasperReport = JasperCompileManager.compileReport(design);
-
-	    JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters);
-
-	    JasperExportManager.exportReportToPdfFile(jasperPrint, JASPER_TEMPLATES_RESOURCE + pdfName + ".pdf");
-
-	    return JASPER_TEMPLATES_RESOURCE + pdfName + ".pdf";
+    public JasperReportResponse createPDF(Map<String, Object> parameters, String fileName, String layout, String pageSize, String margins, String pdfName) {
+    	JasperReportResponse jasperReportResponse = null;
+    	try {
+		    MongoDbConnection mongoConnection = new MongoDbConnection(MONGO_HOST_URI, null, null);
+	
+		    parameters.put("REPORT_CONNECTION", mongoConnection);
+		    parameters.put("SUBREPORT_DIR", JASPER_TEMPLATES_RESOURCE);
+	
+		    DefaultJasperReportsContext context = DefaultJasperReportsContext.getInstance();
+		    context.setValue("net.sf.jasperreports.extension.registry.factory.queryexecuters.mongodb",
+			    "com.jaspersoft.mongodb.query.MongoDbQueryExecuterExtensionsRegistryFactory");
+		    // JRPropertiesUtil propertiesUtil =
+		    // JRPropertiesUtil.getInstance(context);
+	
+		    JRProperties.setProperty("net.sf.jasperreports.query.executer.factory.MongoDbQuery", "com.jaspersoft.mongodb.query.MongoDbQueryExecuterFactory");
+		    JasperDesign design = JRXmlLoader.load(new File(JASPER_TEMPLATES_RESOURCE + fileName + ".jrxml"));
+	
+		    if (layout.equals("LANDSCAPE")) {
+			if (pageSize.equalsIgnoreCase("LETTER")) {
+			    design.setPageHeight(Page.Page_Letter_Landscape().getHeight());
+			    design.setPageWidth(Page.Page_Letter_Landscape().getWidth());
+			} else if (pageSize.equalsIgnoreCase("LEGAL")) {
+			    design.setPageHeight(Page.Page_Legal_Landscape().getHeight());
+			    design.setPageWidth(Page.Page_Legal_Landscape().getWidth());
+			} else {
+			    design.setPageHeight(Page.Page_A4_Landscape().getHeight());
+			    design.setPageWidth(Page.Page_A4_Landscape().getWidth());
+			}
+		    } else {
+			if (pageSize.equalsIgnoreCase("LETTER")) {
+			    design.setPageHeight(Page.Page_Letter_Portrait().getHeight());
+			    design.setPageWidth(Page.Page_Letter_Portrait().getWidth());
+			} else if (pageSize.equalsIgnoreCase("LEGAL")) {
+			    design.setPageHeight(Page.Page_Legal_Portrait().getHeight());
+			    design.setPageWidth(Page.Page_Legal_Portrait().getWidth());
+			} else {
+			    design.setPageHeight(Page.Page_A4_Portrait().getHeight());
+			    design.setPageWidth(Page.Page_A4_Portrait().getWidth());
+			}
+		    }
+		    JasperReport jasperReport = JasperCompileManager.compileReport(design);
+	
+		    JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters);
+	
+		    JasperExportManager.exportReportToPdfFile(jasperPrint, JASPER_TEMPLATES_RESOURCE + pdfName + ".pdf");
+	
+		    jasperReportResponse = new JasperReportResponse();
+		    jasperReportResponse.setPath(JASPER_TEMPLATES_RESOURCE + pdfName + ".pdf");
+		    return jasperReportResponse;
 
 	} catch (JRException e) {
 	    e.printStackTrace();
