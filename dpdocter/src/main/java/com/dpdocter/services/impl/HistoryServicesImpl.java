@@ -1000,17 +1000,17 @@ public class HistoryServicesImpl implements HistoryServices {
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
 			diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "createdTime"));
+				new PageRequest(page, size, Direction.ASC, "disease"));
 		    else
 			diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "createdTime"));
+				new Sort(Sort.Direction.ASC, "disease"));
 		} else {
 		    if (size > 0)
 			diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "createdTime"));
+				new PageRequest(page, size, Direction.ASC, "disease"));
 		    else
 			diseasesCollections = diseasesRepository.findCustomDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "createdTime"));
+				new Sort(Sort.Direction.ASC, "disease"));
 		}
 	    }
 	    if (diseasesCollections != null) {
@@ -1044,9 +1044,9 @@ public class HistoryServicesImpl implements HistoryServices {
 
 	    if (size > 0)
 		diseasesCollections = diseasesRepository.findGlobalDiseases(new Date(createdTimeStamp), discards,
-			new PageRequest(page, size, Direction.DESC, "createdTime"));
+			new PageRequest(page, size, Direction.ASC, "disease"));
 	    else
-		diseasesCollections = diseasesRepository.findGlobalDiseases(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
+		diseasesCollections = diseasesRepository.findGlobalDiseases(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.ASC, "disease"));
 
 	    if (diseasesCollections != null) {
 		diseaseListResponses = new ArrayList<DiseaseListResponse>();
@@ -1081,25 +1081,25 @@ public class HistoryServicesImpl implements HistoryServices {
 	    if (doctorId == null) {
 		if (size > 0)
 		    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(new Date(createdTimeStamp), discards,
-			    new PageRequest(page, size, Direction.DESC, "createdTime"));
+			    new PageRequest(page, size, Direction.ASC, "disease"));
 		else
 		    diseasesCollections = diseasesRepository.findCustomGlobalDiseases(new Date(createdTimeStamp), discards,
-			    new Sort(Sort.Direction.DESC, "createdTime"));
+			    new Sort(Sort.Direction.ASC, "disease"));
 	    } else {
 		if (locationId == null && hospitalId == null) {
 		    if (size > 0)
 			diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "createdTime"));
+				new PageRequest(page, size, Direction.ASC, "disease"));
 		    else
 			diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "createdTime"));
+				new Sort(Sort.Direction.ASC, "disease"));
 		} else {
 		    if (size > 0)
 			diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-				discards, new PageRequest(page, size, Direction.DESC, "createdTime"));
+				discards, new PageRequest(page, size, Direction.ASC, "disease"));
 		    else
 			diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-				discards, new Sort(Sort.Direction.DESC, "createdTime"));
+				discards, new Sort(Sort.Direction.ASC, "disease"));
 		}
 	    }
 	    if (diseasesCollections != null) {

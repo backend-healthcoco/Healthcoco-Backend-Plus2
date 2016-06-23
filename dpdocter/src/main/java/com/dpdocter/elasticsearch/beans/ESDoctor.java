@@ -1,3 +1,4 @@
+package com.dpdocter.elasticsearch.beans;
 //package com.dpdocter.solr.beans;
 //
 //import java.util.List;

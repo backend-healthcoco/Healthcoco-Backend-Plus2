@@ -2,9 +2,9 @@ package com.dpdocter.elasticsearch.services;
 
 import java.util.List;
 
+import com.dpdocter.elasticsearch.beans.AppointmentSearchResponse;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
-import com.dpdocter.solr.beans.AppointmentSearchResponse;
-import com.dpdocter.solr.response.LabResponse;
+import com.dpdocter.elasticsearch.response.LabResponse;
 
 public interface ESAppointmentService {
 

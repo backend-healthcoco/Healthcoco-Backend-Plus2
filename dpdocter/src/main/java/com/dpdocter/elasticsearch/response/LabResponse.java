@@ -1,4 +1,4 @@
-package com.dpdocter.solr.response;
+package com.dpdocter.elasticsearch.response;
 
 import java.util.List;
 

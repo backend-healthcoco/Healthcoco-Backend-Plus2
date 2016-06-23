@@ -12,6 +12,7 @@ import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.elasticsearch.beans.ESCityLandmarkLocalityResponse;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESLandmarkLocalityDocument;
 import com.dpdocter.elasticsearch.repository.ESCityRepository;
@@ -22,7 +23,6 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.services.TransactionalManagementService;
-import com.dpdocter.solr.beans.SolrCityLandmarkLocalityResponse;
 
 import common.util.web.DPDoctorUtils;
 
@@ -119,8 +119,8 @@ public class ESCityServiceImpl  implements ESCityService{
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<SolrCityLandmarkLocalityResponse> searchCityLandmarkLocality(String searchTerm, String latitude, String longitude) {
-	List<SolrCityLandmarkLocalityResponse> response = new ArrayList<SolrCityLandmarkLocalityResponse>();
+    public List<ESCityLandmarkLocalityResponse> searchCityLandmarkLocality(String searchTerm, String latitude, String longitude) {
+	List<ESCityLandmarkLocalityResponse> response = new ArrayList<ESCityLandmarkLocalityResponse>();
 	try {
 	    List<ESLandmarkLocalityDocument> landmarks = null;
 	    List<ESLandmarkLocalityDocument> localities = null;
@@ -151,7 +151,7 @@ public class ESCityServiceImpl  implements ESCityService{
 	    if (landmarks != null && !landmarks.isEmpty()) {
 		for (ESLandmarkLocalityDocument document : landmarks) {
 		    ESCityDocument city = esCityRepository.findOne(document.getCityId());
-		    SolrCityLandmarkLocalityResponse landmark = new SolrCityLandmarkLocalityResponse();
+		    ESCityLandmarkLocalityResponse landmark = new ESCityLandmarkLocalityResponse();
 		    BeanUtil.map(document, landmark);
 		    if (city != null) {
 			landmark.setCity(city.getCity());
@@ -164,7 +164,7 @@ public class ESCityServiceImpl  implements ESCityService{
 	    if (localities != null && !localities.isEmpty()) {
 		for (ESLandmarkLocalityDocument document : localities) {
 		    ESCityDocument city = esCityRepository.findOne(document.getCityId());
-		    SolrCityLandmarkLocalityResponse locality = new SolrCityLandmarkLocalityResponse();
+		    ESCityLandmarkLocalityResponse locality = new ESCityLandmarkLocalityResponse();
 		    BeanUtil.map(document, locality);
 		    if (city != null) {
 			locality.setCity(city.getCity());
@@ -176,7 +176,7 @@ public class ESCityServiceImpl  implements ESCityService{
 	    }
 	    if (cities != null && !cities.isEmpty()) {
 		for (ESCityDocument document : cities) {
-		    SolrCityLandmarkLocalityResponse city = new SolrCityLandmarkLocalityResponse();
+		    ESCityLandmarkLocalityResponse city = new ESCityLandmarkLocalityResponse();
 		    BeanUtil.map(document, city);
 		    response.add(city);
 	    }

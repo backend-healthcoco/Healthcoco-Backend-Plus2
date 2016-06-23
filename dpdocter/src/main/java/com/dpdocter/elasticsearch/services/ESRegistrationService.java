@@ -1,18 +1,18 @@
 package com.dpdocter.elasticsearch.services;
 
+import com.dpdocter.elasticsearch.beans.AdvancedSearch;
+import com.dpdocter.elasticsearch.beans.DoctorLocation;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
-import com.dpdocter.solr.beans.AdvancedSearch;
-import com.dpdocter.solr.beans.DoctorLocation;
-import com.dpdocter.solr.response.SolrPatientResponseDetails;
+import com.dpdocter.elasticsearch.response.ESPatientResponseDetails;
 
 public interface ESRegistrationService {
     boolean addPatient(ESPatientDocument request);
 
-    SolrPatientResponseDetails searchPatient(String doctorId, String locationId, String hospitalId, String searchTerm, int page, int size);
+    ESPatientResponseDetails searchPatient(String doctorId, String locationId, String hospitalId, String searchTerm, int page, int size);
 
-    SolrPatientResponseDetails searchPatient(AdvancedSearch request);
+    ESPatientResponseDetails searchPatient(AdvancedSearch request);
 
     boolean addDoctor(ESDoctorDocument request);
 

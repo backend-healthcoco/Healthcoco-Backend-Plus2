@@ -1,5 +1,6 @@
 package com.dpdocter.services.impl;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -9,6 +10,7 @@ import java.util.Map;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -83,6 +85,7 @@ import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddMultipleDataRequest;
+import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.PatientVisitResponse;
 import com.dpdocter.response.PrescriptionAddEditResponse;
 import com.dpdocter.response.TestAndRecordDataResponse;
@@ -559,8 +562,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     @Override
     @Transactional
     public Boolean email(String visitId, String emailAddress) {
+    	Boolean response = false;
 	PatientVisitCollection patientVisitCollection = null;
-	Map<String, Object> parameters = new HashMap<String, Object>();
 	MailAttachment mailAttachment = null;
 	EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 
@@ -571,7 +574,53 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		PatientCollection patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientVisitCollection.getPatientId(),
 			patientVisitCollection.getDoctorId(), patientVisitCollection.getLocationId(), patientVisitCollection.getHospitalId());
 		UserCollection user = userRepository.findOne(patientVisitCollection.getPatientId());
+		JasperReportResponse jasperReportResponse = createJasper(patientVisitCollection, patient, user);
+		if(jasperReportResponse != null){
+			if (user != null) {
+				emailTrackCollection.setPatientName(user.getFirstName());
+				emailTrackCollection.setPatientId(user.getId());
+			    }
+			    List<MailAttachment> mailAttachments = new ArrayList<MailAttachment>();
 
+			    mailAttachment = new MailAttachment();
+			    mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
+			    mailAttachment.setFileSystemResource(new  FileSystemResource(jasperReportResponse.getPath()));
+//			    mailAttachment.setInputStream(jasperReportResponse.getInputStream());
+
+			    mailAttachments.add(mailAttachment);
+			    if (patientVisitCollection.getRecordId() != null) {
+				for (String recordId : patientVisitCollection.getRecordId()) {
+				    Records record = recordsService.getRecordById(recordId);
+				    mailAttachment = recordsService.getRecordMailData(recordId, record.getDoctorId(), record.getLocationId(), record.getHospitalId());
+				    if (mailAttachment != null)
+					mailAttachments.add(mailAttachment);
+				}
+			    }
+			    mailService.sendEmailMultiAttach(emailAddress, "Patient Visit", "PFA.", mailAttachments);
+
+			    emailTrackCollection.setDoctorId(patientVisitCollection.getDoctorId());
+			    emailTrackCollection.setHospitalId(patientVisitCollection.getHospitalId());
+			    emailTrackCollection.setLocationId(patientVisitCollection.getLocationId());
+			    emailTrackCollection.setType(ComponentType.ALL.getType());
+			    emailTrackCollection.setSubject("Patient Visit");
+			    emailTackService.saveEmailTrack(emailTrackCollection);
+			    response = true;
+		}
+	    } else {
+		logger.warn("Patient Visit Id does not exist");
+		throw new BusinessException(ServiceError.NotFound, "Patient Visit Id does not exist");
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return response;
+    }
+
+    private JasperReportResponse createJasper(PatientVisitCollection patientVisitCollection, PatientCollection patient, UserCollection user) throws IOException{
+    	Map<String, Object> parameters = new HashMap<String, Object>();
+    	
 		String patientName = "", dob = "", gender = "", mobileNumber = "", refferedBy = "", pid = "", date = "", resourceId = "", logoURL = "";
 		if (patient.getReferredBy() != null) {
 		    ReferencesCollection referencesCollection = referenceRepository.findOne(patient.getReferredBy());
@@ -724,47 +773,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 		    parameters.put("visitId", patientVisitCollection.getId());
 		    String pdfName = (user != null ? user.getFirstName() : "") + new SimpleDateFormat("dd-MM-yyyy").format(new Date()) + "VISITS";
-		    String path = jasperReportService.createPDF(parameters, "mongo-multiple-data", layout, pageSize, margins, pdfName.replaceAll("\\s+", ""));
-		    if (user != null) {
-			emailTrackCollection.setPatientName(user.getFirstName());
-			emailTrackCollection.setPatientId(user.getId());
-		    }
-		    List<MailAttachment> mailAttachments = new ArrayList<MailAttachment>();
-
-		    FileSystemResource file = new FileSystemResource(path);
-		    mailAttachment = new MailAttachment();
-		    mailAttachment.setAttachmentName(file.getFilename());
-		    mailAttachment.setFileSystemResource(file);
-
-		    mailAttachments.add(mailAttachment);
-		    if (patientVisitCollection.getRecordId() != null) {
-			for (String recordId : patientVisitCollection.getRecordId()) {
-			    Records record = recordsService.getRecordById(recordId);
-			    mailAttachment = recordsService.getRecordMailData(recordId, record.getDoctorId(), record.getLocationId(), record.getHospitalId());
-			    if (mailAttachment != null)
-				mailAttachments.add(mailAttachment);
-			}
-		    }
-		    mailService.sendEmailMultiAttach(emailAddress, "Patient Visit", "PFA.", mailAttachments);
-
-		    emailTrackCollection.setDoctorId(patientVisitCollection.getDoctorId());
-		    emailTrackCollection.setHospitalId(patientVisitCollection.getHospitalId());
-		    emailTrackCollection.setLocationId(patientVisitCollection.getLocationId());
-		    emailTrackCollection.setType(ComponentType.ALL.getType());
-		    emailTrackCollection.setSubject("Patient Visit");
-		    emailTackService.saveEmailTrack(emailTrackCollection);
-	    } else {
-		logger.warn("Patient Visit Id does not exist");
-		throw new BusinessException(ServiceError.NotFound, "Patient Visit Id does not exist");
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-	}
-	return true;
+		    JasperReportResponse path = jasperReportService.createPDF(parameters, "mongo-multiple-data", layout, pageSize, margins, pdfName.replaceAll("\\s+", ""));
+		    
+		    return path;
     }
-
     private ClinicalNotesJasperDetails getClinicalNotesJasperDetails(String clinicalNotesId) {
 	ClinicalNotesCollection clinicalNotesCollection = null;
 	ClinicalNotesJasperDetails clinicalNotesJasperDetails = null;
@@ -1200,4 +1212,29 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 	return visitCount;
     }
+
+	@Override
+	public String getPatientVisitFile(String visitId) {
+		String response = null;
+		try{
+			PatientVisitCollection patientVisitCollection = patientVisitRepository.findOne(visitId);
+
+		    if (patientVisitCollection != null) {
+			PatientCollection patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientVisitCollection.getPatientId(),
+				patientVisitCollection.getDoctorId(), patientVisitCollection.getLocationId(), patientVisitCollection.getHospitalId());
+			UserCollection user = userRepository.findOne(patientVisitCollection.getPatientId());
+
+			JasperReportResponse jasperReportResponse = createJasper(patientVisitCollection, patient, user);
+			if(jasperReportResponse != null && jasperReportResponse.getPath() != null)response = jasperReportResponse.getPath();
+		    } else {
+				logger.warn("Patient Visit Id does not exist");
+				throw new BusinessException(ServiceError.NotFound, "Patient Visit Id does not exist");
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		    logger.error(e + " Error while getting Patient Visits PDF");
+		    throw new BusinessException(ServiceError.Unknown, "Error while getting Patient Visits PDF");
+		}
+		return response;
+	}
 }

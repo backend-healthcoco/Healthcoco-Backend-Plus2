@@ -702,8 +702,7 @@ public class RecordsServiceImpl implements RecordsService {
 		mailAttachment.setInputStream(objectData);
 		UserCollection patientUserCollection = userRepository.findOne(recordsCollection.getPatientId());
 		if (patientUserCollection != null) {
-		    mailAttachment.setAttachmentName(
-			    patientUserCollection.getFirstName() + new Date() + "REPORTS." + FilenameUtils.getExtension(recordsCollection.getRecordsUrl()));
+		    mailAttachment.setAttachmentName(patientUserCollection.getFirstName() + new Date() + "REPORTS." + FilenameUtils.getExtension(recordsCollection.getRecordsUrl()));
 		} else {
 		    mailAttachment.setAttachmentName(new Date() + "REPORTS." + FilenameUtils.getExtension(recordsCollection.getRecordsUrl()));
 		}

@@ -1,10 +1,10 @@
-package com.dpdocter.solr.response;
+package com.dpdocter.elasticsearch.response;
 
 import java.util.Date;
 
 import com.dpdocter.beans.DOB;
 
-public class SolrPatientResponse {
+public class ESPatientResponse {
 
     private String id;
 

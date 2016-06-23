@@ -1,18 +1,18 @@
-package com.dpdocter.solr.response;
+package com.dpdocter.elasticsearch.response;
 
 import java.util.List;
 
-public class SolrPatientResponseDetails {
+public class ESPatientResponseDetails {
 
-    private List<SolrPatientResponse> patients;
+    private List<ESPatientResponse> patients;
 
     private long totalSize;
 
-    public List<SolrPatientResponse> getPatients() {
+    public List<ESPatientResponse> getPatients() {
 	return patients;
     }
 
-    public void setPatients(List<SolrPatientResponse> patients) {
+    public void setPatients(List<ESPatientResponse> patients) {
 	this.patients = patients;
     }
 

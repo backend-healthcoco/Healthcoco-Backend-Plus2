@@ -14,11 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.elasticsearch.beans.AdvancedSearch;
+import com.dpdocter.elasticsearch.response.ESPatientResponseDetails;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.solr.beans.AdvancedSearch;
-import com.dpdocter.solr.response.SolrPatientResponseDetails;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -43,7 +43,7 @@ public class ESRegistrationApi {
     @Path(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT)
     @GET
     @ApiOperation(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT, notes = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT)
-    public Response<SolrPatientResponseDetails> searchPatient(@PathParam(value = "doctorId") String doctorId,
+    public Response<ESPatientResponseDetails> searchPatient(@PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @PathParam(value = "searchTerm") String searchTerm, @QueryParam("page") int page, @QueryParam("size") int size) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, searchTerm)) {
@@ -51,9 +51,9 @@ public class ESRegistrationApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Location Id, Hospital Id and Search Term Cannot Be Empty");
 	}
 
-	SolrPatientResponseDetails patients = solrRegistrationService.searchPatient(doctorId, locationId, hospitalId, searchTerm, page, size);
+	ESPatientResponseDetails patients = solrRegistrationService.searchPatient(doctorId, locationId, hospitalId, searchTerm, page, size);
 
-	Response<SolrPatientResponseDetails> response = new Response<SolrPatientResponseDetails>();
+	Response<ESPatientResponseDetails> response = new Response<ESPatientResponseDetails>();
 	response.setData(patients);
 	return response;
     }
@@ -61,16 +61,16 @@ public class ESRegistrationApi {
     @Path(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT_ADV)
     @POST
     @ApiOperation(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT_ADV, notes = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT_ADV)
-    public Response<SolrPatientResponseDetails> searchPatient(AdvancedSearch request) {
+    public Response<ESPatientResponseDetails> searchPatient(AdvancedSearch request) {
 
 	if (request == null) {
 	    logger.warn("Search Request Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Search Request Cannot Be Empty");
 	}
 
-	SolrPatientResponseDetails patients = solrRegistrationService.searchPatient(request);
+	ESPatientResponseDetails patients = solrRegistrationService.searchPatient(request);
 
-	Response<SolrPatientResponseDetails> response = new Response<SolrPatientResponseDetails>();
+	Response<ESPatientResponseDetails> response = new Response<ESPatientResponseDetails>();
 	response.setData(patients);
 	return response;
     }

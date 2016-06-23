@@ -147,7 +147,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 	List<Reference> response = null;
 	List<ESReferenceDocument> referenceDocuments = null;
 	try {
-		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(page, size, updatedTime, discarded, "reference", searchTerm);
+		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(page, size, updatedTime, discarded, "reference", searchTerm, "reference");
 		referenceDocuments = elasticsearchTemplate.queryForList(searchQuery, ESReferenceDocument.class);
 		if (referenceDocuments != null) {
 			response = new ArrayList<Reference>();
@@ -166,7 +166,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 	List<Reference> response = null;
 	List<ESReferenceDocument> referenceDocuments = null;
 	try {
-		SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "reference", searchTerm);
+		SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "reference", searchTerm, "reference");
 		referenceDocuments = elasticsearchTemplate.queryForList(searchQuery, ESReferenceDocument.class);
 		if (referenceDocuments != null) {
 			response = new ArrayList<Reference>();
@@ -185,7 +185,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 	List<Reference> response = null;
 	List<ESReferenceDocument> referenceDocuments = null;
 	try {
-		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "reference", searchTerm);
+		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "reference", searchTerm, "reference");
 		referenceDocuments = elasticsearchTemplate.queryForList(searchQuery, ESReferenceDocument.class);
 		
 	    if (referenceDocuments != null) {
@@ -229,7 +229,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 
 		if (DPDoctorUtils.anyStringEmpty(doctorId))diseasesDocuments = new ArrayList<ESDiseasesDocument>();
 	    else {
-	    	SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "disease", searchTerm);
+	    	SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "disease", searchTerm, "disease");
 	        diseasesDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDiseasesDocument.class);
 	    }
 	    if (diseasesDocuments != null) {
@@ -255,7 +255,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 	List<ESDiseasesDocument> diseasesDocuments = null;
 	try {	
 		
-		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(page, size, updatedTime, discarded, "disease", searchTerm);
+		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(page, size, updatedTime, discarded, "disease", searchTerm, "disease");
         diseasesDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDiseasesDocument.class);
 
 	    if (diseasesDocuments != null) {
@@ -281,7 +281,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 	List<DiseaseListResponse> diseaseListResponses = null;
 	List<ESDiseasesDocument> diseasesDocuments = null;
 	try {
-		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "disease", searchTerm);
+		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "disease", searchTerm, "disease");
 		
         diseasesDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDiseasesDocument.class);
 
@@ -493,8 +493,8 @@ public class ESMasterServiceImpl implements ESMasterService {
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("superSpeciality", searchTerm));
 		   
 	    SearchQuery searchQuery = null;
-	    if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.ASC, "superSpeciality")).build();
-	    else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("superSpeciality").order(SortOrder.ASC)).build();
+	    if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
+	    else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
 	       
 	    specialityDocuments = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
 

@@ -900,9 +900,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
 		referrencesCollections = referrenceRepository.findAll(new Date(createdTimeStamp), discards,
-			new PageRequest(page, size, Direction.DESC, "createdTime"));
+			new PageRequest(page, size, Direction.ASC, "reference"));
 	    else
-		referrencesCollections = referrenceRepository.findAll(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
+		referrencesCollections = referrenceRepository.findAll(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.ASC, "reference"));
 	    if (referrencesCollections != null) {
 		response = new ArrayList<ReferenceDetail>();
 		BeanUtil.map(referrencesCollections, response);
@@ -927,17 +927,17 @@ public class RegistrationServiceImpl implements RegistrationService {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 		    if (size > 0)
 			referrencesCollections = referrenceRepository.findCustom(doctorId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "createdTime"));
+				new PageRequest(page, size, Direction.ASC, "reference"));
 		    else
 			referrencesCollections = referrenceRepository.findCustom(doctorId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "createdTime"));
+				new Sort(Sort.Direction.ASC, "reference"));
 		} else {
 		    if (size > 0)
 			referrencesCollections = referrenceRepository.findCustom(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "createdTime"));
+				new PageRequest(page, size, Direction.ASC, "reference"));
 		    else
 			referrencesCollections = referrenceRepository.findCustom(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "createdTime"));
+				new Sort(Sort.Direction.ASC, "reference"));
 		}
 	    }
 	    if (referrencesCollections != null) {
@@ -961,25 +961,25 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 		if (size > 0)
 		    referrencesCollections = referrenceRepository.findCustomGlobal(new Date(createdTimeStamp), discards,
-			    new PageRequest(page, size, Direction.DESC, "createdTime"));
+			    new PageRequest(page, size, Direction.ASC, "reference"));
 		else
 		    referrencesCollections = referrenceRepository.findCustomGlobal(new Date(createdTimeStamp), discards,
-			    new Sort(Sort.Direction.DESC, "createdTime"));
+			    new Sort(Sort.Direction.ASC, "reference"));
 	    } else {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 		    if (size > 0)
 			referrencesCollections = referrenceRepository.findCustomGlobal(doctorId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "createdTime"));
+				new PageRequest(page, size, Direction.ASC, "reference"));
 		    else
 			referrencesCollections = referrenceRepository.findCustomGlobal(doctorId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "createdTime"));
+				new Sort(Sort.Direction.ASC, "reference"));
 		} else {
 		    if (size > 0)
 			referrencesCollections = referrenceRepository.findCustomGlobal(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "createdTime"));
+				new PageRequest(page, size, Direction.ASC, "reference"));
 		    else
 			referrencesCollections = referrenceRepository.findCustomGlobal(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "createdTime"));
+				new Sort(Sort.Direction.ASC, "reference"));
 		}
 	    }
 	    if (referrencesCollections != null) {
@@ -1156,11 +1156,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 	LocationCollection locationCollection = null;
 	try {
 	    locationCollection = locationRepository.findOne(request.getId());
-	    String landmarkDetails = null; 
-	    if (locationCollection != null){
-	    	landmarkDetails = locationCollection.getLandmarkDetails();
-	    	BeanUtil.map(request, locationCollection);
-	    }
 	    List<GeocodedLocation> geocodedLocations = locationServices
 		    .geocodeLocation((locationCollection.getLocationName() != null ? locationCollection.getLocationName() : "")
 			    + (locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() : "")
@@ -1170,8 +1165,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	    if (geocodedLocations != null && !geocodedLocations.isEmpty())
 		BeanUtil.map(geocodedLocations.get(0), locationCollection);
-
-	    locationCollection.setLandmarkDetails(landmarkDetails);
+	    locationCollection.setTagLine(request.getTagLine());
+	    locationCollection.setWebsiteUrl(request.getWebsiteUrl());
+	    locationCollection.setLocationName(request.getLocationName());
 	    locationCollection.setSpecialization(request.getSpecialization());
 	    locationCollection = locationRepository.save(locationCollection);
 	    response = new ClinicProfile();
@@ -1307,9 +1303,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    long updateTimeStamp = Long.parseLong(updatedTime);
 
 	    if (size > 0)
-		professionCollections = professionRepository.find(new Date(updateTimeStamp), new PageRequest(page, size, Direction.DESC, "updateTime"));
+		professionCollections = professionRepository.find(new Date(updateTimeStamp), new PageRequest(page, size, Direction.ASC, "profession"));
 	    else
-		professionCollections = professionRepository.find(new Date(updateTimeStamp), new Sort(Direction.DESC, "updateTime"));
+		professionCollections = professionRepository.find(new Date(updateTimeStamp), new Sort(Direction.ASC, "profession"));
 	    if (professionCollections != null) {
 		professions = new ArrayList<Profession>();
 		BeanUtil.map(professionCollections, professions);

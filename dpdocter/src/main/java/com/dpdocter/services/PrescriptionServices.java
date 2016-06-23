@@ -137,4 +137,6 @@ public interface PrescriptionServices {
 
 	GenericCode addEditGenericCode(GenericCode request);
 
+	String getPrescriptionFile(String prescriptionId);
+
 }

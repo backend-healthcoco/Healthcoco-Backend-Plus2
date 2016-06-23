@@ -201,9 +201,12 @@ public class SignUpServiceImpl implements SignUpService {
 //		    + "Click here to Login</a>" + "</div></div></div></div></body></html>";
 
 	    TokenCollection tokenCollection = tokenRepository.findOne(tokenId);
-	    if (tokenCollection == null || tokenCollection.getIsUsed()) {
-		return "Link is already Used";
-	    } else {
+	    if (tokenCollection == null) {
+	    	return "Invalid token";
+	    } else if(tokenCollection.getIsUsed()){
+	    	return "Link is already Used";
+	    }
+	    else {
 		UserLocationCollection userLocationCollection = userLocationRepository.findOne(tokenCollection.getResourceId());
 		if (userLocationCollection == null) {
 		    return "Invalid Url.";
