@@ -64,7 +64,8 @@ public class MailServiceImpl implements MailService {
      */
     @Override
     @Transactional
-    public void sendEmail(String to, String subject, String body, MailAttachment mailAttachment) throws MessagingException {
+    public Boolean sendEmail(String to, String subject, String body, MailAttachment mailAttachment) throws MessagingException {
+    	Boolean respone = false;
 	try {
 	    Session session = Session.getInstance(new Properties());
 	    MimeMessage mimeMessage = new MimeMessage(session);
@@ -95,15 +96,19 @@ public class MailServiceImpl implements MailService {
 	    rawEmailRequest.setSource(FROM);
 	    BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
 	    new AmazonSimpleEmailServiceClient(credentials).sendRawEmail(rawEmailRequest);
+	    outputStream.close();
+	    respone = true;
 	} catch (Exception ex) {
 	    System.out.println("The email was not sent.");
 	    System.out.println("Error message: " + ex.getMessage());
 	}
+	return respone;
     }
 
     @Override
     @Transactional
-    public void sendEmailMultiAttach(String to, String subject, String body, List<MailAttachment> mailAttachments) throws MessagingException {
+    public Boolean sendEmailMultiAttach(String to, String subject, String body, List<MailAttachment> mailAttachments) throws MessagingException {
+    	Boolean respone = false;
 	try {
 	    Session session = Session.getInstance(new Properties());
 	    MimeMessage mimeMessage = new MimeMessage(session);
@@ -130,9 +135,12 @@ public class MailServiceImpl implements MailService {
 	    rawEmailRequest.setSource(FROM);
 	    BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
 	    new AmazonSimpleEmailServiceClient(credentials).sendRawEmail(rawEmailRequest);
+	    outputStream.close();
+	    respone = true;
 	} catch (Exception ex) {
 	    System.out.println("The email was not sent.");
 	    System.out.println("Error message: " + ex.getMessage());
 	}
+	return respone;
     }
 }

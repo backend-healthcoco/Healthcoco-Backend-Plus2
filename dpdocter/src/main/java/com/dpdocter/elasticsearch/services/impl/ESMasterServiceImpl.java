@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
@@ -24,11 +25,15 @@ import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.Speciality;
+import com.dpdocter.collections.CityCollection;
 import com.dpdocter.collections.DrugCollection;
+import com.dpdocter.collections.LandmarkLocalityCollection;
+import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESDiseasesDocument;
 import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.document.ESEducationInstituteDocument;
 import com.dpdocter.elasticsearch.document.ESEducationQualificationDocument;
+import com.dpdocter.elasticsearch.document.ESLandmarkLocalityDocument;
 import com.dpdocter.elasticsearch.document.ESMedicalCouncilDocument;
 import com.dpdocter.elasticsearch.document.ESProfessionDocument;
 import com.dpdocter.elasticsearch.document.ESProfessionalMembershipDocument;
@@ -348,24 +353,24 @@ public class ESMasterServiceImpl implements ESMasterService {
 	@Override
 	public Boolean add() {
 		
-//		List<LandmarkLocalityCollection> professionCollections = landmarkLocalityRepository.findAll();
-//		
-//		for(LandmarkLocalityCollection professionCollection : professionCollections){
-//			ESLandmarkLocalityDocument professionDocument = new ESLandmarkLocalityDocument();
-//			BeanUtil.map(professionCollection, professionDocument);
-//			professionDocument.setGeoPoint(new GeoPoint(professionDocument.getLatitude(), professionDocument.getLongitude()));
-//			esLocalityLandmarkRepository.save(professionDocument);
-//		}
-//		
-//       List<CityCollection> cityCollections = cityRepository.findAll();
-//		
-//		for(CityCollection professionCollection : cityCollections){
-//			ESCityDocument professionDocument = new ESCityDocument();
-//			BeanUtil.map(professionCollection, professionDocument);
-//			professionDocument.setGeoPoint(new GeoPoint(professionDocument.getLatitude(), professionDocument.getLongitude()));
-//			esCityRepository.save(professionDocument);
-//		}
-//		
+		List<LandmarkLocalityCollection> professionCollections = landmarkLocalityRepository.findAll();
+		
+		for(LandmarkLocalityCollection professionCollection : professionCollections){
+			ESLandmarkLocalityDocument professionDocument = new ESLandmarkLocalityDocument();
+			BeanUtil.map(professionCollection, professionDocument);
+			professionDocument.setGeoPoint(new GeoPoint(professionDocument.getLatitude(), professionDocument.getLongitude()));
+			esLocalityLandmarkRepository.save(professionDocument);
+		}
+		
+       List<CityCollection> cityCollections = cityRepository.findAll();
+		
+		for(CityCollection professionCollection : cityCollections){
+			ESCityDocument professionDocument = new ESCityDocument();
+			BeanUtil.map(professionCollection, professionDocument);
+			professionDocument.setGeoPoint(new GeoPoint(professionDocument.getLatitude(), professionDocument.getLongitude()));
+			esCityRepository.save(professionDocument);
+		}
+		
 		List<DrugCollection> drugCollections = drugRepository.findAll();
 		
 		for(DrugCollection drugCollection : drugCollections){

@@ -118,6 +118,7 @@ import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
+import com.google.common.io.Files;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.PrescriptionUtils;
@@ -2644,8 +2645,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     @Transactional
     public void emailPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String emailAddress) {
 	try {
-	    MailAttachment mailAttachment = createMailDate(prescriptionId, doctorId, locationId, hospitalId);
-	    mailService.sendEmail(emailAddress, "Prescription", "PFA.", mailAttachment);
+	    MailAttachment mailAttachment = createMailData(prescriptionId, doctorId, locationId, hospitalId);
+	    Boolean response = mailService.sendEmail(emailAddress, "Prescription", "PFA.", mailAttachment);
+	    if(mailAttachment != null && mailAttachment.getFileSystemResource() != null)
+	    	if(mailAttachment.getFileSystemResource().getFile().exists())mailAttachment.getFileSystemResource().getFile().delete() ;
 	} catch (MessagingException e) {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -2655,10 +2658,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     @Override
     @Transactional
     public MailAttachment getPrescriptionMailData(String prescriptionId, String doctorId, String locationId, String hospitalId) {
-	return createMailDate(prescriptionId, doctorId, locationId, hospitalId);
+	return createMailData(prescriptionId, doctorId, locationId, hospitalId);
     }
 
-    private MailAttachment createMailDate(String prescriptionId, String doctorId, String locationId, String hospitalId) {
+    private MailAttachment createMailData(String prescriptionId, String doctorId, String locationId, String hospitalId) {
 	PrescriptionCollection prescriptionCollection = null;
 	MailAttachment mailAttachment = null;
 	PatientCollection patient = null;
@@ -2688,8 +2691,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				JasperReportResponse jasperReportResponse = createJasper(prescriptionCollection, patient, user);
 				mailAttachment = new MailAttachment();
 				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
-				mailAttachment.setFileSystemResource(null);
-				mailAttachment.setInputStream(jasperReportResponse.getInputStream());
+				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
+//				mailAttachment.setInputStream(jasperReportResponse.getInputStream());
 				emailTackService.saveEmailTrack(emailTrackCollection);
 				
 		    } else {
@@ -3422,6 +3425,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 				JasperReportResponse jasperReportResponse = createJasper(prescriptionCollection, patient, user);
 				if(jasperReportResponse != null)response = getFinalImageURL(jasperReportResponse.getPath());
+				if(jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
+			    	if(jasperReportResponse.getFileSystemResource().getFile().exists())jasperReportResponse.getFileSystemResource().getFile().delete() ;
 			    } else {
 					logger.warn("Patient Visit Id does not exist");
 					throw new BusinessException(ServiceError.NotFound, "Patient Visit Id does not exist");
@@ -3623,7 +3628,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		String pageSize = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
 		String margins = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getMargins() : null) : null;
 
-		String pdfName = (user!= null?user.getFirstName():"") + new SimpleDateFormat("dd-MM-yyyy").format(new Date())+ "PRESCRIPTION";
+		String pdfName = (user!= null?user.getFirstName():"") + "PRESCRIPTION"+ prescriptionCollection.getUniqueEmrId();
 		response = jasperReportService.createPDF(parameters, "mongo-prescription", layout, pageSize, margins, pdfName.replaceAll("\\s+",""));
 		
 		return response;

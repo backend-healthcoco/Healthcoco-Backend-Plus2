@@ -5,9 +5,13 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.JasperReportResponse;
@@ -36,12 +40,27 @@ public class JasperReportServiceImpl implements JasperReportService {
 
     @Value(value = "${jasper.templates.resource}")
     private String JASPER_TEMPLATES_RESOURCE;
-       
+
+    @Value(value = "${jasper.templates.root.path}")
+    private String JASPER_TEMPLATES_ROOT_PATH;
+
+    @Value(value = "${bucket.name}")
+    private String bucketName;
+
+    @Value(value = "${mail.aws.key.id}")
+    private String AWS_KEY;
+
+    @Value(value = "${mail.aws.secret.key}")
+    private String AWS_SECRET_KEY;
+
     @SuppressWarnings("deprecation")
     @Override
     @Transactional
     public JasperReportResponse createPDF(Map<String, Object> parameters, String fileName, String layout, String pageSize, String margins, String pdfName) {
     	JasperReportResponse jasperReportResponse = null;
+    	BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+    	AmazonS3 s3client = new AmazonS3Client(credentials);
+    	
     	try {
 		    MongoDbConnection mongoConnection = new MongoDbConnection(MONGO_HOST_URI, null, null);
 	
@@ -85,9 +104,12 @@ public class JasperReportServiceImpl implements JasperReportService {
 		    JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters);
 	
 		    JasperExportManager.exportReportToPdfFile(jasperPrint, JASPER_TEMPLATES_RESOURCE + pdfName + ".pdf");
-	
+		    
 		    jasperReportResponse = new JasperReportResponse();
-		    jasperReportResponse.setPath(JASPER_TEMPLATES_RESOURCE + pdfName + ".pdf");
+		    jasperReportResponse.setPath(JASPER_TEMPLATES_ROOT_PATH + pdfName + ".pdf");
+		    jasperReportResponse.setFileSystemResource(new FileSystemResource(JASPER_TEMPLATES_RESOURCE + pdfName + ".pdf"));
+		    
+		    s3client.putObject(bucketName, JASPER_TEMPLATES_ROOT_PATH + pdfName + ".pdf", jasperReportResponse.getFileSystemResource().getFile());
 		    return jasperReportResponse;
 
 	} catch (JRException e) {

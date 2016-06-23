@@ -605,6 +605,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			    emailTrackCollection.setSubject("Patient Visit");
 			    emailTackService.saveEmailTrack(emailTrackCollection);
 			    response = true;
+			    if(mailAttachment != null && mailAttachment.getFileSystemResource() != null)
+			    	if(mailAttachment.getFileSystemResource().getFile().exists())mailAttachment.getFileSystemResource().getFile().delete() ;
 		}
 	    } else {
 		logger.warn("Patient Visit Id does not exist");
@@ -772,7 +774,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    String margins = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getMargins() : null) : null;
 
 		    parameters.put("visitId", patientVisitCollection.getId());
-		    String pdfName = (user != null ? user.getFirstName() : "") + new SimpleDateFormat("dd-MM-yyyy").format(new Date()) + "VISITS";
+		    String pdfName = (user != null ? user.getFirstName() : "") + "VISITS" + patientVisitCollection.getUniqueEmrId();
 		    JasperReportResponse path = jasperReportService.createPDF(parameters, "mongo-multiple-data", layout, pageSize, margins, pdfName.replaceAll("\\s+", ""));
 		    
 		    return path;
@@ -1225,7 +1227,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			UserCollection user = userRepository.findOne(patientVisitCollection.getPatientId());
 
 			JasperReportResponse jasperReportResponse = createJasper(patientVisitCollection, patient, user);
-			if(jasperReportResponse != null && jasperReportResponse.getPath() != null)response = jasperReportResponse.getPath();
+			if(jasperReportResponse != null)response = getFinalImageURL(jasperReportResponse.getPath());
+			if(jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
+		    	if(jasperReportResponse.getFileSystemResource().getFile().exists())jasperReportResponse.getFileSystemResource().getFile().delete() ;
 		    } else {
 				logger.warn("Patient Visit Id does not exist");
 				throw new BusinessException(ServiceError.NotFound, "Patient Visit Id does not exist");
