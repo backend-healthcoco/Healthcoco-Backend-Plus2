@@ -12,9 +12,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,9 +78,6 @@ public class ClinicalNotesApi {
 
     @Value(value = "${image.path}")
     private String imagePath;
-
-    @Context
-    private UriInfo uriInfo;
 
     @Path(value = PathProxy.ClinicalNotesUrls.SAVE_CLINICAL_NOTE)
     @POST
@@ -465,7 +460,7 @@ public class ClinicalNotesApi {
     public Response<String> downloadClinicalNotes(@PathParam("clinicalNotesId") String clinicalNotesId) {
     	
     	Response<String> response = new Response<String>();
-    	response.setData(uriInfo.getBaseUri().toString().replace(uriInfo.getBaseUri().getPath(), "/resource-data/")+clinicalNotesService.getClinicalNotesFile(clinicalNotesId));
+    	response.setData(clinicalNotesService.getClinicalNotesFile(clinicalNotesId));
     	return response;
     }
 }

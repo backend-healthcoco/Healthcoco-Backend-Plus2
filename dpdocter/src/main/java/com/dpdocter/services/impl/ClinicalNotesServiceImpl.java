@@ -2114,7 +2114,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     public void emailClinicalNotes(String clinicalNotesId, String doctorId, String locationId, String hospitalId, String emailAddress) {
 	MailAttachment mailAttachment = createMailData(clinicalNotesId, doctorId, locationId, hospitalId);
 	try {
-	    mailService.sendEmail(emailAddress, "Clinical Notes", "PFA.", mailAttachment);
+	    Boolean response = mailService.sendEmail(emailAddress, "Clinical Notes", "PFA.", mailAttachment);
+	    if(mailAttachment != null && mailAttachment.getFileSystemResource() != null)
+	    	if(mailAttachment.getFileSystemResource().getFile().exists())mailAttachment.getFileSystemResource().getFile().delete() ;
 	} catch (MessagingException e) {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -2249,7 +2251,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			UserCollection user = userRepository.findOne(clinicalNotesCollection.getPatientId());
 
 			JasperReportResponse jasperReportResponse = createJasper(clinicalNotesCollection, patient, user);
-			if(jasperReportResponse != null && jasperReportResponse.getPath() != null)response = jasperReportResponse.getPath();
+			if(jasperReportResponse != null)response = getFinalImageURL(jasperReportResponse.getPath());
+			if(jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
+		    	if(jasperReportResponse.getFileSystemResource().getFile().exists())jasperReportResponse.getFileSystemResource().getFile().delete() ;
 		    } else {
 				logger.warn("Patient Visit Id does not exist");
 				throw new BusinessException(ServiceError.NotFound, "Patient Visit Id does not exist");
@@ -2530,7 +2534,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		String pageSize = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
 		String margins = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getMargins() : null) : null;
 
-		String pdfName = (user != null ? user.getFirstName() : "") + new SimpleDateFormat("dd-MM-yyyy").format(new Date()) + "CLINICALNOTES";
+		String pdfName = (user != null ? user.getFirstName() : "") + "CLINICALNOTES"+ clinicalNotesCollection.getUniqueEmrId();
 		response = jasperReportService.createPDF(parameters, "mongo-clinical-notes", layout, pageSize, margins, pdfName.replaceAll("\\s+", ""));
 
 		return response;

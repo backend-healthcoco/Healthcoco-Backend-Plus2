@@ -718,7 +718,7 @@ public class RecordsServiceImpl implements RecordsService {
 		emailTrackCollection.setSubject("Reports");
 
 		emailTackService.saveEmailTrack(emailTrackCollection);
-
+		objectData.close();
 	    } else {
 		logger.warn("Record not found.Please check recordId.");
 		throw new BusinessException(ServiceError.NotFound, "Record not found.Please check recordId.");

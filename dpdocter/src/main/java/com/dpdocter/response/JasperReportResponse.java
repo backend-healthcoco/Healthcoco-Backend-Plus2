@@ -1,19 +1,19 @@
 package com.dpdocter.response;
 
-import java.io.InputStream;
+import org.springframework.core.io.FileSystemResource;
 
 public class JasperReportResponse {
 
-	private InputStream inputStream;
+	private FileSystemResource fileSystemResource;
 	
 	private String path;
 
-	public InputStream getInputStream() {
-		return inputStream;
+	public FileSystemResource getFileSystemResource() {
+		return fileSystemResource;
 	}
 
-	public void setInputStream(InputStream inputStream) {
-		this.inputStream = inputStream;
+	public void setFileSystemResource(FileSystemResource fileSystemResource) {
+		this.fileSystemResource = fileSystemResource;
 	}
 
 	public String getPath() {
@@ -26,6 +26,6 @@ public class JasperReportResponse {
 
 	@Override
 	public String toString() {
-		return "JasperReportResponse [inputStream=" + inputStream + ", path=" + path + "]";
+		return "JasperReportResponse [fileSystemResource=" + fileSystemResource + ", path=" + path + "]";
 	}
-}
+	}
