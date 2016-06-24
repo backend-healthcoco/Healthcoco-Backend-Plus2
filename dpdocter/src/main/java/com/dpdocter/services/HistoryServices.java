@@ -8,6 +8,7 @@ import com.dpdocter.beans.MedicalHistoryHandler;
 import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.Records;
+import com.dpdocter.collections.DiseasesCollection;
 import com.dpdocter.request.DiseaseAddEditRequest;
 import com.dpdocter.response.DiseaseAddEditResponse;
 import com.dpdocter.response.DiseaseListResponse;
@@ -15,7 +16,7 @@ import com.dpdocter.response.HistoryDetailsResponse;
 
 public interface HistoryServices {
 
-    List<DiseaseAddEditResponse> addDiseases(List<DiseaseAddEditRequest> request);
+    List<DiseasesCollection> addDiseases(List<DiseaseAddEditRequest> request);
 
     DiseaseAddEditResponse editDiseases(DiseaseAddEditRequest request);
 

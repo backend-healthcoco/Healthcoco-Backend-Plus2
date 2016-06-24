@@ -118,7 +118,6 @@ import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
-import com.google.common.io.Files;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.PrescriptionUtils;
@@ -601,9 +600,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    		diagnosticTestCollection = diagnosticTestRepository.save(diagnosticTestCollection);
     				
     				transnationalService.addResource(diagnosticTestCollection.getId(), Resource.DIAGNOSTICTEST, false);
-//    				SolrDiagnosticTestDocument diagnosticTestDocument = new SolrDiagnosticTestDocument();
-//    				BeanUtil.map(diagnosticTestCollection, diagnosticTestDocument);
-//    				solrPrescriptionService.addEditDiagnosticTest(diagnosticTestDocument);
+    				ESDiagnosticTestDocument diagnosticTestDocument = new ESDiagnosticTestDocument();
+    				BeanUtil.map(diagnosticTestCollection, diagnosticTestDocument);
+    				esPrescriptionService.addEditDiagnosticTest(diagnosticTestDocument);
     				if (tests == null)tests = new ArrayList<TestAndRecordData>();
        				tests.add(new TestAndRecordData(diagnosticTestCollection.getId(),null));
 		    	}
@@ -632,7 +631,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		   response.setDiagnosticTests(tests);
 		}
 	    response.setVisitId(request.getVisitId());
-	    pushNotificationServices.notifyUser(prescriptionCollection.getPatientId(), "Prescription:"+prescriptionCollection.getUniqueEmrId()+" is added by doctor", ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId());
+	    pushNotificationServices.notifyUser(prescriptionCollection.getPatientId(), "Your prescription by Dr. "+prescriptionCollection.getCreatedBy()+" is here - Tap to view it!", ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId());
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Prescription");
@@ -695,9 +694,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    	diagnosticTestCollection = diagnosticTestRepository.save(diagnosticTestCollection);	
 
 			    	transnationalService.addResource(diagnosticTestCollection.getId(), Resource.DIAGNOSTICTEST, false);
-//	    			SolrDiagnosticTestDocument diagnosticTestDocument = new SolrDiagnosticTestDocument();
-//	    			BeanUtil.map(diagnosticTestCollection, diagnosticTestDocument);
-//	    			solrPrescriptionService.addEditDiagnosticTest(diagnosticTestDocument);
+	    			ESDiagnosticTestDocument diagnosticTestDocument = new ESDiagnosticTestDocument();
+	    			BeanUtil.map(diagnosticTestCollection, diagnosticTestDocument);
+	    			esPrescriptionService.addEditDiagnosticTest(diagnosticTestDocument);
 	    			tests.add(new TestAndRecordData(diagnosticTestCollection.getId(), null));
 			    	}
 			    }
@@ -737,7 +736,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    }
 		   response.setDiagnosticTests(tests);
 		}
-	    pushNotificationServices.notifyUser(prescriptionCollection.getPatientId(), "Prescription:"+prescriptionCollection.getUniqueEmrId()+" is edited by doctor", ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId());
+	    pushNotificationServices.notifyUser(prescriptionCollection.getPatientId(), "Your prescription by Dr. "+prescriptionCollection.getCreatedBy()+" has changed - Tap to view it!", ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId());
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Editing Prescription");
@@ -751,7 +750,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     public Prescription deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId, String patientId, Boolean discarded) {
     	Prescription response = null;
 	PrescriptionCollection prescriptionCollection = null;
+	LocationCollection locationCollection = null;
 	try {
+		locationCollection = locationRepository.findOne(locationId);
 	    prescriptionCollection = prescriptionRepository.findOne(prescriptionId);
 	    if (prescriptionCollection != null) {
 		if (prescriptionCollection.getDoctorId() != null && prescriptionCollection.getHospitalId() != null
@@ -799,7 +800,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    	response.setDiagnosticTests(diagnosticTests);
 			}
 
-			pushNotificationServices.notifyUser(patientId, "Prescription:"+prescriptionCollection.getUniqueEmrId()+" is discarded", ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId());
+			pushNotificationServices.notifyUser(patientId, "Your prescription has been discarded by Dr. "+prescriptionCollection.getCreatedBy()+", for further details contact "+locationCollection.getLocationName(), ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId());
 		    } else {
 			logger.warn("Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");
 			throw new BusinessException(ServiceError.NotAuthorized, "Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");
@@ -3505,7 +3506,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if(labTest != null && !labTest.isEmpty())parameters.put("labTest", labTest); 
 			else parameters.put("labTest", null);
 
-			String patientName = "", dob = "", gender = "", mobileNumber = "", refferedBy ="", pid="", date="", resourceId="",logoURL ="" ;
+			String patientName = "", dob = "", bloodGroup = "", gender = "", mobileNumber = "", refferedBy ="", pid="", date="", resourceId="",logoURL ="" ;
 		if(patient != null && patient.getReferredBy() != null){
 			ReferencesCollection referencesCollection = referenceRepository.findOne(patient.getReferredBy());
 			if(referencesCollection != null)refferedBy = referencesCollection.getReference();
@@ -3525,13 +3526,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				else age = months +" months "+days +" days";
 			}
 		}
-		dob = "Patient Age: " + age + "<br>";
-		gender = "Patient Gender: " + (patient != null ? patient.getGender() : "--") + "<br>";
-		mobileNumber = "Mobile Number: " + (user != null ? user.getMobileNumber() : "--") + "<br>";
+		dob = "Age: " + age + "<br>";
+		gender = "Gender: " + (patient != null ? patient.getGender() : "--") + "<br>";
+		mobileNumber = "Mobile: " + (user != null ? user.getMobileNumber() : "--") + "<br>";
+		bloodGroup = "Blood Group: " + (patient != null ? patient.getBloodGroup() : "--") + "<br>";
 		pid= "Patient Id: " + (patient != null ? patient.getPID() : "--") + "<br>";
 		refferedBy = "Referred By: "+ (refferedBy != "" ? refferedBy : "--") + "<br>";
 		date = "Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date())+"<br>";
-		resourceId = "PrescriptionId: " + (prescriptionCollection.getUniqueEmrId() != null ? prescriptionCollection.getUniqueEmrId() : "--") + "<br>";
+		resourceId = "PID: " + (prescriptionCollection.getUniqueEmrId() != null ? prescriptionCollection.getUniqueEmrId() : "--") + "<br>";
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId(),
 				ComponentType.PRESCRIPTIONS.getType());
 		
@@ -3543,7 +3545,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		String headerLeftText = "", headerRightText = "", footerBottomText = "";
 		if (printSettings != null) {
 		    if (printSettings.getHeaderSetup() != null) {
+		    	int line = 0;
 			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()) {
+				line = line + 1;
 			    boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 			    boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
 			    String text = str.getText();
@@ -3555,7 +3559,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    else
 				headerLeftText = headerLeftText + "<br/>" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 			}
-
+			if(line < 4){
+				for(line = line; line <4 ;line++)
+				line = line + 1;
+				if (headerLeftText.isEmpty())
+					headerLeftText = "<span> </span>";
+				    else
+					headerLeftText = headerLeftText + "<br/>" + "<span></span>";
+			}
+			line = 0;
 			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText()) {
 			    boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 			    boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
@@ -3568,7 +3580,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    else
 				headerRightText = headerRightText + "<br/>" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 			}
-
+			if(line < 4){
+				for(line = line; line <4 ;line++)
+				line = line + 1;
+				if (headerRightText.isEmpty())
+					headerRightText = "<span> </span>";
+				    else
+				    	headerRightText = headerRightText + "<br/>" + "<span></span>";
+			}
 		    }
 		    if (printSettings.getFooterSetup() != null) {
 			    for (PrintSettingsText str : printSettings.getFooterSetup().getBottomText()) {
@@ -3594,17 +3613,18 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						fontSize = "10pt";
 					
 					if (isItalic){
-						patientName = "<i>" + patientName + "</i>";pid = "<i>" + pid + "</i>";dob = "<i>" + dob + "</i>";
+						patientName = "<i>" + patientName + "</i>";pid = "<i>" + pid + "</i>";dob = "<i>" + dob + "</i>";bloodGroup = "<i>" + bloodGroup + "</i>";
 						gender = "<i>" + gender + "</i>";mobileNumber = "<i>" + mobileNumber + "</i>";refferedBy = "<i>" + refferedBy + "</i>";
 						date = "<i>" + date + "</i>";resourceId = "<i>" + resourceId + "</i>";
 					}
 					if (isBold){
-						patientName = "<b>" + patientName + "</b>";pid = "<b>" + pid + "</b>";dob = "<b>" + dob + "</b>";
+						patientName = "<b>" + patientName + "</b>";pid = "<b>" + pid + "</b>";dob = "<b>" + dob + "</b>";bloodGroup = "<b>" + bloodGroup + "</b>";
 						gender = "<b>" + gender + "</b>";mobileNumber = "<b>" + mobileNumber + "</b>";refferedBy = "<b>" + refferedBy + "</b>";
 						date = "<b>" + date + "</b>";resourceId = "<b>" + resourceId + "</b>";
 					}
 					patientName = "<span style='font-size:" + fontSize + "'>" + patientName + "</span>";pid = "<span style='font-size:" + fontSize + "'>" + pid + "</span>";
 					dob = "<span style='font-size:" + fontSize + "'>" + dob + "</span>";
+					bloodGroup = "<span style='font-size:" + fontSize + "'>" + bloodGroup + "</span>";
 					gender = "<span style='font-size:" + fontSize + "'>" + gender + "</span>";
 					mobileNumber = "<span style='font-size:" + fontSize + "'>" + mobileNumber + "</span>";
 					refferedBy = "<span style='font-size:" + fontSize + "'>" + refferedBy + "</span>";
@@ -3617,7 +3637,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    parameters.put("footerSignature", doctorUser.getTitle() + " " + doctorUser.getFirstName());
 		}    
 		
-		parameters.put("patientLeftText", patientName + pid + dob + gender);
+		parameters.put("patientLeftText", patientName + pid + dob + gender+bloodGroup);
 		parameters.put("patientRightText",mobileNumber+ refferedBy+date+resourceId);
 		parameters.put("headerLeftText", headerLeftText);
 		parameters.put("headerRightText", headerRightText);
@@ -3628,7 +3648,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		String pageSize = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
 		String margins = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getMargins() : null) : null;
 
-		String pdfName = (user!= null?user.getFirstName():"") + "PRESCRIPTION"+ prescriptionCollection.getUniqueEmrId();
+		String pdfName = (user!= null?user.getFirstName():"") + "PRESCRIPTION-"+ prescriptionCollection.getUniqueEmrId();
 		response = jasperReportService.createPDF(parameters, "mongo-prescription", layout, pageSize, margins, pdfName.replaceAll("\\s+",""));
 		
 		return response;

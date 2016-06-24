@@ -16,6 +16,7 @@ import com.dpdocter.beans.IssueTrack;
 import com.dpdocter.collections.IssueTrackCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.IssueStatus;
+import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -24,6 +25,7 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.services.IssueTrackService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
+import com.dpdocter.services.PushNotificationServices;
 
 import common.util.web.DPDoctorUtils;
 
@@ -44,6 +46,9 @@ public class IssueTrackServiceImpl implements IssueTrackService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+	PushNotificationServices pushNotificationServices;
+	
     @Override
     @Transactional
     public IssueTrack addEditIssue(IssueTrack request) {
@@ -52,23 +57,15 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 	BeanUtil.map(request, issueTrackCollection);
 	try {
 	    if (request.getId() == null) {
-		List<IssueTrackCollection> issueTrackCollections = issueTrackRepository.findAll(request.getDoctorId(), request.getLocationId(),
-			request.getHospitalId());
-		if (issueTrackCollections.isEmpty())
-		    issueTrackCollection.setIssueCode("ISH" + 1);
-		else {
-		    int counter = issueTrackCollections.size() + 1;
-		    issueTrackCollection.setIssueCode("ISH" + counter);
-		}
-
-		issueTrackCollection.setCreatedTime(new Date());
+			issueTrackCollection.setIssueCode(UniqueIdInitial.ISSUETRACK.getInitial()+DPDoctorUtils.generateRandomId());
+			issueTrackCollection.setCreatedTime(new Date());
 	    } else {
-		IssueTrackCollection oldIssueTrackCollection = issueTrackRepository.findOne(request.getId());
-		issueTrackCollection.setCreatedTime(oldIssueTrackCollection.getCreatedTime());
-		issueTrackCollection.setCreatedBy(oldIssueTrackCollection.getCreatedBy());
-		issueTrackCollection.setDiscarded(oldIssueTrackCollection.getDiscarded());
-		issueTrackCollection.setStatus(oldIssueTrackCollection.getStatus());
-		issueTrackCollection.setIssueCode(oldIssueTrackCollection.getIssueCode());
+			IssueTrackCollection oldIssueTrackCollection = issueTrackRepository.findOne(request.getId());
+			issueTrackCollection.setCreatedTime(oldIssueTrackCollection.getCreatedTime());
+			issueTrackCollection.setCreatedBy(oldIssueTrackCollection.getCreatedBy());
+			issueTrackCollection.setDiscarded(oldIssueTrackCollection.getDiscarded());
+			issueTrackCollection.setStatus(oldIssueTrackCollection.getStatus());
+			issueTrackCollection.setIssueCode(oldIssueTrackCollection.getIssueCode());
 	    }
 
 	    if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
@@ -76,10 +73,10 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 		String body = mailBodyGenerator.generateIssueTrackEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
 			userCollection.getMiddleName(), userCollection.getLastName());
 		mailService.sendEmail(userCollection.getEmailAddress(), "Issue Track", body, null);
-
+		pushNotificationServices.notifyUser(userCollection.getId(), "Your issue "+issueTrackCollection.getIssueCode()+" has been recorded, we will keep you updated on the progress of the issue", null, null);
 	    }
 	    issueTrackCollection = issueTrackRepository.save(issueTrackCollection);
-
+	    
 	    if (issueTrackCollection != null) {
 		response = new IssueTrack();
 		BeanUtil.map(issueTrackCollection, response);
@@ -234,6 +231,14 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 	    if (issueTrackCollection != null) {
 		if (!IssueStatus.valueOf(status.toUpperCase()).equals(IssueStatus.REOPEN)) {
 		    issueTrackCollection.setStatus(IssueStatus.valueOf(status.toUpperCase()));
+		    UserCollection userCollection = userRepository.findOne(issueTrackCollection.getDoctorId());
+		    if(userCollection != null){
+		    	if(status.equalsIgnoreCase(IssueStatus.INPROGRESS.getStatus()))
+			    	pushNotificationServices.notifyUser(userCollection.getId(), "We have started working on the issue "+issueTrackCollection.getIssueCode()+", we will keep you upadated on the progress of the issue", null, null);
+		    	else if(status.equalsIgnoreCase(IssueStatus.COMPLETED.getStatus()))
+		    		pushNotificationServices.notifyUser(userCollection.getId(), "Your issue "+issueTrackCollection.getIssueCode()+" has been resolved, please let us know if you are not satisfied; we will be happy to look at it again", null, null);
+		    
+		    }
 		    issueTrackRepository.save(issueTrackCollection);
 		    response = true;
 		} else {

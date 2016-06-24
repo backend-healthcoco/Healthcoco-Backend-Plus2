@@ -85,10 +85,9 @@ public class GeneralTests {
 	    			 long createdTimeStamp = Long.parseLong("0");
 	    			 System.out.println(DPDoctorUtils.getSHA3SecurePassword("neha".toCharArray()));
 	    			 
-	    			 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+	    			 SimpleDateFormat format = new SimpleDateFormat("MMM dd");
 
-	    			 String dateString = format.format(new Date(Long.parseLong("0")));
-	    			 Date   date       = format.parse (dateString);  System.out.println(new Date(Long.parseLong("0")));  
+	    			 System.out.println(format.format(new Date()));  
 	    		 }
 	    		 
 }  	

@@ -19,7 +19,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -2114,7 +2113,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     public void emailClinicalNotes(String clinicalNotesId, String doctorId, String locationId, String hospitalId, String emailAddress) {
 	MailAttachment mailAttachment = createMailData(clinicalNotesId, doctorId, locationId, hospitalId);
 	try {
-	    Boolean response = mailService.sendEmail(emailAddress, "Clinical Notes", "PFA.", mailAttachment);
+		Boolean response = mailService.sendEmail(emailAddress, "Clinical Notes", "PFA.", mailAttachment);
 	    if(mailAttachment != null && mailAttachment.getFileSystemResource() != null)
 	    	if(mailAttachment.getFileSystemResource().getFile().exists())mailAttachment.getFileSystemResource().getFile().delete() ;
 	} catch (MessagingException e) {
@@ -2159,7 +2158,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			   JasperReportResponse jasperReportResponse = createJasper(clinicalNotesCollection, patient, user);
 				mailAttachment = new MailAttachment();
 				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
-				mailAttachment.setFileSystemResource(new FileSystemResource(jasperReportResponse.getPath()));
+				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
 //				mailAttachment.setInputStream(jasperReportResponse.getInputStream());
 	
 				emailTackService.saveEmailTrack(emailTrackCollection);
@@ -2273,7 +2272,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		for (String observationId : clinicalNotesCollection.getObservations()) {
 		    ObservationCollection observationCollection = observationRepository.findOne(observationId);
 		    if (observationCollection != null) {
-			if (observations == "")
+			if (observations.isEmpty())
 			    observations = observationCollection.getObservation();
 			else
 			    observations = observations + ", " + observationCollection.getObservation();
@@ -2285,7 +2284,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		for (String noteId : clinicalNotesCollection.getNotes()) {
 		    NotesCollection note = notesRepository.findOne(noteId);
 		    if (note != null) {
-			if (notes == "")
+			if (notes.isEmpty())
 			    notes = note.getNote();
 			else
 			    notes = notes + ", " + note.getNote();
@@ -2297,7 +2296,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		for (String investigationId : clinicalNotesCollection.getInvestigations()) {
 		    InvestigationCollection investigation = investigationRepository.findOne(investigationId);
 		    if (investigation != null) {
-			if (investigations == "")
+			if (investigations.isEmpty())
 			    investigations = investigation.getInvestigation();
 			else
 			    investigations = investigations + ", " + investigation.getInvestigation();
@@ -2309,7 +2308,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		for (String diagnosisId : clinicalNotesCollection.getDiagnoses()) {
 		    DiagnosisCollection diagnosisCollection = diagnosisRepository.findOne(diagnosisId);
 		    if (diagnosisCollection != null) {
-			if (diagnosis == "")
+			if (diagnosis.isEmpty())
 			    diagnosis = diagnosisCollection.getDiagnosis();
 			else
 			    diagnosis = diagnosis + ", " + diagnosisCollection.getDiagnosis();
@@ -2321,7 +2320,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		for (String complaintId : clinicalNotesCollection.getComplaints()) {
 		    ComplaintCollection complaint = complaintRepository.findOne(complaintId);
 		    if (complaint != null) {
-			if (complaints == "")
+			if (complaints.isEmpty())
 			    complaints = complaint.getComplaint();
 			else
 			    complaints = complaints + ", " + complaint.getComplaint();
@@ -2358,6 +2357,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		String breathing = clinicalNotesCollection.getVitalSigns().getBreathing();
 		breathing = breathing != null && !breathing.isEmpty() ? "Breathing: " + breathing + " "+VitalSignsUnit.BREATHING.getUnit() + "    " : "";
 
+		String weight = clinicalNotesCollection.getVitalSigns().getWeight();
+		weight = weight != null && !weight.isEmpty() ? "Weight: " + weight +" " +VitalSignsUnit.WEIGHT.getUnit() + "    " : "";
+		
 		String bloodPressure = "";
 		if (clinicalNotesCollection.getVitalSigns().getBloodPressure() != null) {
 		    String systolic = clinicalNotesCollection.getVitalSigns().getBloodPressure().getSystolic();
@@ -2368,12 +2370,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 		    bloodPressure = "Blood Pressure: " + systolic + "/" + diastolic + " "+VitalSignsUnit.BLOODPRESSURE.getUnit();
 		}
-		String vitalSigns = pulse + temp + breathing + bloodPressure;
+		String vitalSigns = pulse + temp + breathing + bloodPressure+ weight;
 		parameters.put("vitalSigns", vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
 	    } else
 		parameters.put("vitalSigns", null);
 
-	    String patientName = "", dob = "", gender = "", mobileNumber = "", refferedBy = "", pid = "", date = "", resourceId = "", logoURL = "";
+	    String patientName = "", dob = "", bloodGroup = "", gender = "", mobileNumber = "", refferedBy = "", pid = "", date = "", resourceId = "", logoURL = "";
 		if (patient.getReferredBy() != null) {
 		    ReferencesCollection referencesCollection = referenceRepository.findOne(patient.getReferredBy());
 		    if (referencesCollection != null)
@@ -2394,13 +2396,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				else age = months +" months "+days +" days";
 			}
 		}
-		dob = "Patient Age: " + age + "<br>";
-		gender = "Patient Gender: " + (patient != null ? patient.getGender() : "--") + "<br>";
-		mobileNumber = "Mobile Number: " + (user != null ? user.getMobileNumber() : "--") + "<br>";
+		dob = "Age: " + age + "<br>";
+		gender = "Gender: " + (patient != null ? patient.getGender() : "--") + "<br>";
+		bloodGroup = "Blood Group: " + (patient != null ? patient.getBloodGroup() : "--") + "<br>";
+		mobileNumber = "Mobile: " + (user != null ? user.getMobileNumber() : "--") + "<br>";
 		pid = "Patient Id: " + (patient != null ? patient.getPID() : "--") + "<br>";
 		refferedBy = "Referred By: " + (refferedBy != "" ? refferedBy : "--") + "<br>";
 		date = "Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()) + "<br>";
-		resourceId = "ClinicalNotesId: " + (clinicalNotesCollection.getUniqueEmrId() != null ? clinicalNotesCollection.getUniqueEmrId() : "--") + "<br>";
+		resourceId = "CID: " + (clinicalNotesCollection.getUniqueEmrId() != null ? clinicalNotesCollection.getUniqueEmrId() : "--") + "<br>";
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(clinicalNotesCollection.getDoctorId(), clinicalNotesCollection.getLocationId(), clinicalNotesCollection.getHospitalId(),
 			ComponentType.CLINICAL_NOTES.getType());
 
@@ -2412,6 +2415,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		String headerLeftText = "", headerRightText = "", footerBottomText = "";
 		if (printSettings != null) {
 		    if (printSettings.getHeaderSetup() != null) {
+		    	int line = 0;
 			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()) {
 
 			    if ((str.getFontSize() != null) && (!str.getFontSize().equalsIgnoreCase("10pt") || !str.getFontSize().equalsIgnoreCase("11pt")
@@ -2433,6 +2437,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				headerLeftText = headerLeftText + "<br/>" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 			}
 
+			if(line < 4){
+				for(line = line; line <4 ;line++)
+				line = line + 1;
+				if (headerLeftText.isEmpty())
+					headerLeftText = "<span> </span>";
+				    else
+					headerLeftText = headerLeftText + "<br/>" + "<span></span>";
+			}
+			line = 0;
 			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText()) {
 			    if ((str.getFontSize() != null) && (!str.getFontSize().equalsIgnoreCase("10pt") || !str.getFontSize().equalsIgnoreCase("11pt")
 				    || !str.getFontSize().equalsIgnoreCase("12pt") || !str.getFontSize().equalsIgnoreCase("13pt")
@@ -2451,8 +2464,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			    else
 				headerRightText = headerRightText + "<br/>" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 			}
-
-		    }
+			if(line < 4){
+				for(line = line; line <4 ;line++)
+				line = line + 1;
+				if (headerRightText.isEmpty())
+					headerRightText = "<span> </span>";
+				    else
+				    	headerRightText = headerRightText + "<br/>" + "<span></span>";
+			}
+			}
 		    if (printSettings.getFooterSetup() != null) {
 			if (printSettings.getFooterSetup().getCustomFooter())
 			    for (PrintSettingsText str : printSettings.getFooterSetup().getBottomText()) {
@@ -2491,6 +2511,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				patientName = "<i>" + patientName + "</i>";
 				pid = "<i>" + pid + "</i>";
 				dob = "<i>" + dob + "</i>";
+				bloodGroup = "<i>" + bloodGroup + "</i>";
 				gender = "<i>" + gender + "</i>";
 				mobileNumber = "<i>" + mobileNumber + "</i>";
 				refferedBy = "<i>" + refferedBy + "</i>";
@@ -2501,6 +2522,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				patientName = "<b>" + patientName + "</b>";
 				pid = "<b>" + pid + "</b>";
 				dob = "<b>" + dob + "</b>";
+				bloodGroup = "<b>" + bloodGroup + "</b>";
 				gender = "<b>" + gender + "</b>";
 				mobileNumber = "<b>" + mobileNumber + "</b>";
 				refferedBy = "<b>" + refferedBy + "</b>";
@@ -2509,6 +2531,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			    }
 			    patientName = "<span style='font-size:" + fontSize + "'>" + patientName + "</span>";
 			    pid = "<span style='font-size:" + fontSize + "'>" + pid + "</span>";
+			    bloodGroup = "<span style='font-size:" + fontSize + "'>" + bloodGroup + "</span>";
 			    dob = "<span style='font-size:" + fontSize + "'>" + dob + "</span>";
 			    gender = "<span style='font-size:" + fontSize + "'>" + gender + "</span>";
 			    mobileNumber = "<span style='font-size:" + fontSize + "'>" + mobileNumber + "</span>";
@@ -2523,7 +2546,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		if (doctorUser != null)
 		    parameters.put("footerSignature", doctorUser.getTitle() + " " + doctorUser.getFirstName());
 
-		parameters.put("patientLeftText", patientName + pid + dob + gender);
+		parameters.put("patientLeftText", patientName + pid + dob + gender+bloodGroup);
 		parameters.put("patientRightText", mobileNumber + refferedBy + date + resourceId);
 		parameters.put("headerLeftText", headerLeftText);
 		parameters.put("headerRightText", headerRightText);
@@ -2534,7 +2557,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		String pageSize = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
 		String margins = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getMargins() : null) : null;
 
-		String pdfName = (user != null ? user.getFirstName() : "") + "CLINICALNOTES"+ clinicalNotesCollection.getUniqueEmrId();
+		String pdfName = (user != null ? user.getFirstName() : "") + "CLINICALNOTES-"+ clinicalNotesCollection.getUniqueEmrId();
 		response = jasperReportService.createPDF(parameters, "mongo-clinical-notes", layout, pageSize, margins, pdfName.replaceAll("\\s+", ""));
 
 		return response;

@@ -584,7 +584,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 			    mailAttachment = new MailAttachment();
 			    mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
-			    mailAttachment.setFileSystemResource(new  FileSystemResource(jasperReportResponse.getPath()));
+			    mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
 //			    mailAttachment.setInputStream(jasperReportResponse.getInputStream());
 
 			    mailAttachments.add(mailAttachment);
@@ -623,7 +623,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     private JasperReportResponse createJasper(PatientVisitCollection patientVisitCollection, PatientCollection patient, UserCollection user) throws IOException{
     	Map<String, Object> parameters = new HashMap<String, Object>();
     	
-		String patientName = "", dob = "", gender = "", mobileNumber = "", refferedBy = "", pid = "", date = "", resourceId = "", logoURL = "";
+		String patientName = "", dob = "", bloodGroup ="", gender = "", mobileNumber = "", refferedBy = "", pid = "", date = "", resourceId = "", logoURL = "";
 		if (patient.getReferredBy() != null) {
 		    ReferencesCollection referencesCollection = referenceRepository.findOne(patient.getReferredBy());
 		    if (referencesCollection != null)
@@ -644,29 +644,34 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				else age = months +" months "+days +" days";
 			}
 		}
-		dob = "Patient Age: " + age + "<br>";
-		gender = "Patient Gender: " + (patient != null ? patient.getGender() : "--") + "<br>";
-		mobileNumber = "Mobile Number: " + (user != null ? user.getMobileNumber() : "--") + "<br>";
+		dob = "Age: " + age + "<br>";
+		gender = "Gender: " + (patient != null ? patient.getGender() : "--") + "<br>";
+		bloodGroup = "Blood Group: " + (patient != null ? patient.getBloodGroup() : "--") + "<br>";
+		mobileNumber = "Mobile: " + (user != null ? user.getMobileNumber() : "--") + "<br>";
 		pid = "Patient Id: " + (patient != null ? patient.getPID() : "--") + "<br>";
 		refferedBy = "Referred By: " + (refferedBy != "" ? refferedBy : "--") + "<br>";
 		date = "Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()) + "<br>";
-		
+		resourceId = "VID: " + (patientVisitCollection.getUniqueEmrId() != null ? patientVisitCollection.getUniqueEmrId() : "--") + "<br>";
 		List<DBObject> prescriptions = new ArrayList<DBObject>();
 	    if (patientVisitCollection.getPrescriptionId() != null) {
 		for (String prescriptionId : patientVisitCollection.getPrescriptionId()) {
-		    DBObject prescriptionItems = new BasicDBObject();
-		    List<PrescriptionJasperDetails> prescriptionJasperDetails = getPrescriptionJasperDetails(prescriptionId, prescriptionItems);
-		    prescriptionItems.put("items", prescriptionJasperDetails);
-		    resourceId = (String) prescriptionItems.get("resourceId");
-		    if(DPDoctorUtils.anyStringEmpty(resourceId))resourceId = "";
-		    prescriptions.add(prescriptionItems);
+		    if(!DPDoctorUtils.anyStringEmpty(prescriptionId)){
+		    	DBObject prescriptionItems = new BasicDBObject();
+			    List<PrescriptionJasperDetails> prescriptionJasperDetails = getPrescriptionJasperDetails(prescriptionId, prescriptionItems);
+			    prescriptionItems.put("items", prescriptionJasperDetails);
+			    resourceId = (String) prescriptionItems.get("resourceId");
+			    if(DPDoctorUtils.anyStringEmpty(resourceId))resourceId = "";
+			    prescriptions.add(prescriptionItems);
+		    }
 		}
 	    }
 	    List<ClinicalNotesJasperDetails> clinicalNotes = new ArrayList<ClinicalNotesJasperDetails>();
 	    if (patientVisitCollection.getClinicalNotesId() != null) {
 		for (String clinicalNotesId : patientVisitCollection.getClinicalNotesId()) {
-		    ClinicalNotesJasperDetails clinicalJasperDetails = getClinicalNotesJasperDetails(clinicalNotesId);
-		    clinicalNotes.add(clinicalJasperDetails);
+		    if(!DPDoctorUtils.anyStringEmpty(clinicalNotesId)){
+		    	ClinicalNotesJasperDetails clinicalJasperDetails = getClinicalNotesJasperDetails(clinicalNotesId);
+			    clinicalNotes.add(clinicalJasperDetails);
+		    }
 		}
 	    }
 	    parameters.put("prescriptions", prescriptions);
@@ -679,6 +684,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    String headerLeftText = "", headerRightText = "", footerBottomText = "";
 		    if (printSettings != null) {
 			if (printSettings.getHeaderSetup() != null) {
+				int line = 0;
 			    for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()) {
 				boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 				boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
@@ -693,8 +699,15 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				else
 				    headerLeftText = headerLeftText + "<br/>" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 			    }
-
-			    for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText()) {
+			    if(line < 4){
+					for(line = line; line <4 ;line++)
+					line = line + 1;
+					if (headerLeftText.isEmpty())
+						headerLeftText = "<span> </span>";
+					    else
+						headerLeftText = headerLeftText + "<br/>" + "<span></span>";
+				}
+				for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText()) {
 				boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 				boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
 				String text = str.getText();
@@ -708,7 +721,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				else
 				    headerRightText = headerRightText + "<br/>" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 			    }
-
+				if(line < 4){
+					for(line = line; line <4 ;line++)
+					line = line + 1;
+					if (headerRightText.isEmpty())
+						headerRightText = "<span> </span>";
+					    else
+					    	headerRightText = headerRightText + "<br/>" + "<span></span>";
+				}
 			}
 			if (printSettings.getFooterSetup() != null) {
 			    if (printSettings.getFooterSetup().getCustomFooter())
@@ -741,16 +761,19 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				fontSize = "10pt";
 
 			    if (isItalic) {
-				patientName = "<i>" + patientName + "</i>";pid = "<i>" + pid + "</i>";dob = "<i>" + dob + "</i>";
+				patientName = "<i>" + patientName + "</i>";pid = "<i>" + pid + "</i>";dob = "<i>" + dob + "</i>";bloodGroup = "<i>" + bloodGroup + "</i>";
 				gender = "<i>" + gender + "</i>";mobileNumber = "<i>" + mobileNumber + "</i>";refferedBy = "<i>" + refferedBy + "</i>";
 				date = "<i>" + date + "</i>";resourceId = "<i>" + resourceId + "</i>";}
-			    if (isBold) {patientName = "<b>" + patientName + "</b>";pid = "<b>" + pid + "</b>";	dob = "<b>" + dob + "</b>";
-				gender = "<b>" + gender + "</b>";mobileNumber = "<b>" + mobileNumber + "</b>";refferedBy = "<b>" + refferedBy + "</b>";
-				date = "<b>" + date + "</b>";resourceId = "<b>" + resourceId + "</b>"; }
+			    if (isBold) {
+			    	patientName = "<b>" + patientName + "</b>";pid = "<b>" + pid + "</b>";	dob = "<b>" + dob + "</b>";bloodGroup = "<b>" + bloodGroup + "</b>";
+			    	gender = "<b>" + gender + "</b>";mobileNumber = "<b>" + mobileNumber + "</b>";refferedBy = "<b>" + refferedBy + "</b>";
+			    	date = "<b>" + date + "</b>";resourceId = "<b>" + resourceId + "</b>"; 
+				}
 			    patientName = "<span style='font-size:" + fontSize + "'>" + patientName + "</span>";
 			    pid = "<span style='font-size:" + fontSize + "'>" + pid + "</span>";
 			    dob = "<span style='font-size:" + fontSize + "'>" + dob + "</span>";
 			    gender = "<span style='font-size:" + fontSize + "'>" + gender + "</span>";
+			    bloodGroup = "<span style='font-size:" + fontSize + "'>" + bloodGroup + "</span>";
 			    mobileNumber = "<span style='font-size:" + fontSize + "'>" + mobileNumber + "</span>";
 			    refferedBy = "<span style='font-size:" + fontSize + "'>" + refferedBy + "</span>";
 			    date = "<span style='font-size:" + fontSize + "'>" + date + "</span>";
@@ -762,7 +785,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    if (doctorUser != null)
 			parameters.put("footerSignature", doctorUser.getTitle() + " " + doctorUser.getFirstName());
 
-		    parameters.put("patientLeftText", patientName + pid + dob + gender);
+		    parameters.put("patientLeftText", patientName + pid + dob + gender+ bloodGroup);
 		    parameters.put("patientRightText", mobileNumber + refferedBy + date + resourceId);
 		    parameters.put("headerLeftText", headerLeftText);
 		    parameters.put("headerRightText", headerRightText);
@@ -774,7 +797,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    String margins = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getMargins() : null) : null;
 
 		    parameters.put("visitId", patientVisitCollection.getId());
-		    String pdfName = (user != null ? user.getFirstName() : "") + "VISITS" + patientVisitCollection.getUniqueEmrId();
+		    String pdfName = (user != null ? user.getFirstName() : "") + "VISITS-" + patientVisitCollection.getUniqueEmrId();
 		    JasperReportResponse path = jasperReportService.createPDF(parameters, "mongo-multiple-data", layout, pageSize, margins, pdfName.replaceAll("\\s+", ""));
 		    
 		    return path;
@@ -799,6 +822,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			String breathing = clinicalNotesCollection.getVitalSigns().getBreathing();
 			breathing = breathing != null && !breathing.isEmpty() ? "Breathing: " + breathing + " "+VitalSignsUnit.BREATHING.getUnit() + "    " : "";
 
+			String weight = clinicalNotesCollection.getVitalSigns().getWeight();
+			weight = weight != null && !weight.isEmpty() ? "Weight: " + weight +" " +VitalSignsUnit.WEIGHT.getUnit() + "    " : "";
+			
 			String bloodPressure = "";
 			if (clinicalNotesCollection.getVitalSigns().getBloodPressure() != null) {
 			    String systolic = clinicalNotesCollection.getVitalSigns().getBloodPressure().getSystolic();
@@ -809,7 +835,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 			    bloodPressure = "Blood Pressure: " + systolic + "/" + diastolic + " "+VitalSignsUnit.BLOODPRESSURE.getUnit();
 			}
-			String vitalSigns = pulse + temp + breathing + bloodPressure;
+			String vitalSigns = pulse + temp + breathing + bloodPressure+ weight;
 			clinicalNotesJasperDetails.setVitalSigns(vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
 		    }
 		    String observations = "";
@@ -908,7 +934,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	try {
 	    prescriptionCollection = prescriptionRepository.findOne(prescriptionId);
 	    if (prescriptionCollection != null) {
-	    	prescriptionItemsObj.put("resourceId","PrescriptionId: " + prescriptionCollection.getUniqueEmrId() != null ? prescriptionCollection.getUniqueEmrId() : "--");
+	    	prescriptionItemsObj.put("resourceId","PID: " + prescriptionCollection.getUniqueEmrId() != null ? prescriptionCollection.getUniqueEmrId() : "--");
 	    	prescriptionItemsObj.put("advice", prescriptionCollection.getAdvice() != null ? prescriptionCollection.getAdvice() : "----");
 		if (prescriptionCollection.getDiagnosticTests() != null && !prescriptionCollection.getDiagnosticTests().isEmpty()) {
 		    String labTest = "";

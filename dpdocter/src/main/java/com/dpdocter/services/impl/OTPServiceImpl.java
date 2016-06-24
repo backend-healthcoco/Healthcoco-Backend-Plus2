@@ -21,6 +21,7 @@ import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
+import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.OTPState;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -33,6 +34,7 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.OTPService;
+import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.SMSServices;
 
 import common.util.web.LoginUtils;
@@ -75,6 +77,9 @@ public class OTPServiceImpl implements OTPService {
     @Autowired
     private MailService mailService;
 
+    @Autowired
+	PushNotificationServices pushNotificationServices;
+	
     @Value(value = "${mail.recordsShareOtpBeforeVerification.subject}")
     private String recordsShareOtpBeforeVerification;
 
@@ -121,6 +126,7 @@ public class OTPServiceImpl implements OTPService {
 			    patient.getFirstName(), doctorName, uriInfo);
 		    mailService.sendEmail(patientCollection.getEmailAddress(), recordsShareOtpBeforeVerification, body, null);
 		}
+		pushNotificationServices.notifyUser(patient.getId(), "Dr. "+userCollection.getFirstName()+" has requested to view your medical history, share OTP that was sent to your registered mobile number to provide access", null, null);
 	    } else {
 		logger.error("Invalid doctorId or patientId");
 		throw new BusinessException(ServiceError.InvalidInput, "Invalid doctorId or patientId");
@@ -156,13 +162,13 @@ public class OTPServiceImpl implements OTPService {
 				otpCollection.setState(OTPState.VERIFIED);
 				otpCollection = otpRepository.save(otpCollection);
 				response = true;
-				if (patientCollection != null && patientCollection.getEmailAddress() != null
-					&& !patientCollection.getEmailAddress().isEmpty()) {
+				if (patientCollection != null && patientCollection.getEmailAddress() != null && !patientCollection.getEmailAddress().isEmpty()) {
 				    String body = mailBodyGenerator.generateRecordsShareOtpAfterVerificationEmailBody(patientCollection.getEmailAddress(),
 					    patient.getFirstName(), doctorName, uriInfo);
 				    mailService.sendEmail(patientCollection.getEmailAddress(),
 					    recordsShareOtpAfterVerification + " " + userCollection.getFirstName(), body, null);
 				}
+				pushNotificationServices.notifyUser(patient.getId(), "Dr. "+userCollection.getFirstName()+" can now access your medical history, Tap to know more about Healthcoco share.", null, null);
 			    } else {
 				logger.error("OTP is expired");
 				throw new BusinessException(ServiceError.NotFound, "OTP is expired");
