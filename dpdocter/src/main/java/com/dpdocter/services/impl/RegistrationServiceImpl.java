@@ -287,6 +287,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 		logger.warn(role);
 		throw new BusinessException(ServiceError.NoRecord, role);
 	    }
+	    
+	    LocationCollection locationCollection = locationRepository.findOne(request.getLocationId());
 	    Date createdTime = new Date();
 	    // save user
 	    UserCollection userCollection = new UserCollection();
@@ -421,7 +423,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		BeanUtil.map(groupCollections, groups);
 	    }
 	    registeredPatientDetails.setGroups(groups);
-	    pushNotificationServices.notifyUser(patientCollection.getId(), "You are register", ComponentType.PATIENT.getType(), patientCollection.getUserId());
+	    pushNotificationServices.notifyUser(patientCollection.getUserId(), "Welcome to "+locationCollection.getLocationName()+", let us know about your visit. We will be happy to serve you again.", ComponentType.PATIENT.getType(), patientCollection.getUserId());
 	    if (userCollection.getMobileNumber() != null) {
 		SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 		smsTrackDetail.setDoctorId(patientCollection.getDoctorId());

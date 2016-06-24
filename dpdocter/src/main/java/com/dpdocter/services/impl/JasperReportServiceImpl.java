@@ -3,6 +3,7 @@ package com.dpdocter.services.impl;
 import java.io.File;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -12,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.JasperReportResponse;
@@ -107,9 +110,15 @@ public class JasperReportServiceImpl implements JasperReportService {
 		    
 		    jasperReportResponse = new JasperReportResponse();
 		    jasperReportResponse.setPath(JASPER_TEMPLATES_ROOT_PATH + pdfName + ".pdf");
-		    jasperReportResponse.setFileSystemResource(new FileSystemResource(JASPER_TEMPLATES_RESOURCE + pdfName + ".pdf"));
-		    
-		    s3client.putObject(bucketName, JASPER_TEMPLATES_ROOT_PATH + pdfName + ".pdf", jasperReportResponse.getFileSystemResource().getFile());
+		    FileSystemResource fileSystemResource = new FileSystemResource(JASPER_TEMPLATES_RESOURCE + pdfName + ".pdf");
+		    jasperReportResponse.setFileSystemResource(fileSystemResource);
+		    ObjectMetadata metadata = new ObjectMetadata();
+		    metadata.setContentEncoding("pdf");
+		    metadata.setContentType("application/pdf");
+		    metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+		    PutObjectRequest putObjectRequest =new PutObjectRequest(bucketName, JASPER_TEMPLATES_ROOT_PATH + pdfName + ".pdf", jasperReportResponse.getFileSystemResource().getFile());
+		    putObjectRequest.setMetadata(metadata);
+		    s3client.putObject(putObjectRequest);
 		    return jasperReportResponse;
 
 	} catch (JRException e) {

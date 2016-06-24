@@ -320,10 +320,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			doctorDocument.setDistance(DPDoctorUtils.distance(Double.parseDouble(latitude), Double.parseDouble(longitude),
 				doctorDocument.getLatitude(), doctorDocument.getLongitude(), "K"));
 		    }
-		    doctorDocument.getExperience();
 		    doctorDocument.getDob();
-		    doctorDocument.getConsultationFee();
-		}
+		  }
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();

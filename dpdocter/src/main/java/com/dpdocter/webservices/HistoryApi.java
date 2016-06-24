@@ -29,6 +29,7 @@ import com.dpdocter.beans.MedicalHistoryHandler;
 import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.Records;
+import com.dpdocter.collections.DiseasesCollection;
 import com.dpdocter.elasticsearch.document.ESDiseasesDocument;
 import com.dpdocter.elasticsearch.services.ESMasterService;
 import com.dpdocter.enums.HistoryFilter;
@@ -82,19 +83,19 @@ public class HistoryApi {
     @Path(value = PathProxy.HistoryUrls.ADD_DISEASE)
     @POST
     @ApiOperation(value = PathProxy.HistoryUrls.ADD_DISEASE, notes = PathProxy.HistoryUrls.ADD_DISEASE)
-    public Response<DiseaseAddEditResponse> addDiseases(List<DiseaseAddEditRequest> request) {
+    public Response<DiseasesCollection> addDiseases(List<DiseaseAddEditRequest> request) {
 	if (request == null) {
 	    logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
-	List<DiseaseAddEditResponse> diseases = historyServices.addDiseases(request);
-	for(DiseaseAddEditResponse addEditResponse : diseases){
+	List<DiseasesCollection> diseases = historyServices.addDiseases(request);
+	for(DiseasesCollection addEditResponse : diseases){
 		transactionalManagementService.addResource(addEditResponse.getId(), Resource.DISEASE, false);
 		ESDiseasesDocument esDiseasesDocument = new ESDiseasesDocument();
 		BeanUtil.map(addEditResponse, esDiseasesDocument);
 		esMasterService.addEditDisease(esDiseasesDocument);
 	}
-	Response<DiseaseAddEditResponse> response = new Response<DiseaseAddEditResponse>();
+	Response<DiseasesCollection> response = new Response<DiseasesCollection>();
 	response.setDataList(diseases);
 	return response;
     }

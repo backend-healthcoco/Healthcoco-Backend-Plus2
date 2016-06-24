@@ -66,6 +66,7 @@ import com.dpdocter.collections.UserLocationCollection;
 import com.dpdocter.enums.AppointmentCreatedBy;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
+import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.DoctorFacility;
 import com.dpdocter.enums.SMSContent;
 import com.dpdocter.enums.SMSFormatType;
@@ -97,6 +98,7 @@ import com.dpdocter.request.PatientQueueAddEditRequest;
 import com.dpdocter.response.SlotDataResponse;
 import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.LocationServices;
+import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.SMSServices;
 
 import common.util.web.DPDoctorUtils;
@@ -176,6 +178,9 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Value(value = "${Appoinment.appointmentDoesNotExist}")
     private String appointmentDoesNotExist;
 
+    @Autowired
+	PushNotificationServices pushNotificationServices;
+	
     @Override
     @Transactional
     public City addCity(City city) {
@@ -366,7 +371,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			appointmentWorkFlowRepository.save(appointmentWorkFlowCollection);
 
 			appointmentCollection.setState(request.getState());
-			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy");
+			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
 			
 			String _24HourTime = String.format("%02d:%02d", appointmentCollection.getTime().getFromTime() / 60, appointmentCollection.getTime().getFromTime() % 60);
 	        SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
@@ -385,7 +390,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	        Date _24HourDt = _24HourSDF.parse(_24HourTime);
 	        
 		    String patientName = patient.getFirstName() != null?patient.getFirstName().split(" ")[0] :"", appointmentId= appointmentCollection.getAppointmentId(), 
-					dateTime= _12HourSDF.format(_24HourDt)+" "+sdf.format(appointmentCollection.getFromDate()),
+					dateTime= _12HourSDF.format(_24HourDt)+", "+sdf.format(appointmentCollection.getFromDate()),
 					doctorName=userCollection.getTitle()+" "+userCollection.getFirstName(),clinicName= locationCollection.getLocationName(),clinicContactNum=locationCollection.getClinicNumber() != null ? locationCollection.getClinicNumber() :"";
 					
 			if(request.getState().getState().equals(AppointmentState.CANCEL.getState())){
@@ -525,7 +530,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    appointmentCollection.setCreatedTime(new Date());
 			    appointmentCollection.setAppointmentId(UniqueIdInitial.APPOINTMENT.getInitial()+DPDoctorUtils.generateRandomId());
 			    
-			    SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy");
+			    SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
 				
 			    String _24HourTime = String.format("%02d:%02d", appointmentCollection.getTime().getFromTime() / 60, appointmentCollection.getTime().getFromTime() % 60);
 		        SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
@@ -544,7 +549,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		        Date _24HourDt = _24HourSDF.parse(_24HourTime);
 		        
 			    String patientName = patient.getFirstName() != null?patient.getFirstName().split(" ")[0] :"", appointmentId= appointmentCollection.getAppointmentId(), 
-						dateTime= _12HourSDF.format(_24HourDt)+" "+sdf.format(appointmentCollection.getFromDate()),
+						dateTime= _12HourSDF.format(_24HourDt)+", "+sdf.format(appointmentCollection.getFromDate()),
 						doctorName=userCollection.getTitle()+" "+userCollection.getFirstName(),clinicName= locationCollection.getLocationName(),clinicContactNum=locationCollection.getClinicNumber() != null ? locationCollection.getClinicNumber() :"";
 						
 			    if(request.getCreatedBy().equals(AppointmentCreatedBy.DOCTOR)){
@@ -637,25 +642,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    if(DPDoctorUtils.anyStringEmpty(doctorName))doctorName="";
 	    if(DPDoctorUtils.anyStringEmpty(clinicName))clinicName="";
 	    if(DPDoctorUtils.anyStringEmpty(clinicContactNum))clinicContactNum="";
-	    if(smsFormatCollection != null){
-//	    		if(!SMSFormatType.CONFIRMED_APPOINTMENT.getType().equalsIgnoreCase(formatType)){
-//	    			if(smsFormatCollection.getContent().contains(SMSContent.PATIENT_NAME.getContent()) && patientName != null && patientName != "")
-//		    			 patientName = " "+patientName;
-//		    		 else patientName = "";
-//	    		}
-//	    		
-//	    		 if(smsFormatCollection.getContent().contains(SMSContent.APPOINTMENT_ID.getContent()) && appointmentId != null && appointmentId != "")
-//	    			 appointmentId = " "+appointmentId;
-//	    		 else appointmentId = "";
-//	    		 if(smsFormatCollection.getContent().contains(SMSContent.DATE_TIME.getContent()) && dateTime != null && dateTime != "")
-//	    			 dateTime = " "+dateTime;
-//	    		 else dateTime ="";
-//	    		 if(!SMSFormatType.CONFIRMED_APPOINTMENT.getType().equalsIgnoreCase(formatType)){
-//	    			 if(smsFormatCollection.getContent().contains(SMSContent.DOCTOR_NAME.getContent()) && doctorName != null && doctorName != "")
-//	    				 doctorName = " "+doctorName;
-//	    			 else doctorName ="";
-//	    		 }
-	    		 
+	    if(smsFormatCollection != null){	    		 
 	    		 if(type.equalsIgnoreCase("CONFIRMED_APPOINTMENT_TO_PATIENT") || type.equalsIgnoreCase("TENTATIVE_APPOINTMENT_TO_PATIENT") ||
 	    				 type.equalsIgnoreCase("CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR") || type.equalsIgnoreCase("APPOINTMENT_REMINDER_TO_PATIENT")||
 	    				 type.equalsIgnoreCase("RESCHEDULE_APPOINTMENT_TO_PATIENT")){
@@ -663,78 +650,82 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    			 if(!smsFormatCollection.getContent().equals(SMSContent.CLINIC_CONTACT_NUMBER.getContent()) || clinicContactNum == null)clinicContactNum = "";
 	    		 }
 	    	}
-//	    else{
-//	    	if(!DPDoctorUtils.anyStringEmpty(patientName))patientName = " "+patientName;
-//	    	if(!DPDoctorUtils.anyStringEmpty(appointmentId))appointmentId = " "+appointmentId;
-//	    	if(!DPDoctorUtils.anyStringEmpty(dateTime))dateTime = " "+dateTime;
-//	    	if(!DPDoctorUtils.anyStringEmpty(doctorName))doctorName = " "+doctorName;
-//	    	if(!DPDoctorUtils.anyStringEmpty(clinicContactNum))clinicContactNum = " "+ clinicContactNum;
-//	    }
 	    String text = "";
 	    switch (type) {
 		case "CONFIRMED_APPOINTMENT_TO_PATIENT" :{
 			text = "Your appointment "+appointmentId+" with "+doctorName+(clinicName!= ""?", "+clinicName:"")+(clinicContactNum!= ""?", "+clinicContactNum:"")+" has been confirmed @ "+dateTime+".";
 			smsDetail.setUserName(patientName);
+			pushNotificationServices.notifyUser(userId, text, null, null);
 		}
 		break;
 
 		case "CONFIRMED_APPOINTMENT_TO_DOCTOR" :{
 			text = "Healthcoco! Your appointment with "+patientName+" has been scheduled @ "+dateTime + (clinicName!= ""?" at "+clinicName:"")+".";
 			smsDetail.setUserName(doctorName);
+			pushNotificationServices.notifyUser(userId, text, null, null);
 		}
 		break;
 		
 		case "CONFIRMED_APPOINTMENT_REQUEST_TO_DOCTOR" :{
 			text = "Healthcoco! You have an appointment request from "+patientName+" for "+dateTime+" at "+clinicName+".";
 			smsDetail.setUserName(doctorName);
+			pushNotificationServices.notifyUser(userId, text, null, null);
 		}
 		break;
 		
 		case "TENTATIVE_APPOINTMENT_TO_PATIENT" :{
 			text = "Your appointment "+appointmentId+" @ "+dateTime+" with "+doctorName+(clinicName!= ""?", "+clinicName:"")+(clinicContactNum!= ""?", "+clinicContactNum:"")+" has been sent for confirmation.";
 			smsDetail.setUserName(patientName);
+			pushNotificationServices.notifyUser(userId, text, null, null);
 		}
 		break;
 		
 		case "CANCEL_APPOINTMENT_TO_DOCTOR_BY_DOCTOR" :{
 			text = "Your appointment"+" with "+patientName+" for "+dateTime+" at " +clinicName+" has been cancelled as per your request.";
 			smsDetail.setUserName(doctorName);
+			pushNotificationServices.notifyUser(userId, text, null, null);
 		}
 		break;
 		
 		case "CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR" :{
 			text = "Your appointment "+appointmentId+" @ "+dateTime+" has been cancelled by "+doctorName+(clinicName!= ""?", "+clinicName:"")+(clinicContactNum!= ""?", "+clinicContactNum:"")+".Request you to book again.";
 			smsDetail.setUserName(patientName);
+			pushNotificationServices.notifyUser(userId, text, null, null);
 		}
 		break;
 		
 		case "CANCEL_APPOINTMENT_TO_DOCTOR_BY_PATIENT" :{
 			text = "Healthcoco! Your appointment"+" with "+patientName+" @ "+dateTime+" at "+clinicName+", has been cancelled by patient.";
 			smsDetail.setUserName(doctorName);
+			pushNotificationServices.notifyUser(userId, text, null, null);
 		}
 		break;
 		
 		case "CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT" :{
 			text = "Your appointment "+appointmentId+" for "+dateTime+" with "+doctorName+" has been cancelled as per your request";
 			smsDetail.setUserName(patientName);
+			pushNotificationServices.notifyUser(userId, text, null, null);
 		}
 		break;
 		
 		case "APPOINTMENT_REMINDER_TO_PATIENT" :{
 			text = "You have an upcoming appointment "+appointmentId+" @ "+dateTime+" with "+doctorName+(clinicName!= ""?", "+clinicName:"")+(clinicContactNum!= ""?", "+clinicContactNum:"")+".";
 			smsDetail.setUserName(patientName);
+			pushNotificationServices.notifyUser(userId, text, null, null);
 		}
 		break;
 		
 		case "RESCHEDULE_APPOINTMENT_TO_PATIENT" :{
 			text = "Your appointment "+appointmentId+" with "+doctorName+(clinicName!= ""?", "+clinicName:"")+(clinicContactNum!= ""?", "+clinicContactNum:"")+" has been rescheduled @ "+dateTime+".";
 			smsDetail.setUserName(patientName);
+			pushNotificationServices.notifyUser(userId, text, null, null);
 		}
 		break;
 		
 		case "RESCHEDULE_APPOINTMENT_TO_DOCTOR" :{
 			text = "Your appointment with "+patientName+"has been rescheduled to "+dateTime+" at "+clinicName+".";
 			smsDetail.setUserName(doctorName);
+			pushNotificationServices.notifyUser(userId, text, null, null);
 		}
 		break;
 		

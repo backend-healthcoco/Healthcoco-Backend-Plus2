@@ -36,6 +36,7 @@ import com.dpdocter.beans.Tags;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.RecordsCollection;
@@ -154,7 +155,7 @@ public class RecordsServiceImpl implements RecordsService {
 	try {
 
 	    Date createdTime = new Date();
-
+	    UserCollection patientCollection = userRepository.findOne(request.getPatientId());
 	    RecordsCollection recordsCollection = new RecordsCollection();
 	    BeanUtil.map(request, recordsCollection);
 	    if(!DPDoctorUtils.anyStringEmpty(request.getRecordsUrl())){
@@ -188,15 +189,15 @@ public class RecordsServiceImpl implements RecordsService {
 	    }
 	    PrescriptionCollection prescriptionCollection = null;
 	    if (recordsCollection.getPrescriptionId() != null) {
-		prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(recordsCollection.getPrescriptionId(),
-			recordsCollection.getPatientId());
-	    }
-	    if (prescriptionCollection != null) {
-		recordsCollection.setPrescribedByDoctorId(prescriptionCollection.getDoctorId());
-		recordsCollection.setPrescribedByLocationId(prescriptionCollection.getLocationId());
-		recordsCollection.setPrescribedByHospitalId(prescriptionCollection.getHospitalId());
+	    	prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(recordsCollection.getPrescriptionId(),recordsCollection.getPatientId());
+	    	 if (prescriptionCollection != null) {
+	    			recordsCollection.setPrescribedByDoctorId(prescriptionCollection.getDoctorId());
+	    			recordsCollection.setPrescribedByLocationId(prescriptionCollection.getLocationId());
+	    			recordsCollection.setPrescribedByHospitalId(prescriptionCollection.getHospitalId());
 
+	    	}
 	    }
+	   
 	    recordsCollection = recordsRepository.save(recordsCollection);
 
 	    if (prescriptionCollection != null && (prescriptionCollection.getDiagnosticTests() != null || !prescriptionCollection.getDiagnosticTests().isEmpty())) {
@@ -213,9 +214,9 @@ public class RecordsServiceImpl implements RecordsService {
 	    }
 	    if(prescriptionCollection != null && prescriptionCollection.getDoctorId().equalsIgnoreCase(recordsCollection.getDoctorId()) &&
 	    		prescriptionCollection.getLocationId().equalsIgnoreCase(recordsCollection.getLocationId()) && prescriptionCollection.getHospitalId().equalsIgnoreCase(recordsCollection.getHospitalId()))
-	    pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId(), "Report:"+recordsCollection.getUniqueEmrId()+" is uploaded by lab", ComponentType.REPORTS.getType(), recordsCollection.getId());
+	    pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId(), patientCollection.getFirstName()+"'s report has been uploaded by "+recordsCollection.getUploadedByLocation()+" - Tap to view it!", ComponentType.REPORTS.getType(), recordsCollection.getId());
 
-	    pushNotificationServices.notifyUser(recordsCollection.getPatientId(), "Report:"+recordsCollection.getUniqueEmrId()+" is uploaded by lab", ComponentType.REPORTS.getType(), recordsCollection.getId());
+	   	pushNotificationServices.notifyUser(recordsCollection.getPatientId(), "Your Report from "+recordsCollection.getUploadedByLocation()+" is here - Tap to view it!", ComponentType.REPORTS.getType(), recordsCollection.getId());
 	    Records records = new Records();
 	    BeanUtil.map(recordsCollection, records);
 
@@ -301,7 +302,7 @@ public class RecordsServiceImpl implements RecordsService {
 
 	    recordsCollection = recordsRepository.save(recordsCollection);
 
-	    pushNotificationServices.notifyUser(recordsCollection.getPatientId(), "Report:"+recordsCollection.getUniqueEmrId()+" is uploaded by lab", ComponentType.REPORTS.getType(), recordsCollection.getId());
+	    //pushNotificationServices.notifyUser(recordsCollection.getPatientId(), "Report:"+recordsCollection.getUniqueEmrId()+" is uploaded by lab", ComponentType.REPORTS.getType(), recordsCollection.getId());
 
 	    BeanUtil.map(recordsCollection, records);
 	    return records;

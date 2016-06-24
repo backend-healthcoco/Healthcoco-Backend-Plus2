@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -144,18 +143,16 @@ public class HistoryServicesImpl implements HistoryServices {
 
     @Override
     @Transactional
-    public List<DiseaseAddEditResponse> addDiseases(List<DiseaseAddEditRequest> request) {
-	List<DiseaseAddEditResponse> response = null;
-	List<DiseasesCollection> diseases = new ArrayList<DiseasesCollection>();
+    public List<DiseasesCollection> addDiseases(List<DiseaseAddEditRequest> request) {
+	List<DiseasesCollection> response = new ArrayList<DiseasesCollection>();
 	try {
-	    for (Iterator<DiseaseAddEditRequest> iterator = request.iterator(); iterator.hasNext();) {
-		DiseaseAddEditRequest diseaseaddEditRequest = iterator.next();
-		diseaseaddEditRequest.setCreatedTime(new Date());
+	    for (DiseaseAddEditRequest addEditRequest : request) {
+	    	addEditRequest.setCreatedTime(new Date());
+	    	DiseasesCollection diseasesCollection = new DiseasesCollection();
+	    	BeanUtil.map(request, diseasesCollection);
+	    	diseasesCollection = diseasesRepository.save(diseasesCollection);
+	    	response.add(diseasesCollection);
 	    }
-	    BeanUtil.map(request, diseases);
-	    diseases = diseasesRepository.save(diseases);
-	    response = new ArrayList<DiseaseAddEditResponse>();
-	    BeanUtil.map(diseases, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Disease(s)");
