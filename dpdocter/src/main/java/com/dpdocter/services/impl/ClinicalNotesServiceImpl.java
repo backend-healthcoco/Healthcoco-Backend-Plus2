@@ -48,6 +48,7 @@ import com.dpdocter.collections.DiagramsCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.InvestigationCollection;
+import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.NotesCollection;
 import com.dpdocter.collections.ObservationCollection;
 import com.dpdocter.collections.PatientCollection;
@@ -91,10 +92,12 @@ import com.dpdocter.request.ClinicalNotesAddRequest;
 import com.dpdocter.request.ClinicalNotesEditRequest;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.JasperReportResponse;
+import com.dpdocter.response.MailResponse;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.JasperReportService;
+import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.mongodb.BasicDBObject;
@@ -169,6 +172,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
      @Autowired
      private ReferenceRepository referenceRepository;
+
+     @Autowired
+     private MailBodyGenerator mailBodyGenerator;
 
      @Value(value = "${image.path}")
      private String imagePath;
@@ -2111,11 +2117,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     @Override
     @Transactional
     public void emailClinicalNotes(String clinicalNotesId, String doctorId, String locationId, String hospitalId, String emailAddress) {
-	MailAttachment mailAttachment = createMailData(clinicalNotesId, doctorId, locationId, hospitalId);
 	try {
-		Boolean response = mailService.sendEmail(emailAddress, "Clinical Notes", "PFA.", mailAttachment);
-	    if(mailAttachment != null && mailAttachment.getFileSystemResource() != null)
-	    	if(mailAttachment.getFileSystemResource().getFile().exists())mailAttachment.getFileSystemResource().getFile().delete() ;
+		MailResponse mailResponse = createMailData(clinicalNotesId, doctorId, locationId, hospitalId);
+	    String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(), mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(), mailResponse.getMailRecordCreatedDate(), "Clinical Notes", "emrRecordTemplate.vm");
+	    Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName()+" sent you a Clinical Notes", body, mailResponse.getMailAttachment());
+	    
+		if(mailResponse.getMailAttachment() != null && mailResponse.getMailAttachment().getFileSystemResource() != null)
+	    	if(mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())mailResponse.getMailAttachment().getFileSystemResource().getFile().delete() ;
 	} catch (MessagingException e) {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -2125,12 +2133,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
     @Override
     @Transactional
-    public MailAttachment getClinicalNotesMailData(String clinicalNotesId, String doctorId, String locationId, String hospitalId) {
+    public MailResponse getClinicalNotesMailData(String clinicalNotesId, String doctorId, String locationId, String hospitalId) {
 	return createMailData(clinicalNotesId, doctorId, locationId, hospitalId);
     }
 
-    private MailAttachment createMailData(String clinicalNotesId, String doctorId, String locationId, String hospitalId) {
-	ClinicalNotesCollection clinicalNotesCollection = null;
+    private MailResponse createMailData(String clinicalNotesId, String doctorId, String locationId, String hospitalId) {
+	MailResponse response = null;
+    ClinicalNotesCollection clinicalNotesCollection = null;
 	MailAttachment mailAttachment = null;
 	PatientCollection patient = null;
 	UserCollection user = null;
@@ -2159,7 +2168,22 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				mailAttachment = new MailAttachment();
 				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
-//				mailAttachment.setInputStream(jasperReportResponse.getInputStream());
+				UserCollection doctorUser = userRepository.findOne(doctorId);
+				LocationCollection locationCollection = locationRepository.findOne(locationId);
+				
+				response = new MailResponse();
+				response.setMailAttachment(mailAttachment);
+				response.setDoctorName(doctorUser.getTitle()+" "+doctorUser.getFirstName());
+				String address = locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress()
+						: "" + locationCollection.getCity() != null ? ", "+locationCollection.getCity()
+							: "" + locationCollection.getPostalCode() != null ? ", "+locationCollection.getPostalCode() 
+										: "" + locationCollection.getState() != null ? ", "+locationCollection.getState() 
+											: "" + locationCollection.getCountry() != null ? ", "+locationCollection.getCountry() : "";
+				response.setClinicAddress(address);
+				response.setClinicName(locationCollection.getLocationName());
+				SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+				response.setMailRecordCreatedDate(sdf.format(clinicalNotesCollection.getCreatedTime()));
+				response.setPatientName(user.getFirstName());
 	
 				emailTackService.saveEmailTrack(emailTrackCollection);
 
@@ -2181,7 +2205,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
-	return mailAttachment;
+	return response;
     }
 
     private String getFinalImageURL(String imageURL) {

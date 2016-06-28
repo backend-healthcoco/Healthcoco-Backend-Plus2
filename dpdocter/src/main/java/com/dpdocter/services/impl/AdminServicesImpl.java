@@ -60,6 +60,8 @@ import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.AdminServices;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.LocationServices;
+import com.dpdocter.services.MailBodyGenerator;
+import com.dpdocter.services.MailService;
 import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
@@ -95,6 +97,12 @@ public class AdminServicesImpl implements AdminServices {
 
 //    @Autowired
 //    private SolrCityService solrCityService;
+
+    @Autowired
+    private MailService mailService;
+
+    @Autowired
+    private MailBodyGenerator mailBodyGenerator;
 
     @Autowired
     private EducationInstituteRepository educationInstituteRepository;
@@ -230,6 +238,8 @@ public class AdminServicesImpl implements AdminServices {
 				response = new Resume();
 				BeanUtil.map(resumeCollection, response);
 			}
+			String body = mailBodyGenerator.generateEmailBody(resumeCollection.getName(), resumeCollection.getType(), "applyForPostTemplate.vm");
+			 mailService.sendEmail(resumeCollection.getEmailAddress(), "", body, null);
 		}catch(Exception e){
 			logger.error("Error while adding resume "+ e.getMessage());
 			e.printStackTrace();

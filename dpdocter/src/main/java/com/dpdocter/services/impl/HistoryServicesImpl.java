@@ -69,10 +69,12 @@ import com.dpdocter.request.DiseaseAddEditRequest;
 import com.dpdocter.response.DiseaseAddEditResponse;
 import com.dpdocter.response.DiseaseListResponse;
 import com.dpdocter.response.HistoryDetailsResponse;
+import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.PatientTreatmentResponse;
 import com.dpdocter.response.TestAndRecordDataResponse;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.HistoryServices;
+import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientTreatmentServices;
@@ -140,6 +142,9 @@ public class HistoryServicesImpl implements HistoryServices {
 
     @Autowired
     private PatientVisitRepository patientVisitRepository;
+
+    @Autowired
+    private MailBodyGenerator mailBodyGenerator;
 
     @Override
     @Transactional
@@ -1567,22 +1572,28 @@ public class HistoryServicesImpl implements HistoryServices {
 	    String hospitalId = medicalData.getHospitalId();
 	    String emailAddress = medicalData.getEmailAddress();
 	    mailAttachments = new ArrayList<MailAttachment>();
-	    /*=====CODE COMMENTED BECAUSE PDF CREATION IS NOT WORKING - UNCOMMENT WHEN FIXED=====*/
+	    MailResponse mailResponse = null;
 	    for (MailData mailData : medicalData.getMailDataList()) {
 		switch (mailData.getMailType()) {
 		case CLINICAL_NOTE:
-		    mailAttachments.add(clinicalNotesService.getClinicalNotesMailData(mailData.getId(), doctorId, locationId, hospitalId));
+			mailResponse = clinicalNotesService.getClinicalNotesMailData(mailData.getId(), doctorId, locationId, hospitalId);
+			mailAttachments.add(mailResponse.getMailAttachment());
 		    break;
 		case PRESCRIPTION:
-		    mailAttachments.add(prescriptionServices.getPrescriptionMailData(mailData.getId(), doctorId, locationId, hospitalId));
+			mailResponse = prescriptionServices.getPrescriptionMailData(mailData.getId(), doctorId, locationId, hospitalId);
+			mailAttachments.add(mailResponse.getMailAttachment());
 		    break;
 		case REPORT:
-		    mailAttachments.add(recordsService.getRecordMailData(mailData.getId(), doctorId, locationId, hospitalId));
+			mailResponse = recordsService.getRecordMailData(mailData.getId(), doctorId, locationId, hospitalId);
+			mailAttachments.add(mailResponse.getMailAttachment());
 		    break;
 		}
 	    }
-	    mailService.sendEmailMultiAttach(emailAddress, "Medical Data", "PFA.", mailAttachments);
-	    response = true;
+	    if(mailResponse != null){
+	    	String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(), mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(), mailResponse.getMailRecordCreatedDate(), "Medical Data", "emrRecordTemplate.vm");
+		    mailService.sendEmailMultiAttach(emailAddress, mailResponse.getDoctorName()+" sent you a Medical Data", body, mailAttachments);
+		    response = true;
+	    }
 	} catch (Exception e) {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());

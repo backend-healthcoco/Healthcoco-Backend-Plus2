@@ -1,61 +1,51 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700,400italic' rel='stylesheet' type='text/css'>
+  <style type="text/css">
+  
+  </style>
+  </head>
 
-</head>
+  <body data-pinterest-extension-installed="cr1.39.1" cz-shortcut-listen="true" style="font-family: 'Roboto Condensed', sans-serif">
+    <div>
 
-<body cz-shortcut-listen="true" style="font-family: 'Open Sans', sans-serif; font-size:15px; color:#2c3335;">
+      <div style="background-color:#ffffff;line-height:25px;margin-bottom:30px;font-family:'Open Sans',sans-serif;margin:0px auto;min-width:200px;max-width:600px">
 
-  <div style="margin:20px auto; max-width:800px; min-width:320px;">
+          <div class="" align="center">
+          <img src="${imageURL}/logo1.png" style="height: 47px;">
+          </div>
 
-    <div style="margin-top:5px">
+          <div class="top" style="background-color: #faf8f8">
 
-      <div style="margin: 10px -20px;">
-       <img src="${imageURL}logo1.png" style="width:280px;">
-      </div>
-      <div style="border-bottom: 2px solid #0077b5;"></div>
-      
-      <div>
-        <p style="margin:20px 0px; line-height: 20px;">Hello,<br>
-        Welcome to Healthcoco!<br><br>
-        We have build a healthcare and wellness platform which will help you connect with users. We aim to improve the access and
-        quality of healthcare among masses and you have brought us one step closer to our goal.<br><br>
-        We are excited to have you on-board and there's just one step to verify if it's actually your e-mail address:</p>
-      </div>
+          <div class="t_image" align="center" style="margin-top: 10px">
+          <img src="${imageURL}/vv.png" style="margin-top: 15px">
+          </div>
 
-      <div style="margin-top:20px;">
-        <a style="border-radius:3px;color:white;font-size:15px; padding:11px 7px; max-width:200px; border:1px #1373b5 solid;text-align:center;text-decoration:none; width:200px; margin:10px auto; display:block; background-color:#007ee6" 
-        href="${link}" target="_blank">Verify now</a>
-      </div>
+            <p style="color:#2c3335;font-size:17px;padding:15px;">Hello ${fName},<br><br>Welcome to Healthcoco!
+            <br><br>We have received a request to authorize this email address for use with Healthcoco+,If you requested this verification, please click Verify Email or go to the following URL to confirm that you are authorized  to use this email address.</p>
+          
 
-      <div style="float:left; width:60%; padding:0px 10px; word-wrap: break-word; word-break: break-all;">
-        <p style="margin:20px 0px; line-height: 20px;">Alternatively, open the following url in your browser:<br>
-        <a href="${link}" style="text-decoration:none; color:#0077b5;">${link}</a><br><br>
+            <a style="border-radius:3px;color:white;font-size:15px;padding:11px 7px;max-width:200px;font-family:proxima_nova,'Open Sans','lucida grande','Segoe UI',arial,verdana,'lucida sans unicode',tahoma,sans-serif;border:1px #1373b5 solid;text-align:center;text-decoration:none;width:200px;margin:-21px auto;display:block;background-color:#007ee6" href="${link}" target="_blank">Verify email</a>
 
-        We will contact you shortly to complete your further verification process and get you started with Healthcoco+.
-        <br><br>
-        If you have any questions or need help you can visit our Support Pages or contact us anytime at <a style="color:#0077b5; text-decoration:none;" href="" target="_blank"> usersfirst@healthcoco.com</a>
-        <br><br>Stay Healthy and Happy,<br>The Healthcoco Team.
-        </p>
-      </div>
 
-      <div style="float:left; width:30%; padding:0px 10px;"> 
-        <img class="mob_img" src="${imageURL}mobye.png" width="100%;">
-           <p style="font-size:17px; text-align:center; color:#555555; font-weight:bold;margin-top:10px;">Coming soon</p>
-           <p align="center"> 
-           <a href="" style="paddin-right:10px;"><img src="${imageURL}appl.png" width="40" height="40"></a>
-           <a href="" style="paddin-left:10px;"><img src="${imageURL}and.png" width="40" height="40"></a>
-           </p>
-      </div> 
-      <div style="clear:both;">
+            <p style="color:#2c3335;font-size:17px;padding:15px;">Alternatively, open the following url in your browser:<br><a style="color: #0077b5;text-decoration:none;"href="" target="_blank">accounts.healthcoco.com</a><br><br>For any feedback regarding our services or the Healthcoco app, please feel free to contact us at  <a style="color: #0077b5;text-decoration:none;"href="${link}" target="_blank">usersfirst@healthcoco.com</a><br><br>Stay Healthy and Happy,<br>Team Healthcoco.
+            </p>
 
-    <div style="border-bottom: 2px solid #0077b5;"></div>
+          
+          
+   </div>
 
-    <div style="margin:10px auto;">
-      <p style="text-align:center;">© 2016 Healthcoco Technologies Pvt Ltd.</p>
-    </div>
-  </div>
+     <div class="footer" >
+       <p class="pager" style="font-size:14px;padding:0px 25px;">This message was sent to you by Healthcoco.</p>
+       
+        <div class="footer_side" style="float: right;margin-top: -43px;margin-right: 24px;">
 
-</body>
-</html>
+         <a style="color: #0077b5;text-decoration:none;"href="" target="_blank"><img src="${imageURL}/f_icn.png" style=""></a>
+          <a style="color: #0077b5;text-decoration:none;"href="" target="_blank"><img src="${imageURL}/t_icn.png" style=""></a>
+         <a style="color: #0077b5;text-decoration:none;"href="" target="_blank"><img src="${imageURL}/l_icn.png" style=""></a>
+          <a style="color: #0077b5;text-decoration:none;"href="" target="_blank"><img src="${imageURL}/g_icn.png" style=""></a>
+          
+        </div>
+
+  </body></html>

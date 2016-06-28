@@ -145,6 +145,10 @@ public class SignUpServiceImpl implements SignUpService {
     @Value(value = "${mail.signup.subject.activation}")
     private String signupSubject;
 
+
+    @Value(value = "${mail.account.activate.subject}")
+    private String accountActivateSubject;
+
     @Value(value = "${web.link}")
     private String LOGIN_WEB_LINK;
 
@@ -274,7 +278,7 @@ public class SignUpServiceImpl implements SignUpService {
 		    		}
 		    	}
 		    }
-			if (userCollection.getMobileNumber() != null && activate) {
+			if (activate) {
 			    SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 
 			    smsTrackDetail.setType("AFTER_VERIFICATION_TO_DOCTOR");
@@ -294,6 +298,9 @@ public class SignUpServiceImpl implements SignUpService {
 			    smsDetails.add(smsDetail);
 			    smsTrackDetail.setSmsDetails(smsDetails);
 			    sMSServices.sendSMS(smsTrackDetail, true);
+			    
+			    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getFirstName(), null, "accountActivateTemplate.vm");
+				mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
 			}
 		} 
 	    else {
@@ -457,8 +464,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    tokenCollection = tokenRepository.save(tokenCollection);
 
 	    // send activation email
-	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
-		    userCollection.getMiddleName(), userCollection.getLastName(), tokenCollection.getId(), uriInfo);
+	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getFirstName(), tokenCollection.getId(), "mailTemplate.vm");
 	    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
 
 	    // user.setPassword(null);
@@ -717,8 +723,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    tokenCollection = tokenRepository.save(tokenCollection);
 
 	    // send activation email
-	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
-		    userCollection.getMiddleName(), userCollection.getLastName(), tokenCollection.getId(), uriInfo);
+	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getFirstName(), tokenCollection.getId(), "mailTemplate.vm");
 	    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
 
 	    // user.setPassword(null);
@@ -1298,8 +1303,7 @@ public class SignUpServiceImpl implements SignUpService {
 			    tokenCollection = tokenRepository.save(tokenCollection);
 
 			    // send activation email
-			    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
-				    userCollection.getMiddleName(), userCollection.getLastName(), tokenCollection.getId(), uriInfo);
+			    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getFirstName(), tokenCollection.getId(), "mailTemplate.vm");
 			    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
 				
 			    response = true;

@@ -105,6 +105,7 @@ import com.dpdocter.response.DrugDurationUnitAddEditResponse;
 import com.dpdocter.response.DrugStrengthAddEditResponse;
 import com.dpdocter.response.DrugTypeAddEditResponse;
 import com.dpdocter.response.JasperReportResponse;
+import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.PrescriptionAddEditResponse;
 import com.dpdocter.response.PrescriptionAddEditResponseDetails;
 import com.dpdocter.response.PrescriptionTestAndRecord;
@@ -113,6 +114,7 @@ import com.dpdocter.response.TemplateAddEditResponseDetails;
 import com.dpdocter.response.TestAndRecordDataResponse;
 import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.JasperReportService;
+import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.PushNotificationServices;
@@ -205,6 +207,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     @Value(value = "${Prescription.checkPrescriptionExists}")
     private String checkPrescriptionExists;
     
+    @Autowired
+    private MailBodyGenerator mailBodyGenerator;
+
     @Override
     @Transactional
     public DrugAddEditResponse addDrug(DrugAddEditRequest request) {
@@ -2645,11 +2650,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     @Override
     @Transactional
     public void emailPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String emailAddress) {
-	try {
-	    MailAttachment mailAttachment = createMailData(prescriptionId, doctorId, locationId, hospitalId);
-	    Boolean response = mailService.sendEmail(emailAddress, "Prescription", "PFA.", mailAttachment);
-	    if(mailAttachment != null && mailAttachment.getFileSystemResource() != null)
-	    	if(mailAttachment.getFileSystemResource().getFile().exists())mailAttachment.getFileSystemResource().getFile().delete() ;
+	try {	
+	    MailResponse mailResponse = createMailData(prescriptionId, doctorId, locationId, hospitalId);
+	    String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(), mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(), mailResponse.getMailRecordCreatedDate(), "Prescription", "emrRecordTemplate.vm");
+	    Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName()+" sent you a Prescription", body, mailResponse.getMailAttachment());
+	    if(mailResponse.getMailAttachment() != null && mailResponse.getMailAttachment().getFileSystemResource() != null)
+	    	if(mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())mailResponse.getMailAttachment().getFileSystemResource().getFile().delete() ;
 	} catch (MessagingException e) {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -2658,12 +2664,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
     @Override
     @Transactional
-    public MailAttachment getPrescriptionMailData(String prescriptionId, String doctorId, String locationId, String hospitalId) {
-	return createMailData(prescriptionId, doctorId, locationId, hospitalId);
+    public MailResponse getPrescriptionMailData(String prescriptionId, String doctorId, String locationId, String hospitalId) {
+    	return  createMailData(prescriptionId, doctorId, locationId, hospitalId);
     }
 
-    private MailAttachment createMailData(String prescriptionId, String doctorId, String locationId, String hospitalId) {
-	PrescriptionCollection prescriptionCollection = null;
+    private MailResponse createMailData(String prescriptionId, String doctorId, String locationId, String hospitalId) {
+    	MailResponse response = null;
+    	PrescriptionCollection prescriptionCollection = null;
 	MailAttachment mailAttachment = null;
 	PatientCollection patient = null;
 	UserCollection user = null;
@@ -2678,7 +2685,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 					user = userRepository.findOne(prescriptionCollection.getPatientId());
 					patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(prescriptionCollection.getPatientId(), doctorId, locationId, hospitalId);
-		
 					emailTrackCollection.setDoctorId(doctorId);
 					emailTrackCollection.setHospitalId(hospitalId);
 					emailTrackCollection.setLocationId(locationId);
@@ -2693,7 +2699,22 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				mailAttachment = new MailAttachment();
 				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
-//				mailAttachment.setInputStream(jasperReportResponse.getInputStream());
+				UserCollection doctorUser = userRepository.findOne(doctorId);
+				LocationCollection locationCollection = locationRepository.findOne(locationId);
+				
+				response = new MailResponse();
+				response.setMailAttachment(mailAttachment);
+				response.setDoctorName(doctorUser.getTitle()+" "+doctorUser.getFirstName());
+				String address = locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress()
+						: "" + locationCollection.getCity() != null ? ", "+locationCollection.getCity()
+							: "" + locationCollection.getPostalCode() != null ? ", "+locationCollection.getPostalCode() 
+										: "" + locationCollection.getState() != null ? ", "+locationCollection.getState() 
+											: "" + locationCollection.getCountry() != null ? ", "+locationCollection.getCountry() : "";
+				response.setClinicAddress(address);
+				response.setClinicName(locationCollection.getLocationName());
+				SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+				response.setMailRecordCreatedDate(sdf.format(prescriptionCollection.getCreatedTime()));
+				response.setPatientName(user.getFirstName());
 				emailTackService.saveEmailTrack(emailTrackCollection);
 				
 		    } else {
@@ -2711,7 +2732,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
-	return mailAttachment;
+	return response;
     }
 
     @Override

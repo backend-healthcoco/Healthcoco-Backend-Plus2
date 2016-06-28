@@ -14,6 +14,8 @@ public class Diagnoses extends GenericCollection {
 
     private String hospitalId;
 
+    private Boolean discarded = false;
+    
     public String getId() {
 	return id;
     }
@@ -54,10 +56,18 @@ public class Diagnoses extends GenericCollection {
 	this.diagnosis = diagnosis;
     }
 
-    @Override
-    public String toString() {
-	return "Diagnoses [id=" + id + ", diagnosis=" + diagnosis + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ "]";
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	@Override
+	public String toString() {
+		return "Diagnoses [id=" + id + ", diagnosis=" + diagnosis + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + "]";
+	}
 
 }

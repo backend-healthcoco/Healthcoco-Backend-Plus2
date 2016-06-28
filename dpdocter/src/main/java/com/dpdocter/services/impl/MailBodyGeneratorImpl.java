@@ -16,6 +16,8 @@ import org.springframework.ui.velocity.VelocityEngineUtils;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.services.MailBodyGenerator;
 
+import common.util.web.DPDoctorUtils;
+
 @Service
 public class MailBodyGeneratorImpl implements MailBodyGenerator {
 
@@ -36,13 +38,13 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 
     @Override
     @Transactional
-    public String generateActivationEmailBody(String userName, String fName, String mName, String lName, String tokenId, UriInfo uriInfo) throws Exception {
+    public String generateActivationEmailBody(String fName, String tokenId, String templatePath) throws Exception {
 
 	Map<String, Object> model = new HashMap<String, Object>();
 	model.put("fName", fName);
-	model.put("link", link+"?token="+tokenId);
+	if(!DPDoctorUtils.anyStringEmpty(tokenId))model.put("link", link+"?token="+tokenId);
 	model.put("imageURL", imagePath + "templatesImage/");
-	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "mailTemplate.vm", "UTF-8", model);
+	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
 	return text;
     }
 
@@ -53,7 +55,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	model.put("fName", fName);
 	model.put("emailAddress", emailAddress);
 	model.put("link", RESET_PASSWORD_LINK + "?uid=" + userId);
-	model.put("imageURL", imagePath + "templatesImage/");
+	model.put("imageURL", imagePath + "templatesImage");
 	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "forgotPasswordTemplate.vm", "UTF-8", model);
 	return text;
     }
@@ -129,4 +131,42 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	return text;
     }
 
+    @Override
+    @Transactional
+    public String generateAppointmentCancelEmailBody(String doctorName, String patientName, String dateTime, String clinicName, String templatePath) {
+	Map<String, Object> model = new HashMap<String, Object>();
+	model.put("doctorName", doctorName);
+	model.put("patientName", patientName);
+	model.put("dateTime", dateTime);
+	model.put("clinicName", clinicName);
+	model.put("imageURL", imagePath + "templatesImage");
+	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
+	return text;
+    }
+
+    @Override
+    @Transactional
+    public String generateEmailBody(String userName, String resumeType, String templatePath) throws Exception {
+
+	Map<String, Object> model = new HashMap<String, Object>();
+	model.put("fName", userName);
+	model.put("resumeType", resumeType);
+	model.put("imageURL", imagePath + "templatesImage/");
+	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
+	return text;
+    }
+
+	@Override
+	public String generateEMREmailBody(String patientName, String doctorName, String clinicName, String clinicAddress, String mailRecordCreatedDate, String medicalRecordType, String templatePath) {
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("fName", patientName);
+		model.put("doctorName", doctorName);
+		model.put("clinicName", clinicName);
+		model.put("clinicAddress", clinicAddress);
+		model.put("mailRecordCreatedDate", mailRecordCreatedDate);
+		model.put("medicalRecordType", medicalRecordType);
+		model.put("imageURL", imagePath + "templatesImage/");
+		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
+		return text;
+	}
 }

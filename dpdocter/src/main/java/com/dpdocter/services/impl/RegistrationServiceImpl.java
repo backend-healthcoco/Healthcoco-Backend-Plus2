@@ -1502,8 +1502,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    tokenCollection = tokenRepository.save(tokenCollection);
 
 	    // send activation email
-	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
-		    userCollection.getMiddleName(), userCollection.getLastName(), tokenCollection.getId(), uriInfo);
+	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getFirstName(), tokenCollection.getId(), "mailTemplate.vm");
 	    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
 
 	    body = mailBodyGenerator.generateForgotPasswordEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
@@ -1952,10 +1951,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 		    }
 		}
-		visibleFeedback(feedbackCollection.getId(), true);
+//		visibleFeedback(feedbackCollection.getId(), true);
 		feedbackCollection = feedbackRepository.findOne(feedbackCollection.getId());
 	    }
 	    BeanUtil.map(feedbackCollection, response);
+//	    String body = mailBodyGenerator.generateEmailBody(feedbackCollection.getCreatedBy(), null, "feedbackTemplate.vm");
+//		mailService.sendEmail(emailAddress, appointmentCancelMailSubject, body, null);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);

@@ -7,11 +7,11 @@ import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.Diagnoses;
 import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.Investigation;
-import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Notes;
 import com.dpdocter.beans.Observation;
 import com.dpdocter.request.ClinicalNotesAddRequest;
 import com.dpdocter.request.ClinicalNotesEditRequest;
+import com.dpdocter.response.MailResponse;
 
 public interface ClinicalNotesService {
     ClinicalNotes addNotes(ClinicalNotesAddRequest request);
@@ -58,7 +58,7 @@ public interface ClinicalNotesService {
 
     void emailClinicalNotes(String clinicalNotesId, String doctorId, String locationId, String hospitalId, String emailAddress);
 
-    MailAttachment getClinicalNotesMailData(String clinicalNotesId, String doctorId, String locationId, String hospitalId);
+    MailResponse getClinicalNotesMailData(String clinicalNotesId, String doctorId, String locationId, String hospitalId);
 
     List<ClinicalNotes> getClinicalNotes(String patientId, int page, int size, String updatedTime, Boolean discarded);
 
