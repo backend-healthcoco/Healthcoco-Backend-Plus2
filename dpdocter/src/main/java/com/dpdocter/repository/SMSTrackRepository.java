@@ -42,22 +42,22 @@ public interface SMSTrackRepository extends MongoRepository<SMSTrackDetail, Stri
     @Query("{'responseId': ?0}")
     SMSTrackDetail findByResponseId(String requestId);
 
-    @Query("{'locationId': ?0, 'hospitalId': ?1, 'patientId': ?2, 'type':{$in: ?3}}")
+    @Query("{'locationId': ?0, 'hospitalId': ?1, 'smsDetails.userId': ?2, 'type':{$in: ?3}}")
     List<SMSTrackDetail> findByLocationHospitalPatientId(String locationId, String hospitalId, String patientId, String[] type, Pageable pageable);
 
-    @Query("{'locationId': ?0, 'hospitalId': ?1, 'patientId': ?2, 'type':{$in: ?3}}")
+    @Query("{'locationId': ?0, 'hospitalId': ?1, 'smsDetails.userId': ?2, 'type':{$in: ?3}}")
     List<SMSTrackDetail> findByLocationHospitalPatientId(String locationId, String hospitalId, String patientId, String[] type, Sort sort);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'patientId': ?3, 'type':{$in: ?4}}")
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'smsDetails.userId': ?3, 'type':{$in: ?4}}")
     List<SMSTrackDetail> findByDoctorLocationHospitalPatient(String doctorId, String locationId, String hospitalId, String patientId, String[] type, Pageable pageable);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'patientId': ?3, 'type':{$in: ?4}}")
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'smsDetails.userId': ?3, 'type':{$in: ?4}}")
     List<SMSTrackDetail> findByDoctorLocationHospitalPatient(String doctorId, String locationId, String hospitalId, String patientId, String[] type, Sort sort);
 
-    @Query("{'doctorId': ?0, 'patientId': ?1, 'type':{$in: ?2}}")
+    @Query("{'doctorId': ?0, 'smsDetails.userId': ?1, 'type':{$in: ?2}}")
     List<SMSTrackDetail> findByDoctorPatient(String doctorId, String patientId, String[] type, Pageable pageable);
 
-    @Query("{'doctorId': ?0, 'patientId': ?1, 'type':{$in: ?2}}")
+    @Query("{'doctorId': ?0, 'smsDetails.userId': ?1, 'type':{$in: ?2}}")
     List<SMSTrackDetail> findByDoctorPatient(String doctorId, String patientId, String[] type, Sort sort);
 
 }

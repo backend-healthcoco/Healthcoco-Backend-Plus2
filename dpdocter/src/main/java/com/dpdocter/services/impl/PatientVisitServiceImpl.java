@@ -14,7 +14,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -51,6 +50,7 @@ import com.dpdocter.collections.DiagramsCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.InvestigationCollection;
+import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.NotesCollection;
 import com.dpdocter.collections.ObservationCollection;
 import com.dpdocter.collections.PatientCollection;
@@ -86,12 +86,14 @@ import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddMultipleDataRequest;
 import com.dpdocter.response.JasperReportResponse;
+import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.PatientVisitResponse;
 import com.dpdocter.response.PrescriptionAddEditResponse;
 import com.dpdocter.response.TestAndRecordDataResponse;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.JasperReportService;
+import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
@@ -180,6 +182,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
     @Autowired
     private ReferenceRepository referenceRepository;
+
+    @Autowired
+    private MailBodyGenerator mailBodyGenerator;
 
     @Value(value = "${image.path}")
     private String imagePath;
@@ -585,18 +590,26 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			    mailAttachment = new MailAttachment();
 			    mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 			    mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
-//			    mailAttachment.setInputStream(jasperReportResponse.getInputStream());
-
 			    mailAttachments.add(mailAttachment);
 			    if (patientVisitCollection.getRecordId() != null) {
 				for (String recordId : patientVisitCollection.getRecordId()) {
 				    Records record = recordsService.getRecordById(recordId);
-				    mailAttachment = recordsService.getRecordMailData(recordId, record.getDoctorId(), record.getLocationId(), record.getHospitalId());
-				    if (mailAttachment != null)
-					mailAttachments.add(mailAttachment);
+				    MailResponse mailResponse = recordsService.getRecordMailData(recordId, record.getDoctorId(), record.getLocationId(), record.getHospitalId());
+				    if (mailResponse.getMailAttachment() != null)
+					mailAttachments.add(mailResponse.getMailAttachment());
 				}
 			    }
-			    mailService.sendEmailMultiAttach(emailAddress, "Patient Visit", "PFA.", mailAttachments);
+			    UserCollection doctorUser = userRepository.findOne(patientVisitCollection.getDoctorId());
+				LocationCollection locationCollection = locationRepository.findOne(patientVisitCollection.getLocationId());
+				String address = locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress()
+						: "" + locationCollection.getCity() != null ? ", "+locationCollection.getCity()
+							: "" + locationCollection.getPostalCode() != null ? ", "+locationCollection.getPostalCode() 
+										: "" + locationCollection.getState() != null ? ", "+locationCollection.getState() 
+											: "" + locationCollection.getCountry() != null ? ", "+locationCollection.getCountry() : "";
+				SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+											
+				String body = mailBodyGenerator.generateEMREmailBody(user.getFirstName(), doctorUser.getTitle()+" "+doctorUser.getFirstName(), locationCollection.getLocationName(), address, sdf.format(patientVisitCollection.getCreatedTime()), "Visit Details", "emrRecordTemplate.vm");
+			    mailService.sendEmailMultiAttach(emailAddress, doctorUser.getTitle()+" "+doctorUser.getFirstName()+" sent you Visit Details", body, mailAttachments);
 
 			    emailTrackCollection.setDoctorId(patientVisitCollection.getDoctorId());
 			    emailTrackCollection.setHospitalId(patientVisitCollection.getHospitalId());

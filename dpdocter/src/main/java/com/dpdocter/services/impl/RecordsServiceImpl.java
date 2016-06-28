@@ -2,6 +2,7 @@ package com.dpdocter.services.impl;
 
 import java.io.File;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -36,7 +37,6 @@ import com.dpdocter.beans.Tags;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.LocationCollection;
-import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.RecordsCollection;
@@ -62,6 +62,7 @@ import com.dpdocter.request.RecordsEditRequest;
 import com.dpdocter.request.RecordsSearchRequest;
 import com.dpdocter.request.TagRecordRequest;
 import com.dpdocter.response.ImageURLResponse;
+import com.dpdocter.response.MailResponse;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.FileManager;
@@ -319,8 +320,9 @@ public class RecordsServiceImpl implements RecordsService {
     @Transactional
     public void emailRecordToPatient(String recordId, String doctorId, String locationId, String hospitalId, String emailAddress) {
 	try {
-	    MailAttachment mailAttachment = createMailData(recordId, doctorId, locationId, hospitalId);
-	    mailService.sendEmail(emailAddress, "Records", "PFA.", mailAttachment);
+		MailResponse mailResponse = createMailData(recordId, doctorId, locationId, hospitalId);
+	    String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(), mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(), mailResponse.getMailRecordCreatedDate(), "Report", "emrRecordTemplate.vm");
+	    mailService.sendEmail(emailAddress,  mailResponse.getDoctorName()+" sent you a Report", body, mailResponse.getMailAttachment());
 	} catch (MessagingException e) {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -682,12 +684,13 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Override
     @Transactional
-    public MailAttachment getRecordMailData(String recordId, String doctorId, String locationId, String hospitalId) {
+    public MailResponse getRecordMailData(String recordId, String doctorId, String locationId, String hospitalId) {
 	return createMailData(recordId, doctorId, locationId, hospitalId);
     }
 
-    private MailAttachment createMailData(String recordId, String doctorId, String locationId, String hospitalId) {
-	MailAttachment mailAttachment = null;
+    private MailResponse createMailData(String recordId, String doctorId, String locationId, String hospitalId) {
+    	MailResponse mailResponse = null;
+    	MailAttachment mailAttachment = null;
 	try {
 	    RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
 	    if (recordsCollection != null) {
@@ -707,14 +710,30 @@ public class RecordsServiceImpl implements RecordsService {
 		} else {
 		    mailAttachment.setAttachmentName(new Date() + "REPORTS." + FilenameUtils.getExtension(recordsCollection.getRecordsUrl()));
 		}
+		
+		UserCollection doctorUser = userRepository.findOne(doctorId);
+		LocationCollection locationCollection = locationRepository.findOne(locationId);
+		
+		mailResponse = new MailResponse();
+		mailResponse.setMailAttachment(mailAttachment);
+		mailResponse.setDoctorName(doctorUser.getTitle()+" "+doctorUser.getFirstName());
+		String address = locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress()
+				: "" + locationCollection.getCity() != null ? ", "+locationCollection.getCity()
+					: "" + locationCollection.getPostalCode() != null ? ", "+locationCollection.getPostalCode() 
+								: "" + locationCollection.getState() != null ? ", "+locationCollection.getState() 
+									: "" + locationCollection.getCountry() != null ? ", "+locationCollection.getCountry() : "";
+		mailResponse.setClinicAddress(address);
+		mailResponse.setClinicName(locationCollection.getLocationName());
+		SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+		mailResponse.setMailRecordCreatedDate(sdf.format(recordsCollection.getCreatedTime()));
+		mailResponse.setPatientName(patientUserCollection.getFirstName());
+		
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 		emailTrackCollection.setDoctorId(recordsCollection.getDoctorId());
 		emailTrackCollection.setHospitalId(recordsCollection.getHospitalId());
 		emailTrackCollection.setLocationId(recordsCollection.getLocationId());
 		emailTrackCollection.setPatientId(recordsCollection.getPatientId());
-		UserCollection userCollection = userRepository.findOne(recordsCollection.getPatientId());
-		if (userCollection != null)
-		    emailTrackCollection.setPatientName(userCollection.getFirstName());
+		emailTrackCollection.setPatientName(patientUserCollection.getFirstName());
 		emailTrackCollection.setType(ComponentType.REPORTS.getType());
 		emailTrackCollection.setSubject("Reports");
 
@@ -733,7 +752,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 
-	return mailAttachment;
+	return mailResponse;
     }
 
     @Override

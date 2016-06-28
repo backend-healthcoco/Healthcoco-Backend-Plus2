@@ -6,7 +6,6 @@ import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.LabTest;
-import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.request.DrugAddEditRequest;
@@ -23,6 +22,7 @@ import com.dpdocter.response.DrugDosageAddEditResponse;
 import com.dpdocter.response.DrugDurationUnitAddEditResponse;
 import com.dpdocter.response.DrugStrengthAddEditResponse;
 import com.dpdocter.response.DrugTypeAddEditResponse;
+import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.PrescriptionAddEditResponse;
 import com.dpdocter.response.PrescriptionAddEditResponseDetails;
 import com.dpdocter.response.PrescriptionTestAndRecord;
@@ -105,7 +105,7 @@ public interface PrescriptionServices {
 
     void emailPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String emailAddress);
 
-    MailAttachment getPrescriptionMailData(String prescriptionId, String doctorId, String locationId, String hospitalId);
+    MailResponse getPrescriptionMailData(String prescriptionId, String doctorId, String locationId, String hospitalId);
 
     Boolean smsPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String mobileNumber, String type);
 

@@ -16,6 +16,8 @@ public class Notes extends GenericCollection {
 
     private boolean inHistory = false;
 
+    private Boolean discarded = false;
+    
     public String getId() {
 	return id;
     }
@@ -64,10 +66,18 @@ public class Notes extends GenericCollection {
 	this.inHistory = inHistory;
     }
 
-    @Override
-    public String toString() {
-	return "Notes [id=" + id + ", note=" + note + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", inHistory="
-		+ inHistory + "]";
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	@Override
+	public String toString() {
+		return "Notes [id=" + id + ", note=" + note + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", inHistory=" + inHistory + ", discarded=" + discarded + "]";
+	}
 
 }

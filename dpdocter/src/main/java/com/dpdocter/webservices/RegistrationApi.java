@@ -292,6 +292,9 @@ public class RegistrationApi {
 	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, patientInitial, new Integer(patientCounter).toString())) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Dcotor Id, ,Location Id, Patient Initial, Patient Counter Cannot Be Empty");
 	}
+	else if(patientInitial.matches(".*\\d+.*")){
+		throw new BusinessException(ServiceError.InvalidInput, "Invalid Patient Initial");
+	}
 	String updateResponse = registrationService.updatePatientInitialAndCounter(doctorId, locationId, patientInitial, patientCounter);
 	Response<String> response = new Response<String>();
 	response.setData(updateResponse);

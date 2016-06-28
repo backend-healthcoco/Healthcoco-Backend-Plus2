@@ -13,6 +13,7 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
@@ -107,8 +108,10 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 				.must(QueryBuilders.termQuery("doctorId", doctorId))
 				.must(QueryBuilders.termQuery("locationId", locationId))
 				.must(QueryBuilders.termQuery("hospitalId", hospitalId))
-				.must(QueryBuilders.multiMatchQuery(searchTerm, AdvancedSearchType.FIRST_NAME.getSearchType(),AdvancedSearchType.EMAIL_ADDRESS.getSearchType(),AdvancedSearchType.MOBILE_NUMBER.getSearchType(),AdvancedSearchType.PID.getSearchType()));
-
+		.should(QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.FIRST_NAME.getSearchType(), searchTerm).boost(4))
+		.should(QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.EMAIL_ADDRESS.getSearchType(), searchTerm).boost(3))
+		.should(QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.MOBILE_NUMBER.getSearchType(), searchTerm).boost(2))
+		.should(QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.PID.getSearchType(), searchTerm).boost(1)).minimumNumberShouldMatch(1);
 		SearchQuery searchQuery = null;
 		if (size > 0) searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size)).build();
 	    else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build();
@@ -211,7 +214,6 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 		    	
 		    } else if (searchType.equalsIgnoreCase(AdvancedSearchType.REFERRED_BY.getSearchType())){
 		    	
-		    	BoolQueryBuilder boolQueryBuilderForRefr = new BoolQueryBuilder();
 		    	
 				if(!DPDoctorUtils.anyStringEmpty(doctorId))boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("doctorId")) , QueryBuilders.termQuery("doctorId", doctorId)));
 				else
@@ -228,9 +230,9 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 		    	Collection<String> referenceIds = CollectionUtils.collect(referenceDocuments, new BeanToPropertyValueTransformer("id"));
 		    	builder = QueryBuilders.termsQuery(searchType, referenceIds);		    	
 		    } else {
-		    	builder = QueryBuilders.termQuery(searchType, searchValue);
+		    	builder = QueryBuilders.matchPhrasePrefixQuery(searchType, searchValue);
 		    }
-		    boolQueryBuilder.filter(builder);
+		    boolQueryBuilder.must(builder);
 		}
 	    }
 	}

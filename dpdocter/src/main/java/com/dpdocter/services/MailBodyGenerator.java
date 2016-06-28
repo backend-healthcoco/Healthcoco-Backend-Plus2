@@ -7,7 +7,7 @@ import javax.ws.rs.core.UriInfo;
 import com.dpdocter.collections.UserCollection;
 
 public interface MailBodyGenerator {
-    public String generateActivationEmailBody(String userName, String fName, String mName, String lName, String tokenId, UriInfo uriInfo) throws Exception;
+    public String generateActivationEmailBody(String fName, String tokenId, String templatePath) throws Exception;
 
     public String generateForgotPasswordEmailBody(String emailAddress, String fName, String mName, String lName, String userId, UriInfo uriInfo);
 
@@ -24,4 +24,10 @@ public interface MailBodyGenerator {
     public String generateRecordsShareOtpAfterVerificationEmailBody(String emailAddress, String firstName, String doctorName, UriInfo uriInfo);
 
     public String generateRecordsUploadedEmailBody(String userName, String firstName, String middleName, String lastName);
+
+	String generateAppointmentCancelEmailBody(String doctorName, String patientName, String dateTime, String clinicName, String templatePath);
+
+	String generateEmailBody(String userName, String resumeType, String templatePath) throws Exception;
+
+	public String generateEMREmailBody(String patientName, String doctorName, String clinicName, String clinicAddress, String mailRecordCreatedDate, String medicalRecordType, String templatePath);
 }

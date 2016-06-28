@@ -12,6 +12,7 @@ import com.dpdocter.request.RecordsAddRequestMultipart;
 import com.dpdocter.request.RecordsEditRequest;
 import com.dpdocter.request.RecordsSearchRequest;
 import com.dpdocter.request.TagRecordRequest;
+import com.dpdocter.response.MailResponse;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
 public interface RecordsService {
@@ -30,7 +31,7 @@ public interface RecordsService {
 
     void emailRecordToPatient(String recordId, String doctorId, String locationId, String hospitalId, String emailAddress);
 
-    MailAttachment getRecordMailData(String recordId, String doctorId, String locationId, String hospitalId);
+    MailResponse getRecordMailData(String recordId, String doctorId, String locationId, String hospitalId);
 
     Tags addEditTag(Tags tags);
 

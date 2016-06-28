@@ -74,7 +74,8 @@ public class DrugCollection extends GenericCollection {
     }
 
     public void setDrugName(String drugName) {
-	this.drugName = drugName;
+    	if(drugName != null)this.drugName = drugName.toUpperCase();
+    	else this.drugName = drugName;
     }
 
     public String getExplanation() {
