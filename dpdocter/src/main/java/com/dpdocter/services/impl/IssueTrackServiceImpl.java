@@ -48,7 +48,7 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 
     @Autowired
 	PushNotificationServices pushNotificationServices;
-	
+
     @Override
     @Transactional
     public IssueTrack addEditIssue(IssueTrack request) {
@@ -70,9 +70,8 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 
 	    if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 		UserCollection userCollection = userRepository.findOne(request.getDoctorId());
-		String body = mailBodyGenerator.generateIssueTrackEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
-			userCollection.getMiddleName(), userCollection.getLastName());
-		mailService.sendEmail(userCollection.getEmailAddress(), "Issue Track", body, null);
+//		String body = mailBodyGenerator.generateIssueTrackEmailBody(userCollection.getUserName(), userCollection.getFirstName(), userCollection.getMiddleName(), userCollection.getLastName());
+//		mailService.sendEmail(userCollection.getEmailAddress(), addIssueSubject, body, null);
 		pushNotificationServices.notifyUser(userCollection.getId(), "Your issue "+issueTrackCollection.getIssueCode()+" has been recorded, we will keep you updated on the progress of the issue", null, null);
 	    }
 	    issueTrackCollection = issueTrackRepository.save(issueTrackCollection);

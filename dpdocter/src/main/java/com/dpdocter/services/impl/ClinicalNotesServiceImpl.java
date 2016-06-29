@@ -2119,7 +2119,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
     public void emailClinicalNotes(String clinicalNotesId, String doctorId, String locationId, String hospitalId, String emailAddress) {
 	try {
 		MailResponse mailResponse = createMailData(clinicalNotesId, doctorId, locationId, hospitalId);
-	    String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(), mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(), mailResponse.getMailRecordCreatedDate(), "Clinical Notes", "emrRecordTemplate.vm");
+	    String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(), mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(), mailResponse.getMailRecordCreatedDate(), "Clinical Notes", "emrMailTemplate.vm");
 	    Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName()+" sent you a Clinical Notes", body, mailResponse.getMailAttachment());
 	    
 		if(mailResponse.getMailAttachment() != null && mailResponse.getMailAttachment().getFileSystemResource() != null)
@@ -2392,7 +2392,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    String diastolic = clinicalNotesCollection.getVitalSigns().getBloodPressure().getDiastolic();
 		    diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic : "";
 
-		    bloodPressure = "Blood Pressure: " + systolic + "/" + diastolic + " "+VitalSignsUnit.BLOODPRESSURE.getUnit();
+		    bloodPressure = "Blood Pressure: " + systolic + "/" + diastolic + " "+VitalSignsUnit.BLOODPRESSURE.getUnit()+ "    ";
 		}
 		String vitalSigns = pulse + temp + breathing + bloodPressure+ weight;
 		parameters.put("vitalSigns", vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
@@ -2421,10 +2421,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 		}
 		dob = "Age: " + age + "<br>";
-		gender = "Gender: " + (patient != null ? patient.getGender() : "--") + "<br>";
-		bloodGroup = "Blood Group: " + (patient != null ? patient.getBloodGroup() : "--") + "<br>";
-		mobileNumber = "Mobile: " + (user != null ? user.getMobileNumber() : "--") + "<br>";
-		pid = "Patient Id: " + (patient != null ? patient.getPID() : "--") + "<br>";
+		gender = "Gender: " + (patient != null && patient.getGender() != null? patient.getGender() : "--") + "<br>";
+		bloodGroup = "Blood Group: " + (patient != null && patient.getBloodGroup() != null? patient.getBloodGroup() : "--") + "<br>";
+		mobileNumber = "Mobile: " + (user != null && user.getMobileNumber() != null ? user.getMobileNumber() : "--") + "<br>";
+		pid = "Patient Id: " + (patient != null && patient.getPID() != null? patient.getPID() : "--") + "<br>";
 		refferedBy = "Referred By: " + (refferedBy != "" ? refferedBy : "--") + "<br>";
 		date = "Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()) + "<br>";
 		resourceId = "CID: " + (clinicalNotesCollection.getUniqueEmrId() != null ? clinicalNotesCollection.getUniqueEmrId() : "--") + "<br>";
@@ -2462,12 +2462,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 
 			if(line < 4){
-				for(line = line; line <4 ;line++)
-				line = line + 1;
-				if (headerLeftText.isEmpty())
-					headerLeftText = "<span> </span>";
-				    else
-					headerLeftText = headerLeftText + "<br/>" + "<span></span>";
+				for(line = line; line <4 ;line++){
+					if (headerRightText.isEmpty())headerRightText = "<span> </span>";
+					else headerRightText = headerRightText + "<br/>" + "<span></span>";
+				}
 			}
 			line = 0;
 			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText()) {
@@ -2489,12 +2487,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				headerRightText = headerRightText + "<br/>" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 			}
 			if(line < 4){
-				for(line = line; line <4 ;line++)
-				line = line + 1;
-				if (headerRightText.isEmpty())
-					headerRightText = "<span> </span>";
-				    else
-				    	headerRightText = headerRightText + "<br/>" + "<span></span>";
+				for(line = line; line <4 ;line++){
+					if (headerRightText.isEmpty())headerRightText = "<span> </span>";
+					else headerRightText = headerRightText + "<br/>" + "<span></span>";
+				}
 			}
 			}
 		    if (printSettings.getFooterSetup() != null) {

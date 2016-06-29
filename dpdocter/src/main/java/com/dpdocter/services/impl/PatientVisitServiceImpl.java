@@ -608,7 +608,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 											: "" + locationCollection.getCountry() != null ? ", "+locationCollection.getCountry() : "";
 				SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
 											
-				String body = mailBodyGenerator.generateEMREmailBody(user.getFirstName(), doctorUser.getTitle()+" "+doctorUser.getFirstName(), locationCollection.getLocationName(), address, sdf.format(patientVisitCollection.getCreatedTime()), "Visit Details", "emrRecordTemplate.vm");
+				String body = mailBodyGenerator.generateEMREmailBody(user.getFirstName(), doctorUser.getTitle()+" "+doctorUser.getFirstName(), locationCollection.getLocationName(), address, sdf.format(patientVisitCollection.getCreatedTime()), "Visit Details", "emrMailTemplate.vm");
 			    mailService.sendEmailMultiAttach(emailAddress, doctorUser.getTitle()+" "+doctorUser.getFirstName()+" sent you Visit Details", body, mailAttachments);
 
 			    emailTrackCollection.setDoctorId(patientVisitCollection.getDoctorId());
@@ -658,10 +658,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			}
 		}
 		dob = "Age: " + age + "<br>";
-		gender = "Gender: " + (patient != null ? patient.getGender() : "--") + "<br>";
-		bloodGroup = "Blood Group: " + (patient != null ? patient.getBloodGroup() : "--") + "<br>";
-		mobileNumber = "Mobile: " + (user != null ? user.getMobileNumber() : "--") + "<br>";
-		pid = "Patient Id: " + (patient != null ? patient.getPID() : "--") + "<br>";
+		gender = "Gender: " + (patient != null && patient.getGender() != null? patient.getGender() : "--") + "<br>";
+		bloodGroup = "Blood Group: " + (patient != null && patient.getBloodGroup() != null? patient.getBloodGroup() : "--") + "<br>";
+		mobileNumber = "Mobile: " + (user != null && user.getMobileNumber() != null ? user.getMobileNumber() : "--") + "<br>";
+		pid = "Patient Id: " + (patient != null && patient.getPID() != null? patient.getPID() : "--") + "<br>";
 		refferedBy = "Referred By: " + (refferedBy != "" ? refferedBy : "--") + "<br>";
 		date = "Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()) + "<br>";
 		resourceId = "VID: " + (patientVisitCollection.getUniqueEmrId() != null ? patientVisitCollection.getUniqueEmrId() : "--") + "<br>";
@@ -713,13 +713,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				    headerLeftText = headerLeftText + "<br/>" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 			    }
 			    if(line < 4){
-					for(line = line; line <4 ;line++)
-					line = line + 1;
-					if (headerLeftText.isEmpty())
-						headerLeftText = "<span> </span>";
-					    else
-						headerLeftText = headerLeftText + "<br/>" + "<span></span>";
+					for(line = line; line <4 ;line++){
+						if (headerRightText.isEmpty())headerRightText = "<span> </span>";
+						else headerRightText = headerRightText + "<br/>" + "<span></span>";
+					}
 				}
+			    line = 0;
 				for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText()) {
 				boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 				boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
@@ -735,12 +734,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				    headerRightText = headerRightText + "<br/>" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 			    }
 				if(line < 4){
-					for(line = line; line <4 ;line++)
-					line = line + 1;
-					if (headerRightText.isEmpty())
-						headerRightText = "<span> </span>";
-					    else
-					    	headerRightText = headerRightText + "<br/>" + "<span></span>";
+					for(line = line; line <4 ;line++){
+						if (headerRightText.isEmpty())headerRightText = "<span> </span>";
+						else headerRightText = headerRightText + "<br/>" + "<span></span>";
+					}
 				}
 			}
 			if (printSettings.getFooterSetup() != null) {
@@ -846,7 +843,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			    String diastolic = clinicalNotesCollection.getVitalSigns().getBloodPressure().getDiastolic();
 			    diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic : "";
 
-			    bloodPressure = "Blood Pressure: " + systolic + "/" + diastolic + " "+VitalSignsUnit.BLOODPRESSURE.getUnit();
+			    bloodPressure = "Blood Pressure: " + systolic + "/" + diastolic + " "+VitalSignsUnit.BLOODPRESSURE.getUnit()+ "    ";
 			}
 			String vitalSigns = pulse + temp + breathing + bloodPressure+ weight;
 			clinicalNotesJasperDetails.setVitalSigns(vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
@@ -918,7 +915,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			    DiagramsCollection diagramsCollection = diagramsRepository.findOne(diagramId);
 			    if (diagramsCollection != null) {
 				if (diagramsCollection.getDiagramUrl() != null) {
-				    diagram.put("url", getFinalImageURL(diagramsCollection.getDiagramUrl()));
+					diagram.put("url", getFinalImageURL(diagramsCollection.getDiagramUrl()));
 				}
 				diagram.put("tags", diagramsCollection.getTags());
 				diagramIds.add(diagram);

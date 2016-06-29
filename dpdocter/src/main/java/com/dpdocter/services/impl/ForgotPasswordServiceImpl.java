@@ -77,7 +77,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
     @Override
     @Transactional
-    public ForgotPasswordResponse forgotPasswordForDoctor(ForgotUsernamePasswordRequest request, UriInfo uriInfo) {
+    public ForgotPasswordResponse forgotPasswordForDoctor(ForgotUsernamePasswordRequest request) {
 	try {
 	    UserCollection userCollection = null;
 	    ForgotPasswordResponse response = null;
@@ -97,8 +97,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		    tokenCollection.setCreatedTime(new Date());
 		    tokenCollection = tokenRepository.save(tokenCollection);
 
-		    String body = mailBodyGenerator.generateForgotPasswordEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
-			    userCollection.getMiddleName(), userCollection.getLastName(), tokenCollection.getId(), uriInfo);
+		    String body = mailBodyGenerator.generateForgotPasswordEmailBody(userCollection.getTitle()+" "+userCollection.getFirstName(), tokenCollection.getId());
 		    mailService.sendEmail(userCollection.getEmailAddress(), forgotUsernamePasswordSub, body, null);
 		    response = new ForgotPasswordResponse(userCollection.getUserName(), userCollection.getMobileNumber(), userCollection.getEmailAddress(),
 			    RoleEnum.DOCTOR);
@@ -123,7 +122,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
     @Override
     @Transactional
-    public Boolean forgotPasswordForPatient(ForgotUsernamePasswordRequest request, UriInfo uriInfo) {
+    public Boolean forgotPasswordForPatient(ForgotUsernamePasswordRequest request) {
 	Boolean flag = false;
 	Boolean isPatient = false;
 	try {
@@ -206,30 +205,6 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
     @Override
     @Transactional
-    public String resetPassword(ResetPasswordRequest request) {
-	try {
-	    UserCollection userCollection = userRepository.findOne(request.getUserId());
-	    char[] salt = DPDoctorUtils.generateSalt();
-	    userCollection.setSalt(salt);
-	    char[] passwordWithSalt = new char[request.getPassword().length + salt.length]; 
-	    for(int i = 0; i < request.getPassword().length; i++)
-	        passwordWithSalt[i] = request.getPassword()[i];
-	    for(int i = 0; i < salt.length; i++)
-	    	passwordWithSalt[i+request.getPassword().length] = salt[i];
-	    userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt));
-//	    userCollection.setIsTempPassword(false);
-	    userRepository.save(userCollection);
-	    return "Password Changed Successfully";
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-	}
-
-    }
-
-    @Override
-    @Transactional
     public Boolean forgotUsername(ForgotUsernamePasswordRequest request) {
 	boolean flag = false;
 	try {
@@ -261,28 +236,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
     @Override
     @Transactional
-    public String resetPassword(ResetPasswordRequest request, UriInfo uriInfo) {
+    public String resetPassword(ResetPasswordRequest request) {
 	try {
-	    // String startText = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01
-	    // Transitional//EN'><html><head><META http-equiv='Content-Type'
-	    // content='text/html; charset=utf-8'></head><body>"
-	    // +"<div><div style='margin-top:130px'><div style='padding:20px
-	    // 30px;border-radius:3px;background-color:#fefefe;border:1px solid
-	    // #f1f1f1;line-height:30px;margin-bottom:30px;font-family:&#39;Open
-	    // Sans&#39;,sans-serif;margin:0px
-	    // auto;min-width:200px;max-width:500px'>"
-	    // +"<div align='center'><h2
-	    // style='font-size:20px;color:#2c3335;text-align:center;letter-spacing:1px'>Reset
-	    // Password</h2><br><p
-	    // style='color:#2c3335;font-size:15px;text-align:left'>";
-	    //
-	    // String endText = "</p><br><p
-	    // style='color:#8a6d3b;font-size:15px;text-align:left'>lorem ipsum
-	    // lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem
-	    // ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem
-	    // ipsum</p>"
-	    // +"</div></div></div></div></body></html>";
-
 	    TokenCollection tokenCollection = tokenRepository.findOne(request.getUserId());
 	    if (tokenCollection == null || tokenCollection.getIsUsed()) {
 		return "Link is already Used";
@@ -307,7 +262,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		tokenCollection.setIsUsed(true);
 		tokenRepository.save(tokenCollection);
 
-		String body = mailBodyGenerator.generateResetPasswordSuccessEmailBody(userCollection.getEmailAddress(), userCollection.getFirstName(), uriInfo);
+		String body = mailBodyGenerator.generateResetPasswordSuccessEmailBody(userCollection.getTitle()+" "+userCollection.getFirstName());
 		mailService.sendEmail(userCollection.getEmailAddress(), resetPasswordSub, body, null);
 
 		return "Password Changed Successfully";
@@ -364,7 +319,6 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		    if (!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress())) {
 		    userCollection.setSalt(salt);
 			userCollection.setPassword(password);
-//			userCollection.setIsTempPassword(false);
 			userRepository.save(userCollection);
 		    }
 		}

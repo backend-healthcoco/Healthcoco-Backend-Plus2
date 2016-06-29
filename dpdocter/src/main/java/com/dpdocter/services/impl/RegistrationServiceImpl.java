@@ -235,6 +235,21 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Value(value = "${mail.forgotPassword.subject}")
     private String forgotUsernamePasswordSub;
 
+    @Value(value = "${mail.staffmember.account.verify.subject}")
+    private String staffmemberAccountVerifySub;
+    
+    @Value(value = "${mail.add.existing.doctor.to.clinic.subject}")
+    private String addExistingDoctorToClinicSub;
+    
+    @Value(value = "${mail.add.doctor.to.clinic..verify.subject}")
+    private String addDoctorToClinicVerifySub;
+    
+    @Value(value = "${mail.add.feedback.subject}")
+    private String addFeedbackSubject;
+
+    @Value(value = "${mail.add.feedback.for.doctor.subject}")
+    private String addFeedbackForDoctorSubject;
+
     @Value(value = "${patient.count}")
     private String patientCount;
 
@@ -1502,13 +1517,30 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    tokenCollection = tokenRepository.save(tokenCollection);
 
 	    // send activation email
-	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getFirstName(), tokenCollection.getId(), "mailTemplate.vm");
-	    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
+//	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getFirstName(), tokenCollection.getId(), "mailTemplate.vm");
+//	    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
+//
+//	    body = mailBodyGenerator.generateForgotPasswordEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
+//		    userCollection.getMiddleName(), userCollection.getLastName(), userCollection.getId(), uriInfo);
+//	    mailService.sendEmail(userCollection.getEmailAddress(), forgotUsernamePasswordSub, body, null);
 
-	    body = mailBodyGenerator.generateForgotPasswordEmailBody(userCollection.getUserName(), userCollection.getFirstName(),
-		    userCollection.getMiddleName(), userCollection.getLastName(), userCollection.getId(), uriInfo);
-	    mailService.sendEmail(userCollection.getEmailAddress(), forgotUsernamePasswordSub, body, null);
-
+	    LocationCollection locationCollection = locationRepository.findOne(request.getLocationId());
+	    RoleCollection adminRoleCollection = roleRepository.findByRole(RoleEnum.SUPER_ADMIN.getRole(), request.getLocationId(), request.getHospitalId());
+	    String admindoctorName= "";
+	    if(adminRoleCollection != null){
+	    	UserRoleCollection roleCollection = userRoleRepository.findByRoleId(adminRoleCollection.getId());
+	    	if(roleCollection != null){
+	    		UserCollection doctorUser = userRepository.findOne(roleCollection.getUserId());
+	    		admindoctorName = doctorUser.getTitle()+" "+doctorUser.getFirstName();
+	    	}
+	    }
+	    if(doctorRole.getRole().equals(RoleEnum.DOCTOR) || doctorRole.getRole().equals(RoleEnum.SUPER_ADMIN) || doctorRole.getRole().equals(RoleEnum.HOSPITAL_ADMIN) || doctorRole.getRole().equals(RoleEnum.LOCATION_ADMIN)){
+			String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getTitle()+" "+userCollection.getFirstName(), null, "addDoctorToClinicVerifyTemplate.vm", admindoctorName, locationCollection.getLocationName());
+		    mailService.sendEmail(userCollection.getEmailAddress(), addDoctorToClinicVerifySub, body, null);
+		}else{
+			String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getTitle()+" "+userCollection.getFirstName(), tokenCollection.getId(), "verifyStaffMemberEmailTemplate.vm", admindoctorName, locationCollection.getLocationName());
+		    mailService.sendEmail(userCollection.getEmailAddress(), staffmemberAccountVerifySub, body, null);
+		}
 	    response = new RegisterDoctorResponse();
 	    userCollection.setPassword(null);
 	    BeanUtil.map(userCollection, response);
@@ -1618,6 +1650,22 @@ public class RegistrationServiceImpl implements RegistrationService {
 		if (accessControl != null)
 		    role.setAccessModules(accessControl.getAccessModules());
 		response.setRole(role);
+		
+		LocationCollection locationCollection = locationRepository.findOne(request.getLocationId());
+	    RoleCollection adminRoleCollection = roleRepository.findByRole(RoleEnum.SUPER_ADMIN.getRole(), request.getLocationId(), request.getHospitalId());
+	    String admindoctorName= "";
+	    if(adminRoleCollection != null){
+	    	UserRoleCollection roleCollection = userRoleRepository.findByRoleId(adminRoleCollection.getId());
+	    	if(roleCollection != null){
+	    		UserCollection doctorUser = userRepository.findOne(roleCollection.getUserId());
+	    		admindoctorName = doctorUser.getTitle()+" "+doctorUser.getFirstName();
+	    	}
+	    }
+		if(doctorRole.getRole().equals(RoleEnum.DOCTOR) || doctorRole.getRole().equals(RoleEnum.SUPER_ADMIN) || doctorRole.getRole().equals(RoleEnum.HOSPITAL_ADMIN) || doctorRole.getRole().equals(RoleEnum.LOCATION_ADMIN)){
+			String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getTitle()+" "+userCollection.getFirstName(), null, "addExistingDoctorToClinicTemplate.vm", admindoctorName, locationCollection.getLocationName());
+		    mailService.sendEmail(userCollection.getEmailAddress(), addExistingDoctorToClinicSub+" "+locationCollection.getLocationName(), body, null);
+		}
+		
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1907,6 +1955,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	try {
 	    FeedbackCollection feedbackCollection = new FeedbackCollection();
 	    BeanUtil.map(request, feedbackCollection);
+	    feedbackCollection.setUniqueFeedbackId(UniqueIdInitial.FEEDBACK.getInitial()+DPDoctorUtils.generateRandomId());
 	    feedbackCollection.setCreatedTime(new Date());
 	    feedbackCollection = feedbackRepository.save(feedbackCollection);
 	    if (feedbackCollection != null && (feedbackCollection.getType().getType().equals(FeedbackType.APPOINTMENT.getType())
@@ -1951,12 +2000,22 @@ public class RegistrationServiceImpl implements RegistrationService {
 			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 		    }
 		}
-//		visibleFeedback(feedbackCollection.getId(), true);
 		feedbackCollection = feedbackRepository.findOne(feedbackCollection.getId());
+		UserCollection patient = userRepository.findOne(feedbackCollection.getUserId());
+		UserCollection doctor = userRepository.findOne(feedbackCollection.getDoctorId());
+		LocationCollection locationCollection = locationRepository.findOne(feedbackCollection.getLocationId());
+		if(patient.getEmailAddress() != null){
+			String body = mailBodyGenerator.generateFeedbackEmailBody(patient.getFirstName(), doctor.getTitle()+" "+doctor.getFirstName(), locationCollection.getLocationName(), feedbackCollection.getUniqueFeedbackId(), "feedbackUserToDoctorTemplate.vm");
+			mailService.sendEmail(patient.getEmailAddress(), addFeedbackForDoctorSubject, body, null);
+		}
+	    }else{
+	    	if(feedbackCollection.getEmailAddress() != null){
+	    		String body = mailBodyGenerator.generateFeedbackEmailBody(feedbackCollection.getCreatedBy(), null, null, null, "feedbackTemplate.vm");
+				mailService.sendEmail(feedbackCollection.getEmailAddress(), addFeedbackSubject, body, null);
+	    	}
 	    }
 	    BeanUtil.map(feedbackCollection, response);
-//	    String body = mailBodyGenerator.generateEmailBody(feedbackCollection.getCreatedBy(), null, "feedbackTemplate.vm");
-//		mailService.sendEmail(emailAddress, appointmentCancelMailSubject, body, null);
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);

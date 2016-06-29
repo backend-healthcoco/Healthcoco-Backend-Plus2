@@ -25,7 +25,7 @@
 
             <div class="middle" style="">
 
-             <p style="color:#2c3335;font-size:17px;padding:18px;">Hello {fName},<br><br>Thank you for sharing your valuable feedback. We appreciate your opinion and hope that we can keep up the quality of our services.
+             <p style="color:#2c3335;font-size:17px;padding:18px;">Hello ${fName},<br><br>Thank you for sharing your valuable feedback. We appreciate your opinion and hope that we can keep up the quality of our services.
             <br><br>Stay Healthy and Happy,<br>Team Healthcoco.</p>
           </div>
           

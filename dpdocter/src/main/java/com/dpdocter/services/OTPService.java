@@ -6,11 +6,11 @@ import javax.ws.rs.core.UriInfo;
 
 public interface OTPService {
 
-    String otpGenerator(String doctorId, String locationId, String hospitalId, String patientId, UriInfo uriInfo);
+    String otpGenerator(String doctorId, String locationId, String hospitalId, String patientId);
 
     Boolean otpGenerator(String mobileNumber);
 
-    Boolean verifyOTP(String doctorId, String locationId, String hospitalId, String patientId, String otpNumber, UriInfo uriInfo);
+    Boolean verifyOTP(String doctorId, String locationId, String hospitalId, String patientId, String otpNumber);
 
     boolean verifyOTP(String mobileNumber, String otpNumber);
 

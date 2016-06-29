@@ -88,7 +88,7 @@ public class OTPServiceImpl implements OTPService {
 
     @Override
     @Transactional
-    public String otpGenerator(String doctorId, String locationId, String hospitalId, String patientId, UriInfo uriInfo) {
+    public String otpGenerator(String doctorId, String locationId, String hospitalId, String patientId) {
 	String OTP = null;
 	try {
 	    OTP = LoginUtils.generateOTP();
@@ -123,7 +123,7 @@ public class OTPServiceImpl implements OTPService {
 
 		if (patientCollection != null && patientCollection.getEmailAddress() != null && !patientCollection.getEmailAddress().isEmpty()) {
 		    String body = mailBodyGenerator.generateRecordsShareOtpBeforeVerificationEmailBody(patientCollection.getEmailAddress(),
-			    patient.getFirstName(), doctorName, uriInfo);
+			    patient.getFirstName(), doctorName);
 		    mailService.sendEmail(patientCollection.getEmailAddress(), recordsShareOtpBeforeVerification, body, null);
 		}
 		pushNotificationServices.notifyUser(patient.getId(), "Dr. "+userCollection.getFirstName()+" has requested to view your medical history, share OTP that was sent to your registered mobile number to provide access", null, null);
@@ -142,7 +142,7 @@ public class OTPServiceImpl implements OTPService {
 
     @Override
     @Transactional
-    public Boolean verifyOTP(String doctorId, String locationId, String hospitalId, String patientId, String otpNumber, UriInfo uriInfo) {
+    public Boolean verifyOTP(String doctorId, String locationId, String hospitalId, String patientId, String otpNumber) {
 	Boolean response = false;
 	try {
 	    UserCollection userCollection = userRepository.findOne(doctorId);
@@ -164,7 +164,7 @@ public class OTPServiceImpl implements OTPService {
 				response = true;
 				if (patientCollection != null && patientCollection.getEmailAddress() != null && !patientCollection.getEmailAddress().isEmpty()) {
 				    String body = mailBodyGenerator.generateRecordsShareOtpAfterVerificationEmailBody(patientCollection.getEmailAddress(),
-					    patient.getFirstName(), doctorName, uriInfo);
+					    patient.getFirstName(), doctorName);
 				    mailService.sendEmail(patientCollection.getEmailAddress(),
 					    recordsShareOtpAfterVerification + " " + userCollection.getFirstName(), body, null);
 				}

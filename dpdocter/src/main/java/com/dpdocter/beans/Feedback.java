@@ -34,6 +34,10 @@ public class Feedback extends GenericCollection {
 
     private User patient;
     
+    private String uniqueFeedbackId;
+
+    private String emailAddress;
+    
     public String getId() {
 	return id;
     }
@@ -146,12 +150,28 @@ public class Feedback extends GenericCollection {
 		this.patient = patient;
 	}
 
+	public String getUniqueFeedbackId() {
+		return uniqueFeedbackId;
+	}
+
+	public void setUniqueFeedbackId(String uniqueFeedbackId) {
+		this.uniqueFeedbackId = uniqueFeedbackId;
+	}
+
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+
 	@Override
 	public String toString() {
 		return "Feedback [id=" + id + ", type=" + type + ", appType=" + appType + ", resourceId=" + resourceId
 				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", userId="
 				+ userId + ", explanation=" + explanation + ", deviceType=" + deviceType + ", deviceInfo=" + deviceInfo
-				+ ", isVisible=" + isVisible + ", isRecommended=" + isRecommended + ", patient=" + patient + "]";
+				+ ", isVisible=" + isVisible + ", isRecommended=" + isRecommended + ", patient=" + patient
+				+ ", uniqueFeedbackId=" + uniqueFeedbackId + ", emailAddress=" + emailAddress + "]";
 	}
-
 }

@@ -34,9 +34,6 @@ public class OTPApi {
     @Autowired
     private OTPService otpService;
 
-    @Context
-    private UriInfo uriInfo;
-
     @Path(value = PathProxy.OTPUrls.OTP_GENERATOR)
     @GET
     @ApiOperation(value = PathProxy.OTPUrls.OTP_GENERATOR, notes = PathProxy.OTPUrls.OTP_GENERATOR)
@@ -46,7 +43,7 @@ public class OTPApi {
 	    logger.warn("Invalid Input. DoctorId, LocationId, HospitalId, PatientId Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. DoctorId, LocationId, HospitalId, PatientId, Cannot Be Empty");
 	}
-	String OTP = otpService.otpGenerator(doctorId, locationId, hospitalId, patientId, uriInfo);
+	String OTP = otpService.otpGenerator(doctorId, locationId, hospitalId, patientId);
 	Response<String> response = new Response<String>();
 	response.setData(OTP);
 	return response;
@@ -75,7 +72,7 @@ public class OTPApi {
 	    logger.warn("Invalid Input. DoctorId, LocationId, HospitalId, PatientId, OTP Number Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. DoctorId, LocationId, HospitalId, PatientId, OTP Number Cannot Be Empty");
 	}
-	Boolean verifyOTPResponse = otpService.verifyOTP(doctorId, locationId, hospitalId, patientId, otpNumber, uriInfo);
+	Boolean verifyOTPResponse = otpService.verifyOTP(doctorId, locationId, hospitalId, patientId, otpNumber);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(verifyOTPResponse);
 	return response;

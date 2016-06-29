@@ -663,13 +663,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 //		break;
 //
 		case "CONFIRMED_APPOINTMENT_TO_DOCTOR_BY_PATIENT" :{
-			String body = mailBodyGenerator.generateAppointmentCancelEmailBody(doctorName, patientName, dateTime, clinicName, "confirmAppointmentToDoctorByPatient.vm");
+			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName, "confirmAppointmentToDoctorByPatient.vm");
 			 mailService.sendEmail(emailAddress, appointmentCancelMailSubject, body, null);
 		}
 		break;
 		
 		case "CONFIRMED_APPOINTMENT_REQUEST_TO_DOCTOR" :{
-			String body = mailBodyGenerator.generateAppointmentCancelEmailBody(doctorName, patientName, dateTime, clinicName, "appointmentRequestToDoctorByPatient.vm");
+			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName, "appointmentRequestToDoctorByPatient.vm");
 			mailService.sendEmail(emailAddress, appointmentCancelMailSubject, body, null);
 		}
 		break;
@@ -682,7 +682,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 //		break;
 //		
 		case "CANCEL_APPOINTMENT_TO_DOCTOR_BY_DOCTOR" :{
-			String body = mailBodyGenerator.generateAppointmentCancelEmailBody(doctorName, patientName, dateTime, clinicName, "appointmentCancelByPatientToDoctor.vm");
+			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName, "appointmentCancelByPatientToDoctor.vm");
 			 mailService.sendEmail(emailAddress, appointmentCancelMailSubject, body, null);
 		}
 		break;
@@ -695,7 +695,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 //		break;
 //		
 		case "CANCEL_APPOINTMENT_TO_DOCTOR_BY_PATIENT" :{
-			 String body = mailBodyGenerator.generateAppointmentCancelEmailBody(doctorName, patientName, dateTime, clinicName, "appointmentCancelByDoctorToDoctor.vm");
+			 String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName, "appointmentCancelByDoctorToDoctor.vm");
 			 mailService.sendEmail(emailAddress, appointmentCancelMailSubject, body, null);
 		}
 		break;
