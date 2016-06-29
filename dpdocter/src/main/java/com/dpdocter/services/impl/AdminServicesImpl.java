@@ -239,7 +239,7 @@ public class AdminServicesImpl implements AdminServices {
 				BeanUtil.map(resumeCollection, response);
 			}
 			String body = mailBodyGenerator.generateEmailBody(resumeCollection.getName(), resumeCollection.getType(), "applyForPostTemplate.vm");
-			 mailService.sendEmail(resumeCollection.getEmailAddress(), "", body, null);
+			 mailService.sendEmail(resumeCollection.getEmailAddress(), "Your application has been received", body, null);
 		}catch(Exception e){
 			logger.error("Error while adding resume "+ e.getMessage());
 			e.printStackTrace();

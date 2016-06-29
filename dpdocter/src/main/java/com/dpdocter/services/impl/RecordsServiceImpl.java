@@ -321,7 +321,7 @@ public class RecordsServiceImpl implements RecordsService {
     public void emailRecordToPatient(String recordId, String doctorId, String locationId, String hospitalId, String emailAddress) {
 	try {
 		MailResponse mailResponse = createMailData(recordId, doctorId, locationId, hospitalId);
-	    String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(), mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(), mailResponse.getMailRecordCreatedDate(), "Report", "emrRecordTemplate.vm");
+	    String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(), mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(), mailResponse.getMailRecordCreatedDate(), "Report", "emrMailTemplate.vm");
 	    mailService.sendEmail(emailAddress,  mailResponse.getDoctorName()+" sent you a Report", body, mailResponse.getMailAttachment());
 	} catch (MessagingException e) {
 	    logger.error(e);
@@ -738,7 +738,7 @@ public class RecordsServiceImpl implements RecordsService {
 		emailTrackCollection.setSubject("Reports");
 
 		emailTackService.saveEmailTrack(emailTrackCollection);
-		objectData.close();
+//		objectData.close();
 	    } else {
 		logger.warn("Record not found.Please check recordId.");
 		throw new BusinessException(ServiceError.NotFound, "Record not found.Please check recordId.");

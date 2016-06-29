@@ -2652,7 +2652,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
     public void emailPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String emailAddress) {
 	try {	
 	    MailResponse mailResponse = createMailData(prescriptionId, doctorId, locationId, hospitalId);
-	    String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(), mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(), mailResponse.getMailRecordCreatedDate(), "Prescription", "emrRecordTemplate.vm");
+	    String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(), mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(), mailResponse.getMailRecordCreatedDate(), "Prescription", "emrMailTemplate.vm");
 	    Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName()+" sent you a Prescription", body, mailResponse.getMailAttachment());
 	    if(mailResponse.getMailAttachment() != null && mailResponse.getMailAttachment().getFileSystemResource() != null)
 	    	if(mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())mailResponse.getMailAttachment().getFileSystemResource().getFile().delete() ;
@@ -3548,10 +3548,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 		}
 		dob = "Age: " + age + "<br>";
-		gender = "Gender: " + (patient != null ? patient.getGender() : "--") + "<br>";
-		mobileNumber = "Mobile: " + (user != null ? user.getMobileNumber() : "--") + "<br>";
-		bloodGroup = "Blood Group: " + (patient != null ? patient.getBloodGroup() : "--") + "<br>";
-		pid= "Patient Id: " + (patient != null ? patient.getPID() : "--") + "<br>";
+		gender = "Gender: " + (patient != null && patient.getGender() != null? patient.getGender() : "--") + "<br>";
+		bloodGroup = "Blood Group: " + (patient != null && patient.getBloodGroup() != null? patient.getBloodGroup() : "--") + "<br>";
+		mobileNumber = "Mobile: " + (user != null && user.getMobileNumber() != null ? user.getMobileNumber() : "--") + "<br>";
+		pid = "Patient Id: " + (patient != null && patient.getPID() != null? patient.getPID() : "--") + "<br>";
 		refferedBy = "Referred By: "+ (refferedBy != "" ? refferedBy : "--") + "<br>";
 		date = "Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date())+"<br>";
 		resourceId = "PID: " + (prescriptionCollection.getUniqueEmrId() != null ? prescriptionCollection.getUniqueEmrId() : "--") + "<br>";
@@ -3582,7 +3582,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 			if(line < 4){
 				for(line = line; line <4 ;line++)
-				line = line + 1;
 				if (headerLeftText.isEmpty())
 					headerLeftText = "<span> </span>";
 				    else
@@ -3602,12 +3601,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				headerRightText = headerRightText + "<br/>" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 			}
 			if(line < 4){
-				for(line = line; line <4 ;line++)
-				line = line + 1;
-				if (headerRightText.isEmpty())
-					headerRightText = "<span> </span>";
-				    else
-				    	headerRightText = headerRightText + "<br/>" + "<span></span>";
+				for(line = line; line <4 ;line++){
+					if (headerRightText.isEmpty())headerRightText = "<span> </span>";
+					else headerRightText = headerRightText + "<br/>" + "<span></span>";
+				}
 			}
 		    }
 		    if (printSettings.getFooterSetup() != null) {

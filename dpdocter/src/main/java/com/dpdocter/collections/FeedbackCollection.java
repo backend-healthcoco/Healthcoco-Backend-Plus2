@@ -55,6 +55,12 @@ public class FeedbackCollection extends GenericCollection {
     @Field
     private Boolean isRecommended = false;
 
+    @Field
+    private String uniqueFeedbackId;
+
+    @Field
+    private String emailAddress;
+    
     public String getId() {
 	return id;
     }
@@ -159,10 +165,29 @@ public class FeedbackCollection extends GenericCollection {
 	this.resourceId = resourceId;
     }
 
-    @Override
-    public String toString() {
-	return "FeedbackCollection [id=" + id + ", type=" + type + ", appType=" + appType + ", resourceId=" + resourceId + ", doctorId=" + doctorId
-		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", userId=" + userId + ", explanation=" + explanation + ", deviceType="
-		+ deviceType + ", deviceInfo=" + deviceInfo + ", isVisible=" + isVisible + ", isRecommended=" + isRecommended + "]";
-    }
+	public String getUniqueFeedbackId() {
+		return uniqueFeedbackId;
+	}
+
+	public void setUniqueFeedbackId(String uniqueFeedbackId) {
+		this.uniqueFeedbackId = uniqueFeedbackId;
+	}
+
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+
+	@Override
+	public String toString() {
+		return "FeedbackCollection [id=" + id + ", type=" + type + ", appType=" + appType + ", resourceId=" + resourceId
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", userId="
+				+ userId + ", explanation=" + explanation + ", deviceType=" + deviceType + ", deviceInfo=" + deviceInfo
+				+ ", isVisible=" + isVisible + ", isRecommended=" + isRecommended + ", uniqueFeedbackId="
+				+ uniqueFeedbackId + ", emailAddress=" + emailAddress + "]";
+	}
+
 }

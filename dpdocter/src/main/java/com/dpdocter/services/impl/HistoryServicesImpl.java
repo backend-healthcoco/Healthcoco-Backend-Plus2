@@ -154,7 +154,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    for (DiseaseAddEditRequest addEditRequest : request) {
 	    	addEditRequest.setCreatedTime(new Date());
 	    	DiseasesCollection diseasesCollection = new DiseasesCollection();
-	    	BeanUtil.map(request, diseasesCollection);
+	    	BeanUtil.map(addEditRequest, diseasesCollection);
 	    	diseasesCollection = diseasesRepository.save(diseasesCollection);
 	    	response.add(diseasesCollection);
 	    }

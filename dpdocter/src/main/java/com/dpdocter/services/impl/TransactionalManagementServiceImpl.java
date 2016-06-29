@@ -1,5 +1,6 @@
 package com.dpdocter.services.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -9,6 +10,7 @@ import java.util.TimeZone;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -89,6 +91,8 @@ import com.dpdocter.repository.TransnationalRepositiory;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.AppointmentDoctorReminderResponse;
+import com.dpdocter.services.MailBodyGenerator;
+import com.dpdocter.services.MailService;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
@@ -175,6 +179,15 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
     @Autowired
     private SMSServices sMSServices;
+
+    @Value(value = "${mail.appointment.details.subject}")
+    private String appointmentDetailsSub;
+
+    @Autowired
+    private MailService mailService;
+
+    @Autowired
+    private MailBodyGenerator mailBodyGenerator;
 
     @Scheduled(fixedDelay = 1800000)
     @Override
@@ -276,8 +289,11 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
     		if(appointmentDoctorReminderResponses != null && !appointmentDoctorReminderResponses.isEmpty())
     		for(AppointmentDoctorReminderResponse appointmentDoctorReminderResponse : appointmentDoctorReminderResponses){
+    			UserCollection userCollection = userRepository.findOne(appointmentDoctorReminderResponse.getDoctorId());
+    			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+    			String dateTime = sdf.format(new Date());
     			if(appointmentDoctorReminderResponse.getTotal() > 0){
-    				UserCollection userCollection = userRepository.findOne(appointmentDoctorReminderResponse.getDoctorId());
+    				
         			if(userCollection != null){
         				
         				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
@@ -300,6 +316,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
         			    smsTrackDetail.setSmsDetails(smsDetails);
         			    sMSServices.sendSMS(smsTrackDetail, true);
         			}
+    			}else{
+//    				String body = mailBodyGenerator.generateAppointmentEmailBody(userCollection.getTitle()+" "+ userCollection.getFirstName(), null, dateTime, null, "noAppointmentDetailsTemplate.vm");
+//    			    mailService.sendEmail(userCollection.getEmailAddress(), appointmentDetailsSub, body, null);
     			}
     		}
     	}catch(Exception e){

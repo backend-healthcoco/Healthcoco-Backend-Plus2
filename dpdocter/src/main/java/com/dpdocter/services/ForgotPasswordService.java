@@ -1,23 +1,19 @@
 package com.dpdocter.services;
 
-import javax.ws.rs.core.UriInfo;
-
 import com.dpdocter.request.ForgotUsernamePasswordRequest;
 import com.dpdocter.request.ResetPasswordRequest;
 import com.dpdocter.response.ForgotPasswordResponse;
 
 public interface ForgotPasswordService {
-    ForgotPasswordResponse forgotPasswordForDoctor(ForgotUsernamePasswordRequest request, UriInfo uriInfo);
+    ForgotPasswordResponse forgotPasswordForDoctor(ForgotUsernamePasswordRequest request);
 
-    Boolean forgotPasswordForPatient(ForgotUsernamePasswordRequest request, UriInfo uriInfo);
-
-    String resetPassword(ResetPasswordRequest request);
+    Boolean forgotPasswordForPatient(ForgotUsernamePasswordRequest request);
 
     Boolean forgotUsername(ForgotUsernamePasswordRequest request);
 
     ForgotPasswordResponse getEmailAndMobNumberOfPatient(String username);
 
-    String resetPassword(ResetPasswordRequest request, UriInfo uriInfo);
+    String resetPassword(ResetPasswordRequest request);
 
     String checkLinkIsAlreadyUsed(String userId);
 
