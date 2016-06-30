@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.DeviceType;
 import com.dpdocter.enums.RoleEnum;
@@ -8,7 +10,7 @@ public class UserDevice extends GenericCollection{
 
     private String id;
 
-    private String userId;
+    private List<String> userIds;
 
     private DeviceType deviceType;
 
@@ -18,6 +20,8 @@ public class UserDevice extends GenericCollection{
     
     private RoleEnum role;
     
+    private String mobileNumber;
+
 	public String getId() {
 		return id;
 	}
@@ -26,12 +30,12 @@ public class UserDevice extends GenericCollection{
 		this.id = id;
 	}
 
-	public String getUserId() {
-		return userId;
+	public List<String> getUserIds() {
+		return userIds;
 	}
 
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setUserIds(List<String> userIds) {
+		this.userIds = userIds;
 	}
 
 	public DeviceType getDeviceType() {
@@ -50,14 +54,6 @@ public class UserDevice extends GenericCollection{
 		this.deviceId = deviceId;
 	}
 
-	public RoleEnum getRole() {
-		return role;
-	}
-
-	public void setRole(RoleEnum role) {
-		this.role = role;
-	}
-
 	public String getPushToken() {
 		return pushToken;
 	}
@@ -66,9 +62,25 @@ public class UserDevice extends GenericCollection{
 		this.pushToken = pushToken;
 	}
 
+	public RoleEnum getRole() {
+		return role;
+	}
+
+	public void setRole(RoleEnum role) {
+		this.role = role;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+
 	@Override
 	public String toString() {
-		return "UserDevice [id=" + id + ", userId=" + userId + ", deviceType=" + deviceType + ", deviceId=" + deviceId
-				+ ", pushToken=" + pushToken + ", role=" + role + "]";
+		return "UserDevice [id=" + id + ", userIds=" + userIds + ", deviceType=" + deviceType + ", deviceId=" + deviceId
+				+ ", pushToken=" + pushToken + ", role=" + role + ", mobileNumber=" + mobileNumber + "]";
 	}
 }

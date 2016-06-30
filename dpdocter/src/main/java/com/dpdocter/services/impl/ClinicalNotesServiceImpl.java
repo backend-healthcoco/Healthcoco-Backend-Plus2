@@ -2373,16 +2373,16 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    parameters.put("clinicalNotesId", clinicalNotesCollection.getId());
 	    if (clinicalNotesCollection.getVitalSigns() != null) {
 		String pulse = clinicalNotesCollection.getVitalSigns().getPulse();
-		pulse = pulse != null && !pulse.isEmpty() ? "Pulse: " + pulse +" " +VitalSignsUnit.PULSE.getUnit() + "    " : "";
+		pulse =  "Pulse: " + (pulse != null && !pulse.isEmpty() ?pulse +" " +VitalSignsUnit.PULSE.getUnit() + "    " : "--    ");
 
 		String temp = clinicalNotesCollection.getVitalSigns().getTemperature();
-		temp = temp != null && !temp.isEmpty() ? "Temperature: " + temp +" " +VitalSignsUnit.TEMPERATURE.getUnit() +"    " : "";
+		temp = "Temperature: " + (temp != null && !temp.isEmpty() ? temp +" " +VitalSignsUnit.TEMPERATURE.getUnit() +"    " : "--    ");
 
 		String breathing = clinicalNotesCollection.getVitalSigns().getBreathing();
-		breathing = breathing != null && !breathing.isEmpty() ? "Breathing: " + breathing + " "+VitalSignsUnit.BREATHING.getUnit() + "    " : "";
+		breathing = "Breathing: " + (breathing != null && !breathing.isEmpty() ? breathing + " "+VitalSignsUnit.BREATHING.getUnit() + "    " : "--    ");
 
 		String weight = clinicalNotesCollection.getVitalSigns().getWeight();
-		weight = weight != null && !weight.isEmpty() ? "Weight: " + weight +" " +VitalSignsUnit.WEIGHT.getUnit() + "    " : "";
+		weight = "Weight: " + (weight != null && !weight.isEmpty() ? weight +" " +VitalSignsUnit.WEIGHT.getUnit() + "    " : "--    ");
 		
 		String bloodPressure = "";
 		if (clinicalNotesCollection.getVitalSigns().getBloodPressure() != null) {
@@ -2393,6 +2393,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic : "";
 
 		    bloodPressure = "Blood Pressure: " + systolic + "/" + diastolic + " "+VitalSignsUnit.BLOODPRESSURE.getUnit()+ "    ";
+		}else{
+			bloodPressure = "Blood Pressure: --    ";
 		}
 		String vitalSigns = pulse + temp + breathing + bloodPressure+ weight;
 		parameters.put("vitalSigns", vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
@@ -2446,7 +2448,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				    || !str.getFontSize().equalsIgnoreCase("12pt") || !str.getFontSize().equalsIgnoreCase("13pt")
 				    || !str.getFontSize().equalsIgnoreCase("14pt") || !str.getFontSize().equalsIgnoreCase("15pt")))
 				str.setFontSize("10pt");
-
+			    line = line + 1;
 			    boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 			    boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
 			    String text = str.getText();
@@ -2473,6 +2475,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				    || !str.getFontSize().equalsIgnoreCase("12pt") || !str.getFontSize().equalsIgnoreCase("13pt")
 				    || !str.getFontSize().equalsIgnoreCase("14pt") || !str.getFontSize().equalsIgnoreCase("15pt")))
 				str.setFontSize("10pt");
+			    line = line + 1;
 			    boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 			    boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
 			    String text = str.getText();

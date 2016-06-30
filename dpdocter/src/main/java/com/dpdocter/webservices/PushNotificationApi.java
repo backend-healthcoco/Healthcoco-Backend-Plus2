@@ -1,9 +1,12 @@
 package com.dpdocter.webservices;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
@@ -16,6 +19,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.BroadcastNotificationRequest;
 import com.dpdocter.services.PushNotificationServices;
 
+import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -55,6 +59,21 @@ public class PushNotificationApi {
 			    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Boolean broadcastresponse = pushNotificationServices.broadcastNotification(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(broadcastresponse);
+		return response;
+	}
+	
+	@Path(value = PathProxy.PushNotificationUrls.READ_NOTIFICATION)
+	@POST
+	@ApiOperation(value = PathProxy.PushNotificationUrls.READ_NOTIFICATION, notes = PathProxy.PushNotificationUrls.READ_NOTIFICATION)
+	public Response<Boolean> readNotification(@PathParam(value = "deviceId") String deviceId,
+		    @DefaultValue("0") @QueryParam("count") Integer count){
+		if(DPDoctorUtils.anyStringEmpty(deviceId)){
+			    logger.warn("Invalid Input");
+			    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Boolean broadcastresponse = pushNotificationServices.readNotification(deviceId, count);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(broadcastresponse);
 		return response;

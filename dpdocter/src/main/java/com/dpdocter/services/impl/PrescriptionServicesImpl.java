@@ -577,7 +577,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 			if (item.getDuration() != null && item.getDuration().getDurationUnit() != null) {
 			    if (item.getDuration().getDurationUnit().getId() == null)
-				item.getDuration().setDurationUnit(null);
+				item.setDuration(null);
+			}else{
+				item.setDuration(null);
 			}
 			if (items == null)
 			    items = new ArrayList<PrescriptionItem>();
@@ -677,8 +679,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    }
 		    if (item.getDuration() != null && item.getDuration().getDurationUnit() != null) {
 			if (item.getDuration().getDurationUnit().getId() == null)
-			    item.getDuration().setDurationUnit(null);
-		    }
+				item.setDuration(null);
+			}else{
+				item.setDuration(null);
+			}
 		}
 	    }
 	    if (diagnosticTests != null) {
@@ -3569,6 +3573,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    	int line = 0;
 			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()) {
 				line = line + 1;
+				if ((str.getFontSize() != null) && (!str.getFontSize().equalsIgnoreCase("10pt") || !str.getFontSize().equalsIgnoreCase("11pt")
+					    || !str.getFontSize().equalsIgnoreCase("12pt") || !str.getFontSize().equalsIgnoreCase("13pt")
+					    || !str.getFontSize().equalsIgnoreCase("14pt") || !str.getFontSize().equalsIgnoreCase("15pt")))
+					str.setFontSize("10pt");
 			    boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 			    boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
 			    String text = str.getText();
@@ -3589,6 +3597,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 			line = 0;
 			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText()) {
+				line = line + 1;
+				if ((str.getFontSize() != null) && (!str.getFontSize().equalsIgnoreCase("10pt") || !str.getFontSize().equalsIgnoreCase("11pt")
+					    || !str.getFontSize().equalsIgnoreCase("12pt") || !str.getFontSize().equalsIgnoreCase("13pt")
+					    || !str.getFontSize().equalsIgnoreCase("14pt") || !str.getFontSize().equalsIgnoreCase("15pt")))
+					str.setFontSize("10pt");
 			    boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 			    boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
 			    String text = str.getText();
@@ -3609,6 +3622,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    }
 		    if (printSettings.getFooterSetup() != null) {
 			    for (PrintSettingsText str : printSettings.getFooterSetup().getBottomText()) {
+			    	if ((str.getFontSize() != null) && (!str.getFontSize().equalsIgnoreCase("10pt") || !str.getFontSize().equalsIgnoreCase("11pt")
+						    || !str.getFontSize().equalsIgnoreCase("12pt") || !str.getFontSize().equalsIgnoreCase("13pt")
+						    || !str.getFontSize().equalsIgnoreCase("14pt") || !str.getFontSize().equalsIgnoreCase("15pt")))
+						str.setFontSize("10pt");
 				boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 				boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
 				String text = str.getText();
