@@ -1590,7 +1590,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		}
 	    }
 	    if(mailResponse != null){
-	    	String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(), mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(), mailResponse.getMailRecordCreatedDate(), "Medical Data", "emrRecordTemplate.vm");
+	    	String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(), mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(), mailResponse.getMailRecordCreatedDate(), "Medical Data", "emrMailTemplate.vm");
 		    mailService.sendEmailMultiAttach(emailAddress, mailResponse.getDoctorName()+" sent you a Medical Data", body, mailAttachments);
 		    response = true;
 	    }

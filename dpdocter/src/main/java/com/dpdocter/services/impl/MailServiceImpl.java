@@ -75,7 +75,7 @@ public class MailServiceImpl implements MailService {
 	    BodyPart p = new MimeBodyPart();
 	    p.setContent(body, "text/html");
 	    mimeMultipart.addBodyPart(p);
-	    mimeMessage.setContent(mimeMultipart, "multipart/mixed");
+//	    mimeMessage.setContent(mimeMultipart, "multipart/mixed");
 	    if (mailAttachment != null) {
 		mimeMessage.setFileName(mailAttachment.getAttachmentName());
 		DataSource ds;

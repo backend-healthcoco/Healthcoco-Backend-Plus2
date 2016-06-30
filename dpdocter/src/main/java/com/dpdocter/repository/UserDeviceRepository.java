@@ -16,4 +16,10 @@ public interface UserDeviceRepository extends MongoRepository<UserDeviceCollecti
 	@Query("{'deviceId': ?0}")
 	UserDeviceCollection findByDeviceId(String deviceId);
 
+	@Query("{'role': ?0}")
+	List<UserDeviceCollection> findByRole(String role);
+
+	@Query("{'role': ?0, 'deviceType': ?1}")
+	List<UserDeviceCollection> findByRoleAndType(String role, String type);
+
 }

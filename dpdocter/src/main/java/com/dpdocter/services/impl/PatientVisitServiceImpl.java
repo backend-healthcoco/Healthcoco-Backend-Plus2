@@ -699,6 +699,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (printSettings.getHeaderSetup() != null) {
 				int line = 0;
 			    for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()) {
+			    	if ((str.getFontSize() != null) && (!str.getFontSize().equalsIgnoreCase("10pt") || !str.getFontSize().equalsIgnoreCase("11pt")
+						    || !str.getFontSize().equalsIgnoreCase("12pt") || !str.getFontSize().equalsIgnoreCase("13pt")
+						    || !str.getFontSize().equalsIgnoreCase("14pt") || !str.getFontSize().equalsIgnoreCase("15pt")))
+						str.setFontSize("10pt");
 				boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 				boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
 				String text = str.getText();
@@ -720,6 +724,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				}
 			    line = 0;
 				for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText()) {
+					if ((str.getFontSize() != null) && (!str.getFontSize().equalsIgnoreCase("10pt") || !str.getFontSize().equalsIgnoreCase("11pt")
+						    || !str.getFontSize().equalsIgnoreCase("12pt") || !str.getFontSize().equalsIgnoreCase("13pt")
+						    || !str.getFontSize().equalsIgnoreCase("14pt") || !str.getFontSize().equalsIgnoreCase("15pt")))
+						str.setFontSize("10pt");
+					line = line + 1;
 				boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 				boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
 				String text = str.getText();
@@ -743,6 +752,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (printSettings.getFooterSetup() != null) {
 			    if (printSettings.getFooterSetup().getCustomFooter())
 				for (PrintSettingsText str : printSettings.getFooterSetup().getBottomText()) {
+					if ((str.getFontSize() != null) && (!str.getFontSize().equalsIgnoreCase("10pt") || !str.getFontSize().equalsIgnoreCase("11pt")
+						    || !str.getFontSize().equalsIgnoreCase("12pt") || !str.getFontSize().equalsIgnoreCase("13pt")
+						    || !str.getFontSize().equalsIgnoreCase("14pt") || !str.getFontSize().equalsIgnoreCase("15pt")))
+						str.setFontSize("10pt");
 				    boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 				    boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
 				    String text = str.getText();
@@ -823,28 +836,30 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 		    clinicalNotesJasperDetails = new ClinicalNotesJasperDetails();
 		    if (clinicalNotesCollection.getVitalSigns() != null) {
-			String pulse = clinicalNotesCollection.getVitalSigns().getPulse();
-			pulse = pulse != null && !pulse.isEmpty() ? "Pulse: " + pulse + " "+VitalSignsUnit.PULSE.getUnit() + "    " : "";
+				String pulse = clinicalNotesCollection.getVitalSigns().getPulse();
+				pulse =  "Pulse: " + (pulse != null && !pulse.isEmpty() ?pulse +" " +VitalSignsUnit.PULSE.getUnit() + "    " : "--    ");
 
-			String temp = clinicalNotesCollection.getVitalSigns().getTemperature();
-			temp = temp != null && !temp.isEmpty() ? "Temperature: " + temp +" "+VitalSignsUnit.TEMPERATURE.getUnit()+ "    " : "";
+				String temp = clinicalNotesCollection.getVitalSigns().getTemperature();
+				temp = "Temperature: " + (temp != null && !temp.isEmpty() ? temp +" " +VitalSignsUnit.TEMPERATURE.getUnit() +"    " : "--    ");
 
-			String breathing = clinicalNotesCollection.getVitalSigns().getBreathing();
-			breathing = breathing != null && !breathing.isEmpty() ? "Breathing: " + breathing + " "+VitalSignsUnit.BREATHING.getUnit() + "    " : "";
+				String breathing = clinicalNotesCollection.getVitalSigns().getBreathing();
+				breathing = "Breathing: " + (breathing != null && !breathing.isEmpty() ? breathing + " "+VitalSignsUnit.BREATHING.getUnit() + "    " : "--    ");
 
-			String weight = clinicalNotesCollection.getVitalSigns().getWeight();
-			weight = weight != null && !weight.isEmpty() ? "Weight: " + weight +" " +VitalSignsUnit.WEIGHT.getUnit() + "    " : "";
-			
-			String bloodPressure = "";
-			if (clinicalNotesCollection.getVitalSigns().getBloodPressure() != null) {
-			    String systolic = clinicalNotesCollection.getVitalSigns().getBloodPressure().getSystolic();
-			    systolic = systolic != null && !systolic.isEmpty() ? systolic : "";
+				String weight = clinicalNotesCollection.getVitalSigns().getWeight();
+				weight = "Weight: " + (weight != null && !weight.isEmpty() ? weight +" " +VitalSignsUnit.WEIGHT.getUnit() + "    " : "--    ");
+				
+				String bloodPressure = "";
+				if (clinicalNotesCollection.getVitalSigns().getBloodPressure() != null) {
+				    String systolic = clinicalNotesCollection.getVitalSigns().getBloodPressure().getSystolic();
+				    systolic = systolic != null && !systolic.isEmpty() ? systolic : "";
 
-			    String diastolic = clinicalNotesCollection.getVitalSigns().getBloodPressure().getDiastolic();
-			    diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic : "";
+				    String diastolic = clinicalNotesCollection.getVitalSigns().getBloodPressure().getDiastolic();
+				    diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic : "";
 
-			    bloodPressure = "Blood Pressure: " + systolic + "/" + diastolic + " "+VitalSignsUnit.BLOODPRESSURE.getUnit()+ "    ";
-			}
+				    bloodPressure = "Blood Pressure: " + systolic + "/" + diastolic + " "+VitalSignsUnit.BLOODPRESSURE.getUnit()+ "    ";
+				}else{
+					bloodPressure = "Blood Pressure: --    ";
+				}
 			String vitalSigns = pulse + temp + breathing + bloodPressure+ weight;
 			clinicalNotesJasperDetails.setVitalSigns(vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
 		    }

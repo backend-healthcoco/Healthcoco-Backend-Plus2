@@ -1,5 +1,7 @@
 package com.dpdocter.collections;
 
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -14,7 +16,7 @@ public class UserDeviceCollection extends GenericCollection{
     private String id;
 
     @Field
-    private String userId;
+    private List<String> userIds;
 
     @Field
     private DeviceType deviceType;
@@ -27,6 +29,9 @@ public class UserDeviceCollection extends GenericCollection{
 
     @Field
     private RoleEnum role;
+
+    @Field
+    private int batchCount = 0;
     
 	public String getId() {
 		return id;
@@ -36,12 +41,12 @@ public class UserDeviceCollection extends GenericCollection{
 		this.id = id;
 	}
 
-	public String getUserId() {
-		return userId;
+	public List<String> getUserIds() {
+		return userIds;
 	}
 
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setUserIds(List<String> userIds) {
+		this.userIds = userIds;
 	}
 
 	public DeviceType getDeviceType() {
@@ -60,14 +65,6 @@ public class UserDeviceCollection extends GenericCollection{
 		this.deviceId = deviceId;
 	}
 
-	public RoleEnum getRole() {
-		return role;
-	}
-
-	public void setRole(RoleEnum role) {
-		this.role = role;
-	}
-
 	public String getPushToken() {
 		return pushToken;
 	}
@@ -76,10 +73,25 @@ public class UserDeviceCollection extends GenericCollection{
 		this.pushToken = pushToken;
 	}
 
-	@Override
-	public String toString() {
-		return "UserDeviceCollection [id=" + id + ", userId=" + userId + ", deviceType=" + deviceType + ", deviceId="
-				+ deviceId + ", pushToken=" + pushToken + ", role=" + role + "]";
+	public RoleEnum getRole() {
+		return role;
 	}
 
+	public void setRole(RoleEnum role) {
+		this.role = role;
+	}
+
+	public int getBatchCount() {
+		return batchCount;
+	}
+
+	public void setBatchCount(int batchCount) {
+		this.batchCount = batchCount;
+	}
+
+	@Override
+	public String toString() {
+		return "UserDeviceCollection [id=" + id + ", userIds=" + userIds + ", deviceType=" + deviceType + ", deviceId="
+				+ deviceId + ", pushToken=" + pushToken + ", role=" + role + ", batchCount=" + batchCount + "]";
+	}
 }

@@ -788,5 +788,7 @@ public interface PathProxy {
 	public static final String ADD_DEVICE = "/device/add";
 	
 	public static final String BROADCAST_NOTIFICATION = "/broadcast";
+	
+	public static final String READ_NOTIFICATION = "/read/{deviceId}";
     }
 }
