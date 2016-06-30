@@ -4,6 +4,7 @@ public class DrugDirectionAddEditRequest {
 
     private String id;
 
+//    @Nonnull
     private String direction;
 
     private String doctorId;

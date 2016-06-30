@@ -227,6 +227,8 @@ public interface PathProxy {
     public interface RecordsUrls {
 	public static final String ADD_RECORDS = "/add";
 
+	public static final String GET_RECORD_BY_ID = "/{recordId}/view";
+	
 	public static final String TAG_RECORD = "/tagrecord";
 
 	public static final String SEARCH_RECORD = "/search";
