@@ -673,7 +673,9 @@ public class RecordsServiceImpl implements RecordsService {
 		PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(record.getId());
 		if (patientVisitCollection != null)
 		    record.setVisitId(patientVisitCollection.getId());
+		record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl()));
 	    }
+	    
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error while getting record : " + e.getCause().getMessage());
