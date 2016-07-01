@@ -99,6 +99,9 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    @Value(value = "${Signup.role}")
+    private String role;
+    
     /**
      * This method is used for login purpose.
      */
@@ -338,48 +341,52 @@ public class LoginServiceImpl implements LoginService {
     @Override
     @Transactional
     public User adminLogin(LoginPatientRequest request) {
-	User response = null;
-	try {
-		Criteria criteria = new Criteria("mobileNumber").is(request.getMobileNumber());
+    User response = null;
+    try {
+    	RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.SUPER_ADMIN.getRole());
+	    if (roleCollection == null) {
+		logger.warn(role);
+		throw new BusinessException(ServiceError.NoRecord, role);
+	    }
+	    List<UserRoleCollection> userRoleCollections = userRoleRepository.findByRoleId(roleCollection.getId());
+	    @SuppressWarnings("unchecked")
+	    Collection<String> userIds = CollectionUtils.collect(userRoleCollections, new BeanToPropertyValueTransformer("userId")); 
+	    
+		Criteria criteria = new Criteria("mobileNumber").is(request.getMobileNumber()).and("id").in(userIds);
 		Query query = new Query(); query.addCriteria(criteria);
 		List<UserCollection> userCollections = mongoTemplate.find(query, UserCollection.class);
-		UserCollection userCollection = null;
-		if(userCollections != null && !userCollections.isEmpty())userCollection = userCollections.get(0);
-	    if (userCollection == null) {
+//		UserCollection userCollection = null;
+//		if(userCollections != null && !userCollections.isEmpty())userCollection = userCollections.get(0);
+	    if (userCollections == null || userCollections.isEmpty()) {
 		logger.warn("Invalid mobile Number and Password");
 		throw new BusinessException(ServiceError.InvalidInput, "Invalid mobile Number and Password");
 	    }else{
-	    	char[] salt = userCollection.getSalt();
-			char[] passwordWithSalt = new char[request.getPassword().length + salt.length]; 
-			for(int i = 0; i < request.getPassword().length; i++)
-				        passwordWithSalt[i] = request.getPassword()[i];
-			for(int i = 0; i < salt.length; i++)
-				    	passwordWithSalt[i+request.getPassword().length] = salt[i];
-			if(!Arrays.equals(userCollection.getPassword(), DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt))){
-				    	logger.warn(login);
-						throw new BusinessException(ServiceError.InvalidInput, login);
-		    }
+	    	
+	    	for(UserCollection userCollection : userCollections){
+	    		char[] salt = userCollection.getSalt();
+				char[] passwordWithSalt = new char[request.getPassword().length + salt.length]; 
+				for(int i = 0; i < request.getPassword().length; i++)
+					        passwordWithSalt[i] = request.getPassword()[i];
+				for(int i = 0; i < salt.length; i++)
+					    	passwordWithSalt[i+request.getPassword().length] = salt[i];
+				if(Arrays.equals(userCollection.getPassword(), DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt))){
+					userCollection.setLastSession(new Date());
+				    userCollection = userRepository.save(userCollection);
+				    response = new User();
+				    BeanUtil.map(userCollection, response);
+				    return response;
+			    }
+	    	}
 	    }
-	    User user = new User();
-	    BeanUtil.map(userCollection, user);
-
-	    List<UserRoleCollection> userRoleCollections = userRoleRepository.findByUserId(userCollection.getId());
-
-	    for (UserRoleCollection userRoleCollection : userRoleCollections) {
-		RoleCollection roleCollection = roleRepository.findOne(userRoleCollection.getRoleId());
-		if (roleCollection.getRole().equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole())) {
-		    userCollection.setLastSession(new Date());
-		    userCollection = userRepository.save(userCollection);
-		    response = new User();
-		    BeanUtil.map(userCollection, response);
-		    return response;
-		}
-	    }
+	   if(response == null){
+		   logger.warn(login);
+			throw new BusinessException(ServiceError.Unknown, login);
+	   }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while login");
 	    throw new BusinessException(ServiceError.Unknown, "Error occured while login");
 	}
 	return response;
-    }
+	}
 }

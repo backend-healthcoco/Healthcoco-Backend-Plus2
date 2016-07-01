@@ -1024,12 +1024,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	    DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
 	    DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
-	    List<PatientCollection> patientCollections = patientRepository.findTodaysRegisteredPatient(doctorId, locationId, hospitalId, start, end);
-	    int patientCount = 0;
-	    if (CollectionUtils.isNotEmpty(patientCollections)) {
-		patientCount = patientCollections.size();
-	    }
-
+	    Integer patientSize = patientRepository.findTodaysRegisteredPatient(doctorId, locationId, hospitalId, start, end);
+	    if(patientCount == null)patientSize = 0;
 	    UserLocationCollection userLocation = userLocationRepository.findByUserIdAndLocationId(doctorId, locationId);
 	    if (userLocation != null) {
 		DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocation.getId());
@@ -1042,7 +1038,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 		String patientInitial = clinicProfileCollection.getPatientInitial();
 		int patientCounter = clinicProfileCollection.getPatientCounter();
 
-		if(patientCount > 0)patientCounter = patientCounter + patientCount + 1;
+//		if(patientCount > 0)patientCounter = patientCounter + patientCount + 1;
+		if(patientCounter <= patientSize)patientCounter =  patientCounter + patientSize;
 		generatedId = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay) + DPDoctorUtils.getPrefixedNumber(currentMonth)
 			+ DPDoctorUtils.getPrefixedNumber(currentYear % 100) + DPDoctorUtils.getPrefixedNumber(patientCounter);
 		} else {
@@ -1117,7 +1114,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     private String checkIfPatientInitialAndCounterExist(String doctorId, String locationId, String patientInitial, int patientCounter) {
 	String response = null;
 	try {
-	    Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 	    int currentDay = localCalendar.get(Calendar.DATE);
 	    int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 	    int currentYear = localCalendar.get(Calendar.YEAR);
