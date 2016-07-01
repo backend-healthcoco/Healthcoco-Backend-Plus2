@@ -1114,7 +1114,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     private String checkIfPatientInitialAndCounterExist(String doctorId, String locationId, String patientInitial, int patientCounter) {
 	String response = null;
 	try {
-	    Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 	    int currentDay = localCalendar.get(Calendar.DATE);
 	    int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 	    int currentYear = localCalendar.get(Calendar.YEAR);

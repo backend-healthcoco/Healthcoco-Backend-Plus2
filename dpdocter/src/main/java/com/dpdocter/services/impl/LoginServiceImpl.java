@@ -95,13 +95,13 @@ public class LoginServiceImpl implements LoginService {
 
     @Value(value = "${Login.loginPatient}")
     private String loginPatient;
+   
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     @Value(value = "${Signup.role}")
     private String role;
     
-    @Autowired
-    private MongoTemplate mongoTemplate;
-
     /**
      * This method is used for login purpose.
      */
@@ -341,9 +341,10 @@ public class LoginServiceImpl implements LoginService {
     @Override
     @Transactional
     public User adminLogin(LoginPatientRequest request) {
-	User response = null;
-	try {
-		RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.SUPER_ADMIN.getRole());
+
+    User response = null;
+    try {
+    	RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.SUPER_ADMIN.getRole());
 	    if (roleCollection == null) {
 		logger.warn(role);
 		throw new BusinessException(ServiceError.NoRecord, role);
@@ -388,5 +389,5 @@ public class LoginServiceImpl implements LoginService {
 	    throw new BusinessException(ServiceError.Unknown, "Error occured while login");
 	}
 	return response;
-    }
+	}
 }
