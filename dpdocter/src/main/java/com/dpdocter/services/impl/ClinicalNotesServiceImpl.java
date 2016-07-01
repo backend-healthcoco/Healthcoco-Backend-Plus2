@@ -2439,61 +2439,49 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 		parameters.put("printSettingsId", printSettings != null ? printSettings.getId() : "");
 		String headerLeftText = "", headerRightText = "", footerBottomText = "";
+		int  headerLeftTextLength = 0, headerRightTextLength = 0;
 		if (printSettings != null) {
 		    if (printSettings.getHeaderSetup() != null) {
-		    	int line = 0;
 			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()) {
 
 			    if ((str.getFontSize() != null) && (!str.getFontSize().equalsIgnoreCase("10pt") || !str.getFontSize().equalsIgnoreCase("11pt")
 				    || !str.getFontSize().equalsIgnoreCase("12pt") || !str.getFontSize().equalsIgnoreCase("13pt")
 				    || !str.getFontSize().equalsIgnoreCase("14pt") || !str.getFontSize().equalsIgnoreCase("15pt")))
 				str.setFontSize("10pt");
-			    line = line + 1;
 			    boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 			    boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
-			    String text = str.getText();
-			    if (isItalic)
-				text = "<i>" + text + "</i>";
-			    if (isBold)
-				text = "<b>" + text + "</b>";
+			    if(!DPDoctorUtils.anyStringEmpty(str.getText())){headerLeftTextLength++;
+			    	String text = str.getText();
+				    if (isItalic)
+					text = "<i>" + text + "</i>";
+				    if (isBold)
+					text = "<b>" + text + "</b>";
 
-			    if (headerLeftText.isEmpty())
-				headerLeftText = "<span style='font-size:" + str.getFontSize() + ";'>" + text + "</span>";
-			    else
-				headerLeftText = headerLeftText + "<br/>" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
+				    if (headerLeftText.isEmpty())
+					headerLeftText = "<span style='font-size:" + str.getFontSize() + ";'>" + text + "</span>";
+				    else
+					headerLeftText = headerLeftText + "<br/>" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
+			    }
 			}
-
-			if(line < 4){
-				for(line = line; line <4 ;line++){
-					if (headerRightText.isEmpty())headerRightText = "<span> </span>";
-					else headerRightText = headerRightText + "<br/>" + "<span></span>";
-				}
-			}
-			line = 0;
 			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText()) {
 			    if ((str.getFontSize() != null) && (!str.getFontSize().equalsIgnoreCase("10pt") || !str.getFontSize().equalsIgnoreCase("11pt")
 				    || !str.getFontSize().equalsIgnoreCase("12pt") || !str.getFontSize().equalsIgnoreCase("13pt")
 				    || !str.getFontSize().equalsIgnoreCase("14pt") || !str.getFontSize().equalsIgnoreCase("15pt")))
 				str.setFontSize("10pt");
-			    line = line + 1;
 			    boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 			    boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
-			    String text = str.getText();
-			    if (isItalic)
-				text = "<i>" + text + "</i>";
-			    if (isBold)
-				text = "<b>" + text + "</b>";
+			    if(!DPDoctorUtils.anyStringEmpty(str.getText())){headerRightTextLength++;
+			    	String text = str.getText();
+				    if (isItalic)
+					text = "<i>" + text + "</i>";
+				    if (isBold)
+					text = "<b>" + text + "</b>";
 
-			    if (headerRightText.isEmpty())
-				headerRightText = "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
-			    else
-				headerRightText = headerRightText + "<br/>" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
-			}
-			if(line < 4){
-				for(line = line; line <4 ;line++){
-					if (headerRightText.isEmpty())headerRightText = "<span> </span>";
-					else headerRightText = headerRightText + "<br/>" + "<span></span>";
-				}
+				    if (headerRightText.isEmpty())
+					headerRightText = "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
+				    else
+					headerRightText = headerRightText + "<br/>" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
+			    }
 			}
 			}
 		    if (printSettings.getFooterSetup() != null) {
@@ -2517,6 +2505,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				else
 				    footerBottomText = footerBottomText + "" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 			    }
+		    }
 			if(printSettings.getClinicLogoUrl() != null)logoURL = getFinalImageURL(printSettings.getClinicLogoUrl());
 
 			if (printSettings.getHeaderSetup() != null && printSettings.getHeaderSetup().getPatientDetails() != null
@@ -2562,7 +2551,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			    date = "<span style='font-size:" + fontSize + "'>" + date + "</span>";
 			    resourceId = "<span style='font-size:" + fontSize + "'>" + resourceId + "</span>";
 			}
-		    }
 		}
 
 		UserCollection doctorUser = userRepository.findOne(clinicalNotesCollection.getDoctorId());
@@ -2575,6 +2563,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		parameters.put("headerRightText", headerRightText);
 		parameters.put("footerBottomText", footerBottomText);
 		parameters.put("logoURL", logoURL);
+		if(headerLeftTextLength > 2 || headerRightTextLength > 2){
+			parameters.put("showTableOne", true);
+		}else {
+			parameters.put("showTableOne", false);
+		}
 		String layout = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 			: "PORTRAIT";
 		String pageSize = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
