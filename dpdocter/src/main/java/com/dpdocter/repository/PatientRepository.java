@@ -30,8 +30,8 @@ public interface PatientRepository extends MongoRepository<PatientCollection, St
     @Query("{'doctorId': ?0,'locationId': ?1,'hospitalId': ?2, 'updatedTime': {'$gt': ?3}}")
     List<PatientCollection> findByDoctorIdLocationIdAndHospitalId(String doctorId, String locationId, String hospitalId, Date date, Sort sort);
 
-    @Query("{'doctorId':?0,'locationId':?1,'hospitalId':?2,'createdTime' : {'$gt' : ?3, '$lte' : ?4}}")
-    List<PatientCollection> findTodaysRegisteredPatient(String doctorId, String location, String hospitalId, DateTime start, DateTime end);
+    @Query(value ="{'doctorId':?0, 'locationId':?1, 'hospitalId':?2, 'createdTime' : {'$gt' : ?3, '$lte' : ?4}}", count = true)
+    Integer findTodaysRegisteredPatient(String doctorId, String location, String hospitalId, DateTime start, DateTime end);
 
     @Query("{'userId': {'$in': ?0}, 'doctorId':?1,'locationId': ?2,'hospitalId': ?3, 'updatedTime': {'$gt': ?4}, 'discarded':{'$in': ?5}}")
     List<PatientCollection> findByUserIdDoctorIdLocationIdHospitalId(Collection<String> patientIds, String doctorId, String locationId, String hospitalId,
@@ -63,9 +63,6 @@ public interface PatientRepository extends MongoRepository<PatientCollection, St
 
     @Query("{'userId': ?0, 'doctorId':?1}")
     PatientCollection findByUserIdDoctorId(String patientId, String doctorId);
-
-    @Query(value = "{'doctorId':?0, 'locationId':?1, 'registrationDate' : {'$gt' : ?2, '$lt' : ?3}}", count = true)
-    Integer findTodaysRegisteredPatient(String doctorId, String locationId, Long from, Long to);
 
     @Query(value = "{'doctorId':?0, 'locationId':?1, 'PID':?2}", count = true)
     Integer findPatientByPID(String doctorId, String locationId, String generatedId);

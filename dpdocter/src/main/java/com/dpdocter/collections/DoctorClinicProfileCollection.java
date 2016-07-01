@@ -24,7 +24,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
     private String patientInitial = "P";
 
     @Field
-    private int patientCounter = 0;
+    private int patientCounter = 1;
 
     @Field
     private List<String> appointmentBookingNumber;
