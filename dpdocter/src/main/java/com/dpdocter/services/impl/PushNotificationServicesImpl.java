@@ -144,10 +144,10 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 
 	@Override
 	@Transactional
-	public Boolean notifyUser(String patientId, String message, String componentType, String componentTypeId) {
+	public Boolean notifyUser(String userId, String message, String componentType, String componentTypeId) {
 		Boolean response = false;
 		try{
-			List<UserDeviceCollection> userDeviceCollections = userDeviceRepository.findByUserId(patientId);
+			List<UserDeviceCollection> userDeviceCollections = userDeviceRepository.findByUserId(userId);
 			if(userDeviceCollections != null && !userDeviceCollections.isEmpty()){
 				for(UserDeviceCollection userDeviceCollection : userDeviceCollections){
 					if(userDeviceCollection.getDeviceType() != null){
@@ -283,7 +283,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 			}
 					String payload = APNS.newPayload()
 							.alertBody(message)
-							.sound(iosNotificationSoundFilepath)
+							.sound("default")
 							.customFields(customValues).build();
 					service.push(pushToken, payload);
 					List<String> deviceIds= new ArrayList<String>();

@@ -89,13 +89,11 @@ public class MailServiceImpl implements MailService {
 	    mainMultipart.addBodyPart(htmlAndTextBodyPart);
 
 	    if (mailAttachment != null) {
-//		mimeMessage.setFileName(mailAttachment.getAttachmentName());
 		DataSource ds;
 		if (mailAttachment.getFileSystemResource() == null)
 		    ds = new ByteArrayDataSource(mailAttachment.getInputStream(), "application/octet-stream");
 		else
 		    ds = new ByteArrayDataSource(new FileInputStream(mailAttachment.getFileSystemResource().getFile()), "application/octet-stream");
-//		mimeMessage.setDataHandler(new DataHandler(ds));
 	    
 		MimeBodyPart filePart = new MimeBodyPart();
 	    
@@ -132,18 +130,38 @@ public class MailServiceImpl implements MailService {
 	    Session session = Session.getInstance(new Properties());
 	    MimeMessage mimeMessage = new MimeMessage(session);
 	    mimeMessage.setSubject(subject);
-	    MimeMultipart mimeMultipart = new MimeMultipart();
-	    BodyPart p = new MimeBodyPart();
-	    p.setContent(body, "text/html");
-	    mimeMultipart.addBodyPart(p);
+//	    MimeMultipart mimeMultipart = new MimeMultipart();
+//	    BodyPart p = new MimeBodyPart();
+//	    p.setContent(body, "text/html");
+//	    mimeMultipart.addBodyPart(p);
+
+	    Multipart mainMultipart = new MimeMultipart("related");
+	    Multipart htmlAndTextMultipart = new MimeMultipart("alternative");
+	    MimeBodyPart htmlBodyPart = new MimeBodyPart();
+	    htmlBodyPart.setContent(body, "text/html; charset=utf-8");
+	    htmlAndTextMultipart.addBodyPart(htmlBodyPart);
+	    
+	    MimeBodyPart htmlAndTextBodyPart = new MimeBodyPart();
+	    htmlAndTextBodyPart.setContent(htmlAndTextMultipart);
+	    mainMultipart.addBodyPart(htmlAndTextBodyPart);
+
 
 	    if (mailAttachments != null && !mailAttachments.isEmpty()) {
 		for (MailAttachment mailAttachment : mailAttachments) {
 			mimeMessage.setFileName(mailAttachment.getAttachmentName());
 		    DataSource ds = new ByteArrayDataSource(new FileInputStream(mailAttachment.getFileSystemResource().getFile()), "application/octet-stream");
-		    mimeMessage.setDataHandler(new DataHandler(ds));
-		}
+//		    mimeMessage.setDataHandler(new DataHandler(ds));
+		    
+			MimeBodyPart filePart = new MimeBodyPart();
+		    
+		    filePart.setDataHandler(new DataHandler(ds));
+		    filePart.setFileName(mailAttachment.getAttachmentName());
+		    mainMultipart.addBodyPart(filePart);
+		    }
 	    }
+		    mimeMessage.setContent(mainMultipart);
+		    
+		
 	    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 	    mimeMessage.writeTo(outputStream);
 	    RawMessage rawMessage = new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
