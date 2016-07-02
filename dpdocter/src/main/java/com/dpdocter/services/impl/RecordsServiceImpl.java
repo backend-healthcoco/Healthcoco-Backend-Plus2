@@ -213,9 +213,8 @@ public class RecordsServiceImpl implements RecordsService {
 		prescriptionCollection.setUpdatedTime(new Date());
 		prescriptionRepository.save(prescriptionCollection);
 	    }
-	    if(prescriptionCollection != null && prescriptionCollection.getDoctorId().equalsIgnoreCase(recordsCollection.getDoctorId()) &&
-	    		prescriptionCollection.getLocationId().equalsIgnoreCase(recordsCollection.getLocationId()) && prescriptionCollection.getHospitalId().equalsIgnoreCase(recordsCollection.getHospitalId()))
-	    pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId(), patientCollection.getFirstName()+"'s report has been uploaded by "+recordsCollection.getUploadedByLocation()+" - Tap to view it!", ComponentType.REPORTS.getType(), recordsCollection.getId());
+	    if(prescriptionCollection != null)
+	        pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId(), patientCollection.getFirstName()+"'s report has been uploaded by "+recordsCollection.getUploadedByLocation()+" - Tap to view it!", ComponentType.REPORTS.getType(), recordsCollection.getId());
 
 	   	pushNotificationServices.notifyUser(recordsCollection.getPatientId(), "Your Report from "+recordsCollection.getUploadedByLocation()+" is here - Tap to view it!", ComponentType.REPORTS.getType(), recordsCollection.getId());
 	    Records records = new Records();

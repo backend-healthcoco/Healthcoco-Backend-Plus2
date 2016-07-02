@@ -10,7 +10,7 @@ import com.dpdocter.collections.UserDeviceCollection;
 
 public interface UserDeviceRepository extends MongoRepository<UserDeviceCollection, String>, PagingAndSortingRepository<UserDeviceCollection, String> {
 
-	@Query("{'userId': ?0}")
+	@Query("{'userIds': ?0}")
 	List<UserDeviceCollection> findByUserId(String userId);
 
 	@Query("{'deviceId': ?0}")

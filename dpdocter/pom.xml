@@ -29,10 +29,27 @@
 			</build>
 		</profile>
 		<profile>
-			<id>stagging</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
+			<id>dev</id>
+			<build>
+				<finalName>dpdocter</finalName>
+				<resources>
+					<resource>
+						<directory>src/main/resources/spring-context</directory>
+						<filtering>true</filtering>
+					</resource>
+					<resource>
+						<directory>src/main/resources/spring-properties/staging</directory>
+						<filtering>true</filtering>
+					</resource>
+					<resource>
+						<directory>src/main/resources/velocityTemplates</directory>
+						<filtering>true</filtering>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+		<profile>
+			<id>qa</id>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -53,6 +70,9 @@
 		</profile>
 		<profile>
 			<id>production</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>

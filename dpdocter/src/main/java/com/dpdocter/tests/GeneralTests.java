@@ -3,13 +3,10 @@ package com.dpdocter.tests;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
+import com.dpdocter.beans.PrintSettingsText;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-
-import common.util.web.DPDoctorUtils;
 
 
 
@@ -82,12 +79,14 @@ public class GeneralTests {
 //	    	}
 	    		 
 	    		 public static void main(String[] args) throws NoSuchAlgorithmException, JsonGenerationException, JsonMappingException, IOException, ParseException  {
-	    			 long createdTimeStamp = Long.parseLong("0");
-	    			 System.out.println(DPDoctorUtils.getSHA3SecurePassword("neha".toCharArray()));
+	    			 PrintSettingsText str = new PrintSettingsText();
+	    			 str.setFontSize("15pt");
+	    			 if ((str.getFontSize() != null) && (!str.getFontSize().equalsIgnoreCase("10pt") && !str.getFontSize().equalsIgnoreCase("11pt")
+	    					    && !str.getFontSize().equalsIgnoreCase("12pt") && !str.getFontSize().equalsIgnoreCase("13pt")
+	    					    && !str.getFontSize().equalsIgnoreCase("14pt") && !str.getFontSize().equalsIgnoreCase("15pt")))
+	    					str.setFontSize("10pt");
 	    			 
-	    			 SimpleDateFormat format = new SimpleDateFormat("MMM dd, yyyy");
-
-	    			 System.out.println(format.format(new Date()));  
+	    			 System.out.println(str.getFontSize()+"  "+!str.getFontSize().equalsIgnoreCase("15pt"));
 	    		 }
 	    		 
 }  	
