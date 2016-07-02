@@ -41,7 +41,7 @@
 						<filtering>true</filtering>
 					</resource>
 					<resource>
-						<directory>src/main/resources/spring-properties/staging</directory>
+						<directory>src/main/resources/spring-properties/dev</directory>
 						<filtering>true</filtering>
 					</resource>
 					<resource>
@@ -61,7 +61,7 @@
 						<filtering>true</filtering>
 					</resource>
 					<resource>
-						<directory>src/main/resources/spring-properties/staging</directory>
+						<directory>src/main/resources/spring-properties/qa</directory>
 						<filtering>true</filtering>
 					</resource>
 					<resource>
