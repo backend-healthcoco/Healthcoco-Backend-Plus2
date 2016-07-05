@@ -555,6 +555,10 @@ public class PrescriptionApi {
 	request.setId(drugTypeId);
 	DrugTypeAddEditResponse drugTypeAddEditResponse = prescriptionServices.editDrugType(request);
 
+	transnationalService.addResource(drugTypeId, Resource.DRUGSDRUGTYPE, false);
+	if (drugTypeAddEditResponse != null) {
+	    esPrescriptionService.editDrugTypeInDrugs(drugTypeId);
+	}
 	Response<DrugTypeAddEditResponse> response = new Response<DrugTypeAddEditResponse>();
 	response.setData(drugTypeAddEditResponse);
 	return response;
@@ -927,12 +931,12 @@ public class PrescriptionApi {
     @GET
     @ApiOperation(value = PathProxy.PrescriptionUrls.ADD_REMOVE_GENERIC_CODE_TO_DRUG, notes = PathProxy.PrescriptionUrls.ADD_REMOVE_GENERIC_CODE_TO_DRUG)
     public Response<Boolean> addRemoveGenericCode(@PathParam(value = "action") String action,
-	    @PathParam(value = "genericId") String genericId, @PathParam(value = "drugCode") String drugCode) {
-	if (DPDoctorUtils.anyStringEmpty(action, genericId, drugCode)) {
-	    logger.warn("Action, Generic Id, Drug Code Cannot Be Empty");
+	    @PathParam(value = "genericCode") String genericCode, @PathParam(value = "drugCode") String drugCode) {
+	if (DPDoctorUtils.anyStringEmpty(action, genericCode, drugCode)) {
+	    logger.warn("Action, Generic Code, Drug Code Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Action, Generic Id, Drug Code Cannot Be Empty");
 	}
-	Boolean addRemoveGenericCodeResponse = prescriptionServices.addRemoveGenericCode(action, genericId, drugCode);
+	Boolean addRemoveGenericCodeResponse = prescriptionServices.addRemoveGenericCode(action, genericCode, drugCode);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addRemoveGenericCodeResponse);
 	return response;

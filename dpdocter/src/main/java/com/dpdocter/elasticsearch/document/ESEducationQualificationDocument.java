@@ -45,6 +45,6 @@ public class ESEducationQualificationDocument {
 
     @Override
     public String toString() {
-	return "SolrEducationQualificationDocument [id=" + id + ", name=" + name + ", updatedTime=" + updatedTime + "]";
+	return "ESEducationQualificationDocument [id=" + id + ", name=" + name + ", updatedTime=" + updatedTime + "]";
     }
 }

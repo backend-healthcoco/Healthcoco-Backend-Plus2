@@ -249,48 +249,27 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     @Transactional
     public List<String> addEditSpeciality(DoctorSpecialityAddEditRequest request) {
 	DoctorCollection doctorCollection = null;
-	List<SpecialityCollection> specialityCollections = null;
-	List<String> specialities = null;
-	List<String> specialitiesByName = null;
 	try {
-	    specialityCollections = specialityRepository.findAll();
-	    specialities = new ArrayList<String>();
-	    specialitiesByName = new ArrayList<String>();
-
-	    if (request.getSpeciality() != null) {
-		if (!request.getSpeciality().isEmpty()) {
-		    specialityCollections = specialityRepository.findAll();
-		    specialities = new ArrayList<String>();
-		    for (String speciality : request.getSpeciality()) {
-//			Boolean specialityFound = false;
-			for (SpecialityCollection specialityCollection : specialityCollections) {
-			    if (speciality.trim().equalsIgnoreCase(specialityCollection.getSuperSpeciality())) {
-				specialities.add(specialityCollection.getId());
-//				specialityFound = true;
-				break;
-			    }
-			}
-//			if (!specialityFound) {
-//			    SpecialityCollection specialityCollection = new SpecialityCollection();
-//			    specialityCollection.setSpeciality(speciality);
-//			    specialityCollection.setSuperSpeciality(speciality);
-//			    specialityCollection.setCreatedTime(new Date());
-//			    specialityCollection = specialityRepository.save(specialityCollection);
-//			    specialities.add(specialityCollection.getId());
-//			}
+		doctorCollection = doctorRepository.findByUserId(request.getDoctorId());
+		if(doctorCollection != null){
+			if (request.getSpeciality() != null && !request.getSpeciality().isEmpty()) {
+				List<SpecialityCollection> specialityCollections = specialityRepository.findBySuperSpeciality(request.getSpeciality());
+			    @SuppressWarnings("unchecked")
+				Collection<String> specialityIds = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("id"));
+			    if(specialityIds != null && !specialityIds.isEmpty())doctorCollection.setSpecialities(new ArrayList<>(specialityIds));
+			    else doctorCollection.setSpecialities(null);
+		    }else{
+		    	doctorCollection.setSpecialities(null);	
 		    }
+		    doctorRepository.save(doctorCollection);
 		}
-	    }
-	    doctorCollection = doctorRepository.findByUserId(request.getDoctorId());
-	    doctorCollection.setSpecialities(specialities);
-	    doctorRepository.save(doctorCollection);
 
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Profile");
 	    throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
 	}
-	return specialitiesByName;
+	return request.getSpeciality();
     }
 
     @Override
@@ -816,9 +795,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     public DoctorMultipleDataAddEditResponse addEditMultipleData(DoctorMultipleDataAddEditRequest request) {
 	UserCollection userCollection = null;
 	DoctorCollection doctorCollection = null;
-	List<SpecialityCollection> specialityCollections = null;
-	List<String> specialities = null;
-	List<String> specialitiesresponse = null;
+	List<String> specialitiesresponse = new ArrayList<>();
 	DoctorMultipleDataAddEditResponse response = null;
 	try {
 	    userCollection = userRepository.findOne(request.getDoctorId());
@@ -848,35 +825,28 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		    doctorCollection.setExperience(doctorExperience);
 		}
 
-		if (request.getSpeciality() != null) {
-		    if (!request.getSpeciality().isEmpty()) {
-			specialityCollections = specialityRepository.findAll();
-			specialities = new ArrayList<String>();
-			specialitiesresponse = new ArrayList<String>();
-			for (String speciality : request.getSpeciality()) {
-//			    Boolean specialityFound = false;
-			    for (SpecialityCollection specialityCollection : specialityCollections) {
-				if (speciality.trim().equalsIgnoreCase(specialityCollection.getSuperSpeciality())) {
-				    specialities.add(specialityCollection.getId());
-				    specialitiesresponse.add(specialityCollection.getSuperSpeciality());
-//				    specialityFound = true;
-				    break;
-				}
+		if (request.getSpeciality() != null && !request.getSpeciality().isEmpty()) {
+			List<SpecialityCollection> specialityCollections = specialityRepository.findBySuperSpeciality(request.getSpeciality());
+		    if(specialityCollections != null && !specialityCollections.isEmpty()){
+		    	@SuppressWarnings("unchecked")
+				Collection<String> specialityIds = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("id"));
+			    @SuppressWarnings("unchecked")
+				Collection<String> specialities = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("superSpeciality"));
+			    if(specialityIds != null && !specialityIds.isEmpty()){
+			    	doctorCollection.setSpecialities(new ArrayList<>(specialityIds));
+			    	specialitiesresponse.addAll(specialities);
 			    }
-//			    if (!specialityFound) {
-//				SpecialityCollection specialityCollection = new SpecialityCollection();
-//				specialityCollection.setSpeciality(speciality);
-//				specialityCollection.setCreatedTime(new Date());
-//				specialityCollection = specialityRepository.save(specialityCollection);
-//				specialities.add(specialityCollection.getId());
-//				specialitiesresponse.add(specialityCollection.getSpeciality());
-//			    }
-			}
-			doctorCollection.setSpecialities(specialities);
-		    } else {
-			doctorCollection.setSpecialities(new ArrayList<String>());
+			    else {
+			    	doctorCollection.setSpecialities(null);
+			    	specialitiesresponse = null;
+			    }
+		    }else{
+		    	doctorCollection.setSpecialities(null);
+		    	specialitiesresponse = null;
 		    }
-		}
+	    }else{
+	    	doctorCollection.setSpecialities(null);	
+	    }
 
 		if (request.getProfileImage() != null) {
 		    String path = "profile-image";

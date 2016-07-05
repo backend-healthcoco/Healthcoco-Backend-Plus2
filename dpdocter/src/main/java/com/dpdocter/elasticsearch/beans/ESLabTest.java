@@ -34,6 +34,6 @@ public class ESLabTest {
 
     @Override
     public String toString() {
-	return "SolrLabTest [id=" + id + ", testName=" + testName + ", cost=" + cost + "]";
+	return "ESLabTest [id=" + id + ", testName=" + testName + ", cost=" + cost + "]";
     }
 }

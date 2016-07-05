@@ -133,7 +133,7 @@ public interface PrescriptionServices {
 
     PrescriptionTestAndRecord checkPrescriptionExists(String uniqueEmrId, String patientId);
 
-	Boolean addRemoveGenericCode(String action, String genericId, String drugCode);
+	Boolean addRemoveGenericCode(String action, String genericCode, String drugCode);
 
 	GenericCode addEditGenericCode(GenericCode request);
 

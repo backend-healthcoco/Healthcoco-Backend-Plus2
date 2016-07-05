@@ -1,3 +1,4 @@
+
 package com.dpdocter.services.impl;
 
 import java.io.File;
@@ -1017,7 +1018,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     public String patientIdGenerator(String doctorId, String locationId, String hospitalId) {
 	String generatedId = null;
 	try {
-	    Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+	    Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 	    int currentDay = localCalendar.get(Calendar.DATE);
 	    int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 	    int currentYear = localCalendar.get(Calendar.YEAR);
@@ -1038,7 +1039,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 		String patientInitial = clinicProfileCollection.getPatientInitial();
 		int patientCounter = clinicProfileCollection.getPatientCounter();
 
-//		if(patientCount > 0)patientCounter = patientCounter + patientCount + 1;
 		if(patientCounter <= patientSize)patientCounter =  patientCounter + patientSize;
 		generatedId = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay) + DPDoctorUtils.getPrefixedNumber(currentMonth)
 			+ DPDoctorUtils.getPrefixedNumber(currentYear % 100) + DPDoctorUtils.getPrefixedNumber(patientCounter);
@@ -1114,7 +1114,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     private Boolean checkIfPatientInitialAndCounterExist(String doctorId, String locationId, String patientInitial, int patientCounter) {
     	Boolean response = false;
 	try {
-	    Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+	    Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 	    int currentDay = localCalendar.get(Calendar.DATE);
 	    int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 	    int currentYear = localCalendar.get(Calendar.YEAR);

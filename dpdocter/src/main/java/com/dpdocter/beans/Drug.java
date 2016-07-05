@@ -13,7 +13,7 @@ public class Drug {
 
     private Strength strength;
 
-    private List<String> genericIds;
+    private List<String> genericCodes;
 
     private String drugCode;
 
@@ -71,12 +71,12 @@ public class Drug {
 	this.strength = strength;
     }
 
-    public List<String> getGenericIds() {
-		return genericIds;
+	public List<String> getGenericCodes() {
+		return genericCodes;
 	}
 
-	public void setGenericIds(List<String> genericIds) {
-		this.genericIds = genericIds;
+	public void setGenericCodes(List<String> genericCodes) {
+		this.genericCodes = genericCodes;
 	}
 
 	public String getDrugCode() {
@@ -146,9 +146,8 @@ public class Drug {
 	@Override
 	public String toString() {
 		return "Drug [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation=" + explanation
-				+ ", strength=" + strength + ", genericIds=" + genericIds + ", drugCode=" + drugCode + ", discarded="
-				+ discarded + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP=" + MRP + ", doctorId="
-				+ doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + "]";
+				+ ", strength=" + strength + ", genericCodes=" + genericCodes + ", drugCode=" + drugCode
+				+ ", discarded=" + discarded + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP="
+				+ MRP + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + "]";
 	}
-
 }

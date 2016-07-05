@@ -15,7 +15,7 @@ public class ESDrugDocument {
     @Id
     private String id;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.String, index = FieldIndex.not_analyzed)
     private String drugName;
 
     @Field(type = FieldType.String)
@@ -55,7 +55,7 @@ public class ESDrugDocument {
     private String MRP;
 
     @MultiField(mainField = @Field(type = FieldType.String))
-    private List<String> genericIds;
+    private List<String> genericCodes;
 
     public String getId() {
 	return id;
@@ -169,13 +169,12 @@ public class ESDrugDocument {
 		MRP = mRP;
 	}
 
-	
-	public List<String> getGenericIds() {
-		return genericIds;
+	public List<String> getGenericCodes() {
+		return genericCodes;
 	}
 
-	public void setGenericIds(List<String> genericIds) {
-		this.genericIds = genericIds;
+	public void setGenericCodes(List<String> genericCodes) {
+		this.genericCodes = genericCodes;
 	}
 
 	@Override
@@ -184,6 +183,6 @@ public class ESDrugDocument {
 				+ drugCode + ", drugTypeId=" + drugTypeId + ", drugType=" + drugType + ", doctorId=" + doctorId
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
 				+ ", updatedTime=" + updatedTime + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP="
-				+ MRP + ", genericIds=" + genericIds + "]";
+				+ MRP + ", genericCodes=" + genericCodes + "]";
 	}
 }

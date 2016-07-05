@@ -14,21 +14,15 @@
       <div style="background-color: #faf8f8; padding:20px;">
 
         <div align="center" style="margin-top: 10px">
-          <img src="${imageURL}/prs.png" style="margin-top: 5px">
+          <img src="${imageURL}/p_cancle.png" style="margin-top: 5px">
         </div>
 
         <div>
-         <p style="color:#2c3335;font-size:15px;">Hello ${fName},<br><br>
-         Your password was reset successfully.<br><br>
-         If this wasn’t you, you can change your password by clicking here.
-         <a style="color: #0077b5;text-decoration:none;"href="${link}" target="_blank">${link}</a> <br><br>
+         <p style="color:#2c3335;font-size:15px;">Hello ${patientName},<br><br>
+         Your appointment with ${doctorName} scheduled on ${dateTime} has been cancelled as per your request.
+         Kindly use the Healthcoco app to book another appointment as per your need.<br><br>
          For any feedback regarding our services or the Healthcoco app, please feel free to contact us at <a style="color: #0077b5;text-decoration:none;"href="" target="_blank" >usersfirst@healthcoco.com</a>
-
- 
-
-
-
-            <br><br>Stay Healthy and Happy,<br>Team Healthcoco.
+          <br><br>Stay Healthy and Happy,<br>Team Healthcoco.
          </p>
         </div>
       </div>

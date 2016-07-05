@@ -66,10 +66,29 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	    transnationalService.addResource(request.getId(), Resource.DRUG, true);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e + " Error Occurred While Saving Drug in Solr");
+	    logger.error(e + " Error Occurred While Saving Drug in ES");
 	}
 	return response;
     }
+    
+	@Override
+	public Boolean editDrugTypeInDrugs(String drugTypeId) {
+		Boolean response = false;
+		try {
+		    List<ESDrugDocument> esDrugDocuments = esDrugRepository.findBydrugTypeId(drugTypeId);
+		    if(esDrugDocuments != null && !esDrugDocuments.isEmpty()){
+		    	for(ESDrugDocument esDrugDocument : esDrugDocuments){
+		    		esDrugRepository.save(esDrugDocument);
+		    	}
+		    }
+		    response = true;
+		    transnationalService.addResource(drugTypeId, Resource.DRUGSDRUGTYPE, true);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error Occurred While Saving Drug in ES");
+		}
+		return response;
+	}
 
     @Override
     public boolean addLabTest(ESLabTestDocument request) {
@@ -81,7 +100,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e + " Error Occurred While Saving Lab Test in Solr");
+	    logger.error(e + " Error Occurred While Saving Lab Test in ES");
 	}
 	return response;
     }
@@ -110,7 +129,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	    boolean discarded, String searchTerm) {
 	List<ESDrugDocument> response = null;
 	try {
-	    SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "drugName", searchTerm, null);
+	    SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "drugName", searchTerm, "drugName");
 	    response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -123,7 +142,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
     private List<ESDrugDocument> getGlobalDrugs(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
 	List<ESDrugDocument> response = null;
 	try {
-		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(page, size, updatedTime, discarded, "drugName", searchTerm, null);
+		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(page, size, updatedTime, discarded, null, searchTerm, "drugName");
 	    response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -139,7 +158,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	try {
 	    if (doctorId == null)response = new ArrayList<ESDrugDocument>();
 	    else {
-	    	SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "drugName", searchTerm, null);
+	    	SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, "drugName");
 		    response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
 			}
 	} catch (Exception e) {
@@ -192,7 +211,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	try {
 		Collection<String> testIds = null;
 		if(!DPDoctorUtils.anyStringEmpty(searchTerm)){
-			SearchQuery searchQueryForTest = createGlobalQueryWithoutDoctorId(0, 0, updatedTime, false, "testName", searchTerm, null, true, ESDiagnosticTestDocument.class, null);
+			SearchQuery searchQueryForTest = createGlobalQueryWithoutDoctorId(0, 0, updatedTime, false, "testName", searchTerm, null, true, ESDiagnosticTestDocument.class, "testName");
 			List<ESDiagnosticTestDocument> diagnosticTestCollections = elasticsearchTemplate.queryForList(searchQueryForTest, ESDiagnosticTestDocument.class);
 		    testIds = CollectionUtils.collect(diagnosticTestCollections, new BeanToPropertyValueTransformer("id"));
 		    if(testIds == null || testIds.isEmpty())return response;
@@ -216,7 +235,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	    else {
 	    	Collection<String> testIds = null;
 			if(!DPDoctorUtils.anyStringEmpty(searchTerm)){
-		    	SearchQuery searchQueryForTest = createCustomQueryWithoutDoctorId(0, 0, locationId, hospitalId, updatedTime, false, "testName", searchTerm, null, true, ESDiagnosticTestDocument.class, null);
+		    	SearchQuery searchQueryForTest = createCustomQueryWithoutDoctorId(0, 0, locationId, hospitalId, updatedTime, false, "testName", searchTerm, null, true, ESDiagnosticTestDocument.class, "testName");
 				List<ESDiagnosticTestDocument> diagnosticTestCollections = elasticsearchTemplate.queryForList(searchQueryForTest, ESDiagnosticTestDocument.class);
 			    testIds = CollectionUtils.collect(diagnosticTestCollections, new BeanToPropertyValueTransformer("id"));
 			    if(testIds == null || testIds.isEmpty())return response;
@@ -239,7 +258,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	try {
 		Collection<String> testIds = null;
 		if(!DPDoctorUtils.anyStringEmpty(searchTerm)){
-			SearchQuery searchQueryForTest = createCustomGlobalQueryWithoutDoctorId(0, 0, locationId, hospitalId, updatedTime, false, "testName", searchTerm, null, true, ESDiagnosticTestDocument.class, null);
+			SearchQuery searchQueryForTest = createCustomGlobalQueryWithoutDoctorId(0, 0, locationId, hospitalId, updatedTime, false, "testName", searchTerm, null, true, ESDiagnosticTestDocument.class, "testName");
 			List<ESDiagnosticTestDocument> diagnosticTestCollections = elasticsearchTemplate.queryForList(searchQueryForTest, ESDiagnosticTestDocument.class);
 		    testIds = CollectionUtils.collect(diagnosticTestCollections, new BeanToPropertyValueTransformer("id"));
 		    if(testIds == null || testIds.isEmpty())return response;
@@ -256,16 +275,16 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
     }
 
     @Override
-    public Boolean addEditDiagnosticTest(ESDiagnosticTestDocument solrDiagnosticTestDocument) {
+    public Boolean addEditDiagnosticTest(ESDiagnosticTestDocument ESDiagnosticTestDocument) {
 	boolean response = false;
 	try {
-	    esDiagnosticTestRepository.save(solrDiagnosticTestDocument);
+	    esDiagnosticTestRepository.save(ESDiagnosticTestDocument);
 	    response = true;
-	    transnationalService.addResource(solrDiagnosticTestDocument.getId(), Resource.DIAGNOSTICTEST, true);
+	    transnationalService.addResource(ESDiagnosticTestDocument.getId(), Resource.DIAGNOSTICTEST, true);
 
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error(e + " Error Occurred While Saving Diagnostic Test in Solr");
+	    logger.error(e + " Error Occurred While Saving Diagnostic Test in ES");
 	}
 	return response;
     }
@@ -340,13 +359,19 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 				.mustNot(QueryBuilders.existsQuery("locationId"))
     			.mustNot(QueryBuilders.existsQuery("hospitalId"));
  	    
-		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName, searchTerm));
- 	    if(!discarded)boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
+	   if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName, searchTerm));
+ 	   if(!discarded)boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
  	   if(testIds != null && !testIds.isEmpty())boolQueryBuilder.must(QueryBuilders.termsQuery("testId", testIds));
- 	  if(calculateCount)size = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), classForCount);
+ 	   if(calculateCount)size = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), classForCount);
         SearchQuery searchQuery = null;
-        if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
-        else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
+        if(!DPDoctorUtils.anyStringEmpty(sortBy)){
+        	if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.ASC, sortBy)).build();
+            else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
+        }
+        else{
+        	if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size)).build();
+            else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build();
+        }
         
         return searchQuery;
 	}
@@ -361,9 +386,15 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
  	   if(testIds != null && !testIds.isEmpty())boolQueryBuilder.must(QueryBuilders.termsQuery("testId", testIds));
  	    if(calculateCount)size = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), classForCount);
         SearchQuery searchQuery = null;
-        if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
-        else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
-        
+        if(!DPDoctorUtils.anyStringEmpty(sortBy)){
+        	if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.ASC, sortBy)).build();
+            else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
+        }
+        else{
+        	if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size)).build();
+            else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build();
+        }
+          
         return searchQuery;
 	}
 
@@ -386,10 +417,16 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	    
 	    if(calculateCount)size = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), classForCount);
         SearchQuery searchQuery = null;
-        if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
-        else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
+        if(!DPDoctorUtils.anyStringEmpty(sortBy)){
+        	if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.ASC, sortBy)).build();
+            else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
+        }
+        else{
+        	if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size)).build();
+            else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build();
+        }
+        
 
         return searchQuery;
 	}
-
 }

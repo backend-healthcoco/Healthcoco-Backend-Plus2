@@ -11,7 +11,6 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -290,6 +289,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     		if(appointmentDoctorReminderResponses != null && !appointmentDoctorReminderResponses.isEmpty())
     		for(AppointmentDoctorReminderResponse appointmentDoctorReminderResponse : appointmentDoctorReminderResponses){
     			UserCollection userCollection = userRepository.findOne(appointmentDoctorReminderResponse.getDoctorId());
+//    			LocationCollection locationCollection = locationRepository.findOne(appointmentDoctorReminderResponse.get)
     			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
     			String dateTime = sdf.format(new Date());
     			if(appointmentDoctorReminderResponse.getTotal() > 0){
@@ -315,6 +315,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
         			    smsDetails.add(smsDetail);
         			    smsTrackDetail.setSmsDetails(smsDetails);
         			    sMSServices.sendSMS(smsTrackDetail, true);
+        			    
+//        			    String body = mailBodyGenerator.generateAppointmentEmailBody(userCollection.getTitle()+" "+ userCollection.getFirstName(), null, dateTime, null, "appointmentDetailsTemplate.vm");
+//        			    mailService.sendEmail(userCollection.getEmailAddress(), appointmentDetailsSub, body, null);
         			}
     			}else{
 //    				String body = mailBodyGenerator.generateAppointmentEmailBody(userCollection.getTitle()+" "+ userCollection.getFirstName(), null, dateTime, null, "noAppointmentDetailsTemplate.vm");
@@ -326,6 +329,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     	    logger.error(e);
     	}
     }
+    
     public void checkOTP() {
 	try {
 	    List<OTPCollection> otpCollections = otpRepository.findNonExpiredOtp(OTPState.EXPIRED.getState());

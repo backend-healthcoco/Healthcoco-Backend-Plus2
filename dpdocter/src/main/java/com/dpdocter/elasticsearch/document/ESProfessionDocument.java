@@ -48,7 +48,7 @@ public class ESProfessionDocument {
 
 	@Override
 	public String toString() {
-		return "SolrProfessionDocument [id=" + id + ", profession=" + profession + ", explanation=" + explanation
+		return "ESProfessionDocument [id=" + id + ", profession=" + profession + ", explanation=" + explanation
 				+ ", updatedTime=" + updatedTime + "]";
 	}
 }
