@@ -49,7 +49,7 @@ public class Location {
 
     private List<String> alternateClinicNumbers;
 
-    private List<WorkingSchedule> workingSchedules;
+    private List<WorkingSchedule> clinicWorkingSchedules;
 
     private boolean isTwentyFourSevenOpen;
 
@@ -209,15 +209,15 @@ public class Location {
 	this.locality = locality;
     }
 
-    public List<WorkingSchedule> getWorkingSchedules() {
-	return workingSchedules;
-    }
+    public List<WorkingSchedule> getClinicWorkingSchedules() {
+		return clinicWorkingSchedules;
+	}
 
-    public void setWorkingSchedules(List<WorkingSchedule> workingSchedules) {
-	this.workingSchedules = workingSchedules;
-    }
+	public void setClinicWorkingSchedules(List<WorkingSchedule> clinicWorkingSchedules) {
+		this.clinicWorkingSchedules = clinicWorkingSchedules;
+	}
 
-    public boolean isTwentyFourSevenOpen() {
+	public boolean isTwentyFourSevenOpen() {
 	return isTwentyFourSevenOpen;
     }
 
@@ -305,8 +305,8 @@ public class Location {
 				+ ", latitude=" + latitude + ", longitude=" + longitude + ", tagLine=" + tagLine + ", landmarkDetails="
 				+ landmarkDetails + ", locationEmailAddress=" + locationEmailAddress + ", specialization="
 				+ specialization + ", streetAddress=" + streetAddress + ", locality=" + locality + ", clinicNumber="
-				+ clinicNumber + ", alternateClinicNumbers=" + alternateClinicNumbers + ", workingSchedules="
-				+ workingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + ", isClinic=" + isClinic
+				+ clinicNumber + ", alternateClinicNumbers=" + alternateClinicNumbers + ", clinicWorkingSchedules="
+				+ clinicWorkingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + ", isClinic=" + isClinic
 				+ ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited="
 				+ isNABLAccredited + ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", locationUId="
 				+ locationUId + "]";

@@ -81,17 +81,18 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 				if(!DPDoctorUtils.anyStringEmpty(request.getUserId())){
 					UserCollection userCollection = userRepository.findOne(request.getUserId());
 					if(userCollection != null){
-					if(userCollection.getEmailAddress().equalsIgnoreCase(userCollection.getUserName())) 
-						 userDeviceCollection.setRole(RoleEnum.DOCTOR);
-					else userDeviceCollection.setRole(RoleEnum.PATIENT);
+						if(userCollection.getEmailAddress().equalsIgnoreCase(userCollection.getUserName())) 
+							 userDeviceCollection.setRole(RoleEnum.DOCTOR);
+						else userDeviceCollection.setRole(RoleEnum.PATIENT);
+					}
 				}
 				userDeviceRepository.save(userDeviceCollection);
 				response = new UserDevice();
 				BeanUtil.map(userDeviceCollection, response);
-			}else{
-				logger.error("User ID cannot be null");
-			    throw new BusinessException(ServiceError.InvalidInput, "User ID cannot be null");
-			}
+//			}else{
+//				logger.error("User ID cannot be null");
+//			    throw new BusinessException(ServiceError.InvalidInput, "User ID cannot be null");
+//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		    logger.error(e + " Error while adding device : " + e.getCause().getMessage());

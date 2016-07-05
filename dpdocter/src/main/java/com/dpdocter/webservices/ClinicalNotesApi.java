@@ -27,6 +27,13 @@ import com.dpdocter.beans.Investigation;
 import com.dpdocter.beans.Notes;
 import com.dpdocter.beans.Observation;
 import com.dpdocter.collections.DiagramsCollection;
+import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
+import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
+import com.dpdocter.elasticsearch.document.ESDiagramsDocument;
+import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
+import com.dpdocter.elasticsearch.document.ESNotesDocument;
+import com.dpdocter.elasticsearch.document.ESObservationsDocument;
+import com.dpdocter.elasticsearch.services.ESClinicalNotesService;
 import com.dpdocter.enums.ClinicalItems;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.VisitedFor;
@@ -39,13 +46,6 @@ import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.TransactionalManagementService;
-import com.dpdocter.solr.document.SolrComplaintsDocument;
-import com.dpdocter.solr.document.SolrDiagnosesDocument;
-import com.dpdocter.solr.document.SolrDiagramsDocument;
-import com.dpdocter.solr.document.SolrInvestigationsDocument;
-import com.dpdocter.solr.document.SolrNotesDocument;
-import com.dpdocter.solr.document.SolrObservationsDocument;
-import com.dpdocter.solr.services.SolrClinicalNotesService;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -65,13 +65,13 @@ public class ClinicalNotesApi {
     private ClinicalNotesService clinicalNotesService;
 
     @Autowired
-    private SolrClinicalNotesService solrClinicalNotesService;
+    private ESClinicalNotesService esClinicalNotesService;
 
     @Autowired
     private PatientVisitService patientTrackService;
 
     @Autowired
-    private TransactionalManagementService transnationalService;
+    private TransactionalManagementService transactionalManagementService;
 
     @Autowired
     private OTPService otpService;
@@ -193,16 +193,12 @@ public class ClinicalNotesApi {
     public Response<Complaint> addComplaint(Complaint request) {
 	Complaint complaint = clinicalNotesService.addEditComplaint(request);
 
-	transnationalService.addResource(complaint.getId(), Resource.COMPLAINT, false);
-	// Below service call will add or edit complaint in solr index.
-	SolrComplaintsDocument solrComplaints = new SolrComplaintsDocument();
-	BeanUtil.map(complaint, solrComplaints);
-	if (request.getId() == null) {
-	    solrClinicalNotesService.addComplaints(solrComplaints);
-	} else {
-	    solrClinicalNotesService.editComplaints(solrComplaints);
-	}
-
+	transactionalManagementService.addResource(complaint.getId(), Resource.COMPLAINT, false);
+	// Below service call will add or edit complaint in es index.
+	ESComplaintsDocument esComplaints = new ESComplaintsDocument();
+	BeanUtil.map(complaint, esComplaints);
+	esClinicalNotesService.addComplaints(esComplaints);
+	
 	Response<Complaint> response = new Response<Complaint>();
 	response.setData(complaint);
 	return response;
@@ -214,15 +210,10 @@ public class ClinicalNotesApi {
     public Response<Observation> addObservation(Observation request) {
 	Observation observation = clinicalNotesService.addEditObservation(request);
 
-	transnationalService.addResource(observation.getId(), Resource.OBSERVATION, false);
-
-	SolrObservationsDocument solrObservations = new SolrObservationsDocument();
-	BeanUtil.map(observation, solrObservations);
-	if (request.getId() == null) {
-	    solrClinicalNotesService.addObservations(solrObservations);
-	} else {
-	    solrClinicalNotesService.editObservations(solrObservations);
-	}
+	transactionalManagementService.addResource(observation.getId(), Resource.OBSERVATION, false);
+	ESObservationsDocument esObservations = new ESObservationsDocument();
+	BeanUtil.map(observation, esObservations);
+	esClinicalNotesService.addObservations(esObservations);
 	Response<Observation> response = new Response<Observation>();
 	response.setData(observation);
 	return response;
@@ -234,16 +225,11 @@ public class ClinicalNotesApi {
     public Response<Investigation> addInvestigation(Investigation request) {
 	Investigation investigation = clinicalNotesService.addEditInvestigation(request);
 
-	transnationalService.addResource(investigation.getId(), Resource.INVESTIGATION, false);
-
-	SolrInvestigationsDocument solrInvestigations = new SolrInvestigationsDocument();
-	BeanUtil.map(investigation, solrInvestigations);
-	if (request.getId() == null) {
-	    solrClinicalNotesService.addInvestigations(solrInvestigations);
-	} else {
-	    solrClinicalNotesService.editInvestigations(solrInvestigations);
-	}
-
+	transactionalManagementService.addResource(investigation.getId(), Resource.INVESTIGATION, false);
+	ESInvestigationsDocument esInvestigations = new ESInvestigationsDocument();
+	BeanUtil.map(investigation, esInvestigations);
+	esClinicalNotesService.addInvestigations(esInvestigations);
+	
 	Response<Investigation> response = new Response<Investigation>();
 	response.setData(investigation);
 	return response;
@@ -255,16 +241,11 @@ public class ClinicalNotesApi {
     public Response<Diagnoses> addDiagnosis(Diagnoses request) {
 	Diagnoses diagnosis = clinicalNotesService.addEditDiagnosis(request);
 
-	transnationalService.addResource(diagnosis.getId(), Resource.DIAGNOSIS, false);
-	// Add diagnosis in solr index.
-	SolrDiagnosesDocument solrDiagnoses = new SolrDiagnosesDocument();
-	BeanUtil.map(diagnosis, solrDiagnoses);
-	if (request.getId() == null) {
-	    solrClinicalNotesService.addDiagnoses(solrDiagnoses);
-	} else {
-	    solrClinicalNotesService.editDiagnoses(solrDiagnoses);
-	}
-
+	transactionalManagementService.addResource(diagnosis.getId(), Resource.DIAGNOSIS, false);
+	ESDiagnosesDocument esDiagnoses = new ESDiagnosesDocument();
+	BeanUtil.map(diagnosis, esDiagnoses);
+	esClinicalNotesService.addDiagnoses(esDiagnoses);
+	
 	Response<Diagnoses> response = new Response<Diagnoses>();
 	response.setData(diagnosis);
 	return response;
@@ -276,15 +257,11 @@ public class ClinicalNotesApi {
     public Response<Notes> addNotes(Notes request) {
 	Notes notes = clinicalNotesService.addEditNotes(request);
 
-	transnationalService.addResource(notes.getId(), Resource.NOTES, false);
-	// add notes in solr index.
-	SolrNotesDocument solrNotes = new SolrNotesDocument();
-	BeanUtil.map(notes, solrNotes);
-	if (request.getId() == null) {
-	    solrClinicalNotesService.addNotes(solrNotes);
-	} else {
-	    solrClinicalNotesService.editNotes(solrNotes);
-	}
+	transactionalManagementService.addResource(notes.getId(), Resource.NOTES, false);
+	ESNotesDocument esNotes = new ESNotesDocument();
+	BeanUtil.map(notes, esNotes);
+	esClinicalNotesService.addNotes(esNotes);
+	
 	Response<Notes> response = new Response<Notes>();
 	response.setData(notes);
 	return response;
@@ -295,10 +272,10 @@ public class ClinicalNotesApi {
     @ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_DIAGRAM, notes = PathProxy.ClinicalNotesUrls.ADD_DIAGRAM)
     public Response<Diagram> addDiagram(Diagram request) {
 	Diagram diagram = clinicalNotesService.addEditDiagram(request);
-	transnationalService.addResource(diagram.getId(), Resource.DIAGRAM, false);
-	SolrDiagramsDocument solrDiagrams = new SolrDiagramsDocument();
-	BeanUtil.map(diagram, solrDiagrams);
-	solrClinicalNotesService.addDiagrams(solrDiagrams);
+	transactionalManagementService.addResource(diagram.getId(), Resource.DIAGRAM, false);
+	ESDiagramsDocument esDiagrams = new ESDiagramsDocument();
+	BeanUtil.map(diagram, esDiagrams);
+	esClinicalNotesService.addDiagrams(esDiagrams);
 	
 	if (diagram.getDiagramUrl() != null) {
 	    diagram.setDiagramUrl(getFinalImageURL(diagram.getDiagramUrl()));
@@ -315,10 +292,13 @@ public class ClinicalNotesApi {
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
     	Complaint complaint = clinicalNotesService.deleteComplaint(id, doctorId, locationId, hospitalId, discarded);
-	transnationalService.addResource(id, Resource.COMPLAINT, false);
-
-	solrClinicalNotesService.deleteComplaints(id, discarded);
-
+	
+    	if(complaint != null){
+			transactionalManagementService.addResource(complaint.getId(), Resource.COMPLAINT, false);
+			ESComplaintsDocument esComplaints = new ESComplaintsDocument();
+			BeanUtil.map(complaint, esComplaints);
+			esClinicalNotesService.addComplaints(esComplaints);
+		}
 	Response<Complaint> response = new Response<Complaint>();
 	response.setData(complaint);
 	return response;
@@ -331,9 +311,13 @@ public class ClinicalNotesApi {
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
     	Observation observation = clinicalNotesService.deleteObservation(id, doctorId, locationId, hospitalId, discarded);
-	transnationalService.addResource(id, Resource.OBSERVATION, false);
-	solrClinicalNotesService.deleteObservations(id, discarded);
-
+    	if(observation != null){
+			transactionalManagementService.addResource(observation.getId(), Resource.OBSERVATION, false);
+			ESObservationsDocument esObservations = new ESObservationsDocument();
+			BeanUtil.map(observation, esObservations);
+			esClinicalNotesService.addObservations(esObservations);
+		}
+	    
 	Response<Observation> response = new Response<Observation>();
 	response.setData(observation);
 	return response;
@@ -346,8 +330,12 @@ public class ClinicalNotesApi {
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
     	Investigation investigation = clinicalNotesService.deleteInvestigation(id, doctorId, locationId, hospitalId, discarded);
-	transnationalService.addResource(id, Resource.INVESTIGATION, false);
-	solrClinicalNotesService.deleteInvestigations(id, discarded);
+    	if(investigation != null){
+	    	transactionalManagementService.addResource(investigation.getId(), Resource.INVESTIGATION, false);
+	    	ESInvestigationsDocument esInvestigations = new ESInvestigationsDocument();
+	    	BeanUtil.map(investigation, esInvestigations);
+	    	esClinicalNotesService.addInvestigations(esInvestigations);
+	    }
 
 	Response<Investigation> response = new Response<Investigation>();
 	response.setData(investigation);
@@ -361,9 +349,12 @@ public class ClinicalNotesApi {
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
     	Diagnoses diagnoses = clinicalNotesService.deleteDiagnosis(id, doctorId, locationId, hospitalId, discarded);
-	transnationalService.addResource(id, Resource.DIAGNOSIS, false);
-	solrClinicalNotesService.deleteDiagnoses(id, discarded);
-
+    	if(diagnoses != null){
+			transactionalManagementService.addResource(diagnoses.getId(), Resource.DIAGNOSIS, false);
+			ESDiagnosesDocument esDiagnoses = new ESDiagnosesDocument();
+			BeanUtil.map(diagnoses, esDiagnoses);
+			esClinicalNotesService.addDiagnoses(esDiagnoses);
+		}
 	Response<Diagnoses> response = new Response<Diagnoses>();
 	response.setData(diagnoses);
 	return response;
@@ -376,9 +367,12 @@ public class ClinicalNotesApi {
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
     	Notes notes = clinicalNotesService.deleteNotes(id, doctorId, locationId, hospitalId, discarded);
-	transnationalService.addResource(id, Resource.NOTES, false);
-	solrClinicalNotesService.deleteNotes(id, discarded);
-
+    	if(notes != null){
+			transactionalManagementService.addResource(notes.getId(), Resource.NOTES, false);
+			ESNotesDocument esNotes = new ESNotesDocument();
+			BeanUtil.map(notes, esNotes);
+			esClinicalNotesService.addNotes(esNotes);
+		}
 	Response<Notes> response = new Response<Notes>();
 	response.setData(notes);
 	return response;
@@ -391,9 +385,11 @@ public class ClinicalNotesApi {
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
     	Diagram diagram = clinicalNotesService.deleteDiagram(id, doctorId, locationId, hospitalId, discarded);
-	transnationalService.addResource(id, Resource.DIAGRAM, false);
-	solrClinicalNotesService.deleteDiagrams(id, discarded);
-
+    	if(diagram != null){
+			ESDiagramsDocument esDiagrams = new ESDiagramsDocument();
+			BeanUtil.map(diagram, esDiagrams);
+			esClinicalNotesService.addDiagrams(esDiagrams);		
+		}
 	Response<Diagram> response = new Response<Diagram>();
 	response.setData(diagram);
 	return response;

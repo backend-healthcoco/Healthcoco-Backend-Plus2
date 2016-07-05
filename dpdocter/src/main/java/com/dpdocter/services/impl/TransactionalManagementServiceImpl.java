@@ -37,11 +37,28 @@ import com.dpdocter.collections.NotesCollection;
 import com.dpdocter.collections.OTPCollection;
 import com.dpdocter.collections.ObservationCollection;
 import com.dpdocter.collections.PatientCollection;
-import com.dpdocter.collections.PatientVisitCollection;
+import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TransactionalCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
+import com.dpdocter.elasticsearch.document.ESCityDocument;
+import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
+import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
+import com.dpdocter.elasticsearch.document.ESDiagramsDocument;
+import com.dpdocter.elasticsearch.document.ESDoctorDocument;
+import com.dpdocter.elasticsearch.document.ESDrugDocument;
+import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
+import com.dpdocter.elasticsearch.document.ESLabTestDocument;
+import com.dpdocter.elasticsearch.document.ESLandmarkLocalityDocument;
+import com.dpdocter.elasticsearch.document.ESNotesDocument;
+import com.dpdocter.elasticsearch.document.ESObservationsDocument;
+import com.dpdocter.elasticsearch.document.ESPatientDocument;
+import com.dpdocter.elasticsearch.document.ESReferenceDocument;
+import com.dpdocter.elasticsearch.services.ESCityService;
+import com.dpdocter.elasticsearch.services.ESClinicalNotesService;
+import com.dpdocter.elasticsearch.services.ESPrescriptionService;
+import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
 import com.dpdocter.enums.OTPState;
@@ -74,22 +91,6 @@ import com.dpdocter.services.OTPService;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.solr.beans.DoctorLocation;
-import com.dpdocter.solr.document.SolrCityDocument;
-import com.dpdocter.solr.document.SolrComplaintsDocument;
-import com.dpdocter.solr.document.SolrDiagnosesDocument;
-import com.dpdocter.solr.document.SolrDiagramsDocument;
-import com.dpdocter.solr.document.SolrDoctorDocument;
-import com.dpdocter.solr.document.SolrDrugDocument;
-import com.dpdocter.solr.document.SolrInvestigationsDocument;
-import com.dpdocter.solr.document.SolrLabTestDocument;
-import com.dpdocter.solr.document.SolrLocalityLandmarkDocument;
-import com.dpdocter.solr.document.SolrNotesDocument;
-import com.dpdocter.solr.document.SolrObservationsDocument;
-import com.dpdocter.solr.document.SolrPatientDocument;
-import com.dpdocter.solr.services.SolrCityService;
-import com.dpdocter.solr.services.SolrClinicalNotesService;
-import com.dpdocter.solr.services.SolrPrescriptionService;
-import com.dpdocter.solr.services.SolrRegistrationService;
 
 @Service
 public class TransactionalManagementServiceImpl implements TransactionalManagementService {
@@ -106,7 +107,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     private PatientRepository patientRepository;
 
     @Autowired
-    private SolrRegistrationService solrRegistrationService;
+    private ESRegistrationService esRegistrationService;
 
     @Autowired
     private DrugRepository drugRepository;
@@ -115,8 +116,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     private LabTestRepository labTestRepository;
 
     @Autowired
-    private SolrPrescriptionService solrPrescriptionService;
-
+    private ESPrescriptionService esPrescriptionService;
+	
     @Autowired
     private ComplaintRepository complaintRepository;
 
@@ -136,7 +137,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     private DiagramsRepository diagramsRepository;
 
     @Autowired
-    private SolrCityService solrCityService;
+    private ESCityService esCityService;
 
     @Autowired
     private CityRepository cityRepository;
@@ -157,7 +158,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     private DoctorClinicProfileRepository doctorClinicProfileRepository;
 
     @Autowired
-    private SolrClinicalNotesService solrClinicalNotesService;
+    private ESClinicalNotesService esClinicalNotesService;
 
     @Autowired
     private ReferenceRepository referenceRepository;
@@ -226,7 +227,10 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			case LOCATION:
 			    checkLocation(transactionalCollection.getResourceId());
 			    break;
-
+			case REFERENCE:
+			    checkReference(transactionalCollection.getResourceId());
+			    break;
+   
 			default:
 			    break;
 			}
@@ -241,7 +245,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	}
     }
 
-  //Appointment Reminder to Doctor, if appointment > 0
+	//Appointment Reminder to Doctor, if appointment > 0
     @Scheduled(cron = "0 0/30 7 * * *", zone = "IST")
     @Override
     @Transactional
@@ -356,13 +360,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	    List<PatientCollection> patientCollections = patientRepository.findByUserId(id);
 	    if (userCollection != null && patientCollections != null) {
 		for (PatientCollection patientCollection : patientCollections) {
-		    SolrPatientDocument patientDocument = new SolrPatientDocument();
+		    ESPatientDocument patientDocument = new ESPatientDocument();
 
-		    if (patientCollection.getDob() != null) {
-			patientDocument.setDays(patientCollection.getDob().getDays() + "");
-			patientDocument.setMonths(patientCollection.getDob().getMonths() + "");
-			patientDocument.setYears(patientCollection.getDob().getYears() + "");
-		    }
 		    BeanUtil.map(userCollection, patientDocument);
 		    if (patientCollection != null)
 			BeanUtil.map(patientCollection, patientDocument);
@@ -371,7 +370,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			patientDocument.setId(patientCollection.getId());
 
 		    if (patientCollection != null)
-			solrRegistrationService.editPatient(patientDocument);
+			esRegistrationService.addPatient(patientDocument);
 		}
 	    }
 	} catch (Exception e) {
@@ -386,13 +385,13 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	try {
 	    DrugCollection drugCollection = drugRepository.findOne(id);
 	    if (drugCollection != null) {
-		SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
-		BeanUtil.map(drugCollection, solrDrugDocument);
+		ESDrugDocument esDrugDocument = new ESDrugDocument();
+		BeanUtil.map(drugCollection, esDrugDocument);
 		if (drugCollection.getDrugType() != null) {
-		    solrDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
-		    solrDrugDocument.setDrugType(drugCollection.getDrugType().getType());
+		    esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
+		    esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
 		}
-		solrPrescriptionService.addDrug(solrDrugDocument);
+		esPrescriptionService.addDrug(esDrugDocument);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -406,9 +405,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	try {
 	    LabTestCollection labTestCollection = labTestRepository.findOne(id);
 	    if (labTestCollection != null) {
-		SolrLabTestDocument solrLabTestDocument = new SolrLabTestDocument();
-		BeanUtil.map(labTestCollection, solrLabTestDocument);
-		solrPrescriptionService.addLabTest(solrLabTestDocument);
+		ESLabTestDocument esLabTestDocument = new ESLabTestDocument();
+		BeanUtil.map(labTestCollection, esLabTestDocument);
+		esPrescriptionService.addLabTest(esLabTestDocument);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -422,9 +421,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	try {
 	    ComplaintCollection complaintCollection = complaintRepository.findOne(id);
 	    if (complaintCollection != null) {
-		SolrComplaintsDocument solrComplaintsDocument = new SolrComplaintsDocument();
-		BeanUtil.map(complaintCollection, solrComplaintsDocument);
-		solrClinicalNotesService.addComplaints(solrComplaintsDocument);
+		ESComplaintsDocument esComplaintsDocument = new ESComplaintsDocument();
+		BeanUtil.map(complaintCollection, esComplaintsDocument);
+		esClinicalNotesService.addComplaints(esComplaintsDocument);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -438,9 +437,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	try {
 	    ObservationCollection observationCollection = observationRepository.findOne(id);
 	    if (observationCollection != null) {
-		SolrObservationsDocument solrObservationsDocument = new SolrObservationsDocument();
-		BeanUtil.map(observationCollection, solrObservationsDocument);
-		solrClinicalNotesService.addObservations(solrObservationsDocument);
+		ESObservationsDocument esObservationsDocument = new ESObservationsDocument();
+		BeanUtil.map(observationCollection, esObservationsDocument);
+		esClinicalNotesService.addObservations(esObservationsDocument);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -454,9 +453,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	try {
 	    InvestigationCollection investigationCollection = investigationRepository.findOne(id);
 	    if (investigationCollection != null) {
-		SolrInvestigationsDocument solrInvestigationsDocument = new SolrInvestigationsDocument();
-		BeanUtil.map(investigationCollection, solrInvestigationsDocument);
-		solrClinicalNotesService.addInvestigations(solrInvestigationsDocument);
+		ESInvestigationsDocument esInvestigationsDocument = new ESInvestigationsDocument();
+		BeanUtil.map(investigationCollection, esInvestigationsDocument);
+		esClinicalNotesService.addInvestigations(esInvestigationsDocument);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -470,9 +469,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	try {
 	    DiagnosisCollection diagnosisCollection = diagnosisRepository.findOne(id);
 	    if (diagnosisCollection != null) {
-		SolrDiagnosesDocument solrDiagnosesDocument = new SolrDiagnosesDocument();
-		BeanUtil.map(diagnosisCollection, solrDiagnosesDocument);
-		solrClinicalNotesService.addDiagnoses(solrDiagnosesDocument);
+		ESDiagnosesDocument esDiagnosesDocument = new ESDiagnosesDocument();
+		BeanUtil.map(diagnosisCollection, esDiagnosesDocument);
+		esClinicalNotesService.addDiagnoses(esDiagnosesDocument);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -486,9 +485,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	try {
 	    NotesCollection notesCollection = notesRepository.findOne(id);
 	    if (notesCollection != null) {
-		SolrNotesDocument solrNotesDocument = new SolrNotesDocument();
-		BeanUtil.map(notesCollection, solrNotesDocument);
-		solrClinicalNotesService.addNotes(solrNotesDocument);
+		ESNotesDocument esNotesDocument = new ESNotesDocument();
+		BeanUtil.map(notesCollection, esNotesDocument);
+		esClinicalNotesService.addNotes(esNotesDocument);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -502,9 +501,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	try {
 	    DiagramsCollection diagramsCollection = diagramsRepository.findOne(id);
 	    if (diagramsCollection != null) {
-		SolrDiagramsDocument solrDiagramsDocument = new SolrDiagramsDocument();
-		BeanUtil.map(diagramsCollection, solrDiagramsDocument);
-		solrClinicalNotesService.addDiagrams(solrDiagramsDocument);
+		ESDiagramsDocument esDiagramsDocument = new ESDiagramsDocument();
+		BeanUtil.map(diagramsCollection, esDiagramsDocument);
+		esClinicalNotesService.addDiagrams(esDiagramsDocument);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -521,7 +520,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		DoctorLocation doctorLocation = new DoctorLocation();
 		BeanUtil.map(locationCollection, doctorLocation);
 		doctorLocation.setLocationId(locationCollection.getId());
-		doctorLocation.setClinicNumber(locationCollection.getClinicNumber());
 		if (locationCollection.getImages() != null && !locationCollection.getImages().isEmpty()) {
 		    List<String> images = new ArrayList<String>();
 		    for (ClinicImage clinicImage : locationCollection.getImages()) {
@@ -529,7 +527,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		    }
 		    doctorLocation.setImages(images);
 		}
-		solrRegistrationService.editLocation(doctorLocation);
+		esRegistrationService.editLocation(doctorLocation);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -555,17 +553,13 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		for (UserLocationCollection collection : userLocationCollections) {
 		    LocationCollection locationCollection = locationRepository.findOne(collection.getLocationId());
 		    DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(collection.getId());
-		    SolrDoctorDocument doctorDocument = new SolrDoctorDocument();
+		    ESDoctorDocument doctorDocument = new ESDoctorDocument();
 		    if (locationCollection != null){
-		    	locationCollection.setWorkingSchedules(null);
 		    	BeanUtil.map(locationCollection, doctorDocument);
 		    }
 		    if (userCollection != null)BeanUtil.map(userCollection, doctorDocument);
 		    if (doctorCollection != null)BeanUtil.map(doctorCollection, doctorDocument);
 		    if (clinicProfileCollection != null)BeanUtil.map(clinicProfileCollection, doctorDocument);
-		    else {
-			doctorDocument.setWorkingSchedules(null);
-		    }
 		    if (locationCollection != null)
 			doctorDocument.setLocationId(locationCollection.getId());
 		    if (locationCollection.getImages() != null && !locationCollection.getImages().isEmpty()) {
@@ -575,7 +569,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			}
 			doctorDocument.setImages(images);
 		    }
-		    solrRegistrationService.addDoctor(doctorDocument);
+		    esRegistrationService.addDoctor(doctorDocument);
 		}
 	    }
 	} catch (Exception e) {
@@ -588,9 +582,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	try {
 	    LandmarkLocalityCollection landmarkLocalityCollection = landmarkLocalityRepository.findOne(resourceId);
 	    if (landmarkLocalityCollection != null) {
-		SolrLocalityLandmarkDocument solrLocalityLandmarkDocument = new SolrLocalityLandmarkDocument();
-		BeanUtil.map(landmarkLocalityCollection, solrLocalityLandmarkDocument);
-		solrCityService.addLocalityLandmark(solrLocalityLandmarkDocument);
+		ESLandmarkLocalityDocument esLocalityLandmarkDocument = new ESLandmarkLocalityDocument();
+		BeanUtil.map(landmarkLocalityCollection, esLocalityLandmarkDocument);
+		esCityService.addLocalityLandmark(esLocalityLandmarkDocument);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -602,13 +596,28 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	try {
 	    CityCollection cityCollection = cityRepository.findOne(resourceId);
 	    if (cityCollection != null) {
-		SolrCityDocument solrCityDocument = new SolrCityDocument();
-		BeanUtil.map(cityCollection, solrCityDocument);
-		solrCityService.addCities(solrCityDocument);
+		ESCityDocument esCityDocument = new ESCityDocument();
+		BeanUtil.map(cityCollection, esCityDocument);
+		esCityService.addCities(esCityDocument);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
 	}
     }
-    }
+    
+    private void checkReference(String resourceId) {
+    	try {
+    	    ReferencesCollection referenceCollection = referenceRepository.findOne(resourceId);
+    	    if (referenceCollection != null) {
+    		ESReferenceDocument esReferenceDocument = new ESReferenceDocument();
+    		BeanUtil.map(referenceCollection, esReferenceDocument);
+    		esRegistrationService.addEditReference(esReferenceDocument);
+    	    }
+    	} catch (Exception e) {
+    	    e.printStackTrace();
+    	    logger.error(e);
+    	}
+	}
+
+}

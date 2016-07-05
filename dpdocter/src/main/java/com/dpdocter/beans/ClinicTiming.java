@@ -5,7 +5,7 @@ import java.util.List;
 public class ClinicTiming {
     private String id;
 
-    private List<WorkingSchedule> workingSchedules;
+    private List<WorkingSchedule> clinicWorkingSchedules;
 
     private boolean isTwentyFourSevenOpen;
 
@@ -17,15 +17,15 @@ public class ClinicTiming {
 	this.id = id;
     }
 
-    public List<WorkingSchedule> getWorkingSchedules() {
-	return workingSchedules;
-    }
+    public List<WorkingSchedule> getClinicWorkingSchedules() {
+		return clinicWorkingSchedules;
+	}
 
-    public void setWorkingSchedules(List<WorkingSchedule> workingSchedules) {
-	this.workingSchedules = workingSchedules;
-    }
+	public void setClinicWorkingSchedules(List<WorkingSchedule> clinicWorkingSchedules) {
+		this.clinicWorkingSchedules = clinicWorkingSchedules;
+	}
 
-    public boolean isTwentyFourSevenOpen() {
+	public boolean isTwentyFourSevenOpen() {
 	return isTwentyFourSevenOpen;
     }
 
@@ -35,7 +35,7 @@ public class ClinicTiming {
 
     @Override
     public String toString() {
-	return "ClinicTiming [id=" + id + ", workingSchedules=" + workingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + "]";
+	return "ClinicTiming [id=" + id + ", clinicWorkingSchedules=" + clinicWorkingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + "]";
     }
 
 }

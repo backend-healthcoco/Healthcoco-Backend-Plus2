@@ -4,20 +4,10 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
-import javax.xml.bind.DatatypeConverter;
-
-import org.joda.time.DateTime;
-
-import com.dpdocter.services.PushNotificationServices;
-import com.dpdocter.services.impl.PushNotificationServicesImpl;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 
@@ -92,9 +82,13 @@ public class GeneralTests {
 //	    	}
 	    		 
 	    		 public static void main(String[] args) throws NoSuchAlgorithmException, JsonGenerationException, JsonMappingException, IOException, ParseException  {
-	    			 byte[] bytes = DatatypeConverter.parseHexBinary("cQAIX5sr69w:APA91bFZgKEOIx4jW5x-BWy1M2S2F2uKA2UuHjPex-adlj7ArOMsVecSkcJzYmHKZX07xdPF_9Mr0jpvRzkJ2x5hCLHMoxQArP-mWePJI0gJ8vN7Zx7tVupVkqchOid_EPiQDjIxOYgN");
-	    			 String result= new String(bytes, "UTF-8");
-	    			 System.out.println(result);
+	    			 long createdTimeStamp = Long.parseLong("0");
+	    			 System.out.println(DPDoctorUtils.getSHA3SecurePassword("neha".toCharArray()));
+	    			 
+	    			 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+
+	    			 String dateString = format.format(new Date(Long.parseLong("0")));
+	    			 Date   date       = format.parse (dateString);  System.out.println(new Date(Long.parseLong("0")));  
 	    		 }
 	    		 
 }  	

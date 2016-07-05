@@ -12,8 +12,8 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.elasticsearch.services.ESCityService;
 import com.dpdocter.solr.beans.SolrCityLandmarkLocalityResponse;
-import com.dpdocter.solr.services.SolrCityService;
 
 import common.util.web.Response;
 import io.swagger.annotations.Api;
@@ -24,10 +24,10 @@ import io.swagger.annotations.ApiOperation;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.SOLR_CITY_BASE_URL, description = "Endpoint for solr city")
-public class SolrCityApi {
+public class ESCityApi {
 
     @Autowired
-    private SolrCityService solrCityService;
+    private ESCityService esCityService;
 
     @Path(value = PathProxy.SolrCityUrls.SEARCH_LOCATION)
     @GET
@@ -35,7 +35,7 @@ public class SolrCityApi {
     public Response<SolrCityLandmarkLocalityResponse> searchLocation(@QueryParam(value = "searchTerm") String searchTerm,
 	    @QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude) {
 
-	List<SolrCityLandmarkLocalityResponse> searchResonse = solrCityService.searchCityLandmarkLocality(searchTerm, latitude, longitude);
+	List<SolrCityLandmarkLocalityResponse> searchResonse = esCityService.searchCityLandmarkLocality(searchTerm, latitude, longitude);
 	Response<SolrCityLandmarkLocalityResponse> response = new Response<SolrCityLandmarkLocalityResponse>();
 	response.setDataList(searchResonse);
 	return response;

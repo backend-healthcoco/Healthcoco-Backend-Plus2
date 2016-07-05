@@ -46,6 +46,7 @@ import com.dpdocter.enums.AccessPermissionType;
 import com.dpdocter.enums.ColorCode;
 import com.dpdocter.enums.ColorCode.RandomEnum;
 import com.dpdocter.enums.Module;
+import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.Type;
@@ -59,7 +60,6 @@ import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.RoleRepository;
-import com.dpdocter.repository.SMSFormatRepository;
 import com.dpdocter.repository.TokenRepository;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
@@ -80,6 +80,7 @@ import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.SignUpService;
+import com.dpdocter.services.TransactionalManagementService;
 
 import common.util.web.DPDoctorUtils;
 
@@ -147,14 +148,20 @@ public class SignUpServiceImpl implements SignUpService {
     @Value(value = "${patient.count}")
     private String patientCount;
     
-    @Autowired
-    private SMSFormatRepository sMSFormatRepository;
+//    @Autowired
+//    private SMSFormatRepository sMSFormatRepository;
 
     @Autowired
     private GenerateUniqueUserNameService generateUniqueUserNameService;
 
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @Autowired
+    private ESRegistrationService esRegistrationService;
+
+    @Autowired
+    private TransactionalManagementService transnationalService;
 
     @Value(value = "${Signup.role}")
     private String role;
@@ -177,16 +184,16 @@ public class SignUpServiceImpl implements SignUpService {
     @Transactional
     public String verifyUser(String tokenId) {
 	try {
-	    String startText = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'><html><head><title>verification</title><meta charset='utf-8'>"
-		    + "<meta name='viewport' content='width=device-width, initial-scale=1'><link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>"
-		    + "</head><body>"
-		    + "<div><div style='margin-top:130px'><div style='padding:20px 30px;border-radius:3px;background-color:#fefefe;border:1px solid #f1f1f1;line-height:30px;margin-bottom:30px;font-family:&#39;Open Sans&#39;,sans-serif;margin:0px auto;min-width:200px;max-width:500px'>"
-		    + "<div align='center'><h2 style='font-size:20px;color:#2c3335;text-align:center;letter-spacing:1px'>Account Verification</h2><br><p style='color:#2c3335;font-size:15px;text-align:left'>";
-
-	    String endText = "</p><br><p style='color:#8a6d3b;font-size:15px;text-align:left'>lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum</p>"
-		    + "<br/><a href='" + LOGIN_WEB_LINK
-		    + "' style='border-radius: 3px;color: white;font-size: 15px;font-weight:bold;padding: 11px 7px;max-width: 200px;border: 1px #1373b5 solid;text-align: center;text-decoration: none;width: 200px;margin: 10px auto;display: block;background-color: #007ee6;'>"
-		    + "Click here to Login</a>" + "</div></div></div></div></body></html>";
+//	    String startText = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'><html><head><title>verification</title><meta charset='utf-8'>"
+//		    + "<meta name='viewport' content='width=device-width, initial-scale=1'><link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>"
+//		    + "</head><body>"
+//		    + "<div><div style='margin-top:130px'><div style='padding:20px 30px;border-radius:3px;background-color:#fefefe;border:1px solid #f1f1f1;line-height:30px;margin-bottom:30px;font-family:&#39;Open Sans&#39;,sans-serif;margin:0px auto;min-width:200px;max-width:500px'>"
+//		    + "<div align='center'><h2 style='font-size:20px;color:#2c3335;text-align:center;letter-spacing:1px'>Account Verification</h2><br><p style='color:#2c3335;font-size:15px;text-align:left'>";
+//
+//	    String endText = "</p><br><p style='color:#8a6d3b;font-size:15px;text-align:left'>lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum</p>"
+//		    + "<br/><a href='" + LOGIN_WEB_LINK
+//		    + "' style='border-radius: 3px;color: white;font-size: 15px;font-weight:bold;padding: 11px 7px;max-width: 200px;border: 1px #1373b5 solid;text-align: center;text-decoration: none;width: 200px;margin: 10px auto;display: block;background-color: #007ee6;'>"
+//		    + "Click here to Login</a>" + "</div></div></div></div></body></html>";
 
 	    TokenCollection tokenCollection = tokenRepository.findOne(tokenId);
 	    if (tokenCollection == null || tokenCollection.getIsUsed()) {
@@ -262,8 +269,7 @@ public class SignUpServiceImpl implements SignUpService {
 			    smsTrackDetail.setSmsDetails(smsDetails);
 			    sMSServices.sendSMS(smsTrackDetail, true);
 			}
-
-		    } 
+		} 
 	    else {
 			logger.error("User Not Found For The Given User Id");
 			throw new BusinessException(ServiceError.NotFound, "User Not Found For The Given User Id");
@@ -1131,8 +1137,15 @@ public class SignUpServiceImpl implements SignUpService {
 	patientCollection = patientRepository.save(patientCollection);
 
 	BeanUtil.map(userCollection, user);
-	
-	} catch (NoSuchAlgorithmException e) {
+	ESPatientDocument esPatientDocument = new ESPatientDocument();
+    if (patientCollection.getAddress() != null) {
+	BeanUtil.map(patientCollection.getAddress(), esPatientDocument);
+    }
+    BeanUtil.map(userCollection, esPatientDocument);
+    BeanUtil.map(patientCollection, esPatientDocument);
+    esPatientDocument.setUserId(userCollection.getId());
+    
+    } catch (NoSuchAlgorithmException e) {
 		e.printStackTrace();
 	} catch (NoSuchProviderException e) {
 		e.printStackTrace();
@@ -1182,14 +1195,22 @@ public class SignUpServiceImpl implements SignUpService {
 			    	patientCollection.setHospitalId(null);
 			    	patientCollection.setCreatedTime(new Date());
 			    	patientCollection = patientRepository.save(patientCollection);
+			    	ESPatientDocument esPatientDocument = new ESPatientDocument();
+			        if (patientCollection.getAddress() != null) {
+			    	BeanUtil.map(patientCollection.getAddress(), esPatientDocument);
+			        }
+			        BeanUtil.map(userCollection, esPatientDocument);
+			        BeanUtil.map(patientCollection, esPatientDocument);
+			        esPatientDocument.setUserId(userCollection.getId());
+			        transnationalService.addResource(esPatientDocument.getUserId(), Resource.PATIENT, false);
+				    esRegistrationService.addPatient(esPatientDocument);
 		    	}
 		    User user = new User();
 		    BeanUtil.map(userCollection, user);
 		    users.add(user);
 	    	}
 		}
-	} else {// In case if no patient is registered for this mobile
-		// number.Then signup new patient.
+	} else {
 	    User user = signupNewPatient(request);
 	    users.add(user);
 	}
