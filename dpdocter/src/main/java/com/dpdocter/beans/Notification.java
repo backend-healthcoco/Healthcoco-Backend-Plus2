@@ -2,13 +2,13 @@ package com.dpdocter.beans;
 
 public class Notification {
 
-	private String type;
+	private String title;
 	
 	private String text;
 	
 	private String img;
 	
-	private String componentType;
+	private String notificationType;
 	
 	private String XI;
 	
@@ -18,12 +18,20 @@ public class Notification {
 	
 	private String DI;
 
-	public String getType() {
-		return type;
+	public String getTitle() {
+		return title;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getNotificationType() {
+		return notificationType;
+	}
+
+	public void setNotificationType(String notificationType) {
+		this.notificationType = notificationType;
 	}
 
 	public String getText() {
@@ -40,14 +48,6 @@ public class Notification {
 
 	public void setImg(String img) {
 		this.img = img;
-	}
-
-	public String getComponentType() {
-		return componentType;
-	}
-
-	public void setComponentType(String componentType) {
-		this.componentType = componentType;
 	}
 
 	public String getXI() {
@@ -84,7 +84,8 @@ public class Notification {
 
 	@Override
 	public String toString() {
-		return "Notification [type=" + type + ", text=" + text + ", img=" + img + ", componentType=" + componentType
-				+ ", XI=" + XI + ", RI=" + RI + ", PI=" + PI + ", DI=" + DI + "]";
+		return "Notification [title=" + title + ", text=" + text + ", img=" + img + ", notificationType="
+				+ notificationType + ", XI=" + XI + ", RI=" + RI + ", PI=" + PI + ", DI=" + DI + "]";
 	}
+
 }

@@ -177,20 +177,20 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 			Sender sender = new Sender(GEOCODING_SERVICES_API_KEY);
 
 			Notification notification = new Notification();
-			notification.setType("Healthcoco");
+			notification.setTitle("Healthcoco");
 			notification.setText(message);
 			if(!DPDoctorUtils.anyStringEmpty(componentType)){
 				if(componentType.equalsIgnoreCase(ComponentType.PRESCRIPTIONS.getType())){
-					notification.setPI(componentTypeId);notification.setComponentType(componentType);
+					notification.setXI(componentTypeId);notification.setNotificationType(componentType);
 				}
 				else if(componentType.equalsIgnoreCase(ComponentType.REPORTS.getType())){
-					notification.setPI(componentTypeId);notification.setComponentType(componentType);
+					notification.setRI(componentTypeId);notification.setNotificationType(componentType);
 				}
 				else if(componentType.equalsIgnoreCase(ComponentType.PATIENT.getType())){
-					notification.setPI(componentTypeId);notification.setComponentType(componentType);
+					notification.setPI(componentTypeId);notification.setNotificationType(componentType);
 				}
 				else if(componentType.equalsIgnoreCase(ComponentType.DOCTOR.getType())){
-					notification.setPI(componentTypeId);notification.setComponentType(componentType);
+					notification.setDI(componentTypeId);notification.setNotificationType(componentType);
 				}
 			}
 					String jsonOutput = mapper.writeValueAsString(notification);
@@ -217,7 +217,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 			Sender sender = new Sender(GEOCODING_SERVICES_API_KEY);
 
 			Notification notification = new Notification();
-			notification.setType("Healthcoco");
+			notification.setTitle("Healthcoco");
 			notification.setText(message);
 			
 			if(!DPDoctorUtils.anyStringEmpty(imageURL))notification.setImg(imageURL);
