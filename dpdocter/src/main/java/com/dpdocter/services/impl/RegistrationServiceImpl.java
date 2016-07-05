@@ -1,3 +1,4 @@
+
 package com.dpdocter.services.impl;
 
 import java.io.File;
@@ -1017,7 +1018,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     public String patientIdGenerator(String doctorId, String locationId, String hospitalId) {
 	String generatedId = null;
 	try {
-	    Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+	    Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 	    int currentDay = localCalendar.get(Calendar.DATE);
 	    int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 	    int currentYear = localCalendar.get(Calendar.YEAR);
@@ -1038,7 +1039,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 		String patientInitial = clinicProfileCollection.getPatientInitial();
 		int patientCounter = clinicProfileCollection.getPatientCounter();
 
-//		if(patientCount > 0)patientCounter = patientCounter + patientCount + 1;
 		if(patientCounter <= patientSize)patientCounter =  patientCounter + patientSize;
 		generatedId = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay) + DPDoctorUtils.getPrefixedNumber(currentMonth)
 			+ DPDoctorUtils.getPrefixedNumber(currentYear % 100) + DPDoctorUtils.getPrefixedNumber(patientCounter);
@@ -1081,8 +1081,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     @Transactional
-    public String updatePatientInitialAndCounter(String doctorId, String locationId, String patientInitial, int patientCounter) {
-	String response = null;
+    public Boolean updatePatientInitialAndCounter(String doctorId, String locationId, String patientInitial, int patientCounter) {
+	Boolean response = false;
 	try {
 	    UserLocationCollection userLocation = userLocationRepository.findByUserIdAndLocationId(doctorId, locationId);
 	    if (userLocation != null) {
@@ -1096,7 +1096,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    clinicProfileCollection.setPatientInitial(patientInitial);
 		    clinicProfileCollection.setPatientCounter(patientCounter);
 		    clinicProfileCollection = doctorClinicProfileRepository.save(clinicProfileCollection);
-		    response = "true";
+		    response = true;
 		}
 	    } else {
 		logger.warn("Doctor Id and Location Id does not match.");
@@ -1111,10 +1111,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 	return response;
     }
 
-    private String checkIfPatientInitialAndCounterExist(String doctorId, String locationId, String patientInitial, int patientCounter) {
-	String response = null;
+    private Boolean checkIfPatientInitialAndCounterExist(String doctorId, String locationId, String patientInitial, int patientCounter) {
+    	Boolean response = false;
 	try {
-		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+	    Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 	    int currentDay = localCalendar.get(Calendar.DATE);
 	    int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 	    int currentYear = localCalendar.get(Calendar.YEAR);
@@ -1134,9 +1134,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 		String PID = results.get(0).getPID();
 		PID = PID.substring((patientInitial + date).length());
 		if (patientCounter <= Integer.parseInt(PID)) {
-		    response = "Patient already exist for Prefix: " + patientInitial + " , Date: " + date + " Id Number: " + patientCounter
-			    + ". Please enter Id greater than " + PID;
+			logger.warn("Patient already exist for Prefix: " + patientInitial + " , Date: " + date + " Id Number: " + patientCounter
+				    + ". Please enter Id greater than " + PID);
+			throw new BusinessException(ServiceError.InvalidInput, "Patient already exist for Prefix: " + patientInitial + " , Date: " + date + " Id Number: " + patientCounter
+				    + ". Please enter Id greater than " + PID);
 		}
+		else response = true;
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1154,6 +1157,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    if (locationCollection != null) {
 		location = new Location();
 		BeanUtil.map(locationCollection, location);
+		
+		String address = 
+    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress()) ? locationCollection.getStreetAddress()+", ":"")+
+    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality()) ? locationCollection.getLocality()+", ":"")+
+    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCity()) ? locationCollection.getCity()+", ":"")+
+    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getState()) ? locationCollection.getState()+", ":"")+
+    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry()) ? locationCollection.getCountry()+", ":"")+
+    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode()) ? locationCollection.getPostalCode():"");
+    	
+	    if(address.charAt(address.length() - 2) == ','){
+	    	address = address.substring(0, address.length() - 2);
+	    }
+	    location.setClinicAddress(address);
 	    } else {
 		logger.warn("No Location Found For The Location Id");
 		throw new BusinessException(ServiceError.NotFound, "No Location Found For The Location Id");
@@ -1528,8 +1544,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    RoleCollection adminRoleCollection = roleRepository.findByRole(RoleEnum.SUPER_ADMIN.getRole(), request.getLocationId(), request.getHospitalId());
 	    String admindoctorName= "";
 	    if(adminRoleCollection != null){
-	    	UserRoleCollection roleCollection = userRoleRepository.findByRoleId(adminRoleCollection.getId());
-	    	if(roleCollection != null){
+	    	List<UserRoleCollection> roleCollections = userRoleRepository.findByRoleId(adminRoleCollection.getId());
+	    	UserRoleCollection roleCollection = null;
+	    	if(roleCollections != null && !roleCollections.isEmpty()){
+	    		roleCollection = roleCollections.get(0);
 	    		UserCollection doctorUser = userRepository.findOne(roleCollection.getUserId());
 	    		admindoctorName = doctorUser.getTitle()+" "+doctorUser.getFirstName();
 	    	}
@@ -1655,8 +1673,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    RoleCollection adminRoleCollection = roleRepository.findByRole(RoleEnum.SUPER_ADMIN.getRole(), request.getLocationId(), request.getHospitalId());
 	    String admindoctorName= "";
 	    if(adminRoleCollection != null){
-	    	UserRoleCollection roleCollection = userRoleRepository.findByRoleId(adminRoleCollection.getId());
-	    	if(roleCollection != null){
+	    	List<UserRoleCollection> userRoleCollections = userRoleRepository.findByRoleId(adminRoleCollection.getId());
+	    	UserRoleCollection roleCollection = null;
+	    	if(userRoleCollections != null && !userRoleCollections.isEmpty()){
+	    		roleCollection = userRoleCollections.get(0);
 	    		UserCollection doctorUser = userRepository.findOne(roleCollection.getUserId());
 	    		admindoctorName = doctorUser.getTitle()+" "+doctorUser.getFirstName();
 	    	}

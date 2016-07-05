@@ -24,4 +24,6 @@ public interface ESPrescriptionService {
     List<ESDiagnosticTestDocument> searchDiagnosticTest(String range, int page, int size, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded, String searchTerm);
 
+    Boolean editDrugTypeInDrugs(String drugTypeId);
+
 }

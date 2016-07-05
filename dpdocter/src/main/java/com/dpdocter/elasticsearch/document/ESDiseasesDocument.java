@@ -100,7 +100,7 @@ public class ESDiseasesDocument {
 
 	@Override
 	public String toString() {
-		return "SolrDiseasesDocument [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+		return "ESDiseasesDocument [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", disease=" + disease + ", explanation=" + explanation
 				+ ", discarded=" + discarded + ", updatedTime=" + updatedTime + "]";
 	}

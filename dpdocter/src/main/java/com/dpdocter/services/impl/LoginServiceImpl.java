@@ -341,9 +341,10 @@ public class LoginServiceImpl implements LoginService {
     @Override
     @Transactional
     public User adminLogin(LoginPatientRequest request) {
-    User response = null;
-    try {
-    	RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.SUPER_ADMIN.getRole());
+
+	User response = null;
+	try {
+		RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.SUPER_ADMIN.getRole());
 	    if (roleCollection == null) {
 		logger.warn(role);
 		throw new BusinessException(ServiceError.NoRecord, role);

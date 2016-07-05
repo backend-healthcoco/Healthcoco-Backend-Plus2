@@ -838,6 +838,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    BeanUtil.map(complaint, complaintCollection);
 	    if (DPDoctorUtils.anyStringEmpty(complaintCollection.getId())) {
 		complaintCollection.setCreatedTime(new Date());
+		if(!DPDoctorUtils.anyStringEmpty(complaintCollection.getDoctorId())){
+			UserCollection userCollection = userRepository.findOne(complaintCollection.getDoctorId());
+		    if (userCollection != null) {
+		    	complaintCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
+		    }
+		}
 	    } else {
 		ComplaintCollection oldComplaintCollection = complaintRepository.findOne(complaintCollection.getId());
 		complaintCollection.setCreatedBy(oldComplaintCollection.getCreatedBy());
@@ -845,6 +851,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		complaintCollection.setDiscarded(oldComplaintCollection.getDiscarded());
 	    }
 	    complaintCollection = complaintRepository.save(complaintCollection);
+	    
 	    BeanUtil.map(complaintCollection, complaint);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -862,6 +869,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    BeanUtil.map(observation, observationCollection);
 	    if (DPDoctorUtils.anyStringEmpty(observationCollection.getId())) {
 		observationCollection.setCreatedTime(new Date());
+		if(!DPDoctorUtils.anyStringEmpty(observationCollection.getDoctorId())){
+			UserCollection userCollection = userRepository.findOne(observationCollection.getDoctorId());
+		    if (userCollection != null) {
+		    	observationCollection
+				.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
+		    }
+		}
 	    } else {
 		ObservationCollection oldObservationCollection = observationRepository.findOne(observationCollection.getId());
 		observationCollection.setCreatedBy(oldObservationCollection.getCreatedBy());
@@ -869,6 +883,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		observationCollection.setDiscarded(oldObservationCollection.getDiscarded());
 	    }
 	    observationCollection = observationRepository.save(observationCollection);
+	    
 	    BeanUtil.map(observationCollection, observation);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -886,6 +901,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    BeanUtil.map(investigation, investigationCollection);
 	    if (DPDoctorUtils.anyStringEmpty(investigationCollection.getId())) {
 		investigationCollection.setCreatedTime(new Date());
+		if(!DPDoctorUtils.anyStringEmpty(investigationCollection.getDoctorId())){
+			UserCollection userCollection = userRepository.findOne(investigationCollection.getDoctorId());
+		    if (userCollection != null) {
+		    	investigationCollection
+				.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
+		    }
+		}
 	    } else {
 		InvestigationCollection oldInvestigationCollection = investigationRepository.findOne(investigationCollection.getId());
 		investigationCollection.setCreatedBy(oldInvestigationCollection.getCreatedBy());
@@ -893,6 +915,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		investigationCollection.setDiscarded(oldInvestigationCollection.getDiscarded());
 	    }
 	    investigationCollection = investigationRepository.save(investigationCollection);
+	    
 	    BeanUtil.map(investigationCollection, investigation);
 	    
 	} catch (Exception e) {
@@ -911,6 +934,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    BeanUtil.map(diagnosis, diagnosisCollection);
 	    if (DPDoctorUtils.anyStringEmpty(diagnosisCollection.getId())) {
 		diagnosisCollection.setCreatedTime(new Date());
+		if(!DPDoctorUtils.anyStringEmpty(diagnosisCollection.getDoctorId())){
+			UserCollection userCollection = userRepository.findOne(diagnosisCollection.getDoctorId());
+		    if (userCollection != null) {
+		    	diagnosisCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
+		    }
+		}
 	    } else {
 		DiagnosisCollection oldDiagnosisCollection = diagnosisRepository.findOne(diagnosisCollection.getId());
 		diagnosisCollection.setCreatedBy(oldDiagnosisCollection.getCreatedBy());
@@ -918,6 +947,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		diagnosisCollection.setDiscarded(oldDiagnosisCollection.getDiscarded());
 	    }
 	    diagnosisCollection = diagnosisRepository.save(diagnosisCollection);
+	    
 	    BeanUtil.map(diagnosisCollection, diagnosis);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -935,6 +965,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    BeanUtil.map(notes, notesCollection);
 	    if (DPDoctorUtils.anyStringEmpty(notesCollection.getId())) {
 		notesCollection.setCreatedTime(new Date());
+		if(!DPDoctorUtils.anyStringEmpty(notesCollection.getDoctorId())){
+			UserCollection userCollection = userRepository.findOne(notesCollection.getDoctorId());
+		    if (userCollection != null) {
+		    	notesCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
+		    }
+		}
 	    } else {
 		NotesCollection oldNotesCollection = notesRepository.findOne(notesCollection.getId());
 		notesCollection.setCreatedBy(oldNotesCollection.getCreatedBy());
@@ -942,6 +978,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		notesCollection.setDiscarded(oldNotesCollection.getDiscarded());
 	    }
 	    notesCollection = notesRepository.save(notesCollection);
+	    
 	    BeanUtil.map(notesCollection, notes);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -970,6 +1007,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    
 	    if (DPDoctorUtils.anyStringEmpty(diagramsCollection.getId())) {
 		diagramsCollection.setCreatedTime(new Date());
+		if(diagramsCollection.getDoctorId() != null){
+			UserCollection userCollection = userRepository.findOne(diagramsCollection.getDoctorId());
+		    if (userCollection != null) {
+		    	diagramsCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
+		    }
+		}
 	    } else {
 		DiagramsCollection oldDiagramsCollection = diagramsRepository.findOne(diagramsCollection.getId());
 		diagramsCollection.setCreatedBy(oldDiagramsCollection.getCreatedBy());
@@ -2174,12 +2217,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				response = new MailResponse();
 				response.setMailAttachment(mailAttachment);
 				response.setDoctorName(doctorUser.getTitle()+" "+doctorUser.getFirstName());
-				String address = locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress()
-						: "" + locationCollection.getCity() != null ? ", "+locationCollection.getCity()
-							: "" + locationCollection.getPostalCode() != null ? ", "+locationCollection.getPostalCode() 
-										: "" + locationCollection.getState() != null ? ", "+locationCollection.getState() 
-											: "" + locationCollection.getCountry() != null ? ", "+locationCollection.getCountry() : "";
-				response.setClinicAddress(address);
+				String address = 
+    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress()) ? locationCollection.getStreetAddress()+", ":"")+
+    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality()) ? locationCollection.getLocality()+", ":"")+
+    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCity()) ? locationCollection.getCity()+", ":"")+
+    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getState()) ? locationCollection.getState()+", ":"")+
+    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry()) ? locationCollection.getCountry()+", ":"")+
+    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode()) ? locationCollection.getPostalCode():"");
+    	    	
+    		    if(address.charAt(address.length() - 2) == ','){
+    		    	address = address.substring(0, address.length() - 2);
+    		    }
+    		    response.setClinicAddress(address);
 				response.setClinicName(locationCollection.getLocationName());
 				SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
 				response.setMailRecordCreatedDate(sdf.format(clinicalNotesCollection.getCreatedTime()));
@@ -2444,9 +2493,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    if (printSettings.getHeaderSetup() != null) {
 			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()) {
 
-			    if ((str.getFontSize() != null) && (!str.getFontSize().equalsIgnoreCase("10pt") || !str.getFontSize().equalsIgnoreCase("11pt")
-				    || !str.getFontSize().equalsIgnoreCase("12pt") || !str.getFontSize().equalsIgnoreCase("13pt")
-				    || !str.getFontSize().equalsIgnoreCase("14pt") || !str.getFontSize().equalsIgnoreCase("15pt")))
+			    if ((str.getFontSize() != null) && !str.getFontSize().equalsIgnoreCase("10pt") && !str.getFontSize().equalsIgnoreCase("11pt")
+			    		&& !str.getFontSize().equalsIgnoreCase("12pt") && !str.getFontSize().equalsIgnoreCase("13pt")
+				    && !str.getFontSize().equalsIgnoreCase("14pt") && !str.getFontSize().equalsIgnoreCase("15pt"))
 				str.setFontSize("10pt");
 			    boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 			    boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
@@ -2464,9 +2513,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			    }
 			}
 			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText()) {
-			    if ((str.getFontSize() != null) && (!str.getFontSize().equalsIgnoreCase("10pt") || !str.getFontSize().equalsIgnoreCase("11pt")
-				    || !str.getFontSize().equalsIgnoreCase("12pt") || !str.getFontSize().equalsIgnoreCase("13pt")
-				    || !str.getFontSize().equalsIgnoreCase("14pt") || !str.getFontSize().equalsIgnoreCase("15pt")))
+			    if ((str.getFontSize() != null) && str.getFontSize().equalsIgnoreCase("10pt") && !str.getFontSize().equalsIgnoreCase("11pt")
+			    		&& !str.getFontSize().equalsIgnoreCase("12pt") && !str.getFontSize().equalsIgnoreCase("13pt")
+			    		&& !str.getFontSize().equalsIgnoreCase("14pt") && !str.getFontSize().equalsIgnoreCase("15pt"))
 				str.setFontSize("10pt");
 			    boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 			    boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
@@ -2487,9 +2536,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		    if (printSettings.getFooterSetup() != null) {
 			if (printSettings.getFooterSetup().getCustomFooter())
 			    for (PrintSettingsText str : printSettings.getFooterSetup().getBottomText()) {
-				if ((str.getFontSize() != null) && (!str.getFontSize().equalsIgnoreCase("10pt") || !str.getFontSize().equalsIgnoreCase("11pt")
-					|| !str.getFontSize().equalsIgnoreCase("12pt") || !str.getFontSize().equalsIgnoreCase("13pt")
-					|| !str.getFontSize().equalsIgnoreCase("14pt") || !str.getFontSize().equalsIgnoreCase("15pt")))
+				if ((str.getFontSize() != null) && !str.getFontSize().equalsIgnoreCase("10pt") && !str.getFontSize().equalsIgnoreCase("11pt")
+						&& !str.getFontSize().equalsIgnoreCase("12pt") && !str.getFontSize().equalsIgnoreCase("13pt")
+						&& !str.getFontSize().equalsIgnoreCase("14pt") && !str.getFontSize().equalsIgnoreCase("15pt"))
 				    str.setFontSize("10pt");
 
 				boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
@@ -2514,9 +2563,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			    boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), patientDetails.getStyle().getFontStyle());
 			    boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), patientDetails.getStyle().getFontStyle());
 			    String fontSize = patientDetails.getStyle().getFontSize();
-			    if ((fontSize != null)
-				    && (!fontSize.equalsIgnoreCase("10pt") || !fontSize.equalsIgnoreCase("11pt") || !fontSize.equalsIgnoreCase("12pt")
-					    || !fontSize.equalsIgnoreCase("13pt") || !fontSize.equalsIgnoreCase("14pt") || !fontSize.equalsIgnoreCase("15pt")))
+			    if ((fontSize != null)  && !fontSize.equalsIgnoreCase("10pt") && !fontSize.equalsIgnoreCase("11pt") && !fontSize.equalsIgnoreCase("12pt")
+			    		&& !fontSize.equalsIgnoreCase("13pt") && !fontSize.equalsIgnoreCase("14pt") && !fontSize.equalsIgnoreCase("15pt"))
 				fontSize = "10pt";
 
 			    if (isItalic) {

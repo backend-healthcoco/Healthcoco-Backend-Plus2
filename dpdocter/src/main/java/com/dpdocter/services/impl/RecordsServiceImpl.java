@@ -163,7 +163,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    	String recordsURL = request.getRecordsUrl().replaceAll(imagePath, "");
 	    	recordsCollection.setRecordsUrl(recordsURL);
 			recordsCollection.setRecordsPath(recordsURL);
-			recordsCollection.setRecordsLabel(FilenameUtils.getBaseName(recordsURL).substring(0, recordsURL.length()-13));
+			if(DPDoctorUtils.anyStringEmpty(request.getRecordsLabel()))recordsCollection.setRecordsLabel(FilenameUtils.getBaseName(recordsURL).substring(0, recordsURL.length()-13));
 	    }
 	    if (request.getFileDetails() != null) {
 		String recordLabel = request.getFileDetails().getFileName();
@@ -176,7 +176,7 @@ public class RecordsServiceImpl implements RecordsService {
 
 		recordsCollection.setRecordsUrl(imageURLResponse.getImageUrl());
 		recordsCollection.setRecordsPath(recordPath);
-		recordsCollection.setRecordsLabel(recordLabel);
+		if(DPDoctorUtils.anyStringEmpty(request.getRecordsLabel()))recordsCollection.setRecordsLabel(recordLabel);
 	    }
 	    recordsCollection.setCreatedTime(createdTime);
 	    recordsCollection.setUniqueEmrId(UniqueIdInitial.REPORTS.getInitial() + DPDoctorUtils.generateRandomId());
@@ -195,7 +195,6 @@ public class RecordsServiceImpl implements RecordsService {
 	    			recordsCollection.setPrescribedByDoctorId(prescriptionCollection.getDoctorId());
 	    			recordsCollection.setPrescribedByLocationId(prescriptionCollection.getLocationId());
 	    			recordsCollection.setPrescribedByHospitalId(prescriptionCollection.getHospitalId());
-
 	    	}
 	    }
 	   
@@ -213,9 +212,8 @@ public class RecordsServiceImpl implements RecordsService {
 		prescriptionCollection.setUpdatedTime(new Date());
 		prescriptionRepository.save(prescriptionCollection);
 	    }
-	    if(prescriptionCollection != null && prescriptionCollection.getDoctorId().equalsIgnoreCase(recordsCollection.getDoctorId()) &&
-	    		prescriptionCollection.getLocationId().equalsIgnoreCase(recordsCollection.getLocationId()) && prescriptionCollection.getHospitalId().equalsIgnoreCase(recordsCollection.getHospitalId()))
-	    pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId(), patientCollection.getFirstName()+"'s report has been uploaded by "+recordsCollection.getUploadedByLocation()+" - Tap to view it!", ComponentType.REPORTS.getType(), recordsCollection.getId());
+	    if(prescriptionCollection != null)
+	        pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId(), patientCollection.getFirstName()+"'s report has been uploaded by "+recordsCollection.getUploadedByLocation()+" - Tap to view it!", ComponentType.REPORTS.getType(), recordsCollection.getId());
 
 	   	pushNotificationServices.notifyUser(recordsCollection.getPatientId(), "Your Report from "+recordsCollection.getUploadedByLocation()+" is here - Tap to view it!", ComponentType.REPORTS.getType(), recordsCollection.getId());
 	    Records records = new Records();
@@ -245,7 +243,6 @@ public class RecordsServiceImpl implements RecordsService {
 			recordsCollection.setRecordsLabel(FilenameUtils.getBaseName(recordsURL).substring(0, recordsURL.length()-13));
 	    }
 	    if (request.getFileDetails() != null) {
-		String recordLabel = request.getFileDetails().getFileName();
 		request.getFileDetails().setFileName(request.getFileDetails().getFileName() + new Date().getTime());
 		String path = request.getPatientId() + File.separator + "records";
 		// save image
@@ -255,9 +252,7 @@ public class RecordsServiceImpl implements RecordsService {
 
 		recordsCollection.setRecordsUrl(imageURLResponse.getImageUrl());
 		recordsCollection.setRecordsPath(recordPath);
-		recordsCollection.setRecordsLabel(recordLabel);
-
-	    }
+		}
 	    RecordsCollection oldRecord = recordsRepository.findOne(request.getId());
 	    recordsCollection.setCreatedTime(oldRecord.getCreatedTime());
 	    recordsCollection.setCreatedBy(oldRecord.getCreatedBy());
@@ -719,12 +714,18 @@ public class RecordsServiceImpl implements RecordsService {
 		mailResponse = new MailResponse();
 		mailResponse.setMailAttachment(mailAttachment);
 		mailResponse.setDoctorName(doctorUser.getTitle()+" "+doctorUser.getFirstName());
-		String address = locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress()
-				: "" + locationCollection.getCity() != null ? ", "+locationCollection.getCity()
-					: "" + locationCollection.getPostalCode() != null ? ", "+locationCollection.getPostalCode() 
-								: "" + locationCollection.getState() != null ? ", "+locationCollection.getState() 
-									: "" + locationCollection.getCountry() != null ? ", "+locationCollection.getCountry() : "";
-		mailResponse.setClinicAddress(address);
+		String address = 
+    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress()) ? locationCollection.getStreetAddress()+", ":"")+
+    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality()) ? locationCollection.getLocality()+", ":"")+
+    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCity()) ? locationCollection.getCity()+", ":"")+
+    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getState()) ? locationCollection.getState()+", ":"")+
+    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry()) ? locationCollection.getCountry()+", ":"")+
+    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode()) ? locationCollection.getPostalCode():"");
+    	
+	    if(address.charAt(address.length() - 2) == ','){
+	    	address = address.substring(0, address.length() - 2);
+	    }
+	    mailResponse.setClinicAddress(address);
 		mailResponse.setClinicName(locationCollection.getLocationName());
 		SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
 		mailResponse.setMailRecordCreatedDate(sdf.format(recordsCollection.getCreatedTime()));

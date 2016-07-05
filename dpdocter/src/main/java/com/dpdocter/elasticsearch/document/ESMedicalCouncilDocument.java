@@ -45,6 +45,6 @@ public class ESMedicalCouncilDocument {
 
     @Override
     public String toString() {
-	return "SolrMedicalCouncilDocument [id=" + id + ", medicalCouncil=" + medicalCouncil + ", updatedTime=" + updatedTime + "]";
+	return "ESMedicalCouncilDocument [id=" + id + ", medicalCouncil=" + medicalCouncil + ", updatedTime=" + updatedTime + "]";
     }
 }

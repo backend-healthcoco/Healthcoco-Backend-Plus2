@@ -62,6 +62,7 @@ import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TemplateCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
+import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.services.ESPrescriptionService;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.FONTSTYLE;
@@ -219,6 +220,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	UUID drugCode = UUID.randomUUID();
 	drugCollection.setDrugCode(drugCode.toString());
 	try {
+		if(!DPDoctorUtils.anyStringEmpty(drugCollection.getDoctorId())){
+			UserCollection userCollection = userRepository.findOne(drugCollection.getDoctorId());
+			if (userCollection != null)
+				drugCollection.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());	
+		}
 	    Date createdTime = new Date();
 	    drugCollection.setCreatedTime(createdTime);
 	    if (drugCollection.getDrugType() != null) {
@@ -401,8 +407,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    }
 		}
 		templateCollection.setItems(items);
-	    
+		if(!DPDoctorUtils.anyStringEmpty(templateCollection.getDoctorId())){
+			UserCollection userCollection = userRepository.findOne(templateCollection.getDoctorId());
+			if (userCollection != null)
+				templateCollection.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());	
+		}
 	    templateCollection = templateRepository.save(templateCollection);
+	    
 	    response = new TemplateAddEditResponse();
 	    BeanUtil.map(templateCollection, response);
 	} catch (Exception e) {
@@ -1137,6 +1148,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	BeanUtil.map(request, drugTypeCollection);
 	try {
 	    drugTypeCollection.setCreatedTime(new Date());
+	    if(!DPDoctorUtils.anyStringEmpty(drugTypeCollection.getDoctorId())){
+			UserCollection userCollection = userRepository.findOne(drugTypeCollection.getDoctorId());
+			if (userCollection != null)
+				drugTypeCollection.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());	
+		}
 	    drugTypeCollection = drugTypeRepository.save(drugTypeCollection);
 	    response = new DrugTypeAddEditResponse();
 	    BeanUtil.map(drugTypeCollection, response);
@@ -1210,6 +1226,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	BeanUtil.map(request, drugStrengthUnitCollection);
 	try {
 	    drugStrengthUnitCollection.setCreatedTime(new Date());
+	    if(!DPDoctorUtils.anyStringEmpty(drugStrengthUnitCollection.getDoctorId())){
+			UserCollection userCollection = userRepository.findOne(drugStrengthUnitCollection.getDoctorId());
+			if (userCollection != null)
+				drugStrengthUnitCollection.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());	
+		}
 	    drugStrengthUnitCollection = drugStrengthRepository.save(drugStrengthUnitCollection);
 	    response = new DrugStrengthAddEditResponse();
 	    BeanUtil.map(drugStrengthUnitCollection, response);
@@ -1281,6 +1302,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	BeanUtil.map(request, drugDosageCollection);
 	try {
 	    drugDosageCollection.setCreatedTime(new Date());
+	    if(!DPDoctorUtils.anyStringEmpty(drugDosageCollection.getDoctorId())){
+			UserCollection userCollection = userRepository.findOne(drugDosageCollection.getDoctorId());
+			if (userCollection != null)
+				drugDosageCollection.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());	
+		}
 	    drugDosageCollection = drugDosageRepository.save(drugDosageCollection);
 	    response = new DrugDosageAddEditResponse();
 	    BeanUtil.map(drugDosageCollection, response);
@@ -1351,6 +1377,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	BeanUtil.map(request, drugDirectionCollection);
 	try {
 	    drugDirectionCollection.setCreatedTime(new Date());
+	    if(!DPDoctorUtils.anyStringEmpty(drugDirectionCollection.getDoctorId())){
+			UserCollection userCollection = userRepository.findOne(drugDirectionCollection.getDoctorId());
+			if (userCollection != null)
+				drugDirectionCollection.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());	
+		}
 	    drugDirectionCollection = drugDirectionRepository.save(drugDirectionCollection);
 	    response = new DrugDirectionAddEditResponse();
 	    BeanUtil.map(drugDirectionCollection, response);
@@ -1422,6 +1453,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	BeanUtil.map(request, drugDurationUnitCollection);
 	try {
 	    drugDurationUnitCollection.setCreatedTime(new Date());
+	    if(!DPDoctorUtils.anyStringEmpty(drugDurationUnitCollection.getDoctorId())){
+			UserCollection userCollection = userRepository.findOne(drugDurationUnitCollection.getDoctorId());
+			if (userCollection != null)
+				drugDurationUnitCollection.setCreatedBy((userCollection.getTitle()!=null?userCollection.getTitle()+" ":"")+userCollection.getFirstName());	
+		}
 	    drugDurationUnitCollection = drugDurationUnitRepository.save(drugDurationUnitCollection);
 	    response = new DrugDurationUnitAddEditResponse();
 	    BeanUtil.map(drugDurationUnitCollection, response);
@@ -2844,6 +2880,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		if (request.getTest() != null) {
 			 Date createdTime = new Date();
 		    labTestCollection.setCreatedTime(createdTime);
+		    LocationCollection locationCollection = null;
+		    if(!DPDoctorUtils.anyStringEmpty(labTestCollection.getLocationId())){
+				locationCollection = locationRepository.findOne(labTestCollection.getLocationId());
+				if (locationCollection != null)
+					labTestCollection.setCreatedBy(locationCollection.getLocationName());	
+			}
 		    DiagnosticTestCollection diagnosticTestCollection = null;
 		    if(request.getTest().getId() != null)diagnosticTestCollection = diagnosticTestRepository.findOne(request.getTest().getId());
 			if(diagnosticTestCollection == null){
@@ -2852,6 +2894,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				diagnosticTestCollection.setHospitalId(request.getHospitalId());
 				diagnosticTestCollection.setTestName(request.getTest().getTestName());
 				diagnosticTestCollection.setCreatedTime(new Date());
+				if (locationCollection != null)
+					diagnosticTestCollection.setCreatedBy(locationCollection.getLocationName());
 				diagnosticTestCollection = diagnosticTestRepository.save(diagnosticTestCollection);
 			}
 			transnationalService.addResource(diagnosticTestCollection.getId(), Resource.DIAGNOSTICTEST, false);
@@ -3122,8 +3166,18 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		try {
 			if(request.getId() == null){
 				diagnosticTestCollection.setCreatedTime(new Date());
+				if(!DPDoctorUtils.anyStringEmpty(diagnosticTestCollection.getLocationId())){
+					LocationCollection locationCollection = locationRepository.findOne(diagnosticTestCollection.getLocationId());
+					if (locationCollection != null)
+						diagnosticTestCollection.setCreatedBy(locationCollection.getLocationName());	
+				}
 			}
 			else{
+				DiagnosticTestCollection oldDiagnosticTestCollection = diagnosticTestRepository.findOne(request.getId());
+				oldDiagnosticTestCollection.setCreatedBy(oldDiagnosticTestCollection.getCreatedBy());
+			    oldDiagnosticTestCollection.setCreatedTime(oldDiagnosticTestCollection.getCreatedTime());
+			    oldDiagnosticTestCollection.setDiscarded(oldDiagnosticTestCollection.getDiscarded());
+			    
 				diagnosticTestCollection.setUpdatedTime(new Date());
 			}
 		    diagnosticTestCollection = diagnosticTestRepository.save(diagnosticTestCollection);
@@ -3356,25 +3410,27 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 		@Override
 		@Transactional
-		public Boolean addRemoveGenericCode(String action, String genericId, String drugCode) {
+		public Boolean addRemoveGenericCode(String action, String genericCode, String drugCode) {
 			Boolean response = false;
 			try{
 				DrugCollection drugCollection = null;
 				if(action.equalsIgnoreCase("ADD")){
 					drugCollection = drugRepository.findByDrugCode(drugCode);
 					if(drugCollection != null){
-						List<String> genericIds = drugCollection.getGenericIds();
-						if(genericIds == null)genericIds = new ArrayList<String>();
-						if(!genericIds.contains(genericId))genericIds.add(genericId);
+						List<String> genericCodes = drugCollection.getGenericCodes();
+						if(genericCodes == null)genericCodes = new ArrayList<String>();
+						if(!genericCodes.contains(genericCode))genericCodes.add(genericCode);
+						drugCollection.setGenericCodes(genericCodes);
 						response = true;
 					}
 				}
 				else if(action.equalsIgnoreCase("REMOVE")){
 					drugCollection = drugRepository.findByDrugCode(drugCode);
 					if(drugCollection != null){
-						List<String> genericIds = drugCollection.getGenericIds();
-						if(genericIds == null)genericIds = new ArrayList<String>();
-						if(genericIds.contains(genericId))genericIds.remove(genericId);
+						List<String> genericCodes = drugCollection.getGenericCodes();
+						if(genericCodes == null)genericCodes = new ArrayList<String>();
+						if(genericCodes.contains(genericCode))genericCodes.remove(genericCode);
+						drugCollection.setGenericCodes(genericCodes);
 						response = true;
 					}
 				}
@@ -3388,14 +3444,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				}
 				if(response){
 					if (drugCollection != null) {
+						drugCollection = drugRepository.save(drugCollection);
 						transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
-//					    SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
-//					    BeanUtil.map(drugCollection, solrDrugDocument);
-//					    if (drugCollection.getDrugType() != null) {
-//						solrDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
-//						solrDrugDocument.setDrugType(drugCollection.getDrugType().getType());
-//					    }
-//					    solrPrescriptionService.addDrug(solrDrugDocument);
+					    ESDrugDocument esDrugDocument = new ESDrugDocument();
+					    BeanUtil.map(drugCollection, esDrugDocument);
+					    if (drugCollection.getDrugType() != null) {
+					    	esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
+					    	esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
+					    }
+					    esPrescriptionService.addDrug(esDrugDocument);
 					}
 				}
 			}catch (Exception e) {
@@ -3573,9 +3630,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		    if (printSettings.getHeaderSetup() != null) {
 			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()) {
 				
-				if ((str.getFontSize() != null) && (!str.getFontSize().equalsIgnoreCase("10pt") || !str.getFontSize().equalsIgnoreCase("11pt")
-					    || !str.getFontSize().equalsIgnoreCase("12pt") || !str.getFontSize().equalsIgnoreCase("13pt")
-					    || !str.getFontSize().equalsIgnoreCase("14pt") || !str.getFontSize().equalsIgnoreCase("15pt")))
+				if ((str.getFontSize() != null) && !str.getFontSize().equalsIgnoreCase("10pt") && !str.getFontSize().equalsIgnoreCase("11pt")
+						&& !str.getFontSize().equalsIgnoreCase("12pt") && !str.getFontSize().equalsIgnoreCase("13pt")
+					    && !str.getFontSize().equalsIgnoreCase("14pt") && !str.getFontSize().equalsIgnoreCase("15pt"))
 					str.setFontSize("10pt");
 			    boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 			    boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
@@ -3591,9 +3648,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    	}
 			}
 			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText()) {
-				if ((str.getFontSize() != null) && (!str.getFontSize().equalsIgnoreCase("10pt") || !str.getFontSize().equalsIgnoreCase("11pt")
-					    || !str.getFontSize().equalsIgnoreCase("12pt") || !str.getFontSize().equalsIgnoreCase("13pt")
-					    || !str.getFontSize().equalsIgnoreCase("14pt") || !str.getFontSize().equalsIgnoreCase("15pt")))
+				if ((str.getFontSize() != null) && !str.getFontSize().equalsIgnoreCase("10pt") && !str.getFontSize().equalsIgnoreCase("11pt")
+						&& !str.getFontSize().equalsIgnoreCase("12pt") && !str.getFontSize().equalsIgnoreCase("13pt")
+						&& !str.getFontSize().equalsIgnoreCase("14pt") && !str.getFontSize().equalsIgnoreCase("15pt"))
 					str.setFontSize("10pt");
 			    boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 			    boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
@@ -3602,19 +3659,19 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    if (isItalic)text = "<i>" + text + "</i>";
 				if (isBold)text = "<b>" + text + "</b>";
 				
-			    if (headerLeftText.isEmpty())
-				headerLeftText = "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
+			    if (headerRightText.isEmpty())
+			    	headerRightText = "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 			    else
-				headerLeftText = headerLeftText + "<br/>" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
+			    	headerRightText = headerRightText + "<br/>" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 	    	}
 			    }
 			
 		    }
 		    if (printSettings.getFooterSetup() != null) {
 			    for (PrintSettingsText str : printSettings.getFooterSetup().getBottomText()) {
-			    	if ((str.getFontSize() != null) && (!str.getFontSize().equalsIgnoreCase("10pt") || !str.getFontSize().equalsIgnoreCase("11pt")
-						    || !str.getFontSize().equalsIgnoreCase("12pt") || !str.getFontSize().equalsIgnoreCase("13pt")
-						    || !str.getFontSize().equalsIgnoreCase("14pt") || !str.getFontSize().equalsIgnoreCase("15pt")))
+			    	if ((str.getFontSize() != null) && !str.getFontSize().equalsIgnoreCase("10pt") && !str.getFontSize().equalsIgnoreCase("11pt")
+			    			&& !str.getFontSize().equalsIgnoreCase("12pt") && !str.getFontSize().equalsIgnoreCase("13pt")
+						    && !str.getFontSize().equalsIgnoreCase("14pt") && !str.getFontSize().equalsIgnoreCase("15pt"))
 						str.setFontSize("10pt");
 				boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 				boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
@@ -3635,7 +3692,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), patientDetails.getStyle().getFontStyle());
 				boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), patientDetails.getStyle().getFontStyle());
 				String fontSize = patientDetails.getStyle().getFontSize();
-				if((fontSize!= null) && (!fontSize.equalsIgnoreCase("10pt") || !fontSize.equalsIgnoreCase("11pt") || !fontSize.equalsIgnoreCase("12pt")	|| !fontSize.equalsIgnoreCase("13pt") || !fontSize.equalsIgnoreCase("14pt") || !fontSize.equalsIgnoreCase("15pt")))
+				if((fontSize!= null) && !fontSize.equalsIgnoreCase("10pt") && !fontSize.equalsIgnoreCase("11pt") && !fontSize.equalsIgnoreCase("12pt")	&& !fontSize.equalsIgnoreCase("13pt") && !fontSize.equalsIgnoreCase("14pt") && !fontSize.equalsIgnoreCase("15pt"))
 					fontSize = "10pt";
 				
 				if (isItalic){

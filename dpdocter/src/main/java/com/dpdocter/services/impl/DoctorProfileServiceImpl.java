@@ -249,48 +249,27 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     @Transactional
     public List<String> addEditSpeciality(DoctorSpecialityAddEditRequest request) {
 	DoctorCollection doctorCollection = null;
-	List<SpecialityCollection> specialityCollections = null;
-	List<String> specialities = null;
-	List<String> specialitiesByName = null;
 	try {
-	    specialityCollections = specialityRepository.findAll();
-	    specialities = new ArrayList<String>();
-	    specialitiesByName = new ArrayList<String>();
-
-	    if (request.getSpeciality() != null) {
-		if (!request.getSpeciality().isEmpty()) {
-		    specialityCollections = specialityRepository.findAll();
-		    specialities = new ArrayList<String>();
-		    for (String speciality : request.getSpeciality()) {
-//			Boolean specialityFound = false;
-			for (SpecialityCollection specialityCollection : specialityCollections) {
-			    if (speciality.trim().equalsIgnoreCase(specialityCollection.getSuperSpeciality())) {
-				specialities.add(specialityCollection.getId());
-//				specialityFound = true;
-				break;
-			    }
-			}
-//			if (!specialityFound) {
-//			    SpecialityCollection specialityCollection = new SpecialityCollection();
-//			    specialityCollection.setSpeciality(speciality);
-//			    specialityCollection.setSuperSpeciality(speciality);
-//			    specialityCollection.setCreatedTime(new Date());
-//			    specialityCollection = specialityRepository.save(specialityCollection);
-//			    specialities.add(specialityCollection.getId());
-//			}
+		doctorCollection = doctorRepository.findByUserId(request.getDoctorId());
+		if(doctorCollection != null){
+			if (request.getSpeciality() != null && !request.getSpeciality().isEmpty()) {
+				List<SpecialityCollection> specialityCollections = specialityRepository.findBySuperSpeciality(request.getSpeciality());
+			    @SuppressWarnings("unchecked")
+				Collection<String> specialityIds = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("id"));
+			    if(specialityIds != null && !specialityIds.isEmpty())doctorCollection.setSpecialities(new ArrayList<>(specialityIds));
+			    else doctorCollection.setSpecialities(null);
+		    }else{
+		    	doctorCollection.setSpecialities(null);	
 		    }
+		    doctorRepository.save(doctorCollection);
 		}
-	    }
-	    doctorCollection = doctorRepository.findByUserId(request.getDoctorId());
-	    doctorCollection.setSpecialities(specialities);
-	    doctorRepository.save(doctorCollection);
 
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Profile");
 	    throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
 	}
-	return specialitiesByName;
+	return request.getSpeciality();
     }
 
     @Override
@@ -443,13 +422,20 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		    DoctorClinicProfileCollection doctorClinicCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
 
 		    locationCollection = locationRepository.findOne(userLocationCollection.getLocationId());
+		    
 		    if (locationCollection != null) {
-			String address = locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress()
-				: "" + locationCollection.getCity() != null ? ", "+locationCollection.getCity()
-					: "" + locationCollection.getPostalCode() != null ? ", "+locationCollection.getPostalCode() 
-								: "" + locationCollection.getState() != null ? ", "+locationCollection.getState() 
-									: "" + locationCollection.getCountry() != null ? ", "+locationCollection.getCountry() : "";
-
+		    	String address = 
+		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress()) ? locationCollection.getStreetAddress()+", ":"")+
+		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality()) ? locationCollection.getLocality()+", ":"")+
+		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCity()) ? locationCollection.getCity()+", ":"")+
+		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getState()) ? locationCollection.getState()+", ":"")+
+		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry()) ? locationCollection.getCountry()+", ":"")+
+		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode()) ? locationCollection.getPostalCode():"");
+		    	
+		    if(address.charAt(address.length() - 2) == ','){
+		    	address = address.substring(0, address.length() - 2);
+		    }
+		    
 			doctorClinic.setClinicAddress(address);
 			BeanUtil.map(locationCollection, doctorClinic);
 		    }
@@ -466,12 +452,18 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 		    locationCollection = locationRepository.findOne(locationId);
 		    if (locationCollection != null) {
-		    	String address = locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress()
-						: "" + locationCollection.getCity() != null ? ", "+locationCollection.getCity()
-							: "" + locationCollection.getPostalCode() != null ? ", "+locationCollection.getPostalCode() 
-										: "" + locationCollection.getState() != null ? ", "+locationCollection.getState() 
-											: "" + locationCollection.getCountry() != null ? ", "+locationCollection.getCountry() : "";
-
+		    	String address = 
+		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress()) ? locationCollection.getStreetAddress()+", ":"")+
+		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality()) ? locationCollection.getLocality()+", ":"")+
+		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCity()) ? locationCollection.getCity()+", ":"")+
+		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getState()) ? locationCollection.getState()+", ":"")+
+		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry()) ? locationCollection.getCountry()+", ":"")+
+		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode()) ? locationCollection.getPostalCode():"");
+		    	
+		    if(address.charAt(address.length() - 2) == ','){
+		    	address = address.substring(0, address.length() - 2);
+		    }
+		    	
 			BeanUtil.map(locationCollection, doctorClinic);
 			doctorClinic.setClinicAddress(address);
 		    }
@@ -496,19 +488,21 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 	    // set medical councils using medical councils ids
 	    registrationDetails = new ArrayList<DoctorRegistrationDetail>();
-	    if (doctorProfile.getRegistrationDetails() != null) {
+	    if (doctorProfile.getRegistrationDetails() != null && !doctorProfile.getRegistrationDetails().isEmpty()) {
 		for (DoctorRegistrationDetail registrationDetail : doctorProfile.getRegistrationDetails()) {
 		    DoctorRegistrationDetail doctorRegistrationDetail = new DoctorRegistrationDetail();
 		    BeanUtil.map(registrationDetail, doctorRegistrationDetail);
-		    MedicalCouncilCollection medicalCouncilCollection = medicalCouncilRepository.findOne(registrationDetail.getMedicalCouncil());
-		    if (medicalCouncilCollection != null)
-			doctorRegistrationDetail.setMedicalCouncil(medicalCouncilCollection.getMedicalCouncil());
+		    if(!DPDoctorUtils.anyStringEmpty(registrationDetail.getMedicalCouncil())){
+		    	MedicalCouncilCollection medicalCouncilCollection = medicalCouncilRepository.findOne(registrationDetail.getMedicalCouncil());
+			    if (medicalCouncilCollection != null)
+				doctorRegistrationDetail.setMedicalCouncil(medicalCouncilCollection.getMedicalCouncil());
+		    }
 		    registrationDetails.add(doctorRegistrationDetail);
 		}
 	    }
 	    doctorProfile.setRegistrationDetails(registrationDetails);
 	    // set professional memberships using professional membership ids
-	    if (doctorProfile.getProfessionalMemberships() != null) {
+	    if (doctorProfile.getProfessionalMemberships() != null && !doctorProfile.getProfessionalMemberships().isEmpty()) {
 		professionalMemberships = (List<String>) CollectionUtils.collect(
 			(Collection<?>) professionalMembershipRepository.findAll(doctorProfile.getProfessionalMemberships()),
 			new BeanToPropertyValueTransformer("membership"));
@@ -816,9 +810,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     public DoctorMultipleDataAddEditResponse addEditMultipleData(DoctorMultipleDataAddEditRequest request) {
 	UserCollection userCollection = null;
 	DoctorCollection doctorCollection = null;
-	List<SpecialityCollection> specialityCollections = null;
-	List<String> specialities = null;
-	List<String> specialitiesresponse = null;
+	List<String> specialitiesresponse = new ArrayList<>();
 	DoctorMultipleDataAddEditResponse response = null;
 	try {
 	    userCollection = userRepository.findOne(request.getDoctorId());
@@ -848,35 +840,28 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		    doctorCollection.setExperience(doctorExperience);
 		}
 
-		if (request.getSpeciality() != null) {
-		    if (!request.getSpeciality().isEmpty()) {
-			specialityCollections = specialityRepository.findAll();
-			specialities = new ArrayList<String>();
-			specialitiesresponse = new ArrayList<String>();
-			for (String speciality : request.getSpeciality()) {
-//			    Boolean specialityFound = false;
-			    for (SpecialityCollection specialityCollection : specialityCollections) {
-				if (speciality.trim().equalsIgnoreCase(specialityCollection.getSuperSpeciality())) {
-				    specialities.add(specialityCollection.getId());
-				    specialitiesresponse.add(specialityCollection.getSuperSpeciality());
-//				    specialityFound = true;
-				    break;
-				}
+		if (request.getSpeciality() != null && !request.getSpeciality().isEmpty()) {
+			List<SpecialityCollection> specialityCollections = specialityRepository.findBySuperSpeciality(request.getSpeciality());
+		    if(specialityCollections != null && !specialityCollections.isEmpty()){
+		    	@SuppressWarnings("unchecked")
+				Collection<String> specialityIds = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("id"));
+			    @SuppressWarnings("unchecked")
+				Collection<String> specialities = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("superSpeciality"));
+			    if(specialityIds != null && !specialityIds.isEmpty()){
+			    	doctorCollection.setSpecialities(new ArrayList<>(specialityIds));
+			    	specialitiesresponse.addAll(specialities);
 			    }
-//			    if (!specialityFound) {
-//				SpecialityCollection specialityCollection = new SpecialityCollection();
-//				specialityCollection.setSpeciality(speciality);
-//				specialityCollection.setCreatedTime(new Date());
-//				specialityCollection = specialityRepository.save(specialityCollection);
-//				specialities.add(specialityCollection.getId());
-//				specialitiesresponse.add(specialityCollection.getSpeciality());
-//			    }
-			}
-			doctorCollection.setSpecialities(specialities);
-		    } else {
-			doctorCollection.setSpecialities(new ArrayList<String>());
+			    else {
+			    	doctorCollection.setSpecialities(null);
+			    	specialitiesresponse = null;
+			    }
+		    }else{
+		    	doctorCollection.setSpecialities(null);
+		    	specialitiesresponse = null;
 		    }
-		}
+	    }else{
+	    	doctorCollection.setSpecialities(null);	
+	    }
 
 		if (request.getProfileImage() != null) {
 		    String path = "profile-image";

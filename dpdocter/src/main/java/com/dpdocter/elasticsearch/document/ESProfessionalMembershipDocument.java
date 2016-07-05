@@ -45,6 +45,6 @@ public class ESProfessionalMembershipDocument {
 
     @Override
     public String toString() {
-	return "SolrProfessionalMembershipDocument [id=" + id + ", membership=" + membership + ", updatedTime=" + updatedTime + "]";
+	return "ESProfessionalMembershipDocument [id=" + id + ", membership=" + membership + ", updatedTime=" + updatedTime + "]";
     }
 }

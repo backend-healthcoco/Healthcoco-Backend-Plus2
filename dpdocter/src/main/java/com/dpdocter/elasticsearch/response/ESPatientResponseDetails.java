@@ -26,6 +26,6 @@ public class ESPatientResponseDetails {
 
     @Override
     public String toString() {
-	return "SolrPatientResponseDetails [patients=" + patients + ", totalSize=" + totalSize + "]";
+	return "ESPatientResponseDetails [patients=" + patients + ", totalSize=" + totalSize + "]";
     }
 }

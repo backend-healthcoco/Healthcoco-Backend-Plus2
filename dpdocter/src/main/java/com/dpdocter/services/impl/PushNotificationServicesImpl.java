@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.Notification;
 import com.dpdocter.beans.UserDevice;
 import com.dpdocter.collections.PushNotificationCollection;
 import com.dpdocter.collections.UserCollection;
@@ -40,7 +41,6 @@ import com.google.android.gcm.server.Message;
 import com.google.android.gcm.server.MulticastResult;
 import com.google.android.gcm.server.Result;
 import com.google.android.gcm.server.Sender;
-import com.mongodb.BasicDBObject;
 import com.notnoop.apns.APNS;
 import com.notnoop.apns.ApnsService;
 
@@ -81,6 +81,9 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 	@Value("${ios.notification.sound.filepath}")
 	private String iosNotificationSoundFilepath;
 	
+	@Value("${is.env.production}")
+    private Boolean isEnvProduction;
+
 	@Autowired
     private FileManager fileManager;
 	
@@ -144,10 +147,10 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 
 	@Override
 	@Transactional
-	public Boolean notifyUser(String patientId, String message, String componentType, String componentTypeId) {
-		Boolean response = false;
+	public void notifyUser(String userId, String message, String componentType, String componentTypeId) {
+//		Boolean response = false;
 		try{
-			List<UserDeviceCollection> userDeviceCollections = userDeviceRepository.findByUserId(patientId);
+			List<UserDeviceCollection> userDeviceCollections = userDeviceRepository.findByUserId(userId);
 			if(userDeviceCollections != null && !userDeviceCollections.isEmpty()){
 				for(UserDeviceCollection userDeviceCollection : userDeviceCollections){
 					if(userDeviceCollection.getDeviceType() != null){
@@ -165,7 +168,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 			e.printStackTrace();
 		    logger.error(e + " Error while pushing notification: " + e.getCause().getMessage());
 		}
-		return response;
+//		return response;
 	}
 	
 	public void pushNotificationOnAndroidDevices(String deviceId, String pushToken, String message, String componentType, String componentTypeId, String string) {
@@ -173,24 +176,24 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 			ObjectMapper mapper = new ObjectMapper();
 			Sender sender = new Sender(GEOCODING_SERVICES_API_KEY);
 
-			BasicDBObject basicDBObject = new BasicDBObject();
-			basicDBObject.put("type", "Healthcoco");
-			basicDBObject.put("text", message);
+			Notification notification = new Notification();
+			notification.setTitle("Healthcoco");
+			notification.setText(message);
 			if(!DPDoctorUtils.anyStringEmpty(componentType)){
 				if(componentType.equalsIgnoreCase(ComponentType.PRESCRIPTIONS.getType())){
-					basicDBObject.put("XI", componentTypeId);basicDBObject.put("componentType", componentType);
+					notification.setXI(componentTypeId);notification.setNotificationType(componentType);
 				}
 				else if(componentType.equalsIgnoreCase(ComponentType.REPORTS.getType())){
-					basicDBObject.put("RI", componentTypeId);basicDBObject.put("componentType", componentType);
+					notification.setRI(componentTypeId);notification.setNotificationType(componentType);
 				}
 				else if(componentType.equalsIgnoreCase(ComponentType.PATIENT.getType())){
-					basicDBObject.put("PI", componentTypeId);basicDBObject.put("componentType", componentType);
+					notification.setPI(componentTypeId);notification.setNotificationType(componentType);
 				}
 				else if(componentType.equalsIgnoreCase(ComponentType.DOCTOR.getType())){
-					basicDBObject.put("DI", componentTypeId);basicDBObject.put("componentType", componentType);
+					notification.setDI(componentTypeId);notification.setNotificationType(componentType);
 				}
 			}
-					String jsonOutput = mapper.writeValueAsString(basicDBObject);
+					String jsonOutput = mapper.writeValueAsString(notification);
 					Message messageObj = new Message.Builder()
 							.delayWhileIdle(true)
 							.addData("message", jsonOutput).build();
@@ -213,12 +216,13 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 			ObjectMapper mapper = new ObjectMapper();
 			Sender sender = new Sender(GEOCODING_SERVICES_API_KEY);
 
-			BasicDBObject basicDBObject = new BasicDBObject();
-			basicDBObject.put("type", "Healthcoco");
-			basicDBObject.put("text", message);
-			if(!DPDoctorUtils.anyStringEmpty(imageURL))basicDBObject.put("img", imageURL);
+			Notification notification = new Notification();
+			notification.setTitle("Healthcoco");
+			notification.setText(message);
 			
-			String jsonOutput = mapper.writeValueAsString(basicDBObject);
+			if(!DPDoctorUtils.anyStringEmpty(imageURL))notification.setImg(imageURL);
+			
+			String jsonOutput = mapper.writeValueAsString(notification);
 			Message messageObj = new Message.Builder().delayWhileIdle(true).addData("message", jsonOutput).build();
 
 			MulticastResult result = sender.send(messageObj, pushTokens, 1);
@@ -235,38 +239,70 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 	public void pushNotificationOnIosDevices(String deviceId, String pushToken, String message, String componentType, String componentTypeId, String deviceType, String role) {
 		try {
 			ApnsService service = null;
-			if(deviceType.equalsIgnoreCase(DeviceType.IOS.getType())){
-				if(role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())){
-					service = APNS
-					.newService()
-					.withCert(iosCertificateFileNameDoctorApp, iosCertificatePasswordDoctorApp)
-					.withSandboxDestination()
-					.build();
+			if(isEnvProduction){
+				if(deviceType.equalsIgnoreCase(DeviceType.IOS.getType())){
+					if(role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())){
+						service = APNS
+						.newService()
+						.withCert(iosCertificateFileNameDoctorApp, iosCertificatePasswordDoctorApp)
+						.withProductionDestination()
+						.build();
+					}else{
+						service = APNS
+								.newService()
+								.withCert(iosCertificateFileNamePatientApp, iosCertificatePasswordPatientApp)
+								.withProductionDestination()
+								.build();
+					}
 				}else{
-					service = APNS
-							.newService()
-							.withCert(iosCertificateFileNamePatientApp, iosCertificatePasswordPatientApp)
-							.withSandboxDestination()
-							.build();
+					if(role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())){
+						service = APNS
+						.newService()
+						.withCert(ipadCertificateFileNameDoctorApp, ipadCertificatePasswordDoctorApp)
+						.withProductionDestination()
+						.build();
+					}else{
+						service = APNS
+								.newService()
+								.withCert(ipadCertificateFileNamePatientApp, ipadCertificatePasswordPatientApp)
+								.withProductionDestination()
+								.build();
+					}
 				}
 			}else{
-				if(role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())){
-					service = APNS
-					.newService()
-					.withCert(ipadCertificateFileNameDoctorApp, ipadCertificatePasswordDoctorApp)
-					.withSandboxDestination()
-					.build();
+				if(deviceType.equalsIgnoreCase(DeviceType.IOS.getType())){
+					if(role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())){
+						service = APNS
+						.newService()
+						.withCert(iosCertificateFileNameDoctorApp, iosCertificatePasswordDoctorApp)
+						.withSandboxDestination()
+						.build();
+					}else{
+						service = APNS
+								.newService()
+								.withCert(iosCertificateFileNamePatientApp, iosCertificatePasswordPatientApp)
+								.withSandboxDestination()
+								.build();
+					}
 				}else{
-					service = APNS
-							.newService()
-							.withCert(ipadCertificateFileNamePatientApp, ipadCertificatePasswordPatientApp)
-							.withSandboxDestination()
-							.build();
+					if(role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())){
+						service = APNS
+						.newService()
+						.withCert(ipadCertificateFileNameDoctorApp, ipadCertificatePasswordDoctorApp)
+						.withSandboxDestination()
+						.build();
+					}else{
+						service = APNS
+								.newService()
+								.withCert(ipadCertificateFileNamePatientApp, ipadCertificatePasswordPatientApp)
+								.withSandboxDestination()
+								.build();
+					}
 				}
 			}
 			
+			
 			Map<String, Object> customValues = new HashMap<String, Object>();
-			customValues.put("type", "Healthcoco");
 			if(!DPDoctorUtils.anyStringEmpty(componentType)){
 				if(componentType.equalsIgnoreCase(ComponentType.PRESCRIPTIONS.getType())){
 					customValues.put("XI", componentTypeId);customValues.put("T", "X");
@@ -283,7 +319,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 			}
 					String payload = APNS.newPayload()
 							.alertBody(message)
-							.sound(iosNotificationSoundFilepath)
+							.sound("default")
 							.customFields(customValues).build();
 					service.push(pushToken, payload);
 					List<String> deviceIds= new ArrayList<String>();
@@ -298,38 +334,70 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 	public void broadcastPushNotificationOnIosDevices(List<String> deviceIds, List<String> pushToken, String message, String imageURL, String deviceType, String role) {
 		try {
 			ApnsService service = null;
-			if(deviceType.equalsIgnoreCase(DeviceType.IOS.getType())){
-				if(role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())){
-					service = APNS
-					.newService()
-					.withCert(iosCertificateFileNameDoctorApp, iosCertificatePasswordDoctorApp)
-					.withSandboxDestination()
-					.build();
+			if(isEnvProduction){
+				if(deviceType.equalsIgnoreCase(DeviceType.IOS.getType())){
+					if(role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())){
+						service = APNS
+						.newService()
+						.withCert(iosCertificateFileNameDoctorApp, iosCertificatePasswordDoctorApp)
+						.withProductionDestination()
+						.build();
+					}else{
+						service = APNS
+								.newService()
+								.withCert(iosCertificateFileNamePatientApp, iosCertificatePasswordPatientApp)
+								.withProductionDestination()
+								.build();
+					}
 				}else{
-					service = APNS
-							.newService()
-							.withCert(iosCertificateFileNamePatientApp, iosCertificatePasswordPatientApp)
-							.withSandboxDestination()
-							.build();
+					if(role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())){
+						service = APNS
+						.newService()
+						.withCert(ipadCertificateFileNameDoctorApp, ipadCertificatePasswordDoctorApp)
+						.withProductionDestination()
+						.build();
+					}else{
+						service = APNS
+								.newService()
+								.withCert(ipadCertificateFileNamePatientApp, ipadCertificatePasswordPatientApp)
+								.withProductionDestination()
+								.build();
+					}
 				}
 			}else{
-				if(role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())){
-					service = APNS
-					.newService()
-					.withCert(ipadCertificateFileNameDoctorApp, ipadCertificatePasswordDoctorApp)
-					.withSandboxDestination()
-					.build();
+				if(deviceType.equalsIgnoreCase(DeviceType.IOS.getType())){
+					if(role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())){
+						service = APNS
+						.newService()
+						.withCert(iosCertificateFileNameDoctorApp, iosCertificatePasswordDoctorApp)
+						.withSandboxDestination()
+						.build();
+					}else{
+						service = APNS
+								.newService()
+								.withCert(iosCertificateFileNamePatientApp, iosCertificatePasswordPatientApp)
+								.withSandboxDestination()
+								.build();
+					}
 				}else{
-					service = APNS
-							.newService()
-							.withCert(ipadCertificateFileNamePatientApp, ipadCertificatePasswordPatientApp)
-							.withSandboxDestination()
-							.build();
+					if(role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())){
+						service = APNS
+						.newService()
+						.withCert(ipadCertificateFileNameDoctorApp, ipadCertificatePasswordDoctorApp)
+						.withSandboxDestination()
+						.build();
+					}else{
+						service = APNS
+								.newService()
+								.withCert(ipadCertificateFileNamePatientApp, ipadCertificatePasswordPatientApp)
+								.withSandboxDestination()
+								.build();
+					}
 				}
 			}
 			
+			
 			Map<String, Object> customValues = new HashMap<String, Object>();
-			customValues.put("type", "Healthcoco");
 			if(!DPDoctorUtils.anyStringEmpty(imageURL))customValues.put("img", imageURL);
 			String payload = APNS.newPayload()
 							.alertBody(message)
@@ -347,8 +415,8 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
-	public Boolean broadcastNotification(BroadcastNotificationRequest request) {
-		Boolean response = false;
+	public void broadcastNotification(BroadcastNotificationRequest request) {
+//		Boolean response = false;
 		try{
 			String imageUrl = null;
 			if (request.getImage() != null) {
@@ -449,13 +517,13 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
-		return response;
+//		return response;
 	}
 
 	@Override
 	@Transactional
-	public Boolean readNotification(String deviceId, Integer count) {
-		Boolean response = false;
+	public void readNotification(String deviceId, Integer count) {
+//		Boolean response = false;
 		try{
 			UserDeviceCollection userDeviceCollection = userDeviceRepository.findByDeviceId(deviceId);
 			if(userDeviceCollection != null){
@@ -466,7 +534,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
-		return response;
+//		return response;
 
 	}
 	

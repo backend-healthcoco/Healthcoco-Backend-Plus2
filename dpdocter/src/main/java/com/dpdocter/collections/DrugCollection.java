@@ -3,6 +3,7 @@ package com.dpdocter.collections;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -27,7 +28,7 @@ public class DrugCollection extends GenericCollection {
     private Strength strength;
 
     @Field
-    private List<String> genericIds;
+    private List<String> genericCodes;
 
     @Field
     private String doctorId;
@@ -41,6 +42,7 @@ public class DrugCollection extends GenericCollection {
     @Field
     private Boolean discarded = false;
 
+//    @Indexed(unique = true)
     @Field
     private String drugCode;
 
@@ -94,12 +96,12 @@ public class DrugCollection extends GenericCollection {
 	this.strength = strength;
     }
 
-    public List<String> getGenericIds() {
-		return genericIds;
+	public List<String> getGenericCodes() {
+		return genericCodes;
 	}
 
-	public void setGenericIds(List<String> genericIds) {
-		this.genericIds = genericIds;
+	public void setGenericCodes(List<String> genericCodes) {
+		this.genericCodes = genericCodes;
 	}
 
 	public String getDoctorId() {
@@ -166,10 +168,12 @@ public class DrugCollection extends GenericCollection {
 	MRP = mRP;
     }
 
-    @Override
-    public String toString() {
-	return "DrugCollection [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation=" + explanation + ", strength=" + strength
-		+ ", genericIds=" + genericIds + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", discarded="
-		+ discarded + ", drugCode=" + drugCode + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP=" + MRP + "]";
-    }
+	@Override
+	public String toString() {
+		return "DrugCollection [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation="
+				+ explanation + ", strength=" + strength + ", genericCodes=" + genericCodes + ", doctorId=" + doctorId
+				+ ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", discarded=" + discarded
+				+ ", drugCode=" + drugCode + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP=" + MRP
+				+ "]";
+	}
 }

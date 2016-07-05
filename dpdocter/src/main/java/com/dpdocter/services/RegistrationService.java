@@ -53,7 +53,7 @@ public interface RegistrationService {
 
     PatientInitialAndCounter getPatientInitialAndCounter(String doctorId, String locationId);
 
-    String updatePatientInitialAndCounter(String doctorId, String locationId, String patientInitial, int patientCounter);
+    Boolean updatePatientInitialAndCounter(String doctorId, String locationId, String patientInitial, int patientCounter);
 
     Location getClinicDetails(String clinicId);
 
