@@ -488,19 +488,21 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 	    // set medical councils using medical councils ids
 	    registrationDetails = new ArrayList<DoctorRegistrationDetail>();
-	    if (doctorProfile.getRegistrationDetails() != null) {
+	    if (doctorProfile.getRegistrationDetails() != null && !doctorProfile.getRegistrationDetails().isEmpty()) {
 		for (DoctorRegistrationDetail registrationDetail : doctorProfile.getRegistrationDetails()) {
 		    DoctorRegistrationDetail doctorRegistrationDetail = new DoctorRegistrationDetail();
 		    BeanUtil.map(registrationDetail, doctorRegistrationDetail);
-		    MedicalCouncilCollection medicalCouncilCollection = medicalCouncilRepository.findOne(registrationDetail.getMedicalCouncil());
-		    if (medicalCouncilCollection != null)
-			doctorRegistrationDetail.setMedicalCouncil(medicalCouncilCollection.getMedicalCouncil());
+		    if(!DPDoctorUtils.anyStringEmpty(registrationDetail.getMedicalCouncil())){
+		    	MedicalCouncilCollection medicalCouncilCollection = medicalCouncilRepository.findOne(registrationDetail.getMedicalCouncil());
+			    if (medicalCouncilCollection != null)
+				doctorRegistrationDetail.setMedicalCouncil(medicalCouncilCollection.getMedicalCouncil());
+		    }
 		    registrationDetails.add(doctorRegistrationDetail);
 		}
 	    }
 	    doctorProfile.setRegistrationDetails(registrationDetails);
 	    // set professional memberships using professional membership ids
-	    if (doctorProfile.getProfessionalMemberships() != null) {
+	    if (doctorProfile.getProfessionalMemberships() != null && !doctorProfile.getProfessionalMemberships().isEmpty()) {
 		professionalMemberships = (List<String>) CollectionUtils.collect(
 			(Collection<?>) professionalMembershipRepository.findAll(doctorProfile.getProfessionalMemberships()),
 			new BeanToPropertyValueTransformer("membership"));
