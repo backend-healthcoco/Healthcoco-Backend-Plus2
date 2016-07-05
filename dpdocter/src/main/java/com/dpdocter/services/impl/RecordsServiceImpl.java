@@ -163,7 +163,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    	String recordsURL = request.getRecordsUrl().replaceAll(imagePath, "");
 	    	recordsCollection.setRecordsUrl(recordsURL);
 			recordsCollection.setRecordsPath(recordsURL);
-			recordsCollection.setRecordsLabel(FilenameUtils.getBaseName(recordsURL).substring(0, recordsURL.length()-13));
+			if(DPDoctorUtils.anyStringEmpty(request.getRecordsLabel()))recordsCollection.setRecordsLabel(FilenameUtils.getBaseName(recordsURL).substring(0, recordsURL.length()-13));
 	    }
 	    if (request.getFileDetails() != null) {
 		String recordLabel = request.getFileDetails().getFileName();
@@ -176,7 +176,7 @@ public class RecordsServiceImpl implements RecordsService {
 
 		recordsCollection.setRecordsUrl(imageURLResponse.getImageUrl());
 		recordsCollection.setRecordsPath(recordPath);
-		recordsCollection.setRecordsLabel(recordLabel);
+		if(DPDoctorUtils.anyStringEmpty(request.getRecordsLabel()))recordsCollection.setRecordsLabel(recordLabel);
 	    }
 	    recordsCollection.setCreatedTime(createdTime);
 	    recordsCollection.setUniqueEmrId(UniqueIdInitial.REPORTS.getInitial() + DPDoctorUtils.generateRandomId());
@@ -195,7 +195,6 @@ public class RecordsServiceImpl implements RecordsService {
 	    			recordsCollection.setPrescribedByDoctorId(prescriptionCollection.getDoctorId());
 	    			recordsCollection.setPrescribedByLocationId(prescriptionCollection.getLocationId());
 	    			recordsCollection.setPrescribedByHospitalId(prescriptionCollection.getHospitalId());
-
 	    	}
 	    }
 	   
@@ -244,7 +243,6 @@ public class RecordsServiceImpl implements RecordsService {
 			recordsCollection.setRecordsLabel(FilenameUtils.getBaseName(recordsURL).substring(0, recordsURL.length()-13));
 	    }
 	    if (request.getFileDetails() != null) {
-		String recordLabel = request.getFileDetails().getFileName();
 		request.getFileDetails().setFileName(request.getFileDetails().getFileName() + new Date().getTime());
 		String path = request.getPatientId() + File.separator + "records";
 		// save image
@@ -254,9 +252,7 @@ public class RecordsServiceImpl implements RecordsService {
 
 		recordsCollection.setRecordsUrl(imageURLResponse.getImageUrl());
 		recordsCollection.setRecordsPath(recordPath);
-		recordsCollection.setRecordsLabel(recordLabel);
-
-	    }
+		}
 	    RecordsCollection oldRecord = recordsRepository.findOne(request.getId());
 	    recordsCollection.setCreatedTime(oldRecord.getCreatedTime());
 	    recordsCollection.setCreatedBy(oldRecord.getCreatedBy());

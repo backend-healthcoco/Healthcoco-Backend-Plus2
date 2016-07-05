@@ -28,6 +28,8 @@ public class RecordsAddRequest {
 
     private String diagnosticTestId;
 
+    private String recordsLabel;
+    
     public String getPatientId() {
 	return patientId;
     }
@@ -124,11 +126,21 @@ public class RecordsAddRequest {
 		this.recordsUrl = recordsUrl;
 	}
 
+	public String getRecordsLabel() {
+		return recordsLabel;
+	}
+
+	public void setRecordsLabel(String recordsLabel) {
+		this.recordsLabel = recordsLabel;
+	}
+
 	@Override
 	public String toString() {
 		return "RecordsAddRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", recordsUrl=" + recordsUrl
 				+ ", explanation=" + explanation + ", fileDetails=" + fileDetails + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", recordsType=" + recordsType + ", createdBy=" + createdBy
-				+ ", visitId=" + visitId + ", prescriptionId=" + prescriptionId + ", diagnosticTestId=" + diagnosticTestId + "]";
+				+ ", visitId=" + visitId + ", prescriptionId=" + prescriptionId + ", diagnosticTestId="
+				+ diagnosticTestId + ", recordsLabel=" + recordsLabel + "]";
 	}
+
 }
