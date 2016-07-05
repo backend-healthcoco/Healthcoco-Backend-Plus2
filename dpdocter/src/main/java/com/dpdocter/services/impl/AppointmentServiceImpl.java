@@ -926,25 +926,22 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    		if(locationCollection != null){
 		    			appointment.setLocationName(locationCollection.getLocationName());
 		    			appointment.setClinicNumber(locationCollection.getClinicNumber());
-		    			String address = locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress()
-		    					: "" + locationCollection.getCity() != null ? ", "+locationCollection.getCity()
-		    					: "" + locationCollection.getPostalCode() != null ? ", "+locationCollection.getPostalCode() 
-		    								: "" + locationCollection.getState() != null ? ", "+locationCollection.getState() 
-		    									: "" + locationCollection.getCountry() != null ? ", "+locationCollection.getCountry() : "";
-
+		    			
+		    			String address = 
+		    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress()) ? locationCollection.getStreetAddress()+", ":"")+
+		    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality()) ? locationCollection.getLocality()+", ":"")+
+		    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCity()) ? locationCollection.getCity()+", ":"")+
+		    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getState()) ? locationCollection.getState()+", ":"")+
+		    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry()) ? locationCollection.getCountry()+", ":"")+
+		    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode()) ? locationCollection.getPostalCode():"");
+		    	    	
+		    		    if(address.charAt(address.length() - 2) == ','){
+		    		    	address = address.substring(0, address.length() - 2);
+		    		    }
+		    		    
 		    			appointment.setClinicAddress(address);
 		    			appointment.setLatitude(locationCollection.getLatitude());
 		    			appointment.setLongitude(locationCollection.getLongitude());
-//		    			UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(appointment.getDoctorId(), appointment.getLocationId());
-//		    			if(userLocationCollection != null){
-//		    				DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
-//			    	    	
-//			    		    SimpleDateFormat sdf = new SimpleDateFormat();
-//			    			if(clinicProfileCollection != null)sdf.setTimeZone(TimeZone.getTimeZone(clinicProfileCollection.getTimeZone()));
-//			    			else sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-//			    		    if(appointment.getFromDate() != null)appointment.setFromDate(new Date(sdf.format(appointment.getFromDate())));
-//			    		    if(appointment.getToDate() != null)appointment.setToDate(new Date(sdf.format(appointment.getToDate())));    
-//		    			}
 		    		}
 		    	}
 		    	response.add(appointment);
@@ -1013,13 +1010,18 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    		if(locationCollection != null){
 			    			appointment.setLocationName(locationCollection.getLocationName());
 			    			appointment.setClinicNumber(locationCollection.getClinicNumber());
-			    			String address = locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() + ", "
-			    					: "" + locationCollection.getCity() != null ? locationCollection.getCity() + ", "
-			    								: "" + locationCollection.getPostalCode() != null ? locationCollection.getPostalCode() + ", "
-			    									: "" + locationCollection.getState() != null && locationCollection.getPostalCode() == null
-			    										? ", "
-			    										: "" + locationCollection.getCountry() != null ? locationCollection.getCountry() : "";
-			    			appointment.setClinicAddress(address);
+			    			String address = 
+			    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress()) ? locationCollection.getStreetAddress()+", ":"")+
+			    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality()) ? locationCollection.getLocality()+", ":"")+
+			    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCity()) ? locationCollection.getCity()+", ":"")+
+			    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getState()) ? locationCollection.getState()+", ":"")+
+			    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry()) ? locationCollection.getCountry()+", ":"")+
+			    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode()) ? locationCollection.getPostalCode():"");
+			    	    	
+			    		    if(address.charAt(address.length() - 2) == ','){
+			    		    	address = address.substring(0, address.length() - 2);
+			    		    }
+			    		    appointment.setClinicAddress(address);
 			    			appointment.setLatitude(locationCollection.getLatitude());
 			    			appointment.setLongitude(locationCollection.getLongitude());
 			    		}

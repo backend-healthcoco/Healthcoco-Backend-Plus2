@@ -601,12 +601,18 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			    }
 			    UserCollection doctorUser = userRepository.findOne(patientVisitCollection.getDoctorId());
 				LocationCollection locationCollection = locationRepository.findOne(patientVisitCollection.getLocationId());
-				String address = locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress()
-						: "" + locationCollection.getCity() != null ? ", "+locationCollection.getCity()
-							: "" + locationCollection.getPostalCode() != null ? ", "+locationCollection.getPostalCode() 
-										: "" + locationCollection.getState() != null ? ", "+locationCollection.getState() 
-											: "" + locationCollection.getCountry() != null ? ", "+locationCollection.getCountry() : "";
-				SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+				String address = 
+    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress()) ? locationCollection.getStreetAddress()+", ":"")+
+    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality()) ? locationCollection.getLocality()+", ":"")+
+    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCity()) ? locationCollection.getCity()+", ":"")+
+    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getState()) ? locationCollection.getState()+", ":"")+
+    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry()) ? locationCollection.getCountry()+", ":"")+
+    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode()) ? locationCollection.getPostalCode():"");
+    	    	
+    		    if(address.charAt(address.length() - 2) == ','){
+    		    	address = address.substring(0, address.length() - 2);
+    		    }
+    		    SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
 											
 				String body = mailBodyGenerator.generateEMREmailBody(user.getFirstName(), doctorUser.getTitle()+" "+doctorUser.getFirstName(), locationCollection.getLocationName(), address, sdf.format(patientVisitCollection.getCreatedTime()), "Visit Details", "emrMailTemplate.vm");
 			    mailService.sendEmailMultiAttach(emailAddress, doctorUser.getTitle()+" "+doctorUser.getFirstName()+" sent you Visit Details", body, mailAttachments);

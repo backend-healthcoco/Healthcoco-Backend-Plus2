@@ -2201,12 +2201,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				response = new MailResponse();
 				response.setMailAttachment(mailAttachment);
 				response.setDoctorName(doctorUser.getTitle()+" "+doctorUser.getFirstName());
-				String address = locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress()
-						: "" + locationCollection.getCity() != null ? ", "+locationCollection.getCity()
-							: "" + locationCollection.getPostalCode() != null ? ", "+locationCollection.getPostalCode() 
-										: "" + locationCollection.getState() != null ? ", "+locationCollection.getState() 
-											: "" + locationCollection.getCountry() != null ? ", "+locationCollection.getCountry() : "";
-				response.setClinicAddress(address);
+				String address = 
+    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress()) ? locationCollection.getStreetAddress()+", ":"")+
+    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality()) ? locationCollection.getLocality()+", ":"")+
+    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCity()) ? locationCollection.getCity()+", ":"")+
+    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getState()) ? locationCollection.getState()+", ":"")+
+    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry()) ? locationCollection.getCountry()+", ":"")+
+    	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode()) ? locationCollection.getPostalCode():"");
+    	    	
+    		    if(address.charAt(address.length() - 2) == ','){
+    		    	address = address.substring(0, address.length() - 2);
+    		    }
+    		    response.setClinicAddress(address);
 				response.setClinicName(locationCollection.getLocationName());
 				SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
 				response.setMailRecordCreatedDate(sdf.format(clinicalNotesCollection.getCreatedTime()));

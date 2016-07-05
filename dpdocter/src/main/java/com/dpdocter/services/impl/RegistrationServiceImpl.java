@@ -1157,6 +1157,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    if (locationCollection != null) {
 		location = new Location();
 		BeanUtil.map(locationCollection, location);
+		
+		String address = 
+    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress()) ? locationCollection.getStreetAddress()+", ":"")+
+    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality()) ? locationCollection.getLocality()+", ":"")+
+    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCity()) ? locationCollection.getCity()+", ":"")+
+    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getState()) ? locationCollection.getState()+", ":"")+
+    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry()) ? locationCollection.getCountry()+", ":"")+
+    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode()) ? locationCollection.getPostalCode():"");
+    	
+	    if(address.charAt(address.length() - 2) == ','){
+	    	address = address.substring(0, address.length() - 2);
+	    }
+	    location.setClinicAddress(address);
 	    } else {
 		logger.warn("No Location Found For The Location Id");
 		throw new BusinessException(ServiceError.NotFound, "No Location Found For The Location Id");
