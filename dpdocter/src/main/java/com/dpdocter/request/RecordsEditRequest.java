@@ -22,6 +22,8 @@ public class RecordsEditRequest {
 
     private String recordsUrl;
     
+    private String recordsLabel;
+    
     public String getId() {
 	return id;
     }
@@ -94,10 +96,19 @@ public class RecordsEditRequest {
 		this.recordsUrl = recordsUrl;
 	}
 
+	public String getRecordsLabel() {
+		return recordsLabel;
+	}
+
+	public void setRecordsLabel(String recordsLabel) {
+		this.recordsLabel = recordsLabel;
+	}
+
 	@Override
 	public String toString() {
 		return "RecordsEditRequest [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId + ", explanation="
 				+ explanation + ", fileDetails=" + fileDetails + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + ", visitId=" + visitId + ", recordsUrl=" + recordsUrl + "]";
+				+ hospitalId + ", visitId=" + visitId + ", recordsUrl=" + recordsUrl + ", recordsLabel=" + recordsLabel
+				+ "]";
 	}
 }
