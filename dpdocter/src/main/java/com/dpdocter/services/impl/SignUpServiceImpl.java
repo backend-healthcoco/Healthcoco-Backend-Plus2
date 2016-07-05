@@ -4,11 +4,14 @@ import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +45,8 @@ import com.dpdocter.collections.TokenCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
 import com.dpdocter.collections.UserRoleCollection;
+import com.dpdocter.elasticsearch.document.ESPatientDocument;
+import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.AccessPermissionType;
 import com.dpdocter.enums.ColorCode;
 import com.dpdocter.enums.ColorCode.RandomEnum;
@@ -248,7 +253,24 @@ public class SignUpServiceImpl implements SignUpService {
 			else userCollection.setUserState(UserState.NOTACTIVATED);
 			userRepository.save(userCollection);
 			response = true;
-			if (activate && userCollection.getMobileNumber() != null) {
+    	List<UserRoleCollection> userRoleCollection = userRoleRepository.findByUserId(userCollection.getId());
+			@SuppressWarnings("unchecked")
+		    Collection<String> roleIds = CollectionUtils.collect(userRoleCollection, new BeanToPropertyValueTransformer("roleId"));
+		    if(roleIds != null && !roleIds.isEmpty()){
+		    	List<RoleCollection> roleCollections = roleRepository.findByIdAndRole(roleIds, RoleEnum.SUPER_ADMIN.getRole());
+		    	if(roleCollections != null && !roleCollections.isEmpty()){
+		    		for(RoleCollection roleCollection : roleCollections){
+		    			List<UserLocationCollection> userLocationCollections = userLocationRepository.findByLocationId(roleCollection.getLocationId());
+		    			if(userLocationCollections != null && !userLocationCollections.isEmpty()){
+		    				for(UserLocationCollection userLocationCollection : userLocationCollections){
+		    					userLocationCollection.setIsActivate(activate);
+		    					userLocationRepository.save(userLocationCollection);
+		    				}
+		    			}
+		    		}
+		    	}
+		    }
+			if (userCollection.getMobileNumber() != null && activate) {
 			    SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 
 			    smsTrackDetail.setType("AFTER_VERIFICATION_TO_DOCTOR");
@@ -285,57 +307,28 @@ public class SignUpServiceImpl implements SignUpService {
 
 	@Override
 	public Boolean activateLocation(String locationId, Boolean activate) {
-//		UserCollection userCollection = null;
+		LocationCollection locationCollection = null;
 		Boolean response = false;
-//		try {
-//		    userCollection = userRepository.findOne(userId);
-//		    if (userCollection != null) {
-//		    
-//		    if(userCollection.getUserState().getState().equalsIgnoreCase(UserState.USERSTATEINCOMPLETE.getState())){
-//		    	logger.error("User State is incomplete so user cannot be activated");
-//				throw new BusinessException(ServiceError.Unknown, "User State is incomplete so user cannot be activated");
-//		    }
-//		    else if(userCollection.getUserState().getState().equalsIgnoreCase(UserState.NOTVERIFIED.getState())){
-//		    	logger.error("User has not verified his mail so user cannot be activated");
-//				throw new BusinessException(ServiceError.Unknown, "User has not verified his mail so user cannot be activated");
-//		    }
-//			userCollection.setIsActive(activate);
-//			if(activate)userCollection.setUserState(UserState.USERSTATECOMPLETE);
-//			else userCollection.setUserState(UserState.NOTACTIVATED);
-//			userRepository.save(userCollection);
-//			response = true;
-//			if (userCollection.getMobileNumber() != null && activate) {
-//			    SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-//
-//			    smsTrackDetail.setType("AFTER_VERIFICATION_TO_DOCTOR");
-//			    SMSDetail smsDetail = new SMSDetail();
-//			    smsDetail.setUserId(userCollection.getId());
-//			    smsDetail.setUserName(userCollection.getFirstName());
-//			    SMS sms = new SMS();
-//			    sms.setSmsText("Hi " + (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName()
-//				    + ",Your Healthcoco+ account has been activated,for any query please mail us at support@healthcoco.com ");
-//
-//			    SMSAddress smsAddress = new SMSAddress();
-//			    smsAddress.setRecipient(userCollection.getMobileNumber());
-//			    sms.setSmsAddress(smsAddress);
-//
-//			    smsDetail.setSms(sms);
-//			    smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-//			    List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-//			    smsDetails.add(smsDetail);
-//			    smsTrackDetail.setSmsDetails(smsDetails);
-//			    sMSServices.sendSMS(smsTrackDetail, true);
-//			}
-//
-//		    } else {
-//			logger.error("User Not Found For The Given User Id");
-//			throw new BusinessException(ServiceError.NotFound, "User Not Found For The Given User Id");
-//		    }
-//		} catch (Exception e) {
-//		    e.printStackTrace();
-//		    logger.error(e + " Error While Verifying User");
-//		    throw new BusinessException(ServiceError.Unknown, "Error While Verifying User");
-//		}
+		try {
+			locationCollection = locationRepository.findOne(locationId);
+		    if (locationCollection != null) {
+		    
+		    List<UserLocationCollection> userLocationCollections = userLocationRepository.findByLocationId(locationId);
+		    if(userLocationCollections != null && !userLocationCollections.isEmpty()){
+		    	for(UserLocationCollection userLocationCollection : userLocationCollections){
+		    		userLocationCollection.setIsActivate(activate);
+		    		userLocationRepository.save(userLocationCollection);
+		    	}
+		    }
+		    } else {
+			logger.error("Location Not Found For The Given Id");
+			throw new BusinessException(ServiceError.Unknown, "Location Not Found For The Given Id");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error While Verifying User");
+		    throw new BusinessException(ServiceError.Unknown, "Error While Verifying User");
+		}
 		return response;
 	}
 

@@ -1,5 +1,6 @@
 package com.dpdocter.repository;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -52,5 +53,8 @@ public interface RoleRepository extends MongoRepository<RoleCollection, String> 
 
     @Query("{'id':?0, 'locationId': ?1, 'hospitalId': ?2}")
     public RoleCollection find(String roleId, String id, String hospitalId);
+
+    @Query("{'id':{$in :?0}, 'role': ?1}")
+	public List<RoleCollection> findByIdAndRole(Collection<String> roleIds, String role);
 
 }

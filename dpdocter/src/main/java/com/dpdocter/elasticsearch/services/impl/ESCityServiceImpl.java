@@ -138,8 +138,10 @@ public class ESCityServiceImpl  implements ESCityService{
 	    	BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude)).lon(Double.parseDouble(longitude)).distance("30km"));
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 			landmarks = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("landmark", searchTerm))).build(), ESLandmarkLocalityDocument.class);
+			boolQueryBuilder = new BoolQueryBuilder().filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude)).lon(Double.parseDouble(longitude)).distance("30km"));
 			localities = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("locality", searchTerm))).build(), ESLandmarkLocalityDocument.class);
-		    cities = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder.must(QueryBuilders.matchQuery("city", searchTerm))).build(), ESCityDocument.class);
+			boolQueryBuilder = new BoolQueryBuilder().filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude)).lon(Double.parseDouble(longitude)).distance("30km"));
+		    cities = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("city", searchTerm))).build(), ESCityDocument.class);
 		} else {
 		    landmarks = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder.mustNot(QueryBuilders.existsQuery("locality"))).build(), ESLandmarkLocalityDocument.class);
 		    localities = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder.mustNot(QueryBuilders.existsQuery("landmark"))).build(), ESLandmarkLocalityDocument.class);

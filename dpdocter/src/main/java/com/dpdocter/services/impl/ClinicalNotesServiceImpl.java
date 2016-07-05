@@ -1348,26 +1348,26 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    if (doctorId == null) {
 		if (size > 0)
 		    complaintCollections = complaintRepository.findCustomGlobalComplaints(new Date(createdTimeStamp), discards,
-			    new PageRequest(page, size, Direction.DESC, "createdTime"));
+			    new PageRequest(page, size, Direction.ASC, "complaint"));
 		else
 		    complaintCollections = complaintRepository.findCustomGlobalComplaints(new Date(createdTimeStamp), discards,
-			    new Sort(Sort.Direction.DESC, "createdTime"));
+			    new Sort(Sort.Direction.ASC, "complaint"));
 
 	    } else {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 		    if (size > 0)
 			complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "createdTime"));
+				new PageRequest(page, size, Direction.ASC, "complaint"));
 		    else
 			complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "createdTime"));
+				new Sort(Sort.Direction.ASC, "complaint"));
 		} else {
 		    if (size > 0)
 			complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-				discards, new PageRequest(page, size, Direction.DESC, "createdTime"));
+				discards, new PageRequest(page, size, Direction.ASC, "complaint"));
 		    else
 			complaintCollections = complaintRepository.findCustomGlobalComplaints(doctorId, locationId, hospitalId, new Date(createdTimeStamp),
-				discards, new Sort(Sort.Direction.DESC, "createdTime"));
+				discards, new Sort(Sort.Direction.ASC, "complaint"));
 		}
 	    }
 	    BeanUtil.map(complaintCollections, response);
@@ -1392,10 +1392,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    if (size > 0)
 		complaintCollections = complaintRepository.findGlobalComplaints(new Date(createdTimeStamp), discards,
-			new PageRequest(page, size, Direction.DESC, "createdTime"));
+			new PageRequest(page, size, Direction.ASC, "complaint"));
 	    else
 		complaintCollections = complaintRepository.findGlobalComplaints(new Date(createdTimeStamp), discards,
-			new Sort(Sort.Direction.DESC, "createdTime"));
+			new Sort(Sort.Direction.ASC, "complaint"));
 
 	    if (complaintCollections != null) {
 		response = new ArrayList<Object>();
@@ -1430,17 +1430,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 		    if (size > 0)
 			complaintCollections = complaintRepository.findCustomComplaints(doctorId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "createdTime"));
+				new PageRequest(page, size, Direction.ASC, "complaint"));
 		    else
 			complaintCollections = complaintRepository.findCustomComplaints(doctorId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "createdTime"));
+				new Sort(Sort.Direction.ASC, "complaint"));
 		} else {
 		    if (size > 0)
 			complaintCollections = complaintRepository.findCustomComplaints(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "createdTime"));
+				new PageRequest(page, size, Direction.ASC, "complaint"));
 		    else
 			complaintCollections = complaintRepository.findCustomComplaints(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "createdTime"));
+				new Sort(Sort.Direction.ASC, "complaint"));
 
 		}
 	    }
