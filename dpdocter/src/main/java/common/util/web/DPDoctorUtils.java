@@ -131,14 +131,17 @@ public class DPDoctorUtils {
         return result;
    }
     
-	public static SearchQuery createGlobalQuery(int page, int size, String updatedTime, Boolean discarded, String searchTermFieldName, String searchTerm, String sortBy){
+	public static SearchQuery createGlobalQuery(int page, int size, String updatedTime, Boolean discarded, String sortBy, String searchTerm, String... searchTermFieldName){
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)))
 				.mustNot(QueryBuilders.existsQuery("doctorId"))
     			.mustNot(QueryBuilders.existsQuery("locationId"))
     			.mustNot(QueryBuilders.existsQuery("hospitalId"));
  	    
-		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName, searchTerm));
+		if(!DPDoctorUtils.anyStringEmpty(searchTerm) && searchTermFieldName.length > 0){
+	    	if(searchTermFieldName.length == 1)boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName[0], searchTerm));
+	    	else boolQueryBuilder.must(QueryBuilders.multiMatchQuery(searchTerm, searchTermFieldName));
+	    }
  	    if(!discarded)boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
  	    
         SearchQuery searchQuery = null;
@@ -153,13 +156,16 @@ public class DPDoctorUtils {
         return searchQuery;
 	}
 	
-	public static SearchQuery createCustomQuery(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTermFieldName, String searchTerm, String sortBy){
+	public static SearchQuery createCustomQuery(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String sortBy, String searchTerm, String... searchTermFieldName){
 		
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)))
     			.must(QueryBuilders.termQuery("doctorId", doctorId));
     	
 		if(!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))boolQueryBuilder.must(QueryBuilders.termQuery("locationId", locationId)).must(QueryBuilders.termQuery("hospitalId", hospitalId));
- 	    if (!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName, searchTerm));
+		if(!DPDoctorUtils.anyStringEmpty(searchTerm) && searchTermFieldName.length > 0){
+	    	if(searchTermFieldName.length == 1)boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName[0], searchTerm));
+	    	else boolQueryBuilder.must(QueryBuilders.multiMatchQuery(searchTerm, searchTermFieldName));
+	    }
  	    if(!discarded)boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
  	    
         SearchQuery searchQuery = null;
@@ -174,7 +180,7 @@ public class DPDoctorUtils {
         return searchQuery;
 	}
 
-	public static SearchQuery createCustomGlobalQuery(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTermFieldName, String searchTerm, String sortBy){
+	public static SearchQuery createCustomGlobalQuery(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String sortBy, String searchTerm, String... searchTermFieldName){
 
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)));
     	
@@ -186,10 +192,11 @@ public class DPDoctorUtils {
     		boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")) , QueryBuilders.termQuery("locationId", locationId)))
     		.must(QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")) , QueryBuilders.termQuery("hospitalId", hospitalId)));
     	}
-//    	else{
-//    		boolQueryBuilder.mustNot(QueryBuilders.existsQuery("locationId")).mustNot(QueryBuilders.existsQuery("hospitalId"));
-//    	}
-	    if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName, searchTerm));
+    	
+	    if(!DPDoctorUtils.anyStringEmpty(searchTerm) && searchTermFieldName.length > 0){
+	    	if(searchTermFieldName.length == 1)boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName[0], searchTerm));
+	    	else boolQueryBuilder.must(QueryBuilders.multiMatchQuery(searchTerm, searchTermFieldName));
+	    }
 	    if(!discarded)boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
 
         SearchQuery searchQuery = null;

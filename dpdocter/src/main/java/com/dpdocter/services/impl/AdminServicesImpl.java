@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -41,6 +42,16 @@ import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.ResumeCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.elasticsearch.document.ESCityDocument;
+import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
+import com.dpdocter.elasticsearch.document.ESDrugDocument;
+import com.dpdocter.elasticsearch.document.ESEducationInstituteDocument;
+import com.dpdocter.elasticsearch.document.ESEducationQualificationDocument;
+import com.dpdocter.elasticsearch.repository.ESDiagnosticTestRepository;
+import com.dpdocter.elasticsearch.repository.ESDrugRepository;
+import com.dpdocter.elasticsearch.repository.ESEducationInstituteRepository;
+import com.dpdocter.elasticsearch.repository.ESEducationQualificationRepository;
+import com.dpdocter.elasticsearch.services.ESCityService;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -95,8 +106,8 @@ public class AdminServicesImpl implements AdminServices {
     @Autowired
     private LocationServices locationServices;
 
-//    @Autowired
-//    private SolrCityService solrCityService;
+    @Autowired
+    private ESCityService esCityService;
 
     @Autowired
     private MailService mailService;
@@ -110,20 +121,20 @@ public class AdminServicesImpl implements AdminServices {
     @Autowired
     private EducationQualificationRepository educationQualificationRepository;
 
-//    @Autowired
-//    private SolrEducationInstituteRepository solrEducationInstituteRepository;
-//
-//    @Autowired
-//    private SolrEducationQualificationRepository solrEducationQualificationRepository;
+    @Autowired
+    private ESEducationInstituteRepository esEducationInstituteRepository;
+
+    @Autowired
+    private ESEducationQualificationRepository esEducationQualificationRepository;
 
     @Autowired
     private DiagnosticTestRepository diagnosticTestRepository;
 
-//    @Autowired
-//    private SolrDiagnosticTestRepository solrDiagnosticTestRepository;
-//
-//    @Autowired
-//    private SolrDrugRepository solrDrugRepository;
+    @Autowired
+    private ESDiagnosticTestRepository esDiagnosticTestRepository;
+
+    @Autowired
+    private ESDrugRepository esDrugRepository;
 
     @Autowired
     private DrugRepository drugRepository;
@@ -301,10 +312,10 @@ public class AdminServicesImpl implements AdminServices {
 				BeanUtil.map(geocodedLocations.get(0), cityCollection);
 
 			    cityCollection = cityRepository.save(cityCollection);
-//			    SolrCityDocument solrCities = new SolrCityDocument();
-//				BeanUtil.map(cityCollection, solrCities);
-//				solrCities.setGeoLocation(new GeoLocation(cityCollection.getLatitude(), cityCollection.getLongitude()));
-//				solrCityService.addCities(solrCities);
+			    ESCityDocument esCityDocument = new ESCityDocument();
+				BeanUtil.map(cityCollection, esCityDocument);
+				esCityDocument.setGeoPoint(new GeoPoint(cityCollection.getLatitude(), cityCollection.getLongitude()));
+				esCityService.addCities(esCityDocument);
 		    }
 		} catch (Exception e) {
 		    e.printStackTrace();
@@ -364,13 +375,13 @@ public class AdminServicesImpl implements AdminServices {
 			 drugCollection.setCompanyName(obj[4]);
 			 drugCollection = drugRepository.save(drugCollection);
 	
-//			 SolrDrugDocument solrDrugDocument = new SolrDrugDocument();
-//				BeanUtil.map(drugCollection, solrDrugDocument);
-//				if(drugCollection.getDrugType()!=null){
-//					solrDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
-//					solrDrugDocument.setDrugType(drugCollection.getDrugType().getType());
-//				}
-//				solrDrugRepository.save(solrDrugDocument);
+			 ESDrugDocument esDrugDocument = new ESDrugDocument();
+				BeanUtil.map(drugCollection, esDrugDocument);
+				if(drugCollection.getDrugType()!=null){
+					esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
+					esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
+				}
+				esDrugRepository.save(esDrugDocument);
 		    }
 			
 			
@@ -407,9 +418,9 @@ public class AdminServicesImpl implements AdminServices {
 			DiagnosticTestCollection diagnosticTestCollection = new DiagnosticTestCollection();
 			diagnosticTestCollection.setTestName(obj[0]);
 			diagnosticTestRepository.save(diagnosticTestCollection);
-//			SolrDiagnosticTestDocument document = new  SolrDiagnosticTestDocument();
-//			BeanUtil.map(diagnosticTestCollection, document);
-//			solrDiagnosticTestRepository.save(document);
+			ESDiagnosticTestDocument document = new  ESDiagnosticTestDocument();
+			BeanUtil.map(diagnosticTestCollection, document);
+			esDiagnosticTestRepository.save(document);
 		    }
 
 		} catch (Exception e) {
@@ -448,9 +459,9 @@ public class AdminServicesImpl implements AdminServices {
 			educationInstituteCollection.setUpdatedTime(new Date());
 			
 			educationInstituteRepository.save(educationInstituteCollection);
-//			SolrEducationInstituteDocument document = new  SolrEducationInstituteDocument();
-//			BeanUtil.map(educationInstituteCollection, document);
-//			solrEducationInstituteRepository.save(document);
+			ESEducationInstituteDocument document = new  ESEducationInstituteDocument();
+			BeanUtil.map(educationInstituteCollection, document);
+			esEducationInstituteRepository.save(document);
 		    }
 
 		} catch (Exception e) {
@@ -489,9 +500,9 @@ public class AdminServicesImpl implements AdminServices {
 			educationQualificationCollection.setUpdatedTime(new Date());
 			
 			educationQualificationRepository.save(educationQualificationCollection);
-//			SolrEducationQualificationDocument document = new  SolrEducationQualificationDocument();
-//			BeanUtil.map(educationQualificationCollection, document);
-//			solrEducationQualificationRepository.save(document);
+			ESEducationQualificationDocument document = new  ESEducationQualificationDocument();
+			BeanUtil.map(educationQualificationCollection, document);
+			esEducationQualificationRepository.save(document);
 		    }
 
 		} catch (Exception e) {

@@ -14,21 +14,14 @@
       <div style="background-color: #faf8f8; padding:20px;">
 
         <div align="center" style="margin-top: 10px">
-          <img src="${imageURL}/prs.png" style="margin-top: 5px">
+          <img src="${imageURL}/ap_cn2.png" style="margin-top: 5px">
         </div>
 
         <div>
-         <p style="color:#2c3335;font-size:15px;">Hello ${fName},<br><br>
-         Your password was reset successfully.<br><br>
-         If this wasn’t you, you can change your password by clicking here.
-         <a style="color: #0077b5;text-decoration:none;"href="${link}" target="_blank">${link}</a> <br><br>
-         For any feedback regarding our services or the Healthcoco app, please feel free to contact us at <a style="color: #0077b5;text-decoration:none;"href="" target="_blank" >usersfirst@healthcoco.com</a>
-
- 
-
-
-
-            <br><br>Stay Healthy and Happy,<br>Team Healthcoco.
+         <p style="color:#2c3335;font-size:15px;">Hello ${patientName},<br><br>This is to inform you that your appointment with ${doctorName} on ${dateTime} at ${clinicName} has been confirmed.
+         Please find the address as well as map below.<br><br>{Address}<br>{map}<br>
+         <a style="color: #0077b5;text-decoration:none;"href="" target="_blank"></a><br><br>For any feedback regarding our services or the Healthcoco+ app, please feel free to contact us at <a style="color: #0077b5;text-decoration:none;"href="" target="_blank" >usersfirst@healthcoco.com</a>
+        <br><br>Stay Healthy and Happy,<br>Team Healthcoco.
          </p>
         </div>
       </div>

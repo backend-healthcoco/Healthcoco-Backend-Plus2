@@ -58,9 +58,9 @@ public class PushNotificationApi {
 			    logger.warn("Invalid Input");
 			    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Boolean broadcastresponse = pushNotificationServices.broadcastNotification(request);
+		pushNotificationServices.broadcastNotification(request);
 		Response<Boolean> response = new Response<Boolean>();
-		response.setData(broadcastresponse);
+		response.setData(true);
 		return response;
 	}
 	
@@ -73,9 +73,9 @@ public class PushNotificationApi {
 			    logger.warn("Invalid Input");
 			    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Boolean broadcastresponse = pushNotificationServices.readNotification(deviceId, count);
+		pushNotificationServices.readNotification(deviceId, count);
 		Response<Boolean> response = new Response<Boolean>();
-		response.setData(broadcastresponse);
+		response.setData(true);
 		return response;
 	}
 }

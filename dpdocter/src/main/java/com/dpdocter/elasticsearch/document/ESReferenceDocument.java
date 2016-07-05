@@ -100,7 +100,7 @@ public class ESReferenceDocument {
 
 	@Override
 	public String toString() {
-		return "SolrReferenceDocument [id=" + id + ", reference=" + reference + ", explanation=" + explanation
+		return "ESReferenceDocument [id=" + id + ", reference=" + reference + ", explanation=" + explanation
 				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ ", discarded=" + discarded + ", updatedTime=" + updatedTime + "]";
 	}

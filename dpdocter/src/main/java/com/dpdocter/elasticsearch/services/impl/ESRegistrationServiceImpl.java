@@ -213,18 +213,22 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 		    	builder = QueryBuilders.rangeQuery(AdvancedSearchType.REGISTRATION_DATE.getSearchType()).from(start).to(end);
 		    	
 		    } else if (searchType.equalsIgnoreCase(AdvancedSearchType.REFERRED_BY.getSearchType())){
+		    	BoolQueryBuilder queryBuilderForReference = new BoolQueryBuilder();
 		    	
-		    	
-				if(!DPDoctorUtils.anyStringEmpty(doctorId))boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("doctorId")) , QueryBuilders.termQuery("doctorId", doctorId)));
+		    	if(!DPDoctorUtils.anyStringEmpty(doctorId))
+		    		queryBuilderForReference.must(QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("doctorId")) , QueryBuilders.termQuery("doctorId", doctorId)));
 				else
-					boolQueryBuilder.mustNot(QueryBuilders.existsQuery("doctorId"));
+					queryBuilderForReference.mustNot(QueryBuilders.existsQuery("doctorId"));
+		    	
 		    	if(!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)){
-		    		boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")) , QueryBuilders.termQuery("locationId", locationId)))
+		    		queryBuilderForReference.must(QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")) , QueryBuilders.termQuery("locationId", locationId)))
 		    		.must(QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")) , QueryBuilders.termQuery("hospitalId", hospitalId)));
 		    	}
-			    if(!DPDoctorUtils.anyStringEmpty(searchValue))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("reference", searchValue));
-			    int size = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESReferenceDocument.class);
-		        SearchQuery query = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, size)).build();
+				
+			    if(!DPDoctorUtils.anyStringEmpty(searchValue))
+			    	queryBuilderForReference.must(QueryBuilders.matchPhrasePrefixQuery("reference", searchValue));
+			    int size = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(queryBuilderForReference).build(), ESReferenceDocument.class);
+		        SearchQuery query = new NativeSearchQueryBuilder().withQuery(queryBuilderForReference).withPageable(new PageRequest(0, size)).build();
 		        List<ESReferenceDocument> referenceDocuments = elasticsearchTemplate.queryForList(query, ESReferenceDocument.class);
 		    	@SuppressWarnings("unchecked")
 		    	Collection<String> referenceIds = CollectionUtils.collect(referenceDocuments, new BeanToPropertyValueTransformer("id"));
@@ -255,7 +259,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    logger.error("Error While Saving Doctor Details to Solr : " + e.getMessage());
+	    logger.error("Error While Saving Doctor Details to ES : " + e.getMessage());
 	}
 	return response;
     }
@@ -312,7 +316,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 		    }
 		} catch (Exception e) {
 		    e.printStackTrace();
-		    logger.error("Error While Saving Doctor Details to Solr : " + e.getMessage());
+		    logger.error("Error While Saving Doctor Details to ES : " + e.getMessage());
 		}
 	}
 }

@@ -845,6 +845,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		complaintCollection.setDiscarded(oldComplaintCollection.getDiscarded());
 	    }
 	    complaintCollection = complaintRepository.save(complaintCollection);
+	    UserCollection userCollection = userRepository.findOne(complaintCollection.getDoctorId());
+	    if (userCollection != null) {
+	    	complaintCollection
+			.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
+	    }
 	    BeanUtil.map(complaintCollection, complaint);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -869,6 +874,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		observationCollection.setDiscarded(oldObservationCollection.getDiscarded());
 	    }
 	    observationCollection = observationRepository.save(observationCollection);
+	    UserCollection userCollection = userRepository.findOne(observationCollection.getDoctorId());
+	    if (userCollection != null) {
+	    	observationCollection
+			.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
+	    }
 	    BeanUtil.map(observationCollection, observation);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -893,6 +903,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		investigationCollection.setDiscarded(oldInvestigationCollection.getDiscarded());
 	    }
 	    investigationCollection = investigationRepository.save(investigationCollection);
+	    UserCollection userCollection = userRepository.findOne(investigationCollection.getDoctorId());
+	    if (userCollection != null) {
+	    	investigationCollection
+			.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
+	    }
 	    BeanUtil.map(investigationCollection, investigation);
 	    
 	} catch (Exception e) {
@@ -918,6 +933,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		diagnosisCollection.setDiscarded(oldDiagnosisCollection.getDiscarded());
 	    }
 	    diagnosisCollection = diagnosisRepository.save(diagnosisCollection);
+	    UserCollection userCollection = userRepository.findOne(diagnosisCollection.getDoctorId());
+	    if (userCollection != null) {
+	    	diagnosisCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
+	    }
 	    BeanUtil.map(diagnosisCollection, diagnosis);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -942,6 +961,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		notesCollection.setDiscarded(oldNotesCollection.getDiscarded());
 	    }
 	    notesCollection = notesRepository.save(notesCollection);
+	    UserCollection userCollection = userRepository.findOne(notesCollection.getDoctorId());
+	    if (userCollection != null) {
+	    	notesCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
+	    }
 	    BeanUtil.map(notesCollection, notes);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -970,6 +993,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    
 	    if (DPDoctorUtils.anyStringEmpty(diagramsCollection.getId())) {
 		diagramsCollection.setCreatedTime(new Date());
+		UserCollection userCollection = userRepository.findOne(diagramsCollection.getDoctorId());
+	    if (userCollection != null) {
+	    	diagramsCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
+	    }
 	    } else {
 		DiagramsCollection oldDiagramsCollection = diagramsRepository.findOne(diagramsCollection.getId());
 		diagramsCollection.setCreatedBy(oldDiagramsCollection.getCreatedBy());

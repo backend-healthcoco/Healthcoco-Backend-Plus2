@@ -7,10 +7,10 @@ public interface PushNotificationServices {
 
 	UserDevice addDevice(UserDevice request);
 
-	Boolean notifyUser(String userId, String message, String componentType, String componentTypeId);
+	void notifyUser(String userId, String message, String componentType, String componentTypeId);
 
-	Boolean broadcastNotification(BroadcastNotificationRequest request);
+	void broadcastNotification(BroadcastNotificationRequest request);
 	
-	Boolean readNotification(String deviceId, Integer count);
+	void readNotification(String deviceId, Integer count);
 
 }

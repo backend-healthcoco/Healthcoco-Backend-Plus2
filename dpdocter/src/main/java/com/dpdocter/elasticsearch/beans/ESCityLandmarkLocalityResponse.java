@@ -84,7 +84,7 @@ public class ESCityLandmarkLocalityResponse {
 
     @Override
     public String toString() {
-	return "SolrCityLandmarkLocalityResponse [id=" + id + ", country=" + country + ", state=" + state + ", city=" + city + ", locality=" + locality
+	return "ESCityLandmarkLocalityResponse [id=" + id + ", country=" + country + ", state=" + state + ", city=" + city + ", locality=" + locality
 		+ ", landmark=" + landmark + ", latitude=" + latitude + ", longitude=" + longitude + "]";
     }
 }

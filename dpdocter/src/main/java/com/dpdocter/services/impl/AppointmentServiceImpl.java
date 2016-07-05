@@ -466,7 +466,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    			sendMsg(null, "CANCEL_APPOINTMENT_TO_DOCTOR_BY_DOCTOR",request.getDoctorId(),request.getLocationId(), request.getHospitalId(), request.getDoctorId(), 
 			    				userCollection.getMobileNumber(), patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum);
 			    	}
-			    	if(request.getNotifyPatientByEmail() != null && request.getNotifyPatientByEmail())System.out.println("send email to patient");
+			    	if(request.getNotifyPatientByEmail() != null && request.getNotifyPatientByEmail() && patient.getEmailAddress() != null)
+			    		sendEmail(doctorName, patientName, dateTime, clinicName,"CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR",patient.getEmailAddress());
 			    	if(request.getNotifyPatientBySms() != null && request.getNotifyPatientBySms()){
 			    		if(appointmentCollection.getState().getState().equals(AppointmentState.CANCEL.getState()))
 			    			sendMsg(SMSFormatType.CANCEL_APPOINTMENT.getType(), "CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR", request.getDoctorId(),request.getLocationId(), request.getHospitalId(), request.getPatientId(), 
@@ -479,12 +480,18 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    				userCollection.getMobileNumber(), patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum);
 			    		sendMsg(SMSFormatType.CANCEL_APPOINTMENT.getType(), "CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT", request.getDoctorId(),request.getLocationId(), request.getHospitalId(), request.getPatientId(), 
 			    				patient.getMobileNumber(), patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum);
+			    		if(DPDoctorUtils.anyStringEmpty(patient.getEmailAddress()))
+			    			sendEmail(doctorName, patientName, dateTime, clinicName,"CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT",patient.getEmailAddress());
 			    	}
 			    }
 		    }else{
 		    	if(request.getCreatedBy().equals(AppointmentCreatedBy.DOCTOR.getType())){
 			    	if(request.getNotifyDoctorByEmail() != null && request.getNotifyDoctorByEmail())
-			    		sendEmail(doctorName, patientName, dateTime, clinicName,"CONFIRMED_APPOINTMENT_TO_DOCTOR",userCollection.getEmailAddress());
+			    		if(appointmentCollection.getState().getState().equals(AppointmentState.CONFIRM.getState()))
+			    			sendEmail(doctorName, patientName, dateTime, clinicName,"CONFIRMED_APPOINTMENT_TO_DOCTOR",userCollection.getEmailAddress());
+			    		else
+			    			sendEmail(doctorName, patientName, dateTime, clinicName,"RESCHEDULE_APPOINTMENT_TO_DOCTOR",userCollection.getEmailAddress());
+			    	
 			    	if(request.getNotifyDoctorBySms() != null && request.getNotifyDoctorBySms()){
 			    		if(appointmentCollection.getState().getState().equals(AppointmentState.CONFIRM.getState()))
 			    			sendMsg(null, "CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(),request.getLocationId(), request.getHospitalId(), request.getDoctorId(), 
@@ -608,7 +615,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    		sendMsg(null, "CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(),request.getLocationId(), request.getHospitalId(), request.getDoctorId(), 
 			    				userCollection.getMobileNumber(), patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum);
 			    	}
-			    	if(request.getNotifyPatientByEmail()!=null && request.getNotifyPatientByEmail())System.out.println("send email to patient");
+			    	if(request.getNotifyPatientByEmail()!=null && request.getNotifyPatientByEmail() && patient.getEmailAddress() != null)
+			    		sendEmail(doctorName, patientName, dateTime, clinicName,"CONFIRMED_APPOINTMENT_TO_PATIENT",patient.getEmailAddress());
 			    	if(request.getNotifyPatientBySms()!=null && request.getNotifyPatientBySms()){
 			    		sendMsg(SMSFormatType.CONFIRMED_APPOINTMENT.getType(),"CONFIRMED_APPOINTMENT_TO_PATIENT", request.getDoctorId(),request.getLocationId(), request.getHospitalId(), request.getPatientId(), 
 			    				patient.getMobileNumber(), patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum);
@@ -655,16 +663,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	private void sendEmail(String doctorName, String patientName, String dateTime, String clinicName, String type, String emailAddress) throws MessagingException {
 		switch (type) {
-//		case "CONFIRMED_APPOINTMENT_TO_PATIENT" :{
-//			text = "Your appointment "+appointmentId+" with "+doctorName+(clinicName!= ""?", "+clinicName:"")+(clinicContactNum!= ""?", "+clinicContactNum:"")+" has been confirmed @ "+dateTime+".";
-//			smsDetail.setUserName(patientName);
-//			pushNotificationServices.notifyUser(userId, text, null, null);
-//		}
-//		break;
-//
+		case "CONFIRMED_APPOINTMENT_TO_PATIENT" :{
+			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName, "confirmAppointmentToPatient.vm");
+			mailService.sendEmail(emailAddress, appointmentCancelMailSubject, body, null);		}
+		break;
+
 		case "CONFIRMED_APPOINTMENT_TO_DOCTOR_BY_PATIENT" :{
 			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName, "confirmAppointmentToDoctorByPatient.vm");
-			 mailService.sendEmail(emailAddress, appointmentCancelMailSubject, body, null);
+			mailService.sendEmail(emailAddress, appointmentCancelMailSubject, body, null);
 		}
 		break;
 		
@@ -683,30 +689,28 @@ public class AppointmentServiceImpl implements AppointmentService {
 //		
 		case "CANCEL_APPOINTMENT_TO_DOCTOR_BY_DOCTOR" :{
 			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName, "appointmentCancelByPatientToDoctor.vm");
-			 mailService.sendEmail(emailAddress, appointmentCancelMailSubject, body, null);
+			mailService.sendEmail(emailAddress, appointmentCancelMailSubject, body, null);
 		}
 		break;
-//		
-//		case "CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR" :{
-//			text = "Your appointment "+appointmentId+" @ "+dateTime+" has been cancelled by "+doctorName+(clinicName!= ""?", "+clinicName:"")+(clinicContactNum!= ""?", "+clinicContactNum:"")+".Request you to book again.";
-//			smsDetail.setUserName(patientName);
-//			pushNotificationServices.notifyUser(userId, text, null, null);
-//		}
-//		break;
-//		
+		
+		case "CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR" :{
+			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName, "appointmentCancelToPatientByDoctor.vm");
+			mailService.sendEmail(emailAddress, appointmentCancelMailSubject, body, null);
+		}
+		break;
+		
 		case "CANCEL_APPOINTMENT_TO_DOCTOR_BY_PATIENT" :{
 			 String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName, "appointmentCancelByDoctorToDoctor.vm");
 			 mailService.sendEmail(emailAddress, appointmentCancelMailSubject, body, null);
 		}
 		break;
 		
-//		case "CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT" :{
-//			text = "Your appointment "+appointmentId+" for "+dateTime+" with "+doctorName+" has been cancelled as per your request";
-//			smsDetail.setUserName(patientName);
-//			pushNotificationServices.notifyUser(userId, text, null, null);
-//		}
-//		break;
-//		
+		case "CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT" :{
+			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName, "appointmentCancelToPatientByPatient.vm");
+			 mailService.sendEmail(emailAddress, appointmentCancelMailSubject, body, null);
+		}
+		break;
+		
 //		case "APPOINTMENT_REMINDER_TO_PATIENT" :{
 //			text = "You have an upcoming appointment "+appointmentId+" @ "+dateTime+" with "+doctorName+(clinicName!= ""?", "+clinicName:"")+(clinicContactNum!= ""?", "+clinicContactNum:"")+".";
 //			smsDetail.setUserName(patientName);
@@ -720,13 +724,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 //			pushNotificationServices.notifyUser(userId, text, null, null);
 //		}
 //		break;
-//		
-//		case "RESCHEDULE_APPOINTMENT_TO_DOCTOR" :{
-//			text = "Your appointment with "+patientName+"has been rescheduled to "+dateTime+" at "+clinicName+".";
-//			smsDetail.setUserName(doctorName);
-//			pushNotificationServices.notifyUser(userId, text, null, null);
-//		}
-//		break;
+		
+		case "RESCHEDULE_APPOINTMENT_TO_DOCTOR" :{
+			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName, "appointmentRescheduleByDoctorToDoctor.vm");
+			mailService.sendEmail(emailAddress, appointmentCancelMailSubject, body, null);
+		}
+		break;
 		
 		default:break;
 		}

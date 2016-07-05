@@ -55,21 +55,21 @@ public class ESCityServiceImpl  implements ESCityService{
 	return response;
     }
 
-//    @Override
-//    public boolean activateDeactivateCity(String cityId, boolean activate) {
-//	boolean response = false;
-//	try {
-//	    ESCityDocument solrCity = esCityRepository.findOne(cityId);
-//	    solrCity.setIsActivated(activate);
-//	    esCityRepository.save(solrCity);
-//	    transnationalService.addResource(cityId, Resource.CITY, true);
-//	    response = true;
-//	} catch (Exception e) {
-//	    e.printStackTrace();
-//	}
-//	return response;
-//    }
-//
+    @Override
+    public boolean activateDeactivateCity(String cityId, Boolean activate) {
+	boolean response = false;
+	try {
+	    ESCityDocument solrCity = esCityRepository.findOne(cityId);
+	    solrCity.setIsActivated(activate);
+	    esCityRepository.save(solrCity);
+	    transnationalService.addResource(cityId, Resource.CITY, true);
+	    response = true;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+	return response;
+    }
+
     @Override
     public boolean addLocalityLandmark(ESLandmarkLocalityDocument esLandmarkLocalityDocument) {
 	boolean response = false;
