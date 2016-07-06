@@ -1,5 +1,6 @@
 package com.dpdocter.response;
 
+import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.UserState;
 
 public class DoctorResponse {
@@ -16,6 +17,8 @@ public class DoctorResponse {
 
     private String userUId;
 
+    private String role;
+    
 	public String getId() {
 		return id;
 	}
@@ -64,9 +67,18 @@ public class DoctorResponse {
 		this.userUId = userUId;
 	}
 
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorResponse [id=" + id + ", firstName=" + firstName + ", isActive=" + isActive + ", emailAddress="
-				+ emailAddress + ", userState=" + userState + ", userUId=" + userUId + "]";
+				+ emailAddress + ", userState=" + userState + ", userUId=" + userUId + ", role=" + role + "]";
 	}
+
 }
