@@ -67,6 +67,8 @@ public class Location {
 
     private String clinicAddress;
     
+    private Boolean isActivate = false;
+    
     public String getId() {
 	return id;
     }
@@ -307,6 +309,14 @@ public class Location {
 		this.clinicAddress = clinicAddress;
 	}
 
+	public Boolean getIsActivate() {
+		return isActivate;
+	}
+
+	public void setIsActivate(Boolean isActivate) {
+		this.isActivate = isActivate;
+	}
+
 	@Override
 	public String toString() {
 		return "Location [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state
@@ -319,6 +329,7 @@ public class Location {
 				+ clinicWorkingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + ", isClinic=" + isClinic
 				+ ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited="
 				+ isNABLAccredited + ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", locationUId="
-				+ locationUId + ", clinicAddress=" + clinicAddress + "]";
+				+ locationUId + ", clinicAddress=" + clinicAddress + ", isActivate=" + isActivate + "]";
 	}
+
 }

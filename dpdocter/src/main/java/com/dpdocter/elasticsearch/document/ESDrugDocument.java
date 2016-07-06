@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldIndex;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.MultiField;
 
@@ -15,7 +14,7 @@ public class ESDrugDocument {
     @Id
     private String id;
 
-    @Field(type = FieldType.String, index = FieldIndex.not_analyzed)
+    @Field(type = FieldType.String)
     private String drugName;
 
     @Field(type = FieldType.String)

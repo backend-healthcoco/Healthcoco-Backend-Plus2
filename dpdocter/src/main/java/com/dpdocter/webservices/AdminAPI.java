@@ -3,6 +3,7 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -64,24 +65,14 @@ public class AdminAPI {
 		return response;
 	}
 	
-	@Path(value = PathProxy.AdminUrls.GET_CLINICS)
+	@Path(value = PathProxy.AdminUrls.GET_CLINICS_AND_LABS)
 	@GET
-	@ApiOperation(value = PathProxy.AdminUrls.GET_CLINICS, notes = PathProxy.AdminUrls.GET_CLINICS)
-	public Response<Location> getClinics(@QueryParam(value = "page") int page, @QueryParam(value = "size") int size, @QueryParam(value = "hospitalId") String hospitalId){
+	@ApiOperation(value = PathProxy.AdminUrls.GET_CLINICS_AND_LABS, notes = PathProxy.AdminUrls.GET_CLINICS_AND_LABS)
+	public Response<Location> getClinics(@QueryParam(value = "page") int page, @QueryParam(value = "size") int size, @QueryParam(value = "hospitalId") String hospitalId,
+			@QueryParam(value = "isClinic") @DefaultValue("false") Boolean isClinic, @QueryParam(value = "isLab") @DefaultValue("false") Boolean isLab,
+			@QueryParam(value = "searchTerm") String searchTerm){
 		
-		List<Location> locations = adminServices.getClinics(page, size, hospitalId);
-		
-		Response<Location> response = new Response<Location>();
-		response.setDataList(locations);
-		return response;
-	}
-	
-	@Path(value = PathProxy.AdminUrls.GET_LABS)
-	@GET
-	@ApiOperation(value = PathProxy.AdminUrls.GET_LABS, notes = PathProxy.AdminUrls.GET_LABS)
-	public Response<Location> getLabs(@QueryParam(value = "page") int page, @QueryParam(value = "size") int size, @QueryParam(value = "hospitalId") String hospitalId){
-		
-		List<Location> locations = adminServices.getLabs(page, size, hospitalId);
+		List<Location> locations = adminServices.getClinics(page, size, hospitalId, isClinic, isLab, searchTerm);
 		
 		Response<Location> response = new Response<Location>();
 		response.setDataList(locations);

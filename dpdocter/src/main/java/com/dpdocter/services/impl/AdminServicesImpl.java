@@ -23,6 +23,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.ContactUs;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DrugType;
@@ -190,35 +191,66 @@ public class AdminServicesImpl implements AdminServices {
 
 	@Override
 	@Transactional
-	public List<Location> getClinics(int page, int size, String hospitalId) {
+	public List<Location> getClinics(int page, int size, String hospitalId, Boolean isClinic, Boolean isLab, String searchTerm) {
 		List<Location> response = null;
 		try{
 			List<LocationCollection> locationCollections = null;
-			if(DPDoctorUtils.anyStringEmpty(hospitalId)){
-				if(size > 0)locationCollections = locationRepository.findClinics(true, new PageRequest(page, size, Direction.DESC, "createdTime"));
-				else locationCollections = locationRepository.findClinics(true, new Sort(Direction.DESC, "createdTime"));
+			if(DPDoctorUtils.anyStringEmpty(searchTerm)){
+				if(DPDoctorUtils.anyStringEmpty(hospitalId)){
+					if(!isClinic && !isLab){
+						if(size > 0)locationCollections = locationRepository.findAll(new PageRequest(page, size, Direction.DESC, "createdTime")).getContent();
+						else locationCollections = locationRepository.findAll(new Sort(Direction.DESC, "createdTime"));
+					}else{	
+						if(size > 0)locationCollections = locationRepository.findClinicsAndLabs(isClinic, isLab, new PageRequest(page, size, Direction.DESC, "createdTime"));
+						else locationCollections = locationRepository.findClinicsAndLabs(isClinic, isLab, new Sort(Direction.DESC, "createdTime"));
+					}
+				}else{
+					if(!isClinic && !isLab){
+						if(size > 0)locationCollections = locationRepository.findByHospitalId(hospitalId, new PageRequest(page, size, Direction.DESC, "createdTime"));
+						else locationCollections = locationRepository.findByHospitalId(hospitalId, new Sort(Direction.DESC, "createdTime"));
+					}else{	
+						if(size > 0)locationCollections = locationRepository.findClinicsAndLabs(hospitalId, isClinic, isLab, new PageRequest(page, size, Direction.DESC, "createdTime"));
+						else locationCollections = locationRepository.findClinicsAndLabs(hospitalId, isClinic, isLab, new Sort(Direction.DESC, "createdTime"));
+					}
+				}
 			}else{
-				if(size > 0)locationCollections = locationRepository.findClinics(hospitalId, true, new PageRequest(page, size, Direction.DESC, "createdTime"));
-				else locationCollections = locationRepository.findClinics(hospitalId, true, new Sort(Direction.DESC, "createdTime"));
+				if(DPDoctorUtils.anyStringEmpty(hospitalId)){
+					if(!isClinic && !isLab){
+						if(size > 0)locationCollections = locationRepository.findByNameOrEmailAddress(searchTerm, new PageRequest(page, size, Direction.DESC, "createdTime"));
+						else locationCollections = locationRepository.findByNameOrEmailAddress(searchTerm, new Sort(Direction.DESC, "createdTime"));
+					}else{
+						if(size > 0)locationCollections = locationRepository.findClinicsAndLabs(isClinic, isLab, searchTerm, new PageRequest(page, size, Direction.DESC, "createdTime"));
+						else locationCollections = locationRepository.findClinicsAndLabs(isClinic, isLab, searchTerm, new Sort(Direction.DESC, "createdTime"));
+					}				
+				}else{
+					if(!isClinic && !isLab){
+						if(size > 0)locationCollections = locationRepository.findByNameOrEmailAddressAndHospitalId(hospitalId, searchTerm, new PageRequest(page, size, Direction.DESC, "createdTime"));
+						else locationCollections = locationRepository.findByNameOrEmailAddressAndHospitalId(hospitalId, searchTerm, new Sort(Direction.DESC, "createdTime"));
+					}else{
+						if(size > 0)locationCollections = locationRepository.findClinicsAndLabs(hospitalId, isClinic, isLab, searchTerm, new PageRequest(page, size, Direction.DESC, "createdTime"));
+						else locationCollections = locationRepository.findClinicsAndLabs(hospitalId, isClinic, isLab, searchTerm, new Sort(Direction.DESC, "createdTime"));	
+					}
+				}
 			}
+			
 			if(locationCollections != null){
 				response = new ArrayList<Location>();
-//				for(LocationCollection location : locationCollections){
-//						if (location.getImages() != null && !location.getImages().isEmpty()) {
-//							for (ClinicImage clinicImage : location.getImages()) {
-//							    if (clinicImage.getImageUrl() != null) {
-//								clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl()));
-//							    }
-//							    if (clinicImage.getThumbnailUrl() != null) {
-//								clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
-//							    }
-//							}
-//						    }
-//						    if (location.getLogoUrl() != null)
-//						    	location.setLogoUrl(getFinalImageURL(location.getLogoUrl()));
-//						    if (location.getLogoThumbnailUrl() != null)
-//						    	location.setLogoThumbnailUrl(getFinalImageURL(location.getLogoThumbnailUrl()));
-//					}
+				for(LocationCollection location : locationCollections){
+						if (location.getImages() != null && !location.getImages().isEmpty()) {
+							for (ClinicImage clinicImage : location.getImages()) {
+							    if (clinicImage.getImageUrl() != null) {
+								clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl()));
+							    }
+							    if (clinicImage.getThumbnailUrl() != null) {
+								clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
+							    }
+							}
+						    }
+						    if (location.getLogoUrl() != null)
+						    	location.setLogoUrl(getFinalImageURL(location.getLogoUrl()));
+						    if (location.getLogoThumbnailUrl() != null)
+						    	location.setLogoThumbnailUrl(getFinalImageURL(location.getLogoThumbnailUrl()));
+					}
 					BeanUtil.map(locationCollections, response);
 				}
 		}catch(Exception e){

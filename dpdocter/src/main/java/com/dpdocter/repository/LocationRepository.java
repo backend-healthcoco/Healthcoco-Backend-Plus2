@@ -2,6 +2,7 @@ package com.dpdocter.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -36,5 +37,71 @@ public interface LocationRepository extends MongoRepository<LocationCollection, 
 
 	@Query("{'isLab':?0}")
 	List<LocationCollection> findLabs(boolean isLab, Sort sort);
+
+	@Query("{'isClinic':?0, 'isLab':?1}")
+	List<LocationCollection> findClinicsAndLabs(Boolean isClinic, Boolean isLab, PageRequest pageRequest);
+
+	@Query("{'isClinic':?0, 'isLab':?1}")
+	List<LocationCollection> findClinicsAndLabs(Boolean isClinic, Boolean isLab, Sort sort);
+
+	@Query("{'hospitalId':?0, 'isClinic':?1, 'isLab':?2}")
+	List<LocationCollection> findClinicsAndLabs(String hospitalId, Boolean isClinic, Boolean isLab, PageRequest pageRequest);
+
+	@Query("{'hospitalId':?0, 'isClinic':?1, 'isLab':?2}")
+	List<LocationCollection> findClinicsAndLabs(String hospitalId, Boolean isClinic, Boolean isLab, Sort sort);
+
+	@Query("{'hospitalId':?0}")
+	List<LocationCollection> findByHospitalId(String hospitalId, PageRequest pageRequest);
+
+	@Query("{'hospitalId':?0}")
+	List<LocationCollection> findByHospitalId(String hospitalId, Sort sort);
+
+	@Query("{'$or': [{'isClinic':?0, 'isLab':?1, 'locationName' : {$regex : '^?2*', $options : 'i'}},{'isClinic':?0, 'isLab':?1, 'locationEmailAddress' : {$regex : '^?2*', $options : 'i'}}]}")
+	List<LocationCollection> findClinicsAndLabs(Boolean isClinic, Boolean isLab, String searchTerm,	PageRequest pageRequest);
+
+	@Query("{'$or': [{'isClinic':?0, 'isLab':?1, 'locationName' : {$regex : '^?2*', $options : 'i'}},{'isClinic':?0, 'isLab':?1, 'locationEmailAddress' : {$regex : '^?2*', $options : 'i'}}]}")
+	List<LocationCollection> findClinicsAndLabs(Boolean isClinic, Boolean isLab, String searchTerm, Sort sort);
+
+	@Query("{'$or': [{'isClinic':?0, 'locationName' : {$regex : '^?1*', $options : 'i'}},{'isClinic':?0, 'locationEmailAddress' : {$regex : '^?1*', $options : 'i'}}]}")
+	List<LocationCollection> findClinics(Boolean isClinic, String searchTerm, PageRequest pageRequest);
+
+	@Query("{'$or': [{'isClinic':?0, 'locationName' : {$regex : '^?1*', $options : 'i'}},{'isClinic':?0, 'locationEmailAddress' : {$regex : '^?1*', $options : 'i'}}]}")
+	List<LocationCollection> findClinics(Boolean isClinic, String searchTerm, Sort sort);
+
+	@Query("{'$or': [{'isLab':?0, 'locationName' : {$regex : '^?1*', $options : 'i'}},{'isLab':?0, 'locationEmailAddress' : {$regex : '^?1*', $options : 'i'}}]}")
+	List<LocationCollection> findLabs(Boolean isLab, String searchTerm, PageRequest pageRequest);
+
+	@Query("{'$or': [{'isLab':?0, 'locationName' : {$regex : '^?1*', $options : 'i'}},{'isLab':?0, 'locationEmailAddress' : {$regex : '^?1*', $options : 'i'}}]}")
+	List<LocationCollection> findLabs(Boolean isLab, String searchTerm, Sort sort);
+
+	@Query("{'$or': [{'locationName' : {$regex : '^?0*', $options : 'i'}},{'locationEmailAddress' : {$regex : '^?0*', $options : 'i'}}]}")
+	List<LocationCollection> findByNameOrEmailAddress(String searchTerm, PageRequest pageRequest);
+
+	@Query("{'$or': [{'locationName' : {$regex : '^?0*', $options : 'i'}},{'locationEmailAddress' : {$regex : '^?0*', $options : 'i'}}]}")
+	List<LocationCollection> findByNameOrEmailAddress(String searchTerm, Sort sort);
+
+	@Query("{'$or': [{'hospitalId':?0, 'isClinic':?1, 'isLab':?2, 'locationName' : {$regex : '^?3*', $options : 'i'}},{'hospitalId':?0, 'isClinic':?1, 'isLab':?2, 'locationEmailAddress' : {$regex : '^?3*', $options : 'i'}}]}")
+	List<LocationCollection> findClinicsAndLabs(String hospitalId, Boolean isClinic, Boolean isLab, String searchTerm, PageRequest pageRequest);
+
+	@Query("{'$or': [{'hospitalId':?0, 'isClinic':?1, 'isLab':?2, 'locationName' : {$regex : '^?3*', $options : 'i'}},{'hospitalId':?0, 'isClinic':?1, 'isLab':?2, 'locationEmailAddress' : {$regex : '^?3*', $options : 'i'}}]}")
+	List<LocationCollection> findClinicsAndLabs(String hospitalId, Boolean isClinic, Boolean isLab, String searchTerm, Sort sort);
+
+	@Query("{'$or': [{'hospitalId':?0, 'isClinic':?1, 'locationName' : {$regex : '^?2*', $options : 'i'}},{'hospitalId':?0, 'isClinic':?1, 'locationEmailAddress' : {$regex : '^?2*', $options : 'i'}}]}")
+	List<LocationCollection> findClinics(String hospitalId, Boolean isClinic, String searchTerm, PageRequest pageRequest);
+
+	@Query("{'$or': [{'hospitalId':?0, 'isClinic':?1, 'locationName' : {$regex : '^?2*', $options : 'i'}},{'hospitalId':?0, 'isClinic':?1, 'locationEmailAddress' : {$regex : '^?2*', $options : 'i'}}]}")
+	List<LocationCollection> findClinics(String hospitalId, Boolean isClinic, String searchTerm, Sort sort);
+
+	@Query("{'$or': [{'hospitalId':?0, 'isLab':?1, 'locationName' : {$regex : '^?2*', $options : 'i'}},{'hospitalId':?0, 'isLab':?1, 'locationEmailAddress' : {$regex : '^?2*', $options : 'i'}}]}")
+	List<LocationCollection> findLabs(String hospitalId, Boolean isLab, String searchTerm, PageRequest pageRequest);
+
+	@Query("{'$or': [{'hospitalId':?0, 'isLab':?1, 'locationName' : {$regex : '^?2*', $options : 'i'}},{'hospitalId':?0, 'isLab':?1, 'locationEmailAddress' : {$regex : '^?2*', $options : 'i'}}]}")
+	List<LocationCollection> findLabs(String hospitalId, Boolean isLab, String searchTerm, Sort sort);
+
+	@Query("{'$or': [{'hospitalId':?0, 'locationName' : {$regex : '^?1*', $options : 'i'}},{'hospitalId':?0, 'locationEmailAddress' : {$regex : '^?1*', $options : 'i'}}]}")
+	List<LocationCollection> findByNameOrEmailAddressAndHospitalId(String hospitalId, String searchTerm, PageRequest pageRequest);
+
+	@Query("{'$or': [{'hospitalId':?0, 'locationName' : {$regex : '^?1*', $options : 'i'}},{'hospitalId':?0, 'locationEmailAddress' : {$regex : '^?1*', $options : 'i'}}]}")
+	List<LocationCollection> findByNameOrEmailAddressAndHospitalId(String hospitalId, String searchTerm, Sort sort);
 
 }

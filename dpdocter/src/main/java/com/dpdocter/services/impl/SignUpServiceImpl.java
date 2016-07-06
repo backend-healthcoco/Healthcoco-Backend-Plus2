@@ -267,12 +267,19 @@ public class SignUpServiceImpl implements SignUpService {
 		    	List<RoleCollection> roleCollections = roleRepository.findByIdAndRole(roleIds, RoleEnum.SUPER_ADMIN.getRole());
 		    	if(roleCollections != null && !roleCollections.isEmpty()){
 		    		for(RoleCollection roleCollection : roleCollections){
-		    			List<UserLocationCollection> userLocationCollections = userLocationRepository.findByLocationId(roleCollection.getLocationId());
-		    			if(userLocationCollections != null && !userLocationCollections.isEmpty()){
-		    				for(UserLocationCollection userLocationCollection : userLocationCollections){
-		    					userLocationCollection.setIsActivate(activate);
-		    					userLocationRepository.save(userLocationCollection);
-		    				}
+		    			if(!DPDoctorUtils.anyStringEmpty(roleCollection.getLocationId())){
+		    				List<UserLocationCollection> userLocationCollections = userLocationRepository.findByLocationId(roleCollection.getLocationId());
+			    			if(userLocationCollections != null && !userLocationCollections.isEmpty()){
+			    				for(UserLocationCollection userLocationCollection : userLocationCollections){
+			    					userLocationCollection.setIsActivate(activate);
+			    					userLocationRepository.save(userLocationCollection);
+			    				}
+			    			}
+			    			LocationCollection locationCollection = locationRepository.findOne(roleCollection.getLocationId());
+			    			if(locationCollection != null){
+			    				locationCollection.setIsActivate(activate);
+			    				locationRepository.save(locationCollection);
+			    			}
 		    			}
 		    		}
 		    	}
@@ -322,7 +329,8 @@ public class SignUpServiceImpl implements SignUpService {
 		try {
 			locationCollection = locationRepository.findOne(locationId);
 		    if (locationCollection != null) {
-		    
+		    	locationCollection.setIsActivate(activate);
+    			locationRepository.save(locationCollection);
 		    List<UserLocationCollection> userLocationCollections = userLocationRepository.findByLocationId(locationId);
 		    if(userLocationCollections != null && !userLocationCollections.isEmpty()){
 		    	for(UserLocationCollection userLocationCollection : userLocationCollections){

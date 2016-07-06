@@ -15,7 +15,7 @@ public interface AdminServices {
 
 	List<Hospital> getHospitals(int page, int size);
 
-	List<Location> getClinics(int page, int size, String hospitalId);
+	List<Location> getClinics(int page, int size, String hospitalId, Boolean isClinic, Boolean isLab, String searchTerm);
 
 	Resume addResumes(Resume request);
 

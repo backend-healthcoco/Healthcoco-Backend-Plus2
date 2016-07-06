@@ -64,7 +64,7 @@ public class ESPatientDocument {
     @Field(type = FieldType.String)
     private String hospitalId;
 
-    @Field(type = FieldType.String, index = FieldIndex.not_analyzed)
+    @Field(type = FieldType.String)
     private String referredBy;
 
     @Field(type = FieldType.Date)

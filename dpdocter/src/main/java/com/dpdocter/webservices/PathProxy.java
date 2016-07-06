@@ -738,10 +738,8 @@ public interface PathProxy {
 
 	public static final String GET_HOSPITALS = "/hospitals";
 
-	public static final String GET_CLINICS = "/clinics";
+	public static final String GET_CLINICS_AND_LABS = "/clinics";
 
-	public static final String GET_LABS = "/labs";
-	
 	public static final String GET_DOCTORS = "/doctors";
 	
 //	public static final String GET_USERS = "/users/{locationId}/{hospitalId}"; this API is in RegsiterAPI
