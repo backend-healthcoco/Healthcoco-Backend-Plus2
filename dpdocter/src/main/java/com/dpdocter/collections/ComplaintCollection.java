@@ -23,6 +23,9 @@ public class ComplaintCollection extends GenericCollection {
     @Field
     private Boolean discarded = false;
 
+    @Field
+    private String speciality;
+
     public String getId() {
 	return id;
     }
@@ -71,10 +74,19 @@ public class ComplaintCollection extends GenericCollection {
 	this.discarded = discarded;
     }
 
-    @Override
-    public String toString() {
-	return "ComplaintCollection [id=" + id + ", complaint=" + complaint + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-		+ hospitalId + ", discarded=" + discarded + "]";
-    }
+	public String getSpeciality() {
+		return speciality;
+	}
+
+	public void setSpeciality(String speciality) {
+		this.speciality = speciality;
+	}
+
+	@Override
+	public String toString() {
+		return "ComplaintCollection [id=" + id + ", complaint=" + complaint + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", speciality=" + speciality
+				+ "]";
+	}
 
 }

@@ -228,11 +228,13 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 			    if(!DPDoctorUtils.anyStringEmpty(searchValue))
 			    	queryBuilderForReference.must(QueryBuilders.matchPhrasePrefixQuery("reference", searchValue));
 			    int size = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(queryBuilderForReference).build(), ESReferenceDocument.class);
-		        SearchQuery query = new NativeSearchQueryBuilder().withQuery(queryBuilderForReference).withPageable(new PageRequest(0, size)).build();
-		        List<ESReferenceDocument> referenceDocuments = elasticsearchTemplate.queryForList(query, ESReferenceDocument.class);
-		    	@SuppressWarnings("unchecked")
-		    	Collection<String> referenceIds = CollectionUtils.collect(referenceDocuments, new BeanToPropertyValueTransformer("id"));
-		    	builder = QueryBuilders.termsQuery(searchType, referenceIds);		    	
+		        if(size > 0){
+		        	SearchQuery query = new NativeSearchQueryBuilder().withQuery(queryBuilderForReference).withPageable(new PageRequest(0, size)).build();
+			        List<ESReferenceDocument> referenceDocuments = elasticsearchTemplate.queryForList(query, ESReferenceDocument.class);
+			    	@SuppressWarnings("unchecked")
+			    	Collection<String> referenceIds = CollectionUtils.collect(referenceDocuments, new BeanToPropertyValueTransformer("id"));
+			    	builder = QueryBuilders.termsQuery(searchType, referenceIds);
+		        }
 		    } else {
 		    	builder = QueryBuilders.matchPhrasePrefixQuery(searchType, searchValue);
 		    }

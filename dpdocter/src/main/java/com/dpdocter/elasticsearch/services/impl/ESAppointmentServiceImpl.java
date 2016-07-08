@@ -350,7 +350,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			@SuppressWarnings("unchecked")
 		    Collection<String> testIds = CollectionUtils.collect(diagnosticTests, new BeanToPropertyValueTransformer("id"));
 			int count = (int) elasticsearchTemplate.count(new CriteriaQuery(new Criteria("testId").in(testIds)), ESLabTestDocument.class);
-		    esLabTestDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(QueryBuilders.termsQuery("testId", testIds)).withPageable(new PageRequest(0, count)).build(), ESLabTestDocument.class); 
+		    if(count > 0)esLabTestDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(QueryBuilders.termsQuery("testId", testIds)).withPageable(new PageRequest(0, count)).build(), ESLabTestDocument.class); 
 		}
 	    }
 	    if(esLabTestDocuments == null || esLabTestDocuments.isEmpty()){return null;}

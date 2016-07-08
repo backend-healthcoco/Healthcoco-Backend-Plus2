@@ -129,7 +129,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	    boolean discarded, String searchTerm) {
 	List<ESDrugDocument> response = null;
 	try {
-	    SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "drugName", searchTerm, "drugName");
+	    SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "drugName", searchTerm, null, "drugName");
 	    response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -142,7 +142,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
     private List<ESDrugDocument> getGlobalDrugs(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
 	List<ESDrugDocument> response = null;
 	try {
-		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(page, size, updatedTime, discarded, null, searchTerm, "drugName");
+		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.DRUG, page, size, updatedTime, discarded, null, searchTerm, null, "drugName");
 	    response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -407,9 +407,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
     		boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")) , QueryBuilders.termQuery("locationId", locationId)))
     		.must(QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")) , QueryBuilders.termQuery("hospitalId", hospitalId)));
     	}
-    	else{
-    		boolQueryBuilder.mustNot(QueryBuilders.existsQuery("locationId")).mustNot(QueryBuilders.existsQuery("hospitalId"));
-    	}
+    	
 	    if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName, searchTerm));
 	    if(!discarded)boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
 

@@ -6,6 +6,7 @@ import com.dpdocter.beans.ContactUs;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Resume;
+import com.dpdocter.beans.Speciality;
 import com.dpdocter.beans.User;
 import com.dpdocter.response.DoctorResponse;
 
@@ -31,12 +32,14 @@ public interface AdminServices {
 
 	void importEducationQualification();
 
-	List<DoctorResponse> getDoctors(int page, int size, String locationId, String state);
+	List<DoctorResponse> getDoctors(int page, int size, String locationId, String state, String searchTerm);
 
 	List<Location> getLabs(int page, int size, String hospitalId);
 
 	ContactUs addContactUs(ContactUs request);
 
 	List<ContactUs> getContactUs(int page, int size);
+
+	List<Speciality> getUniqueSpecialities(String searchTerm, String updatedTime, int page, int size);
 
 }

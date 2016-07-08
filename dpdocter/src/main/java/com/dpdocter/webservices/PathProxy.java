@@ -767,6 +767,8 @@ public interface PathProxy {
 	public static final String SEARCH_CLINIC_BY_NAME = "/clinic";
 
 	public static final String SEARCH_DOCTOR_BY_NAME = "/doctor";
+	
+	public static final String GET_UNIQUE_SPECIALITY = "/speciality";
 
 	public static final String IMPORT_DRUG = "/importDrug";
 	

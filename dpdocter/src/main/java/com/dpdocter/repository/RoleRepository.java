@@ -57,4 +57,7 @@ public interface RoleRepository extends MongoRepository<RoleCollection, String> 
     @Query("{'id':{$in :?0}, 'role': ?1}")
 	public List<RoleCollection> findByIdAndRole(Collection<String> roleIds, String role);
 
+    @Query(value = "{'id':{$in :?0}, 'role': ?1}", count = true)
+	public Integer findCountByIdAndRole(Collection<String> roleIds, String role);
+
 }

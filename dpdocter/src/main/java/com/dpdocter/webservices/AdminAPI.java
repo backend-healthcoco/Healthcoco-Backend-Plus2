@@ -11,7 +11,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -20,6 +19,7 @@ import com.dpdocter.beans.ContactUs;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Resume;
+import com.dpdocter.beans.Speciality;
 import com.dpdocter.beans.User;
 import com.dpdocter.response.DoctorResponse;
 import com.dpdocter.services.AdminServices;
@@ -35,7 +35,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.ADMIN_BASE_URL, description = "Endpoint for admin")
 public class AdminAPI {
 
-	private static Logger logger = Logger.getLogger(AdminAPI.class.getName());
+//	private static Logger logger = Logger.getLogger(AdminAPI.class.getName());
 	
 	@Autowired
 	AdminServices adminServices;
@@ -85,7 +85,7 @@ public class AdminAPI {
 	public Response<DoctorResponse> getDoctors(@QueryParam(value = "page") int page, @QueryParam(value = "size") int size, @QueryParam(value = "locationId") String locationId,
 			@QueryParam(value = "state") String state, @QueryParam(value = "searchTerm") String searchTerm){
 		
-		List<DoctorResponse> doctorResponses = adminServices.getDoctors(page, size, locationId, state);
+		List<DoctorResponse> doctorResponses = adminServices.getDoctors(page, size, locationId, state, searchTerm);
 		
 		Response<DoctorResponse> response = new Response<DoctorResponse>();
 		response.setDataList(doctorResponses);
@@ -204,4 +204,15 @@ public class AdminAPI {
 	return response;
     }
 
+    @Path(value = PathProxy.AdminUrls.GET_UNIQUE_SPECIALITY)
+    @GET
+    @ApiOperation(value = PathProxy.AdminUrls.GET_UNIQUE_SPECIALITY, notes = PathProxy.AdminUrls.GET_UNIQUE_SPECIALITY)
+    public Response<Speciality> getUniqueSpecialities(@QueryParam(value = "searchTerm") String searchTerm,
+	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @QueryParam("page") int page, @QueryParam("size") int size) {
+
+	List<Speciality> searchResonse = adminServices.getUniqueSpecialities(searchTerm, updatedTime, page, size);
+	Response<Speciality> response = new Response<Speciality>();
+	response.setDataList(searchResonse);
+	return response;
+    }
 }

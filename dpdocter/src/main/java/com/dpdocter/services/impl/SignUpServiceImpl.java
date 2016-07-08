@@ -264,7 +264,7 @@ public class SignUpServiceImpl implements SignUpService {
 			@SuppressWarnings("unchecked")
 		    Collection<String> roleIds = CollectionUtils.collect(userRoleCollection, new BeanToPropertyValueTransformer("roleId"));
 		    if(roleIds != null && !roleIds.isEmpty()){
-		    	List<RoleCollection> roleCollections = roleRepository.findByIdAndRole(roleIds, RoleEnum.SUPER_ADMIN.getRole());
+		    	List<RoleCollection> roleCollections = roleRepository.findByIdAndRole(roleIds, RoleEnum.LOCATION_ADMIN.getRole());
 		    	if(roleCollections != null && !roleCollections.isEmpty()){
 		    		for(RoleCollection roleCollection : roleCollections){
 		    			if(!DPDoctorUtils.anyStringEmpty(roleCollection.getLocationId())){

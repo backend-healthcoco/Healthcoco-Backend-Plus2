@@ -1,5 +1,6 @@
 package com.dpdocter.repository;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -13,12 +14,11 @@ import com.dpdocter.collections.DiagnosisCollection;
 
 public interface DiagnosisRepository extends MongoRepository<DiagnosisCollection, String>, PagingAndSortingRepository<DiagnosisCollection, String> {
 
-    @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gt': ?3},'discarded': {$in: ?4}}]}")
-    List<DiagnosisCollection> findCustomGlobalDiagnosis(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards,
-	    Pageable pageable);
+    @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'speciality': {$in: ?3}, 'updatedTime': {'$gt': ?4}, 'discarded': {$in: ?5}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'speciality': {$in: ?3}, 'updatedTime': {'$gt': ?4},'discarded': {$in: ?5}}]}")
+    List<DiagnosisCollection> findCustomGlobalDiagnosis(String doctorId, String locationId, String hospitalId, Collection<String> specialities, Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
-    List<DiagnosisCollection> findGlobalDiagnosis(Date date, boolean[] discards, Pageable pageable);
+    @Query("{'doctorId': null, 'speciality': {$in: ?0}, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
+    List<DiagnosisCollection> findGlobalDiagnosis(Collection<String> specialities, Date date, boolean[] discards, Pageable pageable);
 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}}")
     List<DiagnosisCollection> findCustomDiagnosis(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards, Pageable pageable);
@@ -26,14 +26,14 @@ public interface DiagnosisRepository extends MongoRepository<DiagnosisCollection
     @Query("{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
     List<DiagnosisCollection> findCustomDiagnosis(String doctorId, Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}},{'doctorId': null, 'updatedTime': {'$gt': ?1},'discarded': {$in: ?2}}]}")
-    List<DiagnosisCollection> findCustomGlobalDiagnosis(String doctorId, Date date, boolean[] discards, Pageable pageable);
+    @Query("{'$or': [{'doctorId': ?0, 'speciality': {$in: ?1}, 'updatedTime': {'$gt': ?2}, 'discarded': {$in: ?3}},{'doctorId': null, 'speciality': {$in: ?1}, 'updatedTime': {'$gt': ?2},'discarded': {$in: ?3}}]}")
+    List<DiagnosisCollection> findCustomGlobalDiagnosis(String doctorId, Collection<String> specialities, Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gt': ?3},'discarded': {$in: ?4}}]}")
-    List<DiagnosisCollection> findCustomGlobalDiagnosis(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards, Sort sort);
+    @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'speciality': {$in: ?3}, 'updatedTime': {'$gt': ?4}, 'discarded': {$in: ?5}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'speciality': {$in: ?3}, 'updatedTime': {'$gt': ?4},'discarded': {$in: ?5}}]}")
+    List<DiagnosisCollection> findCustomGlobalDiagnosis(String doctorId, String locationId, String hospitalId, Collection<String> specialities, Date date, boolean[] discards, Sort sort);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
-    List<DiagnosisCollection> findGlobalDiagnosis(Date date, boolean[] discards, Sort sort);
+    @Query("{'doctorId': null, 'speciality': {$in: ?0}, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
+    List<DiagnosisCollection> findGlobalDiagnosis(Collection<String> specialities, Date date, boolean[] discards, Sort sort);
 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}}")
     List<DiagnosisCollection> findCustomDiagnosis(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards, Sort sort);
@@ -41,8 +41,8 @@ public interface DiagnosisRepository extends MongoRepository<DiagnosisCollection
     @Query("{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
     List<DiagnosisCollection> findCustomDiagnosis(String doctorId, Date date, boolean[] discards, Sort sort);
 
-    @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}},{'doctorId': null, 'updatedTime': {'$gt': ?1},'discarded': {$in: ?2}}]}")
-    List<DiagnosisCollection> findCustomGlobalDiagnosis(String doctorId, Date date, boolean[] discards, Sort sort);
+    @Query("{'$or': [{'doctorId': ?0, 'speciality': {$in: ?1}, 'updatedTime': {'$gt': ?2}, 'discarded': {$in: ?3}},{'doctorId': null, 'speciality': {$in: ?1}, 'updatedTime': {'$gt': ?2},'discarded': {$in: ?3}}]}")
+    List<DiagnosisCollection> findCustomGlobalDiagnosis(String doctorId, Collection<String> specialities, Date date, boolean[] discards, Sort sort);
 
     @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
     List<DiagnosisCollection> findCustomGlobalDiagnosis(Date date, boolean[] discards, Pageable pageable);

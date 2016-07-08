@@ -152,7 +152,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 	List<Reference> response = null;
 	List<ESReferenceDocument> referenceDocuments = null;
 	try {
-		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(page, size, updatedTime, discarded, "reference", searchTerm, "reference");
+		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.REFERENCE, page, size, updatedTime, discarded, "reference", searchTerm, null, "reference");
 		referenceDocuments = elasticsearchTemplate.queryForList(searchQuery, ESReferenceDocument.class);
 		if (referenceDocuments != null) {
 			response = new ArrayList<Reference>();
@@ -190,7 +190,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 	List<Reference> response = null;
 	List<ESReferenceDocument> referenceDocuments = null;
 	try {
-		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "reference", searchTerm, "reference");
+		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.REFERENCE, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "reference", searchTerm, null, "reference");
 		referenceDocuments = elasticsearchTemplate.queryForList(searchQuery, ESReferenceDocument.class);
 		
 	    if (referenceDocuments != null) {
@@ -260,7 +260,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 	List<ESDiseasesDocument> diseasesDocuments = null;
 	try {	
 		
-		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(page, size, updatedTime, discarded, "disease", searchTerm, "disease");
+		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.DISEASE, page, size, updatedTime, discarded, "disease", searchTerm, null, "disease");
         diseasesDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDiseasesDocument.class);
 
 	    if (diseasesDocuments != null) {
@@ -286,7 +286,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 	List<DiseaseListResponse> diseaseListResponses = null;
 	List<ESDiseasesDocument> diseasesDocuments = null;
 	try {
-		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "disease", searchTerm, "disease");
+		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DISEASE, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "disease", searchTerm, null, "disease");
 		
         diseasesDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDiseasesDocument.class);
 

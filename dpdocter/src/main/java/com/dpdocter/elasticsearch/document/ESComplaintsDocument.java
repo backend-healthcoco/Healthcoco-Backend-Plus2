@@ -5,7 +5,6 @@ import java.util.Date;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldIndex;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 @Document(indexName = "complaints_in", type = "complaints")
@@ -30,6 +29,9 @@ public class ESComplaintsDocument {
 
     @Field(type = FieldType.Date)
     private Date updatedTime = new Date();
+
+    @Field(type = FieldType.String)
+    private String speciality;
 
     public String getId() {
 	return id;
@@ -87,9 +89,19 @@ public class ESComplaintsDocument {
 	this.updatedTime = updatedTime;
     }
 
-    @Override
-    public String toString() {
-	return "ESComplaintsDocument [id=" + id + ", complaint=" + complaint + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-		+ hospitalId + ", discarded=" + discarded + ", updatedTime=" + updatedTime + "]";
-    }
+	public String getSpeciality() {
+		return speciality;
+	}
+
+	public void setSpeciality(String speciality) {
+		this.speciality = speciality;
+	}
+
+	@Override
+	public String toString() {
+		return "ESComplaintsDocument [id=" + id + ", complaint=" + complaint + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ ", updatedTime=" + updatedTime + ", speciality=" + speciality + "]";
+	}
+
 }

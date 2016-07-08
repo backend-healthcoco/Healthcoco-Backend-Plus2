@@ -2,6 +2,7 @@ package com.dpdocter.elasticsearch.services.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
@@ -173,7 +174,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	switch (Range.valueOf(range.toUpperCase())) {
 
 	case GLOBAL:
-	    response = getGlobalObservations(page, size, updatedTime, discarded, searchTerm);
+	    response = getGlobalObservations(page, size, doctorId, updatedTime, discarded, searchTerm);
 	    break;
 	case CUSTOM:
 	    response = getCustomObservations(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
@@ -193,7 +194,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	switch (Range.valueOf(range.toUpperCase())) {
 
 	case GLOBAL:
-	    response = getGlobalInvestigations(page, size, updatedTime, discarded, searchTerm);
+	    response = getGlobalInvestigations(page, size, doctorId, updatedTime, discarded, searchTerm);
 	    break;
 	case CUSTOM:
 	    response = getCustomInvestigations(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
@@ -230,7 +231,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	List<ESNotesDocument> response = null;
 	switch (Range.valueOf(range.toUpperCase())) {
 	case GLOBAL:
-	    response = getGlobalNotes(page, size, updatedTime, discarded, searchTerm);
+	    response = getGlobalNotes(page, size, doctorId, updatedTime, discarded, searchTerm);
 	    break;
 	case CUSTOM:
 	    response = getCustomNotes(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
@@ -248,7 +249,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	List<ESDiagnosesDocument> response = null;
 	switch (Range.valueOf(range.toUpperCase())) {
 	case GLOBAL:
-	    response = getGlobalDiagnosis(page, size, updatedTime, discarded, searchTerm);
+	    response = getGlobalDiagnosis(page, size, doctorId, updatedTime, discarded, searchTerm);
 	    break;
 	case CUSTOM:
 	    response = getCustomDiagnosis(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
@@ -267,7 +268,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	switch (Range.valueOf(range.toUpperCase())) {
 
 	case GLOBAL:
-	    response = getGlobalComplaints(page, size, updatedTime, discarded, searchTerm);
+	    response = getGlobalComplaints(page, size, doctorId, updatedTime, discarded, searchTerm);
 	    break;
 	case CUSTOM:
 	    response = getCustomComplaints(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
@@ -279,11 +280,35 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	return response;
     }
 
-    private List<ESComplaintsDocument> getCustomGlobalComplaints(int page, int size, String doctorId, String locationId, String hospitalId,
+    @SuppressWarnings("unchecked")
+	private List<ESComplaintsDocument> getCustomGlobalComplaints(int page, int size, String doctorId, String locationId, String hospitalId,
 	    String updatedTime, Boolean discarded, String searchTerm) {
 	List<ESComplaintsDocument> response = null;
 	try {
-		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "complaint", searchTerm, "complaint");
+	    List<ESDoctorDocument> doctorCollections = null;
+	    Collection<String> specialities = Collections.EMPTY_LIST;
+	    
+	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
+	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
+		 		@SuppressWarnings("unchecked")
+			    Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
+		 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("id", specialitiesId));
+		 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
+		 		
+		 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+		 		if(count > 0){
+		 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+			 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+			 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+			 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+			 			specialities.add("ALL");specialities.add(null);
+			 		}
+		 		}
+		 	}
+	    }
+
+		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.COMPLAINT, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "complaint", searchTerm, specialities, "complaint");
 		response = elasticsearchTemplate.queryForList(searchQuery, ESComplaintsDocument.class);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -294,10 +319,34 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
     }
 
-    private List<ESComplaintsDocument> getGlobalComplaints(int page, int size, String updatedTime, Boolean discarded, String searchTerm) {
+    @SuppressWarnings("unchecked")
+	private List<ESComplaintsDocument> getGlobalComplaints(int page, int size, String doctorId, String updatedTime, Boolean discarded, String searchTerm) {
 	List<ESComplaintsDocument> response = null;
 	try {
-		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(page, size, updatedTime, discarded, "complaint", searchTerm, "complaint");
+	    List<ESDoctorDocument> doctorCollections = null;
+	    Collection<String> specialities = Collections.EMPTY_LIST;
+	    
+	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
+	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
+		 		@SuppressWarnings("unchecked")
+			    Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
+		 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("id", specialitiesId));
+		 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
+		 		
+		 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+		 		if(count > 0){
+		 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+			 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+			 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+			 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+			 			specialities.add("ALL");specialities.add(null);
+			 		}
+		 		}
+		 	}
+	    }
+
+		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.COMPLAINT, page, size, updatedTime, discarded, "complaint", searchTerm, specialities, "complaint");
 		response = elasticsearchTemplate.queryForList(searchQuery, ESComplaintsDocument.class);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -332,37 +381,38 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 	try {
 	    List<ESDoctorDocument> doctorCollections = null;
-	    if(!DPDoctorUtils.anyStringEmpty(doctorId))esDoctorRepository.findByUserId(doctorId);
-	    Collection<String> specialities = null;
-	    if(doctorCollections != null && !doctorCollections.isEmpty()){
-	 		@SuppressWarnings("unchecked")
-		    Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
-	 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("id", specialitiesId));
-	 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
-	 		
-	 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
-	 		SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
-	 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
-	 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
-	 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
-	 		}
-	 	}
+	    Collection<String> specialities = Collections.EMPTY_LIST;
+	    
+	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
+	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
+		 		@SuppressWarnings("unchecked")
+			    Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
+		 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("id", specialitiesId));
+		 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
+		 		
+		 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+		 		if(count > 0){
+		 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+		 			List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+			 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+			 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+			 			specialities.add("ALL");specialities.add(null);
+			 		}
+		 		}
+		 	}
+	    }
 	 	
         BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)));
     	
 		if(!DPDoctorUtils.anyStringEmpty(doctorId))
 			boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("doctorId")) , QueryBuilders.termQuery("doctorId", doctorId)));
-		else
-			boolQueryBuilder.mustNot(QueryBuilders.existsQuery("doctorId"));
+		
     	if(!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)){
     		boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")) , QueryBuilders.termQuery("locationId", locationId)))
     		.must(QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")) , QueryBuilders.termQuery("hospitalId", hospitalId)));
     	}
-//    	else{
-//    		boolQueryBuilder.mustNot(QueryBuilders.existsQuery("locationId")).mustNot(QueryBuilders.existsQuery("hospitalId"));
-//    	}
     	if(specialities != null)boolQueryBuilder.must(QueryBuilders.termsQuery("speciality", specialities));
-//	    if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
 	    if(!discarded)boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
 
         SearchQuery searchQuery = null;
@@ -384,18 +434,21 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	try {
 		List<ESDoctorDocument> doctorCollections = null;
 	    if(!DPDoctorUtils.anyStringEmpty(doctorId))esDoctorRepository.findByUserId(doctorId);
-	    Collection<String> specialities = null;
+	    Collection<String> specialities = Collections.EMPTY_LIST;
 	    if(doctorCollections != null && !doctorCollections.isEmpty()){
 	 		Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
 	 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("id", specialitiesId));
 	 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
 	 		
 	 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
-	 		SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
-	 		
-	 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
-	 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
-	 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+	 		if(count > 0){
+	 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+		 		
+		 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+		 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+		 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+		 			specialities.add("ALL");specialities.add(null);
+		 		}
 	 		}
 	 	}
 	 	
@@ -430,29 +483,10 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	    if (doctorId == null)
 	    	response = new ArrayList<ESDiagramsDocument>();
 	    else {
-	    	List<ESDoctorDocument> doctorCollections = null;
-		    if(!DPDoctorUtils.anyStringEmpty(doctorId))esDoctorRepository.findByUserId(doctorId);
-		    Collection<String> specialities = null;
-		    if(doctorCollections != null && !doctorCollections.isEmpty()){
-		 		Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
-		 		
-		 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("id", specialitiesId));
-		 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
-		 		
-		 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
-		 		SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
-		 		
-		 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
-		 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
-		 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
-		 		}
-		 	}
-		 	
-		    BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)))
+	    	BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)))
 	    			.must(QueryBuilders.termQuery("doctorId", doctorId));
 	    	
 			if(!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))boolQueryBuilder.must(QueryBuilders.termQuery("locationId", locationId)).must(QueryBuilders.termQuery("hospitalId", hospitalId));
-		    if(specialities != null)boolQueryBuilder.must(QueryBuilders.termsQuery("speciality", specialities));
 		    if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
 		    if(!discarded)boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
 
@@ -470,11 +504,35 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	return response;
     }
 
-    private List<ESInvestigationsDocument> getCustomGlobalInvestigations(int page, int size, String doctorId, String locationId, String hospitalId,
+    @SuppressWarnings("unchecked")
+	private List<ESInvestigationsDocument> getCustomGlobalInvestigations(int page, int size, String doctorId, String locationId, String hospitalId,
 	    String updatedTime, Boolean discarded, String searchTerm) {
 	List<ESInvestigationsDocument> response = null;
 	try {
-		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "investigation", searchTerm, "investigation");
+	    List<ESDoctorDocument> doctorCollections = null;
+	    Collection<String> specialities = Collections.EMPTY_LIST;
+	    
+	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
+	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
+		 		@SuppressWarnings("unchecked")
+			    Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
+		 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("id", specialitiesId));
+		 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
+		 		
+		 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+		 		if(count > 0){
+		 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+			 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+			 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+			 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+			 			specialities.add("ALL");specialities.add(null);
+			 		}
+		 		}
+		 	}
+	    }
+
+		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.INVESTIGATION, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "investigation", searchTerm, specialities, "investigation");
 		response = elasticsearchTemplate.queryForList(searchQuery, ESInvestigationsDocument.class);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -484,10 +542,34 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	return response;
     }
 
-    private List<ESInvestigationsDocument> getGlobalInvestigations(int page, int size, String updatedTime, Boolean discarded, String searchTerm) {
+    @SuppressWarnings("unchecked")
+	private List<ESInvestigationsDocument> getGlobalInvestigations(int page, int size, String doctorId, String updatedTime, Boolean discarded, String searchTerm) {
 	List<ESInvestigationsDocument> response = null;
 	try {
-		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(page, size, updatedTime, discarded, "investigation", searchTerm, "investigation");
+	    List<ESDoctorDocument> doctorCollections = null;
+	    Collection<String> specialities = Collections.EMPTY_LIST;
+	    
+	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
+	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
+		 		@SuppressWarnings("unchecked")
+			    Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
+		 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("id", specialitiesId));
+		 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
+		 		
+		 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+		 		if(count > 0){
+		 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+			 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+			 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+			 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+			 			specialities.add("ALL");specialities.add(null);
+			 		}
+		 		}
+		 	}
+	    }
+
+		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.INVESTIGATION, page, size, updatedTime, discarded, "investigation", searchTerm, specialities, "investigation");
 		response = elasticsearchTemplate.queryForList(searchQuery, ESInvestigationsDocument.class);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -515,11 +597,35 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	return response;
     }
 
-    private List<ESObservationsDocument> getCustomGlobalObservations(int page, int size, String doctorId, String locationId, String hospitalId,
+    @SuppressWarnings("unchecked")
+	private List<ESObservationsDocument> getCustomGlobalObservations(int page, int size, String doctorId, String locationId, String hospitalId,
 	    String updatedTime, Boolean discarded, String searchTerm) {
 	List<ESObservationsDocument> response = null;
 	try {
-		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "observation", searchTerm, "observation");
+	    List<ESDoctorDocument> doctorCollections = null;
+	    Collection<String> specialities = Collections.EMPTY_LIST;
+	    
+	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
+	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
+		 		@SuppressWarnings("unchecked")
+			    Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
+		 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("id", specialitiesId));
+		 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
+		 		
+		 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+		 		if(count > 0){
+		 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+			 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+			 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+			 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+			 			specialities.add("ALL");specialities.add(null);
+			 		}
+		 		}
+		 	}
+	    }
+
+		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.OBSERVATION, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "observation", searchTerm, specialities, "observation");
 		response = elasticsearchTemplate.queryForList(searchQuery, ESObservationsDocument.class);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -530,10 +636,34 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
     }
 
-    private List<ESObservationsDocument> getGlobalObservations(int page, int size, String updatedTime, Boolean discarded, String searchTerm) {
+    @SuppressWarnings("unchecked")
+	private List<ESObservationsDocument> getGlobalObservations(int page, int size, String doctorId, String updatedTime, Boolean discarded, String searchTerm) {
 	List<ESObservationsDocument> response = null;
 	try {
-		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(page, size, updatedTime, discarded, "observation", searchTerm, "observation");
+	    List<ESDoctorDocument> doctorCollections = null;
+	    Collection<String> specialities = Collections.EMPTY_LIST;
+	    
+	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
+	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
+		 		@SuppressWarnings("unchecked")
+			    Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
+		 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("id", specialitiesId));
+		 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
+		 		
+		 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+		 		if(count > 0){
+		 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+			 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+			 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+			 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+			 			specialities.add("ALL");specialities.add(null);
+			 		}
+		 		}
+		 	}
+	    }
+
+		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.OBSERVATION, page, size, updatedTime, discarded, "observation", searchTerm, specialities, "observation");
 		response = elasticsearchTemplate.queryForList(searchQuery, ESObservationsDocument.class);
 		} catch (Exception e) {
 	    e.printStackTrace();
@@ -560,11 +690,35 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	return response;
     }
 
-    private List<ESDiagnosesDocument> getCustomGlobalDiagnosis(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+    @SuppressWarnings("unchecked")
+	private List<ESDiagnosesDocument> getCustomGlobalDiagnosis(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded, String searchTerm) {
 	List<ESDiagnosesDocument> response = null;
 	try {
-	      SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "diagnosis", searchTerm, "diagnosis");
+	    List<ESDoctorDocument> doctorCollections = null;
+	    Collection<String> specialities = Collections.EMPTY_LIST;
+	    
+	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
+	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
+		 		@SuppressWarnings("unchecked")
+			    Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
+		 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("id", specialitiesId));
+		 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
+		 		
+		 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+		 		if(count > 0){
+		 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+			 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+			 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+			 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+			 			specialities.add("ALL");specialities.add(null);
+			 		}
+		 		}
+		 	}
+	    }
+
+	      SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DIAGNOSIS, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "diagnosis", searchTerm, specialities, "diagnosis");
 	      response = elasticsearchTemplate.queryForList(searchQuery, ESDiagnosesDocument.class);
 
 	} catch (Exception e) {
@@ -575,10 +729,34 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	return response;
     }
 
-    private List<ESDiagnosesDocument> getGlobalDiagnosis(int page, int size, String updatedTime, Boolean discarded, String searchTerm) {
+    @SuppressWarnings("unchecked")
+	private List<ESDiagnosesDocument> getGlobalDiagnosis(int page, int size, String doctorId, String updatedTime, Boolean discarded, String searchTerm) {
 	List<ESDiagnosesDocument> response = null;
 	try {
-		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(page, size, updatedTime, discarded, "diagnosis", searchTerm, "diagnosis");
+	    List<ESDoctorDocument> doctorCollections = null;
+	    Collection<String> specialities = Collections.EMPTY_LIST;
+	    
+	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
+	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
+		 		@SuppressWarnings("unchecked")
+			    Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
+		 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("id", specialitiesId));
+		 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
+		 		
+		 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+		 		if(count > 0){
+		 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+			 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+			 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+			 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+			 			specialities.add("ALL");specialities.add(null);
+			 		}
+		 		}
+		 	}
+	    }
+
+		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.DIAGNOSIS, page, size, updatedTime, discarded, "diagnosis", searchTerm, specialities, "diagnosis");
 		response = elasticsearchTemplate.queryForList(searchQuery, ESDiagnosesDocument.class);
 		
 	} catch (Exception e) {
@@ -606,12 +784,36 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	return response;
     }
 
-    private List<ESNotesDocument> getCustomGlobalNotes(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+    @SuppressWarnings("unchecked")
+	private List<ESNotesDocument> getCustomGlobalNotes(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded, String searchTerm) {
 
 	List<ESNotesDocument> response = null;
 	try {
-		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "note", searchTerm, "note");
+	    List<ESDoctorDocument> doctorCollections = null;
+	    Collection<String> specialities = Collections.EMPTY_LIST;
+	    
+	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
+	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
+		 		@SuppressWarnings("unchecked")
+			    Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
+		 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("id", specialitiesId));
+		 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
+		 		
+		 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+		 		if(count > 0){
+		 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+			 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+			 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+			 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+			 			specialities.add("ALL");specialities.add(null);
+			 		}
+		 		}
+		 	}
+	    }
+
+		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.NOTES, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "note", searchTerm, specialities, "note");
 		response = elasticsearchTemplate.queryForList(searchQuery, ESNotesDocument.class);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -622,10 +824,34 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
     }
 
-    private List<ESNotesDocument> getGlobalNotes(int page, int size, String updatedTime, Boolean discarded, String searchTerm) {
+    @SuppressWarnings("unchecked")
+	private List<ESNotesDocument> getGlobalNotes(int page, int size, String doctorId, String updatedTime, Boolean discarded, String searchTerm) {
 	List<ESNotesDocument> response = null;
 	try {
-		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(page, size, updatedTime, discarded, "note", searchTerm, "note");
+	    List<ESDoctorDocument> doctorCollections = null;
+	    Collection<String> specialities = Collections.EMPTY_LIST;
+	    
+	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
+	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
+		 		@SuppressWarnings("unchecked")
+			    Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
+		 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("id", specialitiesId));
+		 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
+		 		
+		 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+		 		if(count > 0){
+		 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+			 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+			 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+			 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+			 			specialities.add("ALL");specialities.add(null);
+			 		}
+		 		}
+		 	}
+	    }
+
+		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.NOTES, page, size, updatedTime, discarded, "note", searchTerm, specialities, "note");
 		response = elasticsearchTemplate.queryForList(searchQuery, ESNotesDocument.class);
 	} catch (Exception e) {
 	    e.printStackTrace();

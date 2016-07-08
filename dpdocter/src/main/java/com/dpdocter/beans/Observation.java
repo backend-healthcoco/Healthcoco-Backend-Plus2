@@ -16,6 +16,8 @@ public class Observation extends GenericCollection {
 
     private Boolean discarded = false;
     
+    private String speciality;
+
     public String getId() {
 	return id;
     }
@@ -64,10 +66,18 @@ public class Observation extends GenericCollection {
 		this.discarded = discarded;
 	}
 
+	public String getSpeciality() {
+		return speciality;
+	}
+
+	public void setSpeciality(String speciality) {
+		this.speciality = speciality;
+	}
+
 	@Override
 	public String toString() {
 		return "Observation [id=" + id + ", observation=" + observation + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + "]";
+				+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", speciality=" + speciality
+				+ "]";
 	}
-
 }

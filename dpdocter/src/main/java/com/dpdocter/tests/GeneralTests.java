@@ -3,6 +3,8 @@ package com.dpdocter.tests;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
+import java.util.Collection;
+import java.util.Collections;
 
 import com.dpdocter.beans.PrintSettingsText;
 import com.fasterxml.jackson.core.JsonGenerationException;
@@ -79,14 +81,8 @@ public class GeneralTests {
 //	    	}
 	    		 
 	    		 public static void main(String[] args) throws NoSuchAlgorithmException, JsonGenerationException, JsonMappingException, IOException, ParseException  {
-	    			 PrintSettingsText str = new PrintSettingsText();
-	    			 str.setFontSize("15pt");
-	    			 if ((str.getFontSize() != null) && (!str.getFontSize().equalsIgnoreCase("10pt") && !str.getFontSize().equalsIgnoreCase("11pt")
-	    					    && !str.getFontSize().equalsIgnoreCase("12pt") && !str.getFontSize().equalsIgnoreCase("13pt")
-	    					    && !str.getFontSize().equalsIgnoreCase("14pt") && !str.getFontSize().equalsIgnoreCase("15pt")))
-	    					str.setFontSize("10pt");
-	    			 
-	    			 System.out.println(str.getFontSize()+"  "+!str.getFontSize().equalsIgnoreCase("15pt"));
+	    			 Collection<String> specialities = Collections.EMPTY_LIST;
+	    			 System.out.println(specialities);
 	    		 }
 	    		 
 }  	

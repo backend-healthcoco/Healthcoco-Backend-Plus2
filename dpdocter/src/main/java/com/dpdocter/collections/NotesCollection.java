@@ -25,6 +25,9 @@ public class NotesCollection extends GenericCollection {
     private Boolean discarded = false;
 
     @Field
+    private String speciality;
+
+    @Field
     private boolean inHistory = false;
 
     public String getId() {
@@ -75,18 +78,26 @@ public class NotesCollection extends GenericCollection {
 	this.discarded = discarded;
     }
 
-    public boolean isInHistory() {
-	return inHistory;
-    }
+	public String getSpeciality() {
+		return speciality;
+	}
 
-    public void setInHistory(boolean inHistory) {
-	this.inHistory = inHistory;
-    }
+	public void setSpeciality(String speciality) {
+		this.speciality = speciality;
+	}
 
-    @Override
-    public String toString() {
-	return "NotesCollection [id=" + id + ", note=" + note + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ ", discarded=" + discarded + ", inHistory=" + inHistory + "]";
-    }
+	public boolean isInHistory() {
+		return inHistory;
+	}
 
+	public void setInHistory(boolean inHistory) {
+		this.inHistory = inHistory;
+	}
+
+	@Override
+	public String toString() {
+		return "NotesCollection [id=" + id + ", note=" + note + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", speciality=" + speciality
+				+ ", inHistory=" + inHistory + "]";
+	}
 }

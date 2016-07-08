@@ -1541,7 +1541,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 //	    mailService.sendEmail(userCollection.getEmailAddress(), forgotUsernamePasswordSub, body, null);
 
 	    LocationCollection locationCollection = locationRepository.findOne(request.getLocationId());
-	    RoleCollection adminRoleCollection = roleRepository.findByRole(RoleEnum.SUPER_ADMIN.getRole(), request.getLocationId(), request.getHospitalId());
+	    RoleCollection adminRoleCollection = roleRepository.findByRole(RoleEnum.LOCATION_ADMIN.getRole(), request.getLocationId(), request.getHospitalId());
 	    String admindoctorName= "";
 	    if(adminRoleCollection != null){
 	    	List<UserRoleCollection> roleCollections = userRoleRepository.findByRoleId(adminRoleCollection.getId());
@@ -1670,7 +1670,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		response.setRole(role);
 		
 		LocationCollection locationCollection = locationRepository.findOne(request.getLocationId());
-	    RoleCollection adminRoleCollection = roleRepository.findByRole(RoleEnum.SUPER_ADMIN.getRole(), request.getLocationId(), request.getHospitalId());
+	    RoleCollection adminRoleCollection = roleRepository.findByRole(RoleEnum.LOCATION_ADMIN.getRole(), request.getLocationId(), request.getHospitalId());
 	    String admindoctorName= "";
 	    if(adminRoleCollection != null){
 	    	List<UserRoleCollection> userRoleCollections = userRoleRepository.findByRoleId(adminRoleCollection.getId());

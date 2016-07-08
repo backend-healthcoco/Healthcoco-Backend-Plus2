@@ -16,7 +16,7 @@ public class SpecialityCollection extends GenericCollection {
     private String superSpeciality;
 
     @Field
-    private String code;
+    private Boolean toShow = true;
 
     public String getId() {
 	return id;
@@ -42,17 +42,18 @@ public class SpecialityCollection extends GenericCollection {
 	this.superSpeciality = superSpeciality;
     }
 
-	public String getCode() {
-		return code;
+	public Boolean getToShow() {
+		return toShow;
 	}
 
-	public void setCode(String code) {
-		this.code = code;
+	public void setToShow(Boolean toShow) {
+		this.toShow = toShow;
 	}
 
 	@Override
 	public String toString() {
 		return "SpecialityCollection [id=" + id + ", speciality=" + speciality + ", superSpeciality=" + superSpeciality
-				+ ", code=" + code + "]";
+				+ ", toShow=" + toShow + "]";
 	}
+
 }

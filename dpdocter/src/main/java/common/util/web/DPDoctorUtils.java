@@ -7,6 +7,7 @@ import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Random;
 import java.util.TimeZone;
@@ -25,6 +26,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
+
+import com.dpdocter.enums.Resource;
 
 public class DPDoctorUtils {
 
@@ -131,7 +134,7 @@ public class DPDoctorUtils {
         return result;
    }
     
-	public static SearchQuery createGlobalQuery(int page, int size, String updatedTime, Boolean discarded, String sortBy, String searchTerm, String... searchTermFieldName){
+	public static SearchQuery createGlobalQuery(Resource resource, int page, int size, String updatedTime, Boolean discarded, String sortBy, String searchTerm, Collection<String> specialities, String... searchTermFieldName){
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)))
 				.mustNot(QueryBuilders.existsQuery("doctorId"))
@@ -143,7 +146,10 @@ public class DPDoctorUtils {
 	    	else boolQueryBuilder.must(QueryBuilders.multiMatchQuery(searchTerm, searchTermFieldName));
 	    }
  	    if(!discarded)boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
- 	    
+ 	   
+ 	    if(resource.equals(Resource.COMPLAINT) || resource.equals(Resource.OBSERVATION) || resource.equals(Resource.INVESTIGATION) || resource.equals(Resource.DIAGNOSIS) || resource.equals(Resource.NOTES)){
+	    	boolQueryBuilder.must(QueryBuilders.termsQuery("speciality", specialities));
+	    }
         SearchQuery searchQuery = null;
         if(anyStringEmpty(sortBy)){
         	if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
@@ -180,14 +186,13 @@ public class DPDoctorUtils {
         return searchQuery;
 	}
 
-	public static SearchQuery createCustomGlobalQuery(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String sortBy, String searchTerm, String... searchTermFieldName){
+	public static SearchQuery createCustomGlobalQuery(Resource resource, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String sortBy, String searchTerm, Collection<String> specialities, String... searchTermFieldName){
 
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)));
     	
 		if(!DPDoctorUtils.anyStringEmpty(doctorId))
 			boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("doctorId")) , QueryBuilders.termQuery("doctorId", doctorId)));
-		else
-			boolQueryBuilder.mustNot(QueryBuilders.existsQuery("doctorId"));
+		
     	if(!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)){
     		boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")) , QueryBuilders.termQuery("locationId", locationId)))
     		.must(QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")) , QueryBuilders.termQuery("hospitalId", hospitalId)));
@@ -199,6 +204,9 @@ public class DPDoctorUtils {
 	    }
 	    if(!discarded)boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
 
+	    if(resource.equals(Resource.COMPLAINT) || resource.equals(Resource.OBSERVATION) || resource.equals(Resource.INVESTIGATION) || resource.equals(Resource.DIAGNOSIS) || resource.equals(Resource.NOTES)){
+	    	if(specialities != null && !specialities.isEmpty())boolQueryBuilder.must(QueryBuilders.termsQuery("speciality", specialities));
+	    }
         SearchQuery searchQuery = null;
         if(anyStringEmpty(sortBy)){
         	if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();

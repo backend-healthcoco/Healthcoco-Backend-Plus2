@@ -30,6 +30,9 @@ public class ESNotesDocument {
     @Field(type = FieldType.Date)
     private Date updatedTime = new Date();
 
+    @Field(type = FieldType.String)
+    private String speciality;
+
     public String getId() {
 	return id;
     }
@@ -86,9 +89,18 @@ public class ESNotesDocument {
 	this.updatedTime = updatedTime;
     }
 
-    @Override
-    public String toString() {
-	return "ESNotesDocument [id=" + id + ", note=" + note + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ ", discarded=" + discarded + ", updatedTime=" + updatedTime + "]";
-    }
+	public String getSpeciality() {
+		return speciality;
+	}
+
+	public void setSpeciality(String speciality) {
+		this.speciality = speciality;
+	}
+
+	@Override
+	public String toString() {
+		return "ESNotesDocument [id=" + id + ", note=" + note + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", updatedTime=" + updatedTime
+				+ ", speciality=" + speciality + "]";
+	}
 }

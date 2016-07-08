@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import com.dpdocter.collections.GenericCollection;
 
 public class Notes extends GenericCollection {
@@ -18,6 +20,8 @@ public class Notes extends GenericCollection {
 
     private Boolean discarded = false;
     
+    private String speciality;
+
     public String getId() {
 	return id;
     }
@@ -74,10 +78,19 @@ public class Notes extends GenericCollection {
 		this.discarded = discarded;
 	}
 
+	public String getSpeciality() {
+		return speciality;
+	}
+
+	public void setSpeciality(String speciality) {
+		this.speciality = speciality;
+	}
+
 	@Override
 	public String toString() {
 		return "Notes [id=" + id + ", note=" + note + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", inHistory=" + inHistory + ", discarded=" + discarded + "]";
+				+ ", hospitalId=" + hospitalId + ", inHistory=" + inHistory + ", discarded=" + discarded
+				+ ", speciality=" + speciality + "]";
 	}
 
 }

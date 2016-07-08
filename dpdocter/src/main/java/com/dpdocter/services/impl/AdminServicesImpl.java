@@ -6,9 +6,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +34,7 @@ import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Resume;
+import com.dpdocter.beans.Speciality;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.CityCollection;
 import com.dpdocter.collections.ContactUsCollection;
@@ -42,7 +46,10 @@ import com.dpdocter.collections.EducationQualificationCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.ResumeCollection;
+import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.collections.UserLocationCollection;
+import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
 import com.dpdocter.elasticsearch.document.ESDrugDocument;
@@ -53,6 +60,7 @@ import com.dpdocter.elasticsearch.repository.ESDrugRepository;
 import com.dpdocter.elasticsearch.repository.ESEducationInstituteRepository;
 import com.dpdocter.elasticsearch.repository.ESEducationQualificationRepository;
 import com.dpdocter.elasticsearch.services.ESCityService;
+import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -66,7 +74,10 @@ import com.dpdocter.repository.EducationQualificationRepository;
 import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.ResumeRepository;
+import com.dpdocter.repository.RoleRepository;
+import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.response.DoctorResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.AdminServices;
@@ -145,6 +156,15 @@ public class AdminServicesImpl implements AdminServices {
 
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private UserRoleRepository userRoleRepository;
+
+    @Autowired
+    private UserLocationRepository userLocationRepository;
 
     @Value(value = "${image.path}")
     private String imagePath;
@@ -559,50 +579,58 @@ public class AdminServicesImpl implements AdminServices {
 	    }
 
 	@Override
-	public List<DoctorResponse> getDoctors(int page, int size, String locationId, String state) {
+	public List<DoctorResponse> getDoctors(int page, int size, String locationId, String state, String searchTerm) {
 		List<DoctorResponse> response = null;
 		try{
 			 Aggregation aggregation = null;
-			 if(DPDoctorUtils.anyStringEmpty(state)){
-				 if(size > 0){
-					 if(DPDoctorUtils.anyStringEmpty(locationId)){
-						 aggregation = Aggregation.newAggregation(new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
-							              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))),Aggregation.skip((page) * size), Aggregation.limit(size));
-					 }else{
-						 aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("locationId").is(locationId)), new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
-					              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))),Aggregation.skip((page) * size), Aggregation.limit(size));
-					 }
-				 }else{
-					 if(DPDoctorUtils.anyStringEmpty(locationId)){
-						 aggregation = Aggregation.newAggregation(new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
-							              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))));
-					 }else{
-						 aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("locationId").is(locationId)), new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
-					              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))));
-					 }
-				 }
-			 }else{
-				 if(size > 0){
-					 if(DPDoctorUtils.anyStringEmpty(locationId)){
-						 aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("userState").is(state)), new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
-							              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))),Aggregation.skip((page) * size), Aggregation.limit(size));
-					 }else{
-						 aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("locationId").is(locationId).and("userState").is(state)), new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
-					              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))),Aggregation.skip((page) * size), Aggregation.limit(size));
-					 }
-				 }else{
-					 if(DPDoctorUtils.anyStringEmpty(locationId)){
-						 aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("userState").is(state)), new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
-							              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))));
-					 }else{
-						 aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("locationId").is(locationId).and("userState").is(state)), new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
-					              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))));
-					 }
-				 }
-			 }
 			 
+			 Criteria criteria = null;
+			 if(!DPDoctorUtils.anyStringEmpty(locationId)){
+				 List<UserLocationCollection> userLocationCollections = userLocationRepository.findByLocationId(locationId);
+				 @SuppressWarnings("unchecked")
+				 Collection<String> userIds = CollectionUtils.collect(userLocationCollections, new BeanToPropertyValueTransformer("userId"));
+				 if(criteria == null)criteria = new Criteria("id").in(userIds);
+			 }
+			 if(!DPDoctorUtils.anyStringEmpty(state)){
+				 if(criteria == null)criteria = new Criteria("userState").is(state);
+				 else criteria.and("userState").is(state);
+			 }
+			 if(!DPDoctorUtils.anyStringEmpty(searchTerm)){
+				 if(criteria == null)
+					 criteria = new Criteria().orOperator(new Criteria("emailAddress").regex("^"+searchTerm,"i"), new Criteria("firstName").regex("^"+searchTerm,"i"));
+				 else
+					 criteria = new Criteria().orOperator(new Criteria("emailAddress").regex("^"+searchTerm,"i").andOperator(criteria), new Criteria("firstName").regex("^"+searchTerm).andOperator(criteria));
+			 }
+			 if(criteria != null){
+				 if(size > 0){
+					 aggregation = Aggregation.newAggregation(Aggregation.match(criteria), 
+							 new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
+				              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))),Aggregation.skip((page) * size), Aggregation.limit(size));
+				 }else{
+					 aggregation = Aggregation.newAggregation(Aggregation.match(criteria), new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
+			              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))));
+				 }
+		}else{
+			if(size > 0){
+				 aggregation = Aggregation.newAggregation(new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
+			              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))),Aggregation.skip((page) * size), Aggregation.limit(size));
+			 }else{
+				 aggregation = Aggregation.newAggregation(new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
+		              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))));
+			 }
+		}
+			 System.out.println(aggregation.toString());
 	    AggregationResults<DoctorResponse> results = mongoTemplate.aggregate(aggregation, UserCollection.class, DoctorResponse.class);
 	    response = results.getMappedResults();
+	    for(DoctorResponse doctorResponse : response){
+	    	List<UserRoleCollection> userRoleCollection = userRoleRepository.findByUserId(doctorResponse.getId());
+			@SuppressWarnings("unchecked")
+		    Collection<String> roleIds = CollectionUtils.collect(userRoleCollection, new BeanToPropertyValueTransformer("roleId"));
+		    if(roleIds != null && !roleIds.isEmpty()){
+		    	Integer count = roleRepository.findCountByIdAndRole(roleIds, RoleEnum.LOCATION_ADMIN.getRole());
+		    	if(count != null && count > 0)doctorResponse.setRole(RoleEnum.LOCATION_ADMIN.getRole());
+		    }
+	    }
 	    }catch(Exception e){
 			logger.error("Error while getting doctors "+ e.getMessage());
 			e.printStackTrace();
@@ -689,6 +717,23 @@ public class AdminServicesImpl implements AdminServices {
 			logger.error("Error while getting clinics "+ e.getMessage());
 			e.printStackTrace();
 		    throw new BusinessException(ServiceError.Unknown,"Error while getting inactive clinics "+ e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public List<Speciality> getUniqueSpecialities(String searchTerm, String updatedTime, int page, int size) {
+	   List<Speciality> response = null;
+	  try {
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.group("speciality").first("speciality").as("speciality"),
+					 Aggregation.sort(Sort.Direction.ASC, "speciality"));
+			AggregationResults <Speciality> groupResults = mongoTemplate.aggregate(aggregation, SpecialityCollection.class, Speciality.class);
+			response = groupResults.getMappedResults();
+			
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
 	}
