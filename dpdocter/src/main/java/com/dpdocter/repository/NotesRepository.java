@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -51,10 +50,10 @@ public interface NotesRepository extends MongoRepository<NotesCollection, String
     @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
 	List<NotesCollection> findCustomGlobalNotesForAdmin(Date date, boolean[] discards, Sort sort);
 
-	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'note' : {$regex : '^?2*', $options : 'i'}}")
+	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'note' : {$regex : '^?2', $options : 'i'}}")
 	List<NotesCollection> findCustomGlobalNotesForAdmin(Date date, boolean[] discards, String searchTerm, Pageable pageable);
 
-	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'note' : {$regex : '^?2*', $options : 'i'}}")
+	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'note' : {$regex : '^?2', $options : 'i'}}")
 	List<NotesCollection> findCustomGlobalNotesForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
 
 	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
@@ -63,10 +62,10 @@ public interface NotesRepository extends MongoRepository<NotesCollection, String
 	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
 	List<NotesCollection> findGlobalNotesForAdmin(Date date, boolean[] discards, Sort sort);
 
-	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'note' : {$regex : '^?2*', $options : 'i'}}")
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'note' : {$regex : '^?2', $options : 'i'}}")
 	List<NotesCollection> findGlobalNotesForAdmin(Date date, boolean[] discards, String searchTerm,	Pageable pageable);
 
-	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'note' : {$regex : '^?2*', $options : 'i'}}")
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'note' : {$regex : '^?2', $options : 'i'}}")
 	List<NotesCollection> findGlobalNotesForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
 
 	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
@@ -75,10 +74,10 @@ public interface NotesRepository extends MongoRepository<NotesCollection, String
 	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
 	List<NotesCollection> findCustomNotesForAdmin(Date date, boolean[] discards, Sort sort);
 
-	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'note' : {$regex : '^?2*', $options : 'i'}}")
+	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'note' : {$regex : '^?2', $options : 'i'}}")
 	List<NotesCollection> findCustomNotesForAdmin(Date date, boolean[] discards, String searchTerm, Pageable pageable);
 	
-	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'note' : {$regex : '^?2*', $options : 'i'}}")
+	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'note' : {$regex : '^?2', $options : 'i'}}")
 	List<NotesCollection> findCustomNotesForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
 
 }

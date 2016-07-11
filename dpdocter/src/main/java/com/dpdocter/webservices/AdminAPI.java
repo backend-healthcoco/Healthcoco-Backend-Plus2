@@ -618,9 +618,9 @@ public class AdminAPI {
     public Response<DiseaseListResponse> getDiseases(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
 	    @QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
-    if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
-    	    logger.warn("Range or Doctor Id Cannot Be Empty");
-    	    throw new BusinessException(ServiceError.InvalidInput, "Range or Doctor Id Cannot Be Empty");
+    if (DPDoctorUtils.anyStringEmpty(range)) {
+    	    logger.warn("Range Cannot Be Empty");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Range Cannot Be Empty");
     	}
 	List<DiseaseListResponse> diseaseListResponse = historyServices.getDiseases(range, page, size, doctorId, hospitalId, locationId, updatedTime, discarded, true, searchTerm);
 	Response<DiseaseListResponse> response = new Response<DiseaseListResponse>();

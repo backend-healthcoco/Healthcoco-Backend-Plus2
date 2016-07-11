@@ -58,10 +58,10 @@ public interface DrugTypeRepository extends MongoRepository<DrugTypeCollection, 
     @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
 	List<DrugTypeCollection> getCustomGlobalDrugTypeForAdmin(Date date, boolean[] discards, Sort sort);
 
-    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'type' : {$regex : '^?2*', $options : 'i'}}")
+    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'type' : {$regex : '^?2', $options : 'i'}}")
 	List<DrugTypeCollection> getCustomGlobalDrugTypeForAdmin(Date date, boolean[] discards, String searchTerm, Pageable pageable);
 
-    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'type' : {$regex : '^?2*', $options : 'i'}}")
+    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'type' : {$regex : '^?2', $options : 'i'}}")
 	List<DrugTypeCollection> getCustomGlobalDrugTypeForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
 
     @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
@@ -70,10 +70,10 @@ public interface DrugTypeRepository extends MongoRepository<DrugTypeCollection, 
     @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
 	List<DrugTypeCollection> getCustomDrugTypeForAdmin(Date date, boolean[] discards, Sort sort);
 
-    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'type' : {$regex : '^?2*', $options : 'i'}}")
+    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'type' : {$regex : '^?2', $options : 'i'}}")
 	List<DrugTypeCollection> getCustomDrugTypeForAdmin(Date date, boolean[] discards, String searchTerm, Pageable pageable);
 
-    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'type' : {$regex : '^?2*', $options : 'i'}}")
+    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'type' : {$regex : '^?2', $options : 'i'}}")
 	List<DrugTypeCollection> getCustomDrugTypeForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
 
 	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
@@ -82,10 +82,10 @@ public interface DrugTypeRepository extends MongoRepository<DrugTypeCollection, 
 	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
 	List<DrugTypeCollection> getGlobalDrugTypeForAdmin(Date date, boolean[] discards, Sort sort);
 
-	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'type' : {$regex : '^?2*', $options : 'i'}}")
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'type' : {$regex : '^?2', $options : 'i'}}")
 	List<DrugTypeCollection> getGlobalDrugTypeForAdmin(Date date, boolean[] discards, String searchTerm, Pageable pageable);
 
-	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'type' : {$regex : '^?2*', $options : 'i'}}")
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'type' : {$regex : '^?2', $options : 'i'}}")
 	List<DrugTypeCollection> getGlobalDrugTypeForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
 
 }

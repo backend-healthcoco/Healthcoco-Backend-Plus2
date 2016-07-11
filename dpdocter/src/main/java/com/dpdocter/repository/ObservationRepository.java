@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -57,10 +56,10 @@ public interface ObservationRepository extends MongoRepository<ObservationCollec
     @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
 	List<ObservationCollection> findCustomGlobalObservationsForAdmin(Date date, boolean[] discards, Sort sort);
 
-	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'observation' : {$regex : '^?2*', $options : 'i'}}")
+	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'observation' : {$regex : '^?2', $options : 'i'}}")
 	List<ObservationCollection> findCustomGlobalObservationsForAdmin(Date date, boolean[] discards, String searchTerm, Pageable pageable);
 
-	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'observation' : {$regex : '^?2*', $options : 'i'}}")
+	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'observation' : {$regex : '^?2', $options : 'i'}}")
 	List<ObservationCollection> findCustomGlobalObservationsForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
 
 	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
@@ -69,10 +68,10 @@ public interface ObservationRepository extends MongoRepository<ObservationCollec
 	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
 	List<ObservationCollection> findGlobalObservationsForAdmin(Date date, boolean[] discards, Sort sort);
 
-	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'observation' : {$regex : '^?2*', $options : 'i'}}")
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'observation' : {$regex : '^?2', $options : 'i'}}")
 	List<ObservationCollection> findGlobalObservationsForAdmin(Date date, boolean[] discards, String searchTerm, Pageable pageable);
 
-	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'observation' : {$regex : '^?2*', $options : 'i'}}")
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'observation' : {$regex : '^?2', $options : 'i'}}")
 	List<ObservationCollection> findGlobalObservationsForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
 
 	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
@@ -81,10 +80,10 @@ public interface ObservationRepository extends MongoRepository<ObservationCollec
 	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
 	List<ObservationCollection> findCustomObservationsForAdmin(Date date, boolean[] discards, Sort sort);
 
-	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'observation' : {$regex : '^?2*', $options : 'i'}}")
+	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'observation' : {$regex : '^?2', $options : 'i'}}")
 	List<ObservationCollection> findCustomObservationsForAdmin(Date date, boolean[] discards, String searchTerm, Pageable pageable);
 
-	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'observation' : {$regex : '^?2*', $options : 'i'}}")
+	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'observation' : {$regex : '^?2', $options : 'i'}}")
 	List<ObservationCollection> findCustomObservationsForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
 
 }

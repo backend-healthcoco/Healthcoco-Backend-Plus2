@@ -50,10 +50,10 @@ public interface InvestigationRepository extends MongoRepository<InvestigationCo
     @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
     List<InvestigationCollection> findCustomGlobalInvestigationsForAdmin(Date date, boolean[] discards, Sort sort);
 
-	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'investigation' : {$regex : '^?2*', $options : 'i'}}")
+	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'investigation' : {$regex : '^?2', $options : 'i'}}")
 	List<InvestigationCollection> findCustomGlobalInvestigationsForAdmin(Date date, boolean[] discards,	String searchTerm, Pageable pageable);
 
-	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'investigation' : {$regex : '^?2*', $options : 'i'}}")
+	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'investigation' : {$regex : '^?2', $options : 'i'}}")
 	List<InvestigationCollection> findCustomGlobalInvestigationsForAdmin(Date date, boolean[] discards,	String searchTerm, Sort sort);
 
     @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
@@ -62,10 +62,10 @@ public interface InvestigationRepository extends MongoRepository<InvestigationCo
 	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
 	List<InvestigationCollection> findGlobalInvestigationsForAdmin(Date date, boolean[] discards, Sort sort);
 
-	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'investigation' : {$regex : '^?2*', $options : 'i'}}")
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'investigation' : {$regex : '^?2', $options : 'i'}}")
 	List<InvestigationCollection> findGlobalInvestigationsForAdmin(Date date, boolean[] discards, String searchTerm, Pageable pageable);
 
-	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'investigation' : {$regex : '^?2*', $options : 'i'}}")
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'investigation' : {$regex : '^?2', $options : 'i'}}")
 	List<InvestigationCollection> findGlobalInvestigationsForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
 
 	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
@@ -74,9 +74,9 @@ public interface InvestigationRepository extends MongoRepository<InvestigationCo
 	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
 	List<InvestigationCollection> findCustomInvestigationsForAdmin(Date date, boolean[] discards, Sort sort);
 
-	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'investigation' : {$regex : '^?2*', $options : 'i'}}")
+	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'investigation' : {$regex : '^?2', $options : 'i'}}")
 	List<InvestigationCollection> findCustomInvestigationsForAdmin(Date date, boolean[] discards, String searchTerm, Pageable pageable);
 
-	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'investigation' : {$regex : '^?2*', $options : 'i'}}")
+	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'investigation' : {$regex : '^?2', $options : 'i'}}")
 	List<InvestigationCollection> findCustomInvestigationsForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
 }
