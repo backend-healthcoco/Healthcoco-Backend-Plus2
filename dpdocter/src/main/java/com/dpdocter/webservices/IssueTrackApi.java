@@ -46,8 +46,8 @@ public class IssueTrackApi {
     public Response<IssueTrack> addEditIssue(IssueTrack request) {
 
 	if (request == null) {
-	    logger.warn("Request cannot be null");
-	    throw new BusinessException(ServiceError.InvalidInput, "Request cannot be null");
+	    logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}else if(DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())){
 		logger.warn("DoctorId, LocationId, HospitalId cannot be null");
 	    throw new BusinessException(ServiceError.InvalidInput, "DoctorId, LocationId, HospitalId cannot be null");

@@ -131,9 +131,9 @@ public class SignUpApi {
     @POST
     @ApiOperation(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP_HANDHELD, notes = PathProxy.SignUpUrls.DOCTOR_SIGNUP_HANDHELD)
     public Response<DoctorSignUp> doctorHandheld(DoctorSignupHandheldRequest request) {
-	if (request == null) {
-	    logger.warn("Request send  is NULL");
-	    throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getFirstName(), request.getEmailAddress(), request.getMobileNumber()) || request.getPassword() == null || request.getPassword().length == 0) {
+	    logger.warn("Inavlid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Inavlid Input");
 	}
 	DoctorSignUp doctorSignUp = signUpService.doctorHandheld(request);
 	if (doctorSignUp != null) {
@@ -150,9 +150,6 @@ public class SignUpApi {
 		    doctorSignUp.getHospital().setHospitalImageUrl(getFinalImageURL(doctorSignUp.getHospital().getHospitalImageUrl()));
 		}
 	    }
-	    // transnationalService.addResource(doctorSignUp.getUser().getId(),
-	    // Resource.DOCTOR, false);
-	    // esRegistrationService.addDoctor(getSolrDoctorDocument(doctorSignUp));
 	}
 	Response<DoctorSignUp> response = new Response<DoctorSignUp>();
 	response.setData(doctorSignUp);
@@ -163,10 +160,10 @@ public class SignUpApi {
     @POST
     @ApiOperation(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP_HANDHELD_CONTINUE, notes = PathProxy.SignUpUrls.DOCTOR_SIGNUP_HANDHELD_CONTINUE)
     public Response<DoctorSignUp> doctorHandheldContinue(DoctorSignupHandheldContinueRequest request) {
-	if (request == null) {
-	    logger.warn("Request send  is NULL");
-	    throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
-	}
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getLocationName(), request.getRegisterNumber(), request.getUserId(), request.getCity(), request.getStreetAddress())) {
+    	    logger.warn("Inavlid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Inavlid Input");
+    	}
 	DoctorSignUp doctorSignUp = signUpService.doctorHandheldContinue(request, uriInfo);
 	if (doctorSignUp != null) {
 	    if (doctorSignUp.getUser() != null) {
@@ -228,10 +225,10 @@ public class SignUpApi {
     @POST
     @ApiOperation(value = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE, notes = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE)
     public Response<User> patientSignupMobile(PatientSignupRequestMobile request) {
-	if (request == null) {
-	    logger.warn("Request send is NULL");
-	    throw new BusinessException(ServiceError.InvalidInput, "Request send is NULL");
-	}
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getMobileNumber()) || request.getPassword() == null || request.getPassword().length == 0) {
+    	    logger.warn("Inavlid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Inavlid Input");
+    	}
 	List<User> users = new ArrayList<>();
 
 	if (request.isNewPatientNeedToBeCreated()) {
@@ -280,10 +277,10 @@ public class SignUpApi {
     @POST
     @ApiOperation(value = PathProxy.SignUpUrls.PATIENT_PROFILE_PIC_CHANGE, notes = PathProxy.SignUpUrls.PATIENT_PROFILE_PIC_CHANGE)
     public Response<User> patientProfilePicChange(PatientProfilePicChangeRequest request) {
-	if (request == null) {
-	    logger.warn("Request send  is NULL");
-	    throw new BusinessException(ServiceError.InvalidInput, "Request sent is NULL");
-	}
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getUsername())) {
+    	    logger.warn("Inavlid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Inavlid Input");
+    	}
 	User user = signUpService.patientProfilePicChange(request);
 	transnationalService.addResource(user.getId(), Resource.PATIENT, false);
 	transnationalService.checkPatient(user.getId());
@@ -388,7 +385,7 @@ public class SignUpApi {
     @GET
     @ApiOperation(value = PathProxy.SignUpUrls.CHECK_IF_EMAIL_ADDR_EXIST, notes = PathProxy.SignUpUrls.CHECK_IF_EMAIL_ADDR_EXIST)
     public Response<Boolean> checkEmailExist(@PathParam(value = "emailaddress") String emailaddress) {
-	if (emailaddress == null) {
+	if (DPDoctorUtils.anyStringEmpty(emailaddress)) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}

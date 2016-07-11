@@ -139,7 +139,7 @@ public class SMSServicesImpl implements SMSServices {
 	    }
 
 	    if (save)smsTrackRepository.save(smsTrackDetail);
-	    if(DPDoctorUtils.anyStringEmpty(responseId))response = true;
+	    if(!DPDoctorUtils.anyStringEmpty(responseId))response = true;
 	} catch (Exception e) {
 	    logger.error("Error : " + e.getMessage());
 	    throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());

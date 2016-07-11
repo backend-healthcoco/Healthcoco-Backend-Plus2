@@ -39,10 +39,6 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-/**
- * @author veeraj
- */
-
 @Component
 @Path(PathProxy.CONTACTS_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
@@ -64,6 +60,10 @@ public class ContactsApi {
     @POST
     @ApiOperation(value = "GET_DOCTOR_CONTACTS", notes = "GET_DOCTOR_CONTACTS")
     public Response<DoctorContactsResponse> doctorContacts(GetDoctorContactsRequest request) {
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	List<PatientCard> patientCards = contactsService.getDoctorContacts(request);
 	int ttlCount = contactsService.getContactsTotalSize(request);
 	DoctorContactsResponse doctorContactsResponse = new DoctorContactsResponse();
@@ -89,9 +89,9 @@ public class ContactsApi {
 
 	DoctorContactsResponse doctorContactsResponse = null;
 
-	if (DPDoctorUtils.anyStringEmpty(type)) {
-	    logger.warn("Invalid Input. Type Cannot Be Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Type Cannot Be Empty");
+	if (DPDoctorUtils.anyStringEmpty(type, doctorId)) {
+	    logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 
 	switch (ContactsSearchType.valueOf(type.toUpperCase())) {
@@ -133,11 +133,18 @@ public class ContactsApi {
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 
+    if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    }
 	return doctorContactsHandheld(doctorId, locationId, hospitalId, updatedTime, discarded);
     }
 
-    private Response<RegisteredPatientDetails> doctorContactsHandheld(String doctorId, String locationId, String hospitalId, String updatedTime,
-	    boolean discarded) {
+    private Response<RegisteredPatientDetails> doctorContactsHandheld(String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
+    	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    }
 	List<RegisteredPatientDetails> registeredPatientDetails = contactsService.getDoctorContactsHandheld(doctorId, locationId, hospitalId, updatedTime,
 		discarded);
 	if (registeredPatientDetails != null && !registeredPatientDetails.isEmpty()) {
@@ -193,9 +200,13 @@ public class ContactsApi {
     @POST
     @ApiOperation(value = PathProxy.ContactsUrls.ADD_GROUP, notes = PathProxy.ContactsUrls.ADD_GROUP)
     public Response<Group> addGroup(Group group) {
-	Group responseGroup = contactsService.addEditGroup(group);
-	Response<Group> response = new Response<Group>();
-	response.setData(responseGroup);
+    	if (group == null || DPDoctorUtils.anyStringEmpty(group.getDoctorId())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    }
+		Group responseGroup = contactsService.addEditGroup(group);
+		Response<Group> response = new Response<Group>();
+		response.setData(responseGroup);
 	return response;
     }
 
@@ -203,10 +214,10 @@ public class ContactsApi {
     @PUT
     @ApiOperation(value = PathProxy.ContactsUrls.EDIT_GROUP, notes = PathProxy.ContactsUrls.EDIT_GROUP)
     public Response<Group> editGroup(@PathParam("groupId") String groupId, Group group) {
-	if (DPDoctorUtils.anyStringEmpty(groupId)) {
-	    logger.warn("Invalid Input. GroupId Cannot Be Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. GroupId Cannot Be Empty");
-	}
+    	if (group == null || DPDoctorUtils.anyStringEmpty(group.getDoctorId(), groupId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    }
 	group.setId(groupId);
 	Group responseGroup = contactsService.addEditGroup(group);
 	Response<Group> response = new Response<Group>();
@@ -218,19 +229,27 @@ public class ContactsApi {
     @DELETE
     @ApiOperation(value = PathProxy.ContactsUrls.DELETE_GROUP, notes = PathProxy.ContactsUrls.DELETE_GROUP)
     public Response<Group> deleteGroup(@PathParam("groupId") String groupId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    	if (DPDoctorUtils.anyStringEmpty(groupId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
     	Group groupDeleteResponse = contactsService.deleteGroup(groupId, discarded);
-	Response<Group> response = new Response<Group>();
-	response.setData(groupDeleteResponse);
-	return response;
+		Response<Group> response = new Response<Group>();
+		response.setData(groupDeleteResponse);
+		return response;
     }
 
     @Path(value = PathProxy.ContactsUrls.TOTAL_COUNT)
     @POST
     @ApiOperation(value = PathProxy.ContactsUrls.TOTAL_COUNT, notes = PathProxy.ContactsUrls.TOTAL_COUNT)
     public Response<Integer> doctorContactsCount(GetDoctorContactsRequest request) {
-	int ttlCount = contactsService.getContactsTotalSize(request);
-	Response<Integer> response = new Response<Integer>();
-	response.setData(ttlCount);
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	    }
+		int ttlCount = contactsService.getContactsTotalSize(request);
+		Response<Integer> response = new Response<Integer>();
+		response.setData(ttlCount);
 	return response;
     }
 
@@ -241,6 +260,10 @@ public class ContactsApi {
 	    @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 
+    if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    }
 	return getGroups(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
     }
 
@@ -266,10 +289,13 @@ public class ContactsApi {
     @POST
     @ApiOperation(value = PathProxy.ContactsUrls.ADD_GROUP_TO_PATIENT, notes = PathProxy.ContactsUrls.ADD_GROUP_TO_PATIENT)
     public Response<PatientGroupAddEditRequest> addGroupToPatient(PatientGroupAddEditRequest request) {
-
-	PatientGroupAddEditRequest groups = contactsService.addGroupToPatient(request);
-	Response<PatientGroupAddEditRequest> response = new Response<PatientGroupAddEditRequest>();
-	response.setData(groups);
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getHospitalId(), request.getLocationId(), request.getPatientId()) || request.getGroupIds() == null || request.getGroupIds().isEmpty()) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	    }
+		PatientGroupAddEditRequest groups = contactsService.addGroupToPatient(request);
+		Response<PatientGroupAddEditRequest> response = new Response<PatientGroupAddEditRequest>();
+		response.setData(groups);
 	return response;
     }
 

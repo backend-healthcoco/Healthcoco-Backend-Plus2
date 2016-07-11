@@ -9,7 +9,6 @@ import java.util.Properties;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
-import javax.mail.BodyPart;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Session;
@@ -23,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClient;
 import com.amazonaws.services.simpleemail.model.RawMessage;
 import com.amazonaws.services.simpleemail.model.SendRawEmailRequest;
@@ -72,12 +72,6 @@ public class MailServiceImpl implements MailService {
 	    MimeMessage mimeMessage = new MimeMessage(session);
 	    mimeMessage.setSubject(subject);
 
-//	    MimeMultipart mimeMultipart = new MimeMultipart();
-//	    BodyPart p = new MimeBodyPart();
-//	    p.setContent(body, "text/html");
-//	    mimeMultipart.addBodyPart(p);
-////	    mimeMessage.setContent(mimeMultipart, "multipart/mixed");
-	    
 	    Multipart mainMultipart = new MimeMultipart("related");
 	    Multipart htmlAndTextMultipart = new MimeMultipart("alternative");
 	    MimeBodyPart htmlBodyPart = new MimeBodyPart();
@@ -112,7 +106,9 @@ public class MailServiceImpl implements MailService {
 	    rawEmailRequest.setDestinations(list);
 	    rawEmailRequest.setSource(FROM);
 	    BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
-	    new AmazonSimpleEmailServiceClient(credentials).sendRawEmail(rawEmailRequest);
+	    AmazonSimpleEmailServiceClient amazonSimpleEmailServiceClient = new AmazonSimpleEmailServiceClient(credentials);
+	    amazonSimpleEmailServiceClient.configureRegion(Regions.US_WEST_2);
+	    amazonSimpleEmailServiceClient.sendRawEmail(rawEmailRequest);
 	    outputStream.close();
 	    respone = true;
 	} catch (Exception ex) {
@@ -130,10 +126,6 @@ public class MailServiceImpl implements MailService {
 	    Session session = Session.getInstance(new Properties());
 	    MimeMessage mimeMessage = new MimeMessage(session);
 	    mimeMessage.setSubject(subject);
-//	    MimeMultipart mimeMultipart = new MimeMultipart();
-//	    BodyPart p = new MimeBodyPart();
-//	    p.setContent(body, "text/html");
-//	    mimeMultipart.addBodyPart(p);
 
 	    Multipart mainMultipart = new MimeMultipart("related");
 	    Multipart htmlAndTextMultipart = new MimeMultipart("alternative");
@@ -150,7 +142,6 @@ public class MailServiceImpl implements MailService {
 		for (MailAttachment mailAttachment : mailAttachments) {
 			mimeMessage.setFileName(mailAttachment.getAttachmentName());
 		    DataSource ds = new ByteArrayDataSource(new FileInputStream(mailAttachment.getFileSystemResource().getFile()), "application/octet-stream");
-//		    mimeMessage.setDataHandler(new DataHandler(ds));
 		    
 			MimeBodyPart filePart = new MimeBodyPart();
 		    

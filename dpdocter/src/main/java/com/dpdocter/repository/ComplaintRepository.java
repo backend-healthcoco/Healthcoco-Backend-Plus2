@@ -27,8 +27,7 @@ public interface ComplaintRepository extends MongoRepository<ComplaintCollection
     List<ComplaintCollection> findCustomComplaints(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards, Sort sort);
 
     @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'speciality': {$in: ?3}, 'updatedTime': {'$gt': ?4}, 'discarded': {$in: ?5}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'speciality': {$in: ?3}, 'updatedTime': {'$gt': ?4},'discarded': {$in: ?5}}]}")
-    List<ComplaintCollection> findCustomGlobalComplaints(String doctorId, String locationId, String hospitalId, Collection<String> specialities, Date date, boolean[] discards,
-	    Pageable pageable);
+    List<ComplaintCollection> findCustomGlobalComplaints(String doctorId, String locationId, String hospitalId, Collection<String> specialities, Date date, boolean[] discards, Pageable pageable);
 
     @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'speciality': {$in: ?3}, 'updatedTime': {'$gt': ?4}, 'discarded': {$in: ?5}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'speciality': {$in: ?3}, 'updatedTime': {'$gt': ?4},'discarded': {$in: ?5}}]}")
     List<ComplaintCollection> findCustomGlobalComplaints(String doctorId, String locationId, String hospitalId, Collection<String> specialities, Date date, boolean[] discards, Sort sort);
@@ -46,8 +45,38 @@ public interface ComplaintRepository extends MongoRepository<ComplaintCollection
     List<ComplaintCollection> findCustomGlobalComplaints(String doctorId, Collection<String> specialities, Date date, boolean[] discards, Sort sort);
 
     @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
-    List<ComplaintCollection> findCustomGlobalComplaints(Date date, boolean[] discards, Pageable pageable);
+    List<ComplaintCollection> findCustomGlobalComplaintsForAdmin(Date date, boolean[] discards, Pageable pageable);
 
     @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
-    List<ComplaintCollection> findCustomGlobalComplaints(Date date, boolean[] discards, Sort sort);
+    List<ComplaintCollection> findCustomGlobalComplaintsForAdmin(Date date, boolean[] discards, Sort sort);
+
+    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'complaint' : {$regex : '^?2*', $options : 'i'}}")
+	List<ComplaintCollection> findCustomGlobalComplaintsForAdmin(Date date, boolean[] discards, String searchTerm, Pageable pageable);
+
+    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'complaint' : {$regex : '^?2*', $options : 'i'}}")
+	List<ComplaintCollection> findCustomGlobalComplaintsForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
+
+    @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<ComplaintCollection> findGlobalComplaintsForAdmin(Date date, boolean[] discards, Pageable pageable);
+
+    @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<ComplaintCollection> findGlobalComplaintsForAdmin(Date date, boolean[] discards, Sort sort);
+
+    @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'complaint' : {$regex : '^?2*', $options : 'i'}}")
+	List<ComplaintCollection> findGlobalComplaintsForAdmin(Date date, boolean[] discards, String searchTerm, Pageable pageable);
+
+    @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'complaint' : {$regex : '^?2*', $options : 'i'}}")
+	List<ComplaintCollection> findGlobalComplaintsForAdmin(Date date, String searchTerm, boolean[] discards, Sort sort);
+
+    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<ComplaintCollection> findCustomComplaintsForAdmin(Date date, boolean[] discards, Pageable pageable);
+
+    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<ComplaintCollection> findCustomComplaintsForAdmin(Date date, boolean[] discards, Sort sort);
+
+    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'complaint' : {$regex : '^?2*', $options : 'i'}}")
+	List<ComplaintCollection> findCustomComplaintsForAdmin(Date date, boolean[] discards, String searchTerm, Pageable pageable);
+
+    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'complaint' : {$regex : '^?2*', $options : 'i'}}")
+	List<ComplaintCollection> findCustomComplaintsForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
 }

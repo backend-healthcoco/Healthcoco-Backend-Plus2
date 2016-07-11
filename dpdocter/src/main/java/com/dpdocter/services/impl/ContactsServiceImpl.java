@@ -420,12 +420,12 @@ public class ContactsServiceImpl implements ContactsService {
 	List<GroupCollection> groupCollection = null;
 	try {
 	    if (group.getId() == null) {
-		groupCollection = groupRepository.findByName(group.getName(), group.getDoctorId(), group.getLocationId(), group.getHospitalId());
+		groupCollection = groupRepository.findByName(group.getName(), group.getDoctorId(), group.getLocationId(), group.getHospitalId(), false);
 	    } else {
 		Query query = new Query();
 
 		Criteria criteria = Criteria.where("id").ne(group.getId()).and("name").is(group.getName()).and("doctorId").is(group.getDoctorId())
-			.and("locationId").is(group.getLocationId()).and("hospitalId").is(group.getHospitalId());
+			.and("locationId").is(group.getLocationId()).and("hospitalId").is(group.getHospitalId()).and("discarded").is(false);
 
 		query.addCriteria(criteria);
 		groupCollection = mongoTemplate.find(query, GroupCollection.class);

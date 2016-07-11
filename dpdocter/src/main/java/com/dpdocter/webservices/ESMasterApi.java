@@ -11,6 +11,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,8 +24,11 @@ import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.Speciality;
 import com.dpdocter.elasticsearch.services.ESMasterService;
+import com.dpdocter.exceptions.BusinessException;
+import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.DiseaseListResponse;
 
+import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -36,6 +40,8 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.SOLR_MASTER_BASE_URL, description = "Endpoint for solr master")
 public class ESMasterApi {
 
+	private static Logger logger = Logger.getLogger(ESMasterApi.class.getName());
+	
     @Autowired
     ESMasterService esMasterService;
 
@@ -47,6 +53,10 @@ public class ESMasterApi {
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
 
+    	if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	List<Reference> searchResonse = esMasterService.searchReference(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
 		searchTerm);
 	Response<Reference> response = new Response<Reference>();
@@ -61,7 +71,10 @@ public class ESMasterApi {
 	    @QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded,
 	    @QueryParam(value = "searchTerm") String searchTerm) {
-
+    	if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	List<DiseaseListResponse> searchResonse = esMasterService.searchDisease(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
 		searchTerm);
 	Response<DiseaseListResponse> response = new Response<DiseaseListResponse>();

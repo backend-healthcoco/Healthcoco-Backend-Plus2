@@ -49,4 +49,40 @@ public interface DiseasesRepository extends MongoRepository<DiseasesCollection, 
     @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
     List<DiseasesCollection> findCustomGlobalDiseases(Date date, boolean[] discards, Sort sort);
 
+    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DiseasesCollection> findCustomDiseasesForAdmin(Date date, boolean[] discards, Pageable pageable);
+
+    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DiseasesCollection> findCustomDiseasesForAdmin(Date date, boolean[] discards, Sort sort);
+
+    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'disease' : {$regex : '^?2*', $options : 'i'}}")
+	List<DiseasesCollection> findCustomDiseasesForAdmin(Date date, boolean[] discards, String searchTerm,	Pageable pageable);
+
+    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'disease' : {$regex : '^?2*', $options : 'i'}}")
+	List<DiseasesCollection> findCustomDiseasesForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
+
+    @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DiseasesCollection> findGlobalDiseasesForAdmin(Date date, boolean[] discards, Pageable pageable);
+
+    @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DiseasesCollection> findGlobalDiseasesForAdmin(Date date, boolean[] discards, Sort sort);
+
+    @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'disease' : {$regex : '^?2*', $options : 'i'}}")
+	List<DiseasesCollection> findGlobalDiseasesForAdmin(Date date, boolean[] discards, String searchTerm, Pageable pageable);
+
+    @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'disease' : {$regex : '^?2*', $options : 'i'}}")
+	List<DiseasesCollection> findGlobalDiseasesForAdmin(Date date, String searchTerm, boolean[] discards, Sort sort);
+
+    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DiseasesCollection> findCustomGlobalDiseasesForAdmin(Date date, boolean[] discards, Pageable pageable);
+
+    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DiseasesCollection> findCustomGlobalDiseasesForAdmin(Date date, boolean[] discards, Sort sort);
+
+    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'disease' : {$regex : '^?2*', $options : 'i'}}")
+	List<DiseasesCollection> findCustomGlobalDiseasesForAdmin(Date date, boolean[] discards, String searchTerm, Pageable pageable);
+
+    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'disease' : {$regex : '^?2*', $options : 'i'}}")
+	List<DiseasesCollection> findCustomGlobalDiseasesForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
+
 }

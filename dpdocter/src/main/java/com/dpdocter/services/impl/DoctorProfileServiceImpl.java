@@ -200,31 +200,6 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
     @Override
     @Transactional
-    public Boolean addEditMedicalCouncils(List<MedicalCouncil> medicalCouncils) {
-	List<MedicalCouncilCollection> medicalCouncilCollections = null;
-	Boolean response = false;
-	try {
-	    medicalCouncilCollections = new ArrayList<MedicalCouncilCollection>();
-	    for (MedicalCouncil medicalCouncil : medicalCouncils) {
-		MedicalCouncilCollection medicalCouncilCollection = new MedicalCouncilCollection();
-		if (medicalCouncil.getId() == null) {
-		    medicalCouncilCollection.setCreatedTime(new Date());
-		}
-		BeanUtil.map(medicalCouncil, medicalCouncilCollection);
-		medicalCouncilCollections.add(medicalCouncilCollection);
-	    }
-	    medicalCouncilRepository.save(medicalCouncilCollections);
-	    response = true;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error Editing Medical Councils");
-	    throw new BusinessException(ServiceError.Unknown, "Error Editing Medical Councils");
-	}
-	return response;
-    }
-
-    @Override
-    @Transactional
     public List<MedicalCouncil> getMedicalCouncils(int page, int size, String updatedTime) {
 	List<MedicalCouncil> medicalCouncils = null;
 	List<MedicalCouncilCollection> medicalCouncilCollections = null;
@@ -417,33 +392,35 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    }
 	    if (locationId == null) {
 		List<UserLocationCollection> userLocationCollections = userLocationRepository.findByUserId(userCollection.getId());
-		for (Iterator<UserLocationCollection> iterator = userLocationCollections.iterator(); iterator.hasNext();) {
-		    UserLocationCollection userLocationCollection = iterator.next();
-		    DoctorClinicProfileCollection doctorClinicCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
+		if(userLocationCollections != null && !userLocationCollections.isEmpty()){
+			for (Iterator<UserLocationCollection> iterator = userLocationCollections.iterator(); iterator.hasNext();) {
+			    UserLocationCollection userLocationCollection = iterator.next();
+			    DoctorClinicProfileCollection doctorClinicCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
 
-		    locationCollection = locationRepository.findOne(userLocationCollection.getLocationId());
-		    
-		    if (locationCollection != null) {
-		    	String address = 
-		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress()) ? locationCollection.getStreetAddress()+", ":"")+
-		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality()) ? locationCollection.getLocality()+", ":"")+
-		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCity()) ? locationCollection.getCity()+", ":"")+
-		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getState()) ? locationCollection.getState()+", ":"")+
-		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry()) ? locationCollection.getCountry()+", ":"")+
-		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode()) ? locationCollection.getPostalCode():"");
-		    	
-		    if(address.charAt(address.length() - 2) == ','){
-		    	address = address.substring(0, address.length() - 2);
-		    }
-		    
-			doctorClinic.setClinicAddress(address);
-			BeanUtil.map(locationCollection, doctorClinic);
-		    }
-		    if (doctorClinicCollection != null)
-			BeanUtil.map(doctorClinicCollection, doctorClinic);
-		    doctorClinic.setLocationId(userLocationCollection.getLocationId());
-		    doctorClinic.setDoctorId(doctorId);
-		    clinicProfile.add(doctorClinic);
+			    locationCollection = locationRepository.findOne(userLocationCollection.getLocationId());
+			    
+			    if (locationCollection != null) {
+			    	String address = 
+			    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress()) ? locationCollection.getStreetAddress()+", ":"")+
+			    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality()) ? locationCollection.getLocality()+", ":"")+
+			    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCity()) ? locationCollection.getCity()+", ":"")+
+			    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getState()) ? locationCollection.getState()+", ":"")+
+			    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry()) ? locationCollection.getCountry()+", ":"")+
+			    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode()) ? locationCollection.getPostalCode():"");
+			    	
+			    if(address.charAt(address.length() - 2) == ','){
+			    	address = address.substring(0, address.length() - 2);
+			    }
+			    
+				doctorClinic.setClinicAddress(address);
+				BeanUtil.map(locationCollection, doctorClinic);
+			    }
+			    if (doctorClinicCollection != null)
+				BeanUtil.map(doctorClinicCollection, doctorClinic);
+			    doctorClinic.setLocationId(userLocationCollection.getLocationId());
+			    doctorClinic.setDoctorId(doctorId);
+			    clinicProfile.add(doctorClinic);
+			}
 		}
 	    } else {
 		UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(userCollection.getId(), locationId);
@@ -517,28 +494,6 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    throw new BusinessException(ServiceError.Unknown, "Error Getting Doctor Profile");
 	}
 	return doctorProfile;
-    }
-
-    @Override
-    @Transactional
-    public Boolean insertProfessionalMemberships(List<ProfessionalMembership> professionalMemberships) {
-	List<ProfessionalMembershipCollection> professionalMembershipCollections = null;
-	Boolean response = false;
-	try {
-	    professionalMembershipCollections = new ArrayList<ProfessionalMembershipCollection>();
-	    BeanUtil.map(professionalMemberships, professionalMembershipCollections);
-	    for (ProfessionalMembershipCollection professionalMembership : professionalMembershipCollections) {
-		if (professionalMembership.getId() == null)
-		    professionalMembership.setCreatedTime(new Date());
-	    }
-	    professionalMembershipRepository.save(professionalMembershipCollections);
-	    response = true;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error Inserting Professional Memberships");
-	    throw new BusinessException(ServiceError.Unknown, "Error Inserting Professional Memberships");
-	}
-	return response;
     }
 
     @Override

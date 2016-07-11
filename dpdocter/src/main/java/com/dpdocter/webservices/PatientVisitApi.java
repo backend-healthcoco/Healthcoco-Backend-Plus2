@@ -12,8 +12,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -21,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.beans.FileDownloadResponse;
 import com.dpdocter.beans.PatientVisit;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -58,9 +55,9 @@ public class PatientVisitApi {
     @ApiOperation(value = PathProxy.PatientVisitUrls.ADD_MULTIPLE_DATA, notes = PathProxy.PatientVisitUrls.ADD_MULTIPLE_DATA)
     public Response<PatientVisitResponse> addMultipleData(AddMultipleDataRequest request) {
 
-	if (request == null) {
-	    logger.warn("Request Sent Is NULL");
-	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
+	if (request == null || DPDoctorUtils.allStringsEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId())) {
+	    logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	PatientVisitResponse patienVisitResponse = patientVisitService.addMultipleData(request);
 	Response<PatientVisitResponse> response = new Response<PatientVisitResponse>();
@@ -174,7 +171,10 @@ public class PatientVisitApi {
     @GET
     @ApiOperation(value = PathProxy.PatientVisitUrls.DOWNLOAD_PATIENT_VISIT, notes = PathProxy.PatientVisitUrls.DOWNLOAD_PATIENT_VISIT)
     public Response<String> downloadPatientVisit(@PathParam("visitId") String visitId) {
-    	
+    	if (DPDoctorUtils.allStringsEmpty(visitId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
     	Response<String> response = new Response<String>();
     	response.setData(patientVisitService.getPatientVisitFile(visitId));
     	return response;

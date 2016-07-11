@@ -15,7 +15,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -84,10 +83,10 @@ public class HistoryApi {
     @POST
     @ApiOperation(value = PathProxy.HistoryUrls.ADD_DISEASE, notes = PathProxy.HistoryUrls.ADD_DISEASE)
     public Response<DiseasesCollection> addDiseases(List<DiseaseAddEditRequest> request) {
-	if (request == null) {
-	    logger.warn("Request Sent Is NULL");
-	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
-	}
+    	if (request == null || !request.isEmpty() || DPDoctorUtils.anyStringEmpty(request.get(0).getDoctorId(), request.get(0).getLocationId(), request.get(0).getHospitalId())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	List<DiseasesCollection> diseases = historyServices.addDiseases(request);
 	for(DiseasesCollection addEditResponse : diseases){
 		transactionalManagementService.addResource(addEditResponse.getId(), Resource.DISEASE, false);
@@ -104,10 +103,10 @@ public class HistoryApi {
     @PUT
     @ApiOperation(value = PathProxy.HistoryUrls.EDIT_DISEASE, notes = PathProxy.HistoryUrls.EDIT_DISEASE)
     public Response<DiseaseAddEditResponse> editDisease(@PathParam(value = "diseaseId") String diseaseId, DiseaseAddEditRequest request) {
-	if (request == null) {
-	    logger.warn("Request Sent Is NULL");
-	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
-	}
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    }
 	request.setId(diseaseId);
 	DiseaseAddEditResponse diseases = historyServices.editDiseases(request);
 	transactionalManagementService.addResource(diseases.getId(), Resource.DISEASE, false);
@@ -125,9 +124,9 @@ public class HistoryApi {
     public Response<DiseaseAddEditResponse> deleteDisease(@PathParam(value = "diseaseId") String diseaseId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-	if (StringUtils.isEmpty(diseaseId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
-	    logger.warn("Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+	if (DPDoctorUtils.anyStringEmpty(diseaseId, doctorId, hospitalId, locationId)) {
+	    logger.warn("Disease Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Disease Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	}
 	DiseaseAddEditResponse diseaseDeleteResponse = historyServices.deleteDisease(diseaseId, doctorId, hospitalId, locationId, discarded);
 	Response<DiseaseAddEditResponse> response = new Response<DiseaseAddEditResponse>();
@@ -141,9 +140,11 @@ public class HistoryApi {
     public Response<DiseaseListResponse> getDiseases(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
 	    @QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-
-	List<DiseaseListResponse> diseaseListResponse = historyServices.getDiseases(range, page, size, doctorId, hospitalId, locationId, updatedTime,
-		discarded);
+    if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+    	    logger.warn("Range or Doctor Id Cannot Be Empty");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Range or Doctor Id Cannot Be Empty");
+    	}
+	List<DiseaseListResponse> diseaseListResponse = historyServices.getDiseases(range, page, size, doctorId, hospitalId, locationId, updatedTime, discarded, false, null);
 	Response<DiseaseListResponse> response = new Response<DiseaseListResponse>();
 	response.setDataList(diseaseListResponse);
 	return response;
@@ -155,8 +156,7 @@ public class HistoryApi {
     public Response<Records> addReportToHistory(@PathParam(value = "reportId") String reportId, @PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId) {
-	if (StringUtils.isEmpty(reportId) || StringUtils.isEmpty(patientId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId)
-		|| StringUtils.isEmpty(locationId)) {
+	if (DPDoctorUtils.anyStringEmpty(reportId, patientId, doctorId, hospitalId, locationId)) {
 	    logger.warn("Report Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Report Id, Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	}
@@ -438,7 +438,7 @@ public class HistoryApi {
     @POST
     @ApiOperation(value = PathProxy.HistoryUrls.HANDLE_MEDICAL_HISTORY, notes = PathProxy.HistoryUrls.HANDLE_MEDICAL_HISTORY)
     public Response<Boolean> handleMedicalHistory(MedicalHistoryHandler request) {
-	if (request == null) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 	    logger.warn("Request Cannot Be Null");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Cannot Be Null");
 	}
@@ -474,9 +474,9 @@ public class HistoryApi {
     @POST
     @ApiOperation(value = PathProxy.HistoryUrls.HANDLE_FAMILY_HISTORY, notes = PathProxy.HistoryUrls.HANDLE_FAMILY_HISTORY)
     public Response<Boolean> handleFamilyHistory(MedicalHistoryHandler request) {
-	if (request == null) {
-	    logger.warn("Request Cannot Be Null");
-	    throw new BusinessException(ServiceError.InvalidInput, "Request Cannot Be Null");
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+	    logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	boolean handleFamilyHistoryResponse = historyServices.handleFamilyHistory(request);
 
@@ -493,8 +493,9 @@ public class HistoryApi {
     @POST
     @ApiOperation(value = PathProxy.HistoryUrls.MAIL_MEDICAL_DATA, notes = PathProxy.HistoryUrls.MAIL_MEDICAL_DATA)
     public Response<Boolean> mailMedicalData(MedicalData medicalData) {
-	if (medicalData == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Medical Data Cannot Be Empty");
+	if (medicalData == null || DPDoctorUtils.anyStringEmpty(medicalData.getDoctorId())) {
+		logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 
 	boolean mailMedicalDataResponse = historyServices.mailMedicalData(medicalData);
@@ -578,6 +579,11 @@ public class HistoryApi {
 	    @QueryParam(value = "patientId") String patientId, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 	    @DefaultValue("true") @QueryParam(value = "inHistory") Boolean inHistory) {
+
+    	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+    		logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 
 	List<HistoryDetailsResponse> historyDetailsResponses = historyServices.getMultipleData(patientId, doctorId, hospitalId, locationId, updatedTime, inHistory, discarded);
 

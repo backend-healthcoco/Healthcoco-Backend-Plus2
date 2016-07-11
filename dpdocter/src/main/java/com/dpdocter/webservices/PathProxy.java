@@ -780,6 +780,90 @@ public interface PathProxy {
 	
 	public static final String IMPORT_EDUCATION_INSTITUTE = "/importEducationInstitute";
 	
+	public static final String GET_CINICAL_ITEMS = "/clinicalNotes/{type}/{range}";
+
+	public static final String ADD_COMPLAINT = "/complaint/add";
+
+	public static final String ADD_OBSERVATION = "/observation/add";
+
+	public static final String ADD_INVESTIGATION = "/investigation/add";
+
+	public static final String ADD_DIAGNOSIS = "/diagnosis/add";
+
+	public static final String ADD_NOTES = "/notes/add";
+
+	public static final String ADD_DIAGRAM = "/diagram/add";
+	
+	public static final String DELETE_COMPLAINT = "/complaint/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+
+	public static final String DELETE_OBSERVATION = "/observation/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+
+	public static final String DELETE_INVESTIGATION = "/investigation/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+
+	public static final String DELETE_DIAGNOSIS = "/diagnosis/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+
+	public static final String DELETE_NOTE = "/notes/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+
+	public static final String DELETE_DIAGRAM = "/diagram/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+
+	public static final String ADD_DISEASE = "/disease/add";
+
+	public static final String EDIT_DISEASE = "/disease/{diseaseId}/update";
+
+	public static final String DELETE_DISEASE = "/disease/{diseaseId}/{doctorId}/{locationId}/{hospitalId}/delete";
+
+	public static final String GET_DISEASES = "/diseases/{range}";
+
+	public static final String ADD_DRUG = "/drug/add";
+
+	public static final String EDIT_DRUG = "/drug/{drugId}/update";
+
+	public static final String DELETE_GLOBAL_DRUG = "/drug/{drugId}/delete";
+
+	public static final String ADD_LAB_TEST = "/labTest/add";
+
+	public static final String EDIT_LAB_TEST = "/labTest/{labTestId}/update";
+
+	public static final String DELETE_GLOBAL_LAB_TEST = "/labTest/{labTestId}/delete";
+
+	public static final String GET_DIAGNOSTIC_TEST = "/diagnosticTest";
+
+	public static final String ADD_EDIT_DIAGNOSTIC_TEST = "/diagnosticTest/addEdit";
+
+	public static final String DELETE_GLOBAL_DIAGNOSTIC_TEST = "/diagnosticTest/{diagnosticTestId}/delete";
+
+	public static final String GET_PRESCRIPTION_ITEMS = "/prescription/{type}/{range}";
+
+	public static final String ADD_DRUG_TYPE = "/drugType/add";
+
+	public static final String EDIT_DRUG_TYPE = "/drugType/{drugTypeId}/update";
+
+	public static final String DELETE_DRUG_TYPE = "/drugType/{drugTypeId}/delete";
+
+	public static final String ADD_DRUG_STRENGTH = "/drugStrength/add";
+
+	public static final String EDIT_DRUG_STRENGTH = "/drugStrength/{drugStrengthId}/update";
+
+	public static final String DELETE_DRUG_STRENGTH = "/drugStrength/{drugStrengthId}/delete";
+
+	public static final String ADD_DRUG_DOSAGE = "/drugDosage/add";
+
+	public static final String EDIT_DRUG_DOSAGE = "/drugDosage/{drugDosageId}/update";
+
+	public static final String DELETE_DRUG_DOSAGE = "/drugDosage/{drugDosageId}/delete";
+
+	public static final String ADD_DRUG_DIRECTION = "/drugDirection/add";
+
+	public static final String EDIT_DRUG_DIRECTION = "/drugDirection/{drugDirectionId}/update";
+
+	public static final String DELETE_DRUG_DIRECTION = "/drugDirection/{drugDirectionId}/delete";
+
+	public static final String ADD_DRUG_DURATION_UNIT = "/drugDurationUnit/add";
+
+	public static final String EDIT_DRUG_DURATION_UNIT = "/drugDurationUnit/{drugDurationUnitId}/update";
+
+	public static final String DELETE_DRUG_DURATION_UNIT = "/drugDurationUnit/{drugDurationUnitId}/delete";
+
 	}
     public static final String PUSH_NOTIFICATION_BASE_URL = BASE_URL + "/notification";
 

@@ -27,7 +27,6 @@ import com.dpdocter.beans.EducationQualification;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Speciality;
-import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -69,9 +68,6 @@ public class DoctorProfileApi {
     private static Logger logger = Logger.getLogger(DoctorProfileApi.class.getName());
 
     @Autowired
-    private ESRegistrationService esRegistrationService;
-
-    @Autowired
     private DoctorProfileService doctorProfileService;
 
     @Autowired
@@ -84,9 +80,9 @@ public class DoctorProfileApi {
     @POST
     @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_NAME, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_NAME)
     public Response<Boolean> addEditName(DoctorNameAddEditRequest request) {
-	if (request == null) {
-	    logger.warn("Request Cannot Be null");
-	    throw new BusinessException(ServiceError.InvalidInput, "Request Cannot Be null");
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+	    logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	Boolean addEditNameResponse = doctorProfileService.addEditName(request);
 	if (addEditNameResponse)transnationalService.checkDoctor(request.getDoctorId(), null);
@@ -99,10 +95,10 @@ public class DoctorProfileApi {
     @POST
     @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_EXPERIENCE, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_EXPERIENCE)
     public Response<Boolean> addEditExperience(DoctorExperienceAddEditRequest request) {
-	if (request == null) {
-	    logger.warn("Doctor Experience Request Is Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Experience Request Is Empty");
-	}
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	DoctorExperience experienceResponse = doctorProfileService.addEditExperience(request);
 	if (experienceResponse != null)transnationalService.checkDoctor(request.getDoctorId(), null);
 	Response<Boolean> response = new Response<Boolean>();
@@ -114,10 +110,10 @@ public class DoctorProfileApi {
     @POST
     @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_CONTACT, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_CONTACT)
     public Response<Boolean> addEditContact(DoctorContactAddEditRequest request) {
-	if (request == null) {
-	    logger.warn("Doctor Contact Request Is Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Contact Request Is Empty");
-	}
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	Boolean addEditContactResponse = doctorProfileService.addEditContact(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditContactResponse);
@@ -128,29 +124,15 @@ public class DoctorProfileApi {
     @POST
     @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_EDUCATION, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_EDUCATION)
     public Response<Boolean> addEditEducation(DoctorEducationAddEditRequest request) {
-	if (request == null) {
-	    logger.warn("Doctor Education Request Is Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Education Request Is Empty");
-	}
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	Boolean addEditEducationResponse = doctorProfileService.addEditEducation(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditEducationResponse);
 	return response;
     }
-
-//    @Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_MEDICAL_COUNCILS)
-//    @POST
-//    @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_MEDICAL_COUNCILS, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_MEDICAL_COUNCILS)
-//    public Response<Boolean> addEditMedicalCouncils(List<MedicalCouncil> medicalCouncils) {
-//	if (medicalCouncils == null || medicalCouncils.isEmpty()) {
-//	    logger.warn("Medical Councils Cannot Be Empty");
-//	    throw new BusinessException(ServiceError.InvalidInput, "Medical Councils Cannot Be Empty");
-//	}
-//	Boolean addEditMedicalCouncil = doctorProfileService.addEditMedicalCouncils(medicalCouncils);
-//	Response<Boolean> response = new Response<Boolean>();
-//	response.setData(addEditMedicalCouncil);
-//	return response;
-//    }
 
     @Path(value = PathProxy.DoctorProfileUrls.GET_MEDICAL_COUNCILS)
     @GET
@@ -167,10 +149,10 @@ public class DoctorProfileApi {
     @POST
     @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_SPECIALITY, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_SPECIALITY)
     public Response<Boolean> addEditSpeciality(DoctorSpecialityAddEditRequest request) {
-	if (request == null) {
-	    logger.warn("Doctor Speciality Request Is Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Speciality Request Is Empty");
-	}
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	List<String> specialityResponse = doctorProfileService.addEditSpeciality(request);
 	request.setSpeciality(specialityResponse);
 	if (specialityResponse != null)transnationalService.checkDoctor(request.getDoctorId(), null);
@@ -183,10 +165,10 @@ public class DoctorProfileApi {
     @POST
     @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_ACHIEVEMENT, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_ACHIEVEMENT)
     public Response<Boolean> addEditAchievement(DoctorAchievementAddEditRequest request) {
-	if (request == null) {
-	    logger.warn("Doctor Achievement Request Is Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Achievement Request Is Empty");
-	}
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	Boolean addEditSpecialityResponse = doctorProfileService.addEditAchievement(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditSpecialityResponse);
@@ -197,10 +179,10 @@ public class DoctorProfileApi {
     @POST
     @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFESSIONAL_STATEMENT, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFESSIONAL_STATEMENT)
     public Response<Boolean> addEditProfessionalStatement(DoctorProfessionalStatementAddEditRequest request) {
-	if (request == null) {
-	    logger.warn("Doctor Professional Request Is Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Professional Statement Request Is Empty");
-	}
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	Boolean addEditProfessionalStatementResponse = doctorProfileService.addEditProfessionalStatement(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditProfessionalStatementResponse);
@@ -211,10 +193,10 @@ public class DoctorProfileApi {
     @POST
     @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_REGISTRATION_DETAIL, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_REGISTRATION_DETAIL)
     public Response<Boolean> addEditRegistrationDetail(DoctorRegistrationAddEditRequest request) {
-	if (request == null) {
-	    logger.warn("Doctor Registration Detail Request Is Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Registration Detail Request Is Empty");
-	}
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	Boolean addEditRegistrationDetailResponse = doctorProfileService.addEditRegistrationDetail(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditRegistrationDetailResponse);
@@ -225,10 +207,10 @@ public class DoctorProfileApi {
     @POST
     @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_EXPERIENCE_DETAIL, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_EXPERIENCE_DETAIL)
     public Response<Boolean> addEditExperienceDetail(DoctorExperienceDetailAddEditRequest request) {
-	if (request == null) {
-	    logger.warn("Doctor Experience Detail Request Is Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Experience Detail Request Is Empty");
-	}
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	Boolean addEditExperienceDetailResponse = doctorProfileService.addEditExperienceDetail(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditExperienceDetailResponse);
@@ -239,10 +221,10 @@ public class DoctorProfileApi {
     @POST
     @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFILE_PICTURE, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFILE_PICTURE)
     public Response<String> addEditProfilePicture(DoctorProfilePictureAddEditRequest request) {
-	if (request == null) {
-	    logger.warn("Doctor Profile Picture Request Is Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Profile Picture Request Is Empty");
-	}
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	String addEditProfilePictureResponse = doctorProfileService.addEditProfilePicture(request);
 	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
 	if (addEditProfilePictureResponse != null)transnationalService.checkDoctor(request.getDoctorId(), null);
@@ -256,10 +238,10 @@ public class DoctorProfileApi {
     @POST
     @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_COVER_PICTURE, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_COVER_PICTURE)
     public Response<String> addEditCoverPicture(DoctorProfilePictureAddEditRequest request) {
-	if (request == null) {
-	    logger.warn("Doctor Profile Picture Request Is Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Profile Picture Request Is Empty");
-	}
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	String addEditCoverPictureResponse = doctorProfileService.addEditCoverPicture(request);
 	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
 	if (addEditCoverPictureResponse != null)transnationalService.checkDoctor(request.getDoctorId(), null);
@@ -273,10 +255,10 @@ public class DoctorProfileApi {
     @POST
     @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFESSIONAL_MEMBERSHIP, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFESSIONAL_MEMBERSHIP)
     public Response<Boolean> addEditProfessionalMembership(DoctorProfessionalAddEditRequest request) {
-	if (request == null) {
-	    logger.warn("Doctor Professional Membership Request Is Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Professional Membership Request Is Empty");
-	}
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	Boolean addEditProfessionalMembershipResponse = doctorProfileService.addEditProfessionalMembership(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditProfessionalMembershipResponse);
@@ -323,20 +305,6 @@ public class DoctorProfileApi {
 	response.setData(doctorProfile);
 	return response;
     }
-
-//    @Path(value = PathProxy.DoctorProfileUrls.INSERT_PROFESSIONAL_MEMBERSHIPS)
-//    @POST
-//    @ApiOperation(value = PathProxy.DoctorProfileUrls.INSERT_PROFESSIONAL_MEMBERSHIPS, notes = PathProxy.DoctorProfileUrls.INSERT_PROFESSIONAL_MEMBERSHIPS)
-//    public Response<Boolean> insertProfessionalMemberships(List<ProfessionalMembership> professionalMemberships) {
-//	if (professionalMemberships == null || professionalMemberships.isEmpty()) {
-//	    logger.warn("Professional Memberships Cannot Be Empty");
-//	    throw new BusinessException(ServiceError.InvalidInput, "Professional Memberships Cannot Be Empty");
-//	}
-//	Boolean insertProfessionalMembershipResponse = doctorProfileService.insertProfessionalMemberships(professionalMemberships);
-//	Response<Boolean> response = new Response<Boolean>();
-//	response.setData(insertProfessionalMembershipResponse);
-//	return response;
-//    }
 
     @Path(value = PathProxy.DoctorProfileUrls.GET_PROFESSIONAL_MEMBERSHIPS)
     @GET
@@ -490,7 +458,7 @@ public class DoctorProfileApi {
     @POST
     @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_MULTIPLE_DATA, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_MULTIPLE_DATA)
     public Response<DoctorMultipleDataAddEditResponse> addEditMultipleData(DoctorMultipleDataAddEditRequest request) {
-	if (request == null) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 	    logger.warn("Request Cannot Be null");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Cannot Be null");
 	}
@@ -532,10 +500,10 @@ public class DoctorProfileApi {
     @POST
     @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_GENDER, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_GENDER)
     public Response<Boolean> addEditGender(DoctorGenderAddEditRequest request) {
-	if (request == null) {
-	    logger.warn("Request Cannot Be null");
-	    throw new BusinessException(ServiceError.InvalidInput, "Request Cannot Be null");
-	}
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	Boolean addEditNameResponse = doctorProfileService.addEditGender(request);
 	if (addEditNameResponse)transnationalService.checkDoctor(request.getDoctorId(), null);
 	Response<Boolean> response = new Response<Boolean>();
@@ -547,10 +515,10 @@ public class DoctorProfileApi {
     @POST
     @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_DOB, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_DOB)
     public Response<Boolean> addEditDOB(DoctorDOBAddEditRequest request) {
-	if (request == null) {
-	    logger.warn("Request Cannot Be null");
-	    throw new BusinessException(ServiceError.InvalidInput, "Request Cannot Be null");
-	}
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	Boolean addEditNameResponse = doctorProfileService.addEditDOB(request);
 	if (addEditNameResponse)transnationalService.checkDoctor(request.getDoctorId(), null);
 	Response<Boolean> response = new Response<Boolean>();

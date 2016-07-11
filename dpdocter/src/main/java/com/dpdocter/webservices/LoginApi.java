@@ -28,9 +28,6 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-/**
- * @author veeraj
- */
 @Component
 @Path(PathProxy.LOGIN_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
@@ -50,7 +47,7 @@ public class LoginApi {
     @POST
     @ApiOperation(value = PathProxy.LoginUrls.LOGIN_ADMIN, notes = PathProxy.LoginUrls.LOGIN_ADMIN, tags = PathProxy.LoginUrls.LOGIN_ADMIN)
     public Response<User> adminLogin(LoginPatientRequest request) {
-	if (request == null) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getMobileNumber()) || request.getPassword() == null || request.getPassword().length == 0) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
@@ -73,7 +70,7 @@ public class LoginApi {
     @POST
     @ApiOperation(value = PathProxy.LoginUrls.LOGIN_USER, notes = PathProxy.LoginUrls.LOGIN_USER)
     public Response<LoginResponse> login(LoginRequest request) {
-	if (request == null) {
+	if (request == null|| DPDoctorUtils.anyStringEmpty(request.getUsername()) || request.getPassword() == null || request.getPassword().length == 0) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
@@ -103,7 +100,7 @@ public class LoginApi {
     @POST
     @ApiOperation(value = PathProxy.LoginUrls.LOGIN_PATIENT, notes = PathProxy.LoginUrls.LOGIN_PATIENT)
     public Response<RegisteredPatientDetails> loginPatient(LoginPatientRequest request) {
-	if (request == null) {
+	if (request == null|| DPDoctorUtils.anyStringEmpty(request.getMobileNumber()) || request.getPassword() == null || request.getPassword().length == 0) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}

@@ -63,9 +63,9 @@ public class ESRegistrationApi {
     @ApiOperation(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT_ADV, notes = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT_ADV)
     public Response<ESPatientResponseDetails> searchPatient(AdvancedSearch request) {
 
-	if (request == null) {
-	    logger.warn("Search Request Cannot Be Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Search Request Cannot Be Empty");
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
+	    logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 
 	ESPatientResponseDetails patients = solrRegistrationService.searchPatient(request);

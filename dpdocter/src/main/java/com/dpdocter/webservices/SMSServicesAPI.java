@@ -29,6 +29,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.SMSResponse;
 import com.dpdocter.services.SMSServices;
 
+import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -60,6 +61,10 @@ public class SMSServicesAPI {
     @ApiOperation(value = "GET_SMS", notes = "GET_SMS")
     public Response<SMSResponse> getSMS(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId) {
+    	if(DPDoctorUtils.allStringsEmpty(doctorId, locationId)){
+    		logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	SMSResponse smsTrackDetails = smsServices.getSMS(page, size, doctorId, locationId, hospitalId);
 	Response<SMSResponse> response = new Response<SMSResponse>();
 	response.setData(smsTrackDetails);
@@ -74,6 +79,10 @@ public class SMSServicesAPI {
     public Response<SMSTrack> getSMSDetails(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "patientId") String patientId,
 	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId) {
+    	if(DPDoctorUtils.allStringsEmpty(doctorId, locationId)){
+    		logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	List<SMSTrack> smsTrackDetails = smsServices.getSMSDetails(page, size, patientId, doctorId, locationId, hospitalId);
 	Response<SMSTrack> response = new Response<SMSTrack>();
 	response.setDataList(smsTrackDetails);
@@ -138,7 +147,7 @@ public class SMSServicesAPI {
     @POST
     @ApiOperation(value = PathProxy.SMSUrls.ADD_EDIT_SMS_FORMAT, notes = PathProxy.SMSUrls.ADD_EDIT_SMS_FORMAT)
     public Response<SMSFormat> addSmsFormat(SMSFormat request) {
-	if (request == null) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),request.getHospitalId())) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
@@ -155,6 +164,10 @@ public class SMSServicesAPI {
     @ApiOperation(value = PathProxy.SMSUrls.GET_SMS_FORMAT, notes = PathProxy.SMSUrls.GET_SMS_FORMAT)
     public Response<SMSFormat> getSmsFormat(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId, @QueryParam(value = "type") String type) {
+    	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	List<SMSFormat> smsFormat = smsServices.getSmsFormat(doctorId, locationId, hospitalId, type);
 	Response<SMSFormat> response = new Response<SMSFormat>();
 	response.setDataList(smsFormat);

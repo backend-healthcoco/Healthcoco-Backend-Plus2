@@ -1,5 +1,6 @@
 package com.dpdocter.repository;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -42,5 +43,11 @@ public interface LabTestRepository extends MongoRepository<LabTestCollection, St
 
     @Query("{'locationId': ?0}")
     List<LabTestCollection> findByLocationId(String id);
+
+    @Query("{'hospitalId': ?0, 'locationId': ?1, 'updatedTime': {'$gt': ?2}, 'discarded': {$in: ?3}, 'testId': {$in: ?4}}")
+	List<LabTestCollection> getCustomLabTests(String hospitalId, String locationId, Date date, boolean[] discards, Collection<String> testIds, Pageable pageable);
+
+    @Query("{'hospitalId': ?0, 'locationId': ?1, 'updatedTime': {'$gt': ?2}, 'discarded': {$in: ?3}, 'testId': {$in: ?4}}")
+	List<LabTestCollection> getCustomLabTests(String hospitalId, String locationId, Date date, boolean[] discards, Collection<String> testIds, Sort sort);
 
 }

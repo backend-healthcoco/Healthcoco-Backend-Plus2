@@ -109,6 +109,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
     public List<ESDrugDocument> searchDrug(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded, String searchTerm) {
 	List<ESDrugDocument> response = new ArrayList<ESDrugDocument>();
+	if(!DPDoctorUtils.anyStringEmpty(searchTerm))searchTerm = searchTerm.toUpperCase();
 	switch (Range.valueOf(range.toUpperCase())) {
 
 	case GLOBAL:
@@ -129,7 +130,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	    boolean discarded, String searchTerm) {
 	List<ESDrugDocument> response = null;
 	try {
-	    SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "drugName", searchTerm, null, "drugName");
+	    SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, "drugName");
 	    response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -311,7 +312,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
     private List<ESDiagnosticTestDocument> getGlobalDiagnosticTests(int page, int size, String updatedTime, Boolean discarded, String searchTerm) {
 	List<ESDiagnosticTestDocument> response = null;
 	try {
-		SearchQuery searchQuery = createGlobalQueryWithoutDoctorId(page, size, updatedTime, discarded, "testName", searchTerm, null, false, null, "testName");
+		SearchQuery searchQuery = createGlobalQueryWithoutDoctorId(page, size, updatedTime, discarded, "testName", searchTerm, null, false, null, null);
 	    response = elasticsearchTemplate.queryForList(searchQuery, ESDiagnosticTestDocument.class);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -327,7 +328,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	try {
 	    if (locationId == null && hospitalId == null);
 	    else {
-	    	SearchQuery searchQuery = createCustomQueryWithoutDoctorId(page, size, locationId, hospitalId, updatedTime, discarded, "testName", searchTerm, null, false, null, "testName");
+	    	SearchQuery searchQuery = createCustomQueryWithoutDoctorId(page, size, locationId, hospitalId, updatedTime, discarded, "testName", searchTerm, null, false, null, null);
 		    response = elasticsearchTemplate.queryForList(searchQuery, ESDiagnosticTestDocument.class);
 	    }
 	} catch (Exception e) {
@@ -342,7 +343,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	    boolean discarded, String searchTerm) {
 	List<ESDiagnosticTestDocument> response = null;
 	try {
-		SearchQuery searchQuery = createCustomGlobalQueryWithoutDoctorId(page, size, locationId, hospitalId, updatedTime, discarded, "testName", searchTerm, null, false, null, "testName");
+		SearchQuery searchQuery = createCustomGlobalQueryWithoutDoctorId(page, size, locationId, hospitalId, updatedTime, discarded, "testName", searchTerm, null, false, null, null);
 	    response = elasticsearchTemplate.queryForList(searchQuery, ESDiagnosticTestDocument.class);
 	    
 	} catch (Exception e) {
@@ -353,6 +354,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	return response;
     }
 
+	@SuppressWarnings("unchecked")
 	public SearchQuery createGlobalQueryWithoutDoctorId(int page, int size, String updatedTime, Boolean discarded, String searchTermFieldName, String searchTerm, Collection<String> testIds,  Boolean calculateCount, Class classForCount, String sortBy){
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)))
@@ -376,6 +378,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
         return searchQuery;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public SearchQuery createCustomQueryWithoutDoctorId(int page, int size, String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTermFieldName, String searchTerm, Collection<String> testIds,  Boolean calculateCount, Class classForCount, String sortBy){
 		
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)))
@@ -398,7 +401,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
         return searchQuery;
 	}
 
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({ "deprecation", "unchecked" })
 	public SearchQuery createCustomGlobalQueryWithoutDoctorId(int page, int size, String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTermFieldName, String searchTerm, Collection<String> testIds, Boolean calculateCount, Class classForCount, String sortBy){
 
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)));

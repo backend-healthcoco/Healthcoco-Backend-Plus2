@@ -255,6 +255,7 @@ public class SignUpServiceImpl implements SignUpService {
 			throw new BusinessException(ServiceError.Unknown, "User has not verified his mail so user cannot be activated");
 	    }
 	    	userCollection.setIsActive(activate);
+	    	userCollection.setUpdatedTime(new Date());
 			if(activate)userCollection.setUserState(UserState.USERSTATECOMPLETE);
 			else userCollection.setUserState(UserState.NOTACTIVATED);
 			userRepository.save(userCollection);
@@ -272,11 +273,13 @@ public class SignUpServiceImpl implements SignUpService {
 			    			if(userLocationCollections != null && !userLocationCollections.isEmpty()){
 			    				for(UserLocationCollection userLocationCollection : userLocationCollections){
 			    					userLocationCollection.setIsActivate(activate);
+			    					userLocationCollection.setUpdatedTime(new Date());
 			    					userLocationRepository.save(userLocationCollection);
 			    				}
 			    			}
 			    			LocationCollection locationCollection = locationRepository.findOne(roleCollection.getLocationId());
 			    			if(locationCollection != null){
+			    				locationCollection.setUpdatedTime(new Date());
 			    				locationCollection.setIsActivate(activate);
 			    				locationRepository.save(locationCollection);
 			    			}
@@ -329,11 +332,13 @@ public class SignUpServiceImpl implements SignUpService {
 		try {
 			locationCollection = locationRepository.findOne(locationId);
 		    if (locationCollection != null) {
+		    	locationCollection.setUpdatedTime(new Date());
 		    	locationCollection.setIsActivate(activate);
     			locationRepository.save(locationCollection);
 		    List<UserLocationCollection> userLocationCollections = userLocationRepository.findByLocationId(locationId);
 		    if(userLocationCollections != null && !userLocationCollections.isEmpty()){
 		    	for(UserLocationCollection userLocationCollection : userLocationCollections){
+		    		userLocationCollection.setUpdatedTime(new Date());
 		    		userLocationCollection.setIsActivate(activate);
 		    		userLocationRepository.save(userLocationCollection);
 		    	}
@@ -743,7 +748,7 @@ public class SignUpServiceImpl implements SignUpService {
 		smsDetail.setUserId(userCollection.getId());
 		smsDetail.setUserName(userCollection.getFirstName());
 		SMS sms = new SMS();
-		sms.setSmsText("Welcome "+(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName()+" to Healthcoco.We will contact you shortly to get you started.Download the Healthcoco+ app now:https://healthcoco.com/doctors/app. For queries, please feel free to contact us at support@healthcoco.com.");
+		sms.setSmsText("Welcome "+(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName()+" to Healthcoco. We will contact you shortly to get you started. Download the Healthcoco+ app now:https://healthcoco.com/doctors/app. For queries, please feel free to contact us at support@healthcoco.com.");
 
 		SMSAddress smsAddress = new SMSAddress();
 		smsAddress.setRecipient(userCollection.getMobileNumber());
@@ -981,7 +986,7 @@ public class SignUpServiceImpl implements SignUpService {
 			if (!userCollection.getUserName().equals(userCollection.getEmailAddress())) {
 			count++;
 			if (userCollection.isSignedUp())
-			    throw new BusinessException(ServiceError.NotAcceptable, "Already Signed Up Please Login");
+			    throw new BusinessException(ServiceError.NotAcceptable, "Mobile Number is already registered. Please Login");
 			else{
 				if(!response.getIsPatientExistWithMobileNumber())response.setIsPatientExistWithMobileNumber(true);
 			}
@@ -1125,9 +1130,11 @@ public class SignUpServiceImpl implements SignUpService {
 	userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
 	userCollection.setSignedUp(true);
 	userCollection.setUserUId(UniqueIdInitial.USER.getInitial()+DPDoctorUtils.generateRandomId());
+	user = new User();
+	user.setFirstName(userCollection.getFirstName());
+	user.setMobileNumber(userCollection.getMobileNumber());
 	userCollection.setUserName(generateUniqueUserNameService.generate(user));
 	userCollection = userRepository.save(userCollection);
-	user = new User();
 	BeanUtil.map(userCollection, user);
 	
 	// assign roles

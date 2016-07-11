@@ -11,6 +11,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -22,7 +23,10 @@ import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
 import com.dpdocter.elasticsearch.document.ESNotesDocument;
 import com.dpdocter.elasticsearch.document.ESObservationsDocument;
 import com.dpdocter.elasticsearch.services.ESClinicalNotesService;
+import com.dpdocter.exceptions.BusinessException;
+import com.dpdocter.exceptions.ServiceError;
 
+import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,6 +38,8 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.SOLR_CLINICAL_NOTES_BASEURL, description = "Endpoint for es clinical notes")
 public class ESClinicalNotesApi {
 
+	private static Logger logger = Logger.getLogger(ESClinicalNotesApi.class.getName());
+	
     @Value(value = "${image.path}")
     private String imagePath;
 
@@ -47,7 +53,10 @@ public class ESClinicalNotesApi {
 	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
-
+    	if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	List<ESComplaintsDocument> complaints = esClinicalNotesService.searchComplaints(range, page, size, doctorId, locationId, hospitalId, updatedTime,
 		discarded, searchTerm);
 	Response<ESComplaintsDocument> response = new Response<ESComplaintsDocument>();
@@ -62,7 +71,10 @@ public class ESClinicalNotesApi {
 	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
-
+    	if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	List<ESDiagnosesDocument> diagnoses = esClinicalNotesService.searchDiagnoses(range, page, size, doctorId, locationId, hospitalId, updatedTime,
 		discarded, searchTerm);
 	Response<ESDiagnosesDocument> response = new Response<ESDiagnosesDocument>();
@@ -77,7 +89,10 @@ public class ESClinicalNotesApi {
 	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
-
+    	if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	List<ESNotesDocument> notes = esClinicalNotesService.searchNotes(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
 		searchTerm);
 	Response<ESNotesDocument> response = new Response<ESNotesDocument>();
@@ -92,7 +107,10 @@ public class ESClinicalNotesApi {
 	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
-
+    	if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	List<ESDiagramsDocument> diagrams = esClinicalNotesService.searchDiagrams(range, page, size, doctorId, locationId, hospitalId, updatedTime,
 		discarded, searchTerm);
 	diagrams = getFinalDiagrams(diagrams);
@@ -120,7 +138,10 @@ public class ESClinicalNotesApi {
 	    @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
-
+    	if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	List<ESInvestigationsDocument> investigations = esClinicalNotesService.searchInvestigations(range, page, size, doctorId, locationId, hospitalId,
 		updatedTime, discarded, searchTerm);
 	Response<ESInvestigationsDocument> response = new Response<ESInvestigationsDocument>();
@@ -135,7 +156,10 @@ public class ESClinicalNotesApi {
 	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
-
+    	if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	List<ESObservationsDocument> observations = esClinicalNotesService.searchObservations(range, page, size, doctorId, locationId, hospitalId,
 		updatedTime, discarded, searchTerm);
 	Response<ESObservationsDocument> response = new Response<ESObservationsDocument>();

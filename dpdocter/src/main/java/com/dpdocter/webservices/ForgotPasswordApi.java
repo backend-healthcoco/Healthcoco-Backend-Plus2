@@ -6,9 +6,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +39,7 @@ public class ForgotPasswordApi {
     @POST
     @ApiOperation(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_DOCTOR, notes = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_DOCTOR)
     public Response<String> forgotPassword(ForgotUsernamePasswordRequest request) {
-	if (request == null) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getEmailAddress())) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
@@ -55,7 +53,7 @@ public class ForgotPasswordApi {
     @POST
     @ApiOperation(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_PATIENT, notes = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_PATIENT)
     public Response<Boolean> forgotPasswordForPatient(ForgotUsernamePasswordRequest request) {
-	if (request == null) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
@@ -69,7 +67,10 @@ public class ForgotPasswordApi {
     @POST
     @ApiOperation(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PATIENT, notes = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PATIENT)
     public Response<Boolean> resetPasswordPatient(ResetPasswordRequest request) {
-
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	Boolean isReset = forgotPasswordService.resetPasswordPatient(request);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(isReset);
@@ -80,10 +81,10 @@ public class ForgotPasswordApi {
     @POST
     @ApiOperation(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD, notes = PathProxy.ForgotPasswordUrls.RESET_PASSWORD)
     public Response<String> resetPassword(ResetPasswordRequest request) {
-	if (request == null) {
-	    logger.warn("Invalid Input");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-	}
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getUserId())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	String string = forgotPasswordService.resetPassword(request);
 	Response<String> response = new Response<String>();
 	response.setData(string);

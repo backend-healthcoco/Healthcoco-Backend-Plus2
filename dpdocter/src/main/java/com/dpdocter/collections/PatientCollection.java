@@ -270,6 +270,7 @@ public class PatientCollection extends GenericCollection {
 
     public void setDob(DOB dob) {
 	this.dob = dob;
+	if(this.dob != null)dob.getAge();
     }
 
 	public String getImageUrl() {

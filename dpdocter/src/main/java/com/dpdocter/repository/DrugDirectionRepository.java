@@ -51,4 +51,40 @@ public interface DrugDirectionRepository extends MongoRepository<DrugDirectionCo
     @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
     List<DrugDirectionCollection> getCustomGlobalDrugDirection(Date date, boolean[] discards, Sort sort);
 
+    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DrugDirectionCollection> getCustomGlobalDrugDirectionForAdmin(Date date, boolean[] discards, Pageable pageable);
+
+    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DrugDirectionCollection> getCustomGlobalDrugDirectionForAdmin(Date date, boolean[] discards, Sort sort);
+
+    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'direction' : {$regex : '^?2*', $options : 'i'}}")
+	List<DrugDirectionCollection> getCustomGlobalDrugDirectionForAdmin(Date date, boolean[] discards, String searchTerm, Pageable pageable);
+
+    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'direction' : {$regex : '^?2*', $options : 'i'}}")
+	List<DrugDirectionCollection> getCustomGlobalDrugDirectionForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
+
+    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DrugDirectionCollection> getCustomDrugDirectionForAdmin(Date date, boolean[] discards,	Pageable pageable);
+
+    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DrugDirectionCollection> getCustomDrugDirectionForAdmin(Date date, boolean[] discards, Sort sort);
+
+    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'direction' : {$regex : '^?2*', $options : 'i'}}")
+	List<DrugDirectionCollection> getCustomDrugDirectionForAdmin(Date date, boolean[] discards, String searchTerm, Pageable pageable);
+
+    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'direction' : {$regex : '^?2*', $options : 'i'}}")
+	List<DrugDirectionCollection> getCustomDrugDirectionForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
+
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DrugDirectionCollection> getGlobalDrugDirectionForAdmin(Date date, boolean[] discards, Pageable pageable);
+
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DrugDirectionCollection> getGlobalDrugDirectionForAdmin(Date date, boolean[] discards, Sort sort);
+
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'direction' : {$regex : '^?2*', $options : 'i'}}")
+	List<DrugDirectionCollection> getGlobalDrugDirectionForAdmin(Date date, boolean[] discards, String searchTerm, Pageable pageable);
+
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'direction' : {$regex : '^?2*', $options : 'i'}}")
+	List<DrugDirectionCollection> getGlobalDrugDirectionForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
+
 }

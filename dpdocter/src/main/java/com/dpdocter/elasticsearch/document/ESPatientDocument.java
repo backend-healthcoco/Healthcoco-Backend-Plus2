@@ -151,6 +151,7 @@ public class ESPatientDocument {
 
 	public void setDob(DOB dob) {
 		this.dob = dob;
+		if(this.dob != null)dob.getAge();
 	}
 
 	public String getCity() {

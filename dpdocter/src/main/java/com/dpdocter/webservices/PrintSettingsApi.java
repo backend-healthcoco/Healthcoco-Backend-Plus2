@@ -75,9 +75,9 @@ public class PrintSettingsApi {
     @ApiOperation(value = "SAVE_PRINT_SETTINGS", notes = "SAVE_PRINT_SETTINGS")
     public Response<PrintSettings> saveSettings(PrintSettings request) {
 
-	if (request == null) {
-	    logger.warn("Request cannot be null");
-	    throw new BusinessException(ServiceError.InvalidInput, "Request cannot be null");
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
+	    logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	PrintSettings printSettings = printSettingsService.saveSettings(request);
 	if (printSettings != null)

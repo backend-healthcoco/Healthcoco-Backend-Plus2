@@ -16,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -51,6 +52,9 @@ import io.swagger.annotations.ApiOperation;
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.RECORDS_BASE_URL, description = "Endpoint for records")
 public class RecordsApi {
+	
+	private static Logger logger = Logger.getLogger(RecordsApi.class.getName());
+	
     @Autowired
     private RecordsService recordsService;
 
@@ -67,8 +71,9 @@ public class RecordsApi {
     @Path(value = PathProxy.RecordsUrls.ADD_RECORDS)
     @ApiOperation(value = PathProxy.RecordsUrls.ADD_RECORDS, notes = PathProxy.RecordsUrls.ADD_RECORDS)
     public Response<Records> addRecords(RecordsAddRequest request) {
-	if (request == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId()) || request.getFileDetails() == null) {
+	    logger.warn("Invalid Input");
+		throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 
 	Records records = recordsService.addRecord(request);
@@ -93,6 +98,7 @@ public class RecordsApi {
     @ApiOperation(value = PathProxy.RecordsUrls.TAG_RECORD, notes = PathProxy.RecordsUrls.TAG_RECORD)
     public Response<Boolean> tagRecord(TagRecordRequest request) {
 	if (request == null) {
+		logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	recordsService.tagRecord(request);
@@ -105,7 +111,8 @@ public class RecordsApi {
     @POST
     @ApiOperation(value = PathProxy.RecordsUrls.SEARCH_RECORD, notes = PathProxy.RecordsUrls.SEARCH_RECORD)
     public Response<Records> searchRecords(RecordsSearchRequest request) {
-	if (request == null) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+		logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	request.setIsOTPVerified(otpService.checkOTPVerified(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId()));
@@ -121,6 +128,7 @@ public class RecordsApi {
     @ApiOperation(value = "GET_RECORDS_BY_ID", notes = "GET_RECORDS_BY_ID")
     public Response<Records> getRecordById(@PathParam("recordId") String recordId) {
 	if (DPDoctorUtils.anyStringEmpty(recordId)) {
+		logger.warn("Record Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Record Id Cannot Be Empty");
 	}
 
@@ -138,6 +146,7 @@ public class RecordsApi {
     public Response<Records> getRecordsByPatientId(@PathParam("patientId") String patientId, @QueryParam("page") int page, @QueryParam("size") int size,
 	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (DPDoctorUtils.anyStringEmpty(patientId)) {
+		logger.warn("Patient Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Patient Id Cannot Be Empty");
 	}
 
@@ -154,18 +163,25 @@ public class RecordsApi {
     @ApiOperation(value = PathProxy.RecordsUrls.GET_RECORD_COUNT, notes = PathProxy.RecordsUrls.GET_RECORD_COUNT)
     public Response<Integer> getRecordCount(@PathParam("doctorId") String doctorId, @PathParam("patientId") String patientId,
 	    @PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
-	Boolean isOTPVerified = otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId);
-	Integer recordCount = recordsService.getRecordCount(doctorId, patientId, locationId, hospitalId, isOTPVerified);
-	Response<Integer> response = new Response<Integer>();
-	response.setData(recordCount);
+    	if (DPDoctorUtils.anyStringEmpty(doctorId, patientId, locationId, hospitalId)) {
+    		logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
+		Boolean isOTPVerified = otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId);
+		Integer recordCount = recordsService.getRecordCount(doctorId, patientId, locationId, hospitalId, isOTPVerified);
+		Response<Integer> response = new Response<Integer>();
+		response.setData(recordCount);
 	return response;
     }
 
     @Path(value = PathProxy.RecordsUrls.GET_ALL_TAGS)
     @GET
     @ApiOperation(value = PathProxy.RecordsUrls.GET_ALL_TAGS, notes = PathProxy.RecordsUrls.GET_ALL_TAGS)
-    public Response<Tags> getAllTags(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
-	    @PathParam("hospitalId") String hospitalId) {
+    public Response<Tags> getAllTags(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+    	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+    		logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	List<Tags> tags = recordsService.getAllTags(doctorId, locationId, hospitalId);
 	Response<Tags> response = new Response<Tags>();
 	response.setDataList(tags);
@@ -201,9 +217,13 @@ public class RecordsApi {
     public Response<Boolean> emailRecords(@PathParam("recordId") String recordId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @PathParam("emailAddress") String emailAddress) {
-	recordsService.emailRecordToPatient(recordId, doctorId, locationId, hospitalId, emailAddress);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
+    	if (DPDoctorUtils.anyStringEmpty(recordId, emailAddress, doctorId, locationId, hospitalId)) {
+    		logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
+		recordsService.emailRecordToPatient(recordId, doctorId, locationId, hospitalId, emailAddress);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(true);
 	return response;
     }
 
@@ -211,9 +231,13 @@ public class RecordsApi {
     @DELETE
     @ApiOperation(value = PathProxy.RecordsUrls.DELETE_RECORD, notes = PathProxy.RecordsUrls.DELETE_RECORD)
     public Response<Records> deleteRecords(@PathParam("recordId") String recordId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    	if (DPDoctorUtils.anyStringEmpty(recordId)) {
+    		logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
     	Records records = recordsService.deleteRecord(recordId, discarded);
-	Response<Records> response = new Response<Records>();
-	response.setData(records);
+		Response<Records> response = new Response<Records>();
+		response.setData(records);
 	return response;
     }
 
@@ -221,6 +245,10 @@ public class RecordsApi {
     @DELETE
     @ApiOperation(value = PathProxy.RecordsUrls.DELETE_TAG, notes = PathProxy.RecordsUrls.DELETE_TAG)
     public Response<Tags> deleteTag(@PathParam("tagid") String tagid, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    	if (DPDoctorUtils.anyStringEmpty(tagid)) {
+    		logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
     	Tags tags = recordsService.deleteTag(tagid, discarded);
 	Response<Tags> response = new Response<Tags>();
 	response.setData(tags);
@@ -245,9 +273,13 @@ public class RecordsApi {
     @POST
     @ApiOperation(value = PathProxy.RecordsUrls.GET_FLEXIBLE_COUNTS, notes = PathProxy.RecordsUrls.GET_FLEXIBLE_COUNTS)
     public Response<FlexibleCounts> getCounts(FlexibleCounts flexibleCounts) {
-	FlexibleCounts flexibleCountsResponse = recordsService.getFlexibleCounts(flexibleCounts);
-	Response<FlexibleCounts> response = new Response<FlexibleCounts>();
-	response.setData(flexibleCountsResponse);
+    	if (flexibleCounts == null || DPDoctorUtils.anyStringEmpty(flexibleCounts.getDoctorId(), flexibleCounts.getPatientId(), flexibleCounts.getLocationId(), flexibleCounts.getHospitalId())) {
+    		logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
+		FlexibleCounts flexibleCountsResponse = recordsService.getFlexibleCounts(flexibleCounts);
+		Response<FlexibleCounts> response = new Response<FlexibleCounts>();
+		response.setData(flexibleCountsResponse);
 	return response;
     }
 
@@ -282,7 +314,7 @@ public class RecordsApi {
     @POST
     @ApiOperation(value = PathProxy.RecordsUrls.CHANGE_LABEL_AND_DESCRIPTION_RECORD, notes = PathProxy.RecordsUrls.CHANGE_LABEL_AND_DESCRIPTION_RECORD)
     public Response<Boolean> changeLabelAndDescription(ChangeRecordLabelDescriptionRequest request) {
-	if (request == null) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getRecordId())) {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	recordsService.changeLabelAndDescription(request.getRecordId(), request.getLabel(), request.getExplanation());

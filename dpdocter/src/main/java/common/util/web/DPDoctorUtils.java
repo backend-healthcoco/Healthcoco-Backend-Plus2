@@ -74,10 +74,6 @@ public class DPDoctorUtils {
 	return solrDate;
     }
 
-    private static DPDoctorUtils getInstance() {
-	return new DPDoctorUtils();
-    }
-
     public static char[] getSHA3SecurePassword(char[] password) throws UnsupportedEncodingException {
 	DigestSHA3 md = new DigestSHA3(256);
 	byte[] buffer = new byte[password.length];

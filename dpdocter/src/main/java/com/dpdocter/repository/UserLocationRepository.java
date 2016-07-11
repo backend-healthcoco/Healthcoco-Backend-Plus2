@@ -11,7 +11,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import com.dpdocter.collections.UserLocationCollection;
 
 public interface UserLocationRepository extends MongoRepository<UserLocationCollection, String>, PagingAndSortingRepository<UserLocationCollection, String> {
-    @Query("{'userId' : ?0}")
+    @Query("{'userId' : ?0, 'isActivate' : true}")
     List<UserLocationCollection> findByUserId(String userId);
 
     @Query("{'locationId':?0}")

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -49,4 +50,35 @@ public interface DiagramsRepository extends MongoRepository<DiagramsCollection, 
 
     @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
     List<DiagramsCollection> findCustomGlobalDiagrams(Date date, boolean[] discards, Sort sort);
+
+	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'tags' : {$regex : '^?2*', $options : 'i'}}")
+	List<DiagramsCollection> findCustomGlobalDiagramsForAdmin(Date date, boolean[] discards, String searchTerm,	Pageable pageable);
+
+	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'tags' : {$regex : '^?2*', $options : 'i'}}")
+	List<DiagramsCollection> findCustomGlobalDiagramsForAdmin(Date date, boolean[] discards, String searchTerm,	Sort sort);
+
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DiagramsCollection> findGlobalDiagramsForAdmin(Date date, boolean[] discards, Pageable pageable);
+
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DiagramsCollection> findGlobalDiagramsForAdmin(Date date, boolean[] discards, Sort sort);
+
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'tags' : {$regex : '^?2*', $options : 'i'}}")
+	List<DiagramsCollection> findGlobalDiagramsForAdmin(Date date, boolean[] discards, String searchTerm, Pageable pageable);
+
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'tags' : {$regex : '^?2*', $options : 'i'}}")
+	List<DiagramsCollection> findGlobalDiagramsForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
+
+	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DiagramsCollection> findCustomDiagramsForAdmin(Date date, boolean[] discards, Pageable pageable);
+
+	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DiagramsCollection> findCustomDiagramsForAdmin(Date date, boolean[] discards, Sort sort);
+
+	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'tags' : {$regex : '^?2*', $options : 'i'}}")
+	List<DiagramsCollection> findCustomGlobalDiagramsForAdmin(Date date, boolean[] discards, Pageable pageable);
+
+    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'tags' : {$regex : '^?2*', $options : 'i'}}")
+	List<DiagramsCollection> findCustomGlobalDiagramsForAdmin(Date date, boolean[] discards, Sort sort);
+
 }

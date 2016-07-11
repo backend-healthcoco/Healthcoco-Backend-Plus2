@@ -36,4 +36,40 @@ public interface DiagnosticTestRepository extends MongoRepository<DiagnosticTest
     @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
     List<DiagnosticTestCollection> getGlobal(Date date, boolean[] discards, Sort sort);
 
+    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DiagnosticTestCollection> getCustomGlobalForAdmin(Date date, boolean[] discards, Pageable pageable);
+
+    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DiagnosticTestCollection> getCustomGlobalForAdmin(Date date, boolean[] discards, Sort sort);
+
+    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'testName' : {$regex : '^?2*', $options : 'i'}}")
+	List<DiagnosticTestCollection> getCustomGlobalForAdmin(Date date, boolean[] discards, String searchTerm, Pageable pageable);
+
+    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'testName' : {$regex : '^?2*', $options : 'i'}}")
+	List<DiagnosticTestCollection> getCustomGlobalForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
+
+    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DiagnosticTestCollection> getCustomForAdmin(Date date, boolean[] discards, Pageable pageable);
+
+    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DiagnosticTestCollection> getCustomForAdmin(Date date, boolean[] discards, Sort sort);
+
+    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'testName' : {$regex : '^?2*', $options : 'i'}}")
+	List<DiagnosticTestCollection> getCustomForAdmin(Date date, boolean[] discards, String searchTerm, Pageable pageable);
+
+    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'testName' : {$regex : '^?2*', $options : 'i'}}")
+	List<DiagnosticTestCollection> getCustomForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
+
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DiagnosticTestCollection> getGlobalForAdmin(Date date, boolean[] discards, Pageable pageable);
+
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DiagnosticTestCollection> getGlobalForAdmin(Date date, boolean[] discards, Sort sort);
+
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'testName' : {$regex : '^?2*', $options : 'i'}}")
+	List<DiagnosticTestCollection> getGlobalForAdmin(Date date, boolean[] discards, String searchTerm, Pageable pageable);
+
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'testName' : {$regex : '^?2*', $options : 'i'}}")
+	List<DiagnosticTestCollection> getGlobalForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
+
 }

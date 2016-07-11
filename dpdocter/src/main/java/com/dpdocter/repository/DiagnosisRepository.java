@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -45,8 +46,38 @@ public interface DiagnosisRepository extends MongoRepository<DiagnosisCollection
     List<DiagnosisCollection> findCustomGlobalDiagnosis(String doctorId, Collection<String> specialities, Date date, boolean[] discards, Sort sort);
 
     @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
-    List<DiagnosisCollection> findCustomGlobalDiagnosis(Date date, boolean[] discards, Pageable pageable);
+	List<DiagnosisCollection> findCustomGlobalDiagnosisForAdmin(Date date, boolean[] discards, Pageable pageable);
 
     @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
-    List<DiagnosisCollection> findCustomGlobalDiagnosis(Date date, boolean[] discards, Sort sort);
+	List<DiagnosisCollection> findCustomGlobalDiagnosisForAdmin(Date date, boolean[] discards, Sort sort);
+
+	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'diagnosis' : {$regex : '^?2*', $options : 'i'}}")
+	List<DiagnosisCollection> findCustomGlobalDiagnosisForAdmin(Date date, boolean[] discards, String searchTerm, Pageable pageable);
+
+	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'diagnosis' : {$regex : '^?2*', $options : 'i'}}")
+	List<DiagnosisCollection> findCustomGlobalDiagnosisForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
+
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DiagnosisCollection> findGlobalDiagnosisForAdmin(Date date, boolean[] discards, Pageable pageable);
+
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DiagnosisCollection> findGlobalDiagnosisForAdmin(Date date, boolean[] discards, Sort sort);
+
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'diagnosis' : {$regex : '^?2*', $options : 'i'}}")
+	List<DiagnosisCollection> findGlobalDiagnosisForAdmin(Date date, boolean[] discards, String searchTerm,	Pageable pageable);
+
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'diagnosis' : {$regex : '^?2*', $options : 'i'}}")
+	List<DiagnosisCollection> findGlobalDiagnosisForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
+
+	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DiagnosisCollection> findCustomDiagnosisForAdmin(Date date, boolean[] discards, Pageable pageable);
+
+	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DiagnosisCollection> findCustomDiagnosisForAdmin(Date date, boolean[] discards, Sort sort);
+
+	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'diagnosis' : {$regex : '^?2*', $options : 'i'}}")
+	List<DiagnosisCollection> findCustomDiagnosisForAdmin(Date date, boolean[] discards, String searchTerm,	Pageable pageable);
+
+	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'diagnosis' : {$regex : '^?2*', $options : 'i'}}")
+	List<DiagnosisCollection> findCustomDiagnosisForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
 }

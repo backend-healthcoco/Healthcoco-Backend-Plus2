@@ -91,8 +91,12 @@ public class RegistrationApi {
     @POST
     @ApiOperation(value = PathProxy.RegistrationUrls.PATIENT_REGISTER, notes = PathProxy.RegistrationUrls.PATIENT_REGISTER, response = Response.class)
     public Response<RegisteredPatientDetails> patientRegister(PatientRegistrationRequest request) {
-	if (request == null) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getFirstName())) {
+		logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	}else if (DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
+			logger.warn("Mobile Number cannot be null");
+			throw new BusinessException(ServiceError.InvalidInput, "Mobile Number cannot be null");
 	}
 	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 	RegisteredPatientDetails registeredPatientDetails = null;
@@ -118,12 +122,13 @@ public class RegistrationApi {
     @PUT
     @ApiOperation(value = PathProxy.RegistrationUrls.EDIT_PATIENT_PROFILE, notes = PathProxy.RegistrationUrls.EDIT_PATIENT_PROFILE, response = Response.class)
     public Response<RegisteredPatientDetails> editPatientRegister(PatientRegistrationRequest request) {
-	if (request == null) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getUserId())) {
+		logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-	} else {
-	    if (request.getUserId() == null)
-		throw new BusinessException(ServiceError.InvalidInput, "User Id cannot be null");
-	}
+	}else if (DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
+		logger.warn("Mobile Number cannot be null");
+		throw new BusinessException(ServiceError.InvalidInput, "Mobile Number cannot be null");
+	 }
 	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 	RegisteredPatientDetails registeredPatientDetails = registrationService.registerExistingPatient(request);
 	transnationalService.addResource(registeredPatientDetails.getUserId(), Resource.PATIENT, false);
@@ -140,15 +145,11 @@ public class RegistrationApi {
     @ApiOperation(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM, notes = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM, response = Response.class)
     public Response<RegisteredPatientDetails> getExistingPatients(@PathParam("mobileNumber") String mobileNumber, @PathParam("doctorId") String doctorId,
 	    @PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
-	if (mobileNumber == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.Mobile Number is null");
+	if (DPDoctorUtils.anyStringEmpty(mobileNumber, locationId, hospitalId)) {
+		logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
-	if (locationId == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.locationId is null");
-	}
-	if (hospitalId == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.hospitalId is null");
-	}
+	
 	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 
 	List<RegisteredPatientDetails> users = registrationService.getUsersByPhoneNumber(mobileNumber, doctorId, locationId, hospitalId);
@@ -166,8 +167,9 @@ public class RegistrationApi {
     @GET
     @ApiOperation(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM_COUNT, notes = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM_COUNT, response = Response.class)
     public Response<Integer> getExistingPatientsCount(@PathParam("mobileNumber") String mobileNumber) {
-	if (mobileNumber == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.Phone Number is null");
+	if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
+		logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	Response<Integer> response = new Response<Integer>();
 	Integer patientCountByMobNum = 0;
@@ -184,8 +186,9 @@ public class RegistrationApi {
     @ApiOperation(value = PathProxy.RegistrationUrls.GET_PATIENT_PROFILE, notes = PathProxy.RegistrationUrls.GET_PATIENT_PROFILE, response = Response.class)
     public Response<RegisteredPatientDetails> getPatientProfile(@PathParam("userId") String userId, @QueryParam("doctorId") String doctorId,
 	    @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId) {
-	if (userId == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.userId is null");
+	if (DPDoctorUtils.anyStringEmpty(userId)) {
+		logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 
 	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
@@ -203,7 +206,8 @@ public class RegistrationApi {
     @POST
     @ApiOperation(value = PathProxy.RegistrationUrls.ADD_REFERRENCE, notes = PathProxy.RegistrationUrls.ADD_REFERRENCE, response = Response.class)
     public Response<Reference> addReference(Reference request) {
-	if (request == null) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getReference())) {
+		logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	Reference reference = registrationService.addEditReference(request);
@@ -222,7 +226,8 @@ public class RegistrationApi {
     public Response<Reference> deleteReferrence(@PathParam("referrenceId") String referrenceId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (referrenceId == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.referrenceId is null");
+		logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	Reference reference = registrationService.deleteReferrence(referrenceId, discarded);
 	transnationalService.addResource(reference.getId(), Resource.REFERENCE, false);
@@ -276,7 +281,8 @@ public class RegistrationApi {
     public Response<PatientInitialAndCounter> getPatientInitialAndCounter(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId) {
 
 	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId)) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id or Location Id cannot be null");
+		logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	Response<PatientInitialAndCounter> response = new Response<PatientInitialAndCounter>();
 	PatientInitialAndCounter patientInitialAndCounter = registrationService.getPatientInitialAndCounter(doctorId, locationId);
@@ -290,9 +296,11 @@ public class RegistrationApi {
     public Response<Boolean> updatePatientInitialAndCounter(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
 	    @PathParam("patientInitial") String patientInitial, @PathParam("patientCounter") int patientCounter) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, patientInitial, new Integer(patientCounter).toString())) {
+		logger.warn("Invalid Input. Dcotor Id, ,Location Id, Patient Initial, Patient Counter Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Dcotor Id, ,Location Id, Patient Initial, Patient Counter Cannot Be Empty");
 	}
 	else if(patientInitial.matches(".*\\d+.*")){
+		logger.warn("Invalid Patient Initial");
 		throw new BusinessException(ServiceError.InvalidInput, "Invalid Patient Initial");
 	}
 	Boolean updateResponse = registrationService.updatePatientInitialAndCounter(doctorId, locationId, patientInitial, patientCounter);
@@ -306,6 +314,7 @@ public class RegistrationApi {
     @ApiOperation(value = PathProxy.RegistrationUrls.GET_CLINIC_DETAILS, notes = PathProxy.RegistrationUrls.GET_CLINIC_DETAILS, response = Response.class)
     public Response<Location> getClinicDetails(@PathParam("clinicId") String clinicId) {
 	if (DPDoctorUtils.anyStringEmpty(clinicId)) {
+		logger.warn("Invalid Input. Clinic Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Clinic Id Cannot Be Empty");
 	}
 	Location clinicDetails = registrationService.getClinicDetails(clinicId);
@@ -334,8 +343,9 @@ public class RegistrationApi {
     @POST
     @ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_PROFILE, notes = PathProxy.RegistrationUrls.UPDATE_CLINIC_PROFILE)
     public Response<ClinicProfile> updateClinicProfile(ClinicProfile request) {
-	if (request == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getId())) {
+		logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	ClinicProfile clinicProfileUpdateResponse = registrationService.updateClinicProfile(request);
 	transnationalService.addResource(clinicProfileUpdateResponse.getId(), Resource.LOCATION, false);
@@ -350,8 +360,9 @@ public class RegistrationApi {
     @POST
     @ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_PROFILE_HANDHELD, notes = PathProxy.RegistrationUrls.UPDATE_CLINIC_PROFILE_HANDHELD)
     public Response<ClinicProfile> updateClinicProfile(ClinicProfileHandheld request) {
-	if (request == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getId())) {
+		logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	ClinicProfile clinicProfileUpdateResponse = registrationService.updateClinicProfileHandheld(request);
 	transnationalService.addResource(clinicProfileUpdateResponse.getId(), Resource.LOCATION, false);
@@ -365,8 +376,9 @@ public class RegistrationApi {
     @POST
     @ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_ADDRESS, notes = PathProxy.RegistrationUrls.UPDATE_CLINIC_ADDRESS)
     public Response<ClinicAddress> updateClinicAddress(ClinicAddress request) {
-	if (request == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getId())) {
+		logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	ClinicAddress clinicAddressUpdateResponse = registrationService.updateClinicAddress(request);
 	transnationalService.addResource(clinicAddressUpdateResponse.getId(), Resource.LOCATION, false);
@@ -380,8 +392,9 @@ public class RegistrationApi {
     @POST
     @ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_TIMING, notes = PathProxy.RegistrationUrls.UPDATE_CLINIC_TIMING)
     public Response<ClinicTiming> updateClinicTiming(ClinicTiming request) {
-	if (request == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getId())) {
+		logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	ClinicTiming clinicTimingUpdateResponse = registrationService.updateClinicTiming(request);
 	transnationalService.addResource(request.getId(), Resource.LOCATION, false);
@@ -395,8 +408,9 @@ public class RegistrationApi {
     @POST
     @ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_SPECIALIZATION, notes = PathProxy.RegistrationUrls.UPDATE_CLINIC_SPECIALIZATION)
     public Response<ClinicSpecialization> updateClinicSpecialization(ClinicSpecialization request) {
-	if (request == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getId())) {
+		logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	ClinicSpecialization clinicSpecializationUpdateResponse = registrationService.updateClinicSpecialization(request);
 	transnationalService.addResource(clinicSpecializationUpdateResponse.getId(), Resource.LOCATION, false);
@@ -411,9 +425,10 @@ public class RegistrationApi {
     @POST
     @ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_LAB_PROPERTIES, notes = PathProxy.RegistrationUrls.UPDATE_CLINIC_LAB_PROPERTIES)
     public Response<ClinicLabProperties> updateLabProperties(ClinicLabProperties request) {
-	if (request == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
-	}
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getId())) {
+    		logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	ClinicLabProperties clinicLabProperties = registrationService.updateLabProperties(request);
 	if (clinicLabProperties != null) {
 	    transnationalService.addResource(request.getId(), Resource.LOCATION, false);
@@ -428,9 +443,10 @@ public class RegistrationApi {
     @POST
     @ApiOperation(value = PathProxy.RegistrationUrls.CHANGE_CLINIC_LOGO, notes = PathProxy.RegistrationUrls.CHANGE_CLINIC_LOGO)
     public Response<ClinicLogo> changeClinicLogo(ClinicLogoAddRequest request) {
-	if (request == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
-	}
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getId())) {
+    		logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	ClinicLogo clinicLogoResponse = registrationService.changeClinicLogo(request);
 	if (clinicLogoResponse != null) {
 	    if (clinicLogoResponse.getLogoURL() != null) {
@@ -451,13 +467,16 @@ public class RegistrationApi {
     @POST
     @ApiOperation(value = PathProxy.RegistrationUrls.ADD_CLINIC_IMAGE, notes = PathProxy.RegistrationUrls.ADD_CLINIC_IMAGE)
     public Response<ClinicImage> addClinicImage(ClinicImageAddRequest request) {
-	if (request == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
-	} else if (request.getImages() == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Image Is Null");
-	} else if (request.getImages().size() > 5) {
-	    throw new BusinessException(ServiceError.NotAcceptable, "More than 5 images cannot be uploaded at a time");
-	}
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getId())) {
+    		logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	} else if (request.getImages() == null) {
+    		logger.warn("Invalid Input. Request Image Is Null");
+		    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Image Is Null");
+		} else if (request.getImages().size() > 5) {
+			logger.warn("More than 5 images cannot be uploaded at a time");
+		    throw new BusinessException(ServiceError.NotAcceptable, "More than 5 images cannot be uploaded at a time");
+		}
 	List<ClinicImage> clinicImageResponse = registrationService.addClinicImage(request);
 	if (clinicImageResponse != null && !clinicImageResponse.isEmpty()) {
 	    for (ClinicImage clinicalImage : clinicImageResponse) {
@@ -481,8 +500,10 @@ public class RegistrationApi {
     @ApiOperation(value = PathProxy.RegistrationUrls.DELETE_CLINIC_IMAGE, notes = PathProxy.RegistrationUrls.DELETE_CLINIC_IMAGE)
     public Response<Boolean> deleteClinicImage(@PathParam(value = "locationId") String locationId, @PathParam(value = "counter") int counter) {
 	if (DPDoctorUtils.anyStringEmpty(locationId)) {
+		logger.warn("Invalid Input. Location Id is null");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Location Id is null");
 	} else if (counter == 0) {
+		logger.warn("Invalid Input. Counter cannot be 0");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Counter cannot be 0");
 	}
 
@@ -533,9 +554,9 @@ public class RegistrationApi {
     @POST
     @ApiOperation(value = PathProxy.RegistrationUrls.USER_REGISTER, notes = PathProxy.RegistrationUrls.USER_REGISTER)
     public Response<RegisterDoctorResponse> userRegister(DoctorRegisterRequest request) {
-	if (request == null) {
-	    logger.warn("Request send  is NULL");
-	    throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getEmailAddress(), request.getFirstName())) {
+	    logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	RegisterDoctorResponse doctorResponse = null;
 	if (!registrationService.checktDoctorExistByEmailAddress(request.getEmailAddress()))
@@ -582,8 +603,9 @@ public class RegistrationApi {
     @POST
     @ApiOperation(value = PathProxy.RegistrationUrls.ADD_ROLE, notes = PathProxy.RegistrationUrls.ADD_ROLE)
     public Response<Role> addRole(Role request) {
-	if (request == null) {
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Request Sent Is Empty");
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getRole())) {
+		logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	Role professionResponse = registrationService.addRole(request);
 	Response<Role> response = new Response<Role>();
@@ -597,7 +619,10 @@ public class RegistrationApi {
     public Response<Role> getRole(@PathParam(value = "range") String range, @QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
     		@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
     		@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
- 
+    	if (DPDoctorUtils.anyStringEmpty(range)) {
+    		logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	List<Role> professionResponse = registrationService.getRole(range, page, size, locationId, hospitalId, updatedTime);
 	Response<Role> response = new Response<Role>();
 	response.setDataList(professionResponse);
@@ -621,9 +646,13 @@ public class RegistrationApi {
     @DELETE
     @ApiOperation(value = PathProxy.RegistrationUrls.DELETE_ROLE, notes = PathProxy.RegistrationUrls.DELETE_ROLE)
     public Response<Role> deleteRole(@PathParam(value = "roleId") String roleId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    	if (DPDoctorUtils.anyStringEmpty(roleId)) {
+    		logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
     	Role role = registrationService.deleteRole(roleId, discarded);
-	Response<Role> response = new Response<Role>();
-	response.setData(role);
+		Response<Role> response = new Response<Role>();
+		response.setData(role);
 	return response;
     }
 
@@ -632,6 +661,10 @@ public class RegistrationApi {
     @ApiOperation(value = PathProxy.RegistrationUrls.DELETE_USER, notes = PathProxy.RegistrationUrls.DELETE_USER)
     public Response<Boolean> deleteUser(@PathParam(value = "userId") String userId, @PathParam(value = "locationId") String locationId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    	if (DPDoctorUtils.anyStringEmpty(userId, locationId)) {
+    		logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	registrationService.deleteUser(userId, locationId, discarded);
 	transnationalService.checkDoctor(userId, null);
 	Response<Boolean> response = new Response<Boolean>();
@@ -689,7 +722,10 @@ public class RegistrationApi {
     public Response<Feedback> getFeedback(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
 	    @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @QueryParam(value = "type") String type) {
-
+    	if(DPDoctorUtils.anyStringEmpty(doctorId)){
+        	logger.warn("Invalid Input");
+        	throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+        }
 	List<Feedback> feedbacks = registrationService.getFeedback(page, size, doctorId, locationId, hospitalId, updatedTime, type);
 	Response<Feedback> response = new Response<Feedback>();
 	response.setDataList(feedbacks);
@@ -700,7 +736,11 @@ public class RegistrationApi {
     @GET
     @ApiOperation(value = PathProxy.RegistrationUrls.CHECK_PATIENT_NUMBER, notes = PathProxy.RegistrationUrls.CHECK_PATIENT_NUMBER)
     public Response<Boolean> checkPatientNumber(@PathParam("oldMobileNumber") String oldMobileNumber, @PathParam("newMobileNumber") String newMobileNumber) {
-
+    	if(DPDoctorUtils.anyStringEmpty(oldMobileNumber, newMobileNumber)){
+        	logger.warn("Invalid Input");
+        	throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+        }
+    	
     Boolean checkPatientNumberResponse = registrationService.checkPatientNumber(oldMobileNumber, newMobileNumber);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(checkPatientNumberResponse);
@@ -711,7 +751,10 @@ public class RegistrationApi {
     @GET
     @ApiOperation(value = PathProxy.RegistrationUrls.CHANGE_PATIENT_NUMBER, notes = PathProxy.RegistrationUrls.CHANGE_PATIENT_NUMBER)
     public Response<Boolean> changePatientNumber(@PathParam("oldMobileNumber") String oldMobileNumber, @PathParam("newMobileNumber") String newMobileNumber, @PathParam("otpNumber") String otpNumber) {
-
+    	if(DPDoctorUtils.anyStringEmpty(oldMobileNumber, newMobileNumber)){
+        	logger.warn("Invalid Input");
+        	throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+        }
     	Boolean changePatientNumberResponse = registrationService.changePatientNumber(oldMobileNumber, newMobileNumber, otpNumber);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(changePatientNumberResponse);

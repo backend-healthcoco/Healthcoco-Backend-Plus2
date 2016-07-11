@@ -53,4 +53,40 @@ public interface DrugDurationUnitRepository
     @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
     List<DrugDurationUnitCollection> getCustomGlobalDrugDurationUnit(Date date, boolean[] discards, Sort sort);
 
+    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DrugDurationUnitCollection> getCustomGlobalDrugDurationUnitForAdmin(Date date, boolean[] discards, Pageable pageable);
+
+    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DrugDurationUnitCollection> getCustomGlobalDrugDurationUnitForAdmin(Date date, boolean[] discards, Sort sort);
+
+    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'unit' : {$regex : '^?2*', $options : 'i'}}")
+	List<DrugDurationUnitCollection> getCustomGlobalDrugDurationUnitForAdmin(Date date, boolean[] discards, String searchTerm, Pageable pageable);
+
+    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'unit' : {$regex : '^?2*', $options : 'i'}}")
+	List<DrugDurationUnitCollection> getCustomGlobalDrugDurationUnitForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
+
+    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DrugDurationUnitCollection> getCustomDrugDurationUnitForAdmin(Date date, boolean[] discards, Pageable pageable);
+
+    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DrugDurationUnitCollection> getCustomDrugDurationUnitForAdmin(Date date, boolean[] discards, Sort sort);
+
+    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'unit' : {$regex : '^?2*', $options : 'i'}}")
+	List<DrugDurationUnitCollection> getCustomDrugDurationUnitForAdmin(Date date, boolean[] discards, String searchTerm, Pageable pageable);
+
+    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'unit' : {$regex : '^?2*', $options : 'i'}}")
+	List<DrugDurationUnitCollection> getCustomDrugDurationUnitForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
+
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DrugDurationUnitCollection> getGlobalDrugDurationUnitForAdmin(Date date, boolean[] discards, Pageable pageable);
+
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DrugDurationUnitCollection> getGlobalDrugDurationUnitForAdmin(Date date, boolean[] discards, Sort sort);
+
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'unit' : {$regex : '^?2*', $options : 'i'}}")
+	List<DrugDurationUnitCollection> getGlobalDrugDurationUnitForAdmin(Date date, boolean[] discards, String searchTerm, Pageable pageable);
+
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'unit' : {$regex : '^?2*', $options : 'i'}}")
+	List<DrugDurationUnitCollection> getGlobalDrugDurationUnitForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
+
 }

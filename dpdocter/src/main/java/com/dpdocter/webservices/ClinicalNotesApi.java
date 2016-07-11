@@ -83,9 +83,13 @@ public class ClinicalNotesApi {
     @POST
     @ApiOperation(value = PathProxy.ClinicalNotesUrls.SAVE_CLINICAL_NOTE, notes = PathProxy.ClinicalNotesUrls.SAVE_CLINICAL_NOTE)
     public Response<ClinicalNotes> addNotes(ClinicalNotesAddRequest request) {
-	ClinicalNotes clinicalNotes = clinicalNotesService.addNotes(request);
+    if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    }
+	
+    ClinicalNotes clinicalNotes = clinicalNotesService.addNotes(request);
 
-	// patient track
 	if (clinicalNotes != null) {
 	    String visitId = patientTrackService.addRecord(clinicalNotes, VisitedFor.CLINICAL_NOTES, request.getVisitId());
 	    clinicalNotes.setVisitId(visitId);
@@ -102,10 +106,11 @@ public class ClinicalNotesApi {
     @PUT
     @ApiOperation(value = PathProxy.ClinicalNotesUrls.EDIT_CLINICAL_NOTES, notes = PathProxy.ClinicalNotesUrls.EDIT_CLINICAL_NOTES)
     public Response<ClinicalNotes> editNotes(@PathParam(value = "clinicalNotesId") String clinicalNotesId, ClinicalNotesEditRequest request) {
-	if (DPDoctorUtils.anyStringEmpty(clinicalNotesId) || request == null) {
-	    logger.warn("Invalid Input");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-	}
+    if (request == null || DPDoctorUtils.anyStringEmpty(clinicalNotesId, request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    }
+	
 	request.setId(clinicalNotesId);
 	ClinicalNotes clinicalNotes = clinicalNotesService.editNotes(request);
 	if (clinicalNotes != null) {
@@ -125,7 +130,8 @@ public class ClinicalNotesApi {
     @ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_CLINICAL_NOTES, notes = PathProxy.ClinicalNotesUrls.DELETE_CLINICAL_NOTES)
     public Response<ClinicalNotes> deleteNotes(@PathParam(value = "clinicalNotesId") String clinicalNotesId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-    	ClinicalNotes clinicalNotes = clinicalNotesService.deleteNote(clinicalNotesId, discarded);
+
+    ClinicalNotes clinicalNotes = clinicalNotesService.deleteNote(clinicalNotesId, discarded);
 	Response<ClinicalNotes> response = new Response<ClinicalNotes>();
 	response.setData(clinicalNotes);
 	return response;
@@ -151,6 +157,11 @@ public class ClinicalNotesApi {
 	    @QueryParam(value = "patientId") String patientId, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 	
+	    if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+	    	    logger.warn("Invalid Input");
+	    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	    }
+		
     	List<ClinicalNotes> clinicalNotes =  clinicalNotesService.getClinicalNotes(page, size, doctorId, locationId, hospitalId, patientId, updatedTime,
 		otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), discarded, false);
     	
@@ -191,10 +202,14 @@ public class ClinicalNotesApi {
     @POST
     @ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_COMPLAINT, notes = PathProxy.ClinicalNotesUrls.ADD_COMPLAINT)
     public Response<Complaint> addComplaint(Complaint request) {
+    	
+    if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    }
 	Complaint complaint = clinicalNotesService.addEditComplaint(request);
 
 	transactionalManagementService.addResource(complaint.getId(), Resource.COMPLAINT, false);
-	// Below service call will add or edit complaint in es index.
 	ESComplaintsDocument esComplaints = new ESComplaintsDocument();
 	BeanUtil.map(complaint, esComplaints);
 	esClinicalNotesService.addComplaints(esComplaints);
@@ -208,6 +223,11 @@ public class ClinicalNotesApi {
     @POST
     @ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_OBSERVATION, notes = PathProxy.ClinicalNotesUrls.ADD_OBSERVATION)
     public Response<Observation> addObservation(Observation request) {
+    if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    }
+	
 	Observation observation = clinicalNotesService.addEditObservation(request);
 
 	transactionalManagementService.addResource(observation.getId(), Resource.OBSERVATION, false);
@@ -223,6 +243,11 @@ public class ClinicalNotesApi {
     @POST
     @ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_INVESTIGATION, notes = PathProxy.ClinicalNotesUrls.ADD_INVESTIGATION)
     public Response<Investigation> addInvestigation(Investigation request) {
+    if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    }
+	
 	Investigation investigation = clinicalNotesService.addEditInvestigation(request);
 
 	transactionalManagementService.addResource(investigation.getId(), Resource.INVESTIGATION, false);
@@ -239,6 +264,11 @@ public class ClinicalNotesApi {
     @POST
     @ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_DIAGNOSIS, notes = PathProxy.ClinicalNotesUrls.ADD_DIAGNOSIS)
     public Response<Diagnoses> addDiagnosis(Diagnoses request) {
+    if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    }
+	
 	Diagnoses diagnosis = clinicalNotesService.addEditDiagnosis(request);
 
 	transactionalManagementService.addResource(diagnosis.getId(), Resource.DIAGNOSIS, false);
@@ -255,6 +285,11 @@ public class ClinicalNotesApi {
     @POST
     @ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_NOTES, notes = PathProxy.ClinicalNotesUrls.ADD_NOTES)
     public Response<Notes> addNotes(Notes request) {
+    if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    }
+	
 	Notes notes = clinicalNotesService.addEditNotes(request);
 
 	transactionalManagementService.addResource(notes.getId(), Resource.NOTES, false);
@@ -271,6 +306,11 @@ public class ClinicalNotesApi {
     @POST
     @ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_DIAGRAM, notes = PathProxy.ClinicalNotesUrls.ADD_DIAGRAM)
     public Response<Diagram> addDiagram(Diagram request) {
+    if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId()) || request.getDiagram() == null) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    }
+	
 	Diagram diagram = clinicalNotesService.addEditDiagram(request);
 	transactionalManagementService.addResource(diagram.getId(), Resource.DIAGRAM, false);
 	ESDiagramsDocument esDiagrams = new ESDiagramsDocument();
@@ -291,6 +331,10 @@ public class ClinicalNotesApi {
     public Response<Complaint> deleteComplaint(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    	if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
+    	    logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+    	}
     	Complaint complaint = clinicalNotesService.deleteComplaint(id, doctorId, locationId, hospitalId, discarded);
 	
     	if(complaint != null){
@@ -310,6 +354,10 @@ public class ClinicalNotesApi {
     public Response<Observation> deleteObservation(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    	if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
+    	    logger.warn("Observation Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Observation Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+    	}
     	Observation observation = clinicalNotesService.deleteObservation(id, doctorId, locationId, hospitalId, discarded);
     	if(observation != null){
 			transactionalManagementService.addResource(observation.getId(), Resource.OBSERVATION, false);
@@ -329,6 +377,10 @@ public class ClinicalNotesApi {
     public Response<Investigation> deleteInvestigation(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    	if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
+    	    logger.warn("Investigation Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Investigation Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+    	}
     	Investigation investigation = clinicalNotesService.deleteInvestigation(id, doctorId, locationId, hospitalId, discarded);
     	if(investigation != null){
 	    	transactionalManagementService.addResource(investigation.getId(), Resource.INVESTIGATION, false);
@@ -348,6 +400,10 @@ public class ClinicalNotesApi {
     public Response<Diagnoses> deleteDiagnosis(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    	if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
+    	    logger.warn("Diagnosis Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Diagnosis Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+    	}
     	Diagnoses diagnoses = clinicalNotesService.deleteDiagnosis(id, doctorId, locationId, hospitalId, discarded);
     	if(diagnoses != null){
 			transactionalManagementService.addResource(diagnoses.getId(), Resource.DIAGNOSIS, false);
@@ -366,6 +422,10 @@ public class ClinicalNotesApi {
     public Response<Notes> deleteNote(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    	if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
+    	    logger.warn("Note Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Note Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+    	}
     	Notes notes = clinicalNotesService.deleteNotes(id, doctorId, locationId, hospitalId, discarded);
     	if(notes != null){
 			transactionalManagementService.addResource(notes.getId(), Resource.NOTES, false);
@@ -384,6 +444,10 @@ public class ClinicalNotesApi {
     public Response<Diagram> deleteDiagram(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    	if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
+    	    logger.warn("Diagram Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Diagram, Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+    	}
     	Diagram diagram = clinicalNotesService.deleteDiagram(id, doctorId, locationId, hospitalId, discarded);
     	if(diagram != null){
 			ESDiagramsDocument esDiagrams = new ESDiagramsDocument();
@@ -403,12 +467,11 @@ public class ClinicalNotesApi {
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 
-	if (DPDoctorUtils.anyStringEmpty(type, range)) {
+	if (DPDoctorUtils.anyStringEmpty(type, range, doctorId)) {
 	    logger.warn("Invalid Input. Type or Range Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Type or Range Cannot Be Empty");
 	}
-	List<Object> clinicalItems = clinicalNotesService.getClinicalItems(type, range, page, size, doctorId, locationId, hospitalId, updatedTime,
-		discarded != null ? discarded : true);
+	List<Object> clinicalItems = clinicalNotesService.getClinicalItems(type, range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, false, null);
 	if (clinicalItems != null && !clinicalItems.isEmpty() && ClinicalItems.DIAGRAMS.getType().equalsIgnoreCase(type)) {
 	    for (Object clinicalItem : clinicalItems) {
 		((DiagramsCollection) clinicalItem).setDiagramUrl(getFinalImageURL(((DiagramsCollection) clinicalItem).getDiagramUrl()));

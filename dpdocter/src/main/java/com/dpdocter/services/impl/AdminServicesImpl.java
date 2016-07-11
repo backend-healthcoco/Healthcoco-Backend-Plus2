@@ -218,37 +218,37 @@ public class AdminServicesImpl implements AdminServices {
 			if(DPDoctorUtils.anyStringEmpty(searchTerm)){
 				if(DPDoctorUtils.anyStringEmpty(hospitalId)){
 					if(!isClinic && !isLab){
-						if(size > 0)locationCollections = locationRepository.findAll(new PageRequest(page, size, Direction.DESC, "createdTime")).getContent();
+						if(size > 0)locationCollections = locationRepository.findAll(new PageRequest(page, size, Direction.DESC, "updatedTime")).getContent();
 						else locationCollections = locationRepository.findAll(new Sort(Direction.DESC, "createdTime"));
 					}else{	
-						if(size > 0)locationCollections = locationRepository.findClinicsAndLabs(isClinic, isLab, new PageRequest(page, size, Direction.DESC, "createdTime"));
-						else locationCollections = locationRepository.findClinicsAndLabs(isClinic, isLab, new Sort(Direction.DESC, "createdTime"));
+						if(size > 0)locationCollections = locationRepository.findClinicsAndLabs(isClinic, isLab, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else locationCollections = locationRepository.findClinicsAndLabs(isClinic, isLab, new Sort(Direction.DESC, "updatedTime"));
 					}
 				}else{
 					if(!isClinic && !isLab){
-						if(size > 0)locationCollections = locationRepository.findByHospitalId(hospitalId, new PageRequest(page, size, Direction.DESC, "createdTime"));
-						else locationCollections = locationRepository.findByHospitalId(hospitalId, new Sort(Direction.DESC, "createdTime"));
+						if(size > 0)locationCollections = locationRepository.findByHospitalId(hospitalId, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else locationCollections = locationRepository.findByHospitalId(hospitalId, new Sort(Direction.DESC, "updatedTime"));
 					}else{	
-						if(size > 0)locationCollections = locationRepository.findClinicsAndLabs(hospitalId, isClinic, isLab, new PageRequest(page, size, Direction.DESC, "createdTime"));
-						else locationCollections = locationRepository.findClinicsAndLabs(hospitalId, isClinic, isLab, new Sort(Direction.DESC, "createdTime"));
+						if(size > 0)locationCollections = locationRepository.findClinicsAndLabs(hospitalId, isClinic, isLab, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else locationCollections = locationRepository.findClinicsAndLabs(hospitalId, isClinic, isLab, new Sort(Direction.DESC, "updatedTime"));
 					}
 				}
 			}else{
 				if(DPDoctorUtils.anyStringEmpty(hospitalId)){
 					if(!isClinic && !isLab){
-						if(size > 0)locationCollections = locationRepository.findByNameOrEmailAddress(searchTerm, new PageRequest(page, size, Direction.DESC, "createdTime"));
-						else locationCollections = locationRepository.findByNameOrEmailAddress(searchTerm, new Sort(Direction.DESC, "createdTime"));
+						if(size > 0)locationCollections = locationRepository.findByNameOrEmailAddress(searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else locationCollections = locationRepository.findByNameOrEmailAddress(searchTerm, new Sort(Direction.DESC, "updatedTime"));
 					}else{
-						if(size > 0)locationCollections = locationRepository.findClinicsAndLabs(isClinic, isLab, searchTerm, new PageRequest(page, size, Direction.DESC, "createdTime"));
-						else locationCollections = locationRepository.findClinicsAndLabs(isClinic, isLab, searchTerm, new Sort(Direction.DESC, "createdTime"));
+						if(size > 0)locationCollections = locationRepository.findClinicsAndLabs(isClinic, isLab, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else locationCollections = locationRepository.findClinicsAndLabs(isClinic, isLab, searchTerm, new Sort(Direction.DESC, "updatedTime"));
 					}				
 				}else{
 					if(!isClinic && !isLab){
-						if(size > 0)locationCollections = locationRepository.findByNameOrEmailAddressAndHospitalId(hospitalId, searchTerm, new PageRequest(page, size, Direction.DESC, "createdTime"));
-						else locationCollections = locationRepository.findByNameOrEmailAddressAndHospitalId(hospitalId, searchTerm, new Sort(Direction.DESC, "createdTime"));
+						if(size > 0)locationCollections = locationRepository.findByNameOrEmailAddressAndHospitalId(hospitalId, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else locationCollections = locationRepository.findByNameOrEmailAddressAndHospitalId(hospitalId, searchTerm, new Sort(Direction.DESC, "updatedTime"));
 					}else{
-						if(size > 0)locationCollections = locationRepository.findClinicsAndLabs(hospitalId, isClinic, isLab, searchTerm, new PageRequest(page, size, Direction.DESC, "createdTime"));
-						else locationCollections = locationRepository.findClinicsAndLabs(hospitalId, isClinic, isLab, searchTerm, new Sort(Direction.DESC, "createdTime"));	
+						if(size > 0)locationCollections = locationRepository.findClinicsAndLabs(hospitalId, isClinic, isLab, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else locationCollections = locationRepository.findClinicsAndLabs(hospitalId, isClinic, isLab, searchTerm, new Sort(Direction.DESC, "updatedTime"));	
 					}
 				}
 			}
@@ -534,7 +534,7 @@ public class AdminServicesImpl implements AdminServices {
 	@Override
 	@Transactional
 	public void importEducationQualification() {
-		String csvFile = "/home/ubuntu/EducationQualification.csv";
+		String csvFile = "/home/suresh/EducationQualification.csv";
 		BufferedReader br = null;
 		String line = "";
 		String cvsSplitBy = "\\?";
@@ -605,21 +605,20 @@ public class AdminServicesImpl implements AdminServices {
 				 if(size > 0){
 					 aggregation = Aggregation.newAggregation(Aggregation.match(criteria), 
 							 new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
-				              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))),Aggregation.skip((page) * size), Aggregation.limit(size));
+				              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))),Aggregation.skip((page) * size), Aggregation.limit(size), Aggregation.sort(Sort.Direction.DESC, "updatedTime"));
 				 }else{
 					 aggregation = Aggregation.newAggregation(Aggregation.match(criteria), new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
-			              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))));
+			              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))), Aggregation.sort(Sort.Direction.DESC, "updatedTime"));
 				 }
 		}else{
 			if(size > 0){
 				 aggregation = Aggregation.newAggregation(new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
-			              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))),Aggregation.skip((page) * size), Aggregation.limit(size));
+			              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))),Aggregation.skip((page) * size), Aggregation.limit(size), Aggregation.sort(Sort.Direction.DESC, "updatedTime"));
 			 }else{
 				 aggregation = Aggregation.newAggregation(new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
-		              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))));
+		              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))), Aggregation.sort(Sort.Direction.DESC, "updatedTime"));
 			 }
 		}
-			 System.out.println(aggregation.toString());
 	    AggregationResults<DoctorResponse> results = mongoTemplate.aggregate(aggregation, UserCollection.class, DoctorResponse.class);
 	    response = results.getMappedResults();
 	    for(DoctorResponse doctorResponse : response){
@@ -737,4 +736,5 @@ public class AdminServicesImpl implements AdminServices {
 		}
 		return response;
 	}
+
 }

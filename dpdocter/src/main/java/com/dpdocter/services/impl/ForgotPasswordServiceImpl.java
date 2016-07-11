@@ -3,8 +3,6 @@ package com.dpdocter.services.impl;
 import java.util.Date;
 import java.util.List;
 
-import javax.ws.rs.core.UriInfo;
-
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
@@ -111,8 +109,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	    }
 	    return response;
 	} catch (BusinessException be) {
-	    logger.error(be + " User not Found.");
-	    throw new BusinessException(ServiceError.Unknown, "User not Found.");
+	    logger.error(be + "No account present with email address, please sign up");
+	    throw new BusinessException(ServiceError.Unknown, "No account present with email address, please sign up");
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
@@ -140,8 +138,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		    }
 		}
 		if (!isPatient) {
-		    logger.warn("No Patient Found");
-		    throw new BusinessException(ServiceError.Unknown, "No Patient Found");
+		    logger.warn("No account present with mobile number, please sign up");
+		    throw new BusinessException(ServiceError.Unknown, "No account present with mobile number, please sign up");
 		}
 		if (request.getMobileNumber() != null && !request.getMobileNumber().isEmpty()) {
 		    String OTP = LoginUtils.generateOTP();

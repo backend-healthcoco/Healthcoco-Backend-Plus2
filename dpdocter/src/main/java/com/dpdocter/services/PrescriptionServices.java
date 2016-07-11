@@ -101,7 +101,7 @@ public interface PrescriptionServices {
     DrugDurationUnitAddEditResponse deleteDrugDurationUnit(String drugDurationUnitId, Boolean discarded);
 
     List<Object> getPrescriptionItems(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
-	    Boolean discarded);
+	    Boolean discarded, Boolean isAdmin, String searchTerm);
 
     void emailPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String emailAddress);
 

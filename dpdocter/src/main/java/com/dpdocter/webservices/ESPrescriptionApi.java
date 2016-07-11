@@ -11,6 +11,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +19,10 @@ import com.dpdocter.beans.LabTest;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
 import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.services.ESPrescriptionService;
+import com.dpdocter.exceptions.BusinessException;
+import com.dpdocter.exceptions.ServiceError;
 
+import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -30,6 +34,8 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.SOLR_PRESCRIPTION_BASEURL, description = "Endpoint for solr prescription")
 public class ESPrescriptionApi {
 
+	private static Logger logger = Logger.getLogger(ESPrescriptionApi.class.getName());
+	
     @Autowired
     private ESPrescriptionService esPrescriptionService;
     
@@ -40,6 +46,11 @@ public class ESPrescriptionApi {
 	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
+
+    	if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 
 	List<ESDrugDocument> complaints = esPrescriptionService.searchDrug(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
 		searchTerm);
@@ -55,7 +66,10 @@ public class ESPrescriptionApi {
 	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 	    @QueryParam(value = "searchTerm") String searchTerm) {
-
+    	if (DPDoctorUtils.anyStringEmpty(range, locationId, hospitalId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	List<LabTest> labTests = esPrescriptionService.searchLabTest(range, page, size, locationId, hospitalId, updatedTime, discarded, searchTerm);
 	Response<LabTest> response = new Response<LabTest>();
 	response.setDataList(labTests);
@@ -69,7 +83,10 @@ public class ESPrescriptionApi {
 	    @QueryParam("size") int size, @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 	    @QueryParam(value = "searchTerm") String searchTerm) {
-
+    	if (DPDoctorUtils.anyStringEmpty(range, locationId, hospitalId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	List<ESDiagnosticTestDocument> diagnosticTests = esPrescriptionService.searchDiagnosticTest(range, page, size, locationId, hospitalId, updatedTime,
 		discarded, searchTerm);
 	Response<ESDiagnosticTestDocument> response = new Response<ESDiagnosticTestDocument>();

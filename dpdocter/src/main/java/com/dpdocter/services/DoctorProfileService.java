@@ -41,8 +41,6 @@ public interface DoctorProfileService {
 
     Boolean addEditEducation(DoctorEducationAddEditRequest request);
 
-    Boolean addEditMedicalCouncils(List<MedicalCouncil> medicalCouncils);
-
     List<MedicalCouncil> getMedicalCouncils(int page, int size, String updatedTime);
 
     List<String> addEditSpeciality(DoctorSpecialityAddEditRequest request);
@@ -60,8 +58,6 @@ public interface DoctorProfileService {
     String addEditCoverPicture(DoctorProfilePictureAddEditRequest request);
 
     DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId);
-
-    Boolean insertProfessionalMemberships(List<ProfessionalMembership> professionalMemberships);
 
     List<ProfessionalMembership> getProfessionalMemberships(int page, int size, String updatedTime);
 

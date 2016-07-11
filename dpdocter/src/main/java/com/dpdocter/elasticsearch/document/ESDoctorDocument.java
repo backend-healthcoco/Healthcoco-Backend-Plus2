@@ -267,6 +267,7 @@ public class ESDoctorDocument extends DoctorLocation{
 
 	public void setDob(DOB dob) {
 		this.dob = dob;
+		if(this.dob != null)dob.getAge();
 	}
 
 	public Double getDistance() {
