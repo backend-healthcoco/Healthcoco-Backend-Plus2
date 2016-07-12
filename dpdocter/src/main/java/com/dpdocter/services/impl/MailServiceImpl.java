@@ -106,9 +106,7 @@ public class MailServiceImpl implements MailService {
 	    rawEmailRequest.setDestinations(list);
 	    rawEmailRequest.setSource(FROM);
 	    BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
-	    AmazonSimpleEmailServiceClient amazonSimpleEmailServiceClient = new AmazonSimpleEmailServiceClient(credentials);
-	    amazonSimpleEmailServiceClient.configureRegion(Regions.US_WEST_2);
-	    amazonSimpleEmailServiceClient.sendRawEmail(rawEmailRequest);
+	    new AmazonSimpleEmailServiceClient(credentials).sendRawEmail(rawEmailRequest);
 	    outputStream.close();
 	    respone = true;
 	} catch (Exception ex) {

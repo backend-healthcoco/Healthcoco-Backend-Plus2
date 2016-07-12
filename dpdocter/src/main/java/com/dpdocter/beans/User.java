@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 import com.dpdocter.enums.UserState;
 
 public class User {
@@ -35,6 +37,8 @@ public class User {
 
     private String userUId;
 
+    private List<String> specialities;
+    
     public String getImageUrl() {
 	return imageUrl;
     }
@@ -163,12 +167,22 @@ public class User {
 		this.userUId = userUId;
 	}
 
+	public List<String> getSpecialities() {
+		return specialities;
+	}
+
+	public void setSpecialities(List<String> specialities) {
+		this.specialities = specialities;
+	}
+
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", title=" + title + ", firstName=" + firstName + ", userName=" + userName
 				+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob="
 				+ dob + ", bloodGroup=" + bloodGroup + ", secPhoneNumber=" + secPhoneNumber + ", isPartOfClinic="
 				+ isPartOfClinic + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", colorCode="
-				+ colorCode + ", userState=" + userState + ", userUId=" + userUId + "]";
+				+ colorCode + ", userState=" + userState + ", userUId=" + userUId + ", specialities=" + specialities
+				+ "]";
 	}
+
 }

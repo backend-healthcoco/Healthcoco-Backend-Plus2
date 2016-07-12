@@ -44,11 +44,11 @@ public interface DiagramsRepository extends MongoRepository<DiagramsCollection, 
     @Query("{'$or': [{'doctorId': ?0, 'speciality': {$in: ?1}, 'updatedTime': {'$gt': ?2}, 'discarded': {$in: ?3}},{'doctorId': null, 'speciality': {$in: ?1}, 'updatedTime': {'$gt': ?2},'discarded': {$in: ?3}}]}")
     List<DiagramsCollection> findCustomGlobalDiagrams(String doctorId, Collection<String> specialities, Date date, boolean[] discards, Sort sort);
 
-    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
-    List<DiagramsCollection> findCustomGlobalDiagrams(Date date, boolean[] discards, Pageable pageable);
+	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DiagramsCollection> findCustomGlobalDiagramsForAdmin(Date date, boolean[] discards, Pageable pageable);
 
     @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
-    List<DiagramsCollection> findCustomGlobalDiagrams(Date date, boolean[] discards, Sort sort);
+	List<DiagramsCollection> findCustomGlobalDiagramsForAdmin(Date date, boolean[] discards, Sort sort);
 
 	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'tags' : {$regex : '^?2', $options : 'i'}}")
 	List<DiagramsCollection> findCustomGlobalDiagramsForAdmin(Date date, boolean[] discards, String searchTerm,	Pageable pageable);
@@ -73,11 +73,4 @@ public interface DiagramsRepository extends MongoRepository<DiagramsCollection, 
 
 	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
 	List<DiagramsCollection> findCustomDiagramsForAdmin(Date date, boolean[] discards, Sort sort);
-
-	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
-	List<DiagramsCollection> findCustomGlobalDiagramsForAdmin(Date date, boolean[] discards, Pageable pageable);
-
-    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
-	List<DiagramsCollection> findCustomGlobalDiagramsForAdmin(Date date, boolean[] discards, Sort sort);
-
 }

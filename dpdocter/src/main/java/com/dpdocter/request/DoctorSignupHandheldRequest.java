@@ -1,13 +1,12 @@
 package com.dpdocter.request;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.dpdocter.beans.DOB;
 
 public class DoctorSignupHandheldRequest {
     private String firstName;
-
-    private String lastName;
-
-    private String middleName;
 
     private String userName;
 
@@ -21,28 +20,14 @@ public class DoctorSignupHandheldRequest {
 
     private DOB dob;
 
+    private List<String> specialities;
+    
     public String getFirstName() {
 	return firstName;
     }
 
     public void setFirstName(String firstName) {
 	this.firstName = firstName;
-    }
-
-    public String getLastName() {
-	return lastName;
-    }
-
-    public void setLastName(String lastName) {
-	this.lastName = lastName;
-    }
-
-    public String getMiddleName() {
-	return middleName;
-    }
-
-    public void setMiddleName(String middleName) {
-	this.middleName = middleName;
     }
 
     public String getUserName() {
@@ -93,9 +78,18 @@ public class DoctorSignupHandheldRequest {
 	this.dob = dob;
     }
 
-    @Override
-    public String toString() {
-	return "DoctorSignupHandheldRequest [firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", userName=" + userName
-		+ ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob=" + dob + "]";
-    }
+	public List<String> getSpecialities() {
+		return specialities;
+	}
+
+	public void setSpecialities(List<String> specialities) {
+		this.specialities = specialities;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorSignupHandheldRequest [firstName=" + firstName + ", userName=" + userName + ", password="
+				+ Arrays.toString(password) + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
+				+ ", gender=" + gender + ", dob=" + dob + ", specialities=" + specialities + "]";
+	}
 }

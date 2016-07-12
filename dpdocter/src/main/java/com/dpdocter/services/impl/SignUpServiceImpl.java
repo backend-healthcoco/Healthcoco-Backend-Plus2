@@ -41,6 +41,7 @@ import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SMSTrackDetail;
+import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.TokenCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
@@ -65,6 +66,7 @@ import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.RoleRepository;
+import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.TokenRepository;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
@@ -156,6 +158,9 @@ public class SignUpServiceImpl implements SignUpService {
     @Value(value = "${patient.count}")
     private String patientCount;
     
+    @Autowired
+    private SpecialityRepository specialityRepository;
+
 //    @Autowired
 //    private SMSFormatRepository sMSFormatRepository;
 
@@ -630,6 +635,15 @@ public class SignUpServiceImpl implements SignUpService {
 	    // save doctor specific details
 	    DoctorCollection doctorCollection = new DoctorCollection();
 	    BeanUtil.map(request, doctorCollection);
+	    if (request.getSpecialities() != null && !request.getSpecialities().isEmpty()) {
+			List<SpecialityCollection> specialityCollections = specialityRepository.findBySuperSpeciality(request.getSpecialities());
+		    @SuppressWarnings("unchecked")
+			Collection<String> specialityIds = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("id"));
+		    if(specialityIds != null && !specialityIds.isEmpty())doctorCollection.setSpecialities(new ArrayList<>(specialityIds));
+		    else doctorCollection.setSpecialities(null);
+	    }else{
+	    	doctorCollection.setSpecialities(null);	
+	    }
 	    doctorCollection.setUserId(userCollection.getId());
 	    doctorCollection.setCreatedTime(new Date());
 	    doctorCollection = doctorRepository.save(doctorCollection);
@@ -639,6 +653,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    userCollection.setPassword(null);
 	    BeanUtil.map(userCollection, user);
 	    user.setEmailAddress(userCollection.getEmailAddress());
+	    user.setSpecialities(request.getSpecialities());
 	    response.setUser(user);
 
 	} catch (DuplicateKeyException de) {
@@ -787,6 +802,19 @@ public class SignUpServiceImpl implements SignUpService {
 	    userCollection.setPassword(null);
 	    BeanUtil.map(userCollection, user);
 	    user.setEmailAddress(userCollection.getEmailAddress());
+	    if(doctorCollection != null){
+	    	if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				List<SpecialityCollection> specialityCollections = specialityRepository.findById(doctorCollection.getSpecialities());
+			    @SuppressWarnings("unchecked")
+				Collection<String> specialities = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("superSpeciality"));
+			    if(specialities != null && !specialities.isEmpty()){
+			    	user.setSpecialities(new ArrayList<>(specialities));
+			    }
+			    else user.setSpecialities(null);
+		    }else{
+		    	user.setSpecialities(null);	
+		    }
+	    }
 	    response.setUser(user);
 	    Hospital hospital = new Hospital();
 	    BeanUtil.map(hospitalCollection, hospital);
@@ -1309,7 +1337,8 @@ public class SignUpServiceImpl implements SignUpService {
 			if (userCollection != null) {
 				List<UserLocationCollection> userLocationCollections = userLocationRepository.findByUserId(userCollection.getId());
 				UserLocationCollection userLocationCollection = null;
-				if(userLocationCollections != null && !userLocationCollections.isEmpty())userLocationCollection = userLocationCollections.get(0);
+				if(userLocationCollections != null && !userLocationCollections.isEmpty())
+					userLocationCollection = userLocationCollections.get(0);
 			    // save token
 			    TokenCollection tokenCollection = new TokenCollection();
 			    tokenCollection.setResourceId(userLocationCollection.getId());
