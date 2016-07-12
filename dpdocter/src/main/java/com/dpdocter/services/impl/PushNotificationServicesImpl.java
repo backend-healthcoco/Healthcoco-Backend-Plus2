@@ -177,7 +177,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 			Sender sender = new Sender(GEOCODING_SERVICES_API_KEY);
 
 			Notification notification = new Notification();
-			notification.setTitle("Healthcoco");
+//			notification.setTitle("Healthcoco");
 			notification.setText(message);
 			if(!DPDoctorUtils.anyStringEmpty(componentType)){
 				if(componentType.equalsIgnoreCase(ComponentType.PRESCRIPTIONS.getType())){
@@ -217,7 +217,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 			Sender sender = new Sender(GEOCODING_SERVICES_API_KEY);
 
 			Notification notification = new Notification();
-			notification.setTitle("Healthcoco");
+//			notification.setTitle("Healthcoco");
 			notification.setText(message);
 			
 			if(!DPDoctorUtils.anyStringEmpty(imageURL))notification.setImg(imageURL);

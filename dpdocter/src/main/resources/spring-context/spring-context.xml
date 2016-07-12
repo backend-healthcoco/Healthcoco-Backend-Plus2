@@ -27,21 +27,8 @@
 	<import resource="classpath:database-connection.xml" />
 	<import resource="mail-config.xml" />
 	<import resource="application-context-velocity.xml" />
-<!-- 	<import resource="spring-security.xml"/> -->
+	<import resource="swagger.xml"/>
 	<mongo:repositories	base-package="com.dpdocter.repository, com.dpdocter.sms.repository" />
 	<elasticsearch:repositories base-package="com.dpdocter.elasticsearch.repository"/>
 
-<!-- Swaager configuration -->
- <bean id="apiListingResourceJSON" class="io.swagger.jaxrs.listing.ApiListingResource"/> 
- <bean id="apiDeclarationProvider" class="io.swagger.jaxrs.listing.SwaggerSerializers" scope="singleton"/> 
- <bean id="beanConfig" class="io.swagger.jaxrs.config.BeanConfig"> 
-         <property name="title" value="Swagger"/> 
-         <property name="version" value="1.0.0" /> 
-         <property name="schemes" value="http" /> 
-         <property name="host" value="52.90.6.21" /> 
-         <property name="basePath" value="/dpdocter/api"/> 
-         <property name="resourcePackage" value="com.dpdocter.webservices"/> 
-         <property name="scan" value="true"/> 
- </bean> 
-    
 </beans>

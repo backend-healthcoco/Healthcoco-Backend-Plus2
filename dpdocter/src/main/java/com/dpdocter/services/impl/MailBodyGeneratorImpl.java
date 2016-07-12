@@ -40,7 +40,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	model.put("fName", fName);
 	model.put("doctorName", doctorName);
 	model.put("clinicName", clinicName);
-	model.put("link", link+"?token="+tokenId);
+	model.put("link", link+"/"+tokenId);
 	model.put("imageURL", imagePath + "templatesImage");
 	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
 	return text;

@@ -12,7 +12,7 @@ import com.dpdocter.collections.UserLocationCollection;
 
 public interface UserLocationRepository extends MongoRepository<UserLocationCollection, String>, PagingAndSortingRepository<UserLocationCollection, String> {
     @Query("{'userId' : ?0, 'isActivate' : true}")
-    List<UserLocationCollection> findByUserId(String userId);
+    List<UserLocationCollection> findByUserIdAndIsActivate(String userId);
 
     @Query("{'locationId':?0}")
     List<UserLocationCollection> findByLocationId(String id);
@@ -28,5 +28,8 @@ public interface UserLocationRepository extends MongoRepository<UserLocationColl
 
     @Query("{'userId':{$in: ?0}, 'locationId':?1}")
     List<UserLocationCollection> findByUserIdAndLocationId(List<String> doctorId, String locationId);
+
+    @Query("{'userId' : ?0}")
+	List<UserLocationCollection> findByUserId(String userId);
 
 }

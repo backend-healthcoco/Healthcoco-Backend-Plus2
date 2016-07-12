@@ -391,7 +391,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		    throw new BusinessException(ServiceError.NoRecord, "No user found");	
 	    }
 	    if (locationId == null) {
-		List<UserLocationCollection> userLocationCollections = userLocationRepository.findByUserId(userCollection.getId());
+		List<UserLocationCollection> userLocationCollections = userLocationRepository.findByUserIdAndIsActivate(userCollection.getId());
 		if(userLocationCollections != null && !userLocationCollections.isEmpty()){
 			for (Iterator<UserLocationCollection> iterator = userLocationCollections.iterator(); iterator.hasNext();) {
 			    UserLocationCollection userLocationCollection = iterator.next();

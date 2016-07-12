@@ -173,7 +173,7 @@ public class LoginServiceImpl implements LoginService {
 
 		    userCollection.setLastSession(new Date());
 		    userCollection = userRepository.save(userCollection);
-		    List<UserLocationCollection> userLocationCollections = userLocationRepository.findByUserId(userCollection.getId());
+		    List<UserLocationCollection> userLocationCollections = userLocationRepository.findByUserIdAndIsActivate(userCollection.getId());
 		    if (userLocationCollections != null) {
 			@SuppressWarnings("unchecked")
 			Collection<String> locationIds = CollectionUtils.collect(userLocationCollections, new BeanToPropertyValueTransformer("locationId"));

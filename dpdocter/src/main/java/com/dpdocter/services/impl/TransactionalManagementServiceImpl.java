@@ -568,7 +568,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	    if (doctorCollection != null && userCollection != null) {
 		List<UserLocationCollection> userLocationCollections = null;
 		if (locationId == null)
-		    userLocationCollections = userLocationRepository.findByUserId(resourceId);
+		    userLocationCollections = userLocationRepository.findByUserIdAndIsActivate(resourceId);
 		else {
 		    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(resourceId, locationId);
 		    userLocationCollections = new ArrayList<UserLocationCollection>();
