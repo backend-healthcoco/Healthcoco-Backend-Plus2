@@ -885,6 +885,6 @@ public interface PathProxy {
 
 	public interface VersionControlUrls {
 		public static final String CHECK_VERSION = "/check";
-		public static final String CHANGE_VERSION = "/update";
+		public static final String CHANGE_VERSION = "/change";
 	}
 }

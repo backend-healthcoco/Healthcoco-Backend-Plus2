@@ -49,9 +49,13 @@ public class VersionControlServiceImpl implements VersionControlService{
 	public VersionControl changeVersion(VersionControl versionControl)
 	{
 		VersionControl response = null;
-		VersionControlCollection versionControlCollection = new VersionControlCollection();
-		if(versionControl != null)
+		VersionControlCollection versionControlCollection = versionControlRepository.findByApplicationType(versionControl.getAppType().toString() , versionControl.getDeviceType().toString());
+		if(versionControl != null )
 		{
+			if(versionControlCollection == null)
+			{
+				versionControlCollection = new VersionControlCollection();
+			}
 			BeanUtil.map(versionControl, versionControlCollection);
 			try {
 				versionControlCollection = versionControlRepository.save(versionControlCollection);
