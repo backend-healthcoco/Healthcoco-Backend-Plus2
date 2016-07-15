@@ -56,6 +56,10 @@ public class VersionControlServiceImpl implements VersionControlService{
 			{
 				versionControlCollection = new VersionControlCollection();
 			}
+			else
+			{
+				versionControl.setId(versionControlCollection.getId().toString());
+			}
 			BeanUtil.map(versionControl, versionControlCollection);
 			try {
 				versionControlCollection = versionControlRepository.save(versionControlCollection);

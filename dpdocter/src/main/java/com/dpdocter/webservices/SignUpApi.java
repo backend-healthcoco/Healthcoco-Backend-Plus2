@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.DoctorContactUs;
 import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.LocationAndAccessControl;
 import com.dpdocter.beans.User;
@@ -38,6 +39,7 @@ import com.dpdocter.request.PatientSignupRequestMobile;
 import com.dpdocter.request.VerifyUnlockPatientRequest;
 import com.dpdocter.request.VerifyUnlockPatientRequest.FlagEnum;
 import com.dpdocter.response.PateientSignUpCheckResponse;
+import com.dpdocter.services.DoctorContactUsService;
 import com.dpdocter.services.SignUpService;
 import com.dpdocter.services.TransactionalManagementService;
 
@@ -63,6 +65,9 @@ public class SignUpApi {
 
     @Autowired
     private TransactionalManagementService transnationalService;
+    
+    @Autowired
+    private DoctorContactUsService doctorContactUsService;
 
     @Context
     private UriInfo uriInfo;
@@ -427,5 +432,32 @@ public class SignUpApi {
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(signUpService.resendVerificationEmail(emailaddress, uriInfo));
 	return response;
+    }
+    
+    @Path(value = PathProxy.SignUpUrls.SUBMIT_DOCTOR_CONTACT)
+    @POST
+    @ApiOperation(value = PathProxy.SignUpUrls.SUBMIT_DOCTOR_CONTACT, notes = PathProxy.SignUpUrls.SUBMIT_DOCTOR_CONTACT)
+    public Response<DoctorContactUs> submitDoctorContactUsInfo(DoctorContactUs doctorContactUs)
+    {
+    	if(doctorContactUs == null)
+    	{
+    		logger.warn("Doctor contact data is null");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Contact data is null");
+    	}
+    	
+    	Response<DoctorContactUs> response = new Response<DoctorContactUs>();
+    	response.setData(doctorContactUsService.submitDoctorContactUSInfo(doctorContactUs));
+    	return response;
+    }
+    
+    @Path(value = PathProxy.SignUpUrls.GET_DOCTOR_CONTACT_LIST)
+    @GET
+    @ApiOperation(value = PathProxy.SignUpUrls.GET_DOCTOR_CONTACT_LIST, notes = PathProxy.SignUpUrls.GET_DOCTOR_CONTACT_LIST)
+    public Response<DoctorContactUs> getDoctorContactList(@QueryParam(value = "page") int page, @QueryParam(value = "size") int size)
+    {
+    	List<DoctorContactUs> doctorContactUsList = doctorContactUsService.getDoctorContactList(page, size);
+		Response<DoctorContactUs> response = new Response<DoctorContactUs>();
+		response.setDataList(doctorContactUsList);
+		return response;
     }
 }

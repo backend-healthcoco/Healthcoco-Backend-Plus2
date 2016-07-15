@@ -44,6 +44,10 @@ public interface PathProxy {
 		public static final String VERIFY_UNLOCK_PATIENT = "/patient/verifyorunlock";
 
 		public static final String RESEND_VERIFICATION_EMAIL_TO_DOCTOR = "/resendVerificationEmail/{emailaddress}";
+		
+		public static final String SUBMIT_DOCTOR_CONTACT = "/submitDoctorContact";
+		
+		public static final String GET_DOCTOR_CONTACT_LIST = "/getDoctorContactList";
 
 	}
 
