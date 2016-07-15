@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -36,15 +37,23 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 		{
 			BeanUtil.map(doctorContactUs, doctorContactUsCollection);
 			try {
+				doctorContactUsCollection.setUserName(doctorContactUs.getEmail());
 				doctorContactUsCollection = doctorContactUsRepository.save(doctorContactUsCollection);
 				if(doctorContactUsCollection != null)
 				{
 					response = new DoctorContactUs();
 					BeanUtil.map(doctorContactUsCollection, response);
 				}
+			} catch (DuplicateKeyException de) {
+			    logger.error(de);
+			    throw new BusinessException(ServiceError.Unknown, "An account already exists with this email address.Please use another email address to register.");
+			} catch (BusinessException be) {
+			    logger.error(be);
+			    throw be;
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.warn(e);
+			    e.printStackTrace();
+			    logger.error(e + " Error occured while creating doctor");
+			    throw new BusinessException(ServiceError.Unknown, "Error occured while creating doctor");
 			}
 		}
 		return response;

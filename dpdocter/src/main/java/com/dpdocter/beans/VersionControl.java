@@ -1,7 +1,6 @@
 package com.dpdocter.beans;
 
 import com.dpdocter.enums.AppType;
-import com.dpdocter.enums.ApplicationType;
 import com.dpdocter.enums.DeviceType;
 
 /**

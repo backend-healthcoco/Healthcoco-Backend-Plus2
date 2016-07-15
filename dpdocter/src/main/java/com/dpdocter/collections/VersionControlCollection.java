@@ -6,7 +6,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.enums.AppType;
-import com.dpdocter.enums.ApplicationType;
 import com.dpdocter.enums.DeviceType;
 
 @Document(collection = "version_control_cl")

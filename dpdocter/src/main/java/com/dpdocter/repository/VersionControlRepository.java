@@ -4,7 +4,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 import com.dpdocter.collections.VersionControlCollection;
-import com.dpdocter.enums.ApplicationType;
 
 public interface VersionControlRepository extends MongoRepository<VersionControlCollection, String> {
 	
