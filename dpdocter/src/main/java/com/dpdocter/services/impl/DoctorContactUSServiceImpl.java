@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.DoctorContactUs;
 import com.dpdocter.collections.DoctorContactUsCollection;
+import com.dpdocter.enums.DoctorContactStateType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -37,7 +38,7 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 		{
 			BeanUtil.map(doctorContactUs, doctorContactUsCollection);
 			try {
-				doctorContactUsCollection.setUserName(doctorContactUs.getEmail());
+				doctorContactUsCollection.setUserName(doctorContactUs.getEmailAddress());
 				doctorContactUsCollection = doctorContactUsRepository.save(doctorContactUsCollection);
 				if(doctorContactUsCollection != null)
 				{
@@ -85,4 +86,31 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 		return response;
 	}
 
+	@Override
+	@Transactional
+	public DoctorContactUs updateDoctorContactState(String contactId, DoctorContactStateType contactState)
+	{
+		DoctorContactUs response = null;
+		if(contactId != null || !(contactId.isEmpty()))
+		{
+			try {
+				DoctorContactUsCollection doctorContactUsCollection = doctorContactUsRepository.findByContactId(contactId);
+				if(doctorContactUsCollection != null)
+				{
+					doctorContactUsCollection.setContactState(contactState);
+					doctorContactUsCollection = doctorContactUsRepository.save(doctorContactUsCollection);
+					if(doctorContactUsCollection != null)
+					{
+						response = new DoctorContactUs();
+						BeanUtil.map(doctorContactUsCollection, response);
+					}
+				}
+			} catch (Exception e) {
+				logger.warn("Error while updating contact state :: "+e);
+				e.printStackTrace();
+				throw new BusinessException(ServiceError.Unknown,"Error while updating doctor contact state " + e.getMessage());
+			}
+		}	
+		return response;
+	}
 }

@@ -48,7 +48,7 @@ public interface PathProxy {
 		public static final String SUBMIT_DOCTOR_CONTACT = "/submitDoctorContact";
 		
 		public static final String GET_DOCTOR_CONTACT_LIST = "/getDoctorContactList";
-
+		
 	}
 
 	public static final String LOGIN_BASE_URL = BASE_URL + "/login";
@@ -737,6 +737,8 @@ public interface PathProxy {
 	public static final String ADMIN_BASE_URL = BASE_URL + "/admin";
 
 	public interface AdminUrls {
+		
+		public static final String UPDATE_DOCTOR_CONTACT_STATE = "/updateDoctorContactState/{contactId}/{contactState}";
 
 		public static final String GET_INACTIVE_USERS = "/inactiveUsers";
 

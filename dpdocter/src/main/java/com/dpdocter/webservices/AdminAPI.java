@@ -25,6 +25,7 @@ import com.dpdocter.beans.ContactUs;
 import com.dpdocter.beans.Diagnoses;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Diagram;
+import com.dpdocter.beans.DoctorContactUs;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.Investigation;
@@ -50,6 +51,7 @@ import com.dpdocter.elasticsearch.services.ESClinicalNotesService;
 import com.dpdocter.elasticsearch.services.ESMasterService;
 import com.dpdocter.elasticsearch.services.ESPrescriptionService;
 import com.dpdocter.enums.ClinicalItems;
+import com.dpdocter.enums.DoctorContactStateType;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -70,6 +72,7 @@ import com.dpdocter.response.DrugDurationUnitAddEditResponse;
 import com.dpdocter.response.DrugTypeAddEditResponse;
 import com.dpdocter.services.AdminServices;
 import com.dpdocter.services.ClinicalNotesService;
+import com.dpdocter.services.DoctorContactUsService;
 import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.TransactionalManagementService;
@@ -111,6 +114,9 @@ public class AdminAPI {
 
     @Autowired
     private PrescriptionServices prescriptionServices;
+    
+    @Autowired
+    private DoctorContactUsService doctorContactUsService;
 
     @Value(value = "${image.path}")
     private String imagePath;
@@ -1010,4 +1016,14 @@ public class AdminAPI {
 	return response;
     }
 
+    @Path(value = PathProxy.AdminUrls.UPDATE_DOCTOR_CONTACT_STATE)
+    @GET
+    @ApiOperation(value = PathProxy.AdminUrls.UPDATE_DOCTOR_CONTACT_STATE, notes = PathProxy.AdminUrls.UPDATE_DOCTOR_CONTACT_STATE)
+    public Response<DoctorContactUs> getDoctorContactList(@PathParam(value = "contactId") String contactId, @PathParam(value = "contactState") DoctorContactStateType contactState)
+    {
+    	DoctorContactUs doctorContactUs = doctorContactUsService.updateDoctorContactState(contactId, contactState);
+		Response<DoctorContactUs> response = new Response<DoctorContactUs>();
+		response.setData(doctorContactUs);
+		return response;
+    }
 }

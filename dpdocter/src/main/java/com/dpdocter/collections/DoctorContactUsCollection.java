@@ -24,10 +24,10 @@ public class DoctorContactUsCollection {
 	private String userName;
 	@Field
 	private GenderType gender;
-	@Indexed
-	private String email;
-	@Indexed
-	private String mobileNo;
+	@Field
+	private String emailAddress;
+	@Field
+	private String mobileNumber;
 	@Field
 	private List<String> specialities;
 	@Field
@@ -77,20 +77,20 @@ public class DoctorContactUsCollection {
 		this.gender = gender;
 	}
 
-	public String getEmail() {
-		return email;
+	public String getEmailAddress() {
+		return emailAddress;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
 	}
 
-	public String getMobileNo() {
-		return mobileNo;
+	public String getMobileNumber() {
+		return mobileNumber;
 	}
 
-	public void setMobileNo(String mobileNo) {
-		this.mobileNo = mobileNo;
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
 	}
 
 	public List<String> getSpecialities() {
@@ -129,9 +129,11 @@ public class DoctorContactUsCollection {
 	@Override
 	public String toString() {
 		return "DoctorContactUsCollection [id=" + id + ", title=" + title + ", firstName=" + firstName + ", userName="
-				+ userName + ", gender=" + gender + ", email=" + email + ", mobileNo=" + mobileNo + ", specialities="
-				+ specialities + ", doctorContactState=" + contactState + ", isVerified=" + isVerified
+				+ userName + ", gender=" + gender + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
+				+ ", specialities=" + specialities + ", contactState=" + contactState + ", isVerified=" + isVerified
 				+ ", toList=" + toList + "]";
 	}
+
+	
 
 }
