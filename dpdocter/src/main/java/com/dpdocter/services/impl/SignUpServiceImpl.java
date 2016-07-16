@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.AccessModule;
 import com.dpdocter.beans.AccessPermission;
+import com.dpdocter.beans.AdminSignupRequest;
 import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Hospital;
@@ -1271,7 +1272,7 @@ public class SignUpServiceImpl implements SignUpService {
 
     @Override
     @Transactional
-    public User adminSignUp(PatientSignUpRequest request) {
+    public User adminSignUp(AdminSignupRequest request) {
 	User user = null;
 	try {
 	    RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.SUPER_ADMIN.getRole());
@@ -1283,21 +1284,22 @@ public class SignUpServiceImpl implements SignUpService {
 	    UserCollection userCollection = new UserCollection();
 	    BeanUtil.map(request, userCollection);
 
-	    if (request.getImage() != null) {
+	    /*if (request.getImage() != null) {
 		String path = "profile-image";
 		request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
 		ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getImage(), path, true);
 		userCollection.setImageUrl(imageURLResponse.getImageUrl());
 		userCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
-	    }
-	    char[] salt = DPDoctorUtils.generateSalt();
+	    }*/
+	    /*char[] salt = DPDoctorUtils.generateSalt();
 		userCollection.setSalt(salt);
 	    char[] passwordWithSalt = new char[request.getPassword().length + salt.length]; 
 	    for(int i = 0; i < request.getPassword().length; i++)
 	        passwordWithSalt[i] = request.getPassword()[i];
 	    for(int i = 0; i < salt.length; i++)
-	    	passwordWithSalt[i+request.getPassword().length] = salt[i];
-	    userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt));
+	    	passwordWithSalt[i+request.getPassword().length] = salt[i];*/
+	   // userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt));
+	    userCollection.setUserName(request.getEmailAddress());
 		userCollection.setUserUId(UniqueIdInitial.USER.getInitial()+DPDoctorUtils.generateRandomId());
 	    userCollection.setIsVerified(true);
 	    userCollection.setIsActive(true);

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ws.rs.core.UriInfo;
 
+import com.dpdocter.beans.AdminSignupRequest;
 import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.User;
 import com.dpdocter.request.DoctorSignupHandheldContinueRequest;
@@ -49,7 +50,7 @@ public interface SignUpService {
 
     boolean checkMobileNumberExistForPatient(String mobileNumber);
 
-    User adminSignUp(PatientSignUpRequest request);
+    User adminSignUp(AdminSignupRequest request);
 
 	Boolean resendVerificationEmail(String emailaddress, UriInfo uriInfo);
 

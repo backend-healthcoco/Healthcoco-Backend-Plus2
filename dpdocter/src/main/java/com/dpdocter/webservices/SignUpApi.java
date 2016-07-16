@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.AdminSignupRequest;
 import com.dpdocter.beans.DoctorContactUs;
 import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.LocationAndAccessControl;
@@ -78,21 +79,21 @@ public class SignUpApi {
     @Path(value = PathProxy.SignUpUrls.ADMIN_SIGNUP)
     @POST
     @ApiOperation(value = PathProxy.SignUpUrls.ADMIN_SIGNUP, notes = PathProxy.SignUpUrls.ADMIN_SIGNUP)
-    public Response<User> adminSignup(PatientSignUpRequest request) {
+    public Response<User> adminSignup(AdminSignupRequest request) {
 	if (request == null) {
 	    logger.warn("Request send  is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
 	}
 
 	User user = signUpService.adminSignUp(request);
-	if (user != null) {
+	/*if (user != null) {
 	    if (user.getImageUrl() != null) {
 		user.setImageUrl(getFinalImageURL(user.getImageUrl()));
 	    }
 	    if (user.getThumbnailUrl() != null) {
 		user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
 	    }
-	}
+	}*/
 
 	Response<User> response = new Response<User>();
 	response.setData(user);

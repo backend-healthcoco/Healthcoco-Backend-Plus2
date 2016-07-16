@@ -54,7 +54,7 @@ public interface PathProxy {
 	public static final String LOGIN_BASE_URL = BASE_URL + "/login";
 
 	public interface LoginUrls {
-		public static final String LOGIN_ADMIN = "/admin";
+		public static final String LOGIN_ADMIN = "/admin/{mobileNumber}";
 
 		public static final String LOGIN_USER = "/user";
 

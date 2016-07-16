@@ -13,5 +13,5 @@ public interface LoginService {
 
     List<RegisteredPatientDetails> loginPatient(LoginPatientRequest request);
 
-    User adminLogin(LoginPatientRequest request);
+	Boolean adminLogin(String mobileNumber);
 }

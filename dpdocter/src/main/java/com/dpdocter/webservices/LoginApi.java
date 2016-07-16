@@ -3,8 +3,10 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -44,23 +46,23 @@ public class LoginApi {
     private String imagePath;
 
     @Path(value = PathProxy.LoginUrls.LOGIN_ADMIN)
-    @POST
+    @GET
     @ApiOperation(value = PathProxy.LoginUrls.LOGIN_ADMIN, notes = PathProxy.LoginUrls.LOGIN_ADMIN, tags = PathProxy.LoginUrls.LOGIN_ADMIN)
-    public Response<User> adminLogin(LoginPatientRequest request) {
-	if (request == null || DPDoctorUtils.anyStringEmpty(request.getMobileNumber()) || request.getPassword() == null || request.getPassword().length == 0) {
-	    logger.warn("Invalid Input");
+    public Response<Boolean> adminLogin(@PathParam(value = "mobileNumber") String mobileNumber) {
+	if (mobileNumber == null || mobileNumber.isEmpty()) {
+	    logger.warn("Mobile number is null");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
-	User loginResponse = loginService.adminLogin(request);
-	if (loginResponse != null) {
+	Boolean loginResponse = loginService.adminLogin(mobileNumber);
+	/*if (loginResponse != null) {
 	    if (!DPDoctorUtils.anyStringEmpty(loginResponse.getImageUrl())) {
 		loginResponse.setImageUrl(getFinalImageURL(loginResponse.getImageUrl()));
 	    }
 	    if (!DPDoctorUtils.anyStringEmpty(loginResponse.getThumbnailUrl())) {
 		loginResponse.setThumbnailUrl(getFinalImageURL(loginResponse.getThumbnailUrl()));
 	    }
-	}
-	Response<User> response = new Response<User>();
+	}*/
+	Response<Boolean> response = new Response<Boolean>();
 	if (response != null)
 	    response.setData(loginResponse);
 	return response;

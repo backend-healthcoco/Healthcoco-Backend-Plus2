@@ -35,5 +35,8 @@ public interface UserRepository extends MongoRepository<UserCollection, String> 
 
     @Query("{'isActive' : ?0}")
 	public List<UserCollection> findInactiveDoctors(boolean isActive, Sort sort);
+    
+    @Query("{'mobileNumber' : ?0, 'userState' : ?1}")
+	public UserCollection findAdminByMobileNumber(String mobileNumber, String userState);
 
 }

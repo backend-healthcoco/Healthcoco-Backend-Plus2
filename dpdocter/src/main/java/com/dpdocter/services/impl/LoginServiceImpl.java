@@ -52,6 +52,7 @@ import com.dpdocter.request.LoginPatientRequest;
 import com.dpdocter.request.LoginRequest;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.LoginService;
+import com.dpdocter.services.OTPService;
 
 import common.util.web.DPDoctorUtils;
 
@@ -86,6 +87,9 @@ public class LoginServiceImpl implements LoginService {
 
     @Autowired
     private PatientRepository patientRepository;
+    
+    @Autowired
+    private OTPService otpService;
 
     @Value(value = "${image.path}")
     private String imagePath;
@@ -340,10 +344,10 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     @Transactional
-    public User adminLogin(LoginPatientRequest request) {
-	User response = null;
+    public Boolean adminLogin(String mobileNumber) {
+	Boolean response = false;
 	try {
-		RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.SUPER_ADMIN.getRole());
+		/*RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.SUPER_ADMIN.getRole());
 	    if (roleCollection == null) {
 		logger.warn(role);
 		throw new BusinessException(ServiceError.NoRecord, role);
@@ -351,13 +355,13 @@ public class LoginServiceImpl implements LoginService {
 	    List<UserRoleCollection> userRoleCollections = userRoleRepository.findByRoleId(roleCollection.getId());
 	    @SuppressWarnings("unchecked")
 	    Collection<String> userIds = CollectionUtils.collect(userRoleCollections, new BeanToPropertyValueTransformer("userId")); 
-	    
-		Criteria criteria = new Criteria("mobileNumber").is(request.getMobileNumber()).and("id").in(userIds);
+	    */
+		/*Criteria criteria = new Criteria("mobileNumber").is(request.getMobileNumber()).and("id").in(userIds);
 		Query query = new Query(); query.addCriteria(criteria);
-		List<UserCollection> userCollections = mongoTemplate.find(query, UserCollection.class);
+		List<UserCollection> userCollections = mongoTemplate.find(query, UserCollection.class);*/
 //		UserCollection userCollection = null;
 //		if(userCollections != null && !userCollections.isEmpty())userCollection = userCollections.get(0);
-	    if (userCollections == null || userCollections.isEmpty()) {
+	/*    if (userCollections == null || userCollections.isEmpty()) {
 		logger.warn("Invalid mobile Number and Password");
 		throw new BusinessException(ServiceError.InvalidInput, "Invalid mobile Number and Password");
 	    }else{
@@ -377,11 +381,21 @@ public class LoginServiceImpl implements LoginService {
 				    return response;
 			    }
 	    	}
-	    }
-	   if(response == null){
+	    }*/
+	   /*if(response == null){
 		   logger.warn(login);
 			throw new BusinessException(ServiceError.Unknown, login);
-	   }
+	   }*/
+		UserCollection userCollection = userRepository.findAdminByMobileNumber(mobileNumber, UserState.ADMIN.getState());
+		if(userCollection == null)
+		{
+			throw new BusinessException(ServiceError.NotAuthorized,"Admin with provided mobile number not found");
+		}
+		else
+		{
+			response = otpService.otpGenerator(mobileNumber);
+		}
+		
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while login");
